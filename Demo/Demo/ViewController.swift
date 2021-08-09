@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import YAPPakistan
 
 class ViewController: UIViewController {
 
@@ -14,6 +15,9 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
 
+    @IBAction func yapPKButtonPressed(_ sender: Any) {
+        let vc = SampleViewController()
 
+        navigationController?.pushViewController(vc, animated: true)
+    }
 }
-

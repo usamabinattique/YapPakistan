@@ -27,5 +27,10 @@
     "Source/**/*.png",
     "Source/**/*.xcassets"
   ],
+  "dependencies": {
+    "YAPComponents": [
+
+    ]
+  },
   "swift_version": "5.0"
 }

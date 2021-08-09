@@ -1,6 +1,7 @@
 PODS:
   - YAPComponents (0.0.1)
-  - YAPPakistan (0.0.1)
+  - YAPPakistan (0.0.1):
+    - YAPComponents
 
 DEPENDENCIES:
   - YAPComponents (from `../YAPComponents`)
@@ -14,7 +15,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   YAPComponents: f56044fd8e7c80e27af666ff6a025fe0c23ae170
-  YAPPakistan: 57b7018bf38ace1677c28562bc344b5ab136449b
+  YAPPakistan: 6b85c3918ff04133568dca8379a196e6149f8733
 
 PODFILE CHECKSUM: 9953929bfbd691c54d1bbf75ba26861127eee3ea
 
