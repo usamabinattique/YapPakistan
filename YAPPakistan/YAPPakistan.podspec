@@ -24,4 +24,6 @@ Pod::Spec.new do |spec|
                                 'Source/**/*.png',
                                 'Source/**/*.xcassets']
 
+  spec.dependency 'YAPComponents'
+
 end
