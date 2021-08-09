@@ -1,16 +1,21 @@
 PODS:
+  - YAPComponents (0.0.1)
   - YAPPakistan (0.0.1)
 
 DEPENDENCIES:
+  - YAPComponents (from `../YAPComponents`)
   - YAPPakistan (from `../YAPPakistan`)
 
 EXTERNAL SOURCES:
+  YAPComponents:
+    :path: "../YAPComponents"
   YAPPakistan:
     :path: "../YAPPakistan"
 
 SPEC CHECKSUMS:
+  YAPComponents: f56044fd8e7c80e27af666ff6a025fe0c23ae170
   YAPPakistan: 57b7018bf38ace1677c28562bc344b5ab136449b
 
-PODFILE CHECKSUM: 8c51ce4ba83eb7f761bc5736134c288900badcbb
+PODFILE CHECKSUM: 9953929bfbd691c54d1bbf75ba26861127eee3ea
 
 COCOAPODS: 1.10.1

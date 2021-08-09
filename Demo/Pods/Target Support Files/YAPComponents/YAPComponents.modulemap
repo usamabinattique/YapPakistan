@@ -1,0 +1,6 @@
+module YAPComponents {
+  umbrella header "YAPComponents-umbrella.h"
+
+  export *
+  module * { export * }
+}

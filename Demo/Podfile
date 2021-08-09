@@ -8,6 +8,7 @@ target 'Demo' do
   use_modular_headers!
 
   pod 'YAPPakistan', :path => '../YAPPakistan'
+  pod 'YAPComponents', :path => '../YAPComponents'
 
   post_install do |installer|
     installer.pods_project.targets.each do |target|
