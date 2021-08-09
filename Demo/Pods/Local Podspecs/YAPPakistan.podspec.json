@@ -1,0 +1,31 @@
+{
+  "name": "YAPPakistan",
+  "version": "0.0.1",
+  "summary": "YAP Pakistan",
+  "homepage": "https://bitbucket.org/mb28/ios-b2c-pk/",
+  "source": {
+    "git": "https://bitbucket.org/mb28/ios-b2c-pk.git",
+    "tag": "v0.0.1"
+  },
+  "license": {
+    "type": "Apache 2.0"
+  },
+  "authors": {
+    "Tayyab Akram": "tayyab.akram@digitify.com"
+  },
+  "platforms": {
+    "ios": "12.0"
+  },
+  "swift_versions": "5.0",
+  "source_files": "Source/**/*.swift",
+  "resources": [
+    "Source/**/*.gif",
+    "Source/**/*.jpg",
+    "Source/**/*.jpeg",
+    "Source/**/*.json",
+    "Source/**/*.mp4",
+    "Source/**/*.png",
+    "Source/**/*.xcassets"
+  ],
+  "swift_version": "5.0"
+}

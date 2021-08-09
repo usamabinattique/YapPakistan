@@ -1,0 +1,31 @@
+{
+  "name": "YAPComponents",
+  "version": "0.0.1",
+  "summary": "YAP Components",
+  "homepage": "https://bitbucket.org/mb28/ios-yap-ui-kit/",
+  "source": {
+    "git": "https://bitbucket.org/mb28/ios-yap-ui-kit.git",
+    "tag": "v0.0.1"
+  },
+  "license": {
+    "type": "Apache 2.0"
+  },
+  "authors": {
+    "Tayyab Akram": "tayyab.akram@digitify.com"
+  },
+  "platforms": {
+    "ios": "12.0"
+  },
+  "swift_versions": "5.0",
+  "source_files": "Source/**/*.swift",
+  "resources": [
+    "Source/**/*.gif",
+    "Source/**/*.jpg",
+    "Source/**/*.jpeg",
+    "Source/**/*.json",
+    "Source/**/*.mp4",
+    "Source/**/*.png",
+    "Source/**/*.xcassets"
+  ],
+  "swift_version": "5.0"
+}

@@ -1,0 +1,16 @@
+PODS:
+  - YAPPakistan (0.0.1)
+
+DEPENDENCIES:
+  - YAPPakistan (from `../YAPPakistan`)
+
+EXTERNAL SOURCES:
+  YAPPakistan:
+    :path: "../YAPPakistan"
+
+SPEC CHECKSUMS:
+  YAPPakistan: 57b7018bf38ace1677c28562bc344b5ab136449b
+
+PODFILE CHECKSUM: 8c51ce4ba83eb7f761bc5736134c288900badcbb
+
+COCOAPODS: 1.10.1
