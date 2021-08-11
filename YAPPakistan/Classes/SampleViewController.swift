@@ -14,18 +14,15 @@ open class SampleViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 1.0, alpha: 1.0)
-
-        let textField = DefaultTextField()
-        textField.borderStyle = .roundedRect
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Default Text Field"
-
-        view.addSubview(textField)
+        
+        let label = UILabelFactory.createUILabel(with: .grey, textStyle: .title1, fontWeight: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byClipping, text: "Label component from component library", alpha: 1, adjustFontSize: true)
+        
+        view.addSubview(label)
 
         NSLayoutConstraint.activate([
-            textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16.0),
-            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16.0),
-            view.trailingAnchor.constraint(equalTo: textField.trailingAnchor, constant: 16.0)
+            label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16.0),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16.0),
+            view.trailingAnchor.constraint(equalTo: label.trailingAnchor, constant: 16.0)
         ])
     }
     

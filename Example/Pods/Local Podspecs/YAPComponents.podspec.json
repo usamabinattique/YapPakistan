@@ -18,5 +18,32 @@
   "platforms": {
     "ios": "11.0"
   },
-  "source_files": "YAPComponents/Classes/**/*"
+  "source_files": "YAPComponents/Classes/**/*",
+  "static_framework": true,
+  "dependencies": {
+    "RxSwift": [
+
+    ],
+    "RxCocoa": [
+
+    ],
+    "PhoneNumberKit": [
+
+    ],
+    "SDWebImage": [
+
+    ],
+    "SwiftyGif": [
+
+    ],
+    "RxSwiftExt": [
+
+    ],
+    "RxDataSources": [
+
+    ],
+    "GoogleMaps": [
+
+    ]
+  }
 }

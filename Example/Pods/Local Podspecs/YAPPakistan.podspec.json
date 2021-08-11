@@ -19,6 +19,7 @@
     "ios": "11.0"
   },
   "source_files": "YAPPakistan/Classes/**/*",
+  "static_framework": true,
   "dependencies": {
     "YAPComponents": [
 
