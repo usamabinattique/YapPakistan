@@ -1,0 +1,14 @@
+use_frameworks!
+
+platform :ios, '11.0'
+
+target 'YAPPakistan_Example' do
+  pod 'YAPPakistan', :path => '../'
+  pod 'YAPComponents', :path => '../YAPComponents'
+
+  target 'YAPPakistan_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

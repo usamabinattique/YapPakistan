@@ -1,0 +1,6 @@
+framework module Pods_YAPPakistan_Tests {
+  umbrella header "Pods-YAPPakistan_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}
