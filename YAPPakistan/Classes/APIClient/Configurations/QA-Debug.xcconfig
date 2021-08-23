@@ -1,0 +1,19 @@
+//
+//  Config.xcconfig
+//  App
+//
+//  Created by Zain on 11/06/2019.
+//  Copyright © 2019 Digitify. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "../Pods/Target Support Files/Pods-APIClient/Pods-APIClient.debug (qa).xcconfig"
+#include "../Pods/Target Support Files/Pods-APIClientTests/Pods-APIClientTests.debug (qa).xcconfig"
+
+environment = QA
+plist = ${SRCROOT}/APIClient/Configurations/QA.plist
+BASE_URL= https:/$()/qa.yap.co
+BASE_URL_ADMIN = https:/$()/qa-hci.yap.co
+PUBLIC_KEY = NONE

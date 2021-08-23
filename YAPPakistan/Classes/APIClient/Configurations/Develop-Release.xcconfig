@@ -1,0 +1,19 @@
+//
+//  Dev.xcconfig
+//  App
+//
+//  Created by Zain on 11/06/2019.
+//  Copyright © 2019 Digitify. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "../Pods/Target Support Files/Pods-APIClient/Pods-APIClient.release (develop).xcconfig"
+
+environment = Develop
+plist = ${SRCROOT}/APIClient/Configurations/Develop.plist
+BASE_URL= https:/$()/dev.yap.co
+//BASE_URL= https:/$()/dev-a.yap.com
+BASE_URL_ADMIN = https:/$()/dev-hci.yap.co
+PUBLIC_KEY = NONE
