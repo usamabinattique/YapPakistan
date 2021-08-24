@@ -10,11 +10,6 @@ import Foundation
 import RxSwift
 import RxSwiftExt
 
-struct PostRequest: Codable {
-    var param1: String
-    var param2: String
-}
-
 public class BaseService: Service {
     
     private var serverReadableDateTimeFormatter: DateFormatter {

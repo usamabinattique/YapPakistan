@@ -8,6 +8,11 @@
 import Foundation
 import RxSwift
 
+struct PostRequest: Codable {
+    var param1: String
+    var param2: String
+}
+
 class SampleService: BaseService {
     private let apiClient: APIClient
     private let config: APIConfiguration
