@@ -16,11 +16,10 @@ struct APIEndpoint<Body: Codable>: Convertible, YAPURLRequestConvertible {
     var requestType: RequestType
     var body: Body?
     var headers: [String: String]
-    var authHeaders: [String: String]
 
     init(_ method: YAPHTTPMethod, _ url: URL, _ path: String, pathVariables: [String]? = nil,
          query: [String : String]? = nil, requestType: RequestType = .json, body: Body? = nil,
-         headers: [String: String] = [:], authHeaders: [String : String] = [:]) {
+         headers: [String: String] = [:]) {
         self.method = method
         self.url = url
         self.path = path
@@ -29,7 +28,10 @@ struct APIEndpoint<Body: Codable>: Convertible, YAPURLRequestConvertible {
         self.requestType = requestType
         self.body = body
         self.headers = headers
-        self.authHeaders = authHeaders
+    }
+
+    var authHeaders: [String: String] {
+        return headers
     }
 
     func asURLRequest() throws -> URLRequest {
