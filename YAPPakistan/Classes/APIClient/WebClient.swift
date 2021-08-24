@@ -104,7 +104,11 @@ public class WebClient: APIClient {
         var requestUrl = ""
         if let url = urlRequest?.url?.absoluteString {
             requestUrl = url + " -> " + (String(data: urlRequest?.httpBody ?? Data(), encoding: .utf8) ?? "Failed to Convert")
+            #if DEBUG
             print("Initiating request: \(requestUrl)")
+            print("HEADERS")
+            urlRequest?.allHTTPHeaderFields?.forEach { print("\($0.key) : \($0.value)")  }
+            #endif
         }
 
         return Observable.create { [unowned self] observer in

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public typealias RouterInput<T> = (body: T?, query: [String: String]?, pathVariables: [String]?)
+public typealias RouterInput<T> = (body: T?, query: [String: String]?, pathVariables: [String]?, headers: [String: String]?)
 
 public enum RequestType: Int {
     case json
