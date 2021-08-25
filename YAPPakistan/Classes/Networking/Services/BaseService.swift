@@ -9,8 +9,23 @@
 import Foundation
 import RxSwift
 import RxSwiftExt
+import Alamofire
 
 public class BaseService: Service {
+    // MARK: PROPERTIES
+    /// Private
+    private let disposeBag = DisposeBag()
+    /// Internal
+    let apiClient: APIClient
+    let apiConfig: APIConfiguration
+    let authorizationProvider: ServiceAuthorizationProviderType
+    
+    // MARK: INITIALIZER
+    public init(apiClient: APIClient = WebClient(), apiConfig: APIConfiguration, authorizationProvider: ServiceAuthorizationProviderType) {
+        self.apiClient = apiClient
+        self.apiConfig = apiConfig
+        self.authorizationProvider = authorizationProvider
+    }
     
     private var serverReadableDateTimeFormatter: DateFormatter {
         let formatter = DateFormatter()
@@ -19,32 +34,31 @@ public class BaseService: Service {
         return formatter
     }
     
-    let disposeBag = DisposeBag()
-//    var interceptor: AuthenticationInterceptor = WebClientInterceptor()
-    
     public func request<T: Codable>(apiClient: APIClient, route: YAPURLRequestConvertible) -> Observable<T> {
-
-        return apiClient.request(route: route).map { apiResonse -> APIResponseConvertible in
-            guard 200...299 ~= apiResonse.code else {
-                throw NetworkErrorHandler.mapError(apiResonse.code, data: apiResonse.data)
+        return apiClient.request(route: route)
+            .map { apiResonse -> APIResponseConvertible in
+                guard 200...299 ~= apiResonse.code else {
+                    throw NetworkErrorHandler.mapError(apiResonse.code, data: apiResonse.data)
+                }
+                return apiResonse
+            }.retry { errorObservable -> Observable<Void> in
+                
+                errorObservable.map { error -> Void in
+                    if case NetworkErrors.authError = error {
+                        let notification = Notification(name: Notification.Name(rawValue: "authentication_required"))
+                        NotificationCenter.default.post(notification)
+                    }
+                    throw error
+                }
             }
-            return apiResonse
-//        }.retryWhen { errorObservable -> Observable<Void> in
-//            //TODO: Add this in Auth Interceptor
-//            errorObservable.map { error -> Bool in
-//                if case NetworkErrors.authError = error { return true }
-//                throw error
-//            }.flatMap { _ in
-//                AuthenticationManager.shared.refreshJWT().map {_ in ()}
-//            }
-        }.map { [unowned self] apiResponse -> T in
-            do {
-                let object: Response<T> = try self.decode(data: apiResponse.data)
-                return object.result
-            } catch let error {
-                throw error
+            .map { [unowned self] apiResponse -> T in
+                do {
+                    let object: Response<T> = try self.decode(data: apiResponse.data)
+                    return object.result
+                } catch let error {
+                    throw error
+                }
             }
-        }
     }
     
     public func upload<T>(apiClient: APIClient, documents: [DocumentDataConvertible], route: YAPURLRequestConvertible, progressObserver: AnyObserver<Progress>?, otherFormValues formValues: [String: String]) -> Observable<T> where T: Decodable, T: Encodable {
@@ -53,15 +67,16 @@ public class BaseService: Service {
                 throw NetworkErrorHandler.mapError(apiResponse.code, data: apiResponse.data)
             }
             return apiResponse
-//        }.retryWhen { errorObservable -> Observable<Void> in
-//            //TODO: Add this in Auth Interceptor
-//            errorObservable.map { error -> Bool in
-//                if case NetworkErrors.authError = error { return true }
-//                throw error
-//            }.flatMap { _ in
-//                AuthenticationManager.shared.refreshJWT().map {_ in ()}
-//            }
-        }.map { apiResponse -> T in
+        }
+        .retry { errorObservable -> Observable<Void> in
+            errorObservable.map { error -> Bool in
+                if case NetworkErrors.authError = error { return true }
+                throw error
+            }.flatMap { _ in
+                Observable.of(Notification(name: Notification.Name(rawValue: "authentication_required"))).do(onNext: { notification in NotificationCenter.default.post(notification)}).map { _ in  }
+            }
+        }
+        .map { apiResponse -> T in
             do {
                 let object: Response<T> = try self.decode(data: apiResponse.data)
                 return object.result
