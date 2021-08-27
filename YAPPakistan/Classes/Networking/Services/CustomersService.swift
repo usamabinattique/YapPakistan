@@ -29,4 +29,15 @@ public class CustomersService: BaseService {
 
         return self.request(apiClient: self.apiClient, route: route)
     }
+
+    public func saveDemographics<T: Codable>(action: String, deviceId: String, deviceName: String,
+                                             deviceModel: String, osType: String, osVersion: String,
+                                             token: String) -> Observable<T> {
+        let body = SaveDemographicsRequest(action: action, deviceId: deviceId,
+                                           deviceName: deviceName, deviceModel: deviceModel,
+                                           osType: osType, osVersion: osVersion, token: token)
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/demographics/", body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
 }
