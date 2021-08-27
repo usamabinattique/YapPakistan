@@ -36,7 +36,19 @@ public class CustomersService: BaseService {
         let body = SaveDemographicsRequest(action: action, deviceId: deviceId,
                                            deviceName: deviceName, deviceModel: deviceModel,
                                            osType: osType, osVersion: osVersion, token: token)
-        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/demographics/", body: body, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/demographics", body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func fetchAccounts<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/accounts", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func fetchRanking<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/fetch-ranking", headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
