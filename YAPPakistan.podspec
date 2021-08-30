@@ -44,4 +44,12 @@ TODO: Add long description of the pod here.
   
   s.dependency 'YAPComponents'
   s.dependency 'Alamofire'
+  s.dependency 'RxSwift'
+  s.dependency 'RxSwiftExt'
+  s.dependency 'RxCocoa'
+  s.dependency 'RxDataSources'
+  #s.dependency 'PhoneNumberKit'
+  #s.dependency 'SDWebImage'
+  s.dependency 'SwiftyGif'
+
 end
