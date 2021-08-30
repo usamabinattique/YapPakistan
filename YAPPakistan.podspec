@@ -40,8 +40,23 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
   
-  s.static_framework = true
-  
+  #s.static_framework = true
+
+  #MARK: YapUIKIT
   s.dependency 'YAPComponents'
-  s.dependency 'Alamofire'
+  
+  #MARK: Networking
+  s.dependency 'Alamofire', '5.4.3'
+  
+  #MARK: RxSwift Extension
+  s.dependency 'RxSwift', '6.2.0'
+  s.dependency 'RxCocoa', '6.2.0'
+  s.dependency 'RxSwiftExt', '6.0.1'
+  s.dependency 'RxGesture', '4.0.2'
+  s.dependency 'RxDataSources', '5.0.0'
+  s.dependency 'NSObject+Rx', '5.2.2'
+  s.dependency 'RxViewController', '2.0.0'
+  s.dependency 'RxOptional', '5.0.2'
+  s.dependency 'RxTheme', '6.0.0'
+  
 end

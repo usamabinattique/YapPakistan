@@ -19,13 +19,39 @@
     "ios": "11.4"
   },
   "source_files": "YAPPakistan/Classes/**/*",
-  "static_framework": true,
   "dependencies": {
     "YAPComponents": [
 
     ],
     "Alamofire": [
-
+      "5.4.3"
+    ],
+    "RxSwift": [
+      "6.2.0"
+    ],
+    "RxCocoa": [
+      "6.2.0"
+    ],
+    "RxSwiftExt": [
+      "6.0.1"
+    ],
+    "RxGesture": [
+      "4.0.2"
+    ],
+    "RxDataSources": [
+      "5.0.0"
+    ],
+    "NSObject+Rx": [
+      "5.2.2"
+    ],
+    "RxViewController": [
+      "2.0.0"
+    ],
+    "RxOptional": [
+      "5.0.2"
+    ],
+    "RxTheme": [
+      "6.0.0"
     ]
   }
 }

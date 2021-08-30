@@ -1,22 +1,19 @@
 PODS:
   - Alamofire (5.4.3)
   - Differentiator (5.0.0)
-  - GoogleMaps (5.1.0):
-    - GoogleMaps/Maps (= 5.1.0)
-  - GoogleMaps/Base (5.1.0)
-  - GoogleMaps/Maps (5.1.0):
-    - GoogleMaps/Base
-  - PhoneNumberKit (3.3.3):
-    - PhoneNumberKit/PhoneNumberKitCore (= 3.3.3)
-    - PhoneNumberKit/UIKit (= 3.3.3)
-  - PhoneNumberKit/PhoneNumberKitCore (3.3.3)
-  - PhoneNumberKit/UIKit (3.3.3):
-    - PhoneNumberKit/PhoneNumberKitCore
+  - "NSObject+Rx (5.2.2)":
+    - RxSwift (~> 6.2)
   - RxCocoa (6.2.0):
     - RxRelay (= 6.2.0)
     - RxSwift (= 6.2.0)
   - RxDataSources (5.0.0):
     - Differentiator (~> 5.0)
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxGesture (4.0.2):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxOptional (5.0.2):
     - RxCocoa (~> 6.0)
     - RxSwift (~> 6.0)
   - RxRelay (6.2.0):
@@ -30,21 +27,24 @@ PODS:
   - RxSwiftExt/RxCocoa (6.0.1):
     - RxCocoa (~> 6.0)
     - RxSwiftExt/Core
-  - SDWebImage (5.11.1):
-    - SDWebImage/Core (= 5.11.1)
-  - SDWebImage/Core (5.11.1)
-  - SwiftyGif (5.4.0)
-  - YAPComponents (0.1.0):
-    - GoogleMaps
-    - PhoneNumberKit
-    - RxCocoa
-    - RxDataSources
-    - RxSwift
-    - RxSwiftExt
-    - SDWebImage
-    - SwiftyGif
+  - RxTheme (6.0.0):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxViewController (2.0.0):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - YAPComponents (0.1.0)
   - YAPPakistan (0.1.0):
-    - Alamofire
+    - Alamofire (= 5.4.3)
+    - "NSObject+Rx (= 5.2.2)"
+    - RxCocoa (= 6.2.0)
+    - RxDataSources (= 5.0.0)
+    - RxGesture (= 4.0.2)
+    - RxOptional (= 5.0.2)
+    - RxSwift (= 6.2.0)
+    - RxSwiftExt (= 6.0.1)
+    - RxTheme (= 6.0.0)
+    - RxViewController (= 2.0.0)
     - YAPComponents
 
 DEPENDENCIES:
@@ -55,15 +55,16 @@ SPEC REPOS:
   trunk:
     - Alamofire
     - Differentiator
-    - GoogleMaps
-    - PhoneNumberKit
+    - "NSObject+Rx"
     - RxCocoa
     - RxDataSources
+    - RxGesture
+    - RxOptional
     - RxRelay
     - RxSwift
     - RxSwiftExt
-    - SDWebImage
-    - SwiftyGif
+    - RxTheme
+    - RxViewController
 
 EXTERNAL SOURCES:
   YAPComponents:
@@ -74,17 +75,18 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
-  GoogleMaps: 086ae1dab659eaa7339bdb30fc88e2f44e7c597c
-  PhoneNumberKit: 4ce83273551c4d2ae10b7361162f4283dd02835f
+  "NSObject+Rx": 61cf1f7306a73dcef8b36649198af0813ec18dfd
   RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
   RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
+  RxGesture: f059f2aeef966fb17dad56ee440e76410f10e55f
+  RxOptional: 3664964c96b69dd20c9cf78bdfe546615e26eca8
   RxRelay: e72dbfd157807478401ef1982e1c61c945c94b2f
   RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
   RxSwiftExt: d61c4b9b06e0a448041b1c659e0f1b5c5a035afc
-  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
-  SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
-  YAPComponents: abb5a3c49eed92f3ce35d51d9dbbe93c0a5fd191
-  YAPPakistan: 38e3af25d3464f606633acbe4ea91cd26a2fbfc1
+  RxTheme: be60cb14e0544b3cbd574cc37fed35ba9d61aa1f
+  RxViewController: 56486fa0afd629a1d6b5ba077f3b8cd9dc31b5d2
+  YAPComponents: 973a1d656d519b7de5e0f2bbc5bdba4466014b60
+  YAPPakistan: 41229ddf1db7698f8fcb610a8ff089ebc6e2626b
 
 PODFILE CHECKSUM: 4d5c5a558650b439c3a50121a385678dc66390aa
 
