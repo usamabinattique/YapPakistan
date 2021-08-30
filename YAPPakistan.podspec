@@ -57,6 +57,19 @@ TODO: Add long description of the pod here.
   s.dependency 'NSObject+Rx', '5.2.2'
   s.dependency 'RxViewController', '2.0.0'
   s.dependency 'RxOptional', '5.0.2'
-  s.dependency 'RxTheme', '6.0.0'
+  s.dependency 'RxTheme', '5.0.4'
   
+  #MARK: UI
+  s.dependency 'Hero', '1.6.1'
+  s.dependency 'SwiftyGif', '5.4.0'
+  s.dependency 'PhoneNumberKit', '3.3.3'
+  
+  #MARK: UIImage
+  s.dependency 'SDWebImage', '5.11.1'
+  
+  #MARK: Swift Extension
+  s.dependency 'SwifterSwift', '5.2.0'
+  
+  #MARK: KeychainAccess
+  s.dependency 'KeychainAccess', '4.2.2'
 end

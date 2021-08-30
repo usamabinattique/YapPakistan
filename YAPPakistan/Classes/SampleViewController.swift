@@ -7,6 +7,8 @@
 
 import YAPComponents
 import UIKit
+import RxSwift
+import RxTheme
 
 open class SampleViewController: UIViewController {
 

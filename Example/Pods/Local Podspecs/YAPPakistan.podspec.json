@@ -51,7 +51,25 @@
       "5.0.2"
     ],
     "RxTheme": [
-      "6.0.0"
+      "5.0.4"
+    ],
+    "Hero": [
+      "1.6.1"
+    ],
+    "SwiftyGif": [
+      "5.4.0"
+    ],
+    "PhoneNumberKit": [
+      "3.3.3"
+    ],
+    "SDWebImage": [
+      "5.11.1"
+    ],
+    "SwifterSwift": [
+      "5.2.0"
+    ],
+    "KeychainAccess": [
+      "4.2.2"
     ]
   }
 }
