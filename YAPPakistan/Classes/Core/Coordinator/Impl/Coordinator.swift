@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 
 /// Base abstract coordinator generic over the return type of the `start` method.
-class Coordinator<ResultType>:NSObject {
+class Coordinator<ResultType>:NSObject, CoordinatorType {
     
     //typealias ResultType =
     typealias CoordinationResult = ResultType
@@ -25,10 +25,8 @@ class Coordinator<ResultType>:NSObject {
     /// Key is an `identifier` of the child coordinator and value is the coordinator itself.
     /// Value type is `Any` because Swift doesn't allow to store generic types in the array.
     private var childCoordinators:[UUID: Any] = [:]
-}
 
-//MARK: Confirmation of CoordinatorType
-extension Coordinator:CoordinatorType {
+    //MARK: Confirmation of CoordinatorType
     func coordinate(to coordinator: Coordinator<ResultType>) -> Observable<ResultType> {
         
         return coordinator
