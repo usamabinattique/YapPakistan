@@ -11,7 +11,17 @@ import UIKit
 import YAPComponents
 
 public class RankView: UIView {
-    private lazy var hStack: UIStackView = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 14)
+    private lazy var hStack: UIStackView = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 10)
+
+    public var minimumDigits: Int = 4
+
+    public var minimumBoxWidth: CGFloat = 45.0
+    public var maximumBoxWidth: CGFloat = 60.0
+
+    public var boxSpacing: CGFloat {
+        get { hStack.spacing }
+        set { hStack.spacing = newValue }
+    }
 
     // MARK: Initialization
 
@@ -53,21 +63,20 @@ extension RankView {
             $0.removeFromSuperview()
         }
 
-        let array = create7digitString(string)
+        let array = createDigitString(string)
         var delay = 0.0
 
-        let minBoxSize = CGFloat(35.0)
-        let multiplier = (minBoxSize * CGFloat(array.count)) / 375.0
+        let multiplier = (minimumBoxWidth * CGFloat(array.count)) / 375.0
         var boxWidth = (UIScreen.main.bounds.width * multiplier) / CGFloat(array.count)
-        boxWidth = boxWidth > 50 ? 50 : boxWidth
+        boxWidth = min(maximumBoxWidth, boxWidth)
 
         array.forEach { string in
             let view = RollingAnimationView()
+            hStack.addArrangedSubview(view)
+
             view
                 .width(constant: boxWidth)
-                .height(constant: 58)
-
-            hStack.addArrangedSubview(view)
+                .height(with: .height, ofView: hStack)
 
             let duration = 0.1
             let labels = createLabels(string)
@@ -82,12 +91,12 @@ extension RankView {
 }
 
 extension RankView {
-    func create7digitString(_ string: String) -> [String] {
-        if string.count >= 7 {
+    func createDigitString(_ string: String) -> [String] {
+        if string.count >= minimumDigits {
             return string.map { String($0) }
         }
 
-        return create7digitString("0" + string)
+        return createDigitString("0" + string)
     }
     
     func createLabels(_ string: String) -> [String] {
