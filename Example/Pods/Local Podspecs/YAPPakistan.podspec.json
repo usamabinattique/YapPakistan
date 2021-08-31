@@ -26,6 +26,21 @@
     ],
     "Alamofire": [
 
+    ],
+    "RxSwift": [
+
+    ],
+    "RxSwiftExt": [
+
+    ],
+    "RxCocoa": [
+
+    ],
+    "RxDataSources": [
+
+    ],
+    "SwiftyGif": [
+
     ]
   }
 }
