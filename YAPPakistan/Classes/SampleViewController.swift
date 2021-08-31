@@ -7,6 +7,8 @@
 
 import YAPComponents
 import UIKit
+import RxSwift
+import RxTheme
 
 open class SampleViewController: UIViewController {
 
@@ -14,8 +16,8 @@ open class SampleViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = UIColor(red: 0.95, green: 0.95, blue: 1.0, alpha: 1.0)
-        
-        let label = UILabelFactory.createUILabel(with: .grey, textStyle: .title1, fontWeight: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byClipping, text: "Label component from component library", alpha: 1, adjustFontSize: true)
+        /*
+        //let label = UILabelFactory.createUILabel(with: .grey, textStyle: .title1, fontWeight: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byClipping, text: "Label component from component library", alpha: 1, adjustFontSize: true)
         
         view.addSubview(label)
 
@@ -23,7 +25,7 @@ open class SampleViewController: UIViewController {
             label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16.0),
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16.0),
             view.trailingAnchor.constraint(equalTo: label.trailingAnchor, constant: 16.0)
-        ])
+        ]) */
     }
     
 

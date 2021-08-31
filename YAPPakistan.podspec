@@ -40,16 +40,36 @@ TODO: Add long description of the pod here.
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
   
-  s.static_framework = true
-  
-  s.dependency 'YAPComponents'
-  s.dependency 'Alamofire'
-  s.dependency 'RxSwift'
-  s.dependency 'RxSwiftExt'
-  s.dependency 'RxCocoa'
-  s.dependency 'RxDataSources'
-  #s.dependency 'PhoneNumberKit'
-  #s.dependency 'SDWebImage'
-  s.dependency 'SwiftyGif'
+  #s.static_framework = true
 
+  #MARK: YapUIKIT
+  s.dependency 'YAPComponents'
+  
+  #MARK: Networking
+  s.dependency 'Alamofire', '5.4.3'
+  
+  #MARK: RxSwift Extension
+  s.dependency 'RxSwift', '6.2.0'
+  s.dependency 'RxCocoa', '6.2.0'
+  s.dependency 'RxSwiftExt', '6.0.1'
+  s.dependency 'RxGesture', '4.0.2'
+  s.dependency 'RxDataSources', '5.0.0'
+  s.dependency 'NSObject+Rx', '5.2.2'
+  s.dependency 'RxViewController', '2.0.0'
+  s.dependency 'RxOptional', '5.0.2'
+  s.dependency 'RxTheme', '5.0.4'
+  
+  #MARK: UI
+  s.dependency 'Hero', '1.6.1'
+  s.dependency 'SwiftyGif', '5.4.0'
+  s.dependency 'PhoneNumberKit', '3.3.3'
+  
+  #MARK: UIImage
+  s.dependency 'SDWebImage', '5.11.1'
+  
+  #MARK: Swift Extension
+  s.dependency 'SwifterSwift', '5.2.0'
+  
+  #MARK: KeychainAccess
+  s.dependency 'KeychainAccess', '4.2.2'
 end
