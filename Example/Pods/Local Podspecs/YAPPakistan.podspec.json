@@ -19,6 +19,9 @@
     "ios": "11.4"
   },
   "source_files": "YAPPakistan/Classes/**/*",
+  "resources": [
+    "YAPPakistan/Assets/*.mp4"
+  ],
   "dependencies": {
     "YAPComponents": [
 
