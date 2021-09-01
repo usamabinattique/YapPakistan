@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 
 /// Base abstract coordinator generic over the return type of the `start` method.
-class Coordinator<ResultType>:NSObject, CoordinatorType {
+public class Coordinator<ResultType>:NSObject, CoordinatorType {
     
     //typealias ResultType =
     typealias CoordinationResult = ResultType
@@ -27,8 +27,9 @@ class Coordinator<ResultType>:NSObject, CoordinatorType {
     private var childCoordinators:[UUID: Any] = [:]
 
     //MARK: Confirmation of CoordinatorType
-    func coordinate(to coordinator: Coordinator<ResultType>) -> Observable<ResultType> {
-        
+    public func coordinate<ResultType>(
+        to coordinator: Coordinator<ResultType>
+    ) -> Observable<ResultType> {
         return coordinator
             .start()
             .do(onNext: { [weak self] _ in
@@ -36,7 +37,7 @@ class Coordinator<ResultType>:NSObject, CoordinatorType {
             })
     }
     
-    func start(with option: DeepLinkOptionType?) -> Observable<ResultType> {
+    public func start(with option: DeepLinkOptionType?) -> Observable<ResultType> {
         fatalError("Start method should be implemented.")
     }
 }

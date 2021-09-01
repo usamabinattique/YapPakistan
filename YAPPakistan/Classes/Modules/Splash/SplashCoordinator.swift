@@ -12,8 +12,9 @@ import UIKit
 
 class SplashCoordinator: Coordinator<ResultType<NavigationType>> {
     
-/*    var root: UINavigationController!
-    var window: UIWindow
+    private var root: UINavigationController!
+    private var window: UIWindow
+    
     private let shortcutItem: UIApplicationShortcutItem?
     private let credentialsStore: CredentialsStoreType
     private let repository: SplashRepositoryType
@@ -28,7 +29,7 @@ class SplashCoordinator: Coordinator<ResultType<NavigationType>> {
         self.repository = repository
     }
     
-    override func start() -> Observable<ResultType<NavigationType>> {
+    override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<NavigationType>> {
         let viewModel: SplashViewModelType = SplashViewModel(shortcutItem: shortcutItem,
                                                              credentialsStore: self.credentialsStore,
                                                              repository: self.repository)
@@ -40,6 +41,6 @@ class SplashCoordinator: Coordinator<ResultType<NavigationType>> {
         window.makeKeyAndVisible()
         
         return viewModel.outputs.next.map { ResultType.success($0) }
-    } */
+    }
 }
 

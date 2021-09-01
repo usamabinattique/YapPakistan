@@ -11,6 +11,8 @@ import RxCocoa
 import NSObject_Rx
 import YAPComponents
 
+let bundle:Bundle? = nil
+
 class SplashViewController: UIViewController {
     
     private var logoWidthConstraint: NSLayoutConstraint!
@@ -22,13 +24,12 @@ class SplashViewController: UIViewController {
     
     private var viewModel: SplashViewModelType!
     
-    
     private lazy var logo = UIFactory
-        .makeImageView(name:  "yap_logo_animate")
+        .makeImageView(image:BundleYapPak.image("yap_logo_animate"))
         .addToSuper(view: view)
     
     private lazy var dot = UIFactory
-        .makeImageView(name: "circle")
+        .makeImageView(image:BundleYapPak.image("circle"))
         .addToSuper(view: view)
     
     /*private lazy var visualEffectView: UIVisualEffectView = {
@@ -59,6 +60,7 @@ class SplashViewController: UIViewController {
         bindViews()
         
         //DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        //    print(self.logo.image)
         //    self.animateLogo().subscribe().disposed(by: self.rx.disposeBag)
         //}
     }
@@ -75,8 +77,8 @@ extension SplashViewController {
     fileprivate func setupSubViews() {
         view.backgroundColor = .white
         
-        //view.addSubview(logo)
-        //view.addSubview(dot)
+        view.addSubview(logo)
+        view.addSubview(dot)
         //view.addSubview(visualEffectView)
     }
     

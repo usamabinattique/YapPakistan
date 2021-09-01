@@ -17,9 +17,9 @@ Pod::Spec.new do |s|
 #   * Write the description between the DESC delimiters below.
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
-  s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
+ # s.description      = <<-DESC
+#TODO: Add long description of the pod here.
+#                       DESC
 
   s.homepage         = 'https://github.com/Tayyab Akram/YAPPakistan'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
@@ -32,9 +32,22 @@ TODO: Add long description of the pod here.
 
   s.source_files = 'YAPPakistan/Classes/**/*'
   
-  # s.resource_bundles = {
-  #   'YAPPakistan' => ['YAPPakistan/Assets/*.png']
-  # }
+  s.resource_bundles = {
+    'YAPPakistan' => ['YAPPakistan/Assets/**/*']
+  }
+  
+  #s.resource_bundles = {
+  #  'YAPPakistan' => ['YAPPakistan/Assets/*']
+  #}
+  
+  #s.resources = [ 'YAPPakistan/Assets/**/*.gif',
+  #                'YAPPakistan/Assets/**/*.jpg',
+  #                'YAPPakistan/Assets/**/*.jpeg',
+  #                'YAPPakistan/Assets/**/*.json',
+  #                'YAPPakistan/Assets/**/*.mp4',
+  #                'YAPPakistan/Assets/**/*.png',
+  #                'YAPPakistan/Assets/**/*.strings',
+  #                'YAPPakistan/Assets/**/*.xcassets']
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
@@ -60,7 +73,6 @@ TODO: Add long description of the pod here.
   s.dependency 'RxTheme', '5.0.4'
   
   #MARK: UI
-  s.dependency 'Hero', '1.6.1'
   s.dependency 'SwiftyGif', '5.4.0'
   s.dependency 'PhoneNumberKit', '3.3.3'
   

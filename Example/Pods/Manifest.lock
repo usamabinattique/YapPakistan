@@ -1,7 +1,6 @@
 PODS:
   - Alamofire (5.4.3)
   - Differentiator (5.0.0)
-  - Hero (1.6.1)
   - KeychainAccess (4.2.2)
   - "NSObject+Rx (5.2.2)":
     - RxSwift (~> 6.2)
@@ -73,7 +72,6 @@ PODS:
   - YAPComponents (0.1.0)
   - YAPPakistan (0.1.0):
     - Alamofire (= 5.4.3)
-    - Hero (= 1.6.1)
     - KeychainAccess (= 4.2.2)
     - "NSObject+Rx (= 5.2.2)"
     - PhoneNumberKit (= 3.3.3)
@@ -98,7 +96,6 @@ SPEC REPOS:
   trunk:
     - Alamofire
     - Differentiator
-    - Hero
     - KeychainAccess
     - "NSObject+Rx"
     - PhoneNumberKit
@@ -124,7 +121,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
-  Hero: 215865ba3ae41dd9bb08cd6c60a645529c6fc94b
   KeychainAccess: c0c4f7f38f6fc7bbe58f5702e25f7bd2f65abf51
   "NSObject+Rx": 61cf1f7306a73dcef8b36649198af0813ec18dfd
   PhoneNumberKit: 4ce83273551c4d2ae10b7361162f4283dd02835f
@@ -141,7 +137,7 @@ SPEC CHECKSUMS:
   SwifterSwift: 334181863c416882d97b7a60c05054d9e4d799e2
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   YAPComponents: 973a1d656d519b7de5e0f2bbc5bdba4466014b60
-  YAPPakistan: d5860fbec145caf839775eb118b59ee3acd709a7
+  YAPPakistan: 3f62337b7f47a01454716b95c73ade69a57e3cc5
 
 PODFILE CHECKSUM: 4d5c5a558650b439c3a50121a385678dc66390aa
 
