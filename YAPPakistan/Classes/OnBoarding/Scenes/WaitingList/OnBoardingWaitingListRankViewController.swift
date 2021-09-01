@@ -10,14 +10,11 @@ import Foundation
 import RxCocoa
 import RxDataSources
 import RxSwift
+import RxTheme
 import UIKit
 import YAPComponents
 
-private let primary = #colorLiteral(red: 0.368627451, green: 0.2078431373, blue: 0.6941176471, alpha: 1)
-private let primaryDark = #colorLiteral(red: 0.1529999971, green: 0.1330000013, blue: 0.3840000033, alpha: 1)
-private let greyDark = #colorLiteral(red: 0.5759999752, green: 0.5690000057, blue: 0.6940000057, alpha: 1)
-
-public class OnBoardingWaitingListRankViewController: UIViewController {
+class OnBoardingWaitingListRankViewController: UIViewController {
 
     // MARK: Views
 
@@ -36,15 +33,15 @@ public class OnBoardingWaitingListRankViewController: UIViewController {
         return player
     }()
 
-    private lazy var placeLabel = UIFactory.makeLabel(with: primaryDark, textStyle: .title2, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var placeLabel = UIFactory.makeLabel(textStyle: .title2, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var rankView: RankView = RankView()
 
-    private lazy var behindNumberLabel = UIFactory.makeLabel(with: primaryDark, textStyle: .large, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var behindNumberLabel = UIFactory.makeLabel(textStyle: .large, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
-    private lazy var behindYouLabel = UIFactory.makeLabel(with: greyDark, textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var behindYouLabel = UIFactory.makeLabel(textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
-    private lazy var infoLabel = UIFactory.makeLabel(with: primaryDark, textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var infoLabel = UIFactory.makeLabel(textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var containerView: UIView = {
         let view = UIView()
@@ -61,12 +58,11 @@ public class OnBoardingWaitingListRankViewController: UIViewController {
         return view
     }()
 
-    private lazy var boostUpLabel: UILabel = UIFactory.makeLabel(with: greyDark, textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var boostUpLabel: UILabel = UIFactory.makeLabel(textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var seeInviteesButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(primary, for: .normal)
         button.titleLabel?.font = .small
         return button
     }()
@@ -76,24 +72,23 @@ public class OnBoardingWaitingListRankViewController: UIViewController {
     private lazy var bumpMeUpButton: UIButton = {
         let button = AppRoundedButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = primary
         button.titleLabel?.font = .large
         return button
     }()
 
     // MARK: Properties
 
+    private var themeService: ThemeService<AppTheme>!
+
     private let disposeBag = DisposeBag()
     private var viewModel: OnBoardingWaitingListRankViewModelType!
 
     // MARK: Initialization
 
-    public init() {
+    init(themeService: ThemeService<AppTheme>, viewModel: OnBoardingWaitingListRankViewModelType) {
         super.init(nibName: nil, bundle: nil)
-    }
 
-    public init(viewModel: OnBoardingWaitingListRankViewModelType) {
-        super.init(nibName: nil, bundle: nil)
+        self.themeService = themeService
         self.viewModel = viewModel
     }
 
@@ -103,30 +98,29 @@ public class OnBoardingWaitingListRankViewController: UIViewController {
 
     // MARK: View Cycle
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         setupViews()
+        setupTheme()
         setupConstraints()
         bindViews(viewModel)
 
         viewModel.inputs.getRanking.onNext(true)
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
 
-    public override func viewDidLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: scrollView.contentSize.height )
     }
-}
 
-// MARK: View Setup
+    // MARK: View Setup
 
-private extension OnBoardingWaitingListRankViewController {
-    func setupViews() {
+    private func setupViews() {
         view.addSubview(scrollView)
         scrollView.addSubview(videoPlayerView)
         scrollView.addSubview(placeLabel)
@@ -140,11 +134,22 @@ private extension OnBoardingWaitingListRankViewController {
         scrollView.addSubview(bumpMeUpButton)
 
         view.backgroundColor = .white
-
-        navigationController?.isNavigationBarHidden = true
     }
 
-    func setupConstraints() {
+    private func setupTheme() {
+        themeService.rx
+            .bind({ $0.primaryDark }, to: placeLabel.rx.textColor)
+            .bind({ $0.primaryDark }, to: rankView.rx.digitColor)
+            .bind({ $0.primaryDark }, to: behindNumberLabel.rx.textColor)
+            .bind({ $0.greyDark }, to: behindYouLabel.rx.textColor)
+            .bind({ $0.primaryDark }, to: infoLabel.rx.textColor)
+            .bind({ $0.greyDark }, to: boostUpLabel.rx.textColor)
+            .bind({ $0.primary }, to: seeInviteesButton.rx.titleColor(for: .normal))
+            .bind({ $0.primary }, to: bumpMeUpButton.rx.backgroundColor)
+            .disposed(by: disposeBag)
+    }
+
+    private func setupConstraints() {
         scrollView
             .alignEdgesWithSuperview([.top, .left, .right, .safeAreaBottom])
 
@@ -200,12 +205,10 @@ private extension OnBoardingWaitingListRankViewController {
             .alignEdgeWithSuperview(.bottom, constant: 20)
             .toBottomOf(contentView, constant: 4)
     }
-}
 
-// MARK: Binding
+    // MARK: Binding
 
-private extension OnBoardingWaitingListRankViewController {
-    func bindViews(_ viewModel: OnBoardingWaitingListRankViewModelType) {
+    private func bindViews(_ viewModel: OnBoardingWaitingListRankViewModelType) {
         viewModel.outputs.loading.subscribe(onNext: { flag in
             switch flag {
             case true:

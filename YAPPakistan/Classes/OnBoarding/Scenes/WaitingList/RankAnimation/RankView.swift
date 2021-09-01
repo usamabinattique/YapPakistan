@@ -23,6 +23,8 @@ public class RankView: UIView {
         set { hStack.spacing = newValue }
     }
 
+    public var digitColor: UIColor! = .black
+
     // MARK: Initialization
 
     public override init(frame: CGRect) {
@@ -74,6 +76,7 @@ extension RankView {
             let view = RollingAnimationView()
             hStack.addArrangedSubview(view)
 
+            view.labelColor = digitColor
             view
                 .width(constant: boxWidth)
                 .height(with: .height, ofView: hStack)

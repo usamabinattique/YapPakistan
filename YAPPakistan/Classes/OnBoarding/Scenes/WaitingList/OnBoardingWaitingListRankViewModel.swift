@@ -10,12 +10,12 @@ import Foundation
 import RxSwift
 import RxDataSources
 
-public protocol OnBoardingWaitingListRankViewModelInput {
+protocol OnBoardingWaitingListRankViewModelInput {
     var getRanking: AnyObserver<Bool> { get }
     var firstVideoEnded: AnyObserver<Void> { get }
 }
 
-public protocol OnBoardingWaitingListRankViewModelOutput {
+protocol OnBoardingWaitingListRankViewModelOutput {
     var loading: Observable<Bool> { get }
     var error: Observable<String> { get }
     var animationFile: Observable<String> { get }
@@ -29,17 +29,14 @@ public protocol OnBoardingWaitingListRankViewModelOutput {
     var bumpMeUpButtonTitle: Observable<String> { get }
 }
 
-public protocol OnBoardingWaitingListRankViewModelType {
+protocol OnBoardingWaitingListRankViewModelType {
     var inputs: OnBoardingWaitingListRankViewModelInput { get }
     var outputs: OnBoardingWaitingListRankViewModelOutput { get }
 }
 
-public class OnBoardingWaitingListRankViewModel: OnBoardingWaitingListRankViewModelInput, OnBoardingWaitingListRankViewModelOutput, OnBoardingWaitingListRankViewModelType {
+class OnBoardingWaitingListRankViewModel: OnBoardingWaitingListRankViewModelInput, OnBoardingWaitingListRankViewModelOutput, OnBoardingWaitingListRankViewModelType {
 
     // MARK: Properties
-    
-    public var inputs: OnBoardingWaitingListRankViewModelInput { self }
-    public var outputs: OnBoardingWaitingListRankViewModelOutput { self }
 
     private let disposeBag = DisposeBag()
 
@@ -61,26 +58,29 @@ public class OnBoardingWaitingListRankViewModel: OnBoardingWaitingListRankViewMo
     private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value: "Signed up friends: 0")
     private let bumpMeUpButtonTitleSubject = BehaviorSubject<String>(value: "Bump me up the queue")
 
+    var inputs: OnBoardingWaitingListRankViewModelInput { self }
+    var outputs: OnBoardingWaitingListRankViewModelOutput { self }
+
     // MARK: Inputs
 
-    public var getRanking: AnyObserver<Bool> { getRankingSubject.asObserver() }
-    public var firstVideoEnded: AnyObserver<Void> { firstVideoEndedSubject.asObserver() }
+    var getRanking: AnyObserver<Bool> { getRankingSubject.asObserver() }
+    var firstVideoEnded: AnyObserver<Void> { firstVideoEndedSubject.asObserver() }
     
     // MARK: Outputs
 
-    public var loading: Observable<Bool> { loadingSubject.asObservable() }
-    public var error: Observable<String> { errorSubject.asObservable() }
-    public var animationFile: Observable<String> { animationFileSubject.asObservable() }
-    public var placeText: Observable<String?> { placeTextSubject.asObservable() }
-    public var rank: Observable<String?> { rankSubject.asObservable() }
-    public var behindNumber: Observable<String?> { behindNumberSubject.asObservable() }
-    public var behindYouText: Observable<String?> { behindYouTextSubject.asObservable() }
-    public var boostUpText: Observable<String> { boostUpTextSubject.asObservable() }
-    public var infoText: Observable<String?> { infoTextSubject.asObservable() }
-    public var seeInviteeButtonTitle: Observable<String> { seeInviteeButtonTitleSubject.asObservable() }
-    public var bumpMeUpButtonTitle: Observable<String> { bumpMeUpButtonTitleSubject.asObservable() }
+    var loading: Observable<Bool> { loadingSubject.asObservable() }
+    var error: Observable<String> { errorSubject.asObservable() }
+    var animationFile: Observable<String> { animationFileSubject.asObservable() }
+    var placeText: Observable<String?> { placeTextSubject.asObservable() }
+    var rank: Observable<String?> { rankSubject.asObservable() }
+    var behindNumber: Observable<String?> { behindNumberSubject.asObservable() }
+    var behindYouText: Observable<String?> { behindYouTextSubject.asObservable() }
+    var boostUpText: Observable<String> { boostUpTextSubject.asObservable() }
+    var infoText: Observable<String?> { infoTextSubject.asObservable() }
+    var seeInviteeButtonTitle: Observable<String> { seeInviteeButtonTitleSubject.asObservable() }
+    var bumpMeUpButtonTitle: Observable<String> { bumpMeUpButtonTitleSubject.asObservable() }
     
-    public init() {
+    init() {
         firstVideoEndedSubject
             .map { "waitingListLoop.mp4" }
             .bind(to: animationFileSubject)

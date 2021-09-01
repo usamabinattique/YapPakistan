@@ -184,6 +184,14 @@ extension Reactive where Base: UIApplication {
     }
 }
 
+extension Reactive where Base: RankView {
+    var digitColor: Binder<UIColor?> {
+        return Binder(self.base) { view, attr in
+            view.digitColor = attr
+        }
+    }
+}
+
 /*
 public extension ThemeProxy where Base: UIApplication {
     /// (set only) bind a stream to status-bar-style
