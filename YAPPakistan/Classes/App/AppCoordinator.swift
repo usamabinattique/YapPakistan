@@ -6,42 +6,54 @@
 //
 
 import UIKit
-//import YAPKit
 import RxSwift
-//import Authentication
-//import OnBoarding
-//import Networking
-//import YAPKit
-//import YAPb2b
+import NSObject_Rx
 
-class AppCoordinator:Coordinator<ResultType<Void>> {
+public class AppCoordinator:Coordinator<ResultType<Void>> {
+    
     private let window: UIWindow
-    private let router:Router<AuthScene>
     private var navigationController: UINavigationController?
     private var shortcutItem: UIApplicationShortcutItem?
     
-    init(window:UIWindow, shortcutItem:UIApplicationShortcutItem?, router:Router<AuthScene>) {
+    public init(window:UIWindow, shortcutItem:UIApplicationShortcutItem?) {
         self.window = window
-        self.router = router
+        
         self.shortcutItem = shortcutItem
         super.init()
     }
-    override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        return Observable<ResultType<Void>>.create { observer in
-            
-            Disposables.create()
+    
+    public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
+        print("HEllo")
+        return Observable<ResultType<Void>>.create { [unowned self] observer in
+            self.splash(shortcutItem: nil)
+            return Disposables.create()
         }
     }
-    /*
+    
     func splash(shortcutItem: UIApplicationShortcutItem?) {
-        self.coordinate(to: SplashCoordinator(window: window,
-                                              shortcutItem: shortcutItem,
-                                              store: CredentialsManager(),
-                                              repository: SplashRepository(service: XSRFService() )))
-            .subscribe(onNext: { [unowned self] result in
-                self.splashResult.onNext(result)
-            })
-            .disposed(by: disposeBag)
+        self.coordinate(
+            to: SplashCoordinator (
+                window: window,
+                shortcutItem: shortcutItem,
+                store: CredentialsManager(),
+                repository: SplashRepository(service: XSRFService() )
+            )
+        )
+        .subscribe(onNext: { [weak self] result in
+            self?.handleSplashResponse(result: result)
+        })
+        .disposed(by: rx.disposeBag)
     }
-    */
+    
+    private func handleSplashResponse(result:ResultType<NavigationType>) {
+        guard let result = result.isSuccess else { return }
+        switch result {
+            case .login(let xsrfToken):
+                print("login result: sxrfToken, \(xsrfToken)")
+            case .passcode(let xsrfToken):
+                print("passcode result: sxrfToken, \(xsrfToken)")
+            case .onboarding(let xsrfToken):
+                print("onboarding result: sxrfToken, \(xsrfToken)")
+        }
+    }
 }

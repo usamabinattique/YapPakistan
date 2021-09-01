@@ -53,20 +53,19 @@ class SplashViewModel: SplashViewModelInput, SplashViewModelOutput, SplashViewMo
     var next: Observable<NavigationType> { return nextSubject.asObservable() }
     
     private let disposeBag = DisposeBag()
-    //private var repository: SplashRepositoryType
-    //private let credentialsStore: CredentialsStoreType
+    private var repository: SplashRepositoryType
+    private let credentialsStore: CredentialsStoreType
     
-    init() { }
-    /*init(shortcutItem: UIApplicationShortcutItem?,
+    init(shortcutItem: UIApplicationShortcutItem?,
          credentialsStore: CredentialsStoreType,
          repository: SplashRepositoryType) {
         self.credentialsStore = credentialsStore
         self.repository = repository
         bindNextNavigation()
         fetchXSRF(repository: repository)
-    }*/
+    }
     
-    /*
+    
     private func fetchXSRF(repository: SplashRepositoryType) {
         let xsrfRequest = refreshRequestSubject.startWith(()).flatMap {
             repository.fetchXSRFToken()
@@ -86,7 +85,7 @@ class SplashViewModel: SplashViewModelInput, SplashViewModelOutput, SplashViewMo
         // Error
         xsrfRequest.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
     }
-    */
+    
     private func bindNextNavigation() {
         xsrfSuccessSubject.map { _ in }.bind(to: showAnimationSubject).disposed(by: disposeBag)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
