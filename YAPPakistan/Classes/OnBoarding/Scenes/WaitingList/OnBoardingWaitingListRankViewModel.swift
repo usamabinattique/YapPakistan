@@ -10,12 +10,12 @@ import Foundation
 import RxSwift
 import RxDataSources
 
-public protocol OnboardingWaitingListRankViewModelInput {
+public protocol OnBoardingWaitingListRankViewModelInput {
     var getRanking: AnyObserver<Bool> { get }
     var firstVideoEnded: AnyObserver<Void> { get }
 }
 
-public protocol OnboardingWaitingListRankViewModelOutput {
+public protocol OnBoardingWaitingListRankViewModelOutput {
     var loading: Observable<Bool> { get }
     var error: Observable<String> { get }
     var animationFile: Observable<String> { get }
@@ -29,17 +29,17 @@ public protocol OnboardingWaitingListRankViewModelOutput {
     var bumpMeUpButtonTitle: Observable<String> { get }
 }
 
-public protocol OnboardingWaitingListRankViewModelType {
-    var inputs: OnboardingWaitingListRankViewModelInput { get }
-    var outputs: OnboardingWaitingListRankViewModelOutput { get }
+public protocol OnBoardingWaitingListRankViewModelType {
+    var inputs: OnBoardingWaitingListRankViewModelInput { get }
+    var outputs: OnBoardingWaitingListRankViewModelOutput { get }
 }
 
-public class OnboardingWaitingListRankViewModel: OnboardingWaitingListRankViewModelInput, OnboardingWaitingListRankViewModelOutput, OnboardingWaitingListRankViewModelType {
+public class OnBoardingWaitingListRankViewModel: OnBoardingWaitingListRankViewModelInput, OnBoardingWaitingListRankViewModelOutput, OnBoardingWaitingListRankViewModelType {
 
     // MARK: Properties
     
-    public var inputs: OnboardingWaitingListRankViewModelInput { self }
-    public var outputs: OnboardingWaitingListRankViewModelOutput { self }
+    public var inputs: OnBoardingWaitingListRankViewModelInput { self }
+    public var outputs: OnBoardingWaitingListRankViewModelOutput { self }
 
     private let disposeBag = DisposeBag()
 

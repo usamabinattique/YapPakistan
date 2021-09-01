@@ -17,7 +17,7 @@ private let primary = #colorLiteral(red: 0.368627451, green: 0.2078431373, blue:
 private let primaryDark = #colorLiteral(red: 0.1529999971, green: 0.1330000013, blue: 0.3840000033, alpha: 1)
 private let greyDark = #colorLiteral(red: 0.5759999752, green: 0.5690000057, blue: 0.6940000057, alpha: 1)
 
-public class OnboardingWaitingListRankViewController: UIViewController {
+public class OnBoardingWaitingListRankViewController: UIViewController {
 
     // MARK: Views
 
@@ -84,7 +84,7 @@ public class OnboardingWaitingListRankViewController: UIViewController {
     // MARK: Properties
 
     private let disposeBag = DisposeBag()
-    private var viewModel: OnboardingWaitingListRankViewModelType!
+    private var viewModel: OnBoardingWaitingListRankViewModelType!
 
     // MARK: Initialization
 
@@ -92,7 +92,7 @@ public class OnboardingWaitingListRankViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    public init(viewModel: OnboardingWaitingListRankViewModelType) {
+    public init(viewModel: OnBoardingWaitingListRankViewModelType) {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
     }
@@ -125,7 +125,7 @@ public class OnboardingWaitingListRankViewController: UIViewController {
 
 // MARK: View Setup
 
-private extension OnboardingWaitingListRankViewController {
+private extension OnBoardingWaitingListRankViewController {
     func setupViews() {
         view.addSubview(scrollView)
         scrollView.addSubview(videoPlayerView)
@@ -197,15 +197,15 @@ private extension OnboardingWaitingListRankViewController {
             .centerHorizontallyInSuperview()
             .height(constant: 52)
             .width(constant: 260)
-            .alignEdgeWithSuperview(.bottom, constant: 8)
+            .alignEdgeWithSuperview(.bottom, constant: 20)
             .toBottomOf(contentView, constant: 4)
     }
 }
 
 // MARK: Binding
 
-private extension OnboardingWaitingListRankViewController {
-    func bindViews(_ viewModel: OnboardingWaitingListRankViewModelType) {
+private extension OnBoardingWaitingListRankViewController {
+    func bindViews(_ viewModel: OnBoardingWaitingListRankViewModelType) {
         viewModel.outputs.loading.subscribe(onNext: { flag in
             switch flag {
             case true:
