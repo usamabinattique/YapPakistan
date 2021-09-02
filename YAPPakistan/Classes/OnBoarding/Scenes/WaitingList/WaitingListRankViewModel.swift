@@ -10,12 +10,12 @@ import Foundation
 import RxSwift
 import RxDataSources
 
-protocol OnBoardingWaitingListRankViewModelInput {
+protocol WaitingListRankViewModelInput {
     var getRanking: AnyObserver<Bool> { get }
     var firstVideoEnded: AnyObserver<Void> { get }
 }
 
-protocol OnBoardingWaitingListRankViewModelOutput {
+protocol WaitingListRankViewModelOutput {
     var loading: Observable<Bool> { get }
     var error: Observable<String> { get }
     var animationFile: Observable<String> { get }
@@ -29,12 +29,12 @@ protocol OnBoardingWaitingListRankViewModelOutput {
     var bumpMeUpButtonTitle: Observable<String> { get }
 }
 
-protocol OnBoardingWaitingListRankViewModelType {
-    var inputs: OnBoardingWaitingListRankViewModelInput { get }
-    var outputs: OnBoardingWaitingListRankViewModelOutput { get }
+protocol WaitingListRankViewModelType {
+    var inputs: WaitingListRankViewModelInput { get }
+    var outputs: WaitingListRankViewModelOutput { get }
 }
 
-class OnBoardingWaitingListRankViewModel: OnBoardingWaitingListRankViewModelInput, OnBoardingWaitingListRankViewModelOutput, OnBoardingWaitingListRankViewModelType {
+class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankViewModelOutput, WaitingListRankViewModelType {
 
     // MARK: Properties
 
@@ -58,8 +58,8 @@ class OnBoardingWaitingListRankViewModel: OnBoardingWaitingListRankViewModelInpu
     private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value: "Signed up friends: 0")
     private let bumpMeUpButtonTitleSubject = BehaviorSubject<String>(value: "Bump me up the queue")
 
-    var inputs: OnBoardingWaitingListRankViewModelInput { self }
-    var outputs: OnBoardingWaitingListRankViewModelOutput { self }
+    var inputs: WaitingListRankViewModelInput { self }
+    var outputs: WaitingListRankViewModelOutput { self }
 
     // MARK: Inputs
 

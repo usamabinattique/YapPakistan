@@ -14,7 +14,7 @@ import RxTheme
 import UIKit
 import YAPComponents
 
-class OnBoardingWaitingListRankViewController: UIViewController {
+class WaitingListRankViewController: UIViewController {
 
     // MARK: Views
 
@@ -81,11 +81,11 @@ class OnBoardingWaitingListRankViewController: UIViewController {
     private var themeService: ThemeService<AppTheme>!
 
     private let disposeBag = DisposeBag()
-    private var viewModel: OnBoardingWaitingListRankViewModelType!
+    private var viewModel: WaitingListRankViewModelType!
 
     // MARK: Initialization
 
-    init(themeService: ThemeService<AppTheme>, viewModel: OnBoardingWaitingListRankViewModelType) {
+    init(themeService: ThemeService<AppTheme>, viewModel: WaitingListRankViewModelType) {
         super.init(nibName: nil, bundle: nil)
 
         self.themeService = themeService
@@ -107,15 +107,6 @@ class OnBoardingWaitingListRankViewController: UIViewController {
         bindViews(viewModel)
 
         viewModel.inputs.getRanking.onNext(true)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        scrollView.contentSize = CGSize(width: scrollView.contentSize.width, height: scrollView.contentSize.height )
     }
 
     // MARK: View Setup
@@ -208,7 +199,7 @@ class OnBoardingWaitingListRankViewController: UIViewController {
 
     // MARK: Binding
 
-    private func bindViews(_ viewModel: OnBoardingWaitingListRankViewModelType) {
+    private func bindViews(_ viewModel: WaitingListRankViewModelType) {
         viewModel.outputs.loading.subscribe(onNext: { flag in
             switch flag {
             case true:
