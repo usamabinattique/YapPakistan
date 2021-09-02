@@ -15,8 +15,6 @@ public class InitialsImageView: UIView {
 
     // MARK: Views
 
-    private lazy var backgroundView: UIView = UIView()
-
     fileprivate lazy var initialsLabel = UIFactory.makeLabel(textStyle: .title2)
 
     fileprivate lazy var imageView: UIImageView = {
@@ -26,7 +24,11 @@ public class InitialsImageView: UIView {
         return imageView
     }()
 
-    private lazy var addButtonContainer: UIView = UIView()
+    private lazy var addButtonContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
 
     private lazy var addButton: UIButton = {
         let button = UIButton()
@@ -46,23 +48,24 @@ public class InitialsImageView: UIView {
         commonInit()
     }
     
-    internal func commonInit() {
+    func commonInit() {
         setupViews()
         setupConstraints()
     }
     
-    // MARK: - Lifecycle
+    // MARK: Lifecycle
 
-    override public func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         layer.cornerRadius = bounds.width / 2.0
     }
+
+    // MARK: View Setup
     
     private func setupViews() {
         translatesAutoresizingMaskIntoConstraints = false
 
-        addSubview(backgroundView)
         addSubview(initialsLabel)
         addSubview(imageView)
         addSubview(addButtonContainer)
@@ -70,7 +73,6 @@ public class InitialsImageView: UIView {
     }
     
     private func setupConstraints() {
-        backgroundView.alignAllEdgesWithSuperview()
         initialsLabel.centerInSuperView()
         imageView.centerInSuperView()
 
@@ -80,8 +82,50 @@ public class InitialsImageView: UIView {
 
         addButton
             .centerInSuperView()
-            .pinEdge(.centerX, toEdge: .right, ofView: addButtonContainer, constant: 0)
-            .pinEdge(.centerY, toEdge: .bottom, ofView: addButtonContainer, constant: 0)
+    }
+
+    // MARK: Public
+
+    public func setImage(_ image: UIImage?) {
+        imageView.isHidden = false
+        imageView.image = image
+        initialsLabel.isHidden = true
+    }
+
+    public func setPhotoURL(_ url: URL?) {
+        imageView.isHidden = false
+        imageView.sd_setImage(with: url)
+        initialsLabel.isHidden = true
+    }
+
+    public func setLabelFont(_ font: UIFont) {
+        initialsLabel.font = font
+    }
+
+    public func setLabelColor(_ color: UIColor?) {
+        initialsLabel.textColor = color
+    }
+
+    public func setInitials(_ initials: String) {
+        imageView.isHidden = imageView.image == nil
+        initialsLabel.isHidden = imageView.image != nil
+
+        let parts = initials.uppercased().split(separator: " ")
+        if parts.count > 1 {
+            let firstPart = parts[0]
+            let secondPart = parts[1]
+            if let first = firstPart.first {
+             initialsLabel.text = "\(first)"
+            }
+            if let second = secondPart.first {
+                initialsLabel.text = "\(initialsLabel.text ?? "")\(second)"
+            }
+        } else if parts.count > 0 {
+            let firstPart = parts[0]
+            if let first = firstPart.first {
+                initialsLabel.text = "\(first)"
+            }
+        }
     }
 }
 
@@ -90,40 +134,25 @@ public class InitialsImageView: UIView {
 extension Reactive where Base: InitialsImageView {
     var image: Binder<UIImage> {
         return Binder(self.base) { initialsImageView, image in
-            initialsImageView.imageView.isHidden = false
-            initialsImageView.imageView.image = image
-            initialsImageView.initialsLabel.isHidden = true
+            initialsImageView.setImage(image)
         }
     }
 
-    var photoUrl: Binder<URL?> {
+    var photoURL: Binder<URL?> {
         return Binder(self.base) { initialsImageView, url in
-            initialsImageView.imageView.isHidden = false
-            initialsImageView.imageView.sd_setImage(with: url)
-            initialsImageView.initialsLabel.isHidden = true
+            initialsImageView.setPhotoURL(url)
+        }
+    }
+
+    var labelColor: Binder<UIColor?> {
+        return Binder(self.base) { initialsImageView, color in
+            initialsImageView.setLabelColor(color)
         }
     }
 
     var initials: Binder<String> {
         return Binder(self.base) { initialsImageView, initials in
-            initialsImageView.imageView.isHidden = initialsImageView.imageView.image == nil
-            initialsImageView.initialsLabel.isHidden = initialsImageView.imageView.image != nil
-            let parts = initials.uppercased().split(separator: " ")
-            if parts.count > 1 {
-                let firstPart = parts[0]
-                let secondPart = parts[1]
-                if let first = firstPart.first {
-                 initialsImageView.initialsLabel.text = "\(first)"
-                }
-                if let second = secondPart.first {
-                    initialsImageView.initialsLabel.text = "\(initialsImageView.initialsLabel.text ?? "")\(second)"
-                }
-            } else if parts.count > 0 {
-                let firstPart = parts[0]
-                if let first = firstPart.first {
-                    initialsImageView.initialsLabel.text = "\(first)"
-                }
-            }
+            initialsImageView.setInitials(initials)
         }
     }
 }
