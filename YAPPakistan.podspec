@@ -67,8 +67,6 @@ Pod::Spec.new do |s|
   s.dependency 'RxSwiftExt', '6.0.1'
   s.dependency 'RxGesture', '4.0.2'
   s.dependency 'RxDataSources', '5.0.0'
-  s.dependency 'NSObject+Rx', '5.2.2'
-  s.dependency 'RxViewController', '2.0.0'
   s.dependency 'RxOptional', '5.0.2'
   s.dependency 'RxTheme', '5.0.4'
   
@@ -82,6 +80,4 @@ Pod::Spec.new do |s|
   #MARK: Swift Extension
   s.dependency 'SwifterSwift', '5.2.0'
   
-  #MARK: KeychainAccess
-  s.dependency 'KeychainAccess', '4.2.2'
 end

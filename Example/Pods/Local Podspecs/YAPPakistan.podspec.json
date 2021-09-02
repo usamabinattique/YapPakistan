@@ -45,12 +45,6 @@
     "RxDataSources": [
       "5.0.0"
     ],
-    "NSObject+Rx": [
-      "5.2.2"
-    ],
-    "RxViewController": [
-      "2.0.0"
-    ],
     "RxOptional": [
       "5.0.2"
     ],
@@ -68,9 +62,6 @@
     ],
     "SwifterSwift": [
       "5.2.0"
-    ],
-    "KeychainAccess": [
-      "4.2.2"
     ]
   }
 }

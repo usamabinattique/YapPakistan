@@ -7,7 +7,6 @@
 
 import UIKit
 import RxSwift
-import NSObject_Rx
 
 public class AppCoordinator:Coordinator<ResultType<Void>> {
     
@@ -15,19 +14,18 @@ public class AppCoordinator:Coordinator<ResultType<Void>> {
     private var navigationController: UINavigationController?
     private var shortcutItem: UIApplicationShortcutItem?
     
+    private let currentSession = PublishSubject<ResultType<Void>>()
+    
     public init(window:UIWindow, shortcutItem:UIApplicationShortcutItem?) {
         self.window = window
-        
         self.shortcutItem = shortcutItem
         super.init()
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         print("HEllo")
-        return Observable<ResultType<Void>>.create { [unowned self] observer in
-            self.splash(shortcutItem: nil)
-            return Disposables.create()
-        }
+        self.splash(shortcutItem: nil)
+        return currentSession
     }
     
     func splash(shortcutItem: UIApplicationShortcutItem?) {
@@ -50,10 +48,24 @@ public class AppCoordinator:Coordinator<ResultType<Void>> {
         switch result {
             case .login(let xsrfToken):
                 print("login result: sxrfToken, \(xsrfToken)")
+                showWelcomeScreen(authorization: GuestServiceAuthorization(xsrf: xsrfToken))
             case .passcode(let xsrfToken):
                 print("passcode result: sxrfToken, \(xsrfToken)")
             case .onboarding(let xsrfToken):
-                print("onboarding result: sxrfToken, \(xsrfToken)")
+                showWelcomeScreen(authorization: GuestServiceAuthorization(xsrf: xsrfToken))
         }
     }
+}
+
+func showWelcomeScreen(authorization: GuestServiceAuthorization) {
+    /* self.coordinate(to: WelcomeScreenCoordinator(window: self.window))
+        .subscribe(onNext: { [unowned self] result in
+            switch result {
+            case .onboarding:
+                startB2BRegistration(authorization: authorization)
+            case .login:
+                showLoginScreen(authorization: authorization)
+            }
+        })
+        .disposed(by: rx.disposeBag) */
 }
