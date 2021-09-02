@@ -123,12 +123,11 @@ class WaitingListRankViewController: UIViewController {
         contentView.addSubview(containerView)
         containerView.addSubview(containerStackView)
         scrollView.addSubview(bumpMeUpButton)
-
-        view.backgroundColor = .white
     }
 
     private func setupTheme() {
         themeService.rx
+            .bind({ $0.backgroundColor }, to: view.rx.backgroundColor)
             .bind({ $0.primaryDark }, to: placeLabel.rx.textColor)
             .bind({ $0.primaryDark }, to: rankView.rx.digitColor)
             .bind({ $0.primaryDark }, to: behindNumberLabel.rx.textColor)
