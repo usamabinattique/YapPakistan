@@ -33,15 +33,15 @@ class WaitingListRankViewController: UIViewController {
         return player
     }()
 
-    private lazy var placeLabel = UIFactory.makeLabel(textStyle: .title2, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var placeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var rankView: RankView = RankView()
 
-    private lazy var behindNumberLabel = UIFactory.makeLabel(textStyle: .large, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var behindNumberLabel = UIFactory.makeLabel(font: .large, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
-    private lazy var behindYouLabel = UIFactory.makeLabel(textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var behindYouLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
-    private lazy var infoLabel = UIFactory.makeLabel(textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var infoLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var containerView: UIView = {
         let view = UIView()
@@ -58,7 +58,7 @@ class WaitingListRankViewController: UIViewController {
         return view
     }()
 
-    private lazy var boostUpLabel: UILabel = UIFactory.makeLabel(textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var boostUpLabel: UILabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var seeInviteesButton: UIButton = {
         let button = UIButton()

@@ -16,8 +16,7 @@ class ViewController: UIViewController {
     }
 
     @IBAction func yapPKButtonPressed(_ sender: Any) {
-        let vc = SampleViewController()
-
-        navigationController?.pushViewController(vc, animated: true)
+        //let vc = SampleViewController()
+        //navigationController?.pushViewController(vc, animated: true)
     }
 }

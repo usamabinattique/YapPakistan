@@ -32,24 +32,19 @@ Pod::Spec.new do |s|
 
   s.source_files = 'YAPPakistan/Classes/**/*'
   
-  s.resource_bundles = {
-    'YAPPakistan' => ['YAPPakistan/Assets/**/*']
-  }
-  
   #s.resource_bundles = {
-  #  'YAPPakistan' => ['YAPPakistan/Assets/*']
+  #  'YAPPakistan' => ['YAPPakistan/Assets/**/*']
   #}
-  
-  #s.resources = [ 'YAPPakistan/Assets/**/*.gif',
-  #                'YAPPakistan/Assets/**/*.jpg',
-  #                'YAPPakistan/Assets/**/*.jpeg',
-  #                'YAPPakistan/Assets/**/*.json',
-  #                'YAPPakistan/Assets/**/*.mp4',
-  #                'YAPPakistan/Assets/**/*.png',
-  #                'YAPPakistan/Assets/**/*.strings',
-  #                'YAPPakistan/Assets/**/*.xcassets']
 
-  s.resources         = ['YAPPakistan/Assets/*.mp4']
+  s.resources = [ 'YAPPakistan/Assets/**/*.gif',
+                  'YAPPakistan/Assets/**/*.jpg',
+                  'YAPPakistan/Assets/**/*.jpeg',
+                  'YAPPakistan/Assets/**/*.json',
+                  'YAPPakistan/Assets/**/*.mp4',
+                  'YAPPakistan/Assets/**/*.png',
+                  'YAPPakistan/Assets/**/*.strings',
+                  'YAPPakistan/Assets/**/*.xcassets',
+                  'YAPPakistan/Assets/**/*.swift']
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
@@ -75,11 +70,17 @@ Pod::Spec.new do |s|
   #MARK: UI
   s.dependency 'SwiftyGif', '5.4.0'
   s.dependency 'PhoneNumberKit', '3.3.3'
+  s.dependency 'SwiftRichString', '3.7.2'
+  s.dependency 'Localize-Swift', '3.2.0'
   
   #MARK: UIImage
   s.dependency 'SDWebImage', '5.11.1'
   
   #MARK: Swift Extension
   s.dependency 'SwifterSwift', '5.2.0'
+  
+  #MARK: Tools
+  s.dependency 'R.swift', '5.4.0'
+  
   
 end
