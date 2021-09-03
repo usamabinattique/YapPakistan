@@ -11,7 +11,7 @@ import UIKit
 import YAPComponents
 
 public class RollingAnimationView: UIView {
-    private lazy var label: UILabel = UIFactory.makeLabel(textStyle: .title1, alignment: .center, numberOfLines: 1)
+    private lazy var label: UILabel = UIFactory.makeLabel(font: .title1, alignment: .center, numberOfLines: 1)
 
     public var labelColor: UIColor! {
         get { label.textColor }
