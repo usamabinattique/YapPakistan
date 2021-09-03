@@ -24,11 +24,11 @@ class SplashViewController: UIViewController {
     private var viewModel: SplashViewModelType!
     
     private lazy var logo = UIFactory
-        .makeImageView(image:BundleYapPak.image("yap_logo_animate"))
+        .makeImageView(image: R.image.yap_logo_animate())
         .addToSuper(view: view)
     
     private lazy var dot = UIFactory
-        .makeImageView(image:BundleYapPak.image("circle")) //BundleYapPak.image("circle"))
+        .makeImageView(image: R.image.circle())
         .addToSuper(view: view)
     
     /*private lazy var visualEffectView: UIVisualEffectView = {
@@ -43,6 +43,7 @@ class SplashViewController: UIViewController {
     init(viewModel: SplashViewModelType) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {

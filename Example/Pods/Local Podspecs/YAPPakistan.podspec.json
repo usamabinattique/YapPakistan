@@ -18,11 +18,17 @@
     "ios": "11.4"
   },
   "source_files": "YAPPakistan/Classes/**/*",
-  "resource_bundles": {
-    "YAPPakistan": [
-      "YAPPakistan/Assets/**/*"
-    ]
-  },
+  "resources": [
+    "YAPPakistan/Assets/**/*.gif",
+    "YAPPakistan/Assets/**/*.jpg",
+    "YAPPakistan/Assets/**/*.jpeg",
+    "YAPPakistan/Assets/**/*.json",
+    "YAPPakistan/Assets/**/*.mp4",
+    "YAPPakistan/Assets/**/*.png",
+    "YAPPakistan/Assets/**/*.strings",
+    "YAPPakistan/Assets/**/*.xcassets",
+    "YAPPakistan/Assets/**/*.swift"
+  ],
   "dependencies": {
     "YAPComponents": [
 
@@ -57,11 +63,20 @@
     "PhoneNumberKit": [
       "3.3.3"
     ],
+    "SwiftRichString": [
+      "3.7.2"
+    ],
+    "Localize-Swift": [
+
+    ],
     "SDWebImage": [
       "5.11.1"
     ],
     "SwifterSwift": [
       "5.2.0"
+    ],
+    "R.swift": [
+      "5.4.0"
     ]
   }
 }
