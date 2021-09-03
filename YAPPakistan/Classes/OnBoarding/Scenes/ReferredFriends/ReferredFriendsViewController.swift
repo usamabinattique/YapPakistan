@@ -15,9 +15,9 @@ class ReferredFriendsViewController: UIViewController {
 
     // MARK: Views
 
-    private lazy var titleLabel = UIFactory.makeLabel(textStyle: .large, alignment: .natural, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var titleLabel = UIFactory.makeLabel(font: .large, alignment: .natural, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
-    private lazy var subtitleLabel = UIFactory.makeLabel(textStyle: .small, alignment: .natural, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var subtitleLabel = UIFactory.makeLabel(font: .small, alignment: .natural, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var separatorView: UIView = {
         let view = UIView()

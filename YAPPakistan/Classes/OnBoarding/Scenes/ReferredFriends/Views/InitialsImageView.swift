@@ -15,7 +15,7 @@ public class InitialsImageView: UIView {
 
     // MARK: Views
 
-    fileprivate lazy var initialsLabel = UIFactory.makeLabel(textStyle: .title2)
+    fileprivate lazy var initialsLabel = UIFactory.makeLabel(font: .title2)
 
     fileprivate lazy var imageView: UIImageView = {
         let imageView = UIImageView()

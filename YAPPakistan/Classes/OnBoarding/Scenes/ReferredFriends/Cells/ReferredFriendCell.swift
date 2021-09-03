@@ -20,7 +20,7 @@ class ReferredFriendCell: UITableViewCell {
         return view
     }()
 
-    private lazy var nameLabel = UIFactory.makeLabel(textStyle: .small, alignment: .natural, numberOfLines: 2)
+    private lazy var nameLabel = UIFactory.makeLabel(font: .small, alignment: .natural, numberOfLines: 2)
 
     // MARK: Properties
 
