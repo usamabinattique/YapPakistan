@@ -72,6 +72,8 @@ Pod::Spec.new do |s|
   s.dependency 'PhoneNumberKit', '3.3.3'
   s.dependency 'SwiftRichString', '3.7.2'
   s.dependency 'Localize-Swift', '3.2.0'
+  s.dependency 'Localize-Swift', '3.2.0'
+  s.dependency 'HWPanModal', '0.8.9'
   
   #MARK: UIImage
   s.dependency 'SDWebImage', '5.11.1'

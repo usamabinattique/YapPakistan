@@ -5,6 +5,7 @@
 //  Created by Tayyab on 01/09/2021.
 //
 
+import HWPanModal
 import RxCocoa
 import RxSwift
 import RxTheme
@@ -113,9 +114,39 @@ class ReferredFriendsViewController: UIViewController {
             .bind(to: subtitleLabel.rx.text)
             .disposed(by: disposeBag)
 
+        viewModel.outputs.hidesSeparator
+            .bind(to: separatorView.rx.isHidden)
+            .disposed(by: disposeBag)
+
+        viewModel.outputs.hidesFriends
+            .bind(to: tableView.rx.isHidden)
+            .disposed(by: disposeBag)
+
         viewModel.outputs.friendList.bind(to: tableView.rx.items(cellIdentifier: ReferredFriendCell.defaultIdentifier, cellType: ReferredFriendCell.self)) { [weak self] (_, viewModel: ReferredFriendViewModelType, cell) in
             guard let self = self else { return }
             cell.configure(with: self.themeService, viewModel: viewModel)
         }.disposed(by: disposeBag)
+    }
+
+    // MARK: HWPanModalPresentable
+
+    override func panScrollable() -> UIScrollView? {
+        return tableView
+    }
+
+    override func shortFormHeight() -> PanModalHeight {
+        return PanModalHeight(type: .content, height: 360)
+    }
+
+    override func longFormHeight() -> PanModalHeight {
+        return PanModalHeight(type: .topInset, height: 64)
+    }
+
+    override func cornerRadius() -> CGFloat {
+        return 16
+    }
+
+    override func showDragIndicator() -> Bool {
+        return false
     }
 }

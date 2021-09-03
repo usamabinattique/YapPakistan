@@ -69,6 +69,9 @@
     "Localize-Swift": [
       "3.2.0"
     ],
+    "HWPanModal": [
+      "0.8.9"
+    ],
     "SDWebImage": [
       "5.11.1"
     ],
