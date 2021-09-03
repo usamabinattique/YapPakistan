@@ -8,7 +8,6 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import NSObject_Rx
 import YAPComponents
 
 let bundle:Bundle? = nil
@@ -29,7 +28,7 @@ class SplashViewController: UIViewController {
         .addToSuper(view: view)
     
     private lazy var dot = UIFactory
-        .makeImageView(image:BundleYapPak.image("circle"))
+        .makeImageView(image:BundleYapPak.image("circle")) //BundleYapPak.image("circle"))
         .addToSuper(view: view)
     
     /*private lazy var visualEffectView: UIVisualEffectView = {
@@ -167,6 +166,7 @@ private extension SplashViewController {
             }){ success in
                 if success {
                     observer.onNext(())
+                    observer.onCompleted()
                 }
             }
             return Disposables.create()
