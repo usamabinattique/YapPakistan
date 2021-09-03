@@ -14,7 +14,7 @@ public class AppCoordinator:Coordinator<ResultType<Void>> {
     private var navigationController: UINavigationController?
     private var shortcutItem: UIApplicationShortcutItem?
     
-    private let currentSession = PublishSubject<ResultType<Void>>()
+    private let userSession = PublishSubject<ResultType<Void>>()
     
     public init(window:UIWindow, shortcutItem:UIApplicationShortcutItem?) {
         self.window = window
@@ -23,27 +23,15 @@ public class AppCoordinator:Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        print("HEllo")
-        self.splash(shortcutItem: nil)
-        return currentSession
+        
+        splashDidComplete(shortcutItem: nil).subscribe( onNext: { [weak self] result in
+            self?.coordinateToBaseOn(result)
+        }).disposed(by: rx.disposeBag)
+        
+        return userSession
     }
     
-    func splash(shortcutItem: UIApplicationShortcutItem?) {
-        self.coordinate(
-            to: SplashCoordinator (
-                window: window,
-                shortcutItem: shortcutItem,
-                store: CredentialsManager(),
-                repository: SplashRepository(service: XSRFService() )
-            )
-        )
-        .subscribe(onNext: { [weak self] result in
-            self?.handleSplashResponse(result: result)
-        })
-        .disposed(by: rx.disposeBag)
-    }
-    
-    private func handleSplashResponse(result:ResultType<NavigationType>) {
+    private func coordinateToBaseOn(_ result:ResultType<NavigationType>) {
         guard let result = result.isSuccess else { return }
         switch result {
             case .login(let xsrfToken):
@@ -57,15 +45,32 @@ public class AppCoordinator:Coordinator<ResultType<Void>> {
     }
 }
 
-func showWelcomeScreen(authorization: GuestServiceAuthorization) {
-    /* self.coordinate(to: WelcomeScreenCoordinator(window: self.window))
-        .subscribe(onNext: { [unowned self] result in
-            switch result {
-            case .onboarding:
-                startB2BRegistration(authorization: authorization)
-            case .login:
-                showLoginScreen(authorization: authorization)
-            }
-        })
-        .disposed(by: rx.disposeBag) */
+//MARK: NAVIGATIONS
+extension AppCoordinator {
+    func showWelcomeScreen(authorization: GuestServiceAuthorization) {
+        /* self.coordinate(to: WelcomeScreenCoordinator(window: self.window))
+            .subscribe(onNext: { [unowned self] result in
+                switch result {
+                case .onboarding:
+                    startB2BRegistration(authorization: authorization)
+                case .login:
+                    showLoginScreen(authorization: authorization)
+                }
+            })
+            .disposed(by: rx.disposeBag) */
+    }
+}
+
+//MARK: HELPERS
+fileprivate extension AppCoordinator {
+    func splashDidComplete(shortcutItem: UIApplicationShortcutItem?)  -> Observable<ResultType<NavigationType>> {
+         return self.coordinate(
+            to: SplashCoordinator (
+                window: window,
+                shortcutItem: shortcutItem,
+                store: CredentialsManager(),
+                repository: SplashRepository(service: XSRFService() )
+            )
+        )
+    }
 }
