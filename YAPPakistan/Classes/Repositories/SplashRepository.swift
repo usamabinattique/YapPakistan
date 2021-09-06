@@ -7,7 +7,6 @@
 //
 
 import Foundation
-//import Authentication
 import RxSwift
 
 public protocol SplashRepositoryType {

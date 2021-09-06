@@ -60,6 +60,7 @@ Pod::Spec.new do |s|
 
   #MARK: YapUIKIT
   s.dependency 'YAPComponents'
+  s.dependency 'YAPCore'
   
   #MARK: Networking
   s.dependency 'Alamofire', '5.4.3'

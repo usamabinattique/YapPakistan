@@ -1,0 +1,5 @@
+platform :ios, '11.0'
+target 'YAPCore' do
+	pod 'RxSwift' , '6.2.0'
+	pod 'RxSwiftExt' , '6.0.1'
+end

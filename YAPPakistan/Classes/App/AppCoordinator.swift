@@ -7,42 +7,43 @@
 
 import UIKit
 import RxSwift
+import YAPCore
 
-public class AppCoordinator:Coordinator<ResultType<Void>> {
+public class AppCoordinator: Coordinator<ResultType<Void>> {
     
     private let window: UIWindow
     private var navigationController: UINavigationController?
     private var shortcutItem: UIApplicationShortcutItem?
+    private let result = PublishSubject<ResultType<Void>>()
+    private let container: YAPPakistanMainContainer
+    let reposiotry = SplashRepository(service: XSRFService())
     
     private let userSession = PublishSubject<ResultType<Void>>()
     
-    public init(window:UIWindow, shortcutItem:UIApplicationShortcutItem?) {
+    public init(window:UIWindow,
+                shortcutItem:UIApplicationShortcutItem?,
+                container: YAPPakistanMainContainer) {
         self.window = window
         self.shortcutItem = shortcutItem
+        self.container = container
         super.init()
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        
-        splashDidComplete(shortcutItem: nil).subscribe( onNext: { [weak self] result in
-            self?.coordinateToBaseOn(result)
-        }).disposed(by: rx.disposeBag)
-        
-        return userSession
+        let _ = reposiotry.fetchXSRFToken().subscribe().disposed(by: rx.disposeBag)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.showDummyController()
+        }
+        return result
     }
     
-    private func coordinateToBaseOn(_ result:ResultType<NavigationType>) {
-        guard let result = result.isSuccess else { return }
-        switch result {
-            case .login(let xsrfToken):
-                print("login result: sxrfToken, \(xsrfToken)")
-                showWelcomeScreen(authorization: GuestServiceAuthorization(xsrf: xsrfToken))
-            case .passcode(let xsrfToken):
-                print("passcode result: sxrfToken, \(xsrfToken)")
-            case .onboarding(let xsrfToken):
-                showWelcomeScreen(authorization: GuestServiceAuthorization(xsrf: xsrfToken))
+    func showDummyController() {
+        if let value = HTTPCookieStorage.shared.cookies?.filter({ $0.name == "XSRF-TOKEN" }).first?.value {
+            // start onboarding, signin, signup flow
+            let vc = container.makeDummyViewController(xsrfToken: value)
         }
     }
+    
 }
 
 //MARK: NAVIGATIONS
@@ -63,14 +64,14 @@ extension AppCoordinator {
 
 //MARK: HELPERS
 fileprivate extension AppCoordinator {
-    func splashDidComplete(shortcutItem: UIApplicationShortcutItem?)  -> Observable<ResultType<NavigationType>> {
-         return self.coordinate(
-            to: SplashCoordinator (
-                window: window,
-                shortcutItem: shortcutItem,
-                store: CredentialsManager(),
-                repository: SplashRepository(service: XSRFService() )
-            )
-        )
-    }
+//    func splashDidComplete(shortcutItem: UIApplicationShortcutItem?)  -> Observable<ResultType<NavigationType>> {
+//         return self.coordinate(
+//            to: SplashCoordinator (
+//                window: window,
+//                shortcutItem: shortcutItem,
+//                store: CredentialsManager(),
+//                repository: SplashRepository(service: XSRFService() )
+//            )
+//        )
+//    }
 }
