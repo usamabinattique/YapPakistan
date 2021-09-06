@@ -70,6 +70,9 @@ PODS:
   - SwifterSwift/UIKit (5.2.0)
   - SwiftyGif (5.4.0)
   - YAPComponents (0.1.0)
+  - YAPCore (0.0.1):
+    - RxSwift (= 6.2.0)
+    - RxSwiftExt (= 6.0.1)
   - YAPPakistan (0.1.0):
     - Alamofire (= 5.4.3)
     - KeychainAccess (= 4.2.2)
@@ -87,9 +90,11 @@ PODS:
     - SwifterSwift (= 5.2.0)
     - SwiftyGif (= 5.4.0)
     - YAPComponents
+    - YAPCore
 
 DEPENDENCIES:
   - YAPComponents (from `../YAPComponents`)
+  - YAPCore (from `../YAPCore`)
   - YAPPakistan (from `../`)
 
 SPEC REPOS:
@@ -115,6 +120,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   YAPComponents:
     :path: "../YAPComponents"
+  YAPCore:
+    :path: "../YAPCore"
   YAPPakistan:
     :path: "../"
 
@@ -137,8 +144,9 @@ SPEC CHECKSUMS:
   SwifterSwift: 334181863c416882d97b7a60c05054d9e4d799e2
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   YAPComponents: 973a1d656d519b7de5e0f2bbc5bdba4466014b60
-  YAPPakistan: 3f62337b7f47a01454716b95c73ade69a57e3cc5
+  YAPCore: d4ed6d75b20b45e0081dfbff530db9c2d0091fd8
+  YAPPakistan: b8d0c068adec800521f48c1842a660571dbd31ab
 
-PODFILE CHECKSUM: 4d5c5a558650b439c3a50121a385678dc66390aa
+PODFILE CHECKSUM: 3103623bdd8c4436e4f8e91ea84c7122a7ab660f
 
 COCOAPODS: 1.10.1

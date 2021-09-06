@@ -21,7 +21,9 @@ public class BaseService: Service {
     let authorizationProvider: ServiceAuthorizationProviderType
     
     // MARK: INITIALIZER
-    public init(apiClient: APIClient = WebClient(), apiConfig: APIConfiguration, authorizationProvider: ServiceAuthorizationProviderType) {
+    public init(apiClient: APIClient = WebClient(),
+                apiConfig: APIConfiguration,
+                authorizationProvider: ServiceAuthorizationProviderType) {
         self.apiClient = apiClient
         self.apiConfig = apiConfig
         self.authorizationProvider = authorizationProvider

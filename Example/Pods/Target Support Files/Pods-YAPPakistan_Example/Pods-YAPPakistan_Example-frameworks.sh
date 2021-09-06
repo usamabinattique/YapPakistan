@@ -193,6 +193,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/SwifterSwift/SwifterSwift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyGif/SwiftyGif.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/YAPComponents/YAPComponents.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/YAPCore/YAPCore.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/YAPPakistan/YAPPakistan.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
@@ -214,6 +215,7 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${BUILT_PRODUCTS_DIR}/SwifterSwift/SwifterSwift.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/SwiftyGif/SwiftyGif.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/YAPComponents/YAPComponents.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/YAPCore/YAPCore.framework"
   install_framework "${BUILT_PRODUCTS_DIR}/YAPPakistan/YAPPakistan.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
