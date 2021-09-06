@@ -16,6 +16,13 @@ class ReferredFriendsViewController: UIViewController {
 
     // MARK: Views
 
+    private lazy var sheetIndicatorView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.cornerRadius = 2
+        return view
+    }()
+
     private lazy var titleLabel = UIFactory.makeLabel(font: .large, alignment: .natural, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var subtitleLabel = UIFactory.makeLabel(font: .small, alignment: .natural, numberOfLines: 0, lineBreakMode: .byWordWrapping)
@@ -68,6 +75,7 @@ class ReferredFriendsViewController: UIViewController {
     // MARK: View Setup
 
     private func setupViews() {
+        view.addSubview(sheetIndicatorView)
         view.addSubview(titleLabel)
         view.addSubview(subtitleLabel)
         view.addSubview(separatorView)
@@ -79,6 +87,7 @@ class ReferredFriendsViewController: UIViewController {
     private func setupTheme() {
         themeService.rx
             .bind({ $0.backgroundColor }, to: view.rx.backgroundColor)
+            .bind({ $0.greyLight }, to: sheetIndicatorView.rx.backgroundColor)
             .bind({ $0.primaryDark }, to: titleLabel.rx.textColor)
             .bind({ $0.greyDark }, to: subtitleLabel.rx.textColor)
             .bind({ $0.greyLight }, to: separatorView.rx.backgroundColor)
@@ -86,8 +95,15 @@ class ReferredFriendsViewController: UIViewController {
     }
 
     private func setupConstraints() {
+        sheetIndicatorView
+            .alignEdgeWithSuperview(.top, constant: 12)
+            .centerHorizontallyInSuperview()
+            .width(60)
+            .height(4)
+
         titleLabel
-            .alignEdgesWithSuperview([.top, .left, .right], constants: [32, 24, 24])
+            .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
+            .toBottomOf(sheetIndicatorView, constant: 16)
 
         subtitleLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
