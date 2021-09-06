@@ -1,0 +1,1385 @@
+/* 
+  File.strings
+  Pods
+
+  Created by Sarmad on 03/09/2021.
+  
+*/
+
+// MARK: Common
+"common_button_next" = "Next";
+"common_button_add" = "Add";
+"common_button_confirm" = "Confirm";
+"common_display_text_retry" = "Retry";
+"common_display_text_error_no_internet" = "Looks like you're offline. Please reconnect and refresh to continue using YAP.";
+"common_display_text_emirates_id" = "Emirates ID";
+"common_button_go_to_dashbaord" = "Go to dashboard";
+"common_button_re_scan" = "Re-scan Emirates ID";
+"common_display_text_gender_male" = "Male";
+"common_display_text_gender_female" = "Female";
+"common_display_text_gender_unspecified" = "Unspecified";
+"common_display_text_permission_denied" = "Permission denied!";
+"common_display_text_permission_camera" = "You have denied YAP access to camera. To allow YAP to use camera go to settings";
+"common_button_settings" = "Settings";
+"common_button_cancel" = "Cancel";
+"common_button_install" = "Install";
+"common_button_yes" = "Yes";
+"common_button_go_to_dashboard"  =  "Go to dashboard";
+"common_button_edit" = "Edit";
+"common_display_text_account" = "Account";
+"common_display_text_copy" = "Copy";
+"common_display_text_currency" = "AED";
+"commone_disply_text_card_name_primary_silver" = "Primary card";
+"commone_disply_text_card_name_premium_rose_gold" = "Rose Gold Premium Card";
+"commone_disply_text_card_name_premium_gold" = "Gold Premium Card";
+"commone_disply_text_card_name_premium_grey" = "Grey Premium Card";
+"commone_disply_text_card_name_premium_black" = "Black Premium Card";
+"commone_disply_text_card_name_metal_black" = "Black Metal Card";
+"common_display_text_virtual_card" = "Virtual card";
+"common_display_text_physical_card" = "Physical card";
+"common_display_text_spare_virtual_card" = "Virtual card";
+"common_display_text_spare_physical_card" = "Spare physical card";
+"common_button_done" = "Done";
+"common_delivery_status_ordered" = "Ordered";
+"common_delivery_status_building" = "Building";
+"common_delivery_status_built" = "Built";
+"common_delivery_status_shipping" = "Shipping";
+"common_delivery_status_shipped" = "Shipped";
+"common_button_select" = "Select";
+"common_button_view" = "View";
+"common_button_change" = "Change";
+"common_button_open_mail_app" = "Open mail app";
+"common_button_may_be_later" = "Maybe later";
+"common_button_ok" = "OK";
+"common_display_text_y2y_share" = "Hi %@ would like to send you some money via YAP. Download the app now and join YAP’s fast growing community!\n\nDownload YAP here:\n\n%@";
+"common_display_text_account_activation" = "Account activation pending";
+"common_display_text_account_eid_expired" = "Please update your Emirates ID to continue using YAP";
+"common_display_text_account_syncing" = "Please wait we are syncing your account";
+"commn_display_text_comming_soon" = "Coming soon";
+"common_display_text_daily_limit_error_multiple_transactions" = "You have exceeded your daily transaction limit";
+"common_display_text_daily_limit_error_single_transaction" = "This amount exceeds your daily transaction limit";
+"common_display_text_daily_limit_error_limit_reached" = "Sorry, you've reached your daily limit. Let's try again tomorrow.";
+"common_display_text_cooling_period_limit_error" = "You can only send up to %@ at this time. To transfer bigger amounts, please wait for %@ hours from the time you added %@.";
+"common_display_text_cooling_period_limit_consumed_error" = "You have consumed the limit for the amount you can send at this time. To send money, please wait for %@ hours from the time you added %@.";
+"common_display_text_on_hold_limit_error" = "You have exceeded your limit for held on transactions, please enter an amount less than %@";
+"common_display_text_available_balance_error" = "Uh oh! You’ll need to have a minimum balance of %@ plus the fee stated to proceed with this payment.";
+"common_display_text_transaction_limit_error" = "Your entered amount should be between %@ and %@";
+"common_display_text_otp_blocked_error" = "This feature has been blocked due to too many OTP attempts. Use our live chat or call us on %@ to get access.";
+"common_display_text_feature_blocked_error" = "Sorry, this feature isn’t available to you at this time. Please use live chat or call us on %@ to get access.";
+"common_display_text_notification_feature_block" = "Some of your card's features are temporarily disabled. Get in touch with us at %@ for assistance.";
+"common_display_text_fallback_error_message" = "Sorry, that doesn't look right. We’re working on fixing it now. Please try again in sometime.";
+
+
+
+// MARK: - Splash
+"screen_splash_display_text_force_update" = "Please update your app in order to continue.";
+"screen_splash_button_force_update" = "Update";
+
+
+// MARK: Home Screen
+"screen_home_display_text_tag_line" = "The Personalized Banking App";
+"screen_home_display_text_account_selection" = "I want an account for";
+"screen_home_button_personal" = "Personal";
+"screen_home_button_business" = "Business";
+"screen_home_button_filter" = "Filter";
+"screen_home_display_text_sign_in" = "Already have an account? <bold>Sign in</bold>";
+
+// MARK: Welcom Screen
+"screen_welcome_b2c_display_text_page1_title" = "Real-time banking";
+"screen_welcome_b2c_display_text_page2_title" = "Real-time perks";
+"screen_welcome_b2c_display_text_page3_title" = "Real-time benefits";
+"screen_welcome_b2c_display_text_page1_details" = "Current account with no\nhidden fees";
+"screen_welcome_b2c_display_text_page2_details" = "A free Mastercard delivered to\nyour doorstep";
+"screen_welcome_b2c_display_text_page3_details" = "Built-in analytics at\nyour fingertips";
+"screen_welcome_button_get_started" = "Get started";
+
+// MARK: Sign in Screen
+"screen_sign_in_display_text_heading_text" = "Sign in to your YAP account";
+"screen_sign_in_input_text_email_hint" = "Email address or phone number";
+"screen_sign_in_display_text_remember_id_text" = "Remember ID";
+"screen_sign_in_display_text_sign_up" = "New to YAP? Sign up now";
+"screen_sign_in_button_sign_in" = "Sign in";
+"screen_sign_in_button_verify" = "Verify";
+"screen_sign_in_button_sign_in_touch_id" = "Sign in with Touch ID";
+"screen_sign_in_display_text_error_text" = "That doesn't look right. Please try again";
+
+//MARK: Complete Verification FSS Screen
+"screen_complete_verification_fss_display_text_heading_text" = "you reached the top of the Queue!";
+"screen_complete_verification_fss_sub_heading_text" = "You are now ready to fully activate and begin using your YAP account.";
+"screen_complete_verification_fss_info_text" = "Make sure you have your Emirates ID at hand before we proceed";
+
+// MARK: Phone number screen
+"screen_phone_number_display_text_title" = "What's your mobile number?";
+
+// MARK: Phone number verification screen
+"screen_verify_phone_number_display_text_title" = "Verify your mobile number";
+"screen_verify_phone_number_display_text_sub_title" = "We've sent a verification code to";
+"screen_verify_phone_number_button_resend_otp" = "Resend OTP";
+"screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
+
+//MARK: Create passcode screen
+"screen_create_passcode_display_text_title" = "Create a new 4- to 6-digit passcode​";
+"screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our\nTerms & Conditions";
+"screen_create_passcode_button_create_passcode" = "Create passcode";
+"screen_create_passcode_button_create_new_passcode" = "Set passcode";
+"screen_create_passcode_display_text_error_sequence" = "Passcode cannot be a straight sequence";
+"screen_create_passcode_display_text_error_same_digits" = "Passcode cannot be of same digits";
+
+//MARK: Waiting list screen
+"screen_waiting_list_dispaly_text_heading" = "You’re on our waiting list";
+"screen_waiting_list_dispaly_text_sub_heading" = "We’re currently in beta and only open to a limited number of users. Don’t worry, you’ll be the first to know when we’re ready. Should you wish to find out more in the meantime, our website has more information for you.";
+"screen_waiting_list_dispaly_button_keep_me_posted" = "Keep me posted!";
+"screen_waiting_list_dispaly_text_awsome_alert" = "Awesome! We’re as excited as you are. We’ll send you an SMS as soon as we’ve launched!";
+"screen_waiting_list_dispaly_text_close" = "Close";
+
+//MARK: Waiting list with rank screen
+"screen_waiting_list_rank_place_text_heading" = "Your place in the queue";
+"screen_waiting_list_rank_behind_text" = "waiting behind you";
+"screen_waiting_list_rank_info_text" = "We will notify you when you’ve reached the top. Log back in to see your updated place in the queue.";
+"screen_waiting_list_rank_bump_me_up_text" = "Bump me up the queue";
+"screen_waiting_list_rank_bump_me_up_info_text_top" = "Want to jump the queue?";
+"screen_waiting_list_rank_bump_me_up_info_text_bottom" = "Boost yourself up the queue by %@ for every friend you refer that signs up.🚀";
+"screen_waiting_list_rank_log_back_in_text" = "Log back in to see your rank in the queue";
+"screen_waiting_list_rank_share_invite_text" = "Hey! I just joined the UAE’s newest banking app – YAP. Transform the way you bank and reserve your place in the queue to be one of the first to join me in the banking revolution.\n\n%@";
+"screen_waiting_list_rank_bumped_notification_text" = "Congrats! You were bumped up by %@ spots! Keep on referring to get to the top faster! ";
+"screen_waiting_list_rank_invitees_list_title_text" = "You referred %d friends! %@";
+"screen_waiting_list_rank_invitees_list_subtitle_zero_invitees_text" = "Once your referred friends sign up, you will see their names listed below and your place in the queue bumped up by %@ spots for each friend!";
+"screen_waiting_list_rank_invitees_list_subtitle_text" = "You have been bumped up by %d spots.";
+"screen_waiting_list_rank_invitees_list_button_title_text" = "Signed up friends: %d";
+
+//MARK: Name screen
+"screeen_name_display_text_title" = "What's your name?";
+"screen_name_display_text_first_name" = "First name";
+"screen_name_display_text_last_name" = "Last name";
+"screen_name_special_character_error" = "Please enter alphabets only";
+
+//MARK: Light Dashboard screen
+"screen_light_dashboard_button_logout" = "Logout";
+"screen_light_dashboard_button_touch_id" = "Touch ID";
+"screen_light_dashboard_button_face_id" = "Face ID";
+"screen_light_dashboard_display_text_heading_text" = "Light Dashboard";
+"screen_lite_dashboard_button_complete_verification" = "Complete verification";
+"screen_lite_dashboard_button_set_pin" = "Set PIN";
+
+//MARK: System Permission screen
+"screen_light_dashboard_button_touch_id" = "Touch ID";
+"screen_light_dashboard_button_face_id" = "Face ID";
+"screen_system_permission_text_title_face_id" = "Use Face ID to log in to your account?";
+"screen_system_permission_text_title_touch_id" = "Use Touch ID to log in to your account?";
+"screen_system_permission_text_title_notification" = "Would you like to receive notifications from us?";
+"screen_system_permission_text_details_face_id" = "Face ID is the quickest way to access YAP. Make sure your Face ID is always on in your device settings";
+"screen_system_permission_text_details_touch_id" = "Use Touch ID to log into YAP quicker. Make sure your Touch ID is always on in your device settings";
+"screen_system_permission_text_details_notification" = "We use push notifications to give you updates about all transactions and to send important reminders about your account";
+"screen_system_permission_text_title_terms_and_conditions" =   "By clicking “Use %@” you agree to our";
+"screen_system_permission_button_touch_id"  =  "Use %@";
+"screen_system_permission_text_denied"    = "No, I'm fine";
+"screen_system_permission_text_terms_and_conditions"  =  "Terms & Conditions";
+"screen_notification_permission_button_title"  =  "Yes, keep me updated";
+
+//MARK: Verify Passcode
+"screen_verify_passcode_display_text_biometrics_reason" = "Use your fingerprint to sign in";
+"screen_verify_passcode_display_text_title" = "Enter your passcode to access this account";
+"screen_verify_passcode_button_sign_in" = "Sign in";
+"screen_verify_passcode_text_forgot_password" = "Forgot passcode?";
+"screen_verify_passcode_text_enter_passcode" = "Enter Passcode";
+"screen_verify_passcode_text_incorrect_attempts" = "Too many attempts. Please wait for";
+"screen_verify_passcode_text_account_locked" = "Sorry, that’s too many incorrect attempts. Click on Forgot passcode to set a new one.";
+
+//MARK: Enter email screen
+"screen_enter_email_b2c_display_text_title" = "What’s your preferred email address?";
+"screen_enter_email_b2b_display_text_title" = "Let's get started";
+"screen_enter_email_b2b_display_text_sub_heading" = "Enter your business email to begin";
+"screen_enter_email_display_text_email_address" = "Email address";
+
+//MARK: Email verification screen
+"screen_email_verification_display_text_title" = "Great!";
+"screen_email_verification_b2c_display_text_email_sent" = "you should now receive an email on";
+"screen_email_verification_b2c_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
+"screen_email_verification_b2b_display_text_email_sent" = "you should now receive an email on";
+"screen_email_verification_b2b_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
+
+//MARK: Company Name Screen
+"screen_company_name_display_text_title" = "What’s the legal name of your company?";
+"screen_company_name_display_text_company_name" = "Company name";
+
+
+//MARK: Generic OTP
+"screen_device_registration_otp_button_resend_otp" = "Resend OTP";
+"screen_device_registration_otp_button_send" = "Verify";
+"screen_device_registration_otp_display_text_message" = "Enter the OTP sent to your registered mobile number to complete login";
+
+// MARK: - Onboarding Congratulation screen
+"screen_onboarding_congratulations_display_text_title" = "Congrats, %@!";
+"screen_onboarding_congratulations_display_text_sub_title" = "A YAP Personal Account has been created for you in less than %@ seconds!";
+"screen_onboarding_congratulations_display_text_sub_title_no_interval" = "A YAP Personal Account has been created for you!";
+"screen_onboarding_congratulations_display_text_iban" = "Here's your IBAN";
+"screen_onboarding_congratulations_display_text_meeting_note" = "\nMake sure you have your Emirates ID at hand before we proceed";
+"screen_onboarding_congratulations_waiting_user_display_text_meeting_note" = "Due to all the excitement of our official launch, we are gradually activating as many accounts as possible to keep the app running smoothly. In the meantime, until your account is ready to be fully activated you’ll be placed in a queue.";
+"screen_onboarding_congratulations_button_complete_verification" = "Complete verification";
+"screen_onboarding_congratulations_waiting_user_button_complete_verification" = "Queue up!";
+
+// MARK: - Meeting Location
+"screen_meeting_location_display_text_title" = "Your card is ready to be delivered!";
+"screen_meeting_location_display_text_subtitle" = "Choose your location below. We will also call you to verify this address.";
+"screen_meeting_location_button_confirm_location" = "Tap map to confirm location";
+"screen_meeting_location_input_text_address_title" = "Address";
+"screen_meeting_location_input_text_address_hint" = "Enter your address";
+"screen_meeting_location_input_text_landmark_title" = "Flat number/ Building name/ Landmark";
+"screen_meeting_location_input_text_emirate_title" = "Emirate";
+"screen_meeting_location_display_text_select_cities" = "Select the emirate you live in";
+"screen_meeting_location_input_text_landmark_hint" = "Enter landmark";
+"screen_meeting_location_text_accept_terms" = "I accept the";
+"screen_meeting_location_text_terms_and_conditions" = "CRS and FATCA Terms and Conditions";
+"screen_meeting_location_button_confirm_selected_location" = "Confirm location";
+"screen_meeting_location_display_text_location_permission_error_title" = "YAP needs to access your location to continue. Please grant location access from Settings.";
+"screen_meeting_location_display_text_uae_location_error" = "Please select a location from within United Arab Emirates";
+
+// MARK: - B2C KYC Home screen
+"screen_b2c_kyc_home_display_text_screen_title" = "Complete verification";
+"screen_b2c_kyc_home_display_text_sub_heading" = "please scan your Emirates ID";
+"screen_b2c_kyc_home_button_skip" = "Skip and go to dashboard";
+"screen_b2c_kyc_home_button_skip_no_dashboard" = "Skip and go to dashboard";
+"screen_b2c_kyc_home_emirates_id_scan" = "Tap to scan your Emirates ID";
+
+// MARK: - Household KYC Home screen
+"screen_household_kyc_home_display_text_screen_title" = "We need to verify your ID to issue your card";
+
+// MARK: - Information Error Screen
+"screen_kyc_information_error_display_text_title_from_usa" = "Looks like you're from the\nUnited States";
+"screen_kyc_information_error_display_text_explanation_from_usa" = "We're sorry, we aren't able to create bank accounts for US citizens at this point. Stay tuned though, we'll announce it everywhere if this changes!";
+"screen_kyc_information_error_display_text_title_under_age" = "Looks like you're under %d!";
+"screen_kyc_information_error_display_text_explanation_under_age" = "And while that's great, this YAP account is only for adults. Don't worry though, you can speak to your parents about getting you started with YAP Young or wait till you're %d :)";
+"screen_kyc_information_error_display_text_title_expired_card" = "YAP works best with a valid Emirates ID";
+"screen_kyc_information_error_display_text_explanation_expired_card" = "Once you've renewed or received your Emirates ID, re-scan it via our dashboard to continue opening your account with YAP.";
+"screen_kyc_information_error_display_text_title_sanctioned" = "We're sorry :(";
+"screen_kyc_information_error_display_text_explanation_sanctioned" = "Unfortunately, we're unable to proceed with creating your account at this time. However, we appreciate your interest in getting a YAP account.";
+
+// MARK: - EID Information Review screen
+"screen_b2c_eid_info_review_display_text_title" = "Almost there!";
+"screen_b2c_eid_info_review_display_text_sub_title"  = "Thanks %@! Verify your details so we can send you your YAP card";
+"screen_b2c_household_eid_info_review_display_text_sub_title"  = "Thanks %@! Check that your details are correct so we can send you your card";
+"screen_b2c_eid_info_review_display_text_emirates_id_heading" = "Emirates ID";
+"screen_b2c_eid_info_review_display_text_emirates_id_sub_heading"  =  "Pending confirmation";
+"screen_b2c_eid_info_review_display_text_first_name_heading"  =  "First name";
+"screen_b2c_eid_info_review_display_text_middle_name_heading"  =  "Middle name (If applicable)";
+"screen_b2c_eid_info_review_display_text_last_name_heading"  =  "Last name";
+"screen_b2c_eid_info_review_display_text_nationality_heading"  =  "Nationality";
+"screen_b2c_eid_info_review_display_text_dob_heading"  =  "Date of birth";
+"screen_b2c_eid_info_review_display_text_gender_heading"  =  "Gender";
+"screen_b2c_eid_info_review_display_text_expiry_date_heading"  =  "Expiry date";
+"screen_b2c_eid_info_review_button_title_confirm"  =  "Confirm";
+"screen_b2c_eid_info_review_button_title_rescan_eid" =  "Re-scan Emirates ID";
+"screen_b2c_eid_info_review_display_text_subheading" = "Thanks %@! Verify your details are exactly as per your Emirates ID. You can edit the name fields incase we got it wrong!";
+
+
+// MARK: - EID Information Review screen
+"screen_meeting_confirmation_display_text_title"  =  "Your card is on it's way!";
+"screen_meeting_confirmation_display_text_guide"  =  "Make sure you have your original Emirates ID on you at the time of delivery as we’ll need to scan it";
+"screen_meeting_confirmation_display_text_emirates_id"  =  "Emirates ID";
+"screen_meeting_confirmation_button_go_to_dashboard"  =  "Go to dashboard";
+
+// MARK: - Passcode Success screen
+"screen_passcode_success_display_text_heading" = "You're all set";
+"screen_passcode_success_display_text_sub_heading" = "Your new passcode has been created successfully";
+"screen_passcode_success_button_sign_in" = "Sign in";
+
+// MARK: - Forgot Passcode OTP screen
+"screen_forgot_passcode_otp_display_text_heading" = "Verify your mobile number";
+"screen_forgot_passcode_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
+
+// MARK: - EID information review
+"screen_b2c_eid_info_review_display_text_error_under_age" = "Hey there, looks like you're under %d";
+"screen_b2c_eid_info_review_button_not_under_age" = "No, I'm over %d";
+"screen_b2c_eid_info_review_display_text_error_expired_eid" = "Looks like your Emirates ID is expired";
+"screen_b2c_eid_info_review_button_valid_emirates_id" = "No, I have a valid Emirates ID";
+"screen_b2c_eid_info_review_display_text_error_from_usa" = "Looks like you're from United States";
+"screen_b2c_eid_info_review_button_not_from_usa" = "No, I'm not from USA";
+"screen_b2c_eid_info_review_display_text_expired_eid_error" = "Looks like your ID has expired. Please re-scan a valid ID";
+
+//MARK: - Set Card Pin Screen
+"screen_set_card_pin_display_text_title" = "Create your 4-digit PIN";
+"screen_set_card_pin_button_create_pin" = "Next";
+"screen_set_card_pin_display_text_error_same_digits" = "PIN cannot be of same digits";
+"screen_set_card_pin_display_text_error_sequence" = "PIN cannot be a straight sequence";
+
+//MARK: - Set Card Pin Screen
+"screen_confirm_card_pin_display_text_title" = "Enter that one more time to confirm";
+"screen_confirm_card_pin_button_create_pin" = "Set PIN";
+"screen_confirm_card_pin_display_text_terms_and_conditions" = "By creating a PIN you agree to our\nTerms & Conditions";
+
+//MARK: - Set PIN Welcome Screen
+"screen_set_card_pin_welcome_display_text_title" = "Now create a unique PIN to start using this card";
+"screen_set_card_pin_welcome_display_text_sub_title" = "This 4-digit code is yours to keep. Please don’t share it with anyone";
+"screen_set_card_pin_welcome_button_create_pin" = "Create PIN";
+"screen_set_card_pin_welcome_button_create_pin_later" = "I’ll do it later";
+
+
+//MARK: - Set Card PIN Success
+"screen_set_card_pin_success_display_text_title" =    "You’re all set! \n Time to top up";
+"screen_set_card_pin_success_display_text_description" = "Begin using your YAP card by topping up your card with AED 50 or more";
+"screen_set_card_pin_success_button_create_pin" = "Top up now";
+"screen_set_card_pin_success_button_create_pin_later" = "Do it later";
+
+//MARK: - Menu screen
+
+"screen_menu_display_text_account" = "Account";
+"screen_menu_display_text_copy" = "Copy";
+"screen_menu_display_text_share" = "Share";
+"screen_menu_display_text_analytics" = "Analytics";
+"screen_menu_display_text_refer_friend" = "Refer a friend";
+"screen_menu_display_text_yap_young" = "Yap Young";
+"screen_menu_display_text_household_salary" = "Household salary";
+"screen_menu_display_text_multi_currency" = "Multi currency";
+"screen_menu_display_text_alert_and_notifications" = "Alerts and notifications";
+"screen_menu_display_text_statements" = "Statements";
+"screen_menu_display_text_contact_us" = "Contact us";
+"screen_menu_display_text_help_and_support" = "Help and support";
+"screen_menu_display_text_business" = "Business";
+"screen_menu_display_text_my_profile" = "My profile";
+"screen_menu_display_text_household" = "Household";
+"screen_menu_display_text_locate_atm_cd" = "ATM and cash deposit";
+"screen_menu_display_text_household_notification" = "Notifications";
+"screen_menu_display_text_live_chat" = "Live chat";
+"screen_menu_display_text_qr_code" = "My QR code";
+
+// MARK: - Help and support screen
+
+"screen_help_and_support_display_text_whatsapp_not_installed" = "WhatsApp is not installed in your phone";
+
+// MARK: - Home Screen
+"screen_home_display_text_nothing_to_report" = "Start using your account to see all your transactions here";
+"screen_home_display_text_nothing_to_report_search" = "No results found.";
+
+// MARK: - Cards Screen
+"creen_cards_display_text_your_cards" = "Your cards";
+"screen_cards_display_text_cards_count" = "You have %d cards";
+"screen_cards_display_text_cards_count_1" = "You have 1 card";
+"screen_cards_display_text_add_upgrade_card" = "Add or upgrade";
+"screen_cards_display_text_add_card" = "Add card";
+"screen_cards_button_update_card" = "Update card";
+"screen_cards_button_set_pin" = "Let's do it";
+"screen_cards_button_set_pin_to_activate" = "Create a PIN to start using your card";
+"screen_cards_button_unfreeze_card" = "Unfreeze card";
+"screen_cards_button_reorder_card" = "Reorder card";
+"screen_cards_display_text_freeze_card" = "This card is frozen";
+"screen_cards_display_text_expired_card" = "This card has expired";
+"screen_cards_display_text_inactive_subheading" = "We are now processing your account. Please wait for activation to be completed shortly.";
+"screen_cards_display_text_hotlisted" = "This card is blocked/stolen";
+"screen_cards_display_text_see_details" = "See details";
+"screen_cards_display_text_card_removed_success" = "Card successfully removed!";
+
+//MARK: - Payment Card Detail Card View
+"screen_payment_card_detail_text_secure" = "Secured by YAP";
+"screen_payment_card_detail_button_card_details" = "Card details";
+"screen_payment_card_detail_display_text_transaction" = "Transaction";
+"screen_payment_card_detail_display_text_transactions" = "Transactions";
+
+
+// MARK: - Remove funds Screen
+"screen_remove_funds_display_text_remove_funds" = "Remove funds";
+"screen_remove_funds_button_remove" = "Remove";
+"screen_remove_funds_display_text_enter_amount" = "Enter the amount to remove";
+"screen_remove_funds_display_text_available_balance" = "Your available balance is %@";
+"screen_remove_funds_display_text_available_balance_error" = "You can only move an amount less than or equal to your current balance of %@";
+"screen_remove_funds_display_text_fee" = "Fee: %@";
+"screen_remove_funds_display_text_max_limit_error" = "You cannot move an amount more than %@";
+
+// MARK: - Add funds Screen
+"screen_add_funds_display_text_add_funds" = "Add funds";
+"screen_add_funds_button_add" = "Add";
+"screen_add_funds_display_text_enter_amount" = "Enter the amount to Add";
+"screen_add_funds_display_text_available_balance" = "Your available balance is %@";
+"screen_add_funds_display_text_available_balance_error" = "You can only top up with an amount equal to or less than the current balance of %@ available on your main debit card";
+"screen_add_funds_display_text_max_limit_error" = "You cannot add an amount more than %@";
+"screen_add_funds_display_text_fee" = "Fee: %@";
+"screen_add_funds_display_text_error_card_balance_limit" = "Your virtual card can only hold up to %@. Please enter an amount up to %@ to proceed.";
+"screen_add_funds_display_text_error_card_balance_limit_reached" = "Your virtual card can only hold up to %@.";
+
+// MARK: Add funds otp screen
+
+"screen_add_funds_otp_display_text_heading" = "Verify your mobile number";
+"screen_add_funds_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
+
+// MARK: - Success funds transaction Screen
+"screen_success_funds_transaction_display_text_success_heading" = "You have topped up with %@ \nfrom your main debit card";
+"screen_success_funds_transaction_display_text_success_sub_heading" = "Now, your primary card balance is \n%@";
+"screen_success_funds_transaction_display_text_success_updated_prepaid_card_balance" = "Your new spare card balance is";
+"screen_success_funds_transaction_display_text_button" = "Back to card";
+"screen_success_remove_funds_transaction_display_text_success_heading" = "You have moved %@ \nto your main debit card";
+"screen_success_remove_funds_transaction_display_text_success_sub_heading" = "Now, your primary card balance is \n%@";
+
+// MARK: - CustomView AmounView
+"custom_view_display_text_amount_view" = "AED";
+"custom_view_display_text_amount_view_initial_value" = "0.00";
+
+// MARK: - Add cards screen
+"screen_add_card_display_text_one_time_fee" = "One time fee of %@";
+"screen_add_card_display_text_title_spare_card" = "Add a virtual spare card";
+"screen_add_card_display_text_spare_card" = "Spare virtual card";
+"screen_add_card_display_text_debit_card" = "Debit card";
+"screen_add_card_display_text_feature_spare_card_add_instantly" = "Add a virtual card instantly";
+"screen_add_card_display_text_feature_spare_card_online_payments" = "Make online payments securely";
+"screen_add_card_display_text_feature_spare_card_funds" = "Add or remove funds as you need";
+"screen_add_card_display_text_feature_spare_card_add_instantly" = "Add a virtual card instantly";
+"screen_add_card_display_text_feature_spare_card_every_need_title" = "A card for every need";
+"screen_add_card_display_text_feature_spare_card_virtual_or_physical_title" = "Choose a virtual or physical card";
+"screen_add_card_display_text_feature_exclusive_partner_offers" = "Exclusive partner offers";
+"screen_add_card_display_text_feature_free_atm_withdrawals" = "Worldwide Free ATM withdrawals";
+"screen_add_card_display_text_feature_realtime_exchange_rate" = "Real-time exchange rates";
+"screen_add_card_display_text_feature_priority_customer_support" = "Priority customer support";
+"screen_add_card_display_text_feature_travel_insurance" = "Travel insurance";
+"screen_add_card_display_text_feature_premier_airport_lounge_access" = "Premier airport lounge access";
+"screen_add_card_display_text_feature_free_package_subscription" = "Free package subscription";
+"screen_add_card_display_text_feature_spare_card_nick_name_title" = "Choose a unique colour and give it a nickname";
+"screen_add_card_display_text_feature_spare_card_freeze_or_unfreeze_title" = "Freeze or unfreeze anytime";
+"screen_add_card_display_text_feature_spare_card_every_need_details" = "Use your spare card as backup or as a card for when you’re away for a few days and don’t want to travel with your primary card. Note that your spare card can only be used by you.";
+"screen_add_card_display_text_feature_spare_card_virtual_or_physical_details" = "Use your spare card as backup or as a card for when you’re away for a few days and don’t want to travel with your primary card. Note that your spare card can only be used by you.";
+"screen_add_card_display_text_feature_spare_card_nick_name_details" = "Use your spare card as backup or as a card for when you’re away for a few days and don’t want to travel with your primary card. Note that your spare card can only be used by you.";
+"screen_add_card_display_text_feature_spare_card_freeze_or_unfreeze_details" = "Use your spare card as backup or as a card for when you’re away for a few days and don’t want to travel with your primary card. Note that your spare card can only be used by you.";
+"screen_add_card_display_text_select_card_type" = "Select a type of card";
+
+// MARK: - Card feature screen
+"screen_card_feature_display_text_title_spare_card" = "Spare card benefits";
+
+// MARK: - Add spare card screen
+"screen_add_spare_card_display_text_title" = "Add a spare card";
+"screen_reorder_spare_card_display_text_title" = "Reorder this card";
+"screen_add_spare_card_display_text_card_fee" = "Card fee";
+"screen_add_spare_card_button_confirm_purchase" = "Confirm purchase";
+"screen_add_spare_card_display_text_available_balance" = "Your available balance is";
+"screen_add_spare_card_button_confirm_purchase" = "Confirm purchase";
+"screen_add_spare_card_button_confirm_location" = "Confirm location";
+"screen_add_spare_card_button_change_location" = "Change location";
+"screen_add_spare_card_display_text_address_confirmation" = "Is this your address?";
+"screen_add_spare_card_display_text_insufficient_balance" = "Looks like you don't have enough funds in your account. Top up now to continue with this purchase";
+"screen_add_spare_card_display_text_top_up" = "Top up";
+"screen_add_spare_card_display_text_skip_now" = "Skip for now";
+
+// MARK: - Add spare card completion screen
+"screen_add_spare_card_completion_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";
+"screen_add_debit_card_completion_display_text_complete_transaction" = "Your card has been reordered successfully";
+"screen_add_spare_card_completion_display_text_delivery_info" = "Our delivery agent will be in touch to confirm the delivery date and time. Please keep your Emirates ID at hand.";
+
+// MARK: - Report card screen
+"screen_report_card_display_text_title" = "Report lost or stolen card";
+"screen_report_card_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";
+"screen_report_card_display_text_block_note" = "Click 'block and report' to confirm that your card has been lost, damaged or stolen. We will immediately block your card and report it to our security team.";
+"screen_report_card_display_text_block_footnote" = "If you suspect any malicious activity or need to provide us with any other essential information regarding your card's disappearance, please give our customer care center a call at %@";
+"screen_report_card_button_block_report" = "Block and report";
+"screen_report_card_display_text_block_card_title" = "Tell us what happened to your card";
+"screen_report_card_button_damage_card" = "Damaged card";
+"screen_report_card_button_lost_stolen_card" = "Lost/Stolen card";
+"screen_report_card_display_text_block_alert_title" = "Block card permanently";
+"screen_report_card_display_text_block_alert_message" = "We will now block your card permanently, following which you will be able to order a new card. Please confirm if you want to move forward with this action.";
+
+// MARK: - Add card update location
+
+"screen_add_spare_card_update_location_display_text_heading" = "Add new delivery address";
+"screen_add_spare_card_update_location_display_text_sub_heading" = "Where can we deliver your debit card?";
+
+// MARK: - Card blocked screen
+"screen_card_blocked_display_text_heading" = "Your card has been blocked";
+"screen_card_blocked_display_text_subheading" = "Do you want to order a new card?";
+"screen_card_blocked_display_text_note" = "%@ will be deducted from your account for the delivery of your new card.";
+"screen_card_blocked_button_reorder_new_card" = "Reorder new card";
+"screen_card_blocked_button_order_later" = "Order later";
+
+// MARK: - Current PIN screen
+"screen_current_card_pin_display_text_heading" = "Enter your current \nPIN";
+"screen_current_card_pin_display_button_next" = "Next";
+
+// MARK: - Create New PIN screen
+"screen_create_card_pin_display_text_heading" = "Enter a new PIN";
+"screen_create_card_pin_display_button_create_pin" = "Create PIN";
+
+// MARK: - confirm PIN screen
+"screen_confirm_card_pin_display_text_heading" = "Enter it one more time";
+"screen_confirm_card_pin_display_button_confirm_pin" = "Confirm PIN";
+
+
+//MARK: - Chaneg PIN success screen
+"screen_change_pin_success_display_text_heading" = "Great, you’ve successfully updated your PIN!";
+"screen_change_pin_success_display_text_sub_heading" = "Remember this PIN as you’ll need it for all your transactions, and make sure you don’t share it with anyone";
+
+//MARK: - Chaneg PIN success screen
+"screen_change_pin_display_text_heading" = "Change PIN";
+"screen_change_pin_action_button_title" = "Create new PIN";
+"screen_change_pin_enter_current_pin_text" = "Enter your current PIN code";
+"screen_change_pin_enter_new_pin_text" = "Enter your new PIN code";
+"screen_change_pin_repeat_new_pin_text" = "Enter it one more time​";
+
+//Mark: - Card Delivery Status Screen
+"screen_card_delivery_status_button_set_pin" = "Set PIN";
+"screen_card_delivery_status_display_text_info" = "Your %@ is on its way";
+"screen_card_delivery_status_shipped_display_text_info" = "Your %@ is shipped";
+
+//Mark: - Card Limits Screen
+"screen_card_limits_display_text_title" = "Set limits";
+"screen_card_limits_display_text_atm_title" = "ATM withdrawal";
+"screen_card_limits_display_text_atm_desc" = "Allow your card to withdraw from cash machines";
+"screen_card_limits_display_text_online_transaction_title" = "Online transactions";
+"screen_card_limits_display_text_online_transaction_desc" = "Allow your card to be used for purchases made over the internet";
+"screen_card_limits_display_text_payment_abroad_title" = "Payments abroad";
+"screen_card_limits_display_text_payment_abroad_desc" = "Allow your card to be used for payments outside your current country";
+"screen_card_limits_display_text_retail_payment_title" = "Retail payments";
+"screen_card_limits_display_text_retail_payment_desc" = "Allow your card to be used at retail outlets. This includes restaurants, petrol stations and hospitality venues";
+
+
+//Mark: - Card statement Screen
+"screen_card_statements_display_text_title" = "Card statements";
+"screen_card_statements_display_text_view" = "View";
+
+//Mark: - Card Detail Screen
+"screen_card_detail_display_text_card_balance" = "Card balance";
+"screen_card_detail_button_unfreeze_now" = "Unfreeze now";
+"screen_card_detail_display_text_frozen" = "This card is frozen";
+"screen_card_detail_display_text_remove_card_alert_title" = "Remove card from YAP account";
+"screen_card_detail_display_text_remove_card_alert_desc" = "Your balance from this card will be transferred back to your main account";
+"screen_card_detail_button_remove_card_alert_remove" = "Remove";
+"screen_card_detail_button_add_funds" = "Add funds";
+"screen_card_detail_button_freeze" = "Freeze card";
+"screen_card_detail_button_unfreeze" = "Unfreeze card";
+"screen_card_detail_button_remove_funds" = "Remove funds";
+"screen_card_detail_button_set_limits" = "Set limits";
+"screen_card_detail_button_change_card_name" = "Change card's name";
+"screen_card_detail_button_change_pin" = "Change PIN";
+"screen_card_detail_button_view_statement" = "View statement";
+"screen_card_detail_button_report" = "Report lost or stolen card";
+"screen_card_detail_button_remove" = "Remove card";
+
+//Mark: - Change Card Name Screen
+"screen_change_card_name_display_text_title" = "Add card name";
+"screen_change_card_name_display_text_add_name" = "What would you like to call this card?";
+
+// MARK: - Profile Screen
+"screen_user_profile_display_text_profile" = "Profile";
+"screen_user_profile_display_text_update_profile_photo" = "Update profile photo";
+"screen_user_profile_display_text_open_camera" = "Open camera";
+"screen_user_profile_display_text_choose_photo" = "Choose photo";
+"screen_user_profile_display_text_remove_photo" = "Remove photo";
+"screen_user_profile_display_text_personal_details" = "Personal details";
+"screen_user_profile_display_text_security" = "Security";
+"screen_user_profile_display_text_privacy" = "Privacy";
+"screen_user_profile_display_text_passcode" = "Passcode";
+"screen_user_profile_display_text_app_notifications" = "App notifications";
+"screen_user_profile_display_text_face_id" = "Sign in with Face ID";
+"screen_user_profile_display_text_touch_id" = "Sign in with Touch ID";
+"screen_user_profile_display_text_about_us" = "About us";
+"screen_user_profile_display_text_terms_conditions" = "Terms and conditions";
+"screen_user_profile_display_text_pricing_plans" = "Fees & pricing plans";
+"screen_user_profile_display_text_instagram" = "Instagram";
+"screen_user_profile_display_text_twitter" = "Twitter";
+"screen_user_profile_button_follow_us" = "Follow us";
+"screen_user_profile_display_text_facebook" = "Facebook";
+"screen_user_profile_button_facebook" = "Like us";
+"screen_user_profile_button_logout" = "Log out";
+
+// MARK: - Permission Error
+"screen_user_profile_display_text_audio_video_permission_error" = "No access to Camera or Microphone. You can grant access to YAP from the Settings.";
+"screen_user_profile_display_text_video_permission_error" = "No access to Camera. You can grant access to YAP from the Settings.";
+"screen_user_profile_display_text_photo_permission_error" = "No access to Photos. You can grant access to YAP from the Settings.";
+"screen_user_profile_display_text_audio_permission_error" = "No access to Microphone. You can grant access to YAP from the Settings.";
+
+//Mark: - Change Phone Number Screen
+"screen_change_phone_number_display_text_heading" = "Change mobile number";
+"screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
+
+//Mark: - Change Email Screen
+"screen_change_email_display_text_heading" = "Change email";
+"screen_change_email_placeholder_email_address" = "Email address";
+"screen_change_email_placeholder_confirm_email_address" = "Confirm email address";
+"screen_change_email_display_text_description" = "A verification email will now be sent to this address";
+"screen_change_email_display_text_email_title" = "Enter your new email address";
+"screen_change_email_display_text_confirm_email_title" = "Enter it one more time";
+"screen_change_email_display_text_confirm_email_diff_error" = "This email doesn’t match what you first entered.";
+
+//Mark: - Email Verification Screen
+"screen_email_verification_display_text_heading" = "Verify your email address";
+"screen_email_verification_display_text_sub_heading" = "We've sent a verification code to \n%@";
+
+//Mark: - Change Email Address Success Screen
+"screen_email_address_success_display_text_heading" = "Awesome!";
+"screen_email_address_success_display_text_sub_heading" = "Your email address has been updated to \n%@";
+
+//Mark: - Change Phone Number Success Screen
+"screen_phone_number_success_display_text_heading" = "Success!";
+"screen_phone_number_success_display_text_sub_heading" = "Your mobile number has been updated to \n%@";
+
+//Mark: - Phone Number Verification Screen
+"screen_phone_number_verification_display_text_heading" = "Verify your mobile number";
+"screen_phone_number_verification_display_text_sub_heading" = "We've sent a code to \n%@";
+
+// MARK: - Current Passcode screen
+"screen_current_passcode_display_text_heading" = "Enter your current passcode";
+"screen_current_passcode_display_button_next" = "Next";
+
+// MARK: - Set Passcode screen
+"screen_set_passcode_display_text_heading" = "Enter your new passcode";
+"screen_set_passcode_display_button_next" = "Next";
+
+// MARK: - Confirm Passcode screen
+"screen_confirm_passcode_display_text_heading" = "Re-enter your new passcode";
+"screen_confirm_passcode_display_button_next" = "Next";
+
+// MARK: - Change Passcode Success Screen
+"screen_change_passcode_success_display_text_heading" = "You’re all set";
+"screen_change_passcode_success_display_text_sub_heading" = "Your passcode has been updated successfully";
+"screen_confirm_passcode_display_button_next" = "Next";
+
+// MARK: - Change Address Success Screen
+"screen_change_address_success_display_text_heading" = "Success!";
+"screen_change_address_success_display_text_sub_heading" = "This will be stored as your primary address";
+
+// MARK: More Home Screen
+
+"screen_more_home_display_text_your_bank_details" = "Account details";
+"screen_more_home_display_text_bank_your_way" = "Bank your way and become a YAP pro";
+"screen_more_home_display_text_yap_for_you" = "YAP for you";
+"screen_more_home_display_text_tile_notification" = "Notifications";
+"screen_more_home_display_text_tile_locate_atm" = "Locate ATM and CDM";
+"screen_more_home_display_text_tile_invite_friend" = "Invite a friend";
+"screen_more_home_display_text_tile_help" = "Help and support";
+"screen_more_home_display_text_tile_subscriptions" = "Subscriptions";
+"screen_more_home_display_text_tile_business" = "YAP Business";
+"screen_more_home_display_text_tile_terms" = "Terms & conditions";
+"screen_more_home_display_text_open_maps" = "Open in Maps";
+"screen_more_home_display_text_open_google_maps" = "Open in Google Maps";
+"screen_more_home_display_text_get_direction" = "Get direction";
+"screen_more_home_display_text_yap_for_you_title" = "YAP for you";
+"screen_more_home_display_text_yap_for_you_description" = "Bank your way and become a YAP pro";
+
+
+// MARK: More Bank Details Screen
+
+"screen_more_bank_details_display_text_name" = "Name";
+"screen_more_bank_details_display_text_swift" = "SWIFT/BIC";
+"screen_more_bank_details_display_text_iban" = "IBAN";
+"screen_more_bank_details_display_text_account" = "Account";
+"screen_more_bank_details_display_text_bank" = "Bank";
+"screen_more_bank_details_display_text_address" = "Address";
+"screen_more_bank_details_button_share" = "Share";
+"screen_more_bank_details_display_text_title" = "YAP account details";
+"screen_more_bank_details_display_text_for_top_up_title" = "My YAP account details";
+
+// MARK: Notifications Screen
+
+"screen_notifications_display_text_title" = "Notifications";
+"screen_notifications_display_text_delete" = "Delete";
+
+// MARK: Notification Details Screen
+
+"screen_notification_details_button_delete" = "Delete notification";
+
+// MARK: Notification Settings Screen
+
+"screen_notification_settings_display_text_title" = "Notificitons settings";
+"screen_notification_settings_display_text_header_in_app" = "In-app notifications";
+"screen_notification_settings_display_text_header_sms" = "SMS notifications";
+"screen_notification_settings_display_text_header_email" = "Email notifications";
+"screen_notification_settings_display_text_setting_all" = "All";
+"screen_notification_settings_display_text_setting_success_transaction" = "Successful card transactions";
+"screen_notification_settings_display_text_setting_failed_transaction" = "Failed card transactions";
+"screen_notification_settings_display_text_setting_incoming_transfer" = "Incoming transfers";
+"screen_notification_settings_display_text_setting_outgoing_transfer" = "Outgoing transfers";
+"screen_notification_settings_display_text_setting_atm_withdrawl" = "ATM withdrawals";
+
+// MARK: Invite Friends Screen
+
+"screen_invite_friend_display_text_title" = "Refer a friend";
+"screen_invite_friend_display_text_reward" = "Tell your friends about us!";
+"screen_invite_friend_display_text_referal_reward" = "Sharing is sweet, and it’s even better when you do it with friends. Send this special link to your special people so they change the way they bank too!";
+"screen_invite_friend_display_text_referal_code" = "Share your referral link";
+"screen_invite_friend_display_text_terms_and_conditions" = "See terms and conditions";
+"screen_invite_friend_display_text_redeemed_by_1_friend" = "Redeemed by 1 friend";
+"screen_invite_friend_display_text_redeemed_by_friends" = "Redeemed by %d friends";
+"screen_invite_friend_display_text_your_referal_code" = "YAP referal code:";
+"screen_invite_friend_button_share" = "Share";
+"screen_invite_friend_display_text_share_url" = "I've started using YAP The Money App to manage my spending and I think you'll find it really useful.\n\n%@";
+"screen_invite_friend_cards_&_plan_display_text_share_url" = "Hey! I’ve started using the UAE’s newest banking app – YAP. Transform how you manage your money and join me in the banking revolution.\n\n%@";
+
+// MARK: Email Verified Popup Screen
+
+"screen_email_verified_popup_display_text_title" = "Hi %@, it looks like you haven’t verified this email yet:";
+"screen_email_verified_popup_display_text_sub_title" = "Having trouble finding your email? Don’t worry, you can request for a new one!\nVerifying your email helps us stay in touch and send you important updates.";
+"screen_email_verified_popup_display_text_click_here" = "Click here if you’d like to change your email address ";
+"screen_email_verified_popup_button_title_click_here" = "Click here";
+"screen_email_verified_popup_button_button_title_take_me_to_email" = "Open Mail App";
+"screen_email_verified_popup_button_button_title_do_it_later" = "Send me a new email";
+
+// MARK: Unverified success Screen
+"screen_unverified_success_display_text_heading" = "Success!";
+"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed to\n%@";
+"screen_unverified_success_display_text_description" = "Please log in to your email address to validate your email and continue with\naccess to YAP!";
+"screen_unverified_display_button_mail" = "Open mail app";
+"screen_unverified_display_button_back_to_dashboard" = "Back to dashboard";
+
+// MARK: - Personal Details Screen
+"screen_personal_details_display_text_title" = "Personal details";
+"screen_personal_details_display_text_full_name" = "Full name";
+"screen_personal_details_display_text_phone_number" = "Mobile number";
+"screen_personal_details_display_text_email" = "Email";
+"screen_personal_details_display_text_address" = "Address";
+"screen_personal_details_display_text_emirates_id" = "Emirates ID";
+"screen_personal_details_display_text_expired_emirates_id_details" = "Your EID is expired.\nPlease ensure you update your card to continue accessing YAP";
+"screen_personal_details_display_text_required_emirates_id_details" = "Your EID is required.\nTap to update to ensure account continuity";
+"screen_personal_details_display_text_emirates_id_details_update" = "Your card is verified and up to date";
+"screen_personal_details_display_text_emirates_id_details" = "Your card is verified and up to date";
+
+// MARK: - Mail Action Sheet Screen
+"screen_mail_action_sheet_display_text_title" = "Choose email app";
+"screen_mail_action_sheet_display_text_gmail" = "Microsoft Outlook";
+"screen_mail_action_sheet_display_text_ms_outlook" = "Gmail";
+"screen_mail_action_sheet_display_text_apple_mail" = "Mail";
+
+// MARK: - YAP it Screen
+"screen_yap_it_button_send_money" = "Send money";
+"screen_yap_it_button_add_money" = "Add money";
+"screen_yap_it_button_pay_bills" = "Pay bills";
+"screen_yap_it_button_request_money" = "Request Money";
+
+// MARK: - Y2Y Screen
+"screen_y2y_display_text_prompt" = "Who do you want to send money to?";
+"screen_y2y_display_text_recent_transfers" = "Recent transfers";
+"screen_y2y_display_text_search" = "Look up friends";
+"screen_y2y_display_button_yap_contacts" = "YAP contacts";
+"screen_y2y_display_button_all_contacts" = "All contacts";
+"screen_y2y_display_text_no_yap_contacts" = "​​Looks like none of your friends use YAP yet. Invite them now to make sending money easier than ever";
+"screen_y2y_display_button_invite_now" = "Invite now";
+"screen_y2y_display_button_invite" = "Invite";
+"screen_y2y_display_text_yap_contacts" = "%d YAP contacts";
+"screen_y2y_display_text_yap_contact" = "%d YAP contact";
+"screen_y2y_display_text_invite_phone_contacts" = "Invite contacts from your address book";
+"screen_y2y_display_text_invite_no_phone_contacts" = "Tell your friends about YAP so you can send and receive money instantly!";
+
+// MARK: - Y2Y Funds transfer screen
+"screen_y2y_funds_transfer_display_text_title_yap_contact" = "Send to a YAP contact";
+"screen_y2y_funds_transfer_display_text_title_qr_contact" = "Enter amount to send";
+"screen_y2y_funds_transfer_display_text_note_placeholder" = "Add a remark (optional)";
+"screen_y2y_funds_transfer_display_text_error_exceeding_amount" = "You can only transfer an amount less than or equal to your current balance of %@";
+"screen_y2y_funds_transfer_display_text_balance" = "Your available balance is %@";
+"screen_y2y_funds_transfer_display_text_fee" = "Fee: %@";
+"screen_y2y_funds_transfer_display_text_daily_limit_error" = "That's over your daily limit. Please enter an amount lower than %@";
+
+// MARK: - Y2Y transfer success
+"screen_y2y_funds_transfer_success_display_text_title" = "Transfer successful";
+"screen_y2y_funds_transfer_success_display_text_transfer" = "You have sent";
+"screen_y2y_funds_transfer_success_button_back" = "Go to dashboard";
+
+// MARK: Transaction filter screen
+"screen_transaction_filter_display_text_title" = "Filters";
+"screen_transaction_filter_button_apply_filter" = "Apply filters";
+"screen_transaction_filter_button_clear_filter" = "Clear filters";
+"screen_transaction_filter_display_text_incoming_transactions" = "Incoming transactions";
+"screen_transaction_filter_display_text_outgoing_transactions" = "Outgoing transactions";
+"screen_transaction_filter_display_text_young_transactions" = "YAP Young transfers";
+"screen_transaction_filter_display_text_household_transactions" = "Household transfers";
+"screen_transaction_filter_display_text_pending_transactions" = "Pending transactions";
+"screen_transaction_filter_display_text_balance" = "AED Balance";
+
+// MARK: Transaction details screen
+"screen_transaction_details_display_text_spent" = "Spent";
+"screen_transaction_details_display_text_received" = "Received";
+"screen_transaction_details_display_text_fee" = "Fee";
+"screen_transaction_details_display_text_total_amount" = "Total amount";
+"screen_transaction_details_display_text_refrence_number" = "Reference number";
+"screen_transaction_details_display_text_note" = "Note";
+"screen_transaction_details_display_text_add_note" = "Add a note";
+"screen_transaction_details_display_text_edit_note" = "Note added ";
+"screen_transaction_details_display_text_add_receipt_description" = "Keep track of your spendings";
+"screen_transaction_details_display_text_add_receipt" = "Add a receipt";
+"screen_transaction_details_display_text_note_description" = "Stay organized by adding transaction notes";
+"screen_transaction_details_display_text_sendare_name" = "Sender";
+"screen_transaction_details_display_text_receiver_name" = "Receiver";
+"screen_transaction_details_display_text_vat" = "VAT";
+"screen_transaction_details_display_text_change_category" = "Tap to change category";
+"screen_transaction_details_display_text_wait_for_category_to_update" = "Check back later to see the category updated";
+"screen_transaction_details_display_text_improve_attribute" = "Improve logo or location?";
+
+// MARK: Add a note screen
+"screen_add_note_display_text_type_something" = "Type something...";
+"screen_add_note_display_text_save" = "Save";
+
+// MARK: Forgot PIN screen
+"screen_forgot_pin_display_text_heading" = "Verify your PIN change";
+"screen_forgot_pin_display_text_sub_heading" = "We've sent a verification code to \n%@";
+
+// MARK: - Topup success screen
+"screen_topup_success_display_text_title" = "Top up successful";
+"screen_topup_success_display_text_success_transaction_message" = "You have now added %@ to your account";
+"screen_topup_success_display_text_account_balance_title" = "Your new YAP balance is";
+"screen_topup_success_display_text_dashboard_action_button_title" = "Go to dashboard";
+
+// MARK: - Topup transfer screen
+"screen_topup_transfer_display_text_screen_title" = "Add money using a card";
+"screen_topup_transfer_display_text_amount_title" = "How much would you like to add?";
+"screen_topup_transfer_display_text_available_balance" = "Your available balance is %@";
+"screen_topup_transfer_display_text_transaction_fee" = "Fee: %@";
+
+// MARK: Screen topup
+"screen_topup_type_selection_display_text_title" = "Top up";
+"screen_topup_type_selection_display_text_heading" = "How do you want to top up?";
+"screen_topup_type_selection_button_bank_transfer" = "Bank transfer";
+"screen_topup_type_selection_button_card" = "Card";
+
+// MARK: Screen card selection
+"screen_topup_card_selection_display_text_title" = "Add money using a card";
+"screen_topup_card_selection_display_text_heading_no_cards" = "Start by adding a card";
+"screen_topup_card_selection_display_text_heading_1_card" = "You have 1 card";
+"screen_topup_card_selection_display_text_heading_cards" = "You have %d cards";
+"screen_topup_card_selection_display_text_sub_heading_no_cards" = "No cards are connected to this account yet";
+"screen_topup_card_selection_display_text_sub_heading_cards" = "Choose which card you want to top up with";
+"screen_topup_card_selection_display_text_add_card" = "Add card";
+"screen_topup_card_selection_display_text_add_new_card" = "Add a new card";
+
+// MARK: - Top Up Card Details Screen
+"screen_topup_card_details_display_text_title" = "Card details";
+"screen_topup_card_details_display_text_placeholder_card_nickname" = "Card nickname";
+"screen_topup_card_details_display_text_placeholder_card_number" = "Card";
+"screen_topup_card_details_display_text_placeholder_card_type" = "Type";
+"screen_topup_card_details_display_text_placeholder_expiry" = "Expiry date";
+"screen_topup_card_details_button_remove_card" = "Remove card";
+"screen_topup_card_details_display_text_remove_card_confirmation" = "This card will be removed from your top-up methods";
+"screen_topup_card_details_display_text_remove_card_confirmation_remove" = "Remove";
+"screen_topup_card_details_button_remove_card_message" = "Card removed successfully.";
+
+// MARK: Screen add top up card
+"screen_add_topup_card_display_text_title" = "Enter your card details";
+"screen_add_topup_card_display_text_succes_title" = "Your card has been added successfully";
+"screen_add_topup_card_display_text_succes_details" = "Top up now with this card?";
+"screen_add_topup_card_succes_button_top_up_now" = "Yes, top up now";
+"screen_add_topup_card_succes_button_later" = "No, do it later";
+
+// MARK: Screend topup card cvv
+"screen_topup_card_cvv_display_text_title" = "Top up confirmation";
+"screen_topup_card_cvv_display_text_cvv" = "Enter the CVV to top up your acccount with";
+
+// MARK: Screen card analytics
+"screen_card_analytics_display_text_category" = "Category";
+"screen_card_analytics_display_text_merchant" = "Merchant";
+"screen_card_analytics_display_text_monthly_average" = "Monthly average is %@";
+"screen_card_analytics_display_text_title" = "Analytics";
+"screen_card_analytics_display_text_transaction" = "transaction";
+"screen_card_analytics_display_text_transactions" = "transactions";
+
+// MARK: Screen add beneficiary OTP
+
+"screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
+"screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
+
+
+// MARK: - Send Money OTP Screen
+"screen_send_money_otp_display_text_title" = "Confirm transfer";
+"screen_send_money_otp_display_text_subheading" = "Enter the code sent to your mobile number to transfer ";
+"screen_send_money_otp_display_text_subheading_preposition" = " to ";
+
+// MARK: Screen cash pickup funds transfer success
+"screen_cash_pickup_funds_transfer_display_text_amount_heading" = "You have sent";
+"screen_cash_pickup_funds_transfer_display_text_title" = "Cash transfer successful!";
+"screen_cash_pickup_funds_transfer_back_to_dashboard" = "Back to dashboard";
+"screen_cash_funds_transfer_display_text_title" = "Cash transfer successful";
+
+// MARK: Screen international funds transfer success
+"screen_international_funds_transfer_display_text_amount_heading" = "You have sent";
+"screen_international_funds_transfer_display_text_title_success" = "Bank transfer successful!";
+"screen_international_funds_transfer_back_to_dashboard" = "Back to dashboard";
+"screen_international_funds_transfer_display_text_cutoff_time_swift" = "Your transfer will be processed on the next business day. Please note there maybe an impact on the FX rate at the time of transfer.";
+"screen_international_funds_transfer_display_text_cutoff_time_uaefts" = "Your transfer will be processed on the next business day.";
+
+// MARK: Screen domestic funds transfer success
+"screen_domestic_funds_transfer_display_text_heading" = "Transfer money to";
+"screen_domestic_funds_transfer_display_text_amount_heading" = "You have sent";
+"screen_domestic_funds_transfer_display_text_title" = "Bank transfer successful!";
+"screen_domestic_funds_transfer_display_text_cutoff_time" = "Transfers made before %@ UAE time will be processed on the same day. All transfers made after this time will be carried out on the next business day";
+
+// MARK: Screen funds transfer information custom view
+"custom_view_funds_transfer_display_text_reference_number_heading" = "Reference number";
+"custom_view_funds_transfer_display_text_location_heading" = "Pickup agent location";
+"custom_view_funds_transfer_button_title" = "Share this code";
+
+// MARK: Screen send money
+
+"screen_send_money_display_text_title" = "Send money";
+"screen_send_money_display_text_recent_transfer" = "Recent transfers";
+"screen_send_money_input_text_search_hint" = "Search";
+"screen_send_money_display_text_all_beneficiaries" = "All beneficiaries";
+"screen_send_money_display_text_edit" = "Edit";
+"screen_send_money_display_text_delete" = "Delete";
+"screen_send_money_no_contacts_display_text_title" = "YAP to YAP";
+"screen_send_money_no_contacts_display_text_sub_heading" = "Who do you want to send money to?";
+"screen_send_money_no_contacts_display_text_detail" = "You can send money to people around the world through your YAP account. Click below to start adding a beneficiary. You can also do this using the + button anytime.";
+"screen_send_money_no_contacts_button_title_add_now" = "Add now";
+
+// MARK: Add send money beneficiary
+
+"screen_add_beneficiary_display_text_country_title" = "Which country do you want to\n send money to?";
+"screen_add_beneficiary_display_text_select_country" = "Select country";
+"screen_add_beneficiary_display_text_select_country_residence" = "Select country of residence";
+"screen_add_beneficiary_display_text_select_country_residence_review" = "Country of residence";
+"screen_add_beneficiary_display_text_transfer_type" = "What type of transfer will this be?";
+"screen_add_beneficiary_display_text_transfer_type_bank" = "Bank transfer";
+"screen_add_beneficiary_display_text_transfer_type_bank_description" = "Send money to an account";
+"screen_add_beneficiary_display_text_transfer_type_cash_pickup" = "Cash pickup";
+"screen_add_beneficiary_display_text_transfer_type_cash_pickup_description" = "Send money to an agent location";
+"screen_add_beneficiary_detail_display_text_title" = "Tell us about the beneficiary";
+"screen_add_beneficiary_detail_display_text_currency" = "Currency";
+"screen_add_beneficiary_detail_display_text_change_currency" = "Change currency";
+"screen_add_beneficiary_detail_input_text_nick_name_hint" = "Add nickname";
+"screen_add_beneficiary_detail_input_text_first_name_hint" = "Add first name";
+"screen_add_beneficiary_detail_input_text_last_name_hint" = "Add last name";
+"screen_add_beneficiary_detail_display_text_country" = "Country";
+"screen_add_beneficiary_detail_display_text_transfer_type" = "Transfer type";
+"screen_add_beneficiary_detail_display_text_transfer_nick_name" = "Nickname";
+"screen_add_beneficiary_detail_display_text_transfer_first_name" = "First name";
+"screen_add_beneficiary_detail_display_text_transfer_last_name" = "Last name";
+"screen_add_beneficiary_detail_display_text_iban" = "Account number";
+"screen_sdd_beneficiary_display_confirm_iban" = "Confirm IBAN";
+"screen_add_beneficiary_detail_display_text_transfer_phone" = "Phone number";
+"screen_add_beneficiary_detail_display_text_transfer_phone_optional" = "Phone number (optional)";
+"screen_bank_details_display_text_title" = "Tell us about the bank";
+"screen_bank_details_display_text_bank_name" = "Bank name";
+"screen_bank_details_input_text_branch_hint" = "Branch name";
+"screen_bank_details_display_text_branch_name" = "Bank branch";
+"screen_bank_details_display_text_swift_code" = "Swift code";
+"screen_bank_details_input_text_city_hint" = "City";
+"screen_bank_details_button_find_bank" = "Find bank";
+"screen_bank_details_display_text_bank_city" = "Bank city";
+"screen_beneficiary_account_details_display_text_title" = "Beneficiary account details";
+"screen_beneficiary_account_details_display_text_iban" = "Enter IBAN";
+"screen_beneficiary_overview_display_text_title" = "Beneficiary overview";
+"screen_beneficiary_overview_display_text_account_number_iban" = "Account number";
+"screen_beneficiary_overview_display_text_swift_code" = "Swift code";
+"screen_add_beneficiary_detail_display_text_alert_title" = "Beneficiary has been added successfully";
+"screen_add_beneficiary_detail_display_button_block_alert_description" = "Send money to this beneficiary now?";
+"screen_add_beneficiary_detail_display_button_block_alert_yes" = "Yes, send now";
+"screen_add_beneficiary_detail_display_button_block_alert_no" = "I'll do it later";
+"screen_add_beneficiary_display_text_title" = "Add beneficiary";
+"screen_edit_beneficiary_display_text_title" = "Edit beneficiary";
+"screen_add_beneficiary_detail_display_text_error_iban_current_user" = "You cannot enter your own IBAN";
+"screen_add_beneficiary_detail_display_text_cancel_popup_title" = "Are you sure you want to exit?";
+"screen_add_beneficiary_detail_display_text_cancel_popup_message" = "The information you've entered will be lost";
+
+// MARK: Screen send money funds transfer
+
+"screen_international_funds_transfer_display_text_title" = "Send money to";
+"screen_international_funds_transfer_display_text_yap_rate" = "YAP rate: ";
+"screen_international_funds_transfer_display_text_reason_placeholder" = "Select a reason for transfer";
+"screen_international_funds_transfer_display_text_reson" = "Reason for transfer";
+"screen_international_funds_transfer_dropdown_text_reason_hint" = "Transferring amount to a friend";
+"screen_international_funds_transfer_input_text_note_hint" = "Add a remark (optional)";
+"screen_international_funds_transfer_display_text_fee_amount" = "International transfer fee: %@\nNote that the recipient's bank may have its own charges.";
+"screen_cash_pickup_funds_display_text_fee" = "An %@ fee will be charged to your YAP account for this transfer";
+"screen_cash_pickup_funds_display_text_header" = "Send cash to";
+
+"scren_send_money_funds_transfer_confirmation_display_text_amount" = "Your transfer of %@ to %@ will be sent at the exchange rate of %@\n\nThat's %@ from your account";
+"scren_send_money_funds_transfer_confirmation_display_text_amount_same_currency" = "You are sending %@ %@\n";
+"scren_send_money_funds_transfer_confirmation_display_text_amount_uaefts" = "%@ will recieve %@";
+"scren_send_money_funds_transfer_confirmation_display_text_fee" = "Fee: %@\nNote that the recipient's bank may have its own charges.";
+
+// MARK: Logout popups
+"screen_profile_action_display_text_logout_popups_logout" = "Log out";
+"screen_profile_action_display_text_logout_popups_cencel" = "Cancel";
+"screen_profile_action_display_text_logout_popups_title" = "Log out";
+"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out";
+
+// MARK: Screen household landing
+
+"screen_yap_house_hold_onboarding_landing_display_text_title" = "Household";
+"screen_yap_house_hold_onboarding_landing_display_text_description" = "Manage your household salaries digitally";
+"screen_yap_house_hold_onboarding_landing_display_text_heading" = "Paying your household help is now easier than ever";
+"screen_yap_house_hold_onboarding_landing_display_text_sub_heading" = "Struggling to keep up with managing your day-to-day house expenses? With Household, set up a quick and safe payment system so you can pay your help and manage expenses easily. Set up monthly salary payments, keep track of grocery spends, and simplify your life without having to rely on cash. Give your household help a card they can use for spending and remittances. ";
+"screen_yap_house_hold_onboarding_landing_button_text" = "Get a Household card";
+"screen_yap_house_hold_onboarding_landing_display_text_salary" = "Set up automatic payouts for salary payments and make life easier with cashless domestic expenses";
+"screen_yap_house_hold_onboarding_landing_display_text_manage_expense" = "Give them the power to manage their salary and expenses";
+"screen_yap_house_hold_onboarding_landing_display_text_choose_colour" = "Let your help choose from any one of these breathtaking colors";
+
+// MARK: YAP Household subscription selection
+
+"screen_yap_house_hold_subscription_selection_display_text_benefit_send_salaries" = "Send salaries directly to account";
+"screen_yap_house_hold_subscription_selection_display_text_benefit_allocate_budget" = "Allocate household budgets";
+"screen_yap_house_hold_subscription_selection_display_text_benefit_setup_payments" = "Set up automatic payments";
+"screen_yap_house_hold_subscription_selection_display_text_benefit_track_expense" = "Track expenses through analytics";
+"screen_yap_house_hold_subscription_selection_display_text_select_plan_monthly" = "Monthly";
+"screen_yap_house_hold_subscription_selection_display_text_select_plan_yearly" = "Yearly";
+"screen_yap_house_hold_subscription_selection_display_text_per_month" = "per month";
+"screen_yap_house_hold_subscription_selection_display_text_per_year" = "per year";
+"screen_yap_house_hold_subscription_selection_display_text_saving" = "save 25%";
+"screen_yap_house_hold_subscription_selection_display_text_months" = "12 months";
+"screen_yap_house_hold_subscription_selection_display_text_house_hold_heading"="Get a card for your household help and start managing your finances easily! ";
+"screen_yap_house_hold_subscription_selection_display_text_house_hold_plan_heading"="Select a plan. You will be charged only when your Household staff confirms their card.";
+
+ // MARK: YAP Household success screen
+"screen_yap_house_hold_success_display_text_title" = "%@ has been added to your account";
+"screen_yap_house_hold_success_display_text_heading" = "%@'s card is on it's way";
+"screen_yap_house_hold_success_display_text_house_hold_card" = "Household card";
+"screen_yap_house_hold_success_display_text_direct_message" = "%@ will receive an SMS with instructions to download the app and complete sign up";
+"screen_yap_house_hold_success_display_text_share_credentials" = "Let %@ know by sharing the details below:";
+"screen_yap_house_hold_success_display_text_share_email" = "Mobile number";
+"screen_yap_house_hold_success_display_text_share_pass_code" = "Temporary passcode";
+"screen_yap_house_hold_success_button_text_share" = "Share";
+"screen_yap_house_hold_success_button_text_goto_house_hold" = "Go to Household";
+
+// MARK: YAP Household user info screen
+"screen_yap_house_hold_user_info_display_text_heading" = "Who are you getting the Household plan for?";
+"screen_yap_house_hold_user_info_display_text_first_name" = "First name";
+"screen_yap_house_hold_user_info_display_text_last_name" = "Last name";
+
+// MARK: YAP Household user contact info screen
+"screen_yap_house_hold_user_info_contact_display_text_heading" = "Tell us how to contact \n %@";
+"screen_yap_house_hold_user_info_contact_display_text_confirm_mobile" = "Confirm mobile number";
+
+// MARK: Confirm Payment household screen
+"screen_yap_house_hold_confirm_payment_display_text_toolbar_title" = "Confirm payment";
+"screen_yap_house_hold_confirm_payment_display_text_change_plan" = "Change paln";
+"screen_yap_house_hold_confirm_payment_display_text_title" = "Household Plan";
+"screen_yap_house_hold_confirm_payment_display_text_title" = "Plan";
+"screen_yap_house_hold_confirm_payment_display_text_account_deducted" = "Your account will be deducted by";
+"screen_yap_house_hold_confirm_payment_display_text_saving" = "Your saving %0.0f%%!";
+"screen_yap_house_hold_confirm_payment_display_text_balance" = "Your available balance is %@";
+"screen_yap_house_hold_confirm_payment_share_text" = "Hi %@,\n%@ has added you as their Household on YAP. Download YAP from the link below and login with these credentials:\n\nUsername: %@\nPasscode:%@\n\nDownload on App Store:\n%@\n\nDownload on Play Store:\n%@";
+"screen_yap_house_hold_confirm_payment_display_text_amount_error" = "You have insufficient balance in your account to purchase this package";
+
+// MARK: Household confrim parent mobile number screen
+"screen_confirm_parent_mobile_display_text_welcome" = "Welcome %@!";
+"screen_confirm_parent_mobile_display_text_instructions" = "To confirm this is really you, enter %@’s number below";
+
+// MARK: Household location selection success
+"screen_household_location_selection_success_display_text_title" = "Your card is on its way!";
+"screen_household_location_selection_success_display_text_subheading" = "We will call you to confirm the time.\nMake sure to keep your Emirates ID with you";
+"screen_household_location_selection_success_address_display_text_heading" = "Your card will be delivered to:";
+"screen_household_location_selection_success_button_dashboard" = "Go to dashboard";
+
+// MARK: Household card selection screen
+"screen_household_card_selection_display_text_title" = "Select a card color";
+"screen_household_card_selection_display_text_subheading" = "Household card";
+"screen_household_card_selectio_button_dashboard" = "Next";
+
+// MARK: Household warning screen
+"screen_household_warning_display_text_oops" = "Oops!";
+"screen_household_warning_display_text_description" = "Sorry Joe, looks like you already have a Household plan connected to this Emirates ID. Please log out and inform your employer that we cannot proceed with activating your plan at this time. ";
+"screen_household_warning_button_title_logout" = "Logout!";
+"screen_household_warning_display_text_support_number" = "If you feel this is a mistake please call us at\n%@";
+
+// MARK: Complete Achievement screen
+"screen_complete_achievement_display_text_screen_title" = "Your achievements";
+
+// MARK: Yap 4 you home screen
+"screen_yap_4_you_home_display_text_screen_title" = "YAP for you";
+"screen_yap_4_you_home_display_text_current_achievement" = "Current achievement";
+"screen_yap_4_you_home_button_title_view" = "View";
+
+// MARK: achievement detail screen
+"screen_achievement_detail_display_text_screen_title" = "YAP for you";
+
+// MARK: - DocumentValidationErrors
+"error_document_validation_malicious" = "That doesn’t look right. Please upload .jpg or .png only";
+"error_document_validation_size_exceed" = "Oops! That’s too big. Please try again with a file that’s under 25 MB";
+
+
+// MARK: Household menu screen
+"screen_menu_display_text_household" = "Household";
+
+//MARK: Household Welcome Screens
+"screen_household_welcome_getstarted_button_title" = "Get Started";
+"screen_household_welcome_title" = "Let’s begin by confirming this is you and setting up your account!";
+"screen_household_welcome_subtitle" = "Welcome %@, you’ve been added to a Household plan by %@";
+"screen_household_welcome_decline_button_title" = "Decline request";
+"screen_household_welcome_accept_button_title" = "Accept";
+"screen_household_welcome_accept_invitation_title" = "You have been added to a Household plan by %@";
+"screen_household_welcome_complete_verification_button_title" = "Complete verification";
+"screen_household_welcome_skip_verification_button_title" = "Skip and do it later";
+"screen_household_welcome_success_heading_title" = "Success!";
+
+//MARK: Household Card Analytics Screen
+"screen_household_card_analytics_screen_display_text_title" = "Household";
+"screen_household_card_analytics_screen_card_button_title" = "Cards";
+"screen_household_card_analytics_screen_Analytics_button_title" = "Analytics";
+
+//MARK: Household  Analytics Screen
+"screen_household_analytics_screen_no_transection_title" = "You don't have any activity on this account yet";
+"screen_household_analytics_screen_no_transection_detail" = "Transfer a salary or add to an expense pot to get your Household analytics started!";
+
+//MARK: Household  card Screen
+"screen_household_card_screen_admin_account_title" = "Your balace";
+"screen_household_card_screen_add_new_card_title" = "Add a new card";
+"screen_household_card_screen_ineligible_card_alert_title" = "Sorry, %@ is ineligible for a household card.";
+"screen_household_card_screen_ineligible_card_alert_description" = "Please remove %@, we will refund you the subscription fee";
+"screen_household_card_screen_ineligible_card_alert_button_title" = "Remove & Refund";
+"screen_household_card_screen_decline_card_alert_title" = "%@ did not accpet your request for a household card";
+"screen_household_card_screen_decline_card_alert_description" = "Would you like to re-send a request or remove this card and get a refund? ";
+"screen_household_card_screen_decline_card_alert_button_title_remove" = "Remove & Refund";
+"screen_household_card_screen_decline_card_alert_button_title_resend" = "Re-send";
+
+//MARK: Household Pay Salary Home
+"screen_household_employee_salary_schedule_once_heading_text" = "Schedule once";
+"screen_household_employee_salary_future_payment_text" = "Set up a single payment for a future date";
+"screen_household_employee_salary_recurring_heading_text" = "Make recurring";
+"screen_household_employee_salary_recurring_text" = "Set up a standing order for future payments";
+"screen_household_employee_salary_pay_now_button_text" = "Pay salary now";
+
+//MARK: Household  Pay Salary Screen
+"screen_household_pay_salary_screen_display_text_title" = "Pay salary to %@";
+"screen_household_pay_salary_screen_enter_transfer_amount_title"= "Enter transfer amount";
+"screen_household_pay_salary_screen_recurring_text_title" = "Set this salary transfer up as a recurring payment ";
+//MARK: HouseHold Subscription Screen
+"screen_household_subscription_title" = "Subscription";
+"screen_household_renewable_title" = "Automatic renewal";
+"screen_household_cancel_subscription_title" = "Cancel subscription";
+"screen_household_reactivate_subscription_title" = "Reactivate subscription";
+"screen_household_cancel_subscription_cancel_title" = "Are you sure you want to cancel this subscription?";
+"screen_household_cancel_subscription_cancel_message" = "Cancellation will come into effect following the 12-month contract period";
+
+//MARK: HouseHold Recurring Payment Screen
+"screen_household_recurring_payment_title" = "Set up a recurring payment";
+"screen_household_amount_to_transfer_title" = "Amount to transfer";
+"screen_household_currency_title" = "AED";
+"screen_household_start_date_title" = "Starting date";
+"screen_household_daily_title" = "Daily";
+"screen_household_weekly_title" = "Weekly";
+"screen_household_monthly_title" = "Monthly";
+"screen_household_current_recurring_salary_title" = "Current recurring salary";
+"screen_household_edit_title" = "Edit";
+
+//MARK: HouseHold Card Holder Profile
+"screen_household_cardholder_profile_title" = "Card holder's profile";
+
+
+//MARK: HouseHold Setup Pin Screen
+"screen_household_pin_setup_continue_button_title" = "Continue";
+"screen_household_pin_setup_title"= "Hope you like your new card!";
+"screen_household_pin_setup_description"= "Set a PIN code to start using it";
+"screen_household_pin_setup_expiry" = "Expiry date: ";
+"screen_household_pin_setup_heading"="Create a 4-digit PIN code to access your new card";
+"screen_household_pin_setup_set_pin_button_title"="Create PIN code";
+"screen_household_pin_setup_confirm_heading"="Enter PIN code again";
+"screen_household_pin_setup_success_heading" = "PIN code saved!";
+"screen_household_pin_setup_success_sub_heading" = "Always remember this code and don't share it with anyone";
+//MARK: Household Salary Profile
+"screen_house_hold_salary_profile_salary_text" = "Salary";
+"screen_house_hold_salary_profile_expenses_text" = "Expenses";
+"screen_house_hold_salary_profile_transfer_text" = "Transfer";
+"screen_house_hold_salary_profile_set_up_salary_text" = "Set up a salary";
+"screen_house_hold_salary_profile_set_up_expense_text" = "Set up an expense pot";
+"screen_house_hold_salary_profile_transfer_bonus_text" = "Transfer a bonus or extra cash";
+"screen_house_hold_salary_profile_display_text_transfers" = "Transfers";
+// MARK: - IBAN Send Money
+"screen_iban_send_money_title" = "Send money to %@";
+"screen_iban_send_money_subheading" = "Enter amount";
+"screen_iban_send_money_available_balance" = "Your available balance is %@";
+
+// MARK: OTP Blocked screen
+"screen_otp_blocked_display_text_heading" = "We thought you should know, %@!";
+"screen_otp_blocked_display_text_details_otp_blocked" = "Some app features have been temporarily blocked for your security. This is because you made too many incorrect OTP attempts.\n\nGet in touch by calling our agents at %@ or message us via the Live Chat so we can unblock your account right away!";
+"screen_otp_blocked_display_text_details_access_restricted" = "Some of your card’s features may not work at this time. This is because your card or account may have been blocked temporarily.\n\nGet in touch by calling our agents at %@ or message us via Live Chat so we can unblock your account right away!";
+"screen_otp_blocked_display_text_dashboard_notification" = "Some features may appear blocked for you as you made too many incorrect OTP attempts. Call or chat with us now to get full access.";
+
+// MARK: Household Payment Confirmation
+"screen_household_payment_confirmation_tool_bar_text" = "Payment confirmation";
+"screen_household_normal_payment_success_text" = "Salary has been transferred successfully";
+"screen_household_normal_payment_recurring_text" = "How about a recurring payment for %1s\'s salary so you don\'t have to manually transfer money every month? You can stop anytime.";
+"screen_household_normal_payment_set_up_recurring_text" = "Set up now";
+"screen_household_normal_payment_go_to_dashboard_text" = "Go to dashboard";
+"screen_household_recurring_payment_success_text" = "Salary has been transferred successfully and a monthly recurring payment has been set for:";
+"screen_household_recurring_payment_guide_text" = "We will notify you before each payment in case you require a fund top up on your account";
+
+// MARK: - IBAN Send Money Success
+"screen_iban_send_money_success_title" = "Transfer completed";
+"screen_iban_send_money_success_prefix_message_display_text" = "You have successfully sent";
+"screen_iban_send_money_success_postfix_message_display_text" = "as an expense advance";
+"screen_iban_send_money_success_reason_header_display_text" = "What is this for?";
+"screen_iban_send_money_success_recurring_payment_display_text" = "Set this salary transfer up as a recurring payment";
+"screen_iban_send_money_success_pick_expense_pot_button" = "Pick an expense pot";
+"screen_iban_send_money_success_do_it_later_button" = "I'll do it later";
+
+// MARK: - Household Change Card Pin
+
+"screen_household_card_pin_change_heading" = "Enter your current PIN";
+"screen_household_card_pin_change_button_title" = "Next";
+"screen_household_card_pin_change_text_forgot_password" = "Forgot PIN?";
+"screen_household_card_new_pin_heading" ="Now enter your new 4-digit PIN";
+
+// MARK: - Household Change Card Pin Success
+"screen_household_card_pin_success_button_title" = "Done";
+"screen_household_pin_change_success_heading" = "Success!";
+"screen_household_pin_change_success_sub_heading" = "You’ve now changed your PIN. Please remember this number and don’t share it with anyone.";
+
+//MARK: HouseHold Edit Delete Future Payment Screen
+"screen_household_future_payment_edit_title" = "Future payment";
+"screen_household_future_payment_edit_cell_title" = "Current future payment set";
+"screen_household_future_payment_edit_date" = "Date of transfer ";
+
+//MARK: Cards Plans Screen
+"screen_card_plans_title" = "Upgrade or add a new card";
+
+
+// MARK: - Payment Card Onboarding Stage View
+"view_payment_card_onboarding_stage_card_on_the_way_title" = "Your card is on the way";
+"view_payment_card_onboarding_stage_card_on_the_way_subheading" = "Give us up to 48 hours for it to reach you";
+"view_payment_card_onboarding_stage_card_on_the_way_action_title" = "Track your delivery";
+"view_payment_card_onboarding_stage_additional_requirement_action_title" = "Submit now";
+"view_payment_card_onboarding_stage_completed_subheading" = "Your card was delieverd on %@";
+"view_payment_card_onboarding_stage_two_title" = "Your card is delivered";
+"view_payment_card_onboarding_stage_two_initial_subtitle" = "Your EID scan is required.";
+"view_payment_card_onboarding_stage_two_active_subheading" = "Your EID scan has been carried out. We are now processing your account. Please wait for activation to be completed shortly.";
+"view_payment_card_onboarding_stage_two_completed_subheading" = "Your EID scan was approved on %@";
+"view_payment_card_onboarding_stage_additional_requirement_title" = "Additional requirements";
+"view_payment_card_onboarding_stage_two_initial_subtitle" = "EID scan will be carried out by the agent";
+"view_payment_card_onboarding_stage_additional_requirement_subtitle" = "We’ll need some more additional information to proceed";
+"view_payment_card_onboarding_stage_additional_requirement_provided_subtitle" = "We are reviewing your documents submitted on %@";
+"view_payment_card_onboarding_stage_three_title" = "Set your card PIN";
+"view_payment_card_onboarding_stage_three_initial_subtitle" = "You’ll need this to begin using your card";
+"view_payment_card_onboarding_stage_three_action_title" = "Set PIN";
+"view_payment_card_onboarding_stage_three_completed_subheading" = "Your PIN was successfully set on %@";
+"view_payment_card_onboarding_stage_four_title" = "Time to top up";
+"view_payment_card_onboarding_stage_four_subheading" = "Add money to your YAP card to start spending";
+"view_payment_card_onboarding_stage_four_action_title" = "Top up now";
+"view_payment_card_onboarding_stage_in_process_label_text" = "In process";
+"view_payment_card_onboarding_stage_completed_label_text" = "Completed";
+
+// MARK: - Home Screen Tour Guids
+"screen_home_display_tour_guide_text_desc_top_menue" = "Get quick access to useful links related to your profile, account details, analytics, support and contacting YAP.";
+"screen_home_display_tour_guide_text_desc_amount" = "This is an indicator of your available balance. It is always updated in real time and supported by a daily transaction graph.";
+"screen_home_display_tour_guide_text_desc_yap_it" = "Launch the YAP it button to carry out important functions like sending money, adding funds to your account and paying bills.";
+"screen_home_display_tour_guide_text_desc_search" = "Click here to search for specific transactions in your account history.";
+"screen_home_display_tour_guide_text_desc_graph" = "View your transactions plotted on a graph and drag your fingers along the bars to view a specific date.";
+
+
+"screen_home_display_tour_guide_text_title_top_menue" = "Top menu";
+"screen_home_display_tour_guide_text_title_amount" = "Your current balance";
+"screen_home_display_tour_guide_text_title_yap_it" = "YAP it";
+"screen_home_display_tour_guide_text_title_search" = "Search";
+"screen_home_display_tour_guide_text_title_graph" = "Daily transaction graph";
+
+// MARK: - Store Screen Tour Guids
+"screen_store_display_tour_guide_text_title_purchase_package" = "Purchased packages";
+"screen_store_display_tour_guide_text_desc_purchase_package" = "View and manage all your purchased YAP packages and add-ons in a single place.";
+
+"screen_store_display_tour_guide_button_title_purchase_package" = "OK, got it!";
+
+//MARK: - Cards Home Tour Guide
+"screen_cards_home_tour_guide_add_card_title" = "Add card";
+"screen_cards_home_tour_guide_add_card_description" = "Click here to add a new card to your account. You can create a spare virtual card or upgrade to Prime or Metal! ";
+
+//MARK: - Primary Card Detail Tour Guide
+"screen_primary_card_detail_tour_guide_more_icon_title" = "More icon";
+"screen_primary_card_detail_tour_guide_more_icon_description" = "Click here to add a name to your card, view statements or remove it from your account. ";
+"screen_primary_card_detail_tour_guide_free_card_title" = "Freeze card";
+"screen_primary_card_detail_tour_guide_free_card_description" = "You can temporarily block usage of your card by clicking on Freeze. Don’t worry though, you can always unfreeze your card instantly. ";
+"screen_primary_card_detail_tour_guide_set_limit_title" = "Set limits";
+"screen_primary_card_detail_tour_guide_set_limit_description" = "Customize your card’s usage by setting limits on where and how it can be used.";
+
+//MARK: - More Screen Tour Guide
+"screen_more_tour_guide_bank_detail_title" = "Your bank details";
+"screen_more_tour_guide_bank_detail_description" = "Tap here to view your complete bank account details, useful for topping up and sharing with contacts for transfer purposes.";
+"screen_more_tour_guide_yap_for_you_title" = "YAP for you";
+"screen_more_tour_guide_yap_for_you_description" = "A fun way to track your progress on YAP, complete missions and explore all the different aspects of the YAP app and account.";
+
+
+//MARK: - Y4Y Home screen
+"screen_yfy_home_screen_get_started_title" = "Get started";
+"screen_yfy_home_screen_up_and_running_title" = "Up and running";
+"screen_yfy_home_screen_better_togather_title" = "Better together";
+"screen_yfy_home_screen_take_the_leap_title" = "Take the leap";
+"screen_yfy_home_screen_store_title" = "YAP Store";
+"screen_yfy_home_screen_you_are_a_pro_started_title" = "You’re a Pro!";
+
+//MARK: - Achievements screen get started
+"screen_yfy_get_started_text_open_account" = "Open your YAP account";
+"screen_yfy_get_started_text_set_pin" = "Set your PIN";
+"screen_yfy_get_started_text_add_money" = "Add money to your account";
+"screen_yfy_get_started_text_set_profile" = "Set a profile photo";
+
+//MARK: - Achievements up and running
+"screen_yfy_up_and_running_text_use_yap_locally" = "Use YAP locally";
+"screen_yfy_up_and_running_text_freeze_unfreeze" = "Freeze and unfreeze your card";
+"screen_yfy_up_and_running_text_spend_money" = "Spend AED 100";
+"screen_yfy_up_and_running_text_explore_card_controls" = "Explore card controls";
+
+//MARK: - Achievements better together
+"screen_yfy_better_together_text_invite_friend" = "Invite a friend";
+"screen_yfy_better_together_text_y2y_transfer" = "Make a Y2Y transfer";
+"screen_yfy_better_together_text_split_bills" = "Split bills with YAP";
+"screen_yfy_better_together_text_send_money" = "Send money outside YAP";
+
+//MARK: - Achievements take a leap
+"screen_yfy_take_a_leap_text_send_money" = "Order a virtual card";
+"screen_yfy_take_a_leap_text_upgrade_to_prime" = "Upgrade to Prime";
+"screen_yfy_take_a_leap_text_go_metal" = "Go Metal";
+"screen_yfy_take_a_leap_text_set_mc_account" = "Set up a multi-currency account";
+
+//MARK: - Achievements You are a Pro
+"screen_yfy_you_are_pro_text_invite_friends" = "Invite 10 friends to YAP";
+"screen_yfy_you_are_pro_text_spend_amount" = "Spend AED 1000";
+"screen_yfy_you_are_pro_text_complete_a_renewal" = "Complete a renewal";
+
+//MARK: - Achievements Yap store
+"screen_yfy_you_are_pro_text_get_yap_young" = "Get YAP Young";
+"screen_yfy_you_are_pro_text_sign_up_house_hold" = "Sign up to Household";
+"screen_yfy_you_are_pro_text_set_mission" = "Set missions on YAP Young";
+"screen_yfy_you_are_pro_text_pay_your_help" = "Pay your help using Household";
+
+// MARK: - Get started goals
+"screen_yfy_get_started_goal_completed_description" = "You’ve completed this task!\nTime for a little celebration 🥳";
+
+"screen_yfy_get_started_goal_one_description" = "That first step was easy! Welcome to YAP.\nWe're so happy you're here :)";
+"screen_yfy_get_started_goal_two_description" = "What are you waiting for? Go ahead and set a unique 4-digit PIN to start using your card";
+"screen_yfy_get_started_goal_three_description" = "Go on and add some money to your account so you can start spending! You can do this by using your existing bank card, make a wire transfer to this account or deposit cash at the nearest machine.";
+"screen_yfy_get_started_goal_four_description" = "Personalize your profile with a picture of you (or your pet)";
+
+// MARK: - Up and running goals
+"screen_yfy_up_and_running_goal_one_description" = "Make heads turn the next time you’re out using your YAP card.";
+"screen_yfy_up_and_running_goal_two_description" = "Try ty freeze and unfreeze your card. You’ll know what to do when you lost or your card has been stolen";
+"screen_yfy_up_and_running_goal_three_description" = "Make your next AED 100 purchase a YAP one. Don’t forget to buy yourself something nice!";
+"screen_yfy_up_and_running_goal_four_description" = "You have full control of your card!\n\nSet limits against spending online, abroad, retail and at an ATM";
+
+// MARK: - Better together goals
+"screen_yfy_better_together_goal_one_description" = "Once you’re set, head over to the top right menu on your dashboard (or via More on the bottom navigation menu) to start inviting your friends to join YAP.\n\nThe more the merrier!";
+"screen_yfy_better_together_goal_two_description" = "Send money to someone instantly within your YAP network. Tap on the YAP it button on your dashboard, select a friend from the list and enter the desired amount.\n\nYes, It's that simple!";
+"screen_yfy_better_together_goal_three_description" = "Split bills (not friendships) the next time you go out with your friends.\n\nTo split a bill, simply swipe left on the transaction you want to split, send out reminders to your friends and settle up effortlessly.\n\nPsst… you can also send reminders!";
+"screen_yfy_better_together_goal_four_description" = "Feeling generous? Send money to someone who isn't on your YAP contacts by adding them as a beneficiary in a few simple steps.\n\nUse the YAP It button and choose either bank transfer or cash pickup, so you can send money to even those who don’t have a bank account!";
+
+// MARK: - Take the leap goals
+"screen_yfy_take_the_leap_goal_one_description" = "Virtual cards let you make online payments without sharing your main card details.\n\nYou can order a virtual card through the Cards section. It is available immediately, so the next time you need to enter your card details online but aren’t comfortable doing it, just use your virtual card!";
+"screen_yfy_take_the_leap_goal_two_description" = "A shiny new card available in 4 metallic shades and a world of perks!\n\nChoose from audacious amber, sparkly sterling, romantic rose or glorious granite.";
+"screen_yfy_take_the_leap_goal_three_description" = "The ultimate YAP card – a 100% metal card with exclusive benefits.\n\nThe Metal card – or experience – is available in Black, Rose Gold and Chrome.";
+"screen_yfy_take_the_leap_goal_four_description" = "Traveling abroad? Set up multi-currency on YAP (available on Prime and Metal plans), create currency wallets for the countries you’re visiting, and spend locally when you get there! You can forget about exchanging cash or running out mid-holiday :)";
+
+// MARK: - Take YAP store goals
+"screen_yfy_yap_store_goal_one_description" = "Teach your kids how to be good with money. Set up a YAP Young account for your child and send them pocket money through the app into their YAP Young card!";
+"screen_yfy_yap_store_goal_two_description" = "Equip your household help with a card of their own. Now you can send them salaries and household expenses directly into their card so you don’t always have to depend on cash.";
+"screen_yfy_yap_store_goal_three_description" = "Give your kids tasks that will help them earn money. Chores can be fun too!";
+"screen_yfy_yap_store_goal_four_description" = "Make life easier by sending household salaries through YAP Household";
+
+// MARK: - Take You are a Pro goals
+"screen_yfy_you_are_a_pro_goal_one_description" = "Show us your social skills! Invite 10 friends to YAP to complete this level.\n\nYou know the drill.";
+"screen_yfy_you_are_a_pro_goal_two_description" = "Make your next AED 1000 purchase a YAP one. Don’t forget to buy yourself something nice!";
+"screen_yfy_you_are_a_pro_goal_three_description" = "365 days of any YAP membership calls for a celebration! We’re glad you’re enjoying YAP so far.";
+
+//MARK: -  Account Subscriptions
+"account_subscription_prime" = "PRIME";
+"account_subscription_gold" = "GOLD";
+"account_subscription_metal" = "METAL";
+
+//MARK: -  Account Subscriptions
+"account_subscription_prime" = "PRIME";
+"account_subscription_gold" = "GOLD";
+"account_subscription_metal" = "METAL";
+"view_payment_card_onboarding_stage_in_process_label_text" = "In process";
+
+//MARK: - KYC Employment Info Questions
+"employment_info_questions_additional_info_for_salary_title" = "Why do we ask you about your monthly salary?";
+"employment_info_questions_additional_info_for_salary_details" = "There is no minimum salary requirement to sign up to YAP. We only ask this question for compliance purposes to safegaurd your account. ";
+"employment_info_questions_additional_info_for_cash_title" = "For those people who still use cash, how much cash will you add to YAP per month?";
+"employment_info_questions_additional_info_for_cash_details" = "We are asking about CASH only that would be deposited in a bank machine.  We only ask this question for compliance purposes to safegaurd your account. ";
+
+//MARK: - KYC Employment Type Screen
+"screen_onboarding_employment_type_screen_heading_title" = "Employment Information";
+"screen_onboarding_employment_type_screen_subheading_title" = "What is your employment status?";
+"screen_onboarding_employment_type_screen_info_title" = "We only ask you this questions for administrative purpose. It does not impact your ability to sign up to a YAP account.";
+
+//MARK: Add Receipt Success Screen
+"screen_add_receipt_success_text" = "Your receipt has been added!";
+"screen_add_receipt_success_done_text" = "Done";
+"screen_add_receipt_success_add_another_text" = "Add another receipt";
+
+// MARK: - Select category
+"screen_change_transaction_category_title" = "Select category";

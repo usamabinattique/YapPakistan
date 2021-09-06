@@ -7,7 +7,6 @@
 
 import UIKit
 import RxSwift
-import NSObject_Rx
 import YAPCore
 
 public class AppCoordinator: Coordinator<ResultType<Void>> {
@@ -19,8 +18,10 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     private let container: YAPPakistanMainContainer
     let reposiotry = SplashRepository(service: XSRFService())
     
+    private let userSession = PublishSubject<ResultType<Void>>()
+    
     public init(window:UIWindow,
-                shortcutItem: UIApplicationShortcutItem?,
+                shortcutItem:UIApplicationShortcutItem?,
                 container: YAPPakistanMainContainer) {
         self.window = window
         self.shortcutItem = shortcutItem
@@ -43,4 +44,34 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
         }
     }
     
+}
+
+//MARK: NAVIGATIONS
+extension AppCoordinator {
+    func showWelcomeScreen(authorization: GuestServiceAuthorization) {
+        /* self.coordinate(to: WelcomeScreenCoordinator(window: self.window))
+            .subscribe(onNext: { [unowned self] result in
+                switch result {
+                case .onboarding:
+                    startB2BRegistration(authorization: authorization)
+                case .login:
+                    showLoginScreen(authorization: authorization)
+                }
+            })
+            .disposed(by: rx.disposeBag) */
+    }
+}
+
+//MARK: HELPERS
+fileprivate extension AppCoordinator {
+//    func splashDidComplete(shortcutItem: UIApplicationShortcutItem?)  -> Observable<ResultType<NavigationType>> {
+//         return self.coordinate(
+//            to: SplashCoordinator (
+//                window: window,
+//                shortcutItem: shortcutItem,
+//                store: CredentialsManager(),
+//                repository: SplashRepository(service: XSRFService() )
+//            )
+//        )
+//    }
 }

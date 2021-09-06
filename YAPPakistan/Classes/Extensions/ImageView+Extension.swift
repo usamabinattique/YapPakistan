@@ -29,4 +29,23 @@ class BundleYapPak {
         }
         return UIImage()
     }
+    
+    static var bundle:Bundle? {
+        let podBundle = Bundle(for: BundleYapPak.self) // for getting pod url
+        if let url = podBundle.url(forResource: "YAPPakistan", withExtension: "bundle") { //<YourBundleName> must be the same as you wrote in .podspec
+            return Bundle(url: url)
+        }
+        return nil
+    }
+}
+
+extension Bundle {
+    var yapPak:Bundle? {BundleYapPak.bundle}
+}
+
+extension UIImageView {
+    @discardableResult func setImage(named:String, bundle:Bundle) -> Self {
+        image = UIImage(named: named, in: bundle, compatibleWith: nil)
+        return self
+    }
 }

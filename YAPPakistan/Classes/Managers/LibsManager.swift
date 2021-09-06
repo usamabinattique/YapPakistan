@@ -11,8 +11,7 @@ import RxSwift
 import RxCocoa
 //import IQKeyboardManagerSwift
 //import NVActivityIndicatorView
-import NSObject_Rx
-import RxViewController
+//import RxViewController
 import RxOptional
 import RxGesture
 import SwifterSwift

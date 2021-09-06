@@ -8,7 +8,6 @@
 import UIKit
 import RxSwift
 import RxCocoa
-import NSObject_Rx
 import YAPComponents
 
 let bundle:Bundle? = nil
@@ -25,11 +24,11 @@ class SplashViewController: UIViewController {
     private var viewModel: SplashViewModelType!
     
     private lazy var logo = UIFactory
-        .makeImageView(image: UIImage(named:"yap_logo_animate"))
+        .makeImageView(image: UIImage(named: "yap_logo_animate"))
         .addToSuper(view: view)
     
     private lazy var dot = UIFactory
-        .makeImageView(image: UIImage(named:"circle"))
+        .makeImageView(image: UIImage(named: "circle"))
         .addToSuper(view: view)
     
     /*private lazy var visualEffectView: UIVisualEffectView = {
@@ -44,6 +43,7 @@ class SplashViewController: UIViewController {
     init(viewModel: SplashViewModelType) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -88,7 +88,7 @@ extension SplashViewController {
         
         logoCenterHorizonConstraint = NSLayoutConstraint(item: logo, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
         
-        //logo.horizontallyCenterWith(view, constant: 0)
+        logo.horizontallyCenterWith(view, constant: 0)
         logoWidthConstraint = logo.widthAnchor.constraint(equalToConstant: 110)
         logoHeightConstraint = logo.heightAnchor.constraint(equalToConstant: 103)
         
@@ -144,7 +144,7 @@ private extension SplashViewController {
 private extension SplashViewController {
     func animateLogo() -> Observable<Void> {
         let logoAnimation = Observable<Void>.create { [weak self] (observer) -> Disposable in
-            UIView.animate(withDuration: 1, delay: 0, options: .curveEaseIn, animations: { [weak self] in
+            UIView.animate(withDuration: 1,delay: 0,options: .curveEaseIn, animations: { [weak self] in
                 guard let self = self else {return}
                 self.logoWidthConstraint.constant = self.logoWidthConstraint.constant * 100
                 self.logoHeightConstraint.constant = self.logoHeightConstraint.constant * 100
@@ -167,6 +167,7 @@ private extension SplashViewController {
             }){ success in
                 if success {
                     observer.onNext(())
+                    observer.onCompleted()
                 }
             }
             return Disposables.create()
