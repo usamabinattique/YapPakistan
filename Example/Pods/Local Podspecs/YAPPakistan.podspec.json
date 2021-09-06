@@ -19,7 +19,15 @@
   },
   "source_files": "YAPPakistan/Classes/**/*",
   "resources": [
-    "YAPPakistan/Assets/*.mp4"
+    "YAPPakistan/Assets/**/*.gif",
+    "YAPPakistan/Assets/**/*.jpg",
+    "YAPPakistan/Assets/**/*.jpeg",
+    "YAPPakistan/Assets/**/*.json",
+    "YAPPakistan/Assets/**/*.mp4",
+    "YAPPakistan/Assets/**/*.png",
+    "YAPPakistan/Assets/**/*.strings",
+    "YAPPakistan/Assets/**/*.xcassets",
+    "YAPPakistan/Assets/**/*.swift"
   ],
   "dependencies": {
     "YAPComponents": [
