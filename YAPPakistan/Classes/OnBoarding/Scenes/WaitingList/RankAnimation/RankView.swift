@@ -11,7 +11,7 @@ import UIKit
 import YAPComponents
 
 public class RankView: UIView {
-    private lazy var hStack: UIStackView = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 10)
+    private lazy var hStack: UIStackView = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 10)
 
     public var minimumDigits: Int = 4
 
