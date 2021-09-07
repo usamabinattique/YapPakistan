@@ -18,6 +18,7 @@ protocol Theme {
     var backgroundColor: UIColor    { get }
     var primary: UIColor            { get }
     var primaryLight: UIColor       { get }
+    var primaryExtraLight: UIColor  { get }
     var primaryDark: UIColor        { get }
     var primarySoft: UIColor        { get }
     var primaryAlt: UIColor         { get }
@@ -46,6 +47,7 @@ protocol Theme {
 struct LightTheme: Theme {
     var primary: UIColor            {   #colorLiteral(red: 0.368627451, green: 0.2078431373, blue: 0.6941176471, alpha: 1)  }
     var primaryLight: UIColor       {   #colorLiteral(red: 0.4862745098, green: 0.3019607843, blue: 1, alpha: 1)  }
+    var primaryExtraLight: UIColor  {   #colorLiteral(red: 0.9411764706, green: 0.9294117647, blue: 1, alpha: 1)  }
     var primaryDark: UIColor        {   #colorLiteral(red: 0.1529999971, green: 0.1330000013, blue: 0.3840000033, alpha: 1)  }
     var primarySoft: UIColor        {   #colorLiteral(red: 0.6509803922, green: 0.5098039216, blue: 1, alpha: 1)  }
     var primaryAlt: UIColor         {   #colorLiteral(red: 0.7329999804, green: 0.2590000033, blue: 0.9219999909, alpha: 1)  }
@@ -76,6 +78,7 @@ struct DarkTheme: Theme {
     //TODO: update these values for dark mode
     var primary: UIColor            {   #colorLiteral(red: 0.368627451, green: 0.2078431373, blue: 0.6941176471, alpha: 1)  }
     var primaryLight: UIColor       {   #colorLiteral(red: 0.4862745098, green: 0.3019607843, blue: 1, alpha: 1)  }
+    var primaryExtraLight: UIColor  {   #colorLiteral(red: 0.9411764706, green: 0.9294117647, blue: 1, alpha: 1)  }
     var primaryDark: UIColor        {   #colorLiteral(red: 0.1529999971, green: 0.1330000013, blue: 0.3840000033, alpha: 1)  }
     var primarySoft: UIColor        {   #colorLiteral(red: 0.6509803922, green: 0.5098039216, blue: 1, alpha: 1)  }
     var primaryAlt: UIColor         {   #colorLiteral(red: 0.7329999804, green: 0.2590000033, blue: 0.9219999909, alpha: 1)  }
@@ -180,6 +183,20 @@ extension Reactive where Base: UIApplication {
     var statusBarStyle: Binder<UIStatusBarStyle> {
         return Binder(self.base) { view, attr in
             globalStatusBarStyle.accept(attr)
+        }
+    }
+}
+
+extension Reactive where Base: RankView {
+    var digitColor: Binder<UIColor?> {
+        return Binder(self.base) { view, attr in
+            view.digitColor = attr
+        }
+    }
+
+    var digitBackgroundColor: Binder<UIColor?> {
+        return Binder(self.base) { view, attr in
+            view.digitBackgroundColor = attr
         }
     }
 }
