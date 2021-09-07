@@ -66,20 +66,11 @@
     "PhoneNumberKit": [
       "3.3.3"
     ],
-    "SwiftRichString": [
-      "3.7.2"
-    ],
-    "Localize-Swift": [
-      "3.2.0"
-    ],
     "SDWebImage": [
       "5.11.1"
     ],
     "SwifterSwift": [
       "5.2.0"
-    ],
-    "R.swift": [
-      "5.4.0"
     ]
   }
 }
