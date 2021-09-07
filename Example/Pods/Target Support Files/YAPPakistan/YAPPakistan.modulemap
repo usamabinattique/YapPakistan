@@ -1,6 +1,0 @@
-framework module YAPPakistan {
-  umbrella header "YAPPakistan-umbrella.h"
-
-  export *
-  module * { export * }
-}
