@@ -6,8 +6,6 @@
 //  Copyright © 2018 YAP. All rights reserved.
 //
 
-import RxCocoa
-import RxSwift
 import UIKit
 import YAPComponents
 
@@ -125,34 +123,6 @@ public class InitialsImageView: UIView {
             if let first = firstPart.first {
                 initialsLabel.text = "\(first)"
             }
-        }
-    }
-}
-
-// MARK: Rx
-
-extension Reactive where Base: InitialsImageView {
-    var image: Binder<UIImage> {
-        return Binder(self.base) { initialsImageView, image in
-            initialsImageView.setImage(image)
-        }
-    }
-
-    var photoURL: Binder<URL?> {
-        return Binder(self.base) { initialsImageView, url in
-            initialsImageView.setPhotoURL(url)
-        }
-    }
-
-    var labelColor: Binder<UIColor?> {
-        return Binder(self.base) { initialsImageView, color in
-            initialsImageView.setLabelColor(color)
-        }
-    }
-
-    var initials: Binder<String> {
-        return Binder(self.base) { initialsImageView, initials in
-            initialsImageView.setInitials(initials)
         }
     }
 }
