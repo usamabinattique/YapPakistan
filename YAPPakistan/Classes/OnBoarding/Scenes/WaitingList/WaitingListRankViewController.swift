@@ -46,7 +46,6 @@ class WaitingListRankViewController: UIViewController {
     private lazy var containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(red: 241/255.0, green: 237/255, blue: 1, alpha: 1.0)
         view.layer.cornerRadius = 8
         return view
     }()
@@ -133,6 +132,7 @@ class WaitingListRankViewController: UIViewController {
             .bind({ $0.primaryDark }, to: behindNumberLabel.rx.textColor)
             .bind({ $0.greyDark }, to: behindYouLabel.rx.textColor)
             .bind({ $0.primaryDark }, to: infoLabel.rx.textColor)
+            .bind({ $0.primaryExtraLight }, to: containerView.rx.backgroundColor)
             .bind({ $0.greyDark }, to: boostUpLabel.rx.textColor)
             .bind({ $0.primary }, to: seeInviteesButton.rx.titleColor(for: .normal))
             .bind({ $0.primary }, to: bumpMeUpButton.rx.backgroundColor)
