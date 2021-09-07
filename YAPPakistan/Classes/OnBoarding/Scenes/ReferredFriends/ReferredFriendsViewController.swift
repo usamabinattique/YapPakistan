@@ -69,7 +69,7 @@ class ReferredFriendsViewController: UIViewController {
         setupViews()
         setupTheme()
         setupConstraints()
-        bindViews()
+        bindViewModel()
     }
 
     // MARK: View Setup
@@ -121,7 +121,7 @@ class ReferredFriendsViewController: UIViewController {
 
     // MARK: Binding
 
-    private func bindViews() {
+    private func bindViewModel() {
         viewModel.outputs.titleText
             .bind(to: titleLabel.rx.text)
             .disposed(by: disposeBag)
