@@ -129,6 +129,7 @@ class WaitingListRankViewController: UIViewController {
             .bind({ $0.backgroundColor }, to: view.rx.backgroundColor)
             .bind({ $0.primaryDark }, to: placeLabel.rx.textColor)
             .bind({ $0.primaryDark }, to: rankView.rx.digitColor)
+            .bind({ $0.greyExtraLight }, to: rankView.rx.digitBackgroundColor)
             .bind({ $0.primaryDark }, to: behindNumberLabel.rx.textColor)
             .bind({ $0.greyDark }, to: behindYouLabel.rx.textColor)
             .bind({ $0.primaryDark }, to: infoLabel.rx.textColor)

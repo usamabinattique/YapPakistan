@@ -24,6 +24,7 @@ public class RankView: UIView {
     }
 
     public var digitColor: UIColor! = .black
+    public var digitBackgroundColor: UIColor! = .black
 
     // MARK: Initialization
 
@@ -77,6 +78,7 @@ extension RankView {
             hStack.addArrangedSubview(view)
 
             view.labelColor = digitColor
+            view.backgroundColor = digitBackgroundColor
             view
                 .width(constant: boxWidth)
                 .height(with: .height, ofView: hStack)

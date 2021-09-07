@@ -193,6 +193,12 @@ extension Reactive where Base: RankView {
             view.digitColor = attr
         }
     }
+
+    var digitBackgroundColor: Binder<UIColor?> {
+        return Binder(self.base) { view, attr in
+            view.digitBackgroundColor = attr
+        }
+    }
 }
 
 /*
