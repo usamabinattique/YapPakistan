@@ -209,12 +209,6 @@ class WaitingListRankViewController: UIViewController {
             }
         }).disposed(by: disposeBag)
 
-//        viewModel.outputs.error.subscribe(onNext: { [weak self] (error) in
-//            self?.showAlert(title: "", message: error, defaultButtonTitle:  "common_button_ok".localized, secondayButtonTitle: nil, defaultButtonHandler: { [weak self] _ in
-//                self?.viewModel.inputs.getRankingObserver.onNext(true)
-//            }, secondaryButtonHandler: nil, completion: nil)
-//        }).disposed(by: disposeBag)
-
         viewModel.outputs.animationFile.subscribe(onNext: { [weak self] fileName in
             let nameOnly = fileName.deletingPathExtension
             let extensionOnly = fileName.pathExtension
