@@ -46,7 +46,6 @@ class WaitingListRankViewController: UIViewController {
     private lazy var containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(red: 241/255.0, green: 237/255, blue: 1, alpha: 1.0)
         view.layer.cornerRadius = 8
         return view
     }()
@@ -67,7 +66,7 @@ class WaitingListRankViewController: UIViewController {
         return button
     }()
 
-    private lazy var containerStackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fillProportionally, spacing: 16, arrangedSubviews: [boostUpLabel, seeInviteesButton])
+    private lazy var containerStackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fillProportionally, spacing: 16, arrangedSubviews: [boostUpLabel, seeInviteesButton])
 
     private lazy var bumpMeUpButton: UIButton = {
         let button = AppRoundedButton()
@@ -130,9 +129,11 @@ class WaitingListRankViewController: UIViewController {
             .bind({ $0.backgroundColor }, to: view.rx.backgroundColor)
             .bind({ $0.primaryDark }, to: placeLabel.rx.textColor)
             .bind({ $0.primaryDark }, to: rankView.rx.digitColor)
+            .bind({ $0.greyExtraLight }, to: rankView.rx.digitBackgroundColor)
             .bind({ $0.primaryDark }, to: behindNumberLabel.rx.textColor)
             .bind({ $0.greyDark }, to: behindYouLabel.rx.textColor)
             .bind({ $0.primaryDark }, to: infoLabel.rx.textColor)
+            .bind({ $0.primaryExtraLight }, to: containerView.rx.backgroundColor)
             .bind({ $0.greyDark }, to: boostUpLabel.rx.textColor)
             .bind({ $0.primary }, to: seeInviteesButton.rx.titleColor(for: .normal))
             .bind({ $0.primary }, to: bumpMeUpButton.rx.backgroundColor)
@@ -207,12 +208,6 @@ class WaitingListRankViewController: UIViewController {
                 YAPProgressHud.hideProgressHud()
             }
         }).disposed(by: disposeBag)
-
-//        viewModel.outputs.error.subscribe(onNext: { [weak self] (error) in
-//            self?.showAlert(title: "", message: error, defaultButtonTitle:  "common_button_ok".localized, secondayButtonTitle: nil, defaultButtonHandler: { [weak self] _ in
-//                self?.viewModel.inputs.getRankingObserver.onNext(true)
-//            }, secondaryButtonHandler: nil, completion: nil)
-//        }).disposed(by: disposeBag)
 
         viewModel.outputs.animationFile.subscribe(onNext: { [weak self] fileName in
             let nameOnly = fileName.deletingPathExtension

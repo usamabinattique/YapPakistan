@@ -1,4 +1,5 @@
 import Foundation
+import YAPCore
 
 struct DeepLinkURLConstants {
   static let Onboarding = "onboarding"

@@ -33,6 +33,9 @@
     "YAPComponents": [
 
     ],
+    "YAPCore": [
+
+    ],
     "Alamofire": [
       "5.4.3"
     ],
@@ -63,12 +66,6 @@
     "PhoneNumberKit": [
       "3.3.3"
     ],
-    "SwiftRichString": [
-      "3.7.2"
-    ],
-    "Localize-Swift": [
-      "3.2.0"
-    ],
     "HWPanModal": [
       "0.8.9"
     ],
@@ -77,9 +74,6 @@
     ],
     "SwifterSwift": [
       "5.2.0"
-    ],
-    "R.swift": [
-      "5.4.0"
     ]
   }
 }

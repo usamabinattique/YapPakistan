@@ -37,7 +37,6 @@ public class RollingAnimationView: UIView {
 
     private func setupViews() {
         translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = #colorLiteral(red: 0.9294117647, green: 0.9411764706, blue: 0.9725490196, alpha: 1)
         clipsToBounds = true
         layer.cornerRadius = 4
 

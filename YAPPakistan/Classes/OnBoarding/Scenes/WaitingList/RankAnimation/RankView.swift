@@ -11,7 +11,7 @@ import UIKit
 import YAPComponents
 
 public class RankView: UIView {
-    private lazy var hStack: UIStackView = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 10)
+    private lazy var hStack: UIStackView = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 10)
 
     public var minimumDigits: Int = 4
 
@@ -24,6 +24,7 @@ public class RankView: UIView {
     }
 
     public var digitColor: UIColor! = .black
+    public var digitBackgroundColor: UIColor! = .black
 
     // MARK: Initialization
 
@@ -77,6 +78,7 @@ extension RankView {
             hStack.addArrangedSubview(view)
 
             view.labelColor = digitColor
+            view.backgroundColor = digitBackgroundColor
             view
                 .width(constant: boxWidth)
                 .height(with: .height, ofView: hStack)

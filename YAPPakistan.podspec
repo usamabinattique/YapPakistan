@@ -35,7 +35,11 @@ Pod::Spec.new do |s|
   #s.resource_bundles = {
   #  'YAPPakistan' => ['YAPPakistan/Assets/**/*']
   #}
-
+  
+  #s.resource_bundles = {
+  #  'YAPPakistan' => ['YAPPakistan/Assets/*']
+  #}
+  
   s.resources = [ 'YAPPakistan/Assets/**/*.gif',
                   'YAPPakistan/Assets/**/*.jpg',
                   'YAPPakistan/Assets/**/*.jpeg',
@@ -54,6 +58,7 @@ Pod::Spec.new do |s|
 
   #MARK: YapUIKIT
   s.dependency 'YAPComponents'
+  s.dependency 'YAPCore'
   
   #MARK: Networking
   s.dependency 'Alamofire', '5.4.3'
@@ -70,9 +75,6 @@ Pod::Spec.new do |s|
   #MARK: UI
   s.dependency 'SwiftyGif', '5.4.0'
   s.dependency 'PhoneNumberKit', '3.3.3'
-  s.dependency 'SwiftRichString', '3.7.2'
-  s.dependency 'Localize-Swift', '3.2.0'
-  s.dependency 'Localize-Swift', '3.2.0'
   s.dependency 'HWPanModal', '0.8.9'
   
   #MARK: UIImage
@@ -80,9 +82,5 @@ Pod::Spec.new do |s|
   
   #MARK: Swift Extension
   s.dependency 'SwifterSwift', '5.2.0'
-  
-  #MARK: Tools
-  s.dependency 'R.swift', '5.4.0'
-  
   
 end

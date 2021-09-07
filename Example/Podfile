@@ -4,6 +4,7 @@ platform :ios, '11.4'
 
 target 'YAPPakistan_Example' do
   pod 'YAPPakistan', :path => '../'
+  pod 'YAPCore', :path => '../YAPCore'
   pod 'YAPComponents', :path => '../YAPComponents'
 
   target 'YAPPakistan_Tests' do

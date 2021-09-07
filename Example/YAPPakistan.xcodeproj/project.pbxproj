@@ -7,10 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D51949F26E1ED3800B81639 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51949C26E1ED3800B81639 /* SplashViewController.swift */; };
+		0D5194A026E1ED3800B81639 /* SplashCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51949D26E1ED3800B81639 /* SplashCoordinator.swift */; };
+		0D5194A126E1ED3800B81639 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51949E26E1ED3800B81639 /* SplashViewModel.swift */; };
+		0D5194C126E1F3FC00B81639 /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5194A426E1F2CA00B81639 /* KeychainItemAccessibility.swift */; };
+		0D5194DA26E1F3FF00B81639 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D5194A526E1F2CA00B81639 /* KeychainManager.swift */; };
+		0D51950826E1FA5000B81639 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */; };
+		0D51950E26E39F1B00B81639 /* CredentialsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51950D26E39F1B00B81639 /* CredentialsManager.swift */; };
+		0D51951226E3A4B600B81639 /* YAPPakistan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951126E3A4B600B81639 /* YAPPakistan.swift */; };
+		0D51951626E3A5B000B81639 /* DemoAppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */; };
+		0D51951C26E3A78500B81639 /* DemoApplicationContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
-		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
-		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
+		607FACDB1AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
+		607FACE01AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		9EB86386FE4EDBA38952F7DD /* Pods_YAPPakistan_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 861F77AB2702806C8679AE20 /* Pods_YAPPakistan_Example.framework */; };
 		CA19FA007DD6CBC56A5643F9 /* Pods_YAPPakistan_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F906C2EBEE9DE0E157C53C9D /* Pods_YAPPakistan_Tests.framework */; };
@@ -27,6 +37,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0D51949C26E1ED3800B81639 /* SplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
+		0D51949D26E1ED3800B81639 /* SplashCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashCoordinator.swift; sourceTree = "<group>"; };
+		0D51949E26E1ED3800B81639 /* SplashViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
+		0D5194A426E1F2CA00B81639 /* KeychainItemAccessibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainItemAccessibility.swift; sourceTree = "<group>"; };
+		0D5194A526E1F2CA00B81639 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		0D51950726E1FA5000B81639 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		0D51950D26E39F1B00B81639 /* CredentialsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManager.swift; sourceTree = "<group>"; };
+		0D51951126E3A4B600B81639 /* YAPPakistan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YAPPakistan.swift; sourceTree = "<group>"; };
+		0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoAppCoordinator.swift; sourceTree = "<group>"; };
+		0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApplicationContainer.swift; sourceTree = "<group>"; };
 		104557EF81E3374A8AEBE811 /* Pods-YAPPakistan_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YAPPakistan_Tests.debug.xcconfig"; path = "Target Support Files/Pods-YAPPakistan_Tests/Pods-YAPPakistan_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		2F1F7EC3BC2E8660EC391263 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		4E2F3A4320599AD33E9B3A27 /* YAPPakistan.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = YAPPakistan.podspec; path = ../YAPPakistan.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -34,8 +54,7 @@
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* YAPPakistan_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YAPPakistan_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
@@ -67,6 +86,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0D51948026E1ECC300B81639 /* Splash */ = {
+			isa = PBXGroup;
+			children = (
+				0D51949D26E1ED3800B81639 /* SplashCoordinator.swift */,
+				0D51949C26E1ED3800B81639 /* SplashViewController.swift */,
+				0D51949E26E1ED3800B81639 /* SplashViewModel.swift */,
+			);
+			path = Splash;
+			sourceTree = "<group>";
+		};
+		0D51948126E1ECC300B81639 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				0D51948026E1ECC300B81639 /* Splash */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		0D5194A626E1F2CA00B81639 /* KeychainManager */ = {
+			isa = PBXGroup;
+			children = (
+				0D51950D26E39F1B00B81639 /* CredentialsManager.swift */,
+				0D5194A426E1F2CA00B81639 /* KeychainItemAccessibility.swift */,
+				0D5194A526E1F2CA00B81639 /* KeychainManager.swift */,
+			);
+			path = KeychainManager;
+			sourceTree = "<group>";
+		};
 		332A5B5475A8B5F85A285429 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -102,10 +149,15 @@
 		607FACD21AFB9204008FA782 /* Example for YAPPakistan */ = {
 			isa = PBXGroup;
 			children = (
+				0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */,
+				0D51948126E1ECC300B81639 /* Modules */,
+				0D5194A626E1F2CA00B81639 /* KeychainManager */,
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
+				0D51951126E3A4B600B81639 /* YAPPakistan.swift */,
+				0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */,
+				0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */,
+				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
-				607FACD91AFB9204008FA782 /* Main.storyboard */,
-				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
 			name = "Example for YAPPakistan";
@@ -164,7 +216,6 @@
 			buildConfigurationList = 607FACEF1AFB9204008FA782 /* Build configuration list for PBXNativeTarget "YAPPakistan_Example" */;
 			buildPhases = (
 				6DC0C0CE9D622030B1EC27E2 /* [CP] Check Pods Manifest.lock */,
-				5679E1E426E1FD4400023D4B /* R.swift */,
 				607FACCC1AFB9204008FA782 /* Sources */,
 				607FACCD1AFB9204008FA782 /* Frameworks */,
 				607FACCE1AFB9204008FA782 /* Resources */,
@@ -246,8 +297,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
-				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
+				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				0D51950826E1FA5000B81639 /* LaunchScreen.storyboard in Resources */,
+				607FACDB1AFB9204008FA782 /* BuildFile in Resources */,
+				607FACE01AFB9204008FA782 /* BuildFile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,26 +336,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		5679E1E426E1FD4400023D4B /* R.swift */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$TEMP_DIR/rswift-lastrun",
-			);
-			name = R.swift;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$SRCROOT/../../YAPPakistan/Assets/R.generated.swift",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"$PODS_ROOT/R.swift/rswift\" generate \"$SRCROOT/../../YAPPakistan/Assets/R.generated.swift\"\n";
-		};
 		5A3548D0B3CBF3F023C75BE9 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -313,9 +346,7 @@
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Differentiator/Differentiator.framework",
 				"${BUILT_PRODUCTS_DIR}/HWPanModal/HWPanModal.framework",
-				"${BUILT_PRODUCTS_DIR}/Localize-Swift/Localize_Swift.framework",
 				"${BUILT_PRODUCTS_DIR}/PhoneNumberKit/PhoneNumberKit.framework",
-				"${BUILT_PRODUCTS_DIR}/R.swift.Library/Rswift.framework",
 				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
 				"${BUILT_PRODUCTS_DIR}/RxDataSources/RxDataSources.framework",
 				"${BUILT_PRODUCTS_DIR}/RxGesture/RxGesture.framework",
@@ -325,10 +356,10 @@
 				"${BUILT_PRODUCTS_DIR}/RxSwiftExt/RxSwiftExt.framework",
 				"${BUILT_PRODUCTS_DIR}/RxTheme/RxTheme.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftRichString/SwiftRichString.framework",
 				"${BUILT_PRODUCTS_DIR}/SwifterSwift/SwifterSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyGif/SwiftyGif.framework",
 				"${BUILT_PRODUCTS_DIR}/YAPComponents/YAPComponents.framework",
+				"${BUILT_PRODUCTS_DIR}/YAPCore/YAPCore.framework",
 				"${BUILT_PRODUCTS_DIR}/YAPPakistan/YAPPakistan.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -336,9 +367,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Differentiator.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HWPanModal.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Localize_Swift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PhoneNumberKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Rswift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxDataSources.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxGesture.framework",
@@ -348,10 +377,10 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwiftExt.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxTheme.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftRichString.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwifterSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyGif.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YAPComponents.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YAPCore.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YAPPakistan.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -388,8 +417,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				0D51950E26E39F1B00B81639 /* CredentialsManager.swift in Sources */,
+				0D51949F26E1ED3800B81639 /* SplashViewController.swift in Sources */,
+				0D51951226E3A4B600B81639 /* YAPPakistan.swift in Sources */,
+				0D51951C26E3A78500B81639 /* DemoApplicationContainer.swift in Sources */,
+				0D5194A026E1ED3800B81639 /* SplashCoordinator.swift in Sources */,
+				0D5194C126E1F3FC00B81639 /* KeychainItemAccessibility.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				0D51951626E3A5B000B81639 /* DemoAppCoordinator.swift in Sources */,
+				0D5194A126E1ED3800B81639 /* SplashViewModel.swift in Sources */,
+				0D5194DA26E1F3FF00B81639 /* KeychainManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,20 +449,12 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		607FACD91AFB9204008FA782 /* Main.storyboard */ = {
+		0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				607FACDA1AFB9204008FA782 /* Base */,
+				0D51950726E1FA5000B81639 /* Base */,
 			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		607FACDE1AFB9204008FA782 /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				607FACDF1AFB9204008FA782 /* Base */,
-			);
-			name = LaunchScreen.xib;
+			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

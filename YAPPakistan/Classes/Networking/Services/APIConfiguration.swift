@@ -8,7 +8,11 @@
 import Foundation
 
 public struct APIConfiguration {
-    public let baseURL: URL
+    public let environment: String
+    
+    public var baseURL: URL {
+        URL(string: "https://pk-dev.yap.co")!
+    }
 
     public var messagesURL: URL {
         return baseURL.appendingPathComponent("/messages")

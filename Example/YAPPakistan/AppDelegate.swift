@@ -7,31 +7,24 @@
 //
 
 import UIKit
-import YAPPakistan
 import RxSwift
+import YAPCore
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var appCoordinator:AppCoordinator!
+    var appCoordinator: DemoAppCoordinator!
     
     fileprivate func appCoordinate(_ shortcutItem: UIApplicationShortcutItem? = nil) -> Observable<ResultType<Void>> {
-        appCoordinator = AppCoordinator(window: window!, shortcutItem: shortcutItem)
+        appCoordinator = DemoAppCoordinator(window: window!, shortcutItem: shortcutItem)
         return appCoordinator!.start().flatMap {[unowned self] _ in
             return self.appCoordinate()
         }
     }
-    
-    func testScreen() {
-        
-    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        window = UIWindow()
-        
-        
+        window = UIWindow(frame: UIScreen.main.bounds)
         let shortcutItem = launchOptions?[.shortcutItem] as? UIApplicationShortcutItem
         appCoordinate(shortcutItem)
             .subscribe()
@@ -40,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-
 }
+
+
 

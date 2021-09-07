@@ -25,7 +25,10 @@ public class CustomersService: BaseService {
                                       passcode: passcode, firstName: firstName, lastName: lastName,
                                       email: email, token: token, whiteListed: whiteListed,
                                       accountType: accountType)
-        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/profile", body: body, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint(.post,
+                                apiConfig.customersURL, "/api/profile",
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
