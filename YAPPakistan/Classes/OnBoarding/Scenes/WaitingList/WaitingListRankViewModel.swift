@@ -46,8 +46,8 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     private let animationFileSubject = BehaviorSubject<String>(value: "waitingListStart.mp4")
     private let firstVideoEndedSubject = PublishSubject<Void>()
     private let placeTextSubject = BehaviorSubject<String?>(value: "Your place in the queue")
-    private let rankSubject = BehaviorSubject<String?>(value: "2142")
-    private let behindNumberSubject = BehaviorSubject<String?>(value: "4836")
+    private let rankSubject = PublishSubject<String?>()
+    private let behindNumberSubject = BehaviorSubject<String?>(value: "")
     private let behindYouTextSubject = BehaviorSubject<String?>(value: "waiting behind you")
     private let infoTextSubject = BehaviorSubject<String?>(value: "We will notify you when you’ve reached the top. Log back in to see your updated place in the queue. ")
     private let boostUpTextSubject = BehaviorSubject<String>(value:
@@ -80,7 +80,29 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     var seeInviteeButtonTitle: Observable<String> { seeInviteeButtonTitleSubject.asObservable() }
     var bumpMeUpButtonTitle: Observable<String> { bumpMeUpButtonTitleSubject.asObservable() }
     
-    init() {
+    init(onBoardingRepository: OnBoardingRepository) {
+        let getRankingRequest = getRankingSubject.share()
+        getRankingRequest.map { $0 }
+            .bind(to: loadingSubject)
+            .disposed(by: disposeBag)
+
+        let result = getRankingRequest.flatMap { _ in
+            onBoardingRepository.getWaitingListRanking()
+        }.share(replay: 1, scope: .whileConnected)
+
+        result
+            .map { _ in false }
+            .bind(to: loadingSubject)
+            .disposed(by: disposeBag)
+
+        result.elements().unwrap().subscribe(onNext: { [weak self] waitingListRank in
+            guard let self = self else { return }
+
+            self.rankSubject.onNext(String(waitingListRank.waitingNewRank))
+            self.behindNumberSubject.onNext(String(waitingListRank.waitingBehind))
+            self.seeInviteeButtonTitleSubject.onNext("Signed up friends: \(waitingListRank.inviteeDetails?.count ?? 0)")
+        }).disposed(by: disposeBag)
+
         firstVideoEndedSubject
             .map { "waitingListLoop.mp4" }
             .bind(to: animationFileSubject)

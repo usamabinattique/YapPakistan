@@ -162,6 +162,7 @@ class WaitingListRankViewController: UIViewController {
         behindNumberLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
             .toBottomOf(rankView, constant: 16)
+            .height(22)
 
         behindYouLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
