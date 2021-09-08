@@ -49,6 +49,10 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
                                                            viewModel: viewModel)
 
         window.rootViewController = viewController
+
+        let referredFriends = ReferredFriendsViewController(themeService: container.themeService, viewModel: ReferredFriendsViewModel())
+
+        viewController.presentPanModal(referredFriends, completion: nil)
     }
 }
 

@@ -1,6 +1,7 @@
 PODS:
   - Alamofire (5.4.3)
   - Differentiator (5.0.0)
+  - HWPanModal (0.8.9)
   - PhoneNumberKit (3.3.3):
     - PhoneNumberKit/PhoneNumberKitCore (= 3.3.3)
     - PhoneNumberKit/UIKit (= 3.3.3)
@@ -69,6 +70,7 @@ PODS:
     - RxSwiftExt (= 6.0.1)
   - YAPPakistan (0.1.0):
     - Alamofire (= 5.4.3)
+    - HWPanModal (= 0.8.9)
     - PhoneNumberKit (= 3.3.3)
     - RxCocoa (= 6.2.0)
     - RxDataSources (= 5.0.0)
@@ -92,6 +94,7 @@ SPEC REPOS:
   trunk:
     - Alamofire
     - Differentiator
+    - HWPanModal
     - PhoneNumberKit
     - RxCocoa
     - RxDataSources
@@ -116,6 +119,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
+  HWPanModal: 259f6916c706b3f63003a325ad1bdfbe913b0fdc
   PhoneNumberKit: 4ce83273551c4d2ae10b7361162f4283dd02835f
   RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
   RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
@@ -130,7 +134,7 @@ SPEC CHECKSUMS:
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   YAPComponents: 973a1d656d519b7de5e0f2bbc5bdba4466014b60
   YAPCore: d4ed6d75b20b45e0081dfbff530db9c2d0091fd8
-  YAPPakistan: c0f531b62150bc25f6b50569a95a4b483916531e
+  YAPPakistan: f1ea09f4ec1604dc2f385fe82d30b8b9009fa9b5
 
 PODFILE CHECKSUM: 3103623bdd8c4436e4f8e91ea84c7122a7ab660f
 
