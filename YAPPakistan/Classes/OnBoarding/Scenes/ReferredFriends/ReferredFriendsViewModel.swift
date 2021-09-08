@@ -60,25 +60,25 @@ class ReferredFriendsViewModel: ReferredFriendsViewModelInput, ReferredFriendsVi
 
         friendListSubject
             .filter { $0.isEmpty }
-            .map { _ in "You referred 0 friends! 😏" }
+            .map { _ in String(format: "screen_waiting_list_rank_invitees_list_title_text".localized, 0, "😏") }
             .bind(to: titleSubject)
             .disposed(by: disposeBag)
 
         friendListSubject
             .filter { $0.isEmpty }
-            .map { _ in "Once your referred friends sign up, you will see their names listed below and your place in the queue bumped up by \(waitingListRank.jump ?? "0") spots for each friend!" }
+            .map { _ in String(format: "screen_waiting_list_rank_invitees_list_subtitle_zero_invitees_text".localized, waitingListRank.jump ?? "0") }
             .bind(to: subtitleSubject)
             .disposed(by: disposeBag)
 
         friendListSubject
             .filter { !$0.isEmpty }
-            .map { _ in "You referred \(invitees.count) friends! 👏" }
+            .map { _ in String(format: "screen_waiting_list_rank_invitees_list_title_text".localized, invitees.count, "👏") }
             .bind(to: titleSubject)
             .disposed(by: disposeBag)
 
         friendListSubject
             .filter { !$0.isEmpty }
-            .map { _ in "You have been bumped up by \(waitingListRank.totalGainedPoints ?? 0) spots." }
+            .map { _ in String(format: "screen_waiting_list_rank_invitees_list_subtitle_text".localized, waitingListRank.totalGainedPoints ?? 0) }
             .bind(to: subtitleSubject)
             .disposed(by: disposeBag)
 

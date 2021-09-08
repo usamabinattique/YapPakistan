@@ -53,7 +53,7 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     private let behindYouTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_behind_text".localized)
     private let infoTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_info_text".localized)
     private let boostUpTextSubject = BehaviorSubject<String>(value: "\("screen_waiting_list_rank_bump_me_up_info_text_top".localized)\n\("screen_waiting_list_rank_bump_me_up_info_text_bottom".localized)")
-    private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value:  String(format: "screen_waiting_list_rank_invitees_list_button_title_text".localized, 2))
+    private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value: String(format: "screen_waiting_list_rank_invitees_list_button_title_text".localized, 0))
     private let bumpMeUpButtonTitleSubject = BehaviorSubject<String>(value: "screen_waiting_list_rank_bump_me_up_text".localized)
 
     var inputs: WaitingListRankViewModelInput { self }
@@ -102,11 +102,11 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
             self.behindNumberSubject.onNext(String(waitingListRank.waitingBehind))
             self.boostUpTextSubject.onNext(
                 """
-                Want to jump the queue?
-                Boost yourself up the queue by \(waitingListRank.jump ?? "0") for every friend you refer that signs up.🚀
+                \("screen_waiting_list_rank_bump_me_up_info_text_top".localized)
+                \(String(format: "screen_waiting_list_rank_bump_me_up_info_text_bottom".localized, waitingListRank.jump ?? "0"))
                 """
             )
-            self.seeInviteeButtonTitleSubject.onNext("Signed up friends: \(waitingListRank.inviteeDetails?.count ?? 0)")
+            self.seeInviteeButtonTitleSubject.onNext(String(format: "screen_waiting_list_rank_invitees_list_button_title_text".localized, waitingListRank.inviteeDetails?.count ?? 0))
         }).disposed(by: disposeBag)
 
         firstVideoEndedSubject
