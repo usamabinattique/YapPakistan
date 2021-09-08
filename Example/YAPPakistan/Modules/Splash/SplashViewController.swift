@@ -32,11 +32,11 @@ class SplashViewController: UIViewController {
         .addToSuper(view: view)
     
     /*private lazy var visualEffectView: UIVisualEffectView = {
-        let view = UIVisualEffectView()
-        view.effect = nil
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()*/
+     let view = UIVisualEffectView()
+     view.effect = nil
+     view.translatesAutoresizingMaskIntoConstraints = false
+     return view
+     }()*/
     
     // MARK: Initialization
     
@@ -50,11 +50,21 @@ class SplashViewController: UIViewController {
         super.init(coder: aDecoder)
     }
     
+    deinit {
+        //#if DEBUG
+        print("CFGetRetainCount:e \(CFGetRetainCount(logoCenterHorizonConstraint))")
+        print("CFGetRetainCount:e \(CFGetRetainCount(logoWidthConstraint))")
+        print("CFGetRetainCount:e \(CFGetRetainCount(logoHeightConstraint))")
+        print("CFGetRetainCount:e \(CFGetRetainCount(dotWidthConstraint))")
+        print("CFGetRetainCount:e \(CFGetRetainCount(dotHeightConstraint))")
+        //#endif
+    }
+    
     // MARK: Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupSubViews()
         setupConstraints()
         bindViews()
@@ -88,7 +98,6 @@ extension SplashViewController {
         
         logoCenterHorizonConstraint = NSLayoutConstraint(item: logo, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
         
-        logo.horizontallyCenterWith(view, constant: 0)
         logoWidthConstraint = logo.widthAnchor.constraint(equalToConstant: 110)
         logoHeightConstraint = logo.heightAnchor.constraint(equalToConstant: 103)
         
@@ -120,11 +129,11 @@ private extension SplashViewController {
             .showError
             .subscribe(onNext: { [unowned self] error in
                 /* self.showAlert(title: "",
-                           message: error,
-                           defaultButtonTitle:  "common_display_text_retry".localized,
-                           secondayButtonTitle: nil, defaultButtonHandler: { [weak self] _ in
-                            self?.viewModel.inputs.refreshXSRF.onNext(())
-                }, secondaryButtonHandler: nil, completion: nil) */
+                 message: error,
+                 defaultButtonTitle:  "common_display_text_retry".localized,
+                 secondayButtonTitle: nil, defaultButtonHandler: { [weak self] _ in
+                 self?.viewModel.inputs.refreshXSRF.onNext(())
+                 }, secondaryButtonHandler: nil, completion: nil) */
             })
             .disposed(by: rx.disposeBag)
         
@@ -135,7 +144,7 @@ private extension SplashViewController {
             .flatMap{ [weak self] _ in self?.animateLogo() ?? .never() }
             .bind(to: viewModel.inputs.animationCompleteObserver)
             .disposed(by: rx.disposeBag)
-
+        
     }
 }
 
@@ -172,7 +181,7 @@ private extension SplashViewController {
             }
             return Disposables.create()
         }
-
+        
         return Observable.zip(logoAnimation, dotAnimationFaster).map{ _ in }
     }
     
