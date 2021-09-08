@@ -5,20 +5,17 @@
 //  Created by Zain on 18/06/2019.
 //  Copyright © 2019 YAP. All rights reserved.
 //
-/*
-import UIKit
-import YAPKit
-import RxSwift
-import YAP
-import OnBoarding
-import AppAnalytics
 
-class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void>>, AccountSelectionCoordinatorType {
-    var root: UINavigationController!
-    var result = PublishSubject<ResultType<Void>>()
-    var loginResult = PublishSubject<ResultType<Void>>()
-    var welcomeResult = PublishSubject<ResultType<Void>>()
-    var b2cOnboardingResult = PublishSubject<ResultType<Void>>()
+import UIKit
+import RxSwift
+import YAPCore
+
+public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void>>, AccountSelectionCoordinatorType {
+    public var root: UINavigationController!
+    public var result = PublishSubject<ResultType<Void>>()
+    //var loginResult = PublishSubject<ResultType<Void>>()
+    //var welcomeResult = PublishSubject<ResultType<Void>>()
+    public var b2cOnboardingResult = PublishSubject<ResultType<Void>>()
     
     private let window: UIWindow
     
@@ -26,10 +23,10 @@ class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void>>, Acc
         self.window = window
     }
     
-    override func start() -> Observable<ResultType<Void>> {
-        let viewController = AccountSelectionViewController()
-        let viewModel: AccountSelectionViewModelType = AccountSelectionViewModel()
-        viewController.viewModel = viewModel
+    public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
+        
+        let viewModel = AccountSelectionViewModel()
+        let viewController = AccountSelectionViewController(themeService: themeService, viewModel: viewModel)
         
         root = UINavigationController(rootViewController: viewController)
         root.interactivePopGestureRecognizer?.isEnabled = false
@@ -38,25 +35,23 @@ class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void>>, Acc
         root.navigationBar.isTranslucent = true
         root.navigationBar.isHidden = true
         
-        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: { [unowned self] in
-            self.window.rootViewController = self.root
-        })
+        //UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: { [unowned self] in
+        self.window.rootViewController = self.root
+        //})
+        
         
         viewModel.outputs.personal.subscribe(onNext: {[unowned self] _ in
-            AppAnalytics.shared.logEvent(OnBoardingEvent.getStarted(_params: nil))
+            //AppAnalytics.shared.logEvent(OnBoardingEvent.getStarted(_params: nil))
             self.b2cOnboarding()
-        }).disposed(by: disposeBag)
-        //        let business = viewModel.outputs.business.flatMap{ [unowned self] _ -> Observable<ResultType<Void>> in
-        //            self.navigateToWelcom(welcomType: .b2b)
-        //        }
-        //
+        }).disposed(by: rx.disposeBag)
         
+        /*
         self.welcomeResult.map { $0.isSuccess }.unwrap()
             .subscribe(onNext: { [weak self] _ in
                 guard let `self` = self else { return }
                 self.b2cOnboarding()
             })
-            .disposed(by: disposeBag)
+            .disposed(by: rx.disposeBag)
         
         viewModel.outputs.signIn.subscribe(onNext: { [unowned self] _ in
             
@@ -68,21 +63,24 @@ class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void>>, Acc
             } else {
                 self.login()
             }
-        }).disposed(by: disposeBag)
+        }).disposed(by: rx.disposeBag)
+        */
         
-        Observable.merge(b2cOnboardingResult.filter { !$0.isCancel }, b2cOnboardingResult.filter { !$0.isCancel }, loginResult.filter { !$0.isCancel })
+        Observable.merge(b2cOnboardingResult.filter { !$0.isCancel }, b2cOnboardingResult.filter { !$0.isCancel }/*, loginResult.filter { !$0.isCancel }*/)
             .subscribe(onNext: { [weak self] output in
                 guard let `self` = self else { return }
                 self.result.onNext(output)
                 self.result.onCompleted()
             })
-            .disposed(by: disposeBag)
-        
+            .disposed(by: rx.disposeBag)
+         
         return self.result
     }
     
 }
 
+
+/*
 class AccountSelectionCoordinatorPushable: Coordinator<ResultType<Void>>, AccountSelectionCoordinatorType {
     var root: UINavigationController!
     var result = PublishSubject<ResultType<Void>>()
@@ -110,14 +108,14 @@ class AccountSelectionCoordinatorPushable: Coordinator<ResultType<Void>>, Accoun
         viewModel.outputs.personal.subscribe(onNext: {[unowned self] _ in
             AppAnalytics.shared.logEvent(OnBoardingEvent.getStarted(_params: nil))
             self.b2cOnboarding()
-        }).disposed(by: disposeBag)
+        }).disposed(by: rx.disposeBag)
         
         self.welcomeResult.map { $0.isSuccess }.unwrap()
             .subscribe(onNext: { [weak self] _ in
                 guard let `self` = self else { return }
                 self.b2cOnboarding()
             })
-            .disposed(by: disposeBag)
+            .disposed(by: rx.disposeBag)
         
         viewModel.outputs.signIn.subscribe(onNext: { [unowned self] _ in
             
@@ -129,7 +127,7 @@ class AccountSelectionCoordinatorPushable: Coordinator<ResultType<Void>>, Accoun
             } else {
                 self.login()
             }
-        }).disposed(by: disposeBag)
+        }).disposed(by: rx.disposeBag)
         
         Observable.merge(b2cOnboardingResult.filter { !$0.isCancel }, b2cOnboardingResult.filter { !$0.isCancel }, loginResult.filter { !$0.isCancel })
             .subscribe(onNext: { [weak self] output in
@@ -137,7 +135,7 @@ class AccountSelectionCoordinatorPushable: Coordinator<ResultType<Void>>, Accoun
                 self.result.onNext(output)
                 self.result.onCompleted()
             })
-            .disposed(by: disposeBag)
+            .disposed(by: rx.disposeBag)
         
         return self.result
     }

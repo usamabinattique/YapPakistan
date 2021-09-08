@@ -13,27 +13,27 @@
 //  Created by Zain on 18/06/2019.
 //  Copyright © 2019 YAP. All rights reserved.
 //
-/*
+
 import UIKit
 import RxCocoa
 import RxSwift
-
 import AVKit
+import RxTheme
+import YAPComponents
 
 class AccountSelectionViewController: UIViewController {
+
     
-    private lazy var signInLabel: UIButton = {
+    private lazy var signInLabelButtonContainer = UIFactory.makeView().setAlpha(0).setHidden(true)
+    private lazy var signInLabel = UIFactory.makeLabel(
+        font: .appFont(forTextStyle: .regular),
+        text: "screen_home_display_text_already_have".localized
+    )
+    
+    private lazy var signInButton: UIButton = {
         let label = UIButton()
         label.titleLabel?.font = UIFont.appFont(forTextStyle: .regular)
-        label.setTitleColor(UIColor.appColor(ofType: .greyDark), for: .normal)
-        let text =  "screen_home_display_text_sign_in".localized
-        let signIn = text.components(separatedBy: "?").last ?? ""
-        let attributed = NSMutableAttributedString(string: text)
-        attributed.addAttribute(.foregroundColor, value: UIColor.white, range: NSRange(location: text.count - signIn.count, length: signIn.count))
-        attributed.addAttribute(.foregroundColor, value: UIColor.greyLight, range: NSRange(location: 0, length: text.count - signIn.count))
-        label.setAttributedTitle(attributed, for: .normal)
-        label.isHidden = true
-        label.alpha = 0
+        label.setTitle("screen_home_button_sign_in".localized, for: .normal)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -41,7 +41,6 @@ class AccountSelectionViewController: UIViewController {
     private lazy var getStartedButton: UIButton = {
         let button = UIButton()
         button.setTitle("screen_welcome_button_get_started".localized, for: .normal)
-        button.backgroundColor = .primary
         button.isHidden = true
         button.alpha = 0
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +50,6 @@ class AccountSelectionViewController: UIViewController {
     private lazy var captionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.appFont(ofSize: 16, weigth: .semibold)
-        label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -64,14 +62,10 @@ class AccountSelectionViewController: UIViewController {
         return playerLayer
     }()
     
-    private lazy var player: AVPlayer = {
-        let url = Bundle.main.url(forResource: "get_started", withExtension: "mp4")
-        let player = AVPlayer(url: url!)
-        return player
+    private lazy var player: AVPlayer? = {
+        let url = Bundle.yapPak.url(forResource: "get_started", withExtension: "mp4")
+        return AVPlayer(url: url!)
     }()
-    
-    var viewModel: AccountSelectionViewModelType!
-    private var disposeBag = DisposeBag()
     
     private var captions = ["Bank your way", "", "Get an account in seconds", "", "Money transfers made simple", "", "Track your spending", "", "Split bills effortlessly", "", "Spend locally wherever you go", "", "Instant spending notifications", "", "An app for everyone", ""]
     private var captionDelays = [2.0, 1.5, 1.0, 1.5, 0.5, 1.8, 0.5, 2.0, 0.5, 2.0, 1.0, 2.5, 1.5, 2.0, 1.0, 3.0]
@@ -80,10 +74,20 @@ class AccountSelectionViewController: UIViewController {
     
     private var stopped = true
     
+    private var viewModel: AccountSelectionViewModelType!
+    private var themeService: ThemeService<AppTheme>!
+    
+    convenience init(themeService: ThemeService<AppTheme>, viewModel:AccountSelectionViewModelType) {
+        self.init(nibName: nil, bundle: nil)
+        self.themeService = themeService
+        self.viewModel = viewModel
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupSubViews()
+        setupTheme()
         setupConstraints()
         bindViews()
         setupVideo()
@@ -119,13 +123,13 @@ class AccountSelectionViewController: UIViewController {
     }
     
     private func addNotificationObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(resetVideo), name: .ApplicationWillResignActive, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(startVideo), name: .ApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(resetVideo), name: .applicationWillResignActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(startVideo), name: .applicationDidBecomeActive, object: nil)
     }
     
     private func removeNotificationObservers() {
-        NotificationCenter.default.removeObserver(self, name: .ApplicationWillResignActive, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .ApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .applicationWillResignActive, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .applicationDidBecomeActive, object: nil)
     }
     
     @objc
@@ -146,31 +150,31 @@ private extension AccountSelectionViewController {
     func resetVideo() {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(animationCaption), object: nil)
         stopped = true
-        player.pause()
-        player.seek(to: .zero)
+        player?.pause()
+        player?.seek(to: .zero)
         currentCaption = 0
         captionLabel.text = ""
         getStartedButton.isHidden = true
         getStartedButton.alpha = 0
         getStartedButton.isEnabled = false
-        signInLabel.isHidden = true
-        signInLabel.alpha = 0
-        signInLabel.isEnabled = false
+        signInLabelButtonContainer.isHidden = true
+        signInLabelButtonContainer.alpha = 0
+        signInLabelButtonContainer.isUserInteractionEnabled = false
     }
     
     @objc
     func startVideo() {
-        player.play()
+        player?.play()
         stopped = false
         self.perform(#selector(animationCaption), with: nil, afterDelay: captionDelays[self.currentCaption])
         getStartedButton.isHidden = false
-        signInLabel.isHidden = false
+        signInLabelButtonContainer.isHidden = false
         UIView.animate(withDuration: 0.5, delay: captionDelays[0], animations: {
             self.getStartedButton.alpha = 1
-            self.signInLabel.alpha = 1
+            self.signInLabelButtonContainer.alpha = 1
         }, completion: { completed in
             self.getStartedButton.isEnabled = true
-            self.signInLabel.isEnabled = true
+            self.signInLabelButtonContainer.isUserInteractionEnabled = true
         })
     }
 }
@@ -180,21 +184,41 @@ private extension AccountSelectionViewController {
 private extension AccountSelectionViewController {
     
     func setupSubViews() {
-        view.backgroundColor = .white
-        
-        view.layer.addSublayer(playerLayer)
-        view.addSubview(getStartedButton)
-        view.addSubview(signInLabel)
-        view.addSubview(captionLabel)
+        view.layer
+            .addSublayer(playerLayer)
+        view
+            .addSub(view: getStartedButton)
+            .addSub(view: signInLabelButtonContainer)
+            .addSub(view: signInLabel)
+            .addSub(view: captionLabel)
+        signInLabelButtonContainer
+            .addSub(view: signInLabel)
+            .addSub(view: signInButton)
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({$0.primaryLight}, to: [view.rx.backgroundColor])
+            .bind({$0.greyLight}, to: [signInLabel.rx.textColor])
+            .bind({$0.primaryExtraLight}, to: [signInButton.rx.titleColor(for: .normal)])
+            .bind({$0.primary}, to: [getStartedButton.rx.backgroundColor])
+            .bind({$0.primaryExtraLight}, to: [captionLabel.rx.textColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func setupConstraints() {
         
-        signInLabel
+        signInLabelButtonContainer
             .alignEdgeWithSuperviewSafeArea(.bottom, constant: 20)
-            .width(constant: view.bounds.size.width)
             .height(constant: 24)
             .centerHorizontallyInSuperview()
+        
+        signInLabel
+            .alignEdgesWithSuperview([.top, .bottom, .left])
+        
+        signInButton
+            .alignEdgesWithSuperview([.top, .bottom, .right])
+            .toRightOf(signInLabel, constant: 5)
         
         getStartedButton
             .toTopOf(signInLabel, constant: 20)
@@ -237,8 +261,8 @@ private extension AccountSelectionViewController {
 private extension AccountSelectionViewController {
     
     func bindViews() {
-        getStartedButton.rx.tap.bind(to: viewModel.inputs.personalObserver).disposed(by: disposeBag)
-        signInLabel.rx.tap.bind(to: viewModel.inputs.signInObserver).disposed(by: disposeBag)
+        getStartedButton.rx.tap.bind(to: viewModel.inputs.personalObserver).disposed(by: rx.disposeBag)
+        signInButton.rx.tap.bind(to: viewModel.inputs.signInObserver).disposed(by: rx.disposeBag)
     }
 }
 
@@ -261,4 +285,3 @@ private extension AccountSelectionViewController {
         self.perform(#selector(animationCaption), with: nil, afterDelay: captionDelays[self.currentCaption])
     }
 }
-*/

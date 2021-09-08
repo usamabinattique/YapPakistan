@@ -31,10 +31,24 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         let _ = reposiotry.fetchXSRFToken().subscribe().disposed(by: rx.disposeBag)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.showDummyController()
-        }
+        
+        //self.showDummyController()
+        self.accountSelection()
+        //self.onboarding()
+        
         return result
+    }
+    
+    func onboarding() {
+        let viewModel = OnBoardingViewModel()
+        let viewController = OnBoardingViewController(themeService: themeService, viewModel: viewModel, withChildNavigation: UINavigationController())
+        window.rootViewController = viewController
+    }
+    
+    func accountSelection() { //-> Observable<ResultType<Void>> {
+        coordinate(to: AccountSelectionCoordinatorReplaceable(window: window)).subscribe { result in
+            print(result)
+        }.disposed(by: rx.disposeBag)
     }
     
     func showDummyController() {

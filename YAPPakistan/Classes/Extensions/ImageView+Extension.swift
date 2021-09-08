@@ -10,42 +10,26 @@ import UIKit
 
 extension UIImageView {
     @discardableResult func setImageInBundle(named:String) -> Self {
-        image = BundleYapPak.image(named)
+        image = UIImage(named: named, in: Bundle.yapPak)
         return self
     }
 }
 
 class BundleYapPak {
-    /* static func image(_ name: String) -> UIImage? {
-        let podBundle = Bundle(for: BundleYapPak.self)
-        return UIImage(named: name, in: podBundle, compatibleWith: nil)
-    } */
-    
     static func image(_ name: String) -> UIImage? {
-        let podBundle = Bundle(for: BundleYapPak.self) // for getting pod url
-        if let url = podBundle.url(forResource: "YAPPakistan", withExtension: "bundle") { //<YourBundleName> must be the same as you wrote in .podspec
-            let bundle = Bundle(url: url)
-            return UIImage(named: name, in: bundle, compatibleWith: nil)
-        }
-        return UIImage()
+        return UIImage(named: name, in: Bundle.yapPak)
     }
-    
-    static var bundle:Bundle? {
-        let podBundle = Bundle(for: BundleYapPak.self) // for getting pod url
-        if let url = podBundle.url(forResource: "YAPPakistan", withExtension: "bundle") { //<YourBundleName> must be the same as you wrote in .podspec
-            return Bundle(url: url)
-        }
-        return nil
-    }
-}
-
-extension Bundle {
-    var yapPak:Bundle? {BundleYapPak.bundle}
 }
 
 extension UIImageView {
-    @discardableResult func setImage(named:String, bundle:Bundle) -> Self {
-        image = UIImage(named: named, in: bundle, compatibleWith: nil)
+    @discardableResult func setImage(named:String, in bundle:Bundle) -> Self {
+        image = UIImage(named: named, in: bundle)
         return self
+    }
+}
+
+public extension UIImage {
+    convenience init?(named:String, in bundle:Bundle?) {
+        self.init(named: named, in: bundle, compatibleWith: nil)
     }
 }
