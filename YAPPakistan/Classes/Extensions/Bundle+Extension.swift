@@ -1,16 +1,15 @@
 //
 //  Bundle+Extension.swift
-//  YAPComponents
+//  YAPPakistan
 //
-//  Created by Sarmad on 07/09/2021.
+//  Created by Umer on 08/09/2021.
 //
 
 import Foundation
 
-private class YapResources {
-    static var bundle:Bundle { return Bundle(for: Self.self) }
-}
-
 public extension Bundle {
-    static var yapPakistan:Bundle { YapResources.bundle }
+    private class YAPPakistanBundle {   }
+    static var yapPakistan: Bundle {
+        Bundle(for: YAPPakistanBundle.self)
+    }
 }
