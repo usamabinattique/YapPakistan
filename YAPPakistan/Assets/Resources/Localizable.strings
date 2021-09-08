@@ -82,7 +82,9 @@
 "screen_home_button_personal" = "Personal";
 "screen_home_button_business" = "Business";
 "screen_home_button_filter" = "Filter";
-"screen_home_display_text_sign_in" = "Already have an account? <bold>Sign in</bold>";
+
+"screen_home_display_text_already_have" = "Already have an account?";
+"screen_home_button_sign_in" = "Sign in";
 
 // MARK: Welcom Screen
 "screen_welcome_b2c_display_text_page1_title" = "Real-time banking";
