@@ -29,9 +29,9 @@ class ReferredFriendsViewModel: ReferredFriendsViewModelInput, ReferredFriendsVi
     // MARK: Properties
 
     private static let colors = [
-        (UIColor(hex: 0xf44774, transparency: 0.16), UIColor(hex: 0xf44774)),
-        (UIColor(hex: 0x478df4, transparency: 0.16), UIColor(hex: 0x478df4)),
-        (UIColor(hex: 0xfc6253, transparency: 0.16), UIColor(hex: 0xf57f17)),
+        ("#f44774", "#f44774"),
+        ("#478df4", "#478df4"),
+        ("#fc6253", "#f57f17"),
     ]
 
     private let disposeBag = DisposeBag()

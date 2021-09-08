@@ -12,8 +12,8 @@ protocol ReferredFriendViewModelInput {
 }
 
 protocol ReferredFriendViewModelOutput {
-    var initialsBackgroundColor: Observable<UIColor?> { get }
-    var initialsTextColor: Observable<UIColor?> { get }
+    var initialsBackgroundColor: Observable<String?> { get }
+    var initialsTextColor: Observable<String?> { get }
     var friendName: Observable<String> { get }
 }
 
@@ -28,8 +28,8 @@ class ReferredFriendViewModel: ReferredFriendViewModelInput, ReferredFriendViewM
 
     private let disposeBag = DisposeBag()
 
-    private let initialsBackgroundColorSubject = BehaviorSubject<UIColor?>(value: nil)
-    private let initialsTextColorSubject = BehaviorSubject<UIColor?>(value: nil)
+    private let initialsBackgroundColorSubject = BehaviorSubject<String?>(value: nil)
+    private let initialsTextColorSubject = BehaviorSubject<String?>(value: nil)
     private let friendNameSubject = BehaviorSubject<String>(value: "")
 
     var inputs: ReferredFriendViewModelInput { self }
@@ -39,11 +39,11 @@ class ReferredFriendViewModel: ReferredFriendViewModelInput, ReferredFriendViewM
 
     // MARK: Outputs
 
-    var initialsBackgroundColor: Observable<UIColor?> { initialsBackgroundColorSubject.asObservable() }
-    var initialsTextColor: Observable<UIColor?> { initialsTextColorSubject.asObservable() }
+    var initialsBackgroundColor: Observable<String?> { initialsBackgroundColorSubject.asObservable() }
+    var initialsTextColor: Observable<String?> { initialsTextColorSubject.asObservable() }
     var friendName: Observable<String> { friendNameSubject.asObservable() }
 
-    init(friendName: String, initialsBackgroundColor: UIColor?, initialsTextColor: UIColor?) {
+    init(friendName: String, initialsBackgroundColor: String?, initialsTextColor: String?) {
         initialsBackgroundColorSubject.onNext(initialsBackgroundColor)
         initialsTextColorSubject.onNext(initialsTextColor)
         friendNameSubject.onNext(friendName)
