@@ -47,18 +47,14 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     private let waitingListRankSubject = PublishSubject<WaitingListRank>()
     private let animationFileSubject = BehaviorSubject<String>(value: "waitingListStart.mp4")
     private let firstVideoEndedSubject = PublishSubject<Void>()
-    private let placeTextSubject = BehaviorSubject<String?>(value: "Your place in the queue")
+    private let placeTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_place_text_heading".localized)
     private let rankSubject = PublishSubject<String?>()
     private let behindNumberSubject = BehaviorSubject<String?>(value: "")
-    private let behindYouTextSubject = BehaviorSubject<String?>(value: "waiting behind you")
-    private let infoTextSubject = BehaviorSubject<String?>(value: "We will notify you when you’ve reached the top. Log back in to see your updated place in the queue. ")
-    private let boostUpTextSubject = BehaviorSubject<String>(value:
-        """
-        Want to jump the queue?
-        Boost yourself up the queue by 0 for every friend you refer that signs up.🚀
-        """)
-    private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value: "Signed up friends: 0")
-    private let bumpMeUpButtonTitleSubject = BehaviorSubject<String>(value: "Bump me up the queue")
+    private let behindYouTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_behind_text".localized)
+    private let infoTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_info_text".localized)
+    private let boostUpTextSubject = BehaviorSubject<String>(value: "\("screen_waiting_list_rank_bump_me_up_info_text_top".localized)\n\("screen_waiting_list_rank_bump_me_up_info_text_bottom".localized)")
+    private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value:  String(format: "screen_waiting_list_rank_invitees_list_button_title_text".localized, 2))
+    private let bumpMeUpButtonTitleSubject = BehaviorSubject<String>(value: "screen_waiting_list_rank_bump_me_up_text".localized)
 
     var inputs: WaitingListRankViewModelInput { self }
     var outputs: WaitingListRankViewModelOutput { self }
@@ -82,7 +78,7 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     var infoText: Observable<String?> { infoTextSubject.asObservable() }
     var seeInviteeButtonTitle: Observable<String> { seeInviteeButtonTitleSubject.asObservable() }
     var bumpMeUpButtonTitle: Observable<String> { bumpMeUpButtonTitleSubject.asObservable() }
-    
+
     init(onBoardingRepository: OnBoardingRepository) {
         let getRankingRequest = getRankingSubject.share()
         getRankingRequest.map { $0 }

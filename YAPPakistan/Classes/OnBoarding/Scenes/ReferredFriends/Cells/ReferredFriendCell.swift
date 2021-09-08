@@ -86,10 +86,12 @@ class ReferredFriendCell: UITableViewCell {
 
     private func bindViews(with viewModel: ReferredFriendViewModelType) {
         viewModel.outputs.initialsBackgroundColor
+            .map { UIColor(hexString: $0 ?? "", transparency: 0.16) }
             .bind(to: initialsImageView.rx.backgroundColor)
             .disposed(by: disposeBag)
 
         viewModel.outputs.initialsTextColor
+            .map { UIColor(hexString: $0 ?? "") }
             .bind(to: initialsImageView.rx.labelColor)
             .disposed(by: disposeBag)
 
