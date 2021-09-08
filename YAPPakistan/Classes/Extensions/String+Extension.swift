@@ -10,9 +10,9 @@ import Foundation
 public extension String {
     var localized: String {
         #if DEBUG
-            return Bundle.YAPPakistan.localizedString(forKey: self, value: "**\(self)**", table: nil)
+            return Bundle.yapPakistan.localizedString(forKey: self, value: "**\(self)**", table: nil)
         #else
-            return YAPPakistanBundle.bundle.localizedString(forKey: self, value: nil, table: nil)
+            return Bundle.yapPakistan.localizedString(forKey: self, value: nil, table: nil)
         #endif
     }
 }
