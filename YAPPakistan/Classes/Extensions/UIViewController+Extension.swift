@@ -106,7 +106,7 @@ extension UIViewController {
         
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
-        button.setImage(UIImage(named: type == .backCircled || type == .backEmpty ? "icon_back" : "icon_close", in: .yapPak, compatibleWith: nil)?.asTemplate, for: .normal)
+        button.setImage(UIImage(named: type == .backCircled || type == .backEmpty ? "icon_back" : "icon_close", in: .yapPakistan, compatibleWith: nil)?.asTemplate, for: .normal)
         button.tintColor = type == .backCircled || type == .closeCircled /*|| SessionManager.current.currentAccountType != .b2cAccount*/ ? tintColor : backgroundColor
         button.backgroundColor = type == .backCircled || type == .closeCircled ? backgroundColor : .clear
         button.layer.cornerRadius = 0.5 * button.bounds.size.width
@@ -123,7 +123,7 @@ extension UIViewController {
         
         let button = UIButton()
         button.frame = CGRect(x: 20, y: 20, width: 35, height: 35)
-        button.setImage(UIImage(named: type == .backCircled || type == .backEmpty ? "icon_back" : "icon_close", in: .yapPak, compatibleWith: nil)?.asTemplate, for: .normal)
+        button.setImage(UIImage(named: type == .backCircled || type == .backEmpty ? "icon_back" : "icon_close", in: .YAPPakistan, compatibleWith: nil)?.asTemplate, for: .normal)
         button.tintColor = type == .backCircled || type == .closeCircled || SessionManager.current.currentAccountType != .b2cAccount ? .white : .primary
         button.backgroundColor = type == .backCircled || type == .closeCircled ? .primary : .clear
         

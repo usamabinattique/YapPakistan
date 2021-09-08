@@ -21,7 +21,7 @@ class LoginViewController: UIViewController {
     fileprivate lazy var logo: UIImageView = {
         let logo = UIImageView()
         logo.contentMode = .scaleAspectFit
-        logo.image = UIImage(named: "icon_app_logo", in:.yapPak)
+        logo.image = UIImage(named: "icon_app_logo", in:.yapPakistan)
         logo.translatesAutoresizingMaskIntoConstraints = false
         return logo
     }()
@@ -78,7 +78,7 @@ class LoginViewController: UIViewController {
         return label
     }()
     
-    fileprivate lazy var rememberIdSwitch: UIAppSwitch = UIAppSwitchFactory.createUIAppSwitch(isOn: true, onImage: UIImage(named: "icon_check_primary_dark", in:.yapPak)?.asTemplate)
+    fileprivate lazy var rememberIdSwitch: UIAppSwitch = UIAppSwitchFactory.createUIAppSwitch(isOn: true, onImage: UIImage(named: "icon_check_primary_dark", in:.yapPakistan)?.asTemplate)
     
     fileprivate lazy var signInButton: AppRoundedButton = {
         let button = AppRoundedButton()

@@ -10,14 +10,14 @@ import UIKit
 
 extension UIImageView {
     @discardableResult func setImageInBundle(named:String) -> Self {
-        image = UIImage(named: named, in: Bundle.yapPak)
+        image = UIImage(named: named, in: Bundle.yapPakistan)
         return self
     }
 }
 
 class BundleYapPak {
     static func image(_ name: String) -> UIImage? {
-        return UIImage(named: name, in: Bundle.yapPak)
+        return UIImage(named: name, in: Bundle.yapPakistan)
     }
 }
 

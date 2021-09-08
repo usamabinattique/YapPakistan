@@ -63,7 +63,7 @@ class AccountSelectionViewController: UIViewController {
     }()
     
     private lazy var player: AVPlayer? = {
-        let url = Bundle.yapPak.url(forResource: "get_started", withExtension: "mp4")
+        let url = Bundle.yapPakistan.url(forResource: "get_started", withExtension: "mp4")
         return AVPlayer(url: url!)
     }()
     

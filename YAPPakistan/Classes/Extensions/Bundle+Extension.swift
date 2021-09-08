@@ -12,5 +12,5 @@ private class YapResources {
 }
 
 public extension Bundle {
-    static var yapPak:Bundle { YapResources.bundle }
+    static var yapPakistan:Bundle { YapResources.bundle }
 }

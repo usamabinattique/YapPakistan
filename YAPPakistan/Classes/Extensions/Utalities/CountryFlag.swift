@@ -10,6 +10,6 @@ import UIKit
 
 public class CountryFlag {
     public static func flag(forCountryCode countryCode: String) -> UIImage? {
-        return UIImage.init(named: countryCode.uppercased(), in: .yapPak, compatibleWith: nil)
+        return UIImage.init(named: countryCode.uppercased(), in: .yapPakistan, compatibleWith: nil)
     }
 }

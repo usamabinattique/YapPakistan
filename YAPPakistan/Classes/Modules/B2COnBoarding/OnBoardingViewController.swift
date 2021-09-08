@@ -15,7 +15,7 @@ import RxTheme
 class OnBoardingViewController: UIViewController {
     
     private lazy var progressView: OnBoardingProgressView = UIFactory
-        .makeOnBoardingProgressView(with: UIImage(named: "icon_back", in: .yapPak), completionImage: UIImage(named: "icon_check", in: .yapPak))
+        .makeOnBoardingProgressView(with: UIImage(named: "icon_back", in: .yapPakistan), completionImage: UIImage(named: "icon_check", in: .yapPakistan))
     
     private var childNavigation: UINavigationController?
     private var childView: UIView?

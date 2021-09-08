@@ -49,11 +49,11 @@ class B2CWelcomPageViewModel: WelcomePageViewModel {
     override func generateChildViewModels() {
         var viewModels = [WelcomePageChildViewModelType]()
         
-        viewModels.append(WelcomePageChildViewModel(heading: "screen_welcome_b2c_display_text_page1_title".localized, details: "screen_welcome_b2c_display_text_page1_details".localized, image: UIImage(named: "image_welcom_page1", in: .yapPak, compatibleWith: nil)))
+        viewModels.append(WelcomePageChildViewModel(heading: "screen_welcome_b2c_display_text_page1_title".localized, details: "screen_welcome_b2c_display_text_page1_details".localized, image: UIImage(named: "image_welcom_page1", in: .yapPakistan, compatibleWith: nil)))
         
-        viewModels.append(WelcomePageChildViewModel(heading: "screen_welcome_b2c_display_text_page2_title".localized, details: "screen_welcome_b2c_display_text_page2_details".localized, image: UIImage(named: "image_welcom_page2", in: .yapPak, compatibleWith: nil)))
+        viewModels.append(WelcomePageChildViewModel(heading: "screen_welcome_b2c_display_text_page2_title".localized, details: "screen_welcome_b2c_display_text_page2_details".localized, image: UIImage(named: "image_welcom_page2", in: .yapPakistan, compatibleWith: nil)))
         
-        viewModels.append(WelcomePageChildViewModel(heading: "screen_welcome_b2c_display_text_page3_title".localized, details: "screen_welcome_b2c_display_text_page3_details".localized, image: UIImage(named: "image_welcom_page3", in: .yapPak, compatibleWith: nil)))
+        viewModels.append(WelcomePageChildViewModel(heading: "screen_welcome_b2c_display_text_page3_title".localized, details: "screen_welcome_b2c_display_text_page3_details".localized, image: UIImage(named: "image_welcom_page3", in: .yapPakistan, compatibleWith: nil)))
         
         pageChildViewModelsSubject.onNext(viewModels)
     }

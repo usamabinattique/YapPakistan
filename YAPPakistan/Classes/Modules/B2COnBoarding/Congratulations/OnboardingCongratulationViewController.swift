@@ -72,7 +72,7 @@ public class OnboardingCongratulationViewController: UIViewController {
         imageView.clipsToBounds = true
         imageView.alpha = 0
         imageView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
-        imageView.image = UIImage(named: "image_payment_card_white", in: .yapPak)
+        imageView.image = UIImage(named: "image_payment_card_white", in: .yapPakistan)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()

@@ -11,7 +11,7 @@ import Foundation
 public class ResourceManager {
     
     public class var appCountries: [AppCountry]? {
-        guard let url = Bundle.yapPak.url(forResource: "Countries", withExtension: "json"),
+        guard let url = Bundle.yapPakistan.url(forResource: "Countries", withExtension: "json"),
             let jsonString = try? String.init(contentsOf: url),
             let jsonData = jsonString.data(using: .utf8),
             let countries = try? JSONDecoder().decode([AppCountry].self, from: jsonData)
@@ -21,7 +21,7 @@ public class ResourceManager {
 }
 
 var ibanValidationRegexes: [String: String] {
-    if let path = Bundle.yapPak.path(forResource: "IBANRegex", ofType: "plist") {
+    if let path = Bundle.yapPakistan.path(forResource: "IBANRegex", ofType: "plist") {
         let dictRoot = NSDictionary(contentsOfFile: path)
         
         if let dict = dictRoot as? [String: String] {
