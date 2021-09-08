@@ -18,6 +18,7 @@ protocol WaitingListRankViewModelInput {
 protocol WaitingListRankViewModelOutput {
     var loading: Observable<Bool> { get }
     var error: Observable<String> { get }
+    var waitingListRank: Observable<WaitingListRank> { get }
     var animationFile: Observable<String> { get }
     var placeText: Observable<String?> { get }
     var rank: Observable<String?> { get }
@@ -43,6 +44,7 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     private let getRankingSubject = PublishSubject<Bool>()
     private let loadingSubject = PublishSubject<Bool>()
     private let errorSubject = PublishSubject<String>()
+    private let waitingListRankSubject = PublishSubject<WaitingListRank>()
     private let animationFileSubject = BehaviorSubject<String>(value: "waitingListStart.mp4")
     private let firstVideoEndedSubject = PublishSubject<Void>()
     private let placeTextSubject = BehaviorSubject<String?>(value: "Your place in the queue")
@@ -53,7 +55,7 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     private let boostUpTextSubject = BehaviorSubject<String>(value:
         """
         Want to jump the queue?
-        Boost yourself up the queue by 100 for every friend you refer that signs up.🚀
+        Boost yourself up the queue by 0 for every friend you refer that signs up.🚀
         """)
     private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value: "Signed up friends: 0")
     private let bumpMeUpButtonTitleSubject = BehaviorSubject<String>(value: "Bump me up the queue")
@@ -70,6 +72,7 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
 
     var loading: Observable<Bool> { loadingSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
+    var waitingListRank: Observable<WaitingListRank> { waitingListRankSubject.asObservable() }
     var animationFile: Observable<String> { animationFileSubject.asObservable() }
     var placeText: Observable<String?> { placeTextSubject.asObservable() }
     var rank: Observable<String?> { rankSubject.asObservable() }
@@ -98,8 +101,15 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
         result.elements().unwrap().subscribe(onNext: { [weak self] waitingListRank in
             guard let self = self else { return }
 
+            self.waitingListRankSubject.onNext(waitingListRank)
             self.rankSubject.onNext(String(waitingListRank.waitingNewRank))
             self.behindNumberSubject.onNext(String(waitingListRank.waitingBehind))
+            self.boostUpTextSubject.onNext(
+                """
+                Want to jump the queue?
+                Boost yourself up the queue by \(waitingListRank.jump ?? "0") for every friend you refer that signs up.🚀
+                """
+            )
             self.seeInviteeButtonTitleSubject.onNext("Signed up friends: \(waitingListRank.inviteeDetails?.count ?? 0)")
         }).disposed(by: disposeBag)
 

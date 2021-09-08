@@ -249,6 +249,13 @@ class WaitingListRankViewController: UIViewController {
             .bind(to: boostUpLabel.rx.text)
             .disposed(by: disposeBag)
 
+        seeInviteesButton.rx.tap.withLatestFrom(viewModel.outputs.waitingListRank).subscribe { (waitingListRank: WaitingListRank) in
+            let viewModel = ReferredFriendsViewModel(waitingListRank: waitingListRank)
+            let referredFriends = ReferredFriendsViewController(themeService: self.themeService, viewModel: viewModel)
+
+            self.presentPanModal(referredFriends, completion: nil)
+        }.disposed(by: disposeBag)
+
         viewModel.outputs.seeInviteeButtonTitle
             .bind(to: seeInviteesButton.rx.title(for: .normal))
             .disposed(by: disposeBag)
