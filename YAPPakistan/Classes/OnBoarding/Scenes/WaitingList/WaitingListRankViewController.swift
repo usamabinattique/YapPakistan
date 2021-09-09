@@ -162,6 +162,7 @@ class WaitingListRankViewController: UIViewController {
         behindNumberLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
             .toBottomOf(rankView, constant: 16)
+            .height(22)
 
         behindYouLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
@@ -247,6 +248,13 @@ class WaitingListRankViewController: UIViewController {
         viewModel.outputs.boostUpText
             .bind(to: boostUpLabel.rx.text)
             .disposed(by: disposeBag)
+
+        seeInviteesButton.rx.tap.withLatestFrom(viewModel.outputs.waitingListRank).subscribe { (waitingListRank: WaitingListRank) in
+            let viewModel = ReferredFriendsViewModel(waitingListRank: waitingListRank)
+            let referredFriends = ReferredFriendsViewController(themeService: self.themeService, viewModel: viewModel)
+
+            self.presentPanModal(referredFriends, completion: nil)
+        }.disposed(by: disposeBag)
 
         viewModel.outputs.seeInviteeButtonTitle
             .bind(to: seeInviteesButton.rx.title(for: .normal))
