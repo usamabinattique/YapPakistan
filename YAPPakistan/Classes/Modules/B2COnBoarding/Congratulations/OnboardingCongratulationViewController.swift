@@ -173,7 +173,7 @@ public class OnboardingCongratulationViewController: UIViewController {
     
     init(viewModel: OnboardingCongratulationViewModelType) {
         super.init(nibName: nil, bundle: nil)
-        //self.viewModel = viewModel
+        self.viewModel = viewModel
     }
     
     public required init?(coder: NSCoder) {
@@ -182,7 +182,7 @@ public class OnboardingCongratulationViewController: UIViewController {
     
     // MARK: - View Life Cycle
     override public func viewDidLoad() {
-       // super.viewDidLoad()
+        super.viewDidLoad()
         
         setup()
         style()
@@ -432,13 +432,13 @@ extension OnboardingCongratulationViewController {
                     .font: UIFont.systemFont(ofSize: 16.0, weight: .regular)//,
                     //.foregroundColor: UIColor.appColor(ofType: .greyDark)
                     ])
-                attributedString.addAttributes([
-                    .font: UIFont.systemFont(ofSize: 16.0, weight: .medium) //,
+                //attributedString.addAttributes([
+                //    .font: UIFont.systemFont(ofSize: 16.0, weight: .medium) //,
                     //.foregroundColor: UIColor.appColor(ofType: .primaryDark)
-                    ], range: NSRange(location: 61, length: 9 + secondsInString.count))
+                //    ], range: NSRange(location: 61, length: 9 + secondsInString.count))
                 self?.subheadingLabel.attributedText = attributedString
                 self?.subheadingLabel.sizeToFit()
-                self?.subheadingLabel.animateCountDown(labels: Array((maxValue > 30 ? maxValue - 30 : 9)...maxValue).map({ String(format: "%02d", $0) }), withDuration: 2, inRange: NSRange(location: 61, length: secondsInString.count))
+                ///self?.subheadingLabel.animateCountDown(labels: Array((maxValue > 30 ? maxValue - 30 : 9)...maxValue).map({ String(format: "%02d", $0) }), withDuration: 2, inRange: NSRange(location: 61, length: secondsInString.count))
             }
         }).disposed(by: rx.disposeBag)
     }

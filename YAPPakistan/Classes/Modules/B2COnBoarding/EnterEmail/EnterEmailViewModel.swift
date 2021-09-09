@@ -112,11 +112,18 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         textValid.map { $0 ? .valid : .neutral }.bind(to: emailValidationSubject).disposed(by: disposeBag)
         
         sendSubject.filter { $0 == .emailVerify }.map { [unowned self] _ in self.user }.bind(to: resultSubject).disposed(by: disposeBag)
-        /*
+        
         let request = sendSubject.filter {
             if case OnboardingStage.email = $0 { return true}
             return false
         }
+        //MARK: START: START OF TEMP FLOW ONLY CODE
+        .map({_ in OnBoardingUser(accountType: .b2cAccount)})
+        .bind(to: resultSubject)
+        .disposed(by: disposeBag)
+        // END OF TEMP FLOW ONLY CODE
+        
+        /*
         .do(onNext: {[unowned self] _ in
             self.endEdittingSubject.onNext(true)
             self.emailValidationSubject.onNext(.valid)
