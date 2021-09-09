@@ -10,9 +10,6 @@ import RxSwift
 import RxCocoa
 import YAPComponents
 
-//import RxTheme
-//import YAPPakistan
-
 let bundle:Bundle? = nil
 
 class SplashViewController: UIViewController {
@@ -25,7 +22,6 @@ class SplashViewController: UIViewController {
     private var dotHeightConstraint: NSLayoutConstraint!
     
     private var viewModel: SplashViewModelType!
-    //private var themeService: ThemeService<AppTheme>!
     
     private lazy var logo = UIFactory
         .makeImageView(image: UIImage(named: "yap_logo_animate"))
@@ -35,20 +31,10 @@ class SplashViewController: UIViewController {
         .makeImageView(image: UIImage(named: "circle"))
         .addToSuper(view: view)
     
-    /*private lazy var visualEffectView: UIVisualEffectView = {
-     let view = UIVisualEffectView()
-     view.effect = nil
-     view.translatesAutoresizingMaskIntoConstraints = false
-     return view
-     }()*/
-    
     // MARK: Initialization
-    
-    init(/*themeService: ThemeService<AppTheme>!,*/ viewModel: SplashViewModelType) {
+    init(viewModel: SplashViewModelType) {
         self.viewModel = viewModel
-        //self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -61,14 +47,8 @@ class SplashViewController: UIViewController {
         super.viewDidLoad()
         
         setupSubViews()
-        //setupTheme()
         setupConstraints()
         bindViews()
-        
-        //DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-        //    print(self.logo.image)
-        //    self.animateLogo().subscribe().disposed(by: self.rx.disposeBag)
-        //}
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -84,36 +64,7 @@ extension SplashViewController {
         view.backgroundColor = .white
         view.addSubview(logo)
         view.addSubview(dot)
-        //view.addSubview(visualEffectView)
     }
-    
-//    fileprivate func setupTheme() {
-//        themeService.rx
-//            .bind({$0.primaryExtraLight}, to: [view.rx.backgroundColor])
-//            .disposed(by: rx.disposeBag)
-//    }
-    //MARK: OLD WAY OF SETTING LAYOUT CONSTRAINTS
-    /*
-    fileprivate func setupConstraints() {
-        
-        logo.centerVerticallyInSuperview()
-        logoCenterHorizonConstraint = NSLayoutConstraint(item: logo, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
-        logoWidthConstraint = logo.widthAnchor.constraint(equalToConstant: 110)
-        logoHeightConstraint = logo.heightAnchor.constraint(equalToConstant: 103)
-        
-        logoWidthConstraint.isActive = true
-        logoHeightConstraint.isActive = true
-        logoCenterHorizonConstraint.isActive = true
-        
-        dot
-            .centerHorizontallyInSuperview()
-            .verticallyCenterWith(view, constant: 8)
-        dotWidthConstraint = dot.widthAnchor.constraint(equalToConstant: 13)
-        dotHeightConstraint = dot.heightAnchor.constraint(equalToConstant: 13)
-        
-        dotWidthConstraint.isActive = true
-        dotHeightConstraint.isActive = true
-    } */
     
     //MARK: Updated YAPLayout, after using UnsafeMutablePointer for initialization
     fileprivate func setupConstraints() {
@@ -129,27 +80,6 @@ extension SplashViewController {
             .width(constant: 13, initTo:&dotWidthConstraint)
             .height(constant: 13, initTo:&dotHeightConstraint)
     }
-    
-    /*
-    //MARK: Native NSLayoutConstraint Approach
-    fileprivate func setupConstraints() {
-        let constraints = [
-            logo.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            logo.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logo.widthAnchor.constraint(equalToConstant: 110),
-            logo.heightAnchor.constraint(equalToConstant: 103),
-            
-            dot.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            dot.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 8),
-            dot.widthAnchor.constraint(equalToConstant: 13),
-            dot.heightAnchor.constraint(equalToConstant: 13),
-        ]
-        
-        ( logoCenterHorizonConstraint, logoWidthConstraint, logoHeightConstraint, dotWidthConstraint, dotHeightConstraint ) = ( constraints[1], constraints[2], constraints[3], constraints[6], constraints[7] )
-        
-        NSLayoutConstraint.activate(constraints)
-    }
-    */
     
 }
 

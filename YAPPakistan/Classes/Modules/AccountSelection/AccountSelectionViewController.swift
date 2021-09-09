@@ -6,14 +6,6 @@
 //  Copyright © 2019 YAP. All rights reserved.
 //
 
-//
-//  AccountSelectionViewController.swift
-//  App
-//
-//  Created by Zain on 18/06/2019.
-//  Copyright © 2019 YAP. All rights reserved.
-//
-
 import UIKit
 import RxCocoa
 import RxSwift
@@ -23,57 +15,33 @@ import YAPComponents
 
 class AccountSelectionViewController: UIViewController {
 
+    //MARK: UI Components
+    private lazy var signInLabelButtonContainer = UIFactory
+        .makeView(alpha:0)
+        .setHidden(true)
+    fileprivate lazy var signInLabel = UIFactory
+        .makeLabel(font: .regular)
+    fileprivate lazy var signInButton = UIFactory
+        .makeButton(with: .regular)
+    fileprivate lazy var getStartedButton = UIFactory
+        .makeButton(with: .regular)
+        .setHidden(true)
+        .setAlpha(0)
+    fileprivate lazy var captionLabel = UIFactory
+        .makeLabel(font: .regular, alignment: .center)
+    fileprivate lazy var player = AVFactory
+        .makePlayer(with: Resource(named: "get_started.mp4", in: .yapPakistan))
+    fileprivate lazy var playerLayer = AVFactory
+        .makeAVPlayerLayer(with: player)
     
-    private lazy var signInLabelButtonContainer = UIFactory.makeView().setAlpha(0).setHidden(true)
-    
-    fileprivate lazy var signInLabel = UIFactory.makeLabel(
-        font: .regular
-    )
-    
-    fileprivate lazy var signInButton: UIButton = {
-        let label = UIButton()
-        label.titleLabel?.font = .regular
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    fileprivate lazy var getStartedButton: UIButton = {
-        let button = UIButton()
-        button.isHidden = true
-        button.alpha = 0
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private lazy var captionLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.appFont(ofSize: 16, weigth: .semibold)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var playerLayer: AVPlayerLayer = {
-        let playerLayer = AVPlayerLayer(player: nil)
-        playerLayer.videoGravity = .resizeAspectFill
-        return playerLayer
-    }()
-    
-    private lazy var player: AVPlayer? = {
-        let url = Bundle.yapPakistan.url(forResource: "get_started", withExtension: "mp4")
-        return AVPlayer(url: url!)
-    }()
-    
-    fileprivate lazy var captions:[String] = { Array(repeating: "", count: captionDelays.count) }()
+    //MARK: Properties
     fileprivate var captionDelays = [2.0, 1.5, 1.0, 1.5, 0.5, 1.8, 0.5, 2.0, 0.5, 2.0, 1.0, 2.5, 1.5, 2.0, 1.0, 3.0]
+    fileprivate lazy var captions = { Array(repeating: "", count: captionDelays.count) }()
+    fileprivate var currentCaption = 0
+    fileprivate var stopped = true
     
-    private var currentCaption = 0
-    
-    private var stopped = true
-    
-    private var viewModel: AccountSelectionViewModelType!
-    private var themeService: ThemeService<AppTheme>!
+    fileprivate var viewModel: AccountSelectionViewModelType!
+    fileprivate var themeService: ThemeService<AppTheme>!
     
     convenience init(themeService: ThemeService<AppTheme>, viewModel:AccountSelectionViewModelType) {
         self.init(nibName: nil, bundle: nil)
@@ -89,12 +57,7 @@ class AccountSelectionViewController: UIViewController {
         setupLocalizedStrings()
         setupConstraints()
         bindViews()
-        setupVideo()
         
-        NotificationCenter.default.addObserver(Self.self, selector: #selector(setupLocalizedStrings), name: NSLocale.currentLocaleDidChangeNotification, object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: .AVPlayerItemDidPlayToEndTime, object: nil)
-
     }
 
     override func viewWillLayoutSubviews() {
@@ -113,24 +76,29 @@ class AccountSelectionViewController: UIViewController {
         startVideo()
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        removeNotificationObservers()
-    }
-    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(true)
         resetVideo()
     }
     
     private func addNotificationObservers() {
-        NotificationCenter.default.addObserver(self, selector: #selector(resetVideo), name: .applicationWillResignActive, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(startVideo), name: .applicationDidBecomeActive, object: nil)
-    }
-    
-    private func removeNotificationObservers() {
-        NotificationCenter.default.removeObserver(self, name: .applicationWillResignActive, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .applicationDidBecomeActive, object: nil)
+        NotificationCenter.default.rx
+            .notification(.AVPlayerItemDidPlayToEndTime)
+            .subscribe { [weak self] _ in
+                self?.playerDidFinishPlaying()
+            }.disposed(by: rx.disposeBag)
+        
+        NotificationCenter.default.rx
+            .notification(.applicationWillResignActive)
+            .subscribe { [weak self] _ in
+                self?.resetVideo()
+            }.disposed(by: rx.disposeBag)
+        
+        NotificationCenter.default.rx
+            .notification(.applicationDidBecomeActive)
+            .subscribe { [weak self] _ in
+                self?.startVideo()
+            }.disposed(by: rx.disposeBag)
     }
     
     @objc
@@ -143,16 +111,13 @@ class AccountSelectionViewController: UIViewController {
 // MARK: Setup video
 
 private extension AccountSelectionViewController {
-    func setupVideo() {
-        playerLayer.player = player
-    }
     
     @objc
     func resetVideo() {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(animationCaption), object: nil)
         stopped = true
-        player?.pause()
-        player?.seek(to: .zero)
+        player.pause()
+        player.seek(to: .zero)
         currentCaption = 0
         captionLabel.text = ""
         getStartedButton.isHidden = true
@@ -165,7 +130,7 @@ private extension AccountSelectionViewController {
     
     @objc
     func startVideo() {
-        player?.play()
+        player.play()
         stopped = false
         self.perform(#selector(animationCaption), with: nil, afterDelay: captionDelays[self.currentCaption])
         getStartedButton.isHidden = false
@@ -269,7 +234,6 @@ private extension AccountSelectionViewController {
         getStartedButton.layer.shadowOpacity = 0.5
         getStartedButton.layer.shadowOffset = .zero
         getStartedButton.layer.cornerRadius = 26
-//      getStartedButton.layer.masksToBounds = true
     }
 }
 
