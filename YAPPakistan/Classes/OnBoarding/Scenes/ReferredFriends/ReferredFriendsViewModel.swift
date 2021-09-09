@@ -55,28 +55,30 @@ class ReferredFriendsViewModel: ReferredFriendsViewModelInput, ReferredFriendsVi
     var hidesSeparator: Observable<Bool> { hidesSeparatorSubject.asObservable() }
     var hidesFriends: Observable<Bool> { hidesFriendsSubject.asObservable() }
 
-    init() {
+    init(waitingListRank: WaitingListRank) {
+        let invitees = waitingListRank.inviteeDetails ?? []
+
         friendListSubject
             .filter { $0.isEmpty }
-            .map { _ in "You referred 0 friends! 😏" }
+            .map { _ in String(format: "screen_waiting_list_rank_invitees_list_title_text".localized, 0, "😏") }
             .bind(to: titleSubject)
             .disposed(by: disposeBag)
 
         friendListSubject
             .filter { $0.isEmpty }
-            .map { _ in "Once your referred friends sign up, you will see their names listed below and your place in the queue bumped up by 100 spots for each friend!" }
+            .map { _ in String(format: "screen_waiting_list_rank_invitees_list_subtitle_zero_invitees_text".localized, waitingListRank.jump ?? "0") }
             .bind(to: subtitleSubject)
             .disposed(by: disposeBag)
 
         friendListSubject
             .filter { !$0.isEmpty }
-            .map { _ in "You referred 10 friends! 👏" }
+            .map { _ in String(format: "screen_waiting_list_rank_invitees_list_title_text".localized, invitees.count, "👏") }
             .bind(to: titleSubject)
             .disposed(by: disposeBag)
 
         friendListSubject
             .filter { !$0.isEmpty }
-            .map { _ in "You have been bumped up by 1000 spots." }
+            .map { _ in String(format: "screen_waiting_list_rank_invitees_list_subtitle_text".localized, waitingListRank.totalGainedPoints ?? 0) }
             .bind(to: subtitleSubject)
             .disposed(by: disposeBag)
 
@@ -90,22 +92,14 @@ class ReferredFriendsViewModel: ReferredFriendsViewModelInput, ReferredFriendsVi
             .bind(to: hidesFriendsSubject)
             .disposed(by: disposeBag)
 
-        friendListSubject.onNext([
-            ReferredFriendViewModel(friendName: "Logan Pearson",
-                                    initialsBackgroundColor: Self.colors[0].0,
-                                    initialsTextColor: Self.colors[0].1),
-            ReferredFriendViewModel(friendName: "Virginia Alvarado",
-                                    initialsBackgroundColor: Self.colors[1].0,
-                                    initialsTextColor: Self.colors[1].1),
-            ReferredFriendViewModel(friendName: "Bruce Guerrero",
-                                    initialsBackgroundColor: Self.colors[2].0,
-                                    initialsTextColor: Self.colors[2].1),
-            ReferredFriendViewModel(friendName: "Emma Weber",
-                                    initialsBackgroundColor: Self.colors[0].0,
-                                    initialsTextColor: Self.colors[0].1),
-            ReferredFriendViewModel(friendName: "Nada Hassan",
-                                    initialsBackgroundColor: Self.colors[1].0,
-                                    initialsTextColor: Self.colors[1].1)
-        ])
+        let inviteeViewModels = invitees.enumerated().map { (index, invitee) -> ReferredFriendViewModel in
+            let colorIndex = index % Self.colors.count
+
+            return ReferredFriendViewModel(friendName: invitee.inviteeCustomerName,
+                                           initialsBackgroundColor: Self.colors[colorIndex].0,
+                                           initialsTextColor: Self.colors[colorIndex].1)
+        }
+
+        friendListSubject.onNext(inviteeViewModels)
     }
 }

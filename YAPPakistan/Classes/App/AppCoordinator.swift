@@ -43,17 +43,13 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
             // let vc = container.makeDummyViewController(xsrfToken: value)
         }
 
-        let viewModel = WaitingListRankViewModel()
+        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: "1234"))
+        let viewModel = WaitingListRankViewModel(onBoardingRepository: onBoardingRepository)
         let viewController = WaitingListRankViewController(themeService: container.themeService,
                                                            viewModel: viewModel)
 
         window.rootViewController = viewController
-
-        let referredFriends = ReferredFriendsViewController(themeService: container.themeService, viewModel: ReferredFriendsViewModel())
-
-        viewController.presentPanModal(referredFriends, completion: nil)
     }
-    
 }
 
 //MARK: NAVIGATIONS
