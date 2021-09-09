@@ -33,10 +33,11 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         reposiotry.fetchXSRFToken().subscribe(onNext: { _ in
             self.xsrfToken = HTTPCookieStorage.shared.cookies?.filter({ $0.name == "XSRF-TOKEN" }).first?.value ?? ""
+            self.accountSelection()
         }).disposed(by: rx.disposeBag)
         
         //self.showDummyController()
-        self.accountSelection()
+        //self.accountSelection()
         //self.onboarding()
         
         return result
@@ -49,7 +50,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func accountSelection() { //-> Observable<ResultType<Void>> {
-        coordinate(to: AccountSelectionCoordinatorReplaceable(window: window)).subscribe { result in
+        coordinate(to: AccountSelectionCoordinatorReplaceable(container: container, xsrfToken: xsrfToken, window: window)).subscribe { result in
             print(result)
         }.disposed(by: rx.disposeBag)
     }

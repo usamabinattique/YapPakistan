@@ -104,7 +104,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         self.repository = onBoardingRepository
         self.user = user
 
-        countryList.append(("United Arab Emirates", "AE", "+971 ", CountryFlag.flag(forCountryCode: "AE")))
+        countryList.append(("Pakistan", "PK", "+92 ", CountryFlag.flag(forCountryCode: "PK")))
         
         iconSubject.onNext(countryList.first?.flag)
         textSubject.onNext(self.attributed(text: countryList.first?.callingCode ?? ""))
