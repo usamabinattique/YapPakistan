@@ -98,8 +98,8 @@ class ReferredFriendsViewController: UIViewController {
         sheetIndicatorView
             .alignEdgeWithSuperview(.top, constant: 12)
             .centerHorizontallyInSuperview()
-            .width(60)
-            .height(4)
+            .width(constant: 60)
+            .height(constant:4)
 
         titleLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
@@ -112,7 +112,7 @@ class ReferredFriendsViewController: UIViewController {
         separatorView
             .alignEdgesWithSuperview([.left, .right])
             .toBottomOf(subtitleLabel, constant: 24)
-            .height(1)
+            .height(constant: 1)
 
         tableView
             .alignEdgesWithSuperview([.left, .right, .bottom])
