@@ -164,7 +164,7 @@ private extension AccountSelectionViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({$0.primaryLight}, to: [view.rx.backgroundColor])
+            .bind({$0.backgroundColor}, to: [view.rx.backgroundColor])
             .bind({$0.greyLight}, to: [signInLabel.rx.textColor])
             .bind({$0.primaryExtraLight}, to: [signInButton.rx.titleColor(for: .normal)])
             .bind({$0.primary}, to: [getStartedButton.rx.backgroundColor])

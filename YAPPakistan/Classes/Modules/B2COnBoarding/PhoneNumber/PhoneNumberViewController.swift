@@ -10,6 +10,7 @@ import UIKit
 import YAPComponents
 import RxSwift
 import RxCocoa
+import RxTheme
 
 
 class PhoneNumberViewController: OnBoardinContainerChildViewController {
@@ -17,18 +18,18 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
     private lazy var headingLabel: UILabel = {
         let label = UILabel()
         label.text =  "screen_phone_number_display_text_title".localized
-        label.font = UIFont.appFont(forTextStyle: .title2)
-        label.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
+        label.font = UIFont.title2
+        //label.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private lazy var mobileNumber: AppRoundedTextField = {
-        let textField = AppRoundedTextField()
+    private lazy var mobileNumber:AppRoundedTextField = {
+        let textField =  UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, placeholder: nil, validation: .neutral, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage: UIImage(named: "icon_invalid", in: .yapPakistan), leftIcon: nil)
+
         textField.displaysIcon = true
-        textField.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
         textField.returnKeyType = .send
         textField.delegate = self
         textField.autocorrectionType = .no
@@ -51,9 +52,11 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
     }
     
     private var viewModel: PhoneNumberViewModelType!
+    private var themeService:ThemeService<AppTheme>!
     
-    init(viewModel: PhoneNumberViewModelType) {
+    init(themeService:ThemeService<AppTheme>, viewModel: PhoneNumberViewModelType) {
         self.viewModel = viewModel
+        self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -65,6 +68,7 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
         super.viewDidLoad()
     
         setupViews()
+        setupTheme()
         setupConstraint()
         bindViews()
     }
@@ -96,6 +100,18 @@ private extension PhoneNumberViewController {
         view.addSubview(countryTextField)
     }
     
+    func setupTheme() {
+        themeService.rx
+            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
+            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
+            .bind({ $0.primary }, to: [mobileNumber.rx.primaryColor])
+            .bind({ $0.primaryDark }, to: [mobileNumber.rx.secondaryColor])
+            .bind({ $0.error }, to: [mobileNumber.rx.errorBorderColor])
+            .bind({ $0.grey }, to: [mobileNumber.rx.bgColor])
+            .bind({ $0.grey }, to: [mobileNumber.rx.errorTextColor])
+            .disposed(by: rx.disposeBag)
+    }
+    
     func setupConstraint() {
         
         headingLabel
@@ -113,11 +129,11 @@ private extension PhoneNumberViewController {
 
 private extension PhoneNumberViewController {
     func bindViews() {
-        viewModel.outputs.text.bind(to: mobileNumber.rx.attributedText).disposed(by: rx.disposeBag)
+        viewModel.outputs.text.map({$0?.string}).bind(to: mobileNumber.rx.text).disposed(by: rx.disposeBag)
         mobileNumber.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
-        mobileNumber.rx.iconTap.bind(to: viewModel.inputs.iconTapObserver).disposed(by: rx.disposeBag)
+        mobileNumber.leftIcon.rx.tap.bind(to: viewModel.inputs.iconTapObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.inputValidation.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
-        viewModel.outputs.icon.bind(to: mobileNumber.rx.icon).disposed(by: rx.disposeBag)
+        viewModel.outputs.icon.bind(to: mobileNumber.leftIcon.rx.image(for: .normal)).disposed(by: rx.disposeBag)
         
         Observable.merge(countryPicker.rx.cancel, countryPicker.rx.done.map {_ in }).subscribe(onNext: { [unowned self] in
             _ = self.mobileNumber.becomeFirstResponder()
@@ -127,7 +143,7 @@ private extension PhoneNumberViewController {
         
         countryPicker.rx.itemSelected.map { $0.row }.bind(to: viewModel.inputs.countrySelectionObserver).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.showError.bind(to: mobileNumber.rx.errorText).disposed(by: rx.disposeBag)
+        viewModel.outputs.showError.bind(to: mobileNumber.errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid }.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.endEditting.bind(to: view.rx.endEditting).disposed(by: rx.disposeBag)
     }

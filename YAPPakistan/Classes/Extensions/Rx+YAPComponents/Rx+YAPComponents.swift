@@ -9,6 +9,7 @@ import YAPComponents
 import RxCocoa
 import RxSwift
 
+/*
 // MARK: Reactive AppRoundedTextField
 public extension Reactive where Base: AppRoundedTextField {
     
@@ -50,6 +51,7 @@ public extension Reactive where Base: AppRoundedTextField {
         return self.base.errorLabel.rx.text
     }
 }
+*/
 
 // MARK: Reactive UICircularButton
 extension Reactive where Base: UICircularButton {

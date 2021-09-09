@@ -8,18 +8,45 @@
 
 import UIKit
 import YAPComponents
+import RxTheme
+import RxSwift
+import RxCocoa
 
 class OnBoardingContainerNavigationController: UINavigationController {
     
     var keyboardShown: Bool = false
+    fileprivate var themeService:ThemeService<AppTheme>!
+    
+    init(themeService:ThemeService<AppTheme>!, rootViewController: UIViewController) {
+        self.themeService = themeService
+        super.init(rootViewController: rootViewController)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        NotificationCenter.default.rx
+            .notification(UIResponder.keyboardDidShowNotification)
+            .subscribe { [weak self] notif in
+                self?.keyboardDidShow(notification: notif.element! as NSNotification)
+            }.disposed(by: rx.disposeBag)
         
-        //if UIScreen.screenType != .iPhone5 {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidHide), name: UIResponder.keyboardDidHideNotification, object: nil)
-        //}
+        NotificationCenter.default.rx
+            .notification(UIResponder.keyboardDidHideNotification)
+            .subscribe { [weak self] notif in
+                self?.keyboardDidHide(notification: notif.element! as NSNotification)
+            }.disposed(by: rx.disposeBag)
+        
+        setupTheme()
+        
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
     }
     
 }
