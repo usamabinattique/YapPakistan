@@ -75,6 +75,7 @@ Pod::Spec.new do |s|
   #MARK: UI
   s.dependency 'SwiftyGif', '5.4.0'
   s.dependency 'PhoneNumberKit', '3.3.3'
+  s.dependency 'HWPanModal', '0.8.9'
   
   #MARK: UIImage
   s.dependency 'SDWebImage', '5.11.1'

@@ -28,10 +28,34 @@ public final class YAPPakistanMainContainer {
     public func rootCoordinator(window: UIWindow) -> AppCoordinator {
         AppCoordinator(window: window, shortcutItem: nil, container: self)
     }
-    
+
+    func makeAPIClient() -> APIClient {
+        return WebClient()
+    }
+
+    func makeAPIConfiguration() -> APIConfiguration {
+        return APIConfiguration(environment: configuration.environment)
+    }
+
+    func makeAuthorizationProvider(xsrfToken: String) -> ServiceAuthorizationProviderType {
+        return GuestServiceAuthorization(xsrf: xsrfToken)
+    }
+
+    func makeCustomersService(xsrfToken: String) -> CustomersService {
+        return CustomersService(apiClient: makeAPIClient(),
+                                apiConfig: makeAPIConfiguration(),
+                                authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+    }
+
+    func makeCustomersService(authorizationProvider: ServiceAuthorizationProviderType) -> CustomersService {
+        return CustomersService(apiClient: makeAPIClient(),
+                                apiConfig: makeAPIConfiguration(),
+                                authorizationProvider: authorizationProvider)
+    }
+
     public func makeDummyViewController(xsrfToken: String) -> UIViewController {
-        let customerService = CustomersService(apiConfig: APIConfiguration(environment: configuration.environment),
-                                               authorizationProvider: GuestServiceAuthorization(xsrf: xsrfToken))
+        let customerService = CustomersService(apiConfig: makeAPIConfiguration(),
+                                               authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
         return UIViewController()
     }
 }
