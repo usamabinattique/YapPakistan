@@ -78,7 +78,7 @@ class ReferredFriendCell: UITableViewCell {
 
     private func setupTheme(with themeService: ThemeService<AppTheme>) {
         themeService.rx
-            .bind({ $0.primaryDark }, to: nameLabel.rx.textColor)
+            .bind({ UIColor($0.primaryDark) }, to: nameLabel.rx.textColor)
             .disposed(by: disposeBag)
     }
 
@@ -86,12 +86,12 @@ class ReferredFriendCell: UITableViewCell {
 
     private func bindViews(with viewModel: ReferredFriendViewModelType) {
         viewModel.outputs.initialsBackgroundColor
-            .map { UIColor(hexString: $0 ?? "", transparency: 0.16) }
+            .map { UIColor($0 ?? Color(hex: "#FFFFFF")).withAlphaComponent(0.16) }
             .bind(to: initialsImageView.rx.backgroundColor)
             .disposed(by: disposeBag)
 
         viewModel.outputs.initialsTextColor
-            .map { UIColor(hexString: $0 ?? "") }
+            .map { UIColor($0 ?? Color(hex: "#FFFFFF")) }
             .bind(to: initialsImageView.rx.labelColor)
             .disposed(by: disposeBag)
 

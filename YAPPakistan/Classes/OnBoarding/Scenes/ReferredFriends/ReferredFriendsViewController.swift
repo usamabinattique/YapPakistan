@@ -86,11 +86,11 @@ class ReferredFriendsViewController: UIViewController {
 
     private func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor }, to: view.rx.backgroundColor)
-            .bind({ $0.greyLight }, to: sheetIndicatorView.rx.backgroundColor)
-            .bind({ $0.primaryDark }, to: titleLabel.rx.textColor)
-            .bind({ $0.greyDark }, to: subtitleLabel.rx.textColor)
-            .bind({ $0.greyLight }, to: separatorView.rx.backgroundColor)
+            .bind({ UIColor($0.backgroundColor) }, to: view.rx.backgroundColor)
+            .bind({ UIColor($0.greyLight) }, to: sheetIndicatorView.rx.backgroundColor)
+            .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
+            .bind({ UIColor($0.greyDark) }, to: subtitleLabel.rx.textColor)
+            .bind({ UIColor($0.greyLight) }, to: separatorView.rx.backgroundColor)
             .disposed(by: disposeBag)
     }
 

@@ -14,95 +14,85 @@ func appTheme<T>(_ mapper: @escaping ((Theme) -> T)) -> Observable<T> {
     return themeService.attrStream(mapper)
 }
 
+struct Color {
+    let hex: String
+}
+
 protocol Theme {
-    var backgroundColor: UIColor    { get }
-    var primary: UIColor            { get }
-    var primaryLight: UIColor       { get }
-    var primaryExtraLight: UIColor  { get }
-    var primaryDark: UIColor        { get }
-    var primarySoft: UIColor        { get }
-    var primaryAlt: UIColor         { get }
-    var grey: UIColor               { get }
-    var greyDark: UIColor           { get }
-    var greyLight: UIColor          { get }
-    var greyExtraLight: UIColor     { get }
-    var success: UIColor            { get }
-    var warning: UIColor            { get }
-    var error: UIColor              { get }
-    var secondaryBlue: UIColor      { get }
-    var secondaryGreen: UIColor     { get }
-    var secondaryOrange: UIColor    { get }
-    var secondaryMagenta: UIColor   { get }
-    var initials: UIColor           { get }
-    var cell: UIColor               { get }
-    var icon: UIColor               { get }
-    var iconHolder: UIColor         { get }
-    
-    var statusBarStyle: UIStatusBarStyle        { get }
-    var barStyle: UIBarStyle                    { get }
-    var keyboardAppearance: UIKeyboardAppearance{ get }
-    var blurStyle: UIBlurEffect.Style           { get }
+    var primary: Color              { get }
+    var primaryLight: Color       { get }
+    var primaryExtraLight: Color  { get }
+    var primaryDark: Color        { get }
+    var primarySoft: Color        { get }
+    var primaryAlt: Color         { get }
+    var grey: Color               { get }
+    var greyDark: Color           { get }
+    var greyLight: Color          { get }
+    var greyExtraLight: Color     { get }
+    var success: Color            { get }
+    var warning: Color            { get }
+    var error: Color              { get }
+    var secondaryBlue: Color      { get }
+    var secondaryGreen: Color     { get }
+    var secondaryOrange: Color    { get }
+    var secondaryMagenta: Color   { get }
+    var initials: Color           { get }
+    var cell: Color               { get }
+    var icon: Color               { get }
+    var iconHolder: Color         { get }
+    var backgroundColor: Color    { get }
 }
 
 struct LightTheme: Theme {
-    var primary: UIColor            {   #colorLiteral(red: 0.368627451, green: 0.2078431373, blue: 0.6941176471, alpha: 1)  }
-    var primaryLight: UIColor       {   #colorLiteral(red: 0.4862745098, green: 0.3019607843, blue: 1, alpha: 1)  }
-    var primaryExtraLight: UIColor  {   #colorLiteral(red: 0.9411764706, green: 0.9294117647, blue: 1, alpha: 1)  }
-    var primaryDark: UIColor        {   #colorLiteral(red: 0.1529999971, green: 0.1330000013, blue: 0.3840000033, alpha: 1)  }
-    var primarySoft: UIColor        {   #colorLiteral(red: 0.6509803922, green: 0.5098039216, blue: 1, alpha: 1)  }
-    var primaryAlt: UIColor         {   #colorLiteral(red: 0.7329999804, green: 0.2590000033, blue: 0.9219999909, alpha: 1)  }
-    var grey: UIColor               {   #colorLiteral(red: 0.7879999876, green: 0.7839999795, blue: 0.8470000029, alpha: 1)  }
-    var greyDark: UIColor           {   #colorLiteral(red: 0.5759999752, green: 0.5690000057, blue: 0.6940000057, alpha: 1)  }
-    var greyLight: UIColor          {   #colorLiteral(red: 0.8549019608, green: 0.878000021, blue: 0.9409999847, alpha: 1)  }
-    var greyExtraLight: UIColor     {   #colorLiteral(red: 0.9294117647, green: 0.9411764706, blue: 0.9725490196, alpha: 1)  }
-    var success: UIColor            {   #colorLiteral(red: 0.2669999897, green: 0.8270000219, blue: 0.5370000005, alpha: 1)  }
-    var warning: UIColor            {   #colorLiteral(red: 1, green: 0.7689999938, blue: 0.1879999936, alpha: 1)  }
-    var error: UIColor              {   #colorLiteral(red: 1, green: 0.2310000062, blue: 0.1879999936, alpha: 1)  }
-    var secondaryBlue: UIColor      {   #colorLiteral(red: 0.2784313725, green: 0.5529411765, blue: 0.9568627451, alpha: 1)  }
-    var secondaryGreen: UIColor     {   #colorLiteral(red: 0, green: 0.7254901961, blue: 0.6823529412, alpha: 1)  }
-    var secondaryOrange: UIColor    {   #colorLiteral(red: 0.9607843137, green: 0.4980392157, blue: 0.09019607843, alpha: 1)  }
-    var secondaryMagenta: UIColor   {   #colorLiteral(red: 0.9568627451, green: 0.2784313725, blue: 0.4549019608, alpha: 1)  }
-    var initials: UIColor           {   #colorLiteral(red: 0.4862745098, green: 0.3019607843, blue: 1, alpha: 1)  }
-    var cell: UIColor               {   #colorLiteral(red: 0.968627451, green: 0.9725490196, blue: 0.9882352941, alpha: 1)  }
-    var icon: UIColor               {   #colorLiteral(red: 0.368627451, green: 0.2078431373, blue: 0.6941176471, alpha: 1)  }
-    var iconHolder: UIColor         {   #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)  }
-    var backgroundColor: UIColor    {   .white   }
-    
-    var statusBarStyle: UIStatusBarStyle    {   UIStatusBarStyle.default    }
-    var barStyle: UIBarStyle                {   UIBarStyle.default          }
-    var keyboardAppearance: UIKeyboardAppearance { UIKeyboardAppearance.light }
-    var blurStyle: UIBlurEffect.Style       { UIBlurEffect.Style.extraLight }
+    var primary: Color              {   Color(hex: "#5E35B1")   }
+    var primaryLight: Color         {   Color(hex: "#7C4DFF")   }
+    var primaryExtraLight: Color    {   Color(hex: "#F0EDFF")   }
+    var primaryDark: Color          {   Color(hex: "#272262")   }
+    var primarySoft: Color          {   Color(hex: "#A682FF")   }
+    var primaryAlt: Color           {   Color(hex: "#BB42EB")   }
+    var grey: Color                 {   Color(hex: "#C9C8D8")   }
+    var greyDark: Color             {   Color(hex: "#9391B1")   }
+    var greyLight: Color            {   Color(hex: "#DAE0F0")   }
+    var greyExtraLight: Color       {   Color(hex: "#EDF0F8")   }
+    var success: Color              {   Color(hex: "#44D389")   }
+    var warning: Color              {   Color(hex: "#FFC430")   }
+    var error: Color                {   Color(hex: "#FF3B30")   }
+    var secondaryBlue: Color        {   Color(hex: "#478DF4")   }
+    var secondaryGreen: Color       {   Color(hex: "#00B9AE")   }
+    var secondaryOrange: Color      {   Color(hex: "#F57F17")   }
+    var secondaryMagenta: Color     {   Color(hex: "#F44774")   }
+    var initials: Color             {   Color(hex: "#7C4DFF")   }
+    var cell: Color                 {   Color(hex: "#F7F8FC")   }
+    var icon: Color                 {   Color(hex: "#5E35B1")   }
+    var iconHolder: Color           {   Color(hex: "#FFFFFF")   }
+    var backgroundColor: Color      {   Color(hex: "#FFFFFF")   }
+
 }
 
 struct DarkTheme: Theme {
     //TODO: update these values for dark mode
-    var primary: UIColor            {   #colorLiteral(red: 0.368627451, green: 0.2078431373, blue: 0.6941176471, alpha: 1)  }
-    var primaryLight: UIColor       {   #colorLiteral(red: 0.4862745098, green: 0.3019607843, blue: 1, alpha: 1)  }
-    var primaryExtraLight: UIColor  {   #colorLiteral(red: 0.9411764706, green: 0.9294117647, blue: 1, alpha: 1)  }
-    var primaryDark: UIColor        {   #colorLiteral(red: 0.1529999971, green: 0.1330000013, blue: 0.3840000033, alpha: 1)  }
-    var primarySoft: UIColor        {   #colorLiteral(red: 0.6509803922, green: 0.5098039216, blue: 1, alpha: 1)  }
-    var primaryAlt: UIColor         {   #colorLiteral(red: 0.7329999804, green: 0.2590000033, blue: 0.9219999909, alpha: 1)  }
-    var grey: UIColor               {   #colorLiteral(red: 0.7879999876, green: 0.7839999795, blue: 0.8470000029, alpha: 1)  }
-    var greyDark: UIColor           {   #colorLiteral(red: 0.5759999752, green: 0.5690000057, blue: 0.6940000057, alpha: 1)  }
-    var greyLight: UIColor          {   #colorLiteral(red: 0.8549019608, green: 0.878000021, blue: 0.9409999847, alpha: 1)  }
-    var greyExtraLight: UIColor     {   #colorLiteral(red: 0.9294117647, green: 0.9411764706, blue: 0.9725490196, alpha: 1)  }
-    var success: UIColor            {   #colorLiteral(red: 0.2669999897, green: 0.8270000219, blue: 0.5370000005, alpha: 1)  }
-    var warning: UIColor            {   #colorLiteral(red: 1, green: 0.7689999938, blue: 0.1879999936, alpha: 1)  }
-    var error: UIColor              {   #colorLiteral(red: 1, green: 0.2310000062, blue: 0.1879999936, alpha: 1)  }
-    var secondaryBlue: UIColor      {   #colorLiteral(red: 0.2784313725, green: 0.5529411765, blue: 0.9568627451, alpha: 1)  }
-    var secondaryGreen: UIColor     {   #colorLiteral(red: 0, green: 0.7254901961, blue: 0.6823529412, alpha: 1)  }
-    var secondaryOrange: UIColor    {   #colorLiteral(red: 0.9607843137, green: 0.4980392157, blue: 0.09019607843, alpha: 1)  }
-    var secondaryMagenta: UIColor   {   #colorLiteral(red: 0.9568627451, green: 0.2784313725, blue: 0.4549019608, alpha: 1)  }
-    var initials: UIColor           {   #colorLiteral(red: 0.4862745098, green: 0.3019607843, blue: 1, alpha: 1)  }
-    var cell: UIColor               {   #colorLiteral(red: 0.968627451, green: 0.9725490196, blue: 0.9882352941, alpha: 1)  }
-    var icon: UIColor               {   #colorLiteral(red: 0.368627451, green: 0.2078431373, blue: 0.6941176471, alpha: 1)  }
-    var iconHolder: UIColor         {   #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)  }
-    var backgroundColor: UIColor    {   .black  }
-    
-    var statusBarStyle: UIStatusBarStyle    {   UIStatusBarStyle.default    }
-    var barStyle: UIBarStyle                {   UIBarStyle.default          }
-    var keyboardAppearance: UIKeyboardAppearance { UIKeyboardAppearance.light }
-    var blurStyle: UIBlurEffect.Style       { UIBlurEffect.Style.extraLight }
+    var primary: Color              {   Color(hex: "#5E35B1")   }
+    var primaryLight: Color         {   Color(hex: "#7C4DFF")   }
+    var primaryExtraLight: Color    {   Color(hex: "#F0EDFF")   }
+    var primaryDark: Color          {   Color(hex: "#272262")   }
+    var primarySoft: Color          {   Color(hex: "#A682FF")   }
+    var primaryAlt: Color           {   Color(hex: "#BB42EB")   }
+    var grey: Color                 {   Color(hex: "#C9C8D8")   }
+    var greyDark: Color             {   Color(hex: "#9391B1")   }
+    var greyLight: Color            {   Color(hex: "#DAE0F0")   }
+    var greyExtraLight: Color       {   Color(hex: "#EDF0F8")   }
+    var success: Color              {   Color(hex: "#44D389")   }
+    var warning: Color              {   Color(hex: "#FFC430")   }
+    var error: Color                {   Color(hex: "#FF3B30")   }
+    var secondaryBlue: Color        {   Color(hex: "#478DF4")   }
+    var secondaryGreen: Color       {   Color(hex: "#00B9AE")   }
+    var secondaryOrange: Color      {   Color(hex: "#F57F17")   }
+    var secondaryMagenta: Color     {   Color(hex: "#F44774")   }
+    var initials: Color             {   Color(hex: "#7C4DFF")   }
+    var cell: Color                 {   Color(hex: "#F7F8FC")   }
+    var icon: Color                 {   Color(hex: "#5E35B1")   }
+    var iconHolder: Color           {   Color(hex: "#FFFFFF")   }
+    var backgroundColor: Color      {   Color(hex: "#FFFFFF")   }
 }
 
 enum AppTheme: ThemeProvider {
