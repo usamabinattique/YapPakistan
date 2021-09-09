@@ -66,6 +66,9 @@
     "PhoneNumberKit": [
       "3.3.3"
     ],
+    "HWPanModal": [
+      "0.8.9"
+    ],
     "SDWebImage": [
       "5.11.1"
     ],
