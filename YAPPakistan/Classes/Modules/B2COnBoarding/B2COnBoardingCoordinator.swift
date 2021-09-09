@@ -101,7 +101,9 @@ private extension B2COnBoardingCoordinator {
     
     
     func navigateToPhoneNumberVerification(user: OnBoardingUser) {
-        let verificationViewModel = PhoneNumberVerificationViewModel(user: user)
+        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
+
+        let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository: onBoardingRepository, user: user)
         let phoneNumberVerificationController = PhoneNumberVerificationViewController(viewModel: verificationViewModel)
         childContainerNavigation.pushViewController(phoneNumberVerificationController, animated: true)
         

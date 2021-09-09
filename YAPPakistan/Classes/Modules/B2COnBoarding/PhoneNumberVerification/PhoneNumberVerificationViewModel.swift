@@ -88,10 +88,11 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
     private var timer: Timer?
     private let resendTimeSubject = BehaviorSubject<TimeInterval>(value: 10)
     private let resendBlocked = BehaviorSubject<Bool>(value: false)
-    ///private let repository = OnBoardingRepository()
+    private let repository: OnBoardingRepository
     private var otpForRequest: String?
     
-    init(user: OnBoardingUser, otpTime: TimeInterval = 10) {
+    init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser, otpTime: TimeInterval = 10) {
+        self.repository = onBoardingRepository
         self.user = user
         self.otpTime = otpTime
         self.phoneNumberText = user.mobileNo.formattedValue ?? ""
@@ -113,24 +114,13 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
             if case OnboardingStage.otp = $0 { return true}
             return false
         }
-        //MARK:START TEMP
-        .map({ _ in
-            OnBoardingUser(accountType: .b2cAccount)
-        })
-        .bind(to: resultSubject)
-        .disposed(by: disposeBag)
-        //End Temp
-        #warning("Will remove this latter")
-        
-        
-        /*
+
         .do(onNext: {[unowned self] _ in
             self.endEdittingSubject.onNext(true)
             YAPProgressHud.showProgressHud()
-        }).withLatestFrom(textSubject).unwrap().flatMap {[unowned self] text -> Observable<Event<WaitingList>> in
+        }).withLatestFrom(textSubject).unwrap().flatMap {[unowned self] text -> Observable<Event<OTPData>> in
             guard let countryCode = user.mobileNo.countryCode, let number = user.mobileNo.number else { return .error(NetworkErrors.notFound)}
-            return self.repository.verifyOTP(countryCode: countryCode, phoneNumber: number, otp: text)
-            
+            return self.repository.verifyOTP(countryCode: countryCode, mobileNo: number, otp: text)
         }.do(onNext: { _ in
             YAPProgressHud.hideProgressHud()
         }).share()
@@ -140,23 +130,23 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
         request.elements().map{ $0.otpToken }
             .map { [weak self] in
                 self?.user.otpVerificationToken = $0
-                AppAnalytics.shared.logEvent(OnBoardingEvent.otpCodeStarted())
+                // AppAnalytics.shared.logEvent(OnBoardingEvent.otpCodeStarted())
                 return self?.user }.unwrap()
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
         
         let resendReqeust = resendSubject.do(onNext: { self.endEdittingSubject.onNext(true) }).flatMap { [unowned self] _ -> Observable<Event<String?>> in
             YAPProgressHud.showProgressHud()
-            return self.repository.createMobileOTP(countryCode: self.user.mobileNo.countryCode ?? "", phoneNumber: self.user.mobileNo.number ?? "", accountType: user.accountType.rawValue)
+            return self.repository.resendOTP(countryCode: self.user.mobileNo.countryCode ?? "", mobileNo: self.user.mobileNo.number ?? "", accountType: user.accountType.rawValue)
         }.do(onNext: {_ in
             YAPProgressHud.hideProgressHud()
         }).share()
-        
+
         resendReqeust.elements().do(onNext: { [unowned self] _ in
             self.startTimer()
-            AppAnalytics.shared.logEvent(OnBoardingEvent.resendOtp())
+            // AppAnalytics.shared.logEvent(OnBoardingEvent.resendOtp())
         }).map { _ in  "screen_verify_phone_number_display_text_resend_otp_success".localized }.bind(to: showAlertSubject).disposed(by: disposeBag)
-        
+
         Observable.merge(request.errors(), resendReqeust.errors()).map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
          
         request.errors().map{ error -> Bool in
@@ -170,7 +160,7 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
         request.errors().map{ _ in nil }
             .do(onNext: { [unowned self] in self.otpForRequest = $0 })
             .bind(to: textSubject).disposed(by: disposeBag)
-         */
+
         startTimer()
         
         poppedSubject.subscribe(onNext: { [unowned self] in
