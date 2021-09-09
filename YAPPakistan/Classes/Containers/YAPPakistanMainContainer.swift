@@ -19,10 +19,12 @@ public struct YAPPakistanConfiguration {
 public final class YAPPakistanMainContainer {
     let configuration: YAPPakistanConfiguration
     let themeService: ThemeService<AppTheme>
+    let credentialsStore: CredentialsStoreType
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
         self.themeService = AppTheme.service(initial: .light)
+        self.credentialsStore = CredentialsManager()
     }
     
     public func rootCoordinator(window: UIWindow) -> AppCoordinator {

@@ -16,6 +16,7 @@ import YAPComponents
 public class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
     private let container: YAPPakistanMainContainer
     private let xsrfToken: String
+    private var session: Session!
 
     internal weak var root: UINavigationController!
     private var containerNavigation: UINavigationController!
@@ -174,9 +175,10 @@ private extension B2COnBoardingCoordinator {
     }
     
     func navigateToEnterEmail(user: OnBoardingUser) {
+        let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
 
-        let enterEmailViewModel = EnterEmailViewModel(onBoardingRepository: onBoardingRepository, user: user)
+        let enterEmailViewModel = EnterEmailViewModel(credentialsStore: container.credentialsStore, sessionProvider: sessionProvider, onBoardingRepository: onBoardingRepository, user: user)
         childContainerNavigation.pushViewController(EnterEmailViewController(viewModel: enterEmailViewModel), animated: true)
         
         enterEmailViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
@@ -200,7 +202,8 @@ private extension B2COnBoardingCoordinator {
         demographicsResultSubject.bind(to: enterEmailViewModel.inputs.demographicsSuccessObserver).disposed(by: rx.disposeBag)
         
         enterEmailViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
-            var user = result
+            self.session = result.session
+            var user = result.user
             user.timeTaken = self.viewModel.time
             user.isWaiting == true ? self.navigateToWaitingUserCongratulation(user: user) : self.navigateToCongratulation(user: user)
                 //AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailSuccess())
@@ -228,7 +231,7 @@ private extension B2COnBoardingCoordinator {
         containerNavigation.pushViewController(congratulationViewController, animated: true)
         
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
-            ///self?.waitingRank()
+            self?.navigateToWaitingListRank()
         }).disposed(by: rx.disposeBag)
     }
     
@@ -243,7 +246,16 @@ private extension B2COnBoardingCoordinator {
         }).disposed(by: rx.disposeBag)
     }
     
-    
+    func navigateToWaitingListRank() {
+        let customersService = container.makeCustomersService(authorizationProvider: session)
+        let messagesService = container.makeMessagesService(authorizationProvider: session)
+        let onBoardingRepository = OnBoardingRepository(customersService: customersService, messagesService: messagesService)
+        let viewModel = WaitingListRankViewModel(onBoardingRepository: onBoardingRepository)
+        let viewController = WaitingListRankViewController(themeService: container.themeService, viewModel: viewModel)
+
+        containerNavigation.pushViewController(viewController, animated: true)
+    }
+
     /*
      func postDemographicsInformation() {
      let viewModel = DeviceRegistrationViewModel(credentials: nil, action: .signup, otpVerificationToken: nil)

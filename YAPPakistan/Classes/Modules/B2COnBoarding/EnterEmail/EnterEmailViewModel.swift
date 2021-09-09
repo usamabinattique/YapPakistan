@@ -24,7 +24,7 @@ protocol EnterEmailViewModelInput {
 protocol EnterEmailViewModelOutput {
     var emailValidation: Observable<AppRoundedTextFieldValidation> { get }
     var valid: Observable<Bool> { get }
-    var result: Observable<OnBoardingUser> { get }
+    var result: Observable<(user: OnBoardingUser, session: Session)> { get }
     var error: Observable<String?> { get }
     var subHeadingHidden: Observable<Bool> { get }
     var heading: Observable<String> { get }
@@ -55,7 +55,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     
     private let emailValidationSubject = BehaviorSubject<AppRoundedTextFieldValidation>(value: .neutral)
     private let validSubject = BehaviorSubject<Bool>(value: false)
-    private let resultSubject = PublishSubject<OnBoardingUser>()
+    private let resultSubject = PublishSubject<(user: OnBoardingUser, session: Session)>()
     private let errorSubject = BehaviorSubject<String?>(value: nil)
     private let subHeadingHiddenSubject = BehaviorSubject<Bool>(value: true)
     private let headingSubject = BehaviorSubject<String>(value: "")
@@ -64,6 +64,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     private let progressSubject = PublishSubject<Float>()
     private let stageSubject = PublishSubject<OnboardingStage>()
     private let verificationTextSubject = BehaviorSubject<String>(value: "")
+    private let emailVerifiedSubject = PublishSubject<Void>()
     private let poppedSubject = PublishSubject<Void>()
     
     // inputs
@@ -79,7 +80,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     // outputs
     var emailValidation: Observable<AppRoundedTextFieldValidation> { return emailValidationSubject.asObservable() }
     var valid: Observable<Bool> { return validSubject.asObservable() }
-    var result: Observable<OnBoardingUser> { return resultSubject.asObservable() }
+    var result: Observable<(user: OnBoardingUser, session: Session)> { return resultSubject.asObservable() }
     var error: Observable<String?> { return errorSubject.asObservable() }
     var subHeadingHidden: Observable<Bool> { return subHeadingHiddenSubject.asObservable() }
     var heading: Observable<String> { return headingSubject.asObservable() }
@@ -95,8 +96,16 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     private let disposeBag = DisposeBag()
     private var isValidInput = false
     private let repository: OnBoardingRepository
-    
-    init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser) {
+
+    private let sessionProvider: SessionProviderType
+    private let credentialsStore: CredentialsStoreType
+
+    init(credentialsStore: CredentialsStoreType,
+         sessionProvider: SessionProviderType,
+         onBoardingRepository: OnBoardingRepository,
+         user: OnBoardingUser) {
+        self.credentialsStore = credentialsStore
+        self.sessionProvider = sessionProvider
         self.repository = onBoardingRepository
         self.user = user
         
@@ -111,9 +120,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         
         textValid.bind(to: validSubject).disposed(by: disposeBag)
         textValid.map { $0 ? .valid : .neutral }.bind(to: emailValidationSubject).disposed(by: disposeBag)
-        
-        sendSubject.filter { $0 == .emailVerify }.map { [unowned self] _ in self.user }.bind(to: resultSubject).disposed(by: disposeBag)
-        
+
         let request = sendSubject
             .filter {
                 if case OnboardingStage.email = $0 {
@@ -147,16 +154,15 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         let user = request.elements()
             .map { [weak self] token -> OnBoardingUser? in
                 self?.user.otpVerificationToken = token
+                self?.user.isWaiting = true
+
                 return self?.user
             }
             .unwrap()
             .share()
-        
-        let b2bUser = user.filter { $0.accountType == .b2bAccount }
+
         let b2cUser = user.filter { $0.accountType == .b2cAccount }
-        
-        b2cUser.map { _ in }.bind(to: demographicsSuccessSubject).disposed(by: disposeBag)
-        
+
         let saveProfileRequest = b2cUser.flatMap { [unowned self] user -> Observable<Event<String>> in
             self.repository.saveProfile(countryCode: user.mobileNo.countryCode ?? "",
                                         mobileNo: user.mobileNo.number ?? "",
@@ -168,6 +174,23 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                                         whiteListed: false,
                                         accountType: user.accountType.rawValue)
         }.share()
+
+        saveProfileRequest.elements().subscribe(onNext: { [weak self] jwt in
+            YAPProgressHud.hideProgressHud()
+
+            guard let self = self,
+                  let passcode = self.user.passcode,
+                  let phoneNumber = self.user.mobileNo.serverFormattedValue else {
+                return
+            }
+
+            let session = self.sessionProvider.makeUserSession(jwt: jwt)
+
+            self.credentialsStore.secureCredentials(username: phoneNumber, passcode: passcode)
+
+            self.resultSubject.onNext((self.user, session))
+            self.resultSubject.onCompleted()
+        }).disposed(by: disposeBag)
 
         saveProfileRequest.errors()
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
