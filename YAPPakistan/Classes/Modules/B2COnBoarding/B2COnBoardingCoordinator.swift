@@ -14,7 +14,9 @@ import YAPComponents
 
 
 public class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
-    
+    private let container: YAPPakistanMainContainer
+    private let xsrfToken: String
+
     internal weak var root: UINavigationController!
     private var containerNavigation: UINavigationController!
     private var childContainerNavigation: UINavigationController!
@@ -25,7 +27,11 @@ public class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
     private let resultSubject = PublishSubject<ResultType<Void>>()
     private let demographicsResultSubject = PublishSubject<Void>()
     
-    public init(navigationController: UINavigationController) {
+    public init(container: YAPPakistanMainContainer,
+                xsrfToken: String,
+                navigationController: UINavigationController) {
+        self.container = container
+        self.xsrfToken = xsrfToken
         self.root = navigationController
     }
     
@@ -67,7 +73,9 @@ public class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
 private extension B2COnBoardingCoordinator {
     
     func navigateToPhoneNumber(user: OnBoardingUser) {
-        let phoneNumberViewModel = PhoneNumberViewModel(user: user)
+        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
+
+        let phoneNumberViewModel = PhoneNumberViewModel(onBoardingRepository: onBoardingRepository, user: user)
         let phoneNumberViewController = PhoneNumberViewController(viewModel: phoneNumberViewModel)
         childContainerNavigation = OnBoardingContainerNavigationController(rootViewController: phoneNumberViewController)
         childContainerNavigation.navigationBar.isHidden = true

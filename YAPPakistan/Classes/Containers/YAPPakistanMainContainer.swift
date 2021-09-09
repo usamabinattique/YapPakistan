@@ -53,6 +53,18 @@ public final class YAPPakistanMainContainer {
                                 authorizationProvider: authorizationProvider)
     }
 
+    func makeMessagesService(xsrfToken: String) -> MessagesService {
+        return MessagesService(apiClient: makeAPIClient(),
+                               apiConfig: makeAPIConfiguration(),
+                               authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+    }
+
+    func makeMessagesService(authorizationProvider: ServiceAuthorizationProviderType) -> MessagesService {
+        return MessagesService(apiClient: makeAPIClient(),
+                               apiConfig: makeAPIConfiguration(),
+                               authorizationProvider: authorizationProvider)
+    }
+
     public func makeDummyViewController(xsrfToken: String) -> UIViewController {
         let customerService = CustomersService(apiConfig: makeAPIConfiguration(),
                                                authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))

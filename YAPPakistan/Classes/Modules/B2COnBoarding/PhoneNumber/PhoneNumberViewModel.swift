@@ -98,10 +98,12 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     private var isFormatted = false
     
     private var user: OnBoardingUser!
-    //let repository = OnBoardingRepository()
+    private let repository: OnBoardingRepository
     
-    init(user: OnBoardingUser) {
+    init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser) {
+        self.repository = onBoardingRepository
         self.user = user
+
         countryList.append(("United Arab Emirates", "AE", "+971 ", CountryFlag.flag(forCountryCode: "AE")))
         
         iconSubject.onNext(countryList.first?.flag)
@@ -138,15 +140,10 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
             .do(onNext: {[unowned self] _ in
             self.endEdittingSubject.onNext(true)
         })
-        //MARK: START Temporary
-        #warning("This is temporary for flow will fix it latter")
-        request.map{_ in ( OnBoardingUser(accountType: .b2cAccount))}.bind(to: resultSubject).disposed(by: disposeBag)
-        //MARK: END Temporary
-        /*
         .map { [unowned self] _ in self.user.mobileNo }.unwrap().flatMap { [unowned self] phone -> Observable<Event<String?>> in
-            
             YAPProgressHud.showProgressHud()
-            return self.repository.createMobileOTP(countryCode: phone.countryCode ?? "", phoneNumber: phone.number ?? "", accountType: user.accountType.rawValue)
+
+            return self.repository.signUpOTP(countryCode: phone.countryCode ?? "", mobileNo: phone.number ?? "", accountType: user.accountType.rawValue)
             
             }.do(onNext: {_ in
                 YAPProgressHud.hideProgressHud()
@@ -156,13 +153,12 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         error
             .bind(to: showErrorSubject).disposed(by: disposeBag)
         
-        error
-            .map{ OnBoardingEvent.phoneNumberError(["error" : $0])}
-            .bind(to: AppAnalytics.shared.rx.logEvent)
-            .disposed(by: disposeBag)
+//        error
+//            .map{ OnBoardingEvent.phoneNumberError(["error" : $0])}
+//            .bind(to: AppAnalytics.shared.rx.logEvent)
+//            .disposed(by: disposeBag)
         
         request.elements().map {[weak self] _ in self?.user }.unwrap().bind(to: resultSubject).disposed(by: disposeBag)
-        */
         
         
         let viewAppeared = viewAppearedSubject.filter { $0 }
