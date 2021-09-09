@@ -19,6 +19,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     let reposiotry = SplashRepository(service: XSRFService())
     
     private let userSession = PublishSubject<ResultType<Void>>()
+    private var xsrfToken = ""
     
     public init(window:UIWindow,
                 shortcutItem:UIApplicationShortcutItem?,
@@ -30,10 +31,13 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let _ = reposiotry.fetchXSRFToken().subscribe().disposed(by: rx.disposeBag)
+        reposiotry.fetchXSRFToken().subscribe(onNext: { _ in
+            self.xsrfToken = HTTPCookieStorage.shared.cookies?.filter({ $0.name == "XSRF-TOKEN" }).first?.value ?? ""
+            self.accountSelection()
+        }).disposed(by: rx.disposeBag)
         
         //self.showDummyController()
-        self.accountSelection()
+        //self.accountSelection()
         //self.onboarding()
         
         return result
@@ -46,7 +50,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func accountSelection() { //-> Observable<ResultType<Void>> {
-        coordinate(to: AccountSelectionCoordinatorReplaceable(window: window)).subscribe { result in
+        coordinate(to: AccountSelectionCoordinatorReplaceable(container: container, xsrfToken: xsrfToken, window: window)).subscribe { result in
             print(result)
         }.disposed(by: rx.disposeBag)
     }
@@ -57,7 +61,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
             // let vc = container.makeDummyViewController(xsrfToken: value)
         }
 
-        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: "1234"))
+        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
         let viewModel = WaitingListRankViewModel(onBoardingRepository: onBoardingRepository)
         let viewController = WaitingListRankViewController(themeService: container.themeService,
                                                            viewModel: viewModel)

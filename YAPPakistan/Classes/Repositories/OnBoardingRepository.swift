@@ -10,9 +10,23 @@ import RxSwift
 
 class OnBoardingRepository {
     private let customersService: CustomersService
+    private let messagesService: MessagesService
 
-    init(customersService: CustomersService) {
+    init(customersService: CustomersService, messagesService: MessagesService) {
         self.customersService = customersService
+        self.messagesService = messagesService
+    }
+
+    func signUpOTP(countryCode: String, mobileNo: String, accountType: String) -> Observable<Event<String?>> {
+        return messagesService.signUpOTP(countryCode: countryCode, mobileNo: mobileNo, accountType: accountType).materialize()
+    }
+
+    func resendOTP(countryCode: String, mobileNo: String, accountType: String) -> Observable<Event<String?>> {
+        return messagesService.resendOTP(countryCode: countryCode, mobileNo: mobileNo, accountType: accountType).materialize()
+    }
+
+    func verifyOTP(countryCode: String, mobileNo: String, otp: String) -> Observable<Event<OTPData>> {
+        return messagesService.verifyOTP(countryCode: countryCode, mobileNo: mobileNo, otp: otp).materialize()
     }
 
     func getWaitingListRanking() -> Observable<Event<WaitingListRank?>> {

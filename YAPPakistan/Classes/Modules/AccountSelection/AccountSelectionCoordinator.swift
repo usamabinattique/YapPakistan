@@ -11,6 +11,9 @@ import RxSwift
 import YAPCore
 
 public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void>>, AccountSelectionCoordinatorType {
+    private let container: YAPPakistanMainContainer
+    private let xsrfToken: String
+
     public var root: UINavigationController!
     public var result = PublishSubject<ResultType<Void>>()
     //var loginResult = PublishSubject<ResultType<Void>>()
@@ -19,7 +22,9 @@ public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void
     
     private let window: UIWindow
     
-    init(window: UIWindow) {
+    init(container: YAPPakistanMainContainer, xsrfToken: String, window: UIWindow) {
+        self.container = container
+        self.xsrfToken = xsrfToken
         self.window = window
     }
     
@@ -76,7 +81,15 @@ public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void
          
         return self.result
     }
-    
+
+    public func b2cOnboarding() {
+        coordinate(to: B2COnBoardingCoordinator(container: container, xsrfToken: xsrfToken, navigationController: self.root))
+            .subscribe(onNext: { [weak self] result in
+                guard let `self` = self else { return }
+                self.b2cOnboardingResult.onNext(result)
+            })
+            .disposed(by: rx.disposeBag)
+    }
 }
 
 

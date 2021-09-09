@@ -37,7 +37,8 @@ extension AccountSelectionCoordinatorType {
             .disposed(by: rx.disposeBag)
     }
     */
-    
+
+    /*
     public func b2cOnboarding() {
 //        coordinate(to: HouseholdOnBoardingCoordinator(navigationController: self.root))
         coordinate(to: B2COnBoardingCoordinator(navigationController: self.root))
@@ -47,7 +48,7 @@ extension AccountSelectionCoordinatorType {
             })
             .disposed(by: rx.disposeBag)
     }
-     
+    */
  
     /*
     func login() {
