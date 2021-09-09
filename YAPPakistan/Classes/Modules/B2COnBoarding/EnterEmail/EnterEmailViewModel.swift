@@ -94,9 +94,10 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     private var user: OnBoardingUser
     private let disposeBag = DisposeBag()
     private var isValidInput = false
-    //private let repository = OnBoardingRepository()
+    private let repository: OnBoardingRepository
     
-    init(user: OnBoardingUser) {
+    init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser) {
+        self.repository = onBoardingRepository
         self.user = user
         
         let appeared = viewAppearedSubject.filter { $0 }
@@ -113,28 +114,27 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         
         sendSubject.filter { $0 == .emailVerify }.map { [unowned self] _ in self.user }.bind(to: resultSubject).disposed(by: disposeBag)
         
-        let request = sendSubject.filter {
-            if case OnboardingStage.email = $0 { return true}
-            return false
-        }
-        //MARK: START: START OF TEMP FLOW ONLY CODE
-        .map({_ in OnBoardingUser(accountType: .b2cAccount)})
-        .bind(to: resultSubject)
-        .disposed(by: disposeBag)
-        // END OF TEMP FLOW ONLY CODE
-        
-        /*
-        .do(onNext: {[unowned self] _ in
-            self.endEdittingSubject.onNext(true)
-            self.emailValidationSubject.onNext(.valid)
-            YAPProgressHud.showProgressHud()
-        })
+        let request = sendSubject
+            .filter {
+                if case OnboardingStage.email = $0 {
+                    return true
+                }
+                return false
+            }
+            .do(onNext: {[unowned self] _ in
+                self.endEdittingSubject.onNext(true)
+                self.emailValidationSubject.onNext(.valid)
+
+                YAPProgressHud.showProgressHud()
+            })
             .withLatestFrom(validSubject)
             .filter { $0 }
             .flatMap { [unowned self] _ -> Observable<Event<String?>> in
-                return self.repository.sendVerficationEmail(email: self.user.email ?? "", accountType: self.user.accountType.rawValue, otpToken: self.user.otpVerificationToken)
-        }
-        .share()
+                return self.repository.signUpEmail(email: self.user.email ?? "",
+                                                   accountType: self.user.accountType.rawValue,
+                                                   otpToken: self.user.otpVerificationToken ?? "")
+            }
+            .share()
         
         request.errors()
             .do(onNext: { _ in
@@ -143,22 +143,30 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .map { $0.localizedDescription }
             .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
-        
+
         let user = request.elements()
             .map { [weak self] token -> OnBoardingUser? in
                 self?.user.otpVerificationToken = token
-                return self?.user }
+                return self?.user
+            }
             .unwrap()
             .share()
         
         let b2bUser = user.filter { $0.accountType == .b2bAccount }
         let b2cUser = user.filter { $0.accountType == .b2cAccount }
         
-        b2bUser.map { _ in }.bind(to: demographicsSuccessSubject).disposed(by: disposeBag)
+        b2cUser.map { _ in }.bind(to: demographicsSuccessSubject).disposed(by: disposeBag)
         
         let saveProfileRequest = b2cUser.flatMap { [unowned self] user -> Observable<Event<String>> in
-            
-            return self.repository.saveProfile(firstName: user.firstName ?? "", lastName: user.lastName ?? "", email: user.email ?? "", companyName: user.companyName, countryCode: user.mobileNo.countryCode ?? "", phone: user.mobileNo.number ?? "", passcode: user.passcode ?? "", accountType: user.accountType.rawValue, token: user.otpVerificationToken)
+            self.repository.saveProfile(countryCode: user.mobileNo.countryCode ?? "",
+                                        mobileNo: user.mobileNo.number ?? "",
+                                        passcode: user.passcode ?? "",
+                                        firstName: user.firstName ?? "",
+                                        lastName: user.lastName ?? "",
+                                        email: user.email ?? "",
+                                        token: user.otpVerificationToken ?? "",
+                                        whiteListed: false,
+                                        accountType: user.accountType.rawValue)
         }.share()
 
         saveProfileRequest.errors()
@@ -166,7 +174,8 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .map { $0.localizedDescription }
             .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
-        
+
+        /*
         saveProfileRequest.elements()
             .do(onNext: { token in
                 AuthenticationManager.shared.setJWT(token)
@@ -188,8 +197,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .do(onNext: { _ in AppReferralManager.removeReferralInformation() })
             .subscribe()
             .disposed(by: disposeBag)
-        
-        
+
         SessionManager.current.currentAccount
             .unwrap()
             .do(onNext: { [weak self] in
@@ -200,7 +208,8 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .unwrap()
             .bind(to: deviceRegistrationSubject)
             .disposed(by: disposeBag)
-         */
+        */
+
         keyboardNextSubject.withLatestFrom(validSubject).filter { $0 }.map {_ in OnboardingStage.email }.bind(to: sendSubject).disposed(by: disposeBag)
         
         subHeadingHiddenSubject.onNext(self.user.accountType == .b2cAccount)
@@ -224,7 +233,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             self.deviceRegistrationSubject.onCompleted()
             self.sendSubject.dispose()
         }).disposed(by: disposeBag)
-        
+
         /* resultSubject.withLatestFrom(textSubject)
             .map { (email) -> AppEvent in
                 AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmail())

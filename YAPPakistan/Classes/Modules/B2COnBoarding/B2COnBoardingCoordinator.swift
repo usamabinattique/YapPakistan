@@ -127,7 +127,6 @@ private extension B2COnBoardingCoordinator {
     }
     
     func navigateToCreatePasscode(user: OnBoardingUser) {
-        
         let createPasscodeViewModel = CreatePasscodeViewModel()
         let createPasscodeViewController = PINViewController(themeService: themeService, viewModel: createPasscodeViewModel, isCreatePasscode: true)
         let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: createPasscodeViewController)
@@ -175,7 +174,9 @@ private extension B2COnBoardingCoordinator {
     }
     
     func navigateToEnterEmail(user: OnBoardingUser) {
-        let enterEmailViewModel = EnterEmailViewModel(user: user)
+        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
+
+        let enterEmailViewModel = EnterEmailViewModel(onBoardingRepository: onBoardingRepository, user: user)
         childContainerNavigation.pushViewController(EnterEmailViewController(viewModel: enterEmailViewModel), animated: true)
         
         enterEmailViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
