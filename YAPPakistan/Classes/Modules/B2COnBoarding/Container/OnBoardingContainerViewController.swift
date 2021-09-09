@@ -68,7 +68,7 @@ fileprivate extension OnBoardingContainerViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({$0.primaryExtraLight}, to: [view.rx.backgroundColor])
+            .bind({$0.backgroundColor}, to: [view.rx.backgroundColor])
             .bind({$0.primary}, to: [sendButton.rx.enabledBackgroundColor])
             .bind({$0.primary}, to: [sendButton.rx.disabledBackgroundColor])
             .bind({$0.primaryExtraLight}, to: [sendButton.rx.titleColor(for: .normal)])

@@ -76,8 +76,8 @@ private extension B2COnBoardingCoordinator {
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
 
         let phoneNumberViewModel = PhoneNumberViewModel(onBoardingRepository: onBoardingRepository, user: user)
-        let phoneNumberViewController = PhoneNumberViewController(viewModel: phoneNumberViewModel)
-        childContainerNavigation = OnBoardingContainerNavigationController(rootViewController: phoneNumberViewController)
+        let phoneNumberViewController = PhoneNumberViewController(themeService: themeService, viewModel: phoneNumberViewModel)
+        childContainerNavigation = OnBoardingContainerNavigationController(themeService: themeService, rootViewController: phoneNumberViewController)
         childContainerNavigation.navigationBar.isHidden = true
         
         phoneNumberViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in

@@ -177,11 +177,11 @@ private extension EnterEmailViewController {
         
         email.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.endEditting.bind(to: view.rx.endEditting).disposed(by: rx.disposeBag)
-        viewModel.outputs.emailValidation.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
+        ///viewModel.outputs.emailValidation.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.emailValidation.map{ $0 != .invalid }.bind(to: errorLabel.rx.isHidden).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.showError.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid }.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
+        ///viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid }.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.showError.map{ _ in false }.bind(to: errorLabel.rx.isHidden).disposed(by: rx.disposeBag)
         viewModel.outputs.subHeadingHidden.bind(to: subHeadingLabel.rx.isHidden).disposed(by: rx.disposeBag)
         viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)

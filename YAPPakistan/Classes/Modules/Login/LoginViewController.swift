@@ -46,7 +46,7 @@ class LoginViewController: UIViewController {
         textfield.returnKeyType = .done
         textfield.clearButtonMode = .whileEditing
         textfield.errorTextColor = .red    //.error
-        textfield.placeholderColor = .blue //.greyDark
+        //textfield.placeholderColor = .blue //.greyDark
         return textfield
     }()
     

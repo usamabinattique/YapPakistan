@@ -15,7 +15,10 @@ import RxTheme
 class OnBoardingViewController: UIViewController {
     
     private lazy var progressView: OnBoardingProgressView = UIFactory
-        .makeOnBoardingProgressView(with: UIImage(named: "icon_back", in: .yapPakistan), completionImage: UIImage(named: "icon_check", in: .yapPakistan))
+        .makeOnBoardingProgressView(
+            with: UIImage(named: "icon_back", in: .yapPakistan),
+            completionImage: UIImage(named: "icon_check", in: .yapPakistan)
+        )
     
     private var childNavigation: UINavigationController?
     private var childView: UIView?
@@ -57,7 +60,6 @@ class OnBoardingViewController: UIViewController {
 
 fileprivate extension OnBoardingViewController {
     func setupViews() {
-        view.backgroundColor = .white
         view.addSubview(progressView)
         childView?.translatesAutoresizingMaskIntoConstraints = false
         if childView != nil,  childNavigation != nil {
@@ -82,6 +84,7 @@ fileprivate extension OnBoardingViewController {
     
     func setupTheme() {
         themeService.rx
+            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
             .bind({ $0.primary }, to: [progressView.rx.tintColor])
             .bind({ $0.primaryLight }, to: [progressView.rx.disabledColor])
             .disposed(by: rx.disposeBag)

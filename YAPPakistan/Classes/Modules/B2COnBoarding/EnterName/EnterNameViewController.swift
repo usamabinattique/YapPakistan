@@ -127,10 +127,10 @@ private extension EnterNameViewController {
 
 private extension EnterNameViewController {
     func bindViews() {
-        viewModel.outputs.firstNameError.bind(to: firstName.rx.errorText).disposed(by: rx.disposeBag)
-        viewModel.outputs.lastNameError.bind(to: lastName.rx.errorText).disposed(by: rx.disposeBag)
-        viewModel.outputs.firstNameValidation.bind(to: firstName.rx.validation).disposed(by: rx.disposeBag)
-        viewModel.outputs.lastNameValidation.bind(to: lastName.rx.validation).disposed(by: rx.disposeBag)
+        ///viewModel.outputs.firstNameError.bind(to: firstName.rx.errorText).disposed(by: rx.disposeBag)
+        ///viewModel.outputs.lastNameError.bind(to: lastName.rx.errorText).disposed(by: rx.disposeBag)
+        ///viewModel.outputs.firstNameValidation.bind(to: firstName.rx.validation).disposed(by: rx.disposeBag)
+        ///viewModel.outputs.lastNameValidation.bind(to: lastName.rx.validation).disposed(by: rx.disposeBag)
         
         firstName.rx.text.bind(to: viewModel.inputs.firstNameObserver).disposed(by: rx.disposeBag)
         lastName.rx.text.bind(to: viewModel.inputs.lastNameObserver).disposed(by: rx.disposeBag)
