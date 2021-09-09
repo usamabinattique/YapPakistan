@@ -202,12 +202,6 @@ public extension NSAttributedString.Key {
 // MARK: - String Localizable
 
 public extension String {
-    var localized: String {
-        return  AppTranslation.shared.translation(forKey: self)
-    }
-}
-
-public extension String {
     func firstCharacterUpperCase() -> String? {
         guard !isEmpty else { return nil }
         let lowerCasedString = self.lowercased()

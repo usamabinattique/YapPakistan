@@ -5,7 +5,7 @@
 //  Created by Zain on 17/06/2019.
 //  Copyright © 2019 YAP. All rights reserved.
 //
-
+/*
 import Foundation
 
 public class AppTranslation {
@@ -22,3 +22,4 @@ var translationBundel: Bundle {
     return Bundle(for: AppTranslation.self)
 }
 
+*/
