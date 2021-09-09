@@ -29,6 +29,14 @@ class OnBoardingRepository {
         return messagesService.verifyOTP(countryCode: countryCode, mobileNo: mobileNo, otp: otp).materialize()
     }
 
+    func signUpEmail(email: String, accountType: String, otpToken: String) -> Observable<Event<String?>> {
+        return customersService.signUpEmail(email: email, otpToken: otpToken, accountType: accountType).materialize()
+    }
+
+    func saveProfile(countryCode: String, mobileNo: String, passcode: String, firstName: String, lastName: String, email: String, token: String, whiteListed: Bool, accountType: String) -> Observable<Event<String>> {
+        return customersService.saveProfile(countryCode: countryCode, mobileNo: mobileNo, passcode: passcode, firstName: firstName, lastName: lastName, email: email, token: token, whiteListed: whiteListed).materialize()
+    }
+
     func getWaitingListRanking() -> Observable<Event<WaitingListRank?>> {
         let invitees: [Invitee] = [
             Invitee(inviteeCustomerId: "1", inviteeCustomerName: "Logan Pearson"),
