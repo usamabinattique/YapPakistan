@@ -90,11 +90,12 @@ private extension B2COnBoardingCoordinator {
             self.navigateToPhoneNumberVerification(user: result)
         }).disposed(by: rx.disposeBag)
     }
-
+    
     
     func navigateToPhoneNumberVerification(user: OnBoardingUser) {
         let verificationViewModel = PhoneNumberVerificationViewModel(user: user)
-        childContainerNavigation.pushViewController(PhoneNumberVerificationViewController(viewModel: verificationViewModel), animated: true)
+        let phoneNumberVerificationController = PhoneNumberVerificationViewController(viewModel: verificationViewModel)
+        childContainerNavigation.pushViewController(phoneNumberVerificationController, animated: true)
         
         verificationViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
             self.viewModel.inputs.progressObserver.onNext(progress)
@@ -116,11 +117,9 @@ private extension B2COnBoardingCoordinator {
     }
     
     func navigateToCreatePasscode(user: OnBoardingUser) {
-         let createPasscodeViewModel = CreatePasscodeViewModel()
-        let createPasscodeViewController = PINViewController(viewModel: createPasscodeViewModel, isCreatePasscode: true)
         
-        
-
+        let createPasscodeViewModel = CreatePasscodeViewModel()
+        let createPasscodeViewController = PINViewController(themeService: themeService, viewModel: createPasscodeViewModel, isCreatePasscode: true)
         let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: createPasscodeViewController)
         nav.modalPresentationStyle = .fullScreen
         root.present(nav, animated: true, completion: nil)
@@ -136,12 +135,12 @@ private extension B2COnBoardingCoordinator {
             //AppAnalytics.shared.logEvent(OnBoardingEvent.passcodeCreated())
             //AppAnalytics.shared.logEvent(OnBoardingEvent.createPin())
             u.passcode = result
-           self.navigateToEnterName(user: u)
+            self.navigateToEnterName(user: u)
         }).disposed(by: rx.disposeBag)
     }
     
     func navigateToEnterName(user: OnBoardingUser) {
-        /* let enterNameViewModel = EnterNameViewModel(user: user)
+        let enterNameViewModel = EnterNameViewModel(user: user)
         childContainerNavigation.popViewController(animated: false)?.didPopFromNavigationController()
         childContainerNavigation.pushViewController(EnterNameViewController(viewModel: enterNameViewModel), animated: false)
         
@@ -161,12 +160,12 @@ private extension B2COnBoardingCoordinator {
         
         enterNameViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
             self.navigateToEnterEmail(user: result)
-            AppAnalytics.shared.logEvent(OnBoardingEvent.signupName())
-        }).disposed(by: rx.disposeBag) */
+            // AppAnalytics.shared.logEvent(OnBoardingEvent.signupName())
+        }).disposed(by: rx.disposeBag)
     }
     
     func navigateToEnterEmail(user: OnBoardingUser) {
-        /* let enterEmailViewModel = EnterEmailViewModel(user: user)
+        let enterEmailViewModel = EnterEmailViewModel(user: user)
         childContainerNavigation.pushViewController(EnterEmailViewController(viewModel: enterEmailViewModel), animated: true)
         
         enterEmailViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
@@ -183,7 +182,9 @@ private extension B2COnBoardingCoordinator {
         
         containerViewModel.outputs.send.bind(to: enterEmailViewModel.inputs.sendObserver).disposed(by: rx.disposeBag)
         
-        enterEmailViewModel.outputs.deviceRegistration.subscribe(onNext: { [unowned self] _ in self.postDemographicsInformation() }).disposed(by: rx.disposeBag)
+        enterEmailViewModel.outputs.deviceRegistration.subscribe(onNext: { [unowned self] _ in
+            // self.postDemographicsInformation()
+        }).disposed(by: rx.disposeBag)
         
         demographicsResultSubject.bind(to: enterEmailViewModel.inputs.demographicsSuccessObserver).disposed(by: rx.disposeBag)
         
@@ -191,85 +192,86 @@ private extension B2COnBoardingCoordinator {
             var user = result
             user.timeTaken = self.viewModel.time
             user.isWaiting == true ? self.navigateToWaitingUserCongratulation(user: user) : self.navigateToCongratulation(user: user)
-            AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailSuccess())
-        }).disposed(by: rx.disposeBag) */
+                //AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailSuccess())
+        }).disposed(by: rx.disposeBag)
     }
     
     func navigateToCongratulation(user: OnBoardingUser) {
-        /* let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
+        let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
         let congratulationViewController = OnboardingCongratulationViewController(viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: rx.disposeBag)
         
         containerNavigation.pushViewController(congratulationViewController, animated: true)
         
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
-            self?.b2cKyc()
-            AppAnalytics.shared.logEvent(OnBoardingEvent.completeVerification())
-        }).disposed(by: rx.disposeBag) */
+            ///self?.b2cKyc()
+            //AppAnalytics.shared.logEvent(OnBoardingEvent.completeVerification())
+        }).disposed(by: rx.disposeBag)
     }
     
     func navigateToWaitingUserCongratulation(user: OnBoardingUser) {
-        /* let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
+        let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
         let congratulationViewController = OnboardingCongratulationWaitingUserViewController(viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: rx.disposeBag)
         
         containerNavigation.pushViewController(congratulationViewController, animated: true)
         
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
-            self?.waitingRank()
-        }).disposed(by: rx.disposeBag) */
+            ///self?.waitingRank()
+        }).disposed(by: rx.disposeBag)
     }
     
     func navigateToWaitingList(_ waitingListNumber: Int) {
-        /* let waitingListViewModel = OnBoardingWaitingListViewModel(waitingListNumber)
+        let waitingListViewModel = OnBoardingWaitingListViewModel(waitingListNumber)
         let waitingListViewController = OnBoardingWaitingListViewController(viewModel: waitingListViewModel)
         
         containerNavigation.pushViewController(waitingListViewController, animated: true)
         
         waitingListViewModel.outputs.keepMePosted.subscribe(onNext: {
             UIApplication.shared.open($0, options: [:], completionHandler: nil)
-        }).disposed(by: rx.disposeBag) */
+        }).disposed(by: rx.disposeBag)
     }
     
     
     /*
-    func postDemographicsInformation() {
-        let viewModel = DeviceRegistrationViewModel(credentials: nil, action: .signup, otpVerificationToken: nil)
-        let viewController = DeviceRegistrationViewController(viewModel: viewModel)
-        viewController.modalPresentationStyle = .overCurrentContext
-        root.present(viewController, animated: false, completion: nil)
-        
-        viewModel.outputs.error.subscribe(onNext: { [weak self] error in
-            viewController.dismiss(animated: false, completion: nil)
-            self?.root.rx.showErrorMessage.onNext(error)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.success.delay(RxTimeInterval.milliseconds(100), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] _ in
-            viewController.dismiss(animated: false, completion: nil)
-            self?.demographicsResultSubject.onNext(())
-        }).disposed(by: rx.disposeBag)
-    }
-    
-    func b2cKyc() {
-        coordinate(to: B2CKYCCoordinatorPushable(root: self.root))
-            .subscribe(onNext: { [weak self] res in
-                self?.resultSubject.onNext(res)
-                self?.resultSubject.onCompleted()
-        }).disposed(by: self.rx.disposeBag)
-    }
-    
-    func waitingRank() {
-        coordinate(to: OnboardingWaitingListRankCoordinator(window: UIWindow.keyWindow, repository: AccountRepository()))
-            .subscribe(onNext: { [weak self] _ in
-                self?.resultSubject.onNext(.success(()))
-                self?.resultSubject.onCompleted()
-        }).disposed(by: self.rx.disposeBag)
-    }
+     func postDemographicsInformation() {
+     let viewModel = DeviceRegistrationViewModel(credentials: nil, action: .signup, otpVerificationToken: nil)
+     let viewController = DeviceRegistrationViewController(viewModel: viewModel)
+     viewController.modalPresentationStyle = .overCurrentContext
+     root.present(viewController, animated: false, completion: nil)
+     
+     viewModel.outputs.error.subscribe(onNext: { [weak self] error in
+     viewController.dismiss(animated: false, completion: nil)
+     self?.root.rx.showErrorMessage.onNext(error)
+     }).disposed(by: rx.disposeBag)
+     
+     viewModel.outputs.success.delay(RxTimeInterval.milliseconds(100), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] _ in
+     viewController.dismiss(animated: false, completion: nil)
+     self?.demographicsResultSubject.onNext(())
+     }).disposed(by: rx.disposeBag)
+     }
+     
+     func b2cKyc() {
+     coordinate(to: B2CKYCCoordinatorPushable(root: self.root))
+     .subscribe(onNext: { [weak self] res in
+     self?.resultSubject.onNext(res)
+     self?.resultSubject.onCompleted()
+     }).disposed(by: self.rx.disposeBag)
+     }
+     
+     func waitingRank() {
+     coordinate(to: OnboardingWaitingListRankCoordinator(window: UIWindow.keyWindow, repository: AccountRepository()))
+     .subscribe(onNext: { [weak self] _ in
+     self?.resultSubject.onNext(.success(()))
+     self?.resultSubject.onCompleted()
+     }).disposed(by: self.rx.disposeBag)
+     }
+     */
     
     //MARK: Bump me up the queue - Invite Friends using Adjust
     private func bumpMeUpTheQueue() {
         
-    } */
+    }
 }
 
 

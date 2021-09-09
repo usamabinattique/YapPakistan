@@ -108,11 +108,22 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
         
         viewAppeared.map { [unowned self] _ -> Float in return self.user.accountType == .b2cAccount ? 0.4 : 0.428 }.bind(to: progressSubject).disposed(by: disposeBag)
         viewAppeared.map { [unowned self] _ in self.otpCode.count == 6 }.bind(to: validSubject).disposed(by: disposeBag)
-        /*
+        
         let request = sendSubject.filter {
             if case OnboardingStage.otp = $0 { return true}
             return false
         }
+        //MARK:START TEMP
+        .map({ _ in
+            OnBoardingUser(accountType: .b2cAccount)
+        })
+        .bind(to: resultSubject)
+        .disposed(by: disposeBag)
+        //End Temp
+        #warning("Will remove this latter")
+        
+        
+        /*
         .do(onNext: {[unowned self] _ in
             self.endEdittingSubject.onNext(true)
             YAPProgressHud.showProgressHud()

@@ -106,3 +106,12 @@
 "screen_waiting_list_rank_invitees_list_subtitle_zero_invitees_text" = "Once your referred friends sign up, you will see their names listed below and your place in the queue bumped up by %@ spots for each friend!";
 "screen_waiting_list_rank_invitees_list_subtitle_text" = "You have been bumped up by %d spots.";
 "screen_waiting_list_rank_invitees_list_button_title_text" = "Signed up friends: %d";
+
+"screen_waiting_list_caption_backyourway" = "Bank your way";
+"screen_waiting_list_caption_getanaccount" = "Get an account in seconds";
+"screen_waiting_list_caption_moneytransfers" = "Money transfers made simple";
+"screen_waiting_list_caption_trackyourspending" = "Track your spending";
+"screen_waiting_list_caption_splitbills" = "Split bills effortlessly";
+"screen_waiting_list_caption_spendlocally" = "Spend locally wherever you go";
+"screen_waiting_list_caption_instantspending" = "Instant spending notifications";
+"screen_waiting_list_caption_anappfor" = "An app for everyone";

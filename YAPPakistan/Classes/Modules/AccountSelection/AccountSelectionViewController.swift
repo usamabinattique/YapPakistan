@@ -25,22 +25,20 @@ class AccountSelectionViewController: UIViewController {
 
     
     private lazy var signInLabelButtonContainer = UIFactory.makeView().setAlpha(0).setHidden(true)
-    private lazy var signInLabel = UIFactory.makeLabel(
-        font: .appFont(forTextStyle: .regular),
-        text: "screen_home_display_text_already_have".localized
+    
+    fileprivate lazy var signInLabel = UIFactory.makeLabel(
+        font: .regular
     )
     
-    private lazy var signInButton: UIButton = {
+    fileprivate lazy var signInButton: UIButton = {
         let label = UIButton()
-        label.titleLabel?.font = UIFont.appFont(forTextStyle: .regular)
-        label.setTitle("screen_home_button_sign_in".localized, for: .normal)
+        label.titleLabel?.font = .regular
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
-    private lazy var getStartedButton: UIButton = {
+    fileprivate lazy var getStartedButton: UIButton = {
         let button = UIButton()
-        button.setTitle("screen_welcome_button_get_started".localized, for: .normal)
         button.isHidden = true
         button.alpha = 0
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -67,8 +65,8 @@ class AccountSelectionViewController: UIViewController {
         return AVPlayer(url: url!)
     }()
     
-    private var captions = ["Bank your way", "", "Get an account in seconds", "", "Money transfers made simple", "", "Track your spending", "", "Split bills effortlessly", "", "Spend locally wherever you go", "", "Instant spending notifications", "", "An app for everyone", ""]
-    private var captionDelays = [2.0, 1.5, 1.0, 1.5, 0.5, 1.8, 0.5, 2.0, 0.5, 2.0, 1.0, 2.5, 1.5, 2.0, 1.0, 3.0]
+    fileprivate lazy var captions:[String] = { Array(repeating: "", count: captionDelays.count) }()
+    fileprivate var captionDelays = [2.0, 1.5, 1.0, 1.5, 0.5, 1.8, 0.5, 2.0, 0.5, 2.0, 1.0, 2.5, 1.5, 2.0, 1.0, 3.0]
     
     private var currentCaption = 0
     
@@ -88,9 +86,12 @@ class AccountSelectionViewController: UIViewController {
 
         setupSubViews()
         setupTheme()
+        setupLocalizedStrings()
         setupConstraints()
         bindViews()
         setupVideo()
+        
+        NotificationCenter.default.addObserver(Self.self, selector: #selector(setupLocalizedStrings), name: NSLocale.currentLocaleDidChangeNotification, object: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying), name: .AVPlayerItemDidPlayToEndTime, object: nil)
 
@@ -206,6 +207,22 @@ private extension AccountSelectionViewController {
             .disposed(by: rx.disposeBag)
     }
     
+    @objc func setupLocalizedStrings() {
+        signInLabel.text = "screen_home_display_text_already_have".localized
+        signInButton.setTitle("screen_home_button_sign_in".localized, for: .normal)
+        getStartedButton.setTitle("screen_welcome_button_get_started".localized, for: .normal)
+        self.captions = [
+            "screen_waiting_list_caption_backyourway", .empty,
+            "screen_waiting_list_caption_getanaccount", .empty,
+            "screen_waiting_list_caption_moneytransfers", .empty,
+            "screen_waiting_list_caption_trackyourspending", .empty,
+            "screen_waiting_list_caption_splitbills", .empty,
+            "screen_waiting_list_caption_spendlocally", .empty,
+            "screen_waiting_list_caption_instantspending", .empty,
+            "screen_waiting_list_caption_anappfor", .empty
+        ].map{ $0.localized }
+    }
+    
     func setupConstraints() {
         
         signInLabelButtonContainer
@@ -252,7 +269,7 @@ private extension AccountSelectionViewController {
         getStartedButton.layer.shadowOpacity = 0.5
         getStartedButton.layer.shadowOffset = .zero
         getStartedButton.layer.cornerRadius = 26
-//        getStartedButton.layer.masksToBounds = true
+//      getStartedButton.layer.masksToBounds = true
     }
 }
 

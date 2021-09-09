@@ -56,7 +56,6 @@ class OnBoardingContainerViewController: KeyboardAvoidingViewController {
 
 fileprivate extension OnBoardingContainerViewController {
     func setupViews() {
-        view.backgroundColor = .white
         view.addSubview(sendButton)
         
         childView?.translatesAutoresizingMaskIntoConstraints = false
@@ -69,8 +68,11 @@ fileprivate extension OnBoardingContainerViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({$0.primary}, to: [sendButton.rx.backgroundColor])
+            .bind({$0.primaryExtraLight}, to: [view.rx.backgroundColor])
+            .bind({$0.primary}, to: [sendButton.rx.enabledBackgroundColor])
+            .bind({$0.primary}, to: [sendButton.rx.disabledBackgroundColor])
             .bind({$0.primaryExtraLight}, to: [sendButton.rx.titleColor(for: .normal)])
+            
             .disposed(by: rx.disposeBag)
     }
     
@@ -92,7 +94,10 @@ fileprivate extension OnBoardingContainerViewController {
 
 fileprivate extension OnBoardingContainerViewController {
     func bindViews() {
-        sendButton.rx.tap.withLatestFrom(viewModel.outputs.activeStage).bind(to: viewModel.inputs.sendObserver).disposed(by: rx.disposeBag)
+        sendButton.rx.tap.withLatestFrom(viewModel.outputs.activeStage)
+            .do(onNext: { value in
+                print(value)
+            }).bind(to: viewModel.inputs.sendObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.valid.bind(to: sendButton.rx.isEnabled).disposed(by: rx.disposeBag)
     }
 }

@@ -10,6 +10,7 @@ import UIKit
 import YAPComponents
 import RxSwift
 import RxCocoa
+import RxTheme
 
 /**
  
@@ -17,8 +18,9 @@ import RxCocoa
 public class PINViewController: UIViewController {
     
     // MARK: - Init
-    public init(viewModel: PINViewModelType, isCreatePasscode: Bool? = false) {
+    public init(themeService:ThemeService<AppTheme>, viewModel: PINViewModelType, isCreatePasscode: Bool? = false) {
         self.viewModel = viewModel
+        self.themeService = themeService
         self.isCreatePasscode = isCreatePasscode ?? false
         disposeBag = DisposeBag()
         super.init(nibName: nil, bundle: nil)
@@ -55,6 +57,7 @@ public class PINViewController: UIViewController {
     private lazy var createPINButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton()
     
     // MARK: - Properties
+    let themeService:ThemeService<AppTheme>
     let viewModel: PINViewModelType
     let disposeBag: DisposeBag
     var hideNavigationBar: Bool = false
@@ -96,11 +99,11 @@ public class PINViewController: UIViewController {
 fileprivate extension PINViewController {
     func setup() {
         setupViews()
+        setupTheme()
         setupConstraints()
     }
     
     func setupViews() {
-        view.backgroundColor = .white
         holdingView.addSubview(dottedView)
         holdingView.addSubview(errorLabel)
         view.addSubview(headingLabel)
@@ -110,6 +113,12 @@ fileprivate extension PINViewController {
         view.addSubview(createPINButton)
     }
     
+    func setupTheme() {
+        themeService.rx
+            .bind({$0.primaryExtraLight}, to: [view.rx.backgroundColor])
+            .bind({$0.primary}, to: [createPINButton.rx.enabledBackgroundColor, createPINButton.rx.disabledBackgroundColor])
+            .disposed(by: rx.disposeBag)
+    }
     
     func setupConstraints() {
         

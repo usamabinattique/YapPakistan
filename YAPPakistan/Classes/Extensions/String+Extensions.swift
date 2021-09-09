@@ -214,3 +214,8 @@ public extension String {
         return lowerCasedString.replacingCharacters(in: lowerCasedString.startIndex...lowerCasedString.startIndex, with: String(lowerCasedString[lowerCasedString.startIndex]).uppercased())
     }
 }
+
+
+public extension String {
+    static var empty:Self { return "" }
+}

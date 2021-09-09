@@ -115,9 +115,14 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         let formattedText = textObserverSubject.do(onNext: {[unowned self] in
             self.user.mobileNo.formattedValue = $0})
             .map { [unowned self] in self.formatePhoneNumber($0 ?? "")}
-            .do(onNext: { [unowned self] in self.isFormatted = $0.formatted})
+            .do(onNext: { [unowned self] in
+                    self.isFormatted = $0.formatted}
+            )
         
-        formattedText.map { $0.formatted }.bind(to: validSubject).disposed(by: disposeBag)
+        formattedText.map {
+            let formated = $0.formatted
+            return formated
+        }.bind(to: validSubject).disposed(by: disposeBag)
         formattedText.map { $0.formatted ? .valid : .neutral }.bind(to: validationSubject).disposed(by: disposeBag)
         formattedText.map { [unowned self] in self.attributed(text: $0.phoneNumber) }.bind(to: textSubject).disposed(by: disposeBag)
         
@@ -125,14 +130,20 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
             let currentText = (currentText ?? "").replacingOccurrences(of: " ", with: "")
             self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count-1 && (currentText.count + text.count < 14 || text.count == 0)) && (!self.isFormatted || text.count == 0)
         }).subscribe().disposed(by: disposeBag)
-        /*
+        
         let request = sendSubject.filter {
             if case OnboardingStage.phone = $0 { return true}
             return false
             }
             .do(onNext: {[unowned self] _ in
             self.endEdittingSubject.onNext(true)
-        }).map { [unowned self] _ in self.user.mobileNo }.unwrap().flatMap { [unowned self] phone -> Observable<Event<String?>> in
+        })
+        //MARK: START Temporary
+        #warning("This is temporary for flow will fix it latter")
+        request.map{_ in ( OnBoardingUser(accountType: .b2cAccount))}.bind(to: resultSubject).disposed(by: disposeBag)
+        //MARK: END Temporary
+        /*
+        .map { [unowned self] _ in self.user.mobileNo }.unwrap().flatMap { [unowned self] phone -> Observable<Event<String?>> in
             
             YAPProgressHud.showProgressHud()
             return self.repository.createMobileOTP(countryCode: phone.countryCode ?? "", phoneNumber: phone.number ?? "", accountType: user.accountType.rawValue)
@@ -152,6 +163,8 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         
         request.elements().map {[weak self] _ in self?.user }.unwrap().bind(to: resultSubject).disposed(by: disposeBag)
         */
+        
+        
         let viewAppeared = viewAppearedSubject.filter { $0 }
         viewAppeared.map { [unowned self] _ -> Float in return self.user.accountType == .b2cAccount ? 0.2 : 0.428 }.bind(to: progressSubject).disposed(by: disposeBag)
         viewAppeared.map { [unowned self] _ in self.isFormatted }.bind(to: validSubject).disposed(by: disposeBag)

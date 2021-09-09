@@ -10,6 +10,9 @@ import RxSwift
 import RxCocoa
 import YAPComponents
 
+//import RxTheme
+//import YAPPakistan
+
 let bundle:Bundle? = nil
 
 class SplashViewController: UIViewController {
@@ -22,6 +25,7 @@ class SplashViewController: UIViewController {
     private var dotHeightConstraint: NSLayoutConstraint!
     
     private var viewModel: SplashViewModelType!
+    //private var themeService: ThemeService<AppTheme>!
     
     private lazy var logo = UIFactory
         .makeImageView(image: UIImage(named: "yap_logo_animate"))
@@ -40,8 +44,9 @@ class SplashViewController: UIViewController {
     
     // MARK: Initialization
     
-    init(viewModel: SplashViewModelType) {
+    init(/*themeService: ThemeService<AppTheme>!,*/ viewModel: SplashViewModelType) {
         self.viewModel = viewModel
+        //self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
         
     }
@@ -49,23 +54,14 @@ class SplashViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
-    deinit {
-        //#if DEBUG
-        print("CFGetRetainCount:e \(CFGetRetainCount(logoCenterHorizonConstraint))")
-        print("CFGetRetainCount:e \(CFGetRetainCount(logoWidthConstraint))")
-        print("CFGetRetainCount:e \(CFGetRetainCount(logoHeightConstraint))")
-        print("CFGetRetainCount:e \(CFGetRetainCount(dotWidthConstraint))")
-        print("CFGetRetainCount:e \(CFGetRetainCount(dotHeightConstraint))")
-        //#endif
-    }
-    
+
     // MARK: Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupSubViews()
+        //setupTheme()
         setupConstraints()
         bindViews()
         
@@ -86,18 +82,22 @@ extension SplashViewController {
     
     fileprivate func setupSubViews() {
         view.backgroundColor = .white
-        
         view.addSubview(logo)
         view.addSubview(dot)
         //view.addSubview(visualEffectView)
     }
     
+//    fileprivate func setupTheme() {
+//        themeService.rx
+//            .bind({$0.primaryExtraLight}, to: [view.rx.backgroundColor])
+//            .disposed(by: rx.disposeBag)
+//    }
+    //MARK: OLD WAY OF SETTING LAYOUT CONSTRAINTS
+    /*
     fileprivate func setupConstraints() {
         
         logo.centerVerticallyInSuperview()
-        
         logoCenterHorizonConstraint = NSLayoutConstraint(item: logo, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
-        
         logoWidthConstraint = logo.widthAnchor.constraint(equalToConstant: 110)
         logoHeightConstraint = logo.heightAnchor.constraint(equalToConstant: 103)
         
@@ -106,17 +106,51 @@ extension SplashViewController {
         logoCenterHorizonConstraint.isActive = true
         
         dot
-        .centerHorizontallyInSuperview()
-        .verticallyCenterWith(view, constant: 8)
-       
+            .centerHorizontallyInSuperview()
+            .verticallyCenterWith(view, constant: 8)
         dotWidthConstraint = dot.widthAnchor.constraint(equalToConstant: 13)
         dotHeightConstraint = dot.heightAnchor.constraint(equalToConstant: 13)
         
         dotWidthConstraint.isActive = true
         dotHeightConstraint.isActive = true
+    } */
+    
+    //MARK: Updated YAPLayout, after using UnsafeMutablePointer for initialization
+    fileprivate func setupConstraints() {
+        logo
+            .centerVerticallyInSuperview()
+            .horizontallyCenterWith(view, initTo:&logoCenterHorizonConstraint)
+            .width(constant: 110, initTo:&logoWidthConstraint)
+            .height(constant: 103, initTo:&logoHeightConstraint)
         
-        //visualEffectView.alignAllEdgesWithSuperview()
+        dot
+            .centerHorizontallyInSuperview()
+            .verticallyCenterWith(view, constant: 8)
+            .width(constant: 13, initTo:&dotWidthConstraint)
+            .height(constant: 13, initTo:&dotHeightConstraint)
     }
+    
+    /*
+    //MARK: Native NSLayoutConstraint Approach
+    fileprivate func setupConstraints() {
+        let constraints = [
+            logo.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            logo.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logo.widthAnchor.constraint(equalToConstant: 110),
+            logo.heightAnchor.constraint(equalToConstant: 103),
+            
+            dot.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dot.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 8),
+            dot.widthAnchor.constraint(equalToConstant: 13),
+            dot.heightAnchor.constraint(equalToConstant: 13),
+        ]
+        
+        ( logoCenterHorizonConstraint, logoWidthConstraint, logoHeightConstraint, dotWidthConstraint, dotHeightConstraint ) = ( constraints[1], constraints[2], constraints[3], constraints[6], constraints[7] )
+        
+        NSLayoutConstraint.activate(constraints)
+    }
+    */
+    
 }
 
 // MARK: Binding
@@ -128,12 +162,12 @@ private extension SplashViewController {
             .outputs
             .showError
             .subscribe(onNext: { [unowned self] error in
-                /* self.showAlert(title: "",
+                self.showAlert(title: "",
                  message: error,
-                 defaultButtonTitle:  "common_display_text_retry".localized,
+                 defaultButtonTitle:  "common_display_text_retry",
                  secondayButtonTitle: nil, defaultButtonHandler: { [weak self] _ in
                  self?.viewModel.inputs.refreshXSRF.onNext(())
-                 }, secondaryButtonHandler: nil, completion: nil) */
+                 }, secondaryButtonHandler: nil, completion: nil)
             })
             .disposed(by: rx.disposeBag)
         

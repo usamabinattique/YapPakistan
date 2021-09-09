@@ -3,18 +3,18 @@ import RxTheme
 import RxCocoa
 import RxSwift
 
-let globalStatusBarStyle = BehaviorRelay<UIStatusBarStyle>(value: .default)
-let themeService = AppTheme.service(initial: .light)
+public let globalStatusBarStyle = BehaviorRelay<UIStatusBarStyle>(value: .default)
+public let themeService = AppTheme.service(initial: .light)
 
 /*func appTheme<T>(_ mapper: @escaping ((Theme) -> T)) -> ThemeAttribute<T> {
     return themeService.attribute(mapper)
 }*/
 
-func appTheme<T>(_ mapper: @escaping ((Theme) -> T)) -> Observable<T> {
+public func appTheme<T>(_ mapper: @escaping ((Theme) -> T)) -> Observable<T> {
     return themeService.attrStream(mapper)
 }
 
-protocol Theme {
+public protocol Theme {
     var backgroundColor: UIColor    { get }
     var primary: UIColor            { get }
     var primaryLight: UIColor       { get }
@@ -105,11 +105,11 @@ struct DarkTheme: Theme {
     var blurStyle: UIBlurEffect.Style       { UIBlurEffect.Style.extraLight }
 }
 
-enum AppTheme: ThemeProvider {
+public enum AppTheme: ThemeProvider {
     case light
     case dark
     
-    var associatedObject: Theme {
+    public var associatedObject: Theme {
         switch self {
         case .dark:
             return DarkTheme()
