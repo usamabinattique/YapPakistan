@@ -5,13 +5,12 @@
 //  Created by Abbas on 06/06/2021.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
 import SDWebImage
+import UIKit
 
 extension Reactive where Base: UIImageView {
-
     public var imageURL: Binder<URL?> {
         return self.imageURL(withPlaceholder: nil)
     }
