@@ -230,6 +230,9 @@ private extension B2COnBoardingCoordinator {
         let congratulationViewController = OnboardingCongratulationWaitingUserViewController(themeService: themeService, viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: rx.disposeBag)
         
+        #warning("Progress marked completed!")
+        self.viewModel.inputs.progressObserver.onNext(1)
+        
         containerNavigation.pushViewController(congratulationViewController, animated: true)
         
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
