@@ -30,9 +30,20 @@
 "common_display_text_copy" = "Copy";
 "common_display_text_currency" = "AED";
 
+"" = "";
+
 // MARK: - Splash
 "screen_splash_display_text_force_update" = "Please update your app in order to continue.";
 "screen_splash_button_force_update" = "Update";
+
+// MARK: Enter Name Screen
+"screeen_name_display_text_title" = "What's your name?";
+"screen_name_display_text_first_name" = "First name";
+"screen_name_display_text_last_name" = "Last name";
+
+// MARK: Enter Email Screen
+"screen_enter_email_b2b_display_text_sub_heading" = "What's your preferred email address?";
+"screen_enter_email_display_text_email_address" = "Email address";
 
 // MARK: Home Screen
 "screen_home_display_text_tag_line" = "The Personalized Banking App";
@@ -78,8 +89,9 @@
 "screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
 
 //MARK: Create passcode screen
-"screen_create_passcode_display_text_title" = "Create a new 4- to 6-digit passcode​";
-"screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our\nTerms & Conditions";
+"screen_create_passcode_display_text_title" = "Create a new 4- to 6-digit passcode to access your account​";
+"screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our";
+"screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
 "screen_create_passcode_button_create_passcode" = "Create passcode";
 "screen_create_passcode_button_create_new_passcode" = "Set passcode";
 "screen_create_passcode_display_text_error_sequence" = "Passcode cannot be a straight sequence";
@@ -115,3 +127,20 @@
 "screen_waiting_list_caption_spendlocally" = "Spend locally wherever you go";
 "screen_waiting_list_caption_instantspending" = "Instant spending notifications";
 "screen_waiting_list_caption_anappfor" = "An app for everyone";
+
+// MARK: - Onboarding Congratulation screen
+"screen_onboarding_congratulations_display_text_title" = "Congrats, %@!";
+"screen_onboarding_congratulations_display_text_sub_title" = "A YAP Personal Account has been created for you in less than %@ seconds!";
+"screen_onboarding_congratulations_display_text_sub_title_no_interval" = "A YAP Personal Account has been created for you!";
+"screen_onboarding_congratulations_display_text_iban" = "Here's your IBAN";
+"screen_onboarding_congratulations_display_text_meeting_note" = "\nMake sure you have your Emirates ID at hand before we proceed";
+"screen_onboarding_congratulations_waiting_user_display_text_meeting_note" = "Due to all the excitement of our official launch, we are gradually activating as many accounts as possible to keep the app running smoothly. In the meantime, until your account is ready to be fully activated you’ll be placed in a queue.";
+"screen_onboarding_congratulations_button_complete_verification" = "Complete verification";
+"screen_onboarding_congratulations_waiting_user_button_complete_verification" = "Queue up!";
+
+//MARK: Email verification screen
+"screen_email_verification_display_text_title" = "Great!";
+"screen_email_verification_b2c_display_text_email_sent" = "you should now receive an email on";
+"screen_email_verification_b2c_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
+"screen_email_verification_b2b_display_text_email_sent" = "you should now receive an email on";
+"screen_email_verification_b2b_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";

@@ -28,7 +28,7 @@ class LoginViewController: UIViewController {
     
     fileprivate lazy var headingLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .large)
+        label.font = UIFont.large
         label.text =  "screen_sign_in_display_text_heading_text".localized
         //label.textColor = UIColor.appColor(ofType: .greyDark)
         label.textAlignment = .center
@@ -71,7 +71,7 @@ class LoginViewController: UIViewController {
     
     fileprivate lazy var rememberId: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .small)
+        label.font = UIFont.small
         label.text =  "screen_sign_in_display_text_remember_id_text".localized
         label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -90,7 +90,7 @@ class LoginViewController: UIViewController {
     
     fileprivate lazy var signUpLabel: UIButton = {
         let label = UIButton()
-        label.titleLabel?.font = UIFont.appFont(forTextStyle: .regular)
+        label.titleLabel?.font = UIFont.regular
         label.setTitleColor(UIColor.darkGray /*.appColor(ofType: .greyDark)*/, for: .normal)
         let text = "screen_sign_in_display_text_sign_up".localized()
         let signUp = "Sign up"

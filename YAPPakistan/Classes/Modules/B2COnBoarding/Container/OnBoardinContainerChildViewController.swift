@@ -20,19 +20,15 @@ class OnBoardinContainerChildViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //if UIScreen.screenType != .iPhone5 {
-        if (self.navigationController as? OnBoardingContainerNavigationController)?.keyboardShown ?? false {
-            _ = firstReponder?.becomeFirstResponder()
-        }
-        //}
+        guard UIScreen.screenType != .iPhone5 else { return }
+        guard (self.navigationController as? OnBoardingContainerNavigationController)?.keyboardShown ?? false else { return }
+        _ = firstReponder?.becomeFirstResponder()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //if UIScreen.screenType != .iPhone5 {
-        if !((self.navigationController as? OnBoardingContainerNavigationController)?.keyboardShown ?? false) {
-            _ = firstReponder?.becomeFirstResponder()
-        }
-        //}
+        guard UIScreen.screenType != .iPhone5 else { return }
+        guard !((self.navigationController as? OnBoardingContainerNavigationController)?.keyboardShown ?? false) else { return }
+        _ = firstReponder?.becomeFirstResponder()
     }
 }

@@ -11,6 +11,7 @@ import UIKit
 import YAPComponents
 import RxSwift
 import RxCocoa
+import RxTheme
 //import AppAnalytics
 
 class PhoneNumberVerificationViewController: OnBoardinContainerChildViewController {
@@ -18,8 +19,8 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
     private lazy var headingLabel: UILabel = {
         let label = UILabel()
         label.text =  "screen_verify_phone_number_display_text_title".localized
-        label.font = UIFont.appFont(forTextStyle: .title2)
-        label.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
+        label.font = UIFont.title2
+        //label.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -28,8 +29,8 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
     
     private lazy var subHeadingLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .regular)
-        label.textColor = UIColor.darkGray //.appColor(ofType: .greyDark)
+        label.font = UIFont.regular
+        //label.textColor = UIColor.darkGray //.appColor(ofType: .greyDark)
         label.textAlignment = .center
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
@@ -46,8 +47,8 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
     
     private lazy var timerLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .micro)
-        label.textColor = UIColor.darkGray //.appColor(ofType: .greyDark)
+        label.font = .micro
+        //label.textColor = UIColor.darkGray //.appColor(ofType: .greyDark)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -56,8 +57,8 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
     private lazy var resendButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
-        button.setTitleColor(UIColor.blue /*.appColor(ofType: .primary)*/, for: .normal)
-        button.titleLabel?.font = UIFont.appFont(forTextStyle: .large)
+        //button.setTitleColor(UIColor.blue /*.appColor(ofType: .primary)*/, for: .normal)
+        button.titleLabel?.font = .large
         button.setTitle( "screen_verify_phone_number_button_resend_otp".localized, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -68,9 +69,11 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
     }
     
     private var viewModel: PhoneNumberVerificationViewModelType!
+    private var themeService:ThemeService<AppTheme>!
     
-    init(viewModel: PhoneNumberVerificationViewModelType) {
+    init(themeService:ThemeService<AppTheme>, viewModel: PhoneNumberVerificationViewModelType) {
         self.viewModel = viewModel
+        self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -88,6 +91,7 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
         super.viewDidLoad()
         
         setupViews()
+        setupTheme()
         setupConstraints()
         bindViews()
         
@@ -103,12 +107,21 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
 
 extension PhoneNumberVerificationViewController {
     func setupViews() {
-        view.backgroundColor = .white
         view.addSubview(headingLabel)
         view.addSubview(subHeadingLabel)
         view.addSubview(codeTextField)
         view.addSubview(resendButton)
         view.addSubview(timerLabel)
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
+            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
+            .bind({ $0.greyDark }, to: [subHeadingLabel.rx.textColor])
+            .bind({ $0.greyDark }, to: [timerLabel.rx.textColor])
+            .bind({ $0.primary }, to: [resendButton.rx.titleColor(for: .normal)])
+            .disposed(by: rx.disposeBag)
     }
     
     func setupConstraints() {

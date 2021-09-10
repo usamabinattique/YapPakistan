@@ -15,13 +15,10 @@ import RxTheme
 
 class OnBoardingContainerViewController: KeyboardAvoidingViewController {
     
-    private lazy var sendButton: AppRoundedButton = {
-        let button = AppRoundedButton()
-        button.title =  "common_button_next".localized
-        button.titleLabel?.font = .large
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
+    private lazy var sendButton = UIFactory.makeAppRoundedButton(
+        with: .large,
+        title: "common_button_next".localized
+    )
     
     private var themeService: ThemeService<AppTheme>!
     private var viewModel: OnBoardingContainerViewModelType!
@@ -72,7 +69,6 @@ fileprivate extension OnBoardingContainerViewController {
             .bind({$0.primary}, to: [sendButton.rx.enabledBackgroundColor])
             .bind({$0.primary}, to: [sendButton.rx.disabledBackgroundColor])
             .bind({$0.primaryExtraLight}, to: [sendButton.rx.titleColor(for: .normal)])
-            
             .disposed(by: rx.disposeBag)
     }
     

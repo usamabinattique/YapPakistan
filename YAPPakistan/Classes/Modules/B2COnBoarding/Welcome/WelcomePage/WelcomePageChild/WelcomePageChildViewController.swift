@@ -17,7 +17,7 @@ class WelcomePageChildViewController: UIViewController {
     
     fileprivate lazy var heading: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .title2)
+        label.font = UIFont.title2
         label.textAlignment = .center
         label.textColor = .blue //UIColor.appColor(ofType: .primaryDark)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -26,7 +26,7 @@ class WelcomePageChildViewController: UIViewController {
     
     fileprivate lazy var details: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .title3)
+        label.font = UIFont.title3
         label.textAlignment = .center
         label.textColor = .gray //UIColor.appColor(ofType: .greyDark)
         label.numberOfLines = 0

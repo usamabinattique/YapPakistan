@@ -32,7 +32,7 @@ public class PINViewController: UIViewController {
     
     // MARK: - Views
     //.primaryDark, textStyle: .title3
-    private lazy var headingLabel: UILabel = UIFactory.makeLabel(font: .title3, alignment: .center, lineBreakMode: .byWordWrapping)
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     
     private lazy var holdingView: UIView = {
         let view = UIView()
@@ -49,10 +49,24 @@ public class PINViewController: UIViewController {
     //collor: .error
     private lazy var errorLabel: UILabel = UIFactory.makeLabel(font:.regular, alignment: .center)
     
-    private lazy var pinKeyboard: RxPasscodeKeyboard = RxPasscodeKeyboard()
+    //DefaultOPT 831095
+    private lazy var pinKeyboard: RxPasscodeKeyboard = {
+        let keyPad = RxPasscodeKeyboard()
+        
+        var imageName: String = (BiometryType.faceID == BiometricsManager().deviceBiometryType) ?
+            "icon_face_id":"icon_touch_id"
+        keyPad.biomatryButton.setImage(UIImage(named: imageName, in: .yapPakistan, compatibleWith: nil), for: .normal)
+        
+        keyPad.backButton.setImage(UIImage(named: "icon_delete_purple", in: .yapPakistan, compatibleWith: nil)?.asTemplate, for: .normal)
+        
+        return keyPad
+    }()
+    
+    
     
     //with: .greyDark
-    private lazy var termsAndCondtionsLabel: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var termsAndCondtionsLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var termsAndCondtionsButton = UIFactory.makeButton(with: .micro, title:"screen_create_passcode_display_button_terms_and_conditions".localized)
     
     private lazy var createPINButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton()
     
@@ -69,9 +83,6 @@ public class PINViewController: UIViewController {
         setup()
         bind()
         bindTranslations()
-        
-        termsAndCondtionsLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(termsAndCondtionsTapped)))
-        termsAndCondtionsLabel.isUserInteractionEnabled = true
     }
     
     public override func onTapBackButton() {
@@ -110,55 +121,93 @@ fileprivate extension PINViewController {
         view.addSubview(holdingView)
         view.addSubview(pinKeyboard)
         view.addSubview(termsAndCondtionsLabel)
+        view.addSubview(termsAndCondtionsButton)
         view.addSubview(createPINButton)
     }
-    
+
     func setupTheme() {
         themeService.rx
-            .bind({$0.primaryExtraLight}, to: [view.rx.backgroundColor])
-            .bind({$0.primary}, to: [createPINButton.rx.enabledBackgroundColor, createPINButton.rx.disabledBackgroundColor])
+            .bind({ $0.backgroundColor}, to: [view.rx.backgroundColor])
+            .bind({ $0.primary}, to: [createPINButton.rx.enabledBackgroundColor, createPINButton.rx.disabledBackgroundColor])
+            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
+            .bind({ $0.error }, to: [errorLabel.rx.textColor])
+            .bind({ $0.greyDark }, to: [termsAndCondtionsLabel.rx.textColor])
+            .bind({ $0.primary }, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
+            .bind({ $0.primary }, to: [pinKeyboard.rx.themeColor])
+            .bind({ $0.primary }, to: [dottedView.rx.themeColor])
             .disposed(by: rx.disposeBag)
     }
     
     func setupConstraints() {
         
+        let spacer1 = UIFactory.makeView()
+        let spacer2 = UIFactory.makeView()
+        let spacer3 = UIFactory.makeView()
+        let spacer4 = UIFactory.makeView()
+        let spacer5 = UIFactory.makeView()
+        view.addSub(view: spacer1)
+            .addSub(view: spacer2)
+            .addSub(view: spacer3)
+            .addSub(view: spacer4)
+            .addSub(view: spacer5)
+        
+        spacer1
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
+            .heightEqualTo(view: spacer2)
+            .heightEqualTo(view: spacer3)
+            .heightEqualTo(view: spacer4)
+            .heightEqualTo(view: spacer5)
+        
         headingLabel
-            .alignEdge(.left, withView: view, constant: 20)
-            .height(.greaterThanOrEqualTo, constant: 23)
-            .centerHorizontallyInSuperview()
-            .alignEdgeWithSuperviewSafeArea(.safeAreaTop, .lessThanOrEqualTo, constant: 15)
-            .alignEdgeWithSuperviewSafeArea(.safeAreaTop, .greaterThanOrEqualTo, constant: 0)
-
+            .toBottomOf(spacer1)
+            .alignEdgesWithSuperview([.left, .right], constant: 20)
         
         dottedView
-            .centerInSuperView()
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.top])
             .height(constant: 16)
         
         errorLabel
             .toBottomOf(dottedView, constant: 3)
-            .alignEdges([.left, .right], withView: holdingView, constant: 25)
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.bottom])
             .height(constant: 20)
         
+        spacer2
+            .toBottomOf(headingLabel)
+            .alignEdgesWithSuperview([.left, .right])
+        
         holdingView
-            .toBottomOf(headingLabel, constant: 1)
-            .toTopOf(pinKeyboard)
+            .toBottomOf(spacer2)
+            .alignEdgesWithSuperview([.left, .right])
+        
+        spacer3
+            .toBottomOf(holdingView)
             .alignEdgesWithSuperview([.left, .right])
         
         pinKeyboard
+            .toBottomOf(spacer3)
             .alignEdgesWithSuperview([.left, .right], constants: [55, 55])
-            .toBottomOf(errorLabel, .lessThanOrEqualTo, constant: 40)
-            .toBottomOf(dottedView, .greaterThanOrEqualTo, constant: 40)
+        
+        spacer4
+            .toBottomOf(pinKeyboard)
+            .alignEdgesWithSuperview([.left, .right])
         
         termsAndCondtionsLabel
-            .alignEdge(.left, withView: view, constant: 70)
-            .toBottomOf(pinKeyboard, .lessThanOrEqualTo, constant: 25)
-            .toBottomOf(pinKeyboard, .greaterThanOrEqualTo, constant: 10)
-            .height(constant: UIScreen.screenType == .iPhone5 || UIScreen.screenType == .iPhone6 ? 30 : 34)
+            .toBottomOf(spacer4)
             .centerHorizontallyInSuperview()
+        
+        termsAndCondtionsButton
+            .toBottomOf(termsAndCondtionsLabel)
+            .centerHorizontallyInSuperview()
+        
+        spacer5
+            .toBottomOf(termsAndCondtionsButton)
+            .alignEdgesWithSuperview([.left, .right])
         
         let bottomSafeArea: CGFloat = (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0) == 0 ? 18 : 12
         createPINButton
-            .toBottomOf(termsAndCondtionsLabel, constant: 16)
+            .toBottomOf(spacer5)
             .centerHorizontallyInSuperview()
             .height(constant: UIScreen.screenType == .iPhone5 || UIScreen.screenType == .iPhone6 ? 50 : 52)
             .width(constant: 200)
@@ -205,7 +254,7 @@ fileprivate extension PINViewController {
         viewModel.outputs.headingText.bind(to: headingLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.termsAndConditionsText.subscribe(onNext: {[weak self] in
             if $0 == nil { self?.termsAndCondtionsLabel.isHidden = true }
-            self?.termsAndCondtionsLabel.attributedText = $0
+            self?.termsAndCondtionsLabel.text = $0?.string
         }).disposed(by: disposeBag)
         viewModel.outputs.actionTitle.bind(to: createPINButton.rx.title()).disposed(by: disposeBag)
     }

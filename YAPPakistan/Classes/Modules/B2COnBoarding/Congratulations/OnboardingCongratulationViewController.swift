@@ -9,6 +9,7 @@
 import UIKit
 import YAPComponents
 import RxSwift
+import RxTheme
 
 
 public class OnboardingCongratulationViewController: UIViewController {
@@ -30,8 +31,7 @@ public class OnboardingCongratulationViewController: UIViewController {
         label.textAlignment = .center
         label.alpha = 0
         label.transform = CGAffineTransform(scaleX: 0.7, y: 0.7)
-        label.font = UIFont.appFont(forTextStyle: .title2)
-        label.textColor = .blue //.appColor(ofType: .primaryDark)
+        label.font = .title2
         label.translatesAutoresizingMaskIntoConstraints = false
         label.type = .continuous
         label.speed = .duration(8.0)
@@ -49,8 +49,7 @@ public class OnboardingCongratulationViewController: UIViewController {
     lazy var subheadingLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont.appFont(forTextStyle: .regular)
-        label.textColor = .darkGray //.appColor(ofType: .greyDark)
+        label.font = UIFont.regular
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -81,8 +80,7 @@ public class OnboardingCongratulationViewController: UIViewController {
     lazy var ibanHeaderLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont.appFont(forTextStyle: .small)
-        label.textColor = .darkGray //UIColor.appColor(ofType: .greyDark)
+        label.font = UIFont.small
         label.text = "screen_onboarding_congratulations_display_text_iban".localized
         label.alpha = 0
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -98,8 +96,7 @@ public class OnboardingCongratulationViewController: UIViewController {
     // MARK: - IBAN
     lazy var ibanLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .regular)
-        label.textColor = .blue //.appColor(ofType: .primary)
+        label.font = UIFont.regular
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -112,7 +109,6 @@ public class OnboardingCongratulationViewController: UIViewController {
         view.heightAnchor.constraint(equalToConstant: 44).isActive = true
         view.clipsToBounds = true
         view.alpha = 0
-        view.backgroundColor = UIColor.lightGray //.appColor(ofType: .greyLight).withAlphaComponent(0.5)
         view.layer.cornerRadius = 22
         
         let label = ibanLabel
@@ -134,8 +130,7 @@ public class OnboardingCongratulationViewController: UIViewController {
     lazy var footnoteLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont.appFont(forTextStyle: .small)
-        label.textColor = UIColor.darkGray //.appColor(ofType: .greyDark)
+        label.font = UIFont.small
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
@@ -168,12 +163,14 @@ public class OnboardingCongratulationViewController: UIViewController {
     
     // MARK: - Properties
     var viewModel: OnboardingCongratulationViewModelType!
+    var themeService:ThemeService<AppTheme>!
     
     // MARK: - Initialization
     
-    init(viewModel: OnboardingCongratulationViewModelType) {
-        super.init(nibName: nil, bundle: nil)
+    init(themeService:ThemeService<AppTheme>, viewModel: OnboardingCongratulationViewModelType) {
         self.viewModel = viewModel
+        self.themeService = themeService
+        super.init(nibName: nil, bundle: nil)
     }
     
     public required init?(coder: NSCoder) {
@@ -185,6 +182,7 @@ public class OnboardingCongratulationViewController: UIViewController {
         super.viewDidLoad()
         
         setup()
+        setupTheme()
         style()
         localize()
         bind()
@@ -204,6 +202,18 @@ public class OnboardingCongratulationViewController: UIViewController {
         animateIBANView()
         animateFootnote()
         animateCompleteVerificationButton()
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
+            .bind({ $0.primary }, to: [completeVerificationButton.rx.backgroundColor])
+            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
+            .bind({ $0.greyDark }, to: [subheadingLabel.rx.textColor])
+            .bind({ $0.primary }, to: [ibanLabel.rx.textColor])
+            .bind({ $0.greyLight.withAlphaComponent(0.5)}, to: [ibanView.rx.backgroundColor])
+            .bind({ $0.greyDark }, to: [footnoteLabel.rx.textColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func addFootnoteTopConstraint() -> NSLayoutConstraint {
@@ -233,7 +243,6 @@ extension OnboardingCongratulationViewController {
     }
     
     func animateHeading() {
-        view.backgroundColor = .white
         
         view.addSubview(headingLabel)
         _ = headingLabelCenterYConstraint
@@ -429,16 +438,16 @@ extension OnboardingCongratulationViewController {
                 let secondsInString = String(format: "%.0f", ceil(interval))
                 let maxValue = Int(secondsInString)!
                 let attributedString = NSMutableAttributedString(string: String(format:  "screen_onboarding_congratulations_display_text_sub_title".localized, secondsInString), attributes: [
-                    .font: UIFont.systemFont(ofSize: 16.0, weight: .regular)//,
-                    //.foregroundColor: UIColor.appColor(ofType: .greyDark)
+                    .font: UIFont.regular,
+                    .foregroundColor: self?.themeService.attrs.greyDark ?? .lightGray
                     ])
-                //attributedString.addAttributes([
-                //    .font: UIFont.systemFont(ofSize: 16.0, weight: .medium) //,
-                    //.foregroundColor: UIColor.appColor(ofType: .primaryDark)
-                //    ], range: NSRange(location: 61, length: 9 + secondsInString.count))
+                attributedString.addAttributes([
+                    .font: UIFont.systemFont(ofSize: 16.0, weight: .medium),
+                    .foregroundColor:self?.themeService.attrs.primaryDark ?? .blue
+                    ], range: NSRange(location: 61, length: 9 + secondsInString.count))
                 self?.subheadingLabel.attributedText = attributedString
                 self?.subheadingLabel.sizeToFit()
-                ///self?.subheadingLabel.animateCountDown(labels: Array((maxValue > 30 ? maxValue - 30 : 9)...maxValue).map({ String(format: "%02d", $0) }), withDuration: 2, inRange: NSRange(location: 61, length: secondsInString.count))
+                self?.subheadingLabel.animateCountDown(labels: Array((maxValue > 30 ? maxValue - 30 : 9)...maxValue).map({ String(format: "%02d", $0) }), withDuration: 2, inRange: NSRange(location: 61, length: secondsInString.count))
             }
         }).disposed(by: rx.disposeBag)
     }

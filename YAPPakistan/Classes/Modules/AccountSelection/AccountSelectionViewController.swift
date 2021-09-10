@@ -16,23 +16,13 @@ import YAPComponents
 class AccountSelectionViewController: UIViewController {
 
     //MARK: UI Components
-    private lazy var signInLabelButtonContainer = UIFactory
-        .makeView(alpha:0)
-        .setHidden(true)
-    fileprivate lazy var signInLabel = UIFactory
-        .makeLabel(font: .regular)
-    fileprivate lazy var signInButton = UIFactory
-        .makeButton(with: .regular)
-    fileprivate lazy var getStartedButton = UIFactory
-        .makeButton(with: .regular)
-        .setHidden(true)
-        .setAlpha(0)
-    fileprivate lazy var captionLabel = UIFactory
-        .makeLabel(font: .regular, alignment: .center)
-    fileprivate lazy var player = AVFactory
-        .makePlayer(with: Resource(named: "get_started.mp4", in: .yapPakistan))
-    fileprivate lazy var playerLayer = AVFactory
-        .makeAVPlayerLayer(with: player)
+    fileprivate lazy var signInContainer = UIFactory.makeView(alpha:0).setHidden(true)
+    fileprivate lazy var signInLabel = UIFactory.makeLabel(font: .regular)
+    fileprivate lazy var signInButton = UIFactory.makeButton(with: .regular)
+    fileprivate lazy var getStartedButton = UIFactory.makeButton(with: .regular).setHidden(true).setAlpha(0)
+    fileprivate lazy var captionLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
+    fileprivate lazy var player = AVFactory.makePlayer(with: Resource(named: "get_started.mp4", in: .yapPakistan))
+    fileprivate lazy var playerLayer = AVFactory.makeAVPlayerLayer(with: player)
     
     //MARK: Properties
     fileprivate var captionDelays = [2.0, 1.5, 1.0, 1.5, 0.5, 1.8, 0.5, 2.0, 0.5, 2.0, 1.0, 2.5, 1.5, 2.0, 1.0, 3.0]
@@ -84,21 +74,21 @@ class AccountSelectionViewController: UIViewController {
     private func addNotificationObservers() {
         NotificationCenter.default.rx
             .notification(.AVPlayerItemDidPlayToEndTime)
-            .subscribe { [weak self] _ in
-                self?.playerDidFinishPlaying()
-            }.disposed(by: rx.disposeBag)
+            .withUnretained(self)
+            .subscribe{ $0.0.playerDidFinishPlaying() }
+            .disposed(by: rx.disposeBag)
         
         NotificationCenter.default.rx
             .notification(.applicationWillResignActive)
-            .subscribe { [weak self] _ in
-                self?.resetVideo()
-            }.disposed(by: rx.disposeBag)
+            .withUnretained(self)
+            .subscribe { $0.0.resetVideo() }
+            .disposed(by: rx.disposeBag)
         
         NotificationCenter.default.rx
             .notification(.applicationDidBecomeActive)
-            .subscribe { [weak self] _ in
-                self?.startVideo()
-            }.disposed(by: rx.disposeBag)
+            .withUnretained(self)
+            .subscribe { $0.0.startVideo() }
+            .disposed(by: rx.disposeBag)
     }
     
     @objc
@@ -123,9 +113,9 @@ private extension AccountSelectionViewController {
         getStartedButton.isHidden = true
         getStartedButton.alpha = 0
         getStartedButton.isEnabled = false
-        signInLabelButtonContainer.isHidden = true
-        signInLabelButtonContainer.alpha = 0
-        signInLabelButtonContainer.isUserInteractionEnabled = false
+        signInContainer.isHidden = true
+        signInContainer.alpha = 0
+        signInContainer.isUserInteractionEnabled = false
     }
     
     @objc
@@ -134,13 +124,13 @@ private extension AccountSelectionViewController {
         stopped = false
         self.perform(#selector(animationCaption), with: nil, afterDelay: captionDelays[self.currentCaption])
         getStartedButton.isHidden = false
-        signInLabelButtonContainer.isHidden = false
+        signInContainer.isHidden = false
         UIView.animate(withDuration: 0.5, delay: captionDelays[0], animations: {
             self.getStartedButton.alpha = 1
-            self.signInLabelButtonContainer.alpha = 1
+            self.signInContainer.alpha = 1
         }, completion: { completed in
             self.getStartedButton.isEnabled = true
-            self.signInLabelButtonContainer.isUserInteractionEnabled = true
+            self.signInContainer.isUserInteractionEnabled = true
         })
     }
 }
@@ -154,10 +144,10 @@ private extension AccountSelectionViewController {
             .addSublayer(playerLayer)
         view
             .addSub(view: getStartedButton)
-            .addSub(view: signInLabelButtonContainer)
+            .addSub(view: signInContainer)
             .addSub(view: signInLabel)
             .addSub(view: captionLabel)
-        signInLabelButtonContainer
+        signInContainer
             .addSub(view: signInLabel)
             .addSub(view: signInButton)
     }
@@ -190,7 +180,7 @@ private extension AccountSelectionViewController {
     
     func setupConstraints() {
         
-        signInLabelButtonContainer
+        signInContainer
             .alignEdgeWithSuperviewSafeArea(.bottom, constant: 20)
             .height(constant: 24)
             .centerHorizontallyInSuperview()

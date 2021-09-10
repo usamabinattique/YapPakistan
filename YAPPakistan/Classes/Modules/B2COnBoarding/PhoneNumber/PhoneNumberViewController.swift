@@ -15,27 +15,9 @@ import RxTheme
 
 class PhoneNumberViewController: OnBoardinContainerChildViewController {
     
-    private lazy var headingLabel: UILabel = {
-        let label = UILabel()
-        label.text =  "screen_phone_number_display_text_title".localized
-        label.font = UIFont.title2
-        //label.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
-        label.textAlignment = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title2, alignment: .center, text: "screen_phone_number_display_text_title".localized, adjustFontSize: true)
     
-    private lazy var mobileNumber:AppRoundedTextField = {
-        let textField =  UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, placeholder: nil, validation: .neutral, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage: UIImage(named: "icon_invalid", in: .yapPakistan), leftIcon: nil)
-
-        textField.displaysIcon = true
-        textField.returnKeyType = .send
-        textField.delegate = self
-        textField.autocorrectionType = .no
-        textField.keyboardType = .asciiCapableNumberPad
-        return textField
-    }()
+    private lazy var mobileNumber = UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage: UIImage(named: "icon_invalid", in: .yapPakistan), leftIcon: nil, displaysIcon:true, returnKeyType:.send, autocorrectionType:.no, keyboardType:.asciiCapableNumberPad, delegate:self)
     
     private lazy var countryPicker: RxAppPickerView = {
         return RxAppPickerView()
@@ -66,7 +48,6 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
         setupViews()
         setupTheme()
         setupConstraint()
@@ -94,7 +75,6 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
 
 private extension PhoneNumberViewController {
     func setupViews() {
-        view.backgroundColor = .white
         view.addSubview(headingLabel)
         view.addSubview(mobileNumber)
         view.addSubview(countryTextField)
@@ -106,8 +86,8 @@ private extension PhoneNumberViewController {
             .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
             .bind({ $0.primary }, to: [mobileNumber.rx.primaryColor])
             .bind({ $0.primaryDark }, to: [mobileNumber.rx.secondaryColor])
-            .bind({ $0.error }, to: [mobileNumber.rx.errorBorderColor])
             .bind({ $0.grey }, to: [mobileNumber.rx.bgColor])
+            .bind({ $0.error }, to: [mobileNumber.rx.errorBorderColor])
             .bind({ $0.grey }, to: [mobileNumber.rx.errorTextColor])
             .disposed(by: rx.disposeBag)
     }

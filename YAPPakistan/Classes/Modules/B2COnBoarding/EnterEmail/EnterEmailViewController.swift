@@ -11,84 +11,31 @@ import YAPComponents
 
 import RxSwift
 import RxCocoa
+import RxTheme
 
 class EnterEmailViewController: OnBoardinContainerChildViewController {
     
-    private lazy var headingLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .title2)
-        label.textColor = UIColor.blue //appColor(ofType: .primaryDark)
-        label.textAlignment = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "screen_enter_email_b2b_display_text_sub_heading".localized, adjustFontSize: true)
     
-    private lazy var subHeadingLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .regular)
-        label.textColor = UIColor.darkGray //appColor(ofType: .greyDark)
-        label.textAlignment = .center
-        label.text = "screen_enter_email_b2b_display_text_sub_heading".localized
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private lazy var subHeadingLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "screen_enter_email_b2b_display_text_sub_heading".localized, adjustFontSize: true)
     
-    private lazy var errorLabel:UILabel = {
-        let label = UIFactory.makeLabel(alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
-        label.textColor = .darkGray //with: .greyDark
-                                    //textStyle: .micro,
-        return label
-    }()
+    private lazy var stackView = UIFactory.makeStackView(axis: .vertical, alignment: .fill, distribution: .fillProportionally, spacing: 11)
     
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 11
-        stackView.alignment = .fill
-        stackView.distribution = .fillProportionally
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        return stackView
-    }()
+    private lazy var email = UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, placeholder: "screen_enter_email_display_text_email_address".localized, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage:  UIImage(named: "icon_invalid", in: .yapPakistan), returnKeyType: .next, autocorrectionType: .no, autocapitalizationType: .none, keyboardType: .emailAddress, delegate: self)
     
-    private lazy var email: AppRoundedTextField = {
-        let textField = AppRoundedTextField()
-        textField.placeholder = "screen_enter_email_display_text_email_address".localized
-        textField.delegate = self
-        textField.autocorrectionType = .no
-        textField.returnKeyType = .next
-        textField.autocapitalizationType = .none
-        textField.keyboardType = .emailAddress
-        return textField
-    }()
+    private lazy var verificationLabel =  UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, alpha: 0, adjustFontSize: true)
     
-    private lazy var verificationLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .regular)
-        label.textColor = .darkGray //UIColor.appColor(ofType: .greyDark)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.alpha = 0
-        return label
-    }()
+    override var firstReponder: UITextField? { email }
     
-    override var firstReponder: UITextField? {
-        return email
-    }
-    
-    private var viewModel: EnterEmailViewModelType!
-    private var onBoardingStage: OnboardingStage = .email
+    fileprivate var viewModel: EnterEmailViewModelType!
+    fileprivate var themeService:ThemeService<AppTheme>!
+    fileprivate var onBoardingStage: OnboardingStage = .email
     
     // MARK: Initialization
     
-    init(viewModel: EnterEmailViewModelType!) {
+    init(themeService:ThemeService<AppTheme>, viewModel: EnterEmailViewModelType!) {
         self.viewModel = viewModel
+        self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -100,8 +47,8 @@ class EnterEmailViewController: OnBoardinContainerChildViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupViews()
+        setupTheme()
         setupConstraints()
         bindViews()
     }
@@ -122,13 +69,13 @@ class EnterEmailViewController: OnBoardinContainerChildViewController {
         viewModel.inputs.viewAppearedObserver.onNext(false)
     }
     
-    /* override func didPopFromNavigationController() {
-        ///viewModel.inputs.poppedObserver.onNext(())
-        ///guard let errorText = errorLabel.text else { return }
-        ///if errorText.count > 0 {
-        ///    AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailFailure())
-        ///}
-    } */
+     override func didPopFromNavigationController() {
+        viewModel.inputs.poppedObserver.onNext(())
+        //guard let errorText = errorLabel.text else { return }
+        //if errorText.count > 0 {
+        //AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailFailure())
+        //}
+    }
     
 }
 
@@ -142,8 +89,21 @@ private extension EnterEmailViewController {
         stackView.addArrangedSubview(headingLabel)
         stackView.addArrangedSubview(subHeadingLabel)
         view.addSubview(email)
-        view.addSubview(errorLabel)
         view.addSubview(verificationLabel)
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
+            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
+            .bind({ $0.greyDark }, to: [subHeadingLabel.rx.textColor])
+            .bind({ $0.greyDark }, to: [verificationLabel.rx.textColor])
+            .bind({ $0.primary }, to: [email.rx.primaryColor])
+            .bind({ $0.primaryDark }, to: [email.rx.secondaryColor])
+            .bind({ $0.grey }, to: [email.rx.bgColor])
+            .bind({ $0.error }, to: [email.rx.errorBorderColor])
+            .bind({ $0.grey }, to: [email.rx.errorTextColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func setupConstraints() {
@@ -163,10 +123,6 @@ private extension EnterEmailViewController {
         verificationLabel
             .alignEdgesWithSuperview([.left, .right], constant: 25)
             .toBottomOf(email, constant: 40)
-        
-        errorLabel
-            .toBottomOf(email, constant: -20)
-            .alignEdges([.left, .right], withView: email, constant: 15)
     }
 }
 
@@ -177,14 +133,14 @@ private extension EnterEmailViewController {
         
         email.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.endEditting.bind(to: view.rx.endEditting).disposed(by: rx.disposeBag)
-        ///viewModel.outputs.emailValidation.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
-        viewModel.outputs.emailValidation.map{ $0 != .invalid }.bind(to: errorLabel.rx.isHidden).disposed(by: rx.disposeBag)
-        viewModel.outputs.error.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.showError.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
-        ///viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid }.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
-        viewModel.outputs.showError.map{ _ in false }.bind(to: errorLabel.rx.isHidden).disposed(by: rx.disposeBag)
+        viewModel.outputs.emailValidation.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
+        viewModel.outputs.emailValidation.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
+        viewModel.outputs.error.bind(to: email.errorLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.showError.bind(to: email.errorLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid }.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
+        viewModel.outputs.showError.map{ _ in AppRoundedTextFieldValidation.invalid }.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.subHeadingHidden.bind(to: subHeadingLabel.rx.isHidden).disposed(by: rx.disposeBag)
-        viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
+        //viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.verificationText.bind(to: verificationLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.demographicsSuccess.subscribe(onNext: { [weak self] in self?.animateVerificationText() }).disposed(by: rx.disposeBag)
     }

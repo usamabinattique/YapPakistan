@@ -9,8 +9,8 @@ import RxSwift
 import RxCocoa
 import YAPComponents
 
-class RxPasscodeKeyboard:PasscodeKeyboard {
-    var clearTextSubject = PublishSubject<Void>()
+public class RxPasscodeKeyboard:PasscodeKeyboard {
+    public var clearTextSubject = PublishSubject<Void>()
 }
 
 extension Reactive where Base: RxPasscodeKeyboard {
@@ -50,5 +50,13 @@ extension Reactive where Base: RxPasscodeKeyboard {
                 .forEach { $0.isEnabled = isEnabled }
         }
     }
+    
+    var themeColor: Binder<UIColor> {
+        return Binder(self.base) { keyboard, thColor -> Void in
+            keyboard.themeColor = thColor
+        }
+    }
 }
+
+
 

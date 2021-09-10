@@ -30,15 +30,15 @@ class OnBoardingContainerNavigationController: UINavigationController {
         super.viewDidLoad()
         NotificationCenter.default.rx
             .notification(UIResponder.keyboardDidShowNotification)
-            .subscribe { [weak self] notif in
-                self?.keyboardDidShow(notification: notif.element! as NSNotification)
-            }.disposed(by: rx.disposeBag)
+            .withUnretained(self)
+            .subscribe { $0.0.keyboardDidShow($0.1) }
+            .disposed(by: rx.disposeBag)
         
         NotificationCenter.default.rx
             .notification(UIResponder.keyboardDidHideNotification)
-            .subscribe { [weak self] notif in
-                self?.keyboardDidHide(notification: notif.element! as NSNotification)
-            }.disposed(by: rx.disposeBag)
+            .withUnretained(self)
+            .subscribe { $0.0.keyboardDidHide($0.1) }
+            .disposed(by: rx.disposeBag)
         
         setupTheme()
         
@@ -47,6 +47,7 @@ class OnBoardingContainerNavigationController: UINavigationController {
     func setupTheme() {
         themeService.rx
             .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
+            .disposed(by: rx.disposeBag)
     }
     
 }
@@ -55,11 +56,11 @@ class OnBoardingContainerNavigationController: UINavigationController {
 
 fileprivate extension OnBoardingContainerNavigationController {
     
-    @objc func keyboardDidShow(notification: NSNotification) {
+    @objc func keyboardDidShow(_ notification: Notification) {
         keyboardShown = true
     }
     
-    @objc func keyboardDidHide(notification: NSNotification) {
+    @objc func keyboardDidHide(_ notification: Notification) {
         keyboardShown = false
     }
 }

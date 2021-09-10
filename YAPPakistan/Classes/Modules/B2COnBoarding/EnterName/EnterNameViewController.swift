@@ -11,55 +11,29 @@ import UIKit
 import YAPComponents
 import RxSwift
 import RxCocoa
+import RxTheme
 
 class EnterNameViewController: OnBoardinContainerChildViewController {
     
-    private lazy var headingLabel: UILabel = {
-        let label = UILabel()
-        label.text =  "screeen_name_display_text_title".localized
-        label.font = UIFont.appFont(forTextStyle: .title2)
-        label.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
-        label.textAlignment = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title2, alignment: .center, text: "screeen_name_display_text_title".localized, adjustFontSize: true)
     
-    private lazy var firstName: AppRoundedTextField = {
-        let textField = AppRoundedTextField()
-        textField.placeholder =  "screen_name_display_text_first_name".localized
-        textField.delegate = self
-        textField.autocorrectionType = .no
-        textField.returnKeyType = .next
-        textField.keyboardType = .default
-        textField.autocapitalizationType = .words
-        return textField
-    }()
+    private lazy var firstName = UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, placeholder: "screen_name_display_text_first_name".localized, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage:  UIImage(named: "icon_invalid", in: .yapPakistan), returnKeyType: .next, autocorrectionType: .no, autocapitalizationType: .words, keyboardType: .default, delegate: self)
     
-    private lazy var lastName: AppRoundedTextField = {
-        let textField = AppRoundedTextField()
-        textField.placeholder =  "screen_name_display_text_last_name".localized
-        textField.delegate = self
-        textField.autocorrectionType = .no
-        textField.returnKeyType = .next
-        textField.keyboardType = .default
-        textField.autocapitalizationType = .words
-        return textField
-    }()
+    private lazy var lastName = UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, placeholder: "screen_name_display_text_last_name".localized, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage:  UIImage(named: "icon_invalid", in: .yapPakistan), returnKeyType: .next, autocorrectionType: .no, autocapitalizationType: .words, keyboardType: .default, delegate: self)
     
-    override var firstReponder: UITextField? {
-        return firstName
-    }
+    override var firstReponder: UITextField? { return firstName }
     
-    private var viewModel: EnterNameViewModelType!
+    fileprivate var shouldChangeFirstNameText: Bool = true
+    fileprivate var shouldChangeLastNameText: Bool = true
     
-    private var shouldChangeFirstNameText: Bool = true
-    private var shouldChangeLastNameText: Bool = true
+    fileprivate var viewModel: EnterNameViewModelType!
+    fileprivate var themeService:ThemeService<AppTheme>!
 
     // MARK: Initialization
     
-    init(viewModel: EnterNameViewModelType) {
+    init(themeService:ThemeService<AppTheme>, viewModel: EnterNameViewModelType) {
         self.viewModel = viewModel
+        self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -71,8 +45,8 @@ class EnterNameViewController: OnBoardinContainerChildViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupViews()
+        setupTheme()
         setupConstraints()
         bindViews()
     }
@@ -97,11 +71,21 @@ class EnterNameViewController: OnBoardinContainerChildViewController {
 
 private extension EnterNameViewController {
     func setupViews() {
-        view.backgroundColor = .white
-        
         view.addSubview(headingLabel)
         view.addSubview(firstName)
         view.addSubview(lastName)
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
+            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
+            .bind({ $0.primary }, to: [firstName.rx.primaryColor, lastName.rx.primaryColor])
+            .bind({ $0.primaryDark }, to: [firstName.rx.secondaryColor, lastName.rx.secondaryColor])
+            .bind({ $0.grey }, to: [firstName.rx.bgColor, lastName.rx.bgColor])
+            .bind({ $0.error }, to: [firstName.rx.errorBorderColor, lastName.rx.errorBorderColor])
+            .bind({ $0.grey }, to:  [firstName.rx.errorTextColor, lastName.rx.errorTextColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func setupConstraints() {
@@ -111,7 +95,7 @@ private extension EnterNameViewController {
         
         firstName
             .alignEdgesWithSuperview([.left, .right], constant: 25)
-            .toBottomOf(headingLabel, .lessThanOrEqualTo, constant: /*UIScreen.screenType == .iPhone5 ? 30 :*/ 90)
+            .toBottomOf(headingLabel, .lessThanOrEqualTo, constant: UIScreen.screenType == .iPhone5 ? 30 : 90)
             .toBottomOf(headingLabel, .greaterThanOrEqualTo, constant: 20)
             .height(constant: 86)
         
@@ -120,6 +104,7 @@ private extension EnterNameViewController {
             .height(with: .height, ofView: firstName)
             .alignEdges([.left, .right], withView: firstName)
             .alignEdgeWithSuperview(.bottom, .greaterThanOrEqualTo, constant: 15)
+        
     }
 }
 
@@ -127,10 +112,10 @@ private extension EnterNameViewController {
 
 private extension EnterNameViewController {
     func bindViews() {
-        ///viewModel.outputs.firstNameError.bind(to: firstName.rx.errorText).disposed(by: rx.disposeBag)
-        ///viewModel.outputs.lastNameError.bind(to: lastName.rx.errorText).disposed(by: rx.disposeBag)
-        ///viewModel.outputs.firstNameValidation.bind(to: firstName.rx.validation).disposed(by: rx.disposeBag)
-        ///viewModel.outputs.lastNameValidation.bind(to: lastName.rx.validation).disposed(by: rx.disposeBag)
+        viewModel.outputs.firstNameError.bind(to: firstName.errorLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.lastNameError.bind(to: lastName.errorLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.firstNameValidation.bind(to: firstName.rx.validation).disposed(by: rx.disposeBag)
+        viewModel.outputs.lastNameValidation.bind(to: lastName.rx.validation).disposed(by: rx.disposeBag)
         
         firstName.rx.text.bind(to: viewModel.inputs.firstNameObserver).disposed(by: rx.disposeBag)
         lastName.rx.text.bind(to: viewModel.inputs.lastNameObserver).disposed(by: rx.disposeBag)

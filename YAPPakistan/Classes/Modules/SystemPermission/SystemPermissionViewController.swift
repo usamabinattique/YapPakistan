@@ -35,7 +35,7 @@ class SystemPermissionViewController: UIViewController {
     
     fileprivate lazy var headingLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .title3)
+        label.font = .title3
         label.textColor = .blue //UIColor.appColor(ofType: .primaryDark)
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -55,7 +55,7 @@ class SystemPermissionViewController: UIViewController {
     
     fileprivate lazy var termsDescriptionLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .small)
+        label.font = UIFont.small
         label.textColor = UIColor.gray //.appColor(ofType: .greyDark)
         label.textAlignment = .center
         label.numberOfLines = 2
@@ -66,7 +66,7 @@ class SystemPermissionViewController: UIViewController {
     fileprivate lazy var termsConditionButton: UIButton = {
         let button = UIButton()
         button.setTitle( "screen_system_permission_text_terms_and_conditions".localized, for: .normal)
-        button.titleLabel?.font = .appFont(forTextStyle: .small)
+        button.titleLabel?.font = .small
         button.setTitleColor(UIColor.blue /*.appColor(ofType: .primary )*/, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button

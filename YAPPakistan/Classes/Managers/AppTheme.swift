@@ -217,7 +217,7 @@ public extension ThemeProxy where Base: UIApplication {
     }
 }
 */
-
+/*
 struct Font {
     enum FontType {
         case custom(String)
@@ -310,3 +310,4 @@ public extension UIFont {
         Font(.system, size: .standard(.h6)).instance
     }
 }
+*/

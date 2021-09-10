@@ -104,7 +104,7 @@ private extension B2COnBoardingCoordinator {
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
 
         let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository: onBoardingRepository, user: user)
-        let phoneNumberVerificationController = PhoneNumberVerificationViewController(viewModel: verificationViewModel)
+        let phoneNumberVerificationController = PhoneNumberVerificationViewController(themeService: themeService, viewModel: verificationViewModel)
         childContainerNavigation.pushViewController(phoneNumberVerificationController, animated: true)
         
         verificationViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
@@ -151,7 +151,7 @@ private extension B2COnBoardingCoordinator {
     func navigateToEnterName(user: OnBoardingUser) {
         let enterNameViewModel = EnterNameViewModel(user: user)
         childContainerNavigation.popViewController(animated: false)?.didPopFromNavigationController()
-        childContainerNavigation.pushViewController(EnterNameViewController(viewModel: enterNameViewModel), animated: false)
+        childContainerNavigation.pushViewController(EnterNameViewController(themeService: themeService, viewModel: enterNameViewModel), animated: false)
         
         enterNameViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
             self.viewModel.inputs.progressObserver.onNext(progress)
@@ -177,7 +177,7 @@ private extension B2COnBoardingCoordinator {
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
 
         let enterEmailViewModel = EnterEmailViewModel(onBoardingRepository: onBoardingRepository, user: user)
-        childContainerNavigation.pushViewController(EnterEmailViewController(viewModel: enterEmailViewModel), animated: true)
+        childContainerNavigation.pushViewController(EnterEmailViewController(themeService: themeService, viewModel: enterEmailViewModel), animated: true)
         
         enterEmailViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
             self.viewModel.inputs.progressObserver.onNext(progress)
@@ -202,14 +202,16 @@ private extension B2COnBoardingCoordinator {
         enterEmailViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
             var user = result
             user.timeTaken = self.viewModel.time
-            user.isWaiting == true ? self.navigateToWaitingUserCongratulation(user: user) : self.navigateToCongratulation(user: user)
+            //user.isWaiting == true ?
+            self.navigateToWaitingUserCongratulation(user: user)
+            //: self.navigateToCongratulation(user: user)
                 //AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailSuccess())
         }).disposed(by: rx.disposeBag)
     }
     
     func navigateToCongratulation(user: OnBoardingUser) {
         let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
-        let congratulationViewController = OnboardingCongratulationViewController(viewModel: congratulationViewModel)
+        let congratulationViewController = OnboardingCongratulationViewController(themeService: themeService, viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: rx.disposeBag)
         
         containerNavigation.pushViewController(congratulationViewController, animated: true)
@@ -222,7 +224,7 @@ private extension B2COnBoardingCoordinator {
     
     func navigateToWaitingUserCongratulation(user: OnBoardingUser) {
         let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
-        let congratulationViewController = OnboardingCongratulationWaitingUserViewController(viewModel: congratulationViewModel)
+        let congratulationViewController = OnboardingCongratulationWaitingUserViewController(themeService: themeService, viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: rx.disposeBag)
         
         containerNavigation.pushViewController(congratulationViewController, animated: true)

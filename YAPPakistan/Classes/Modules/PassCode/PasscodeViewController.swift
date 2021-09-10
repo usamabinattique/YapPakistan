@@ -21,7 +21,7 @@ public class PasscodeViewController: UIViewController {
     
     fileprivate lazy var headingLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.appFont(forTextStyle: .title3)
+        label.font = .title3
         label.text = /* UIScreen.screenType == ScreenType.iPhone5 ? "" : */ "screen_verify_passcode_display_text_title".localized
         label.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
         label.textAlignment = .center
