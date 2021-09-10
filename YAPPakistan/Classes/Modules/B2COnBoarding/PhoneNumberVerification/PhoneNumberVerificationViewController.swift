@@ -116,11 +116,11 @@ extension PhoneNumberVerificationViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
-            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
-            .bind({ $0.greyDark }, to: [subHeadingLabel.rx.textColor])
-            .bind({ $0.greyDark }, to: [timerLabel.rx.textColor])
-            .bind({ $0.primary }, to: [resendButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.backgroundColor)}, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark    )}, to: [headingLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark       )}, to: [subHeadingLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark       )}, to: [timerLabel.rx.textColor])
+            .bind({ UIColor($0.primary        )}, to: [resendButton.rx.titleColor(for: .normal)])
             .disposed(by: rx.disposeBag)
     }
     

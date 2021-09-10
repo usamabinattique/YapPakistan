@@ -127,14 +127,14 @@ fileprivate extension PINViewController {
 
     func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor}, to: [view.rx.backgroundColor])
-            .bind({ $0.primary}, to: [createPINButton.rx.enabledBackgroundColor, createPINButton.rx.disabledBackgroundColor])
-            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
-            .bind({ $0.error }, to: [errorLabel.rx.textColor])
-            .bind({ $0.greyDark }, to: [termsAndCondtionsLabel.rx.textColor])
-            .bind({ $0.primary }, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
-            .bind({ $0.primary }, to: [pinKeyboard.rx.themeColor])
-            .bind({ $0.primary }, to: [dottedView.rx.themeColor])
+            .bind({ UIColor($0.backgroundColor )}, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primary         )}, to: [createPINButton.rx.enabledBackgroundColor, createPINButton.rx.disabledBackgroundColor])
+            .bind({ UIColor($0.primaryDark     )}, to: [headingLabel.rx.textColor])
+            .bind({ UIColor($0.error           )}, to: [errorLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark        )}, to: [termsAndCondtionsLabel.rx.textColor])
+            .bind({ UIColor($0.primary         )}, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primary         )}, to: [pinKeyboard.rx.themeColor])
+            .bind({ UIColor($0.primary         )}, to: [dottedView.rx.themeColor])
             .disposed(by: rx.disposeBag)
     }
     

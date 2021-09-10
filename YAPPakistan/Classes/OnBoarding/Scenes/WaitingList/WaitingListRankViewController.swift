@@ -126,17 +126,17 @@ class WaitingListRankViewController: UIViewController {
 
     private func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor }, to: view.rx.backgroundColor)
-            .bind({ $0.primaryDark }, to: placeLabel.rx.textColor)
-            .bind({ $0.primaryDark }, to: rankView.rx.digitColor)
-            .bind({ $0.greyExtraLight }, to: rankView.rx.digitBackgroundColor)
-            .bind({ $0.primaryDark }, to: behindNumberLabel.rx.textColor)
-            .bind({ $0.greyDark }, to: behindYouLabel.rx.textColor)
-            .bind({ $0.primaryDark }, to: infoLabel.rx.textColor)
-            .bind({ $0.primaryExtraLight }, to: containerView.rx.backgroundColor)
-            .bind({ $0.greyDark }, to: boostUpLabel.rx.textColor)
-            .bind({ $0.primary }, to: seeInviteesButton.rx.titleColor(for: .normal))
-            .bind({ $0.primary }, to: bumpMeUpButton.rx.backgroundColor)
+            .bind({ UIColor($0.backgroundColor) }, to: view.rx.backgroundColor)
+            .bind({ UIColor($0.primaryDark) }, to: placeLabel.rx.textColor)
+            .bind({ UIColor($0.primaryDark) }, to: rankView.rx.digitColor)
+            .bind({ UIColor($0.greyExtraLight) }, to: rankView.rx.digitBackgroundColor)
+            .bind({ UIColor($0.primaryDark) }, to: behindNumberLabel.rx.textColor)
+            .bind({ UIColor($0.greyDark) }, to: behindYouLabel.rx.textColor)
+            .bind({ UIColor($0.primaryDark) }, to: infoLabel.rx.textColor)
+            .bind({ UIColor($0.primaryExtraLight) }, to: containerView.rx.backgroundColor)
+            .bind({ UIColor($0.greyDark) }, to: boostUpLabel.rx.textColor)
+            .bind({ UIColor($0.primary) }, to: seeInviteesButton.rx.titleColor(for: .normal))
+            .bind({ UIColor($0.primary) }, to: bumpMeUpButton.rx.backgroundColor)
             .disposed(by: disposeBag)
     }
 

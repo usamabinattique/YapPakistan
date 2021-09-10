@@ -83,9 +83,9 @@ fileprivate extension OnBoardingViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
-            .bind({ $0.primary }, to: [progressView.rx.tintColor])
-            .bind({ $0.primaryLight }, to: [progressView.rx.disabledColor])
+            .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primary) }, to: [progressView.rx.tintColor])
+            .bind({ UIColor($0.primaryLight) }, to: [progressView.rx.disabledColor])
             .disposed(by: rx.disposeBag)
     }
 }

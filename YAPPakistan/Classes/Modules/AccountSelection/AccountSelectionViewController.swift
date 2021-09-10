@@ -154,11 +154,11 @@ private extension AccountSelectionViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({$0.backgroundColor}, to: [view.rx.backgroundColor])
-            .bind({$0.greyLight}, to: [signInLabel.rx.textColor])
-            .bind({$0.primaryExtraLight}, to: [signInButton.rx.titleColor(for: .normal)])
-            .bind({$0.primary}, to: [getStartedButton.rx.backgroundColor])
-            .bind({$0.primaryExtraLight}, to: [captionLabel.rx.textColor])
+            .bind({ UIColor($0.backgroundColor   )}, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.greyLight         )}, to: [signInLabel.rx.textColor])
+            .bind({ UIColor($0.primaryExtraLight )}, to: [signInButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primary           )}, to: [getStartedButton.rx.backgroundColor])
+            .bind({ UIColor($0.primaryExtraLight )}, to: [captionLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
     

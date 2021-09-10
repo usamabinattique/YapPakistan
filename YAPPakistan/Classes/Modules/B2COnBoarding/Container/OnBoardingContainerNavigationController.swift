@@ -46,7 +46,7 @@ class OnBoardingContainerNavigationController: UINavigationController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
             .disposed(by: rx.disposeBag)
     }
     

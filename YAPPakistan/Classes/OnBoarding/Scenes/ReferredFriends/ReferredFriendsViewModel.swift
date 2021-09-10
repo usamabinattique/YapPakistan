@@ -29,9 +29,9 @@ class ReferredFriendsViewModel: ReferredFriendsViewModelInput, ReferredFriendsVi
     // MARK: Properties
 
     private static let colors = [
-        ("#f44774", "#f44774"),
-        ("#478df4", "#478df4"),
-        ("#fc6253", "#f57f17"),
+        (Color(hex: "#f44774"), Color(hex: "#f44774")),
+        (Color(hex: "#478df4"), Color(hex: "#478df4")),
+        (Color(hex: "#fc6253"), Color(hex: "#f57f17")),
     ]
 
     private let disposeBag = DisposeBag()

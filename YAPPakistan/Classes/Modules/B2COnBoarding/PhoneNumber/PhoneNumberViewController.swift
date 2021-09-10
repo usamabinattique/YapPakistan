@@ -82,13 +82,13 @@ private extension PhoneNumberViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
-            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
-            .bind({ $0.primary }, to: [mobileNumber.rx.primaryColor])
-            .bind({ $0.primaryDark }, to: [mobileNumber.rx.secondaryColor])
-            .bind({ $0.grey }, to: [mobileNumber.rx.bgColor])
-            .bind({ $0.error }, to: [mobileNumber.rx.errorBorderColor])
-            .bind({ $0.grey }, to: [mobileNumber.rx.errorTextColor])
+            .bind({ UIColor($0.backgroundColor )}, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark     )}, to: [headingLabel.rx.textColor])
+            .bind({ UIColor($0.primary         )}, to: [mobileNumber.rx.primaryColor])
+            .bind({ UIColor($0.primaryDark     )}, to: [mobileNumber.rx.secondaryColor])
+            .bind({ UIColor($0.grey            )}, to: [mobileNumber.rx.bgColor])
+            .bind({ UIColor($0.error           )}, to: [mobileNumber.rx.errorBorderColor])
+            .bind({ UIColor($0.grey            )}, to: [mobileNumber.rx.errorTextColor])
             .disposed(by: rx.disposeBag)
     }
     

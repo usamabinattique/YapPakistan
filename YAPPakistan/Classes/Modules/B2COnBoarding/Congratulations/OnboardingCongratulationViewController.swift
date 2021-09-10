@@ -206,13 +206,13 @@ public class OnboardingCongratulationViewController: UIViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
-            .bind({ $0.primary }, to: [completeVerificationButton.rx.backgroundColor])
-            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
-            .bind({ $0.greyDark }, to: [subheadingLabel.rx.textColor])
-            .bind({ $0.primary }, to: [ibanLabel.rx.textColor])
-            .bind({ $0.greyLight.withAlphaComponent(0.5)}, to: [ibanView.rx.backgroundColor])
-            .bind({ $0.greyDark }, to: [footnoteLabel.rx.textColor])
+            .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primary) }, to: [completeVerificationButton.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark) }, to: [headingLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark) }, to: [subheadingLabel.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [ibanLabel.rx.textColor])
+            .bind({ UIColor($0.greyLight).withAlphaComponent(0.5)}, to: [ibanView.rx.backgroundColor])
+            .bind({ UIColor($0.greyDark) }, to: [footnoteLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
     
@@ -439,11 +439,11 @@ extension OnboardingCongratulationViewController {
                 let maxValue = Int(secondsInString)!
                 let attributedString = NSMutableAttributedString(string: String(format:  "screen_onboarding_congratulations_display_text_sub_title".localized, secondsInString), attributes: [
                     .font: UIFont.regular,
-                    .foregroundColor: self?.themeService.attrs.greyDark ?? .lightGray
+                    .foregroundColor: UIColor(self!.themeService.attrs.greyDark)
                     ])
                 attributedString.addAttributes([
                     .font: UIFont.systemFont(ofSize: 16.0, weight: .medium),
-                    .foregroundColor:self?.themeService.attrs.primaryDark ?? .blue
+                    .foregroundColor:UIColor(self!.themeService.attrs.primaryDark)
                     ], range: NSRange(location: 61, length: 9 + secondsInString.count))
                 self?.subheadingLabel.attributedText = attributedString
                 self?.subheadingLabel.sizeToFit()

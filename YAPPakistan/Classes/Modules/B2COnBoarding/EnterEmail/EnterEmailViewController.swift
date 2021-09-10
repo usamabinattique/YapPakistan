@@ -94,15 +94,15 @@ private extension EnterEmailViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ $0.backgroundColor }, to: [view.rx.backgroundColor])
-            .bind({ $0.primaryDark }, to: [headingLabel.rx.textColor])
-            .bind({ $0.greyDark }, to: [subHeadingLabel.rx.textColor])
-            .bind({ $0.greyDark }, to: [verificationLabel.rx.textColor])
-            .bind({ $0.primary }, to: [email.rx.primaryColor])
-            .bind({ $0.primaryDark }, to: [email.rx.secondaryColor])
-            .bind({ $0.grey }, to: [email.rx.bgColor])
-            .bind({ $0.error }, to: [email.rx.errorBorderColor])
-            .bind({ $0.grey }, to: [email.rx.errorTextColor])
+            .bind({ UIColor($0.backgroundColor)}, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark    )}, to: [headingLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark       )}, to: [subHeadingLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark       )}, to: [verificationLabel.rx.textColor])
+            .bind({ UIColor($0.primary        )}, to: [email.rx.primaryColor])
+            .bind({ UIColor($0.primaryDark    )}, to: [email.rx.secondaryColor])
+            .bind({ UIColor($0.grey           )}, to: [email.rx.bgColor])
+            .bind({ UIColor($0.error          )}, to: [email.rx.errorBorderColor])
+            .bind({ UIColor($0.grey           )}, to: [email.rx.errorTextColor])
             .disposed(by: rx.disposeBag)
     }
     
