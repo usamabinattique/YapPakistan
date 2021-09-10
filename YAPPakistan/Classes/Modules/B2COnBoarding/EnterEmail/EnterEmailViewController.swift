@@ -100,7 +100,7 @@ private extension EnterEmailViewController {
             .bind({ UIColor($0.greyDark       )}, to: [verificationLabel.rx.textColor])
             .bind({ UIColor($0.primary        )}, to: [email.rx.primaryColor])
             .bind({ UIColor($0.primaryDark    )}, to: [email.rx.secondaryColor])
-            .bind({ UIColor($0.grey           )}, to: [email.rx.bgColor])
+            .bind({ UIColor($0.greyLight      )}, to: [email.rx.bgColor])
             .bind({ UIColor($0.error          )}, to: [email.rx.errorBorderColor])
             .bind({ UIColor($0.grey           )}, to: [email.rx.errorTextColor])
             .disposed(by: rx.disposeBag)
