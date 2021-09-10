@@ -1,18 +1,16 @@
 //
-//  Rx+YAPComponents.swift
-//  YAPComponents
+//  AppRoundedTextField+Rx.swift
+//  YAPPakistan
 //
-//  Created by Sarmad on 06/09/2021.
+//  Created by Tayyab on 10/09/2021.
 //
 
-import YAPComponents
 import RxCocoa
 import RxSwift
+import YAPComponents
 
 /*
-// MARK: Reactive AppRoundedTextField
-public extension Reactive where Base: AppRoundedTextField {
-    
+extension Reactive where Base: AppRoundedTextField {
     var iconTap: ControlEvent<Void> {
         return self.base.iconImage.rx.tap
     }
