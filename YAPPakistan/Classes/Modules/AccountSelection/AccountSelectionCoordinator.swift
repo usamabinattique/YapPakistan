@@ -31,7 +31,7 @@ public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
         let viewModel = AccountSelectionViewModel()
-        let viewController = AccountSelectionViewController(themeService: themeService, viewModel: viewModel)
+        let viewController = AccountSelectionViewController(themeService: container.themeService, viewModel: viewModel)
         
         root = UINavigationController(rootViewController: viewController)
         root.interactivePopGestureRecognizer?.isEnabled = false

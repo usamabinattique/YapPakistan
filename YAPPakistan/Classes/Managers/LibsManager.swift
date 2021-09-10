@@ -42,10 +42,11 @@ class LibsManager: NSObject {
     
     
     func setupTheme() {
+        /*
         themeService.rx
             .bind({ _ in UIStatusBarStyle.default }, to: UIApplication.shared.rx.statusBarStyle)
             .disposed(by: rx.disposeBag)
-    
+         */
         //UIApplication.shared.theme.statusBarStyle = themed{ $0.statusBarStyle }
     }
     /*

@@ -4,22 +4,13 @@ import RxCocoa
 import RxSwift
 
 public let globalStatusBarStyle = BehaviorRelay<UIStatusBarStyle>(value: .default)
-public let themeService = AppTheme.service(initial: .light)
-
-/*func appTheme<T>(_ mapper: @escaping ((Theme) -> T)) -> ThemeAttribute<T> {
-    return themeService.attribute(mapper)
-}*/
-
-public func appTheme<T>(_ mapper: @escaping ((Theme) -> T)) -> Observable<T> {
-    return themeService.attrStream(mapper)
-}
 
 public struct Color {
     let hex: String
 }
 
 public protocol Theme {
-    var primary: Color              { get }
+    var primary: Color            { get }
     var primaryLight: Color       { get }
     var primaryExtraLight: Color  { get }
     var primaryDark: Color        { get }

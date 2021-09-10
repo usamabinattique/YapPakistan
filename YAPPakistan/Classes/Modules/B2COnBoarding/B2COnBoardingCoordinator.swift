@@ -43,13 +43,13 @@ public class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
         
         navigateToPhoneNumber(user: OnBoardingUser(accountType: .b2cAccount))
         
-        let containerView = OnBoardingContainerViewController(themeService: themeService, viewModel: containerViewModel, childNavigation: childContainerNavigation)
+        let containerView = OnBoardingContainerViewController(themeService: container.themeService, viewModel: containerViewModel, childNavigation: childContainerNavigation)
         containerNavigation = UINavigationController(rootViewController: containerView)
         containerNavigation.navigationBar.isHidden = true
         containerNavigation.interactivePopGestureRecognizer?.isEnabled = false
         childContainerNavigation.interactivePopGestureRecognizer?.isEnabled = false
         
-        let viewController = OnBoardingViewController(themeService: themeService, viewModel: viewModel, withChildNavigation: containerNavigation)
+        let viewController = OnBoardingViewController(themeService: container.themeService, viewModel: viewModel, withChildNavigation: containerNavigation)
         
         root.pushViewController(viewController, animated: true)
         
@@ -77,8 +77,8 @@ private extension B2COnBoardingCoordinator {
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
 
         let phoneNumberViewModel = PhoneNumberViewModel(onBoardingRepository: onBoardingRepository, user: user)
-        let phoneNumberViewController = PhoneNumberViewController(themeService: themeService, viewModel: phoneNumberViewModel)
-        childContainerNavigation = OnBoardingContainerNavigationController(themeService: themeService, rootViewController: phoneNumberViewController)
+        let phoneNumberViewController = PhoneNumberViewController(themeService: container.themeService, viewModel: phoneNumberViewModel)
+        childContainerNavigation = OnBoardingContainerNavigationController(themeService: container.themeService, rootViewController: phoneNumberViewController)
         childContainerNavigation.navigationBar.isHidden = true
         
         phoneNumberViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
@@ -105,7 +105,7 @@ private extension B2COnBoardingCoordinator {
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
 
         let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository: onBoardingRepository, user: user)
-        let phoneNumberVerificationController = PhoneNumberVerificationViewController(themeService: themeService, viewModel: verificationViewModel)
+        let phoneNumberVerificationController = PhoneNumberVerificationViewController(themeService: container.themeService, viewModel: verificationViewModel)
         childContainerNavigation.pushViewController(phoneNumberVerificationController, animated: true)
         
         verificationViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
@@ -129,7 +129,7 @@ private extension B2COnBoardingCoordinator {
     
     func navigateToCreatePasscode(user: OnBoardingUser) {
         let createPasscodeViewModel = CreatePasscodeViewModel()
-        let createPasscodeViewController = PINViewController(themeService: themeService, viewModel: createPasscodeViewModel, isCreatePasscode: true)
+        let createPasscodeViewController = PINViewController(themeService: container.themeService, viewModel: createPasscodeViewModel, isCreatePasscode: true)
         let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: createPasscodeViewController)
         nav.modalPresentationStyle = .fullScreen
         root.present(nav, animated: true, completion: nil)
@@ -152,7 +152,7 @@ private extension B2COnBoardingCoordinator {
     func navigateToEnterName(user: OnBoardingUser) {
         let enterNameViewModel = EnterNameViewModel(user: user)
         childContainerNavigation.popViewController(animated: false)?.didPopFromNavigationController()
-        childContainerNavigation.pushViewController(EnterNameViewController(themeService: themeService, viewModel: enterNameViewModel), animated: false)
+        childContainerNavigation.pushViewController(EnterNameViewController(themeService: container.themeService, viewModel: enterNameViewModel), animated: false)
         
         enterNameViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
             self.viewModel.inputs.progressObserver.onNext(progress)
@@ -179,7 +179,7 @@ private extension B2COnBoardingCoordinator {
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
 
         let enterEmailViewModel = EnterEmailViewModel(credentialsStore: container.credentialsStore, sessionProvider: sessionProvider, onBoardingRepository: onBoardingRepository, user: user)
-        childContainerNavigation.pushViewController(EnterEmailViewController(themeService: themeService, viewModel: enterEmailViewModel), animated: true)
+        childContainerNavigation.pushViewController(EnterEmailViewController(themeService: container.themeService, viewModel: enterEmailViewModel), animated: true)
         
         enterEmailViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
             self.viewModel.inputs.progressObserver.onNext(progress)
@@ -214,7 +214,7 @@ private extension B2COnBoardingCoordinator {
     
     func navigateToCongratulation(user: OnBoardingUser) {
         let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
-        let congratulationViewController = OnboardingCongratulationViewController(themeService: themeService, viewModel: congratulationViewModel)
+        let congratulationViewController = OnboardingCongratulationViewController(themeService: container.themeService, viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: rx.disposeBag)
         
         containerNavigation.pushViewController(congratulationViewController, animated: true)
@@ -227,7 +227,7 @@ private extension B2COnBoardingCoordinator {
     
     func navigateToWaitingUserCongratulation(user: OnBoardingUser) {
         let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
-        let congratulationViewController = OnboardingCongratulationWaitingUserViewController(themeService: themeService, viewModel: congratulationViewModel)
+        let congratulationViewController = OnboardingCongratulationWaitingUserViewController(themeService: container.themeService, viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: rx.disposeBag)
         
         #warning("Progress marked completed!")

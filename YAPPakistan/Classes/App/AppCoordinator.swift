@@ -45,7 +45,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     
     func onboarding() {
         let viewModel = OnBoardingViewModel()
-        let viewController = OnBoardingViewController(themeService: themeService, viewModel: viewModel, withChildNavigation: UINavigationController())
+        let viewController = OnBoardingViewController(themeService: container.themeService, viewModel: viewModel, withChildNavigation: UINavigationController())
         window.rootViewController = viewController
     }
     
