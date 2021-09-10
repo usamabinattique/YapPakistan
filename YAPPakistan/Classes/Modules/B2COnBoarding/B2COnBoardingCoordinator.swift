@@ -255,7 +255,7 @@ private extension B2COnBoardingCoordinator {
         let viewModel = WaitingListRankViewModel(onBoardingRepository: onBoardingRepository)
         let viewController = WaitingListRankViewController(themeService: container.themeService, viewModel: viewModel)
 
-        containerNavigation.pushViewController(viewController, animated: true)
+        root.pushViewController(viewController, animated: true)
     }
 
     /*
