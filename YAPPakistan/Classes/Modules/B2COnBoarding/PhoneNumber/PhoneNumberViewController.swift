@@ -86,7 +86,7 @@ private extension PhoneNumberViewController {
             .bind({ UIColor($0.primaryDark     )}, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.primary         )}, to: [mobileNumber.rx.primaryColor])
             .bind({ UIColor($0.primaryDark     )}, to: [mobileNumber.rx.secondaryColor])
-            .bind({ UIColor($0.grey            )}, to: [mobileNumber.rx.bgColor])
+            .bind({ UIColor($0.greyLight       )}, to: [mobileNumber.rx.bgColor])
             .bind({ UIColor($0.error           )}, to: [mobileNumber.rx.errorBorderColor])
             .bind({ UIColor($0.grey            )}, to: [mobileNumber.rx.errorTextColor])
             .disposed(by: rx.disposeBag)
