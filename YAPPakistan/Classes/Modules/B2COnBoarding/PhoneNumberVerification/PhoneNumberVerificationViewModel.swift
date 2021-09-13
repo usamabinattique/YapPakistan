@@ -86,12 +86,12 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
     private var otpResendTime: TimeInterval
     private var user: OnBoardingUser!
     private var timer: Timer?
-    private let resendTimeSubject = BehaviorSubject<TimeInterval>(value: 10)
+    private let resendTimeSubject = BehaviorSubject<TimeInterval>(value: 300)
     private let resendBlocked = BehaviorSubject<Bool>(value: false)
     private let repository: OnBoardingRepository
     private var otpForRequest: String?
     
-    init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser, otpTime: TimeInterval = 10) {
+    init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser, otpTime: TimeInterval = 300) {
         self.repository = onBoardingRepository
         self.user = user
         self.otpTime = otpTime

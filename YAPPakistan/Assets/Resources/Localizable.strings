@@ -85,7 +85,7 @@
 // MARK: Phone number verification screen
 "screen_verify_phone_number_display_text_title" = "Verify your mobile number";
 "screen_verify_phone_number_display_text_sub_title" = "We've sent a verification code to";
-"screen_verify_phone_number_button_resend_otp" = "Resend OTP";
+"screen_verify_phone_number_button_resend_otp" = "Resend code";
 "screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
 
 //MARK: Create passcode screen
