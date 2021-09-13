@@ -18,9 +18,9 @@
 		0D51951626E3A5B000B81639 /* DemoAppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */; };
 		0D51951C26E3A78500B81639 /* DemoApplicationContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACDB1AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		607FACDB1AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
-		607FACE01AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		607FACE01AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		9EB86386FE4EDBA38952F7DD /* Pods_YAPPakistan_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 861F77AB2702806C8679AE20 /* Pods_YAPPakistan_Example.framework */; };
 		CA19FA007DD6CBC56A5643F9 /* Pods_YAPPakistan_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F906C2EBEE9DE0E157C53C9D /* Pods_YAPPakistan_Tests.framework */; };
@@ -50,7 +50,7 @@
 		104557EF81E3374A8AEBE811 /* Pods-YAPPakistan_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YAPPakistan_Tests.debug.xcconfig"; path = "Target Support Files/Pods-YAPPakistan_Tests/Pods-YAPPakistan_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		2F1F7EC3BC2E8660EC391263 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		4E2F3A4320599AD33E9B3A27 /* YAPPakistan.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = YAPPakistan.podspec; path = ../YAPPakistan.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		607FACD01AFB9204008FA782 /* YAPPakistan_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YAPPakistan_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		607FACD01AFB9204008FA782 /* YAP PK Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "YAP PK Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -140,7 +140,7 @@
 		607FACD11AFB9204008FA782 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				607FACD01AFB9204008FA782 /* YAPPakistan_Example.app */,
+				607FACD01AFB9204008FA782 /* YAP PK Dev.app */,
 				607FACE51AFB9204008FA782 /* YAPPakistan_Tests.xctest */,
 			);
 			name = Products;
@@ -227,7 +227,7 @@
 			);
 			name = YAPPakistan_Example;
 			productName = YAPPakistan;
-			productReference = 607FACD01AFB9204008FA782 /* YAPPakistan_Example.app */;
+			productReference = 607FACD01AFB9204008FA782 /* YAP PK Dev.app */;
 			productType = "com.apple.product-type.application";
 		};
 		607FACE41AFB9204008FA782 /* YAPPakistan_Tests */ = {
@@ -299,8 +299,8 @@
 			files = (
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				0D51950826E1FA5000B81639 /* LaunchScreen.storyboard in Resources */,
-				607FACDB1AFB9204008FA782 /* BuildFile in Resources */,
-				607FACE01AFB9204008FA782 /* BuildFile in Resources */,
+				607FACDB1AFB9204008FA782 /* (null) in Resources */,
+				607FACE01AFB9204008FA782 /* (null) in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -569,8 +569,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yap.pk.ios.dev;
+				PRODUCT_NAME = "YAP PK Dev";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 			};
@@ -586,8 +586,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MODULE_NAME = ExampleApp;
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yap.pk.ios.dev;
+				PRODUCT_NAME = "YAP PK Dev";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 5.0;
 			};
