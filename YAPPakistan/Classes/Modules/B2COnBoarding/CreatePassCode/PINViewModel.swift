@@ -73,7 +73,7 @@ open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutpu
     public let pinSubject = BehaviorSubject<String?>(value: nil)
     internal let pinChangeSubject = PublishSubject<String>()
     internal let backSubject = PublishSubject<Void>()
-    public let enableBackSubject = BehaviorSubject<(Bool, BackButtonType)>(value: (false, .backEmpty))
+    public let enableBackSubject = BehaviorSubject<(Bool, BackButtonType)>(value: (true, .backCircled))
     internal let usernameSubject = BehaviorSubject<String>(value: "")
     internal let forgotPasscodeSubject = PublishSubject<Void>()
     public let backImageSubject = BehaviorSubject<BackButtonType>(value: .backCircled)

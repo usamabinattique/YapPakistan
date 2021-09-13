@@ -140,6 +140,12 @@ private extension B2COnBoardingCoordinator {
             //self.coordinate(to: TermsAndConditionCoordinator(root: nav)).subscribe().disposed(by: self.rx.disposeBag)
         }).disposed(by: rx.disposeBag)
         
+        createPasscodeViewModel.outputs.back.subscribe { [weak nav, weak self]_ in
+            nav?.dismiss(animated: true, completion: {
+                self?.childContainerNavigation.popViewController(animated: true)
+            })
+        }.disposed(by: rx.disposeBag)
+        
         createPasscodeViewModel.result.subscribe(onNext: { [unowned self] result in
             nav.dismiss(animated: true, completion: nil)
             //AppAnalytics.shared.logEvent(OnBoardingEvent.passcodeCreated())

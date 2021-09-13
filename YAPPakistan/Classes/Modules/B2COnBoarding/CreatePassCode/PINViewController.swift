@@ -85,6 +85,7 @@ public class PINViewController: UIViewController {
     public override func onTapBackButton() {
         viewModel.inputs.backObserver.onNext(())
         viewModel.inputs.backObserver.onCompleted()
+        //self.dismiss(animated: true, completion: nil)
     }
     
     @objc func termsAndCondtionsTapped() {
@@ -243,7 +244,7 @@ fileprivate extension PINViewController {
         viewModel.outputs.enableBack
             .subscribe(onNext: { [unowned self] in
                 if $0.0 {
-                    self.addBackButton($0.1, backgroundColor: .blue, tintColor: .white)
+                    self.addBackButton($0.1, backgroundColor: UIColor(themeService.attrs.primary), tintColor: .white)
                 }
             })
             .disposed(by: disposeBag)
