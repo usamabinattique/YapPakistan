@@ -93,8 +93,10 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     var verificationText: Observable<String> { return verificationTextSubject.asObservable() }
     
     private var user: OnBoardingUser
+    private var session:Session!
     private let disposeBag = DisposeBag()
     private var isValidInput = false
+    private var isEmailSend = false
     private let repository: OnBoardingRepository
 
     private let sessionProvider: SessionProviderType
@@ -122,11 +124,15 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         textValid.map { $0 ? .valid : .neutral }.bind(to: emailValidationSubject).disposed(by: disposeBag)
 
         let request = sendSubject
-            .filter {
-                if case OnboardingStage.email = $0 {
-                    return true
+            .filter { [weak self] in
+                if let self = self, self.isEmailSend == true {
+                    self.resultSubject.onNext((self.user, self.session))
+                    self.resultSubject.onCompleted()
+                    return false
+                } else {
+                    if case OnboardingStage.email = $0 { return true }
+                    return false
                 }
-                return false
             }
             .do(onNext: {[unowned self] _ in
                 self.endEdittingSubject.onNext(true)
@@ -185,12 +191,11 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                 return
             }
 
-            let session = self.sessionProvider.makeUserSession(jwt: jwt)
-
+            self.session = self.sessionProvider.makeUserSession(jwt: jwt)
             self.credentialsStore.secureCredentials(username: phoneNumber, passcode: passcode)
-
-            self.resultSubject.onNext((self.user, session))
-            self.resultSubject.onCompleted()
+            
+            self.isEmailSend = true
+            
         }).disposed(by: disposeBag)
 
         saveProfileRequest.errors()
