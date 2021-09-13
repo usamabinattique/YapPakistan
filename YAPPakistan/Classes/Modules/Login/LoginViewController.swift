@@ -45,7 +45,7 @@ class LoginViewController: UIViewController {
         textfield.translatesAutoresizingMaskIntoConstraints = false
         textfield.returnKeyType = .done
         textfield.clearButtonMode = .whileEditing
-        textfield.errorTextColor = .red    //.error
+        textfield.errorColor = .red    //.error
         //textfield.placeholderColor = .blue //.greyDark
         return textfield
     }()

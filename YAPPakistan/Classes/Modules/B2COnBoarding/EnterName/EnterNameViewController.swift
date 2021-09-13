@@ -83,8 +83,7 @@ private extension EnterNameViewController {
             .bind({ UIColor($0.primary)         }, to: [firstName.rx.primaryColor, lastName.rx.primaryColor])
             .bind({ UIColor($0.primaryDark)     }, to: [firstName.rx.secondaryColor, lastName.rx.secondaryColor])
             .bind({ UIColor($0.greyLight)       }, to: [firstName.rx.bgColor, lastName.rx.bgColor])
-            .bind({ UIColor($0.error)           }, to: [firstName.rx.errorBorderColor, lastName.rx.errorBorderColor])
-            .bind({ UIColor($0.grey)            }, to:  [firstName.rx.errorTextColor, lastName.rx.errorTextColor])
+            .bind({ UIColor($0.error)           }, to: [firstName.rx.errorColor, lastName.rx.errorColor])
             .disposed(by: rx.disposeBag)
     }
     
