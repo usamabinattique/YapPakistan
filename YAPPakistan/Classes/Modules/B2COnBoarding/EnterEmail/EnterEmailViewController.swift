@@ -140,7 +140,7 @@ private extension EnterEmailViewController {
         viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid }.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.showError.map{ _ in AppRoundedTextFieldValidation.invalid }.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.subHeadingHidden.bind(to: subHeadingLabel.rx.isHidden).disposed(by: rx.disposeBag)
-        //viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.verificationText.bind(to: verificationLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.demographicsSuccess.subscribe(onNext: { [weak self] in self?.animateVerificationText() }).disposed(by: rx.disposeBag)
     }

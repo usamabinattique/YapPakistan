@@ -125,10 +125,12 @@ fileprivate extension PINViewController {
         view.addSubview(createPINButton)
     }
 
+    
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor )}, to: [view.rx.backgroundColor])
-            .bind({ UIColor($0.primary         )}, to: [createPINButton.rx.enabledBackgroundColor, createPINButton.rx.disabledBackgroundColor])
+            .bind({ UIColor($0.primary         )}, to: [createPINButton.rx.enabledBackgroundColor])
+            .bind({ UIColor($0.greyDark        )}, to: [createPINButton.rx.disabledBackgroundColor])
             .bind({ UIColor($0.primaryDark     )}, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.error           )}, to: [errorLabel.rx.textColor])
             .bind({ UIColor($0.greyDark        )}, to: [termsAndCondtionsLabel.rx.textColor])

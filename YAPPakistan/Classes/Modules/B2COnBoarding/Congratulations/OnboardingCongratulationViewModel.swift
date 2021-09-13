@@ -59,11 +59,11 @@ class OnboardingCongratulationViewModel: OnboardingCongratulationViewModelType, 
         self.onboardingIntervalSubject = BehaviorSubject(value: user.timeTaken)
         self.ibanSubject = BehaviorSubject(value: user.iban)
         
-        /*
+        
         let seconds = Int(user.timeTaken.truncatingRemainder(dividingBy: 60.0))
         let minutes = Int(user.timeTaken / 60)
-        AppAnalytics.shared.logEvent(OnBoardingEvent.signUpEnded())
-        AppAnalytics.shared.logEvent(OnBoardingEvent.signUpLength(["signup_length" : String.init(format: "%02d:%02d", minutes, seconds)]), saveAttribute: true) */
+        //AppAnalytics.shared.logEvent(OnBoardingEvent.signUpEnded())
+        //AppAnalytics.shared.logEvent(OnBoardingEvent.signUpLength(["signup_length" : String.init(format: "%02d:%02d", minutes, seconds)]), saveAttribute: true)
         UserDefaults.standard.set(true, forKey: "SHOWS_APPLICATION_STATUS_ON_DASHBOARD")
     }
 }

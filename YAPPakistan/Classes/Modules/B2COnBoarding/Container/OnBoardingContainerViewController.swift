@@ -67,7 +67,7 @@ fileprivate extension OnBoardingContainerViewController {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
             .bind({ UIColor($0.primary) }, to: [sendButton.rx.enabledBackgroundColor])
-            .bind({ UIColor($0.primary) }, to: [sendButton.rx.disabledBackgroundColor])
+            .bind({ UIColor($0.greyDark) }, to: [sendButton.rx.disabledBackgroundColor])
             .bind({ UIColor($0.primaryExtraLight) }, to: [sendButton.rx.titleColor(for: .normal)])
             .disposed(by: rx.disposeBag)
     }

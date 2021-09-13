@@ -162,6 +162,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .share()
 
         let b2cUser = user.filter { $0.accountType == .b2cAccount }
+        b2cUser.map { _ in }.bind(to: demographicsSuccessSubject).disposed(by: disposeBag)
 
         let saveProfileRequest = b2cUser.flatMap { [unowned self] user -> Observable<Event<String>> in
             self.repository.saveProfile(countryCode: user.mobileNo.countryCode ?? "",
