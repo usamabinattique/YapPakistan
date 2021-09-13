@@ -8,7 +8,8 @@
 import Foundation
 
 protocol FeatureEvent {
-    var name: String {  get }
+    var token: String { get }
+    var payload: AnalyticsParameter? {  get }
 }
 
 protocol FeatureTrackerType {
@@ -16,6 +17,11 @@ protocol FeatureTrackerType {
 }
 
 class AdjustFeatureTracker: FeatureTrackerType {
+    init(userId: String?, userData: AnalyticsUserData?) {
+    }
+    func setUserData(userId: String, userData: AnalyticsUserData?) {
+        
+    }
     func log(event: FeatureEvent) {
         
     }

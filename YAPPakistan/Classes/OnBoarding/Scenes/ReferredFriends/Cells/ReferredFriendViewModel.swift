@@ -25,7 +25,6 @@ protocol ReferredFriendViewModelType {
 class ReferredFriendViewModel: ReferredFriendViewModelInput, ReferredFriendViewModelOutput, ReferredFriendViewModelType {
 
     // MARK: Properties
-
     private let disposeBag = DisposeBag()
 
     private let initialsBackgroundColorSubject = BehaviorSubject<Color?>(value: nil)
@@ -43,9 +42,14 @@ class ReferredFriendViewModel: ReferredFriendViewModelInput, ReferredFriendViewM
     var initialsTextColor: Observable<Color?> { initialsTextColorSubject.asObservable() }
     var friendName: Observable<String> { friendNameSubject.asObservable() }
 
-    init(friendName: String, initialsBackgroundColor: Color?, initialsTextColor: Color?) {
+    init(friendName: String,
+         initialsBackgroundColor: Color?,
+         initialsTextColor: Color?,
+         analyticsTracker: AnalyticsTrackerType) {
         initialsBackgroundColorSubject.onNext(initialsBackgroundColor)
         initialsTextColorSubject.onNext(initialsTextColor)
         friendNameSubject.onNext(friendName)
+        // sample event
+        analyticsTracker.log(event: ReferredFriendScreenPresented())
     }
 }

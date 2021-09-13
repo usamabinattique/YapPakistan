@@ -7,8 +7,12 @@
 
 import Foundation
 
+typealias AnalyticsParameter = [String: Any]
+typealias AnalyticsUserData = [String: String]
+
 protocol AnalyticsEvent {
     var name: String {  get }
+    var payload: AnalyticsParameter? {  get }
 }
 
 protocol AnalyticsTrackerType {
@@ -16,7 +20,12 @@ protocol AnalyticsTrackerType {
 }
 
 class FirebaseAnalyticsTracker: AnalyticsTrackerType {
-    func log(event: AnalyticsEvent) {
+    init(userId: String?, userData: AnalyticsUserData?) {
+    }
+    func setUserData(userId: String, userData: AnalyticsUserData?) {
         
     }
+    func log(event: AnalyticsEvent) {
+    }
 }
+

@@ -9,6 +9,7 @@ import Foundation
 
 protocol JourneyEvent {
     var name: String {  get }
+    var payload: AnalyticsParameter? {  get }
 }
 
 protocol JourneyTrackerType {
@@ -16,6 +17,10 @@ protocol JourneyTrackerType {
 }
 
 class LeanplumJourneyTracker: JourneyTrackerType {
+    init(userId: String?, userData: AnalyticsUserData?) {
+    }
+    func setUserData(userId: String, userData: AnalyticsUserData?) {
+    }
     func log(event: JourneyEvent) {
         
     }
