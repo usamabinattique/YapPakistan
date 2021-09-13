@@ -11,5 +11,7 @@ import YAPPakistan
 import YAPCore
 
 func yapPakistanMainContainer() -> YAPPakistanMainContainer {
-     YAPPakistanMainContainer(configuration: YAPPakistanConfiguration(environment: "develop"))
+    let configuration = YAPPakistanConfiguration(environment: .current)
+
+    return YAPPakistanMainContainer(configuration: configuration)
 }
