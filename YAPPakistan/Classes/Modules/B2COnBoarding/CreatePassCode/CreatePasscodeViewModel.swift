@@ -13,8 +13,8 @@ public class CreatePasscodeViewModel: PINViewModel {
     
     public override init(pinRange: ClosedRange<Int> = 4...6) {
         super.init(pinRange: pinRange)
-        
-        headingTextSubject.onNext("screen_create_passcode_display_text_title".localized)
+        let locString = "screen_create_passcode_display_text_title".localized
+        headingTextSubject.onNext(locString)
         termsAndConditionsSubject.onNext(createTermsAndConditions(text: "screen_create_passcode_display_text_terms_and_conditions".localized))
         actionTitleSubject.onNext( "screen_create_passcode_button_create_passcode".localized)
         hideNavigationBarSubject.onNext(false)

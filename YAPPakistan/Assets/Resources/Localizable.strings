@@ -43,6 +43,7 @@
 
 // MARK: Enter Email Screen
 "screen_enter_email_b2b_display_text_sub_heading" = "What's your preferred email address?";
+"screen_enter_email_b2c_display_text_title" = "What's your preferred email address?";
 "screen_enter_email_display_text_email_address" = "Email address";
 
 // MARK: Home Screen

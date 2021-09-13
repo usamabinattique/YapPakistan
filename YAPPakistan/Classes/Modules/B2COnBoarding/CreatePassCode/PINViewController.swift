@@ -32,7 +32,7 @@ public class PINViewController: UIViewController {
     
     // MARK: - Views
     //.primaryDark, textStyle: .title3
-    private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
     
     private lazy var holdingView: UIView = {
         let view = UIView()
@@ -40,11 +40,8 @@ public class PINViewController: UIViewController {
         return view
     }()
     
-    private lazy var dottedView: PasscodeDottedView = {
-        let view = PasscodeDottedView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+    private lazy var dottedView:PasscodeDottedView = PasscodeDottedView().setHidden(true).setTranslatesAutoresizingMask(false)
+    private lazy var codeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, charSpace: 10)
     
     //collor: .error
     private lazy var errorLabel: UILabel = UIFactory.makeLabel(font:.regular, alignment: .center)
@@ -115,7 +112,10 @@ fileprivate extension PINViewController {
     }
     
     func setupViews() {
+        
         holdingView.addSubview(dottedView)
+        holdingView.addSubview(codeLabel)
+        
         holdingView.addSubview(errorLabel)
         view.addSubview(headingLabel)
         view.addSubview(holdingView)
@@ -128,15 +128,16 @@ fileprivate extension PINViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.backgroundColor )}, to: [view.rx.backgroundColor])
-            .bind({ UIColor($0.primary         )}, to: [createPINButton.rx.enabledBackgroundColor])
-            .bind({ UIColor($0.greyDark        )}, to: [createPINButton.rx.disabledBackgroundColor])
-            .bind({ UIColor($0.primaryDark     )}, to: [headingLabel.rx.textColor])
-            .bind({ UIColor($0.error           )}, to: [errorLabel.rx.textColor])
-            .bind({ UIColor($0.greyDark        )}, to: [termsAndCondtionsLabel.rx.textColor])
-            .bind({ UIColor($0.primary         )}, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
-            .bind({ UIColor($0.primary         )}, to: [pinKeyboard.rx.themeColor])
-            .bind({ UIColor($0.primary         )}, to: [dottedView.rx.themeColor])
+            .bind({UIColor($0.backgroundColor)}, to: [view.rx.backgroundColor])
+            .bind({UIColor($0.primary        )}, to: [createPINButton.rx.enabledBackgroundColor])
+            .bind({UIColor($0.greyDark       )}, to: [createPINButton.rx.disabledBackgroundColor])
+            .bind({UIColor($0.primaryDark    )}, to: [headingLabel.rx.textColor])
+            .bind({UIColor($0.error          )}, to: [errorLabel.rx.textColor])
+            .bind({UIColor($0.greyDark       )}, to: [termsAndCondtionsLabel.rx.textColor])
+            .bind({UIColor($0.primary        )}, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
+            .bind({UIColor($0.primary        )}, to: [pinKeyboard.rx.themeColor])
+            .bind({UIColor($0.primary        )}, to: [dottedView.rx.themeColor])
+            .bind({UIColor($0.primaryDark    )}, to: [codeLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
     
@@ -167,7 +168,12 @@ fileprivate extension PINViewController {
         dottedView
             .centerHorizontallyInSuperview()
             .alignEdgesWithSuperview([.top])
-            .height(constant: 16)
+            .height(constant: 20)
+        
+        codeLabel
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.top])
+            .height(constant: 20)
         
         errorLabel
             .toBottomOf(dottedView, constant: 3)
@@ -222,7 +228,9 @@ fileprivate extension PINViewController {
 // MARK: - Bind
 fileprivate extension PINViewController {
     func bind() {
-        viewModel.outputs.pinText.map{ $0?.string.count ?? 0 }.bind(to: dottedView.rx.characters).disposed(by: disposeBag)
+        //viewModel.outputs.pinText.map{ $0?.string.count ?? 0 }.bind(to: dottedView.rx.characters).disposed(by: disposeBag)
+        
+        viewModel.outputs.pinText.map({$0?.string}).bind(to: codeLabel.rx.text).disposed(by: disposeBag)
         
         viewModel.outputs.pinValid.bind(to: createPINButton.rx.isEnabled).disposed(by: disposeBag)
         createPINButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: disposeBag)
@@ -253,7 +261,9 @@ fileprivate extension PINViewController {
     }
     
     func bindTranslations() {
-        viewModel.outputs.headingText.bind(to: headingLabel.rx.text).disposed(by: disposeBag)
+        viewModel.outputs.headingText.do(onNext: { string in
+            print(string)
+        }).bind(to: headingLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.termsAndConditionsText.subscribe(onNext: {[weak self] in
             if $0 == nil { self?.termsAndCondtionsLabel.isHidden = true }
             self?.termsAndCondtionsLabel.text = $0?.string
