@@ -97,7 +97,8 @@ class ReferredFriendsViewModel: ReferredFriendsViewModelInput, ReferredFriendsVi
 
             return ReferredFriendViewModel(friendName: invitee.inviteeCustomerName,
                                            initialsBackgroundColor: Self.colors[colorIndex].0,
-                                           initialsTextColor: Self.colors[colorIndex].1)
+                                           initialsTextColor: Self.colors[colorIndex].1,
+                                           analyticsTracker: FirebaseAnalyticsTracker(userId: nil, userData: nil))
         }
 
         friendListSubject.onNext(inviteeViewModels)
