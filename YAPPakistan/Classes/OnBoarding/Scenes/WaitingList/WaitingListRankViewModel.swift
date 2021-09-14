@@ -41,6 +41,8 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
 
     private let disposeBag = DisposeBag()
 
+    private let accountProvider: AccountProvider
+
     private let getRankingSubject = PublishSubject<Bool>()
     private let loadingSubject = PublishSubject<Bool>()
     private let errorSubject = PublishSubject<String>()
@@ -79,7 +81,10 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     var seeInviteeButtonTitle: Observable<String> { seeInviteeButtonTitleSubject.asObservable() }
     var bumpMeUpButtonTitle: Observable<String> { bumpMeUpButtonTitleSubject.asObservable() }
 
-    init(onBoardingRepository: OnBoardingRepository) {
+    init(accountProvider: AccountProvider, onBoardingRepository: OnBoardingRepository) {
+        self.accountProvider = accountProvider
+        accountProvider.refreshAccount()
+
         let getRankingRequest = getRankingSubject.share()
         getRankingRequest.map { $0 }
             .bind(to: loadingSubject)

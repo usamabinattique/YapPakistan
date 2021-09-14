@@ -60,13 +60,14 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
             // start onboarding, signin, signup flow
             // let vc = container.makeDummyViewController(xsrfToken: value)
         }
-
+/*
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
         let viewModel = WaitingListRankViewModel(onBoardingRepository: onBoardingRepository)
         let viewController = WaitingListRankViewController(themeService: container.themeService,
                                                            viewModel: viewModel)
 
         window.rootViewController = viewController
+ */
     }
 }
 

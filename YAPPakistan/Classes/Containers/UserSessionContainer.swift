@@ -27,7 +27,7 @@ public final class UserSessionContainer {
         let customersService = parent.makeCustomersService(authorizationProvider: session)
         let messagesService = parent.makeMessagesService(authorizationProvider: session)
         let onBoardingRepository = OnBoardingRepository(customersService: customersService, messagesService: messagesService)
-        let viewModel = WaitingListRankViewModel(onBoardingRepository: onBoardingRepository)
+        let viewModel = WaitingListRankViewModel(accountProvider: accountProvider, onBoardingRepository: onBoardingRepository)
 
         return WaitingListRankViewController(themeService: parent.themeService, viewModel: viewModel)
     }
