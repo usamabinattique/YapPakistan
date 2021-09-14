@@ -145,7 +145,7 @@ class WaitingListRankViewController: UIViewController {
             .alignEdgesWithSuperview([.top, .left, .right, .safeAreaBottom])
 
         videoPlayerView
-            .alignEdgeWithSuperview(.top, constant: 36)
+            .alignEdgeWithSuperview(.top, constant: 26)
             .centerHorizontallyInSuperview()
             .height(constant: 192)
             .width(constant: 192)
@@ -162,7 +162,7 @@ class WaitingListRankViewController: UIViewController {
         behindNumberLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
             .toBottomOf(rankView, constant: 16)
-            .height(22)
+            .height(constant: 22)
 
         behindYouLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])

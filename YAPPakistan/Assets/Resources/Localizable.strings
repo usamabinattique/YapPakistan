@@ -1,0 +1,147 @@
+/* 
+  File.strings
+  Pods
+
+  Created by Sarmad on 03/09/2021.
+  
+*/
+
+// MARK: Common
+"common_button_next" = "Next";
+"common_button_add" = "Add";
+"common_button_confirm" = "Confirm";
+"common_display_text_retry" = "Retry";
+"common_display_text_error_no_internet" = "Looks like you're offline. Please reconnect and refresh to continue using YAP.";
+"common_display_text_emirates_id" = "Emirates ID";
+"common_button_go_to_dashbaord" = "Go to dashboard";
+"common_button_re_scan" = "Re-scan Emirates ID";
+"common_display_text_gender_male" = "Male";
+"common_display_text_gender_female" = "Female";
+"common_display_text_gender_unspecified" = "Unspecified";
+"common_display_text_permission_denied" = "Permission denied!";
+"common_display_text_permission_camera" = "You have denied YAP access to camera. To allow YAP to use camera go to settings";
+"common_button_settings" = "Settings";
+"common_button_cancel" = "Cancel";
+"common_button_install" = "Install";
+"common_button_yes" = "Yes";
+"common_button_go_to_dashboard"  =  "Go to dashboard";
+"common_button_edit" = "Edit";
+"common_display_text_account" = "Account";
+"common_display_text_copy" = "Copy";
+"common_display_text_currency" = "AED";
+
+"" = "";
+
+// MARK: - Splash
+"screen_splash_display_text_force_update" = "Please update your app in order to continue.";
+"screen_splash_button_force_update" = "Update";
+
+// MARK: Enter Name Screen
+"screeen_name_display_text_title" = "What's your name?";
+"screen_name_display_text_first_name" = "First name";
+"screen_name_display_text_last_name" = "Last name";
+
+// MARK: Enter Email Screen
+"screen_enter_email_b2b_display_text_sub_heading" = "What's your preferred email address?";
+"screen_enter_email_b2c_display_text_title" = "What's your preferred email address?";
+"screen_enter_email_display_text_email_address" = "Email address";
+
+// MARK: Home Screen
+"screen_home_display_text_tag_line" = "The Personalized Banking App";
+"screen_home_display_text_account_selection" = "I want an account for";
+"screen_home_button_personal" = "Personal";
+"screen_home_button_business" = "Business";
+"screen_home_button_filter" = "Filter";
+
+"screen_home_display_text_already_have" = "Already have an account?";
+"screen_home_button_sign_in" = "Sign in";
+
+// MARK: Welcom Screen
+"screen_welcome_b2c_display_text_page1_title" = "Real-time banking";
+"screen_welcome_b2c_display_text_page2_title" = "Real-time perks";
+"screen_welcome_b2c_display_text_page3_title" = "Real-time benefits";
+"screen_welcome_b2c_display_text_page1_details" = "Current account with no\nhidden fees";
+"screen_welcome_b2c_display_text_page2_details" = "A free Mastercard delivered to\nyour doorstep";
+"screen_welcome_b2c_display_text_page3_details" = "Built-in analytics at\nyour fingertips";
+"screen_welcome_button_get_started" = "Get started";
+
+// MARK: Sign in Screen
+"screen_sign_in_display_text_heading_text" = "Sign in to your YAP account";
+"screen_sign_in_input_text_email_hint" = "Email address or phone number";
+"screen_sign_in_display_text_remember_id_text" = "Remember ID";
+"screen_sign_in_display_text_sign_up" = "New to YAP? Sign up now";
+"screen_sign_in_button_sign_in" = "Sign in";
+"screen_sign_in_button_verify" = "Verify";
+"screen_sign_in_button_sign_in_touch_id" = "Sign in with Touch ID";
+"screen_sign_in_display_text_error_text" = "That doesn't look right. Please try again";
+
+//MARK: Complete Verification FSS Screen
+"screen_complete_verification_fss_display_text_heading_text" = "you reached the top of the Queue!";
+"screen_complete_verification_fss_sub_heading_text" = "You are now ready to fully activate and begin using your YAP account.";
+"screen_complete_verification_fss_info_text" = "Make sure you have your Emirates ID at hand before we proceed";
+
+// MARK: Phone number screen
+"screen_phone_number_display_text_title" = "What's your mobile number?";
+
+// MARK: Phone number verification screen
+"screen_verify_phone_number_display_text_title" = "Verify your mobile number";
+"screen_verify_phone_number_display_text_sub_title" = "We've sent a verification code to";
+"screen_verify_phone_number_button_resend_otp" = "Resend code";
+"screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
+
+//MARK: Create passcode screen
+"screen_create_passcode_display_text_title" = "Create a new 4- to 6-digit passcode to access your account​";
+"screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our";
+"screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
+"screen_create_passcode_button_create_passcode" = "Create passcode";
+"screen_create_passcode_button_create_new_passcode" = "Set passcode";
+"screen_create_passcode_display_text_error_sequence" = "Passcode cannot be a straight sequence";
+"screen_create_passcode_display_text_error_same_digits" = "Passcode cannot be of same digits";
+
+//MARK: Waiting list screen
+"screen_waiting_list_dispaly_text_heading" = "You’re on our waiting list";
+"screen_waiting_list_dispaly_text_sub_heading" = "We’re currently in beta and only open to a limited number of users. Don’t worry, you’ll be the first to know when we’re ready. Should you wish to find out more in the meantime, our website has more information for you.";
+"screen_waiting_list_dispaly_button_keep_me_posted" = "Keep me posted!";
+"screen_waiting_list_dispaly_text_awsome_alert" = "Awesome! We’re as excited as you are. We’ll send you an SMS as soon as we’ve launched!";
+"screen_waiting_list_dispaly_text_close" = "Close";
+
+//MARK: Waiting list with rank screen
+"screen_waiting_list_rank_place_text_heading" = "Your place in the queue";
+"screen_waiting_list_rank_behind_text" = "waiting behind you";
+"screen_waiting_list_rank_info_text" = "We will notify you when you’ve reached the top. Log back in to see your updated place in the queue.";
+"screen_waiting_list_rank_bump_me_up_text" = "Bump me up the queue";
+"screen_waiting_list_rank_bump_me_up_info_text_top" = "Want to jump the queue?";
+"screen_waiting_list_rank_bump_me_up_info_text_bottom" = "Boost yourself up the queue by %@ for every friend you refer that signs up.🚀";
+"screen_waiting_list_rank_log_back_in_text" = "Log back in to see your rank in the queue";
+"screen_waiting_list_rank_share_invite_text" = "Hey! I just joined the UAE’s newest banking app – YAP. Transform the way you bank and reserve your place in the queue to be one of the first to join me in the banking revolution.\n\n%@";
+"screen_waiting_list_rank_bumped_notification_text" = "Congrats! You were bumped up by %@ spots! Keep on referring to get to the top faster! ";
+"screen_waiting_list_rank_invitees_list_title_text" = "You referred %d friends! %@";
+"screen_waiting_list_rank_invitees_list_subtitle_zero_invitees_text" = "Once your referred friends sign up, you will see their names listed below and your place in the queue bumped up by %@ spots for each friend!";
+"screen_waiting_list_rank_invitees_list_subtitle_text" = "You have been bumped up by %d spots.";
+"screen_waiting_list_rank_invitees_list_button_title_text" = "Signed up friends: %d";
+
+"screen_waiting_list_caption_backyourway" = "Bank your way";
+"screen_waiting_list_caption_getanaccount" = "Get an account in seconds";
+"screen_waiting_list_caption_moneytransfers" = "Money transfers made simple";
+"screen_waiting_list_caption_trackyourspending" = "Track your spending";
+"screen_waiting_list_caption_splitbills" = "Split bills effortlessly";
+"screen_waiting_list_caption_spendlocally" = "Spend locally wherever you go";
+"screen_waiting_list_caption_instantspending" = "Instant spending notifications";
+"screen_waiting_list_caption_anappfor" = "An app for everyone";
+
+// MARK: - Onboarding Congratulation screen
+"screen_onboarding_congratulations_display_text_title" = "Congrats, %@!";
+"screen_onboarding_congratulations_display_text_sub_title" = "A YAP Personal Account has been created for you in less than %@ seconds!";
+"screen_onboarding_congratulations_display_text_sub_title_no_interval" = "A YAP Personal Account has been created for you!";
+"screen_onboarding_congratulations_display_text_iban" = "Here's your IBAN";
+"screen_onboarding_congratulations_display_text_meeting_note" = "\nMake sure you have your Emirates ID at hand before we proceed";
+"screen_onboarding_congratulations_waiting_user_display_text_meeting_note" = "Due to all the excitement of our official launch, we are gradually activating as many accounts as possible to keep the app running smoothly. In the meantime, until your account is ready to be fully activated you’ll be placed in a queue.";
+"screen_onboarding_congratulations_button_complete_verification" = "Complete verification";
+"screen_onboarding_congratulations_waiting_user_button_complete_verification" = "Queue up!";
+
+//MARK: Email verification screen
+"screen_email_verification_display_text_title" = "Great!";
+"screen_email_verification_b2c_display_text_email_sent" = "you should now receive an email on";
+"screen_email_verification_b2c_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
+"screen_email_verification_b2b_display_text_email_sent" = "you should now receive an email on";
+"screen_email_verification_b2b_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";

@@ -3,23 +3,14 @@ import RxTheme
 import RxCocoa
 import RxSwift
 
-let globalStatusBarStyle = BehaviorRelay<UIStatusBarStyle>(value: .default)
-let themeService = AppTheme.service(initial: .light)
+public let globalStatusBarStyle = BehaviorRelay<UIStatusBarStyle>(value: .default)
 
-/*func appTheme<T>(_ mapper: @escaping ((Theme) -> T)) -> ThemeAttribute<T> {
-    return themeService.attribute(mapper)
-}*/
-
-func appTheme<T>(_ mapper: @escaping ((Theme) -> T)) -> Observable<T> {
-    return themeService.attrStream(mapper)
-}
-
-struct Color {
+public struct Color {
     let hex: String
 }
 
-protocol Theme {
-    var primary: Color              { get }
+public protocol Theme {
+    var primary: Color            { get }
     var primaryLight: Color       { get }
     var primaryExtraLight: Color  { get }
     var primaryDark: Color        { get }
@@ -95,99 +86,17 @@ struct DarkTheme: Theme {
     var backgroundColor: Color      {   Color(hex: "#FFFFFF")   }
 }
 
-enum AppTheme: ThemeProvider {
+public enum AppTheme: ThemeProvider {
     case light
     case dark
     
-    var associatedObject: Theme {
+    public var associatedObject: Theme {
         switch self {
         case .dark:
             return DarkTheme()
         case .light:
             return LightTheme()
        }
-    }
-}
-
-extension Reactive where Base: UIView {
-
-    var backgroundColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            view.backgroundColor = attr
-        }
-    }
-}
-
-extension Reactive where Base: UITextField {
-    var borderColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            view.borderColor = attr
-        }
-    }
-
-    var placeholderColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            if let color = attr {
-                view.setPlaceHolderTextColor(color)
-            }
-        }
-    }
-}
-
-extension Reactive where Base: UITableView {
-
-    var separatorColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            view.separatorColor = attr
-        }
-    }
-}
-
-extension Reactive where Base: UINavigationBar {
-
-    @available(iOS 11.0, *)
-    var largeTitleTextAttributes: Binder<[NSAttributedString.Key: Any]?> {
-        return Binder(self.base) { view, attr in
-            view.largeTitleTextAttributes = attr
-        }
-    }
-}
-
-public extension Reactive where Base: UISwitch {
-
-    var onTintColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            view.onTintColor = attr
-        }
-    }
-
-    var thumbTintColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            view.thumbTintColor = attr
-        }
-    }
-}
-
-extension Reactive where Base: UIApplication {
-
-    var statusBarStyle: Binder<UIStatusBarStyle> {
-        return Binder(self.base) { view, attr in
-            globalStatusBarStyle.accept(attr)
-        }
-    }
-}
-
-extension Reactive where Base: RankView {
-    var digitColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            view.digitColor = attr
-        }
-    }
-
-    var digitBackgroundColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            view.digitBackgroundColor = attr
-        }
     }
 }
 
@@ -207,7 +116,7 @@ public extension ThemeProxy where Base: UIApplication {
     }
 }
 */
-
+/*
 struct Font {
     enum FontType {
         case custom(String)
@@ -300,3 +209,4 @@ public extension UIFont {
         Font(.system, size: .standard(.h6)).instance
     }
 }
+*/

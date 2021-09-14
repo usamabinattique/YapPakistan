@@ -66,8 +66,8 @@ class ReferredFriendCell: UITableViewCell {
     private func setupConstraints() {
         initialsImageView
             .alignEdgesWithSuperview([.left, .top, .bottom], constants: [28, 10, 10])
-            .width(42)
-            .height(42)
+            .width(constant: 42)
+            .height(constant: 42)
 
         nameLabel
             .alignEdgesWithSuperview([.right, .top], constants: [28, 16])

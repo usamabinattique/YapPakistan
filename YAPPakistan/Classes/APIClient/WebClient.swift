@@ -81,14 +81,14 @@ public var BaseURLAdmin: URL = {
 
 public class WebClient: APIClient {
 
-    private var session: Session
+    private var session: Alamofire.Session
 
     public init() {
         let serverTrustPolicies : [String: PublicKeysTrustEvaluator] = [
             BaseURL.host ?? BaseURL.absoluteString : PublicKeysTrustEvaluator(keys: WebClient.publicSecuredKeys, performDefaultValidation: true, validateHost: true)
         ]
 
-        session = Session(configuration: URLSessionConfiguration.default, serverTrustManager: WebClient.publicSecuredKeys.count > 0 ? ServerTrustManager(evaluators: serverTrustPolicies) : nil)
+        session = Alamofire.Session(configuration: URLSessionConfiguration.default, serverTrustManager: WebClient.publicSecuredKeys.count > 0 ? ServerTrustManager(evaluators: serverTrustPolicies) : nil)
     }
 
     private static var publicSecuredKeys: [SecKey] {

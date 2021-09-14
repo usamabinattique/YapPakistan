@@ -31,38 +31,24 @@ class SplashViewController: UIViewController {
         .makeImageView(image: UIImage(named: "circle"))
         .addToSuper(view: view)
     
-    /*private lazy var visualEffectView: UIVisualEffectView = {
-        let view = UIVisualEffectView()
-        view.effect = nil
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()*/
-    
     // MARK: Initialization
-    
     init(viewModel: SplashViewModelType) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     // MARK: Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setupSubViews()
         setupConstraints()
         bindViews()
-        
-        //DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-        //    print(self.logo.image)
-        //    self.animateLogo().subscribe().disposed(by: self.rx.disposeBag)
-        //}
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -76,38 +62,25 @@ extension SplashViewController {
     
     fileprivate func setupSubViews() {
         view.backgroundColor = .white
-        
         view.addSubview(logo)
         view.addSubview(dot)
-        //view.addSubview(visualEffectView)
     }
     
+    //MARK: Updated YAPLayout, after using UnsafeMutablePointer for initialization
     fileprivate func setupConstraints() {
-        
-        logo.centerVerticallyInSuperview()
-        
-        logoCenterHorizonConstraint = NSLayoutConstraint(item: logo, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0)
-        
-        logo.horizontallyCenterWith(view, constant: 0)
-        logoWidthConstraint = logo.widthAnchor.constraint(equalToConstant: 110)
-        logoHeightConstraint = logo.heightAnchor.constraint(equalToConstant: 103)
-        
-        logoWidthConstraint.isActive = true
-        logoHeightConstraint.isActive = true
-        logoCenterHorizonConstraint.isActive = true
+        logo
+            .centerVerticallyInSuperview()
+            .horizontallyCenterWith(view, initTo:&logoCenterHorizonConstraint)
+            .width(constant: 110, initTo:&logoWidthConstraint)
+            .height(constant: 103, initTo:&logoHeightConstraint)
         
         dot
-        .centerHorizontallyInSuperview()
-        .verticallyCenterWith(view, constant: 8)
-       
-        dotWidthConstraint = dot.widthAnchor.constraint(equalToConstant: 13)
-        dotHeightConstraint = dot.heightAnchor.constraint(equalToConstant: 13)
-        
-        dotWidthConstraint.isActive = true
-        dotHeightConstraint.isActive = true
-        
-        //visualEffectView.alignAllEdgesWithSuperview()
+            .centerHorizontallyInSuperview()
+            .verticallyCenterWith(view, constant: 8)
+            .width(constant: 13, initTo:&dotWidthConstraint)
+            .height(constant: 13, initTo:&dotHeightConstraint)
     }
+    
 }
 
 // MARK: Binding
@@ -119,12 +92,12 @@ private extension SplashViewController {
             .outputs
             .showError
             .subscribe(onNext: { [unowned self] error in
-                /* self.showAlert(title: "",
-                           message: error,
-                           defaultButtonTitle:  "common_display_text_retry".localized,
-                           secondayButtonTitle: nil, defaultButtonHandler: { [weak self] _ in
-                            self?.viewModel.inputs.refreshXSRF.onNext(())
-                }, secondaryButtonHandler: nil, completion: nil) */
+                self.showAlert(title: "",
+                 message: error,
+                 defaultButtonTitle:  "common_display_text_retry",
+                 secondayButtonTitle: nil, defaultButtonHandler: { [weak self] _ in
+                 self?.viewModel.inputs.refreshXSRF.onNext(())
+                 }, secondaryButtonHandler: nil, completion: nil)
             })
             .disposed(by: rx.disposeBag)
         
@@ -135,7 +108,7 @@ private extension SplashViewController {
             .flatMap{ [weak self] _ in self?.animateLogo() ?? .never() }
             .bind(to: viewModel.inputs.animationCompleteObserver)
             .disposed(by: rx.disposeBag)
-
+        
     }
 }
 
@@ -172,7 +145,7 @@ private extension SplashViewController {
             }
             return Disposables.create()
         }
-
+        
         return Observable.zip(logoAnimation, dotAnimationFaster).map{ _ in }
     }
     

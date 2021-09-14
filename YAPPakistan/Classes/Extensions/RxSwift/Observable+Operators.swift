@@ -10,11 +10,11 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-extension Reactive where Base: UIView {
+/* extension Reactive where Base: UIView {
     func tap() -> Observable<Void> {
         return tapGesture().when(.recognized).mapToVoid()
     }
-}
+} */
 
 protocol OptionalType {
     associatedtype Wrapped

@@ -48,6 +48,8 @@ class ReferredFriendsViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var viewModel: ReferredFriendsViewModelType!
 
+    private var hasFriends = true
+
     // MARK: Initialization
 
     init(themeService: ThemeService<AppTheme>, viewModel: ReferredFriendsViewModelType) {
@@ -98,8 +100,8 @@ class ReferredFriendsViewController: UIViewController {
         sheetIndicatorView
             .alignEdgeWithSuperview(.top, constant: 12)
             .centerHorizontallyInSuperview()
-            .width(60)
-            .height(4)
+            .width(constant: 60)
+            .height(constant:4)
 
         titleLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
@@ -112,7 +114,7 @@ class ReferredFriendsViewController: UIViewController {
         separatorView
             .alignEdgesWithSuperview([.left, .right])
             .toBottomOf(subtitleLabel, constant: 24)
-            .height(1)
+            .height(constant: 1)
 
         tableView
             .alignEdgesWithSuperview([.left, .right, .bottom])
@@ -138,6 +140,12 @@ class ReferredFriendsViewController: UIViewController {
             .bind(to: tableView.rx.isHidden)
             .disposed(by: disposeBag)
 
+        viewModel.outputs.hidesFriends.subscribe(onNext: { flag in
+            self.hasFriends = !flag
+            self.panModalTransitionTo(state: .short)
+            self.panModalSetNeedsLayoutUpdate()
+        }).disposed(by: disposeBag)
+
         viewModel.outputs.friendList.bind(to: tableView.rx.items(cellIdentifier: ReferredFriendCell.defaultIdentifier, cellType: ReferredFriendCell.self)) { [weak self] (_, viewModel: ReferredFriendViewModelType, cell) in
             guard let self = self else { return }
             cell.configure(with: self.themeService, viewModel: viewModel)
@@ -151,11 +159,11 @@ class ReferredFriendsViewController: UIViewController {
     }
 
     override func shortFormHeight() -> PanModalHeight {
-        return PanModalHeight(type: .content, height: 360)
+        return PanModalHeight(type: .content, height: hasFriends ? 360 : 175)
     }
 
     override func longFormHeight() -> PanModalHeight {
-        return PanModalHeight(type: .topInset, height: 64)
+        return hasFriends ? PanModalHeight(type: .topInset, height: 64) : shortFormHeight()
     }
 
     override func cornerRadius() -> CGFloat {

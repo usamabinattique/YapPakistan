@@ -17,11 +17,13 @@
 		0D51951226E3A4B600B81639 /* YAPPakistan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951126E3A4B600B81639 /* YAPPakistan.swift */; };
 		0D51951626E3A5B000B81639 /* DemoAppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */; };
 		0D51951C26E3A78500B81639 /* DemoApplicationContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */; };
+		5680335A26E7E36D00D5C183 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
+		7D7BA3FD26EF65590007074C /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7BA3FC26EF65590007074C /* AppEnvironment.swift */; };
 		9EB86386FE4EDBA38952F7DD /* Pods_YAPPakistan_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 861F77AB2702806C8679AE20 /* Pods_YAPPakistan_Example.framework */; };
 		CA19FA007DD6CBC56A5643F9 /* Pods_YAPPakistan_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F906C2EBEE9DE0E157C53C9D /* Pods_YAPPakistan_Tests.framework */; };
 /* End PBXBuildFile section */
@@ -60,6 +62,7 @@
 		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		6357D143ACB8D30E08410C2E /* Pods-YAPPakistan_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YAPPakistan_Example.release.xcconfig"; path = "Target Support Files/Pods-YAPPakistan_Example/Pods-YAPPakistan_Example.release.xcconfig"; sourceTree = "<group>"; };
 		760118D6BD6CA936B19BE7FB /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		7D7BA3FC26EF65590007074C /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		861F77AB2702806C8679AE20 /* Pods_YAPPakistan_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YAPPakistan_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D491B7F23B2F59C1E7CD9D34 /* Pods-YAPPakistan_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YAPPakistan_Tests.release.xcconfig"; path = "Target Support Files/Pods-YAPPakistan_Tests/Pods-YAPPakistan_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		F906C2EBEE9DE0E157C53C9D /* Pods_YAPPakistan_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YAPPakistan_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -100,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				0D51948026E1ECC300B81639 /* Splash */,
+				0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -123,6 +127,34 @@
 				D491B7F23B2F59C1E7CD9D34 /* Pods-YAPPakistan_Tests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		5680335726E7E32900D5C183 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
+				7D7BA3FC26EF65590007074C /* AppEnvironment.swift */,
+				0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */,
+				607FACD71AFB9204008FA782 /* ViewController.swift */,
+			);
+			name = App;
+			sourceTree = "<group>";
+		};
+		5680335826E7E32F00D5C183 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				607FACDC1AFB9204008FA782 /* Images.xcassets */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		5680335926E7E34500D5C183 /* YAPPakistan */ = {
+			isa = PBXGroup;
+			children = (
+				0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */,
+				0D51951126E3A4B600B81639 /* YAPPakistan.swift */,
+			);
+			path = YAPPakistan;
 			sourceTree = "<group>";
 		};
 		607FACC71AFB9204008FA782 = {
@@ -149,15 +181,11 @@
 		607FACD21AFB9204008FA782 /* Example for YAPPakistan */ = {
 			isa = PBXGroup;
 			children = (
-				0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */,
+				5680335726E7E32900D5C183 /* App */,
 				0D51948126E1ECC300B81639 /* Modules */,
+				5680335926E7E34500D5C183 /* YAPPakistan */,
+				5680335826E7E32F00D5C183 /* Resources */,
 				0D5194A626E1F2CA00B81639 /* KeychainManager */,
-				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
-				0D51951126E3A4B600B81639 /* YAPPakistan.swift */,
-				0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */,
-				0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */,
-				607FACDC1AFB9204008FA782 /* Images.xcassets */,
-				607FACD71AFB9204008FA782 /* ViewController.swift */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
 			name = "Example for YAPPakistan";
@@ -418,9 +446,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				0D51950E26E39F1B00B81639 /* CredentialsManager.swift in Sources */,
+				7D7BA3FD26EF65590007074C /* AppEnvironment.swift in Sources */,
 				0D51949F26E1ED3800B81639 /* SplashViewController.swift in Sources */,
 				0D51951226E3A4B600B81639 /* YAPPakistan.swift in Sources */,
 				0D51951C26E3A78500B81639 /* DemoApplicationContainer.swift in Sources */,
+				5680335A26E7E36D00D5C183 /* ViewController.swift in Sources */,
 				0D5194A026E1ED3800B81639 /* SplashCoordinator.swift in Sources */,
 				0D5194C126E1F3FC00B81639 /* KeychainItemAccessibility.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,

@@ -1,38 +1,76 @@
 //
 //  UIFont+Extensions.swift
-//  YAPKit
+//  YAPPakistan
 //
-//  Created by Zain on 17/06/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Sarmad Abbas on 27/08/2021.
+//  Copyright © 2021 YAPPakistan. All rights reserved.
 //
 
 import UIKit
 
-public enum AppTextStyle {
-    case title1
-    case title2
-    case title3
-    case large
-    case regular
-    case small
-    case micro
-    case nano
+public enum AppFontWeight: Hashable {
+    case ultraLight, thin, light, regular, medium, semibold, bold, heavy, black
 }
 
-public enum AppFontWeight: String {
-    case ultraLight
-    case thin
-    case light
-    case regular
-    case medium
-    case semibold
-    case bold
-    case heavy
-    case black
+public enum AppTextStyle:Hashable {
+    case title1 (_ weight:AppFontWeight = .regular )
+    case title2 (_ weight:AppFontWeight = .regular )
+    case title3 (_ weight:AppFontWeight = .regular )
+    case large  (_ weight:AppFontWeight = .regular )
+    case regular(_ weight:AppFontWeight = .regular )
+    case small  (_ weight:AppFontWeight = .regular )
+    case micro  (_ weight:AppFontWeight = .regular )
+    case nano   (_ weight:AppFontWeight = .regular )
 }
 
-extension AppFontWeight {
-    fileprivate var systemFontWeight: UIFont.Weight {
+public extension UIFont {
+    static func title1 ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.title1(weight).font  }
+    static func title2 ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.title2(weight).font  }
+    static func title3 ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.title3(weight).font  }
+    static func large  ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.large(weight).font   }
+    static func regular( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.regular(weight).font }
+    static func small  ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.small(weight).font   }
+    static func micro  ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.micro(weight).font   }
+    
+    static var title1:  UIFont { return .title1( .regular) }
+    static var title2:  UIFont { return .title2( .regular) }
+    static var title3:  UIFont { return .title3( .regular) }
+    static var large:   UIFont { return .large(  .regular) }
+    static var regular: UIFont { return .regular(.regular) }
+    static var small:   UIFont { return .small(  .regular) }
+    static var micro:   UIFont { return .micro(  .regular) }
+}
+
+fileprivate extension AppTextStyle {
+    var fontSize:CGFloat {
+        switch self {
+        case .title1:   return 28.0
+        case .title2:   return 24.0
+        case .title3:   return 21.0
+        case .large:    return 18.0
+        case .regular:  return 16.0
+        case .small:    return 14.0
+        case .micro:    return 12.0
+        case .nano:     return 10.0
+        }
+    }
+    
+    var font:UIFont {
+        switch self {
+        case .title1 (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
+        case .title2 (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
+        case .title3 (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
+        case .large  (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
+        case .regular(let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
+        case .small  (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
+        case .micro  (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
+        case .nano   (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
+        }
+    }
+}
+
+fileprivate extension AppFontWeight {
+    var systemFontWeight: UIFont.Weight {
         switch self {
         case .ultraLight:   return .ultraLight
         case .thin:         return .thin
@@ -45,53 +83,4 @@ extension AppFontWeight {
         case .black:        return .black
         }
     }
-}
-
-public extension UIFont {
-    
-    static func appFont(forTextStyle style: AppTextStyle, weight: AppFontWeight = .regular) -> UIFont {
-        switch style {
-        case .title1:   return .appFont(ofSize: 28.0)
-        case .title2:   return .appFont(ofSize: 24.0)
-        case .title3:   return .appFont(ofSize: 21.0)
-        case .large:    return .appFont(ofSize: 18.0)
-        case .regular:  return .appFont(ofSize: 16.0)
-        case .small:    return .appFont(ofSize: 14.0)
-        case .micro:    return .appFont(ofSize: 12.0)
-        case .nano:     return .appFont(ofSize: 10.0)
-        }
-    }
-    
-    static func appFont(ofSize size: CGFloat, weigth: AppFontWeight = .regular) -> UIFont {
-            return .systemFont(ofSize: size, weight: weigth.systemFontWeight)
-    }
-
-    
-    static var title1: UIFont {
-        return appFont(forTextStyle: .title1)
-    }
-    
-    static var title2: UIFont {
-        return appFont(forTextStyle: .title2)
-    }
-    
-    static var title3: UIFont {
-        return appFont(forTextStyle: .title3)
-    }
-    
-    static var large: UIFont {
-        return appFont(forTextStyle: .large)
-    }
-    
-    static var regular: UIFont {
-        return appFont(forTextStyle: .regular)
-    }
-    
-    static var small: UIFont {
-        return appFont(forTextStyle: .small)
-    }
-    
-    static var micro: UIFont {
-        return appFont(forTextStyle: .micro)
-    } 
 }

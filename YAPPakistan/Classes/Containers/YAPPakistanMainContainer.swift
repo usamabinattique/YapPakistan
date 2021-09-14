@@ -9,9 +9,18 @@ import Foundation
 import RxSwift
 import RxTheme
 
+public enum Environment {
+    case dev
+    case qa
+    case stg
+    case preprod
+    case prod
+}
+
 public struct YAPPakistanConfiguration {
-    let environment: String
-    public init(environment: String) {
+    let environment: Environment
+
+    public init(environment: Environment) {
         self.environment = environment
     }
 }
@@ -19,10 +28,12 @@ public struct YAPPakistanConfiguration {
 public final class YAPPakistanMainContainer {
     let configuration: YAPPakistanConfiguration
     let themeService: ThemeService<AppTheme>
+    let credentialsStore: CredentialsStoreType
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
         self.themeService = AppTheme.service(initial: .light)
+        self.credentialsStore = CredentialsManager()
     }
     
     public func rootCoordinator(window: UIWindow) -> AppCoordinator {
@@ -51,6 +62,18 @@ public final class YAPPakistanMainContainer {
         return CustomersService(apiClient: makeAPIClient(),
                                 apiConfig: makeAPIConfiguration(),
                                 authorizationProvider: authorizationProvider)
+    }
+
+    func makeMessagesService(xsrfToken: String) -> MessagesService {
+        return MessagesService(apiClient: makeAPIClient(),
+                               apiConfig: makeAPIConfiguration(),
+                               authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+    }
+
+    func makeMessagesService(authorizationProvider: ServiceAuthorizationProviderType) -> MessagesService {
+        return MessagesService(apiClient: makeAPIClient(),
+                               apiConfig: makeAPIConfiguration(),
+                               authorizationProvider: authorizationProvider)
     }
 
     public func makeDummyViewController(xsrfToken: String) -> UIViewController {
