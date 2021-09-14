@@ -76,6 +76,11 @@ public final class YAPPakistanMainContainer {
                                authorizationProvider: authorizationProvider)
     }
 
+    func makeWaitingListController(session: Session) -> WaitingListRankViewController {
+        let sessionContainer = UserSessionContainer(parent: self, session: session)
+        return sessionContainer.makeWaitingListController()
+    }
+
     public func makeDummyViewController(xsrfToken: String) -> UIViewController {
         let customerService = CustomersService(apiConfig: makeAPIConfiguration(),
                                                authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
