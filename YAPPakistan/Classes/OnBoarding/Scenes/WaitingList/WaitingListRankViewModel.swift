@@ -11,8 +11,9 @@ import RxSwift
 import RxDataSources
 
 protocol WaitingListRankViewModelInput {
-    var getRanking: AnyObserver<Bool> { get }
     var firstVideoEnded: AnyObserver<Void> { get }
+    var getRanking: AnyObserver<Bool> { get }
+    var bumpMeUp: AnyObserver<Void> { get }
 }
 
 protocol WaitingListRankViewModelOutput {
@@ -28,6 +29,7 @@ protocol WaitingListRankViewModelOutput {
     var boostUpText: Observable<String> { get }
     var seeInviteeButtonTitle: Observable<String> { get }
     var bumpMeUpButtonTitle: Observable<String> { get }
+    var shareInfo: Observable<String> { get }
 }
 
 protocol WaitingListRankViewModelType {
@@ -39,11 +41,13 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
 
     // MARK: Properties
 
+    private let accountProvider: AccountProvider
+    private let referralManager: AppReferralManager
+
     private let disposeBag = DisposeBag()
 
-    private let accountProvider: AccountProvider
-
     private let getRankingSubject = PublishSubject<Bool>()
+    private let bumpMeUpSubject = PublishSubject<Void>()
     private let loadingSubject = PublishSubject<Bool>()
     private let errorSubject = PublishSubject<String>()
     private let waitingListRankSubject = PublishSubject<WaitingListRank>()
@@ -57,15 +61,17 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     private let boostUpTextSubject = BehaviorSubject<String>(value: "\("screen_waiting_list_rank_bump_me_up_info_text_top".localized)\n\("screen_waiting_list_rank_bump_me_up_info_text_bottom".localized)")
     private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value: String(format: "screen_waiting_list_rank_invitees_list_button_title_text".localized, 0))
     private let bumpMeUpButtonTitleSubject = BehaviorSubject<String>(value: "screen_waiting_list_rank_bump_me_up_text".localized)
+    private let shareInfoSubject = PublishSubject<String>()
 
     var inputs: WaitingListRankViewModelInput { self }
     var outputs: WaitingListRankViewModelOutput { self }
 
     // MARK: Inputs
 
-    var getRanking: AnyObserver<Bool> { getRankingSubject.asObserver() }
     var firstVideoEnded: AnyObserver<Void> { firstVideoEndedSubject.asObserver() }
-    
+    var getRanking: AnyObserver<Bool> { getRankingSubject.asObserver() }
+    var bumpMeUp: AnyObserver<Void> { bumpMeUpSubject.asObserver() }
+
     // MARK: Outputs
 
     var loading: Observable<Bool> { loadingSubject.asObservable() }
@@ -80,9 +86,14 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     var infoText: Observable<String?> { infoTextSubject.asObservable() }
     var seeInviteeButtonTitle: Observable<String> { seeInviteeButtonTitleSubject.asObservable() }
     var bumpMeUpButtonTitle: Observable<String> { bumpMeUpButtonTitleSubject.asObservable() }
+    var shareInfo: Observable<String> { shareInfoSubject.asObservable() }
 
-    init(accountProvider: AccountProvider, onBoardingRepository: OnBoardingRepository) {
+    init(accountProvider: AccountProvider,
+         referralManager: AppReferralManager,
+         onBoardingRepository: OnBoardingRepository) {
         self.accountProvider = accountProvider
+        self.referralManager = referralManager
+
         accountProvider.refreshAccount()
 
         let getRankingRequest = getRankingSubject.share()
@@ -90,16 +101,16 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
             .bind(to: loadingSubject)
             .disposed(by: disposeBag)
 
-        let result = getRankingRequest.flatMap { _ in
+        let rankResult = getRankingRequest.flatMap { _ in
             onBoardingRepository.getWaitingListRanking()
         }.share(replay: 1, scope: .whileConnected)
 
-        result
+        rankResult
             .map { _ in false }
             .bind(to: loadingSubject)
             .disposed(by: disposeBag)
 
-        result.elements().unwrap().subscribe(onNext: { [weak self] waitingListRank in
+        rankResult.elements().unwrap().subscribe(onNext: { [weak self] waitingListRank in
             guard let self = self else { return }
 
             self.waitingListRankSubject.onNext(waitingListRank)
@@ -113,6 +124,31 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
             )
             self.seeInviteeButtonTitleSubject.onNext(String(format: "screen_waiting_list_rank_invitees_list_button_title_text".localized, waitingListRank.inviteeDetails?.count ?? 0))
         }).disposed(by: disposeBag)
+
+        let customerId = accountProvider.currentAccount
+            .map { $0?.customer.customerId }.unwrap()
+
+        let sendInviteRequest = bumpMeUpSubject.withLatestFrom(customerId)
+
+        let sendInviteResult = sendInviteRequest
+            .flatMap { customerId -> Observable<Event<String?>> in
+                self.loadingSubject.onNext(true)
+
+                let formatter = DateFormatter()
+                formatter.dateFormat = DateFormatter.serverReadableDateTimeFormat
+
+                let date = formatter.string(from: Date())
+
+                return onBoardingRepository.saveInvite(inviterCustomerId: customerId, referralDate: date)
+            }
+            .do(onNext: { _ in
+                self.loadingSubject.onNext(false)
+            })
+
+        sendInviteResult.withLatestFrom(customerId)
+            .map { appInviteWaitingList(referralManager.getReferralUrl(for: $0)) }
+            .bind(to: shareInfoSubject)
+            .disposed(by: disposeBag)
 
         firstVideoEndedSubject
             .map { "waitingListLoop.mp4" }

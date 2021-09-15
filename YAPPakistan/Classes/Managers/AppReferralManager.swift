@@ -15,18 +15,18 @@ public class AppReferralManager {
 
     private let environment: Environment
 
-    init(environment: Environment) {
+    public init(environment: Environment) {
         self.environment = environment
     }
 
     func getReferralUrl(for inviterId: String, time: Date = Date()) -> String {
         switch environment {
         case .dev:
-            return "https://grwl.adj.st?adjust_t=q3o2z0e_sv94i35&customer_id=\(inviterId)&time=\(refferalTimeString())"
+            return "https://lwnq.adj.st?adjust_t=wbcz4y5_fj4r46p&customer_id=\(inviterId)&time=\(refferalTimeString())"
         case .qa:
-            return "https://grwl.adj.st?adjust_t=q3o2z0e_sv94i35&customer_id=\(inviterId)&time=\(refferalTimeString())"
+            return "https://lwnq.adj.st?adjust_t=wbcz4y5_fj4r46p&customer_id=\(inviterId)&time=\(refferalTimeString())"
         case .stg:
-            return "https://grwl.adj.st?adjust_t=q3o2z0e_sv94i35&customer_id=\(inviterId)&time=\(refferalTimeString())"
+            return "https://lwnq.adj.st?adjust_t=wbcz4y5_fj4r46p&customer_id=\(inviterId)&time=\(refferalTimeString())"
         case .preprod:
             return "https://7s29.adj.st?adjust_t=v3jlxlh_oo71763&customer_id=\(inviterId)&time=\(refferalTimeString())"
         case .prod:
@@ -51,7 +51,7 @@ public class AppReferralManager {
         UserDefaults.standard.removeObject(forKey: Self.invitationTimeKey)
     }
     
-    func parseReferralUrl(_ url: URL?) {
+    public func parseReferralUrl(_ url: URL?) {
         guard let `url` = url else { return }
         
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }

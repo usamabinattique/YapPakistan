@@ -50,6 +50,18 @@ public class CustomersService: BaseService {
         return self.request(apiClient: self.apiClient, route: route)
     }
 
+    public func saveInvite<T: Codable>(inviterCustomerId: String, referralDate: String) -> Observable<T> {
+        let body = [
+            "inviterCustomerId": inviterCustomerId,
+            "referralDate": referralDate
+        ]
+
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/save-invite", body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
     public func fetchRanking<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/fetch-ranking", headers: authorizationProvider.authorizationHeaders)
 

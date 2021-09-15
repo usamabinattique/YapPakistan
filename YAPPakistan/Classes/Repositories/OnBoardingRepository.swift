@@ -37,6 +37,10 @@ class OnBoardingRepository {
         return customersService.saveProfile(countryCode: countryCode, mobileNo: mobileNo, passcode: passcode, firstName: firstName, lastName: lastName, email: email, token: token, whiteListed: whiteListed).materialize()
     }
 
+    func saveInvite(inviterCustomerId: String, referralDate: String) -> Observable<Event<String?>> {
+        return customersService.saveInvite(inviterCustomerId: inviterCustomerId, referralDate: referralDate).materialize()
+    }
+
     func getWaitingListRanking() -> Observable<Event<WaitingListRank?>> {
         return customersService.fetchRanking().materialize()
     }
