@@ -10,104 +10,55 @@ import UIKit
 import RxSwift
 import RxCocoa
 import YAPComponents
-
-//import Authentication
-//import AppAnalytics
+import RxTheme
 
 class SystemPermissionViewController: UIViewController {
     
     // swiftlint:disable force_cast
     //let appDelegate = UIApplication.shared.delegate as! PublicAppDelegate
     // swiftlint:enable force_cast
-    //let viewModel: SystemPermissionViewModelType
-    //fileprivate var disposeBag = DisposeBag()
+    
+    let viewModel: SystemPermissionViewModelType
+    let themeService: ThemeService<AppTheme>
     fileprivate var widthConstraint: NSLayoutConstraint?
-    //fileprivate var permissionType: SystemPermissionType?
+    fileprivate var permissionType: SystemPermissionType?
     fileprivate var username: String = ""
     
-    fileprivate lazy var icon: UIImageView = {
-        let icon = UIImageView()
-        icon.contentMode = .scaleAspectFit
-        icon.tintColor = .blue //.primary
-        icon.translatesAutoresizingMaskIntoConstraints = false
-        return icon
-    }()
+    fileprivate lazy var icon = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     
-    fileprivate lazy var headingLabel: UILabel = {
-        let label = UILabel()
-        label.font = .title3
-        label.textColor = .blue //UIColor.appColor(ofType: .primaryDark)
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    fileprivate lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
     
-    fileprivate lazy var subHeadingLabel: UILabel = {
-        let label = UILabel()
-        label.font = .small
-        label.textColor = .gray //.greyDark
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    fileprivate lazy var subHeadingLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0)
     
-    fileprivate lazy var termsDescriptionLabel: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.small
-        label.textColor = UIColor.gray //.appColor(ofType: .greyDark)
-        label.textAlignment = .center
-        label.numberOfLines = 2
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    fileprivate lazy var termsDescriptionLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 2)
     
-    fileprivate lazy var termsConditionButton: UIButton = {
-        let button = UIButton()
-        button.setTitle( "screen_system_permission_text_terms_and_conditions".localized, for: .normal)
-        button.titleLabel?.font = .small
-        button.setTitleColor(UIColor.blue /*.appColor(ofType: .primary )*/, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
+    fileprivate lazy var termsConditionButton = UIFactory.makeButton(with: .small, title: "screen_system_permission_text_terms_and_conditions".localized)
     
-    fileprivate lazy var permissionButton: AppRoundedButton = {
-        let button = AppRoundedButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
+    fileprivate lazy var permissionButton = UIFactory.makeAppRoundedButton(with: .regular)
     
-    fileprivate lazy var thanksButton: UIButton = {
-        let button = UIButton()
-        button.setTitle( "screen_system_permission_text_denied".localized, for: .normal)
-        button.setTitleColor(UIColor.blue /*appColor(ofType: .primary)*/, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
+    fileprivate lazy var thanksButton = UIFactory.makeButton(with: .regular, title: "screen_system_permission_text_denied".localized)
     
-    /* init(viewModel: SystemPermissionViewModelType, username: String = "") {
+    init(themeService: ThemeService<AppTheme>, viewModel: SystemPermissionViewModelType, username: String = "") {
         self.viewModel = viewModel
+        self.themeService = themeService
         self.username = username
         super.init(nibName: nil, bundle: nil)
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    } */
+    required init?(coder aDecoder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //bind(viewModel: viewModel)
         setupSubViews()
+        setupTheme()
+        bind(viewModel: viewModel)
         setupConstraints()
     }
 }
 
-extension SystemPermissionViewController {
-    fileprivate func setupSubViews() {
+fileprivate extension SystemPermissionViewController {
+    func setupSubViews() {
         navigationItem.hidesBackButton = true
-        view.backgroundColor = .white
         view.addSubview(icon)
         view.addSubview(headingLabel)
         view.addSubview(subHeadingLabel)
@@ -117,8 +68,19 @@ extension SystemPermissionViewController {
         view.addSubview(thanksButton)
     }
     
-    fileprivate func setupConstraints() {
-        //TBEFixed
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.backgroundColor  )}, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primary  )}, to: [icon.rx.tintColor])
+            .bind({ UIColor($0.primaryDark  )}, to: [headingLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark  )}, to: [subHeadingLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark  )}, to: [termsDescriptionLabel.rx.textColor])
+            .bind({ UIColor($0.primary  )}, to: [termsConditionButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primary  )}, to: [thanksButton.rx.titleColor(for: .normal)])
+            .disposed(by: rx.disposeBag)
+    }
+    
+    func setupConstraints() {
         self.widthConstraint = self.permissionButton.widthAnchor.constraint(equalToConstant: 192)
         
         let iconConstraints = [
@@ -178,7 +140,7 @@ extension SystemPermissionViewController {
     
 }
 
-/*
+
 extension SystemPermissionViewController {
     
     fileprivate func bind(viewModel: SystemPermissionViewModelType?) {
@@ -210,9 +172,9 @@ extension SystemPermissionViewController {
     }
     
     private func bindDeviceToken(viewModel: SystemPermissionViewModelType) {
-        let deviceToken = appDelegate.deviceToken.share()
-        deviceToken.unwrap().map { _ in () }.bind(to: viewModel.inputs.successObserver).disposed(by: rx.disposeBag)
-        deviceToken.filter { $0 == nil }.map { _ in () }.bind(to: viewModel.inputs.onNoThanksObserver).disposed(by: rx.disposeBag)
+        //let deviceToken = appDelegate.deviceToken.share()
+        //deviceToken.unwrap().map { _ in () }.bind(to: viewModel.inputs.successObserver).disposed(by: rx.disposeBag)
+        //deviceToken.filter { $0 == nil }.map { _ in () }.bind(to: viewModel.inputs.onNoThanksObserver).disposed(by: rx.disposeBag)
     }
     
     private func bindNoThanks(viewModel: SystemPermissionViewModelType) {
@@ -251,4 +213,3 @@ extension SystemPermissionViewController {
             }).disposed(by: rx.disposeBag)
     }
 }
-*/
