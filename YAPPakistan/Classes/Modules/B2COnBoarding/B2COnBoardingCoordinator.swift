@@ -183,7 +183,11 @@ private extension B2COnBoardingCoordinator {
         let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
         let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
 
-        let enterEmailViewModel = EnterEmailViewModel(credentialsStore: container.credentialsStore, sessionProvider: sessionProvider, onBoardingRepository: onBoardingRepository, user: user)
+        let enterEmailViewModel = EnterEmailViewModel(credentialsStore: container.credentialsStore, referralManager: container.referralManager, sessionProvider: sessionProvider, onBoardingRepository: onBoardingRepository, user: user) { session, onBoardingRepository, accountProvider in
+            let sessionContainer = UserSessionContainer(parent: self.container, session: session)
+            onBoardingRepository = sessionContainer.makeOnBoardingRepository()
+            accountProvider = sessionContainer.accountProvider
+        }
         childContainerNavigation.pushViewController(EnterEmailViewController(themeService: container.themeService, viewModel: enterEmailViewModel), animated: true)
         
         enterEmailViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in

@@ -29,11 +29,13 @@ public final class YAPPakistanMainContainer {
     let configuration: YAPPakistanConfiguration
     let themeService: ThemeService<AppTheme>
     let credentialsStore: CredentialsStoreType
+    let referralManager: AppReferralManager
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
         self.themeService = AppTheme.service(initial: .light)
         self.credentialsStore = CredentialsManager()
+        self.referralManager = AppReferralManager(environment: configuration.environment)
     }
     
     public func rootCoordinator(window: UIWindow) -> AppCoordinator {

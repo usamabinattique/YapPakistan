@@ -23,14 +23,17 @@ public final class UserSessionContainer {
         self.accountProvider = AccountProvider(repository: repository)
     }
 
-    func makeWaitingListController() -> WaitingListRankViewController {
-        let referralManager = AppReferralManager(environment: parent.configuration.environment)
-
+    func makeOnBoardingRepository() -> OnBoardingRepository {
         let customersService = parent.makeCustomersService(authorizationProvider: session)
         let messagesService = parent.makeMessagesService(authorizationProvider: session)
         let onBoardingRepository = OnBoardingRepository(customersService: customersService, messagesService: messagesService)
 
-        let viewModel = WaitingListRankViewModel(accountProvider: accountProvider, referralManager: referralManager, onBoardingRepository: onBoardingRepository)
+        return onBoardingRepository
+    }
+
+    func makeWaitingListController() -> WaitingListRankViewController {
+        let onBoardingRepository = makeOnBoardingRepository()
+        let viewModel = WaitingListRankViewModel(accountProvider: accountProvider, referralManager: parent.referralManager, onBoardingRepository: onBoardingRepository)
 
         return WaitingListRankViewController(themeService: parent.themeService, viewModel: viewModel)
     }

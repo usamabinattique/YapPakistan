@@ -44,4 +44,8 @@ class OnBoardingRepository {
     func getWaitingListRanking() -> Observable<Event<WaitingListRank?>> {
         return customersService.fetchRanking().materialize()
     }
+
+    func saveReferralInvitation(inviterCustomerId: String, referralDate: String) -> Observable<Event<String?>> {
+        return customersService.saveReferralInvitation(inviterCustomerId: inviterCustomerId, referralDate: referralDate).materialize()
+    }
 }
