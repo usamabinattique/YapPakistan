@@ -71,7 +71,7 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
     private var viewModel: PhoneNumberVerificationViewModelType!
     private var themeService:ThemeService<AppTheme>!
     
-    init(themeService:ThemeService<AppTheme>, viewModel: PhoneNumberVerificationViewModelType) {
+    init(themeService:ThemeService<AppTheme>, viewModel: PhoneNumberVerificationViewModelType?) {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
@@ -83,8 +83,8 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.inputs.viewAppearedObserver.onNext(true)
-        viewModel.inputs.stageObserver.onNext(.otp)
+        viewModel?.inputs.viewAppearedObserver.onNext(true)
+        viewModel?.inputs.stageObserver.onNext(.otp)
     }
     
     override func viewDidLoad() {
@@ -98,7 +98,7 @@ class PhoneNumberVerificationViewController: OnBoardinContainerChildViewControll
     }
     
     override func didPopFromNavigationController() {
-        viewModel.inputs.poppedObserver.onNext(())
+        viewModel?.inputs.poppedObserver.onNext(())
     }
 
 }
@@ -158,6 +158,8 @@ extension PhoneNumberVerificationViewController {
 
 private extension PhoneNumberVerificationViewController {
     func bindViews() {
+        guard let viewModel = viewModel else { return }
+        
         codeTextField.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.timerText.bind(to: timerLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.phoneNumber.bind(to: subHeadingLabel.rx.text).disposed(by: rx.disposeBag)

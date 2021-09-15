@@ -30,8 +30,8 @@ class WelcomeViewController: UIViewController {
         return button
     }()
     
-    fileprivate lazy var pageControl: RxAppPageControl = {
-        let pageControl = RxAppPageControl()
+    fileprivate lazy var pageControl: AppPageControl = {
+        let pageControl = AppPageControl()
         pageControl.pages = 3
         return pageControl
     }()

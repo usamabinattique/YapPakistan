@@ -10,7 +10,7 @@ import RxCocoa
 import RxSwift
 import YAPComponents
 
-extension Reactive where Base: UIAppSwitch {
+extension Reactive where Base: AppSwitch {
     /// Reactive wrapper for `isOn` property.
     var isOn: ControlProperty<Bool> {
         return value

@@ -19,8 +19,8 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
     
     private lazy var mobileNumber = UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage: UIImage(named: "icon_invalid", in: .yapPakistan), leftIcon: nil, displaysIcon:true, returnKeyType:.send, autocorrectionType:.no, keyboardType:.asciiCapableNumberPad, delegate:self)
     
-    private lazy var countryPicker: RxAppPickerView = {
-        return RxAppPickerView()
+    private lazy var countryPicker: AppPickerView = {
+        return AppPickerView()
     }()
     
     private lazy var countryTextField: UITextField = {
