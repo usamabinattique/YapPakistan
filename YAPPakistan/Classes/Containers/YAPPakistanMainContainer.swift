@@ -78,6 +78,27 @@ public final class YAPPakistanMainContainer {
                                authorizationProvider: authorizationProvider)
     }
 
+    func makeOnBoardingRepository(xsrfToken: String) -> OnBoardingRepository {
+        let customersService = makeCustomersService(xsrfToken: xsrfToken)
+        let messagesService = makeMessagesService(xsrfToken: xsrfToken)
+        let onBoardingRepository = OnBoardingRepository(customersService: customersService, messagesService: messagesService)
+
+        return onBoardingRepository
+    }
+
+    func makeEnterEmailController(xsrfToken: String, user: OnBoardingUser) -> EnterEmailViewController {
+        let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
+        let onBoardingRepository = makeOnBoardingRepository(xsrfToken: xsrfToken)
+
+        let enterEmailViewModel = EnterEmailViewModel(credentialsStore: credentialsStore, referralManager: referralManager, sessionProvider: sessionProvider, onBoardingRepository: onBoardingRepository, user: user) { session, onBoardingRepository, accountProvider in
+            let sessionContainer = UserSessionContainer(parent: self, session: session)
+            onBoardingRepository = sessionContainer.makeOnBoardingRepository()
+            accountProvider = sessionContainer.accountProvider
+        }
+
+        return EnterEmailViewController(themeService: themeService, viewModel: enterEmailViewModel)
+    }
+
     func makeWaitingListController(session: Session) -> WaitingListRankViewController {
         let sessionContainer = UserSessionContainer(parent: self, session: session)
         return sessionContainer.makeWaitingListController()

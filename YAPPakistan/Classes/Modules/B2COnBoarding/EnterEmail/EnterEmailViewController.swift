@@ -27,7 +27,7 @@ class EnterEmailViewController: OnBoardinContainerChildViewController {
     
     override var firstReponder: UITextField? { email }
     
-    fileprivate var viewModel: EnterEmailViewModelType!
+    var viewModel: EnterEmailViewModelType!
     fileprivate var themeService:ThemeService<AppTheme>!
     fileprivate var onBoardingStage: OnboardingStage = .email
     
