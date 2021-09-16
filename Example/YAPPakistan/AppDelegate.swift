@@ -58,22 +58,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         adjustConfig.logLevel = ADJLogLevelVerbose
         #endif
 
-        let bundle = Bundle.main
-
-        guard let sdkSignature = bundle.object(forInfoDictionaryKey: "AdjustSDKSignature") as? String else {
-            Adjust.appDidLaunch(adjustConfig)
-            return
-        }
-
-        let signatureComponents = sdkSignature.components(separatedBy: ",").compactMap{ UInt($0) }
-
-        guard signatureComponents.count >= 5 else {
-            Adjust.appDidLaunch(adjustConfig)
-            return
-        }
-
-        adjustConfig.setAppSecret(signatureComponents[0], info1: signatureComponents[1], info2: signatureComponents[2], info3: signatureComponents[3], info4: signatureComponents[4])
-
         Adjust.appDidLaunch(adjustConfig)
     }
 }
