@@ -299,9 +299,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                 self?.user.iban = $0.iban
                 self?.user.isWaiting = $0.isWaiting
             })
-            .map { [weak self] _ in self?.user }
-            .unwrap()
-            .bind(to: deviceRegistrationSubject)
+            .subscribe()
             .disposed(by: disposeBag)
     }
 }
