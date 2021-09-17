@@ -45,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func configureAdjust() {
-        let adjustAppToken = "pa4xup5ybrwg"
+        let adjustAppToken = AppConstants.Adjust.appToken
 
         var environment = ADJEnvironmentProduction
         #if DEBUG
