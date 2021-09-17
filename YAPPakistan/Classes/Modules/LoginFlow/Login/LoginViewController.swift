@@ -163,52 +163,37 @@ fileprivate extension LoginViewController {
     
     func setupConstraints() {
         
-        let constraints = [
-            topImage.topAnchor.constraint(equalTo: view.topAnchor),
-            topImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            topImage.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            logo.bottomAnchor.constraint(equalTo: topImage.bottomAnchor, constant: -5),
-            logo.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-            headingLabel.topAnchor.constraint(equalTo: logo.bottomAnchor, constant: 32),
-            headingLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 19),
-            headingLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -19),
-            headingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            mobileNumber.topAnchor.constraint(equalTo: headingLabel.bottomAnchor, constant: 32),
-            mobileNumber.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 19),
-            mobileNumber.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -19),
-            mobileNumber.heightAnchor.constraint(equalToConstant: 86),
-            
-            stackView.topAnchor.constraint(equalTo: mobileNumber.bottomAnchor, constant: 10),
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            signInButton.topAnchor.constraint(greaterThanOrEqualTo: stackView.bottomAnchor, constant: 15),
-            signInButton.heightAnchor.constraint(equalToConstant: 52),
-            signInButton.widthAnchor.constraint(equalToConstant: 192),
-            signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            signUpLabel.topAnchor.constraint(equalTo: signUpContainer.topAnchor),
-            signUpLabel.bottomAnchor.constraint(equalTo: signUpContainer.bottomAnchor),
-            signUpLabel.leftAnchor.constraint(equalTo: signUpContainer.leftAnchor),
-            
-            signUpButton.topAnchor.constraint(equalTo: signUpContainer.topAnchor),
-            signUpButton.bottomAnchor.constraint(equalTo: signUpContainer.bottomAnchor),
-            signUpButton.rightAnchor.constraint(equalTo: signUpContainer.rightAnchor),
-            signUpButton.leftAnchor.constraint(equalTo: signUpLabel.rightAnchor, constant: 5),
-            
-            signUpContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-            signUpContainer.heightAnchor.constraint(equalToConstant: 24),
-            signUpContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            // Constraints with class level reference
-            signUpContainer.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 20)
-        ]
+        topImage.alignEdgesWithSuperview([.top, .left, .right])
         
-        signInButtonBottomConstraint = constraints[constraints.count - 1]
+        logo.alignEdge(.bottom, withView: topImage, constant: 3)
+            .centerHorizontallyInSuperview()
         
-        NSLayoutConstraint.activate(constraints)
+        headingLabel.toBottomOf(logo ,constant: 32)
+            .alignEdgesWithSuperview([.left, .right], constant: 19)
+            .centerHorizontallyInSuperview()
+        
+        mobileNumber.toBottomOf(headingLabel, constant: 32)
+            .alignEdgesWithSuperview([.right, .left], constant: 19)
+            .height(constant: 86)
+        
+        stackView.toBottomOf(mobileNumber, constant: 10)
+            .centerHorizontallyInSuperview()
+        
+        signInButton.toBottomOf(stackView, .greaterThanOrEqualTo, constant: 15)
+            .height(constant: 52)
+            .width(constant: 192)
+            .centerHorizontallyInSuperview()
+        
+        signUpLabel.alignEdgesWithSuperview([.top, .bottom, .left])
+        
+        signUpButton.alignEdgesWithSuperview([.top, .bottom, .right])
+            .toRightOf(signUpLabel, constant: 5)
+        
+        signUpContainer.alignEdgeWithSuperviewSafeArea(.bottom, constant: 30)
+            .height(constant: 24)
+            .centerHorizontallyInSuperview()
+            .toBottomOf(signInButton, constant: 20, assignTo: &signInButtonBottomConstraint)
+        
     }
 }
 

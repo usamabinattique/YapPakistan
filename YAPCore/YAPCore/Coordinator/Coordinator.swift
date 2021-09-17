@@ -25,8 +25,6 @@ open class Coordinator<T>:NSObject, CoordinatorType {
     /// Key is an `identifier` of the child coordinator and value is the coordinator itself.
     /// Value type is `Any` because Swift doesn't allow to store generic types in the array.
     private var childCoordinators:[UUID: Any] = [:]
-    
-    deinit { debugPrint("==================\(Self.className)_Deinited=================") }
 
     //MARK: Confirmation of CoordinatorType
     public func coordinate<ResultType>(
