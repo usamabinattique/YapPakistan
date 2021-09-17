@@ -22,8 +22,7 @@ class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel = ReachedQueueTopViewModel()
-        let viewController = ReachedQueueTopViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewController = container.makeReachedQueueTopViewController()
 
         root = UINavigationController(rootViewController: viewController)
         root.interactivePopGestureRecognizer?.isEnabled = false
