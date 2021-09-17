@@ -15,13 +15,13 @@ public protocol XSRFServiceType {
     func fetchXSRFToken() -> Observable<Bool>
 }
 public class XSRFService: XSRFServiceType  {
-    
+
     private let apiClient: APIClient
-    
+
     public init(apiClient: APIClient = WebClient()) {
         self.apiClient = apiClient
     }
-    
+
     func request(apiClient: APIClient, route: YAPURLRequestConvertible) -> Observable<Bool> {
         let route = XSRFRouter.xsrf
         let response = apiClient.request(route: route)
@@ -37,19 +37,19 @@ public class XSRFService: XSRFServiceType  {
             }
         }
     }
-    
+
     func upload<T>(apiClient: APIClient,
                    documents: [DocumentDataConvertible],
                    route: YAPURLRequestConvertible,
                    progressObserver: AnyObserver<Progress>) -> Observable<Event<T>> where T: Decodable, T: Encodable {
         return Observable.never()
     }
-    
+
     public func fetchXSRFToken() -> Observable<Bool> {
         let route = XSRFRouter.xsrf
         return request(apiClient: apiClient, route: route)
     }
-    
+
     func validateXSRFResponse(_ response: APIResponseConvertible) throws {
         switch response.code {
         case 200 ... 299:

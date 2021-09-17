@@ -18,10 +18,10 @@ public enum NetworkingError: LocalizedError {
     case serverError(Int, String)
     case authError(NetworkingAuthError?)
     case unknown
-    
+
     public static func fromWebClientError(_ webClientError: WebClientError?) -> NetworkingError? {
         guard  let `webClientError` = webClientError else { return nil }
-        
+
         switch webClientError {
         case .noInternet:
             return .noInternet
@@ -34,7 +34,7 @@ public enum NetworkingError: LocalizedError {
         case .forbidden:
             return .forbidden
         case .internalServerError(let error):
-            return .internalServerError(NetworkingInternalServerError(errors: error?.errors.map { NetworkingServerError(code: $0.code, message: $0.message)} ?? []))
+            return .internalServerError(NetworkingInternalServerError(errors: error?.errors.map { NetworkingServerError(code: $0.code, message: $0.message) } ?? []))
         case .serverError(let code, let message):
             return .serverError(code, message)
         case .authError(let error):

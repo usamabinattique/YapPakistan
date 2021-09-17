@@ -10,7 +10,7 @@ import Foundation
 
 public struct ProfilePhotoResponse: Codable {
     public let imageUrl: URL
-    
+
     enum CodingKeys: String, CodingKey {
         case imageUrl = "imageURL"
     }

@@ -32,10 +32,10 @@ public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
         self.apiClient = apiClient
         self.authorizationProvider = authorizationProvider
     }
-    
+
     public func reauthenticate<T: Codable>(token: String) -> Observable<T> {
         let params = ["grant_type": "refresh", "id_token": token]
-        let input: RouterInput<[String:String]> = RouterInput(body: params, query: nil, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)
+        let input: RouterInput<[String: String]> = RouterInput(body: params, query: nil, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)
         let authRoute = AuthRouter.reauthenticate(input)
         return request(apiClient: apiClient, route: authRoute)
     }
@@ -46,7 +46,7 @@ public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
         let authRoute = AuthRouter.authenticate(input)
         return request(apiClient: apiClient, route: authRoute)
     }
-    
+
     public func saveProfile<T: Codable>(firstName: String,
                                         lastName: String,
                                         email: String,
@@ -54,14 +54,14 @@ public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
                                         countryCode: String, phone: String, passcode: String, accountType: String, token: String?) -> Observable<T> {
         Observable.empty()
     }
-    
+
     func switchToken<T: Codable>(uuid: String) -> Observable<T> {
         let params = ["account_uuid": uuid]
         let input: RouterInput<Int> = RouterInput(body: nil, query: params, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)
         let authRoute = AuthRouter.switchToken(input)
         return request(apiClient: apiClient, route: authRoute)
     }
-    
+
     public func logout<T: Codable>(deviceUUID: String) -> Observable<T> {
         let params = ["uuid": deviceUUID]
         let input: RouterInput<Int> = RouterInput(body: nil, query: params, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)

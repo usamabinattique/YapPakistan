@@ -55,7 +55,7 @@ class ReferredFriendCell: UITableViewCell {
     }
 
     // MARK: View Setup
-    
+
     private func setupViews() {
         contentView.addSubview(initialsImageView)
         contentView.addSubview(nameLabel)

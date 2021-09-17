@@ -103,7 +103,7 @@ extension RankView {
 
         return createDigitString("0" + string)
     }
-    
+
     func createLabels(_ string: String) -> [String] {
         let number = (Int(string) ?? 0) - 1 /// add an extra value for bouncing effect
         var array: [String] = []

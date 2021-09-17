@@ -38,20 +38,20 @@ protocol OnBoardingContainerViewModelType {
 }
 
 class OnBoardingContainerViewModel: OnBoardingContainerViewModelInput, OnBoardingContainerViewModelOutput, OnBoardingContainerViewModelType {
-    
+
     var inputs: OnBoardingContainerViewModelInput { return self }
     var outputs: OnBoardingContainerViewModelOutput { return self }
-    
+
     private let sendSubject = PublishSubject<OnboardingStage>()
     private let validSubject = PublishSubject<Bool>()
     private let activeStageSubject = BehaviorSubject<OnboardingStage>(value: .none)
-    
-    //inputs
+
+    // inputs
     var sendObserver: AnyObserver<OnboardingStage> { return sendSubject.asObserver() }
     var validObserver: AnyObserver<Bool> { return validSubject.asObserver() }
     var activeStageObserver: AnyObserver<OnboardingStage> { return activeStageSubject.asObserver() }
-    
-    //outputs
+
+    // outputs
     var send: Observable<OnboardingStage> { return sendSubject.asObservable() }
     var valid: Observable<Bool> { return validSubject.asObservable() }
     var activeStage: Observable<OnboardingStage> { return activeStageSubject.asObservable() }

@@ -13,36 +13,36 @@ public extension String {
     subscript(i: Int) -> String {
         return String(self[index(startIndex, offsetBy: i)])
     }
-    
+
     var initials: String {
-        
+
         let words = components(separatedBy: .whitespacesAndNewlines)
-        
-        //to identify letters
+
+        // to identify letters
         let letters = CharacterSet.letters
         var firstChar: String = ""
         var secondChar: String = ""
         var firstCharFoundIndex: Int = -1
         var firstCharFound: Bool = false
         var secondCharFound: Bool = false
-        
+
         for (index, item) in words.enumerated() {
-            
+
             if item.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 continue
             }
-            //browse through the rest of the word
+            // browse through the rest of the word
             for (_, char) in item.unicodeScalars.enumerated() {
-                //check if its a aplha
+                // check if its a aplha
                 if letters.contains(char) {
-                    
+
                     if !firstCharFound {
                         firstChar = String(char)
                         firstCharFound = true
                         firstCharFoundIndex = index
-                        
+
                     } else if !secondCharFound {
-                        
+
                         secondChar = String(char)
                         if firstCharFoundIndex != index {
                             secondCharFound = true
@@ -58,36 +58,36 @@ public extension String {
             firstChar = "Y"
             secondChar = "P"
         }
-        
+
         return firstChar + secondChar
     }
-    
+
     var isNumeric: Bool {
         return !isEmpty && rangeOfCharacter(from: NSCharacterSet.decimalDigits.inverted) == nil
     }
-    
+
     var isPhoneNumberType: Bool {
         return !isEmpty && range(of: "[^0-9+]", options: .regularExpression) == nil
     }
-    
+
     var isEmailType: Bool {
         return !isEmpty && range(of: "[^a-zA-Z0-9.@]", options: .regularExpression) == nil
     }
-    
+
     var isAlphanumeric: Bool {
         return !isEmpty && range(of: "[^a-zA-Z0-9]", options: .regularExpression) == nil
     }
-    
+
     var isHexString: Bool {
         let hexCharSet = CharacterSet(charactersIn: "0123456789ABCDEF").inverted
         return uppercased().rangeOfCharacter(from: hexCharSet) == nil
     }
-    
-    ///var doubleValue: Double {
+
+    /// var doubleValue: Double {
     ///    let number = localeNumberFormatter.number(from: self) ?? 0
     ////        return Double(exactly: number) ?? 0
     ////    }
-    
+
     var serverReadableDateFormate: String {
         let inputFormatter = DateFormatter()
         inputFormatter.dateFormat = "dd/MM/yyyy"
@@ -95,7 +95,7 @@ public extension String {
         inputFormatter.dateFormat = "yyyy-MM-dd"
         return inputFormatter.string(from: showDate!)
     }
-    
+
 }
 
 public extension String {
@@ -106,10 +106,10 @@ public extension String {
         var components = formattedPhoneNumber.components(separatedBy: " ")
         countryCode = components.first?.replacingOccurrences(of: "+", with: "00")
         components.removeFirst()
-        number = components.joined(separator: "")
+        number = components.joined()
         return (countryCode ?? "invalid code", number ?? "invalid number")
     }
-    
+
     static func format(phoneNumber phone: String) -> String {
         do {
             let phoneNumberKit = PhoneNumberKit()
@@ -121,31 +121,31 @@ public extension String {
         }
         return phone
     }
-    
-    func initialsImage(color: UIColor, font:UIFont, size: CGSize = CGSize(width: 200, height: 200)) -> UIImage {
+
+    func initialsImage(color: UIColor, font: UIFont, size: CGSize = CGSize(width: 200, height: 200)) -> UIImage {
         return initialsImage(backgroundColor: color.withAlphaComponent(0.15), font: font, textColor: color, size: size)
     }
-    
-    func initialsImage(backgroundColor: UIColor, font:UIFont, textColor: UIColor, size: CGSize = CGSize(width: 200, height: 200)) -> UIImage {
+
+    func initialsImage(backgroundColor: UIColor, font: UIFont, textColor: UIColor, size: CGSize = CGSize(width: 200, height: 200)) -> UIImage {
         let nameLabel = UILabel()
         nameLabel.frame.size = size
         nameLabel.textColor = textColor
-        
+
         let comps = components(separatedBy: .whitespaces).filter({ !$0.isEmpty })
         nameLabel.text = comps.count > 1 ? [comps.first?.first?.uppercased(), comps.last?.first?.uppercased()].compactMap({ $0 }).joined() : comps.first?.first?.uppercased()
-        //nameLabel.font = UIFont.appFont(ofSize: 32 * (size.height/100), weight: .semibold, theme: .main)
+        // nameLabel.font = UIFont.appFont(ofSize: 32 * (size.height/100), weight: .semibold, theme: .main)
         nameLabel.textAlignment = NSTextAlignment.center
         nameLabel.backgroundColor = backgroundColor
-        
+
         UIGraphicsBeginImageContext(nameLabel.frame.size)
         nameLabel.layer.render(in: UIGraphicsGetCurrentContext()!)
-        
+
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        
+
         guard let data = newImage?.jpegData(compressionQuality: 1.0) else { return newImage! }
-        
-        return UIImage.init(data: data)!
+
+        return UIImage(data: data)!
     }
 }
 
@@ -154,23 +154,23 @@ public extension String {
         if count == 0 {
             return ""
         }
-        let f: String.Index = index(startIndex, offsetBy: from < count ? from : count-1)
+        let f: String.Index = index(startIndex, offsetBy: from < count ? from : count - 1)
         let t: String.Index = index(startIndex, offsetBy: to <= count ? to : count)
         return String(self[f..<t])
     }
-    
+
     func replace(string: String, replacement: String) -> String {
         return self.replacingOccurrences(of: string, with: replacement, options: String.CompareOptions.literal, range: nil)
     }
-    
+
     func removeWhitespace() -> String {
         return self.replace(string: " ", replacement: "")
     }
-    
+
     func removePlus() -> String {
         return self.replace(string: "+", replacement: "").removeWhitespace()
     }
-    
+
     /*func removingGroupingSeparator() -> String {
         return self.replace(string: localeNumberFormatter.currencyGroupingSeparator, replacement: "")
     }
@@ -178,20 +178,20 @@ public extension String {
     func replacingDecimalSeparator() -> String {
         return self.replace(string: ".", replacement: localeNumberFormatter.currencyDecimalSeparator)
     } */
-    
+
     var formattedDateString: String {
         guard self.count != 19 else { return self }
-        
+
         if self.count > 19 {
             return self.subString(0, length: 19)
         }
-        
+
         if self.count == 16 {
             return self + ":00"
         }
-        
+
         return self
-        
+
     }
 }
 
@@ -209,7 +209,6 @@ public extension String {
     }
 }
 
-
 public extension String {
-    static var empty:Self { return "" }
+    static var empty: Self { return "" }
 }

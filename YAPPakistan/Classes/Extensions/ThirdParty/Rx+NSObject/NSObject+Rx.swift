@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import ObjectiveC
 
-fileprivate var disposeBagContext: UInt8 = 0
+private var disposeBagContext: UInt8 = 0
 
 extension Reactive where Base: AnyObject {
     func synchronizedBag<T>( _ action: () -> T) -> T {
@@ -27,7 +27,7 @@ public extension Reactive where Base: AnyObject {
                 return disposeObject
             }
         }
-        
+
         set {
             synchronizedBag {
                 objc_setAssociatedObject(base, &disposeBagContext, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)

@@ -101,7 +101,7 @@ class ReferredFriendsViewController: UIViewController {
             .alignEdgeWithSuperview(.top, constant: 12)
             .centerHorizontallyInSuperview()
             .width(constant: 60)
-            .height(constant:4)
+            .height(constant: 4)
 
         titleLabel
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])

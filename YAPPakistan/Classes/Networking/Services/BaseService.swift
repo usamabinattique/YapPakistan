@@ -19,7 +19,7 @@ public class BaseService: Service {
     let apiClient: APIClient
     let apiConfig: APIConfiguration
     let authorizationProvider: ServiceAuthorizationProviderType
-    
+
     // MARK: INITIALIZER
     public init(apiClient: APIClient = WebClient(),
                 apiConfig: APIConfiguration,
@@ -28,14 +28,14 @@ public class BaseService: Service {
         self.apiConfig = apiConfig
         self.authorizationProvider = authorizationProvider
     }
-    
+
     private var serverReadableDateTimeFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
         formatter.timeZone = TimeZone(abbreviation: "UTC")
         return formatter
     }
-    
+
     public func request<T: Codable>(apiClient: APIClient, route: YAPURLRequestConvertible) -> Observable<T> {
         return apiClient.request(route: route)
             .map { apiResonse -> APIResponseConvertible in
@@ -44,7 +44,7 @@ public class BaseService: Service {
                 }
                 return apiResonse
             }.retry { errorObservable -> Observable<Void> in
-                
+
                 errorObservable.map { error -> Void in
                     if case NetworkErrors.authError = error {
                         let notification = Notification(name: Notification.Name(rawValue: "authentication_required"))
@@ -62,7 +62,7 @@ public class BaseService: Service {
                 }
             }
     }
-    
+
     public func upload<T>(apiClient: APIClient,
                           documents: [DocumentDataConvertible],
                           route: YAPURLRequestConvertible,
@@ -79,7 +79,7 @@ public class BaseService: Service {
                 if case NetworkErrors.authError = error { return true }
                 throw error
             }.flatMap { _ in
-                Observable.of(Notification(name: Notification.Name(rawValue: "authentication_required"))).do(onNext: { notification in NotificationCenter.default.post(notification)}).map { _ in  }
+                Observable.of(Notification(name: Notification.Name(rawValue: "authentication_required"))).do(onNext: { notification in NotificationCenter.default.post(notification) }).map { _ in }
             }
         }
         .map { apiResponse -> T in
@@ -91,7 +91,7 @@ public class BaseService: Service {
             }
         }
     }
-    
+
     func decode<T: Codable>(data: Data) throws -> T {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(serverReadableDateTimeFormatter)

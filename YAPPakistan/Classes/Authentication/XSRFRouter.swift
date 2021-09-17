@@ -10,14 +10,14 @@ import Foundation
 
 enum XSRFRouter: YAPURLRequestConvertible {
     case xsrf
-    
+
     private var path: String {
         switch self {
         case .xsrf:
             return "/auth/login"
         }
     }
-    
+
     func asURLRequest() throws -> URLRequest {
         let url = BaseURL.appendingPathComponent(self.path)
         var urlRequest = URLRequest(url: url)

@@ -11,7 +11,7 @@ import PhoneNumberKit
 // swiftlint:disable identifier_name
 public struct Customer: Codable {
     public var email: String { _email ?? "" }
-    
+
     public let uuid: String
     let _email: String?
     public let countryCode: String?
@@ -30,11 +30,11 @@ public struct Customer: Codable {
     public let homeCountry: String?
     public let founder: Bool?
     public let customerColor: String?
-    
+
     public var isFounder: Bool {
         founder ?? false
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case uuid, countryCode, mobileNo, firstName, lastName, companyName, emailVerified, mobileNoVerified, status, dob, passportNo, nationality, customerId, homeCountry, customerColor
         case _email = "email"
@@ -96,8 +96,8 @@ public extension Customer {
         let mobileNumber = (countryCode ?? "") + mobileNo
         return formatePhoneNumber(mobileNumber).phoneNumber
     }
-    
-    //var accentColor: UIColor { customerColor.map { UIColor.init(hexString: $0) } ?? .primary }
+
+    // var accentColor: UIColor { customerColor.map { UIColor.init(hexString: $0) } ?? .primary }
 }
 
 private extension Customer {

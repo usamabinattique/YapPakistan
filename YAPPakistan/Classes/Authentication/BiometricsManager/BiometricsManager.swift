@@ -28,46 +28,46 @@ extension BiometryType {
 }
 
 public class BiometricsManager {
-    
+
     private let context: LAContext = LAContext()
 
     public init() {
         guard deviceBiometryType == .none else { return }
         setBiometryPermission(isPrompt: false, phone: "", email: "")
     }
-    
+
     public func isBiometryPermissionPrompt(for username: String) -> Bool {
         return  UserDefaults.standard.bool(forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + username)
     }
-    
+
     public func setBiometryPermission(isPrompt: Bool, phone: String, email: String) {
         UserDefaults.standard.set(isPrompt, forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + phone)
         UserDefaults.standard.set(isPrompt, forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + email)
     }
-    
+
     public func isBiometryEnabled(for username: String) -> Bool {
        return  UserDefaults.standard.bool(forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + username)
     }
-    
+
     public func setBiometry(isEnabled: Bool, phone: String, email: String) {
         UserDefaults.standard.set(isEnabled, forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + phone)
         UserDefaults.standard.set(isEnabled, forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + email)
     }
-    
+
     public func deleteBiometryForUser(username: String) {
         UserDefaults.standard.removeObject(forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + username)
         UserDefaults.standard.removeObject(forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + username)
     }
-    
+
     public var isBiometrySupported: Bool {
         deviceBiometryType != .none
     }
-    
+
     public var deviceBiometryTypeString: String? {
         let type = deviceBiometryType
         return type.title
     }
-    
+
     public var deviceBiometryType: BiometryType {
         var type: BiometryType = .none
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil) {
@@ -75,7 +75,7 @@ public class BiometricsManager {
         }
         return type
     }
-    
+
     public func canAuthenticateWithBiomatircs() -> Observable<Void> {
         return Observable<Void>.create { [unowned self] observer in
             var error: NSError?
@@ -85,7 +85,7 @@ public class BiometricsManager {
                 observer.onError(error ?? NSError(domain: "com.apple.LocalAuthentication", code: -100, userInfo: nil))
             }
             return Disposables.create()
-            }
+        }
     }
 
     // TODO: AppTranslation.shared.translation(forKey: "screen_verify_passcode_display_text_biometrics_reason")
@@ -104,7 +104,7 @@ public class BiometricsManager {
                     }
                 }
                 return Disposables.create()
-                }
+            }
                 .observe(on: MainScheduler.instance)
         }
     }

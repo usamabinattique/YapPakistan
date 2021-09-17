@@ -5,21 +5,20 @@
 //  Created by Abbas on 06/06/2021.
 //
 
-
 import Foundation
 import RxSwift
 import RxCocoa
-//import IQKeyboardManagerSwift
-//import NVActivityIndicatorView
-//import RxViewController
+// import IQKeyboardManagerSwift
+// import NVActivityIndicatorView
+// import RxViewController
 import RxOptional
 import RxGesture
 import SwifterSwift
 import RxTheme
-//import Toast_Swift
-//import Firebase
-//import Kingfisher
-//import KafkaRefresh
+// import Toast_Swift
+// import Firebase
+// import Kingfisher
+// import KafkaRefresh
 
 /// The manager class for configuring all libraries used in app.
 class LibsManager: NSObject {
@@ -27,27 +26,25 @@ class LibsManager: NSObject {
     /// Singleton instance.
     static let shared = LibsManager()
 
-
     private override init() { super.init() }
 
     func setupLibs(with window: UIWindow? = nil) {
         let libsManager = LibsManager.shared
         libsManager.setupTheme()
-        //libsManager.setupKeyboardManager()
-        //libsManager.setupToast()
-        //libsManager.setupAnalytics()
-        //libsManager.setupKingfisher()
-        //libsManager.setupKafkaRefresh()
+        // libsManager.setupKeyboardManager()
+        // libsManager.setupToast()
+        // libsManager.setupAnalytics()
+        // libsManager.setupKingfisher()
+        // libsManager.setupKafkaRefresh()
     }
-    
-    
+
     func setupTheme() {
         /*
         themeService.rx
             .bind({ _ in UIStatusBarStyle.default }, to: UIApplication.shared.rx.statusBarStyle)
             .disposed(by: rx.disposeBag)
          */
-        //UIApplication.shared.theme.statusBarStyle = themed{ $0.statusBarStyle }
+        // UIApplication.shared.theme.statusBarStyle = themed{ $0.statusBarStyle }
     }
     /*
     
@@ -97,4 +94,3 @@ class LibsManager: NSObject {
     }
     */
 }
-

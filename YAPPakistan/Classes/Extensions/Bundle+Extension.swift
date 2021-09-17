@@ -8,7 +8,7 @@
 import Foundation
 
 public extension Bundle {
-    private class YAPPakistanBundle {   }
+    private class YAPPakistanBundle {  }
     static var yapPakistan: Bundle {
         Bundle(for: YAPPakistanBundle.self)
     }

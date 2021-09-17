@@ -12,7 +12,7 @@ import RxSwift
 public class GuestServiceAuthorization: ServiceAuthorizationProviderType {
     public var xsrf: String
     private let tokenSubject: BehaviorSubject<String>!
-    public var tokenObserver: AnyObserver<String> {  tokenSubject.asObserver()  }
+    public var tokenObserver: AnyObserver<String> { tokenSubject.asObserver() }
     private let disposeBag = DisposeBag()
     public init(xsrf: String) {
         self.xsrf = xsrf

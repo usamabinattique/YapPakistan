@@ -10,9 +10,8 @@ import Foundation
 import RxSwift
 import Alamofire
 
-
 public struct TransactionsClient: APIClient {
-    
+
     public init() { }
     public func upload(documents: [DocumentDataConvertible],
                        route: YAPURLRequestConvertible,
@@ -114,7 +113,7 @@ public struct TransactionsClient: APIClient {
               }
             }
             """
-        
+
         return Observable.of(APIResponse(code: 200, data: response.data(using: .utf8)!))
     }
     // swiftlint:enable function_body_length

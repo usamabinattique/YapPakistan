@@ -242,7 +242,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
 
         keyboardNextSubject.withLatestFrom(validSubject)
             .filter { $0 }
-            .map {_ in OnboardingStage.email }
+            .map { _ in OnboardingStage.email }
             .bind(to: sendSubject)
             .disposed(by: disposeBag)
 
@@ -259,7 +259,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         sharedDemographics.map { _ in  "screen_email_verification_display_text_title".localized }
             .bind(to: headingSubject)
             .disposed(by: disposeBag)
-        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? 1.0 : 0.285}
+        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? 1.0 : 0.285 }
             .bind(to: progressSubject)
             .disposed(by: disposeBag)
 
@@ -280,7 +280,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
 private extension EnterEmailViewModel {
     var b2cCofirmationText: String {
         return String(format: "%@, %@ %@\n\n%@",
-                      user.firstName ?? "",  "screen_email_verification_b2c_display_text_email_sent".localized, user.email ?? "",
+                      user.firstName ?? "", "screen_email_verification_b2c_display_text_email_sent".localized, user.email ?? "",
                       "screen_email_verification_b2c_display_text_email_confirmation".localized)
     }
 

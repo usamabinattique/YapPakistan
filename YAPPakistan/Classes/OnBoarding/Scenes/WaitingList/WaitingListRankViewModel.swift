@@ -66,7 +66,7 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
 
     var getRanking: AnyObserver<Bool> { getRankingSubject.asObserver() }
     var firstVideoEnded: AnyObserver<Void> { firstVideoEndedSubject.asObserver() }
-    
+
     // MARK: Outputs
 
     var loading: Observable<Bool> { loadingSubject.asObservable() }

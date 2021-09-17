@@ -47,7 +47,7 @@ protocol PhoneNumberViewModelType {
 class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutput, PhoneNumberViewModelType {
     var inputs: PhoneNumberViewModelInput { return self }
     var outputs: PhoneNumberViewModelOutput { return self }
-    
+
     private let textSubject = BehaviorSubject<NSAttributedString?>(value: NSAttributedString(string: ""))
     private let textObserverSubject = PublishSubject<String?>()
     private let validationSubject = BehaviorSubject<AppRoundedTextFieldValidation>(value: .neutral)
@@ -66,7 +66,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     private let progressSubject = PublishSubject<Float>()
     private let stageSubject = PublishSubject<OnboardingStage>()
     private let poppedSubject = PublishSubject<Void>()
-    
+
     // inputs
     var textObserver: AnyObserver<String?> { return textObserverSubject.asObserver() }
     var iconTapObserver: AnyObserver<Void> { return iconTapSubject.asObserver() }
@@ -76,7 +76,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     var viewAppearedObserserver: AnyObserver<Bool> { return viewAppearedSubject.asObserver() }
     var stageObserver: AnyObserver<OnboardingStage> { return stageSubject.asObserver() }
     var poppedObserver: AnyObserver<Void> { return poppedSubject.asObserver() }
-    
+
     // outputs
     var text: Observable<NSAttributedString?> { return textSubject.asObservable() }
     var inputValidation: Observable<AppRoundedTextFieldValidation> { return validationSubject.asObservable() }
@@ -90,7 +90,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     var endEditting: Observable<Bool> { return endEdittingSubject.asObservable() }
     var progress: Observable<Float> { return progressSubject.asObservable() }
     var stage: Observable<OnboardingStage> { return stageSubject.asObservable() }
-    
+
     private var countryList = [(name: String, code: String, callingCode: String, flag: UIImage?)]()
     private let disposeBag = DisposeBag()
     private var currentItem = 0
@@ -98,7 +98,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     private var isFormatted = false
     private var user: OnBoardingUser!
     private let repository: OnBoardingRepository
-    
+
     init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser) {
         self.repository = onBoardingRepository
         self.user = user
@@ -107,15 +107,15 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
 
         iconSubject.onNext(countryList.first?.flag)
         textSubject.onNext(self.attributed(text: countryList.first?.callingCode ?? ""))
-        
+
         countriesSubject.onNext(countryList.map { $0.name })
         countrySelectionSubject.map { _ in false }.bind(to: validSubject).disposed(by: disposeBag)
         countrySelectionSubject.map { [unowned self] index in self.attributed(text: self.countryList[index].callingCode) }.bind(to: textSubject).disposed(by: disposeBag)
         countrySelectionSubject.do(onNext: { [unowned self] in self.currentItem = $0 }).map { [unowned self] index in self.countryList[index].flag }.bind(to: iconSubject).disposed(by: disposeBag)
-        
+
         let formattedText = textObserverSubject.do(onNext: {[unowned self] in
             self.user.mobileNo.formattedValue = $0})
-            .map { [unowned self] in self.formatePhoneNumber($0 ?? "")}
+            .map { [unowned self] in self.formatePhoneNumber($0 ?? "") }
             .do(onNext: { [unowned self] in
                     self.isFormatted = $0.formatted}
             )
@@ -126,17 +126,17 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         }.bind(to: validSubject).disposed(by: disposeBag)
         formattedText.map { $0.formatted ? .valid : .neutral }.bind(to: validationSubject).disposed(by: disposeBag)
         formattedText.map { [unowned self] in self.attributed(text: $0.phoneNumber) }.bind(to: textSubject).disposed(by: disposeBag)
-        
-        textWillChangeSubject.do(onNext: { [unowned self] (text, range, currentText) in
+
+        textWillChangeSubject.do(onNext: { [unowned self] text, range, currentText in
             let currentText = (currentText ?? "").replacingOccurrences(of: " ", with: "")
-            self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count-1 &&
+            self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count - 1 &&
                                         (currentText.count + text.count < 14 || text.count == 0)) && (!self.isFormatted || text.count == 0)
         }).subscribe().disposed(by: disposeBag)
-        
+
         let request = sendSubject.filter {
-            if case OnboardingStage.phone = $0 { return true}
+            if case OnboardingStage.phone = $0 { return true }
             return false
-            }
+        }
             .do(onNext: {[unowned self] _ in
             self.endEdittingSubject.onNext(true)
         })
@@ -144,27 +144,26 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
             YAPProgressHud.showProgressHud()
 
             return self.repository.signUpOTP(countryCode: phone.countryCode ?? "", mobileNo: phone.number ?? "", accountType: user.accountType.rawValue)
-            
-            }.do(onNext: {_ in
+
+        }.do(onNext: {_ in
                 YAPProgressHud.hideProgressHud()
             }).share()
-        
+
         let error = request.errors().map { $0.localizedDescription }
         error
             .bind(to: showErrorSubject).disposed(by: disposeBag)
-        
+
 //        error
 //            .map{ OnBoardingEvent.phoneNumberError(["error" : $0])}
 //            .bind(to: AppAnalytics.shared.rx.logEvent)
 //            .disposed(by: disposeBag)
-        
-        request.elements().map {[weak self] _ in self?.user }.unwrap().bind(to: resultSubject).disposed(by: disposeBag)
-        
-        
+
+        request.elements().map { [weak self] _ in self?.user }.unwrap().bind(to: resultSubject).disposed(by: disposeBag)
+
         let viewAppeared = viewAppearedSubject.filter { $0 }
         viewAppeared.map { [unowned self] _ -> Float in return self.user.accountType == .b2cAccount ? 0.2 : 0.428 }.bind(to: progressSubject).disposed(by: disposeBag)
         viewAppeared.map { [unowned self] _ in self.isFormatted }.bind(to: validSubject).disposed(by: disposeBag)
-        
+
         poppedSubject.subscribe(onNext: { [unowned self] in
             self.resultSubject.onCompleted()
             self.validSubject.onCompleted()
@@ -179,7 +178,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
             .bind(to: AppAnalytics.shared.rx.logEvent)
             .disposed(by: disposeBag)
         */
-        //AppAnalytics.shared.logEvent(OnBoardingEvent.phoneNumberStart())
+        // AppAnalytics.shared.logEvent(OnBoardingEvent.phoneNumberStart())
     }
 }
 
@@ -194,7 +193,7 @@ private extension PhoneNumberViewModel {
         }
         return (phoneNumber, false)
     }
-    
+
     func attributed(text: String) -> NSAttributedString {
         let length = text.components(separatedBy: " ").first?.count ?? 0
         let attributed = NSMutableAttributedString(string: text)

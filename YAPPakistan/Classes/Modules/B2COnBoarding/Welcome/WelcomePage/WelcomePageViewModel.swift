@@ -9,7 +9,6 @@
 import Foundation
 import RxSwift
 
-
 protocol WelcomePageViewModelInput {
     var selectedPageObserver: AnyObserver<Int> { get }
 }
@@ -27,21 +26,21 @@ protocol WelcomePageViewModelType {
 class WelcomePageViewModel: WelcomePageViewModelInput, WelcomePageViewModelOutput, WelcomePageViewModelType {
     var inputs: WelcomePageViewModelInput { return self }
     var outputs: WelcomePageViewModelOutput { return self }
-    
+
     fileprivate var pageChildViewModelsSubject = BehaviorSubject<[WelcomePageChildViewModelType]>(value: [])
     private var selectedPageSubject = PublishSubject<Int>()
-    
-    //inputs
+
+    // inputs
     var selectedPageObserver: AnyObserver<Int> { return selectedPageSubject.asObserver() }
-    
-    //outputs
+
+    // outputs
     var selectedPage: Observable<Int> { return selectedPageSubject.asObservable() }
     var pageChildViewModels: Observable<[WelcomePageChildViewModelType]> { return pageChildViewModelsSubject.asObservable() }
-    
+
     init() {
         generateChildViewModels()
     }
-    
+
     fileprivate func generateChildViewModels() { }
 }
 

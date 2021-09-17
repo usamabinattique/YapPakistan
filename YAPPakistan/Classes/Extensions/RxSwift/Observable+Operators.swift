@@ -26,7 +26,7 @@ extension Optional: OptionalType {
 
 extension Observable where Element: OptionalType {
     func filterNil() -> Observable<Element.Wrapped> {
-        return flatMap { (element) -> Observable<Element.Wrapped> in
+        return flatMap { element -> Observable<Element.Wrapped> in
             if let value = element.value {
                 return .just(value)
             } else {
@@ -36,13 +36,13 @@ extension Observable where Element: OptionalType {
     }
 
     func filterNilKeepOptional() -> Observable<Element> {
-        return self.filter { (element) -> Bool in
+        return self.filter { element -> Bool in
             return element.value != nil
         }
     }
 
     func replaceNil(with nilValue: Element.Wrapped) -> Observable<Element.Wrapped> {
-        return flatMap { (element) -> Observable<Element.Wrapped> in
+        return flatMap { element -> Observable<Element.Wrapped> in
             if let value = element.value {
                 return .just(value)
             } else {
@@ -70,7 +70,7 @@ extension Observable where Element: BooleanType {
 
 extension Observable where Element: Equatable {
     func ignore(value: Element) -> Observable<Element> {
-        return filter { (selfE) -> Bool in
+        return filter { selfE -> Bool in
             return value != selfE
         }
     }
@@ -113,7 +113,7 @@ extension ObservableType {
 extension Reactive where Base: UIScrollView {
     public var reachedBottom: Observable<Void> {
         let scrollView = self.base as UIScrollView
-        return self.contentOffset.flatMap { [weak scrollView] (contentOffset) -> Observable<Void> in
+        return self.contentOffset.flatMap { [weak scrollView] contentOffset -> Observable<Void> in
             guard let scrollView = scrollView else { return Observable.empty() }
             let visibleHeight = scrollView.frame.height - self.base.contentInset.top - scrollView.contentInset.bottom
             let y = contentOffset.y + scrollView.contentInset.top

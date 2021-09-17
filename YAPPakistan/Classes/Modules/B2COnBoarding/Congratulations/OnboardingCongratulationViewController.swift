@@ -11,7 +11,6 @@ import YAPComponents
 import RxSwift
 import RxTheme
 
-
 public class OnboardingCongratulationViewController: UIViewController {
 
     lazy var marginLayout: UILayoutGuide = {
@@ -134,7 +133,7 @@ public class OnboardingCongratulationViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.text =  footNoteText()
+        label.text = footNoteText()
         label.alpha = 0
         return label
     }()
@@ -150,7 +149,7 @@ public class OnboardingCongratulationViewController: UIViewController {
         let button = AppRoundedButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.heightAnchor.constraint(equalToConstant: 52).isActive = true
-        button.setTitle( actionButtonText() , for: .normal)
+        button.setTitle( actionButtonText(), for: .normal)
         button.alpha = 0
         return button
     }()
@@ -163,11 +162,11 @@ public class OnboardingCongratulationViewController: UIViewController {
 
     // MARK: - Properties
     var viewModel: OnboardingCongratulationViewModelType!
-    var themeService:ThemeService<AppTheme>!
+    var themeService: ThemeService<AppTheme>!
 
     // MARK: - Initialization
 
-    init(themeService:ThemeService<AppTheme>, viewModel: OnboardingCongratulationViewModelType) {
+    init(themeService: ThemeService<AppTheme>, viewModel: OnboardingCongratulationViewModelType) {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
@@ -211,7 +210,7 @@ public class OnboardingCongratulationViewController: UIViewController {
             .bind({ UIColor($0.primaryDark) }, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [subheadingLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [ibanLabel.rx.textColor])
-            .bind({ UIColor($0.greyLight).withAlphaComponent(0.5)}, to: [ibanView.rx.backgroundColor])
+            .bind({ UIColor($0.greyLight).withAlphaComponent(0.5) }, to: [ibanView.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [footnoteLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
@@ -236,8 +235,6 @@ public class OnboardingCongratulationViewController: UIViewController {
 // MARK: - Setup
 extension OnboardingCongratulationViewController {
 
-
-
     fileprivate func setupUI() {
 
     }
@@ -258,7 +255,8 @@ extension OnboardingCongratulationViewController {
                        animations: {
                 self.headingLabel.alpha = 1
                 self.headingLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
-        }) { (_) in }
+        }) { _ in
+        }
 
         UIView.animate(withDuration: 1,
                        delay: 2.2,
@@ -268,7 +266,7 @@ extension OnboardingCongratulationViewController {
                        animations: {
                 self.headingLabelCenterYConstraint.constant = self.rowHeight
                 self.view.layoutIfNeeded()
-        }) { (_) in
+        }) { _ in
             //            self.headingLabel.restartLabel()
             //            self.headingLabel.type = .continuous
             //            self.headingLabel.speed = .duration(8.0)
@@ -293,7 +291,8 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 self.subheadingLabel.alpha = 1
                 self.subheadingLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
-        }) { (_) in }
+        }) { _ in
+        }
 
         UIView.animate(withDuration: 1,
                        delay: 2.5,
@@ -304,7 +303,8 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 self.subheadingLabelCenterYConstraint.constant = self.rowHeight * 8
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
 
     func animatePaymentCard() {
@@ -335,9 +335,10 @@ extension OnboardingCongratulationViewController {
                        options: [.curveEaseOut],
                        animations: { [weak self] in
                 guard let `self` = self else { return }
-                self.ibanHeaderLabelTopConstraint.constant = 0 //self.rowHeight * 1.2
+                self.ibanHeaderLabelTopConstraint.constant = 0 // self.rowHeight * 1.2
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
 
     fileprivate func animateIBANView() {
@@ -360,7 +361,8 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 self.ibanViewTopConstraint.constant = self.rowHeight * 2.5
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
 
     func animateFootnote() {
@@ -382,7 +384,8 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 topConstraint.constant = self.rowHeight * 3.8
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
 
     func animateCompleteVerificationButton() {
@@ -404,7 +407,8 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 self.completeVerificationButtonTopConstraint.constant = self.rowHeight * 3.8
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
 
     fileprivate func style() {
@@ -426,24 +430,24 @@ extension OnboardingCongratulationViewController {
     }
 
     fileprivate func bindName() {
-         viewModel.outputs.name.map { String(format:  "screen_onboarding_congratulations_display_text_title".localized, $0) }.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
+         viewModel.outputs.name.map { String(format: "screen_onboarding_congratulations_display_text_title".localized, $0) }.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
     }
 
     fileprivate func bindTimeInterval() {
          viewModel.outputs.onboardingInterval.subscribe(onNext: { [weak self] interval in
             if interval > 60 || interval <= 0 {
-                self?.subheadingLabel.text =  "screen_onboarding_congratulations_display_text_sub_title_no_interval".localized
+                self?.subheadingLabel.text = "screen_onboarding_congratulations_display_text_sub_title_no_interval".localized
                 self?.subheadingLabel.sizeToFit()
             } else {
                 let secondsInString = String(format: "%.0f", ceil(interval))
                 let maxValue = Int(secondsInString)!
-                let attributedString = NSMutableAttributedString(string: String(format:  "screen_onboarding_congratulations_display_text_sub_title".localized, secondsInString), attributes: [
+                let attributedString = NSMutableAttributedString(string: String(format: "screen_onboarding_congratulations_display_text_sub_title".localized, secondsInString), attributes: [
                     .font: UIFont.regular,
                     .foregroundColor: UIColor(self!.themeService.attrs.greyDark)
                     ])
                 attributedString.addAttributes([
                     .font: UIFont.systemFont(ofSize: 16.0, weight: .medium),
-                    .foregroundColor:UIColor(self!.themeService.attrs.primaryDark)
+                    .foregroundColor: UIColor(self!.themeService.attrs.primaryDark)
                     ], range: NSRange(location: 61, length: 9 + secondsInString.count))
                 self?.subheadingLabel.attributedText = attributedString
                 self?.subheadingLabel.sizeToFit()
