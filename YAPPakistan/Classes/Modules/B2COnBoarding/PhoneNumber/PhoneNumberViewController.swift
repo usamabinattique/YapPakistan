@@ -123,7 +123,7 @@ private extension PhoneNumberViewController {
         countryPicker.rx.itemSelected.map { $0.row }.bind(to: viewModel.inputs.countrySelectionObserver).disposed(by: rx.disposeBag)
         
         viewModel.outputs.showError.bind(to: mobileNumber.errorLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid }.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
+        viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid(nil) }.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.endEditting.bind(to: view.rx.endEditting).disposed(by: rx.disposeBag)
     }
 }

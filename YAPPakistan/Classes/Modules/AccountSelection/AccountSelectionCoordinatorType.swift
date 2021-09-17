@@ -19,7 +19,7 @@ public protocol AccountSelectionCoordinatorType: Coordinator<ResultType<Void>> {
     //var welcomeResult: PublishSubject<ResultType<Void>> { get }
     var b2cOnboardingResult: PublishSubject<ResultType<Void>> { get }
     
-    //func login()
+    func login()
     //func welcome()
     func b2cOnboarding()
 }
@@ -49,15 +49,5 @@ extension AccountSelectionCoordinatorType {
             .disposed(by: rx.disposeBag)
     }
     */
- 
-    /*
-    func login() {
-        coordinate(to: LoginCoordinatorPushable(root: root))
-            .subscribe(onNext: { [weak self] result in
-                guard let `self` = self else { return }
-                self.loginResult.onNext(result)
-            })
-            .disposed(by: rx.disposeBag)
-    }
-    */
-}
+    
+} 

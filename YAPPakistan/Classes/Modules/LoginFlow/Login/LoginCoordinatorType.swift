@@ -1,0 +1,31 @@
+//
+//  LoginCoordinatorType.swift
+//  App
+//
+//  Created by Hussaan S on 24/07/2019.
+//  Copyright © 2019 YAP. All rights reserved.
+//
+
+import Foundation
+import RxSwift
+import YAPCore
+
+
+enum LoginResult {
+    case onboarding
+    case dashboard(session: Session)
+    case cancel
+}
+
+protocol LoginCoordinatorType: Coordinator<LoginResult> {
+    
+    var root: UINavigationController!           { get }
+    var container:YAPPakistanMainContainer!     { get }
+    var biometricsManager: BiometricsManager    { get }
+    var result: PublishSubject<LoginResult>     { get }
+    
+    //func saveDevice(credentials: Credentials, otpVerificationToken: String?) -> Observable<ResultType<Void>>
+    func biometryPermission(permissionType: SystemPermissionType, username: String, account: Observable<Account?>) -> Observable<ResultType<Void>>
+    func notificationPermission(account: Observable<Account?>) -> Observable<ResultType<Void>>
+    
+}

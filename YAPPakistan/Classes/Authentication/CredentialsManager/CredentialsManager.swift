@@ -39,7 +39,11 @@ public class CredentialsManager: CredentialsStoreType {
         false
     }
     
-    
+    public func clearUsername() -> Bool {
+        guard !(remembersId ?? false) else { return false }
+        //return keychainManager.removeObject(forKey: usernameKey)
+        return false
+    }
 
 }
 

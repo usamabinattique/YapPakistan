@@ -55,4 +55,30 @@ public class CustomersService: BaseService {
 
         return self.request(apiClient: self.apiClient, route: route)
     }
+    
+    public func verifyUser<T: Codable>(username: String) -> Observable<T> {
+        let query = ["username": username]
+        
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/verify-user", query: query, headers: authorizationProvider.authorizationHeaders)
+        
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func verifyPasscode<T: Codable>(passcode: String) -> Observable<T> {
+        let query = ["passcode": passcode]
+        
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/user/verify-passcode", query: query, headers: authorizationProvider.authorizationHeaders)
+        
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func generateLoginOTP<T: Codable>(username: String, passcode: String, deviceID: String) -> Observable<T> {
+        
+        //TODO this will go in body
+        let request = ["clientId" : username, "clientSecret": passcode, "deviceId": deviceID]
+        
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/demographics/device-login", query: request, headers: authorizationProvider.authorizationHeaders)
+        
+        return self.request(apiClient: self.apiClient, route: route)
+    }
 }

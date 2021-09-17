@@ -12,4 +12,5 @@ public extension Notification.Name {
     static let applicationWillResignActive = Notification.Name("applicationWillResignActive")
     static let applicationDidBecomeActive = Notification.Name("applicationDidBecomeActive")
     static let applicationWillEnterForeground = Notification.Name("applicationWillEnterForeground")
+    static let checkUserNotificationPreference = Notification.Name("userNotifications")
 }

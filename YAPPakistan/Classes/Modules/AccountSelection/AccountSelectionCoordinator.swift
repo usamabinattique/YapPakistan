@@ -57,9 +57,9 @@ public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void
                 self.b2cOnboarding()
             })
             .disposed(by: rx.disposeBag)
+        */
         
         viewModel.outputs.signIn.subscribe(onNext: { [unowned self] _ in
-            
             if let viewControllers = self.root?.viewControllers, viewControllers.count > 1, viewControllers[viewControllers.count - 2] is LoginViewController {
                 self.root.popViewController(animated: true)
                 self.root.navigationBar.isHidden = false
@@ -69,7 +69,7 @@ public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void
                 self.login()
             }
         }).disposed(by: rx.disposeBag)
-        */
+        
         
         Observable.merge(b2cOnboardingResult.filter { !$0.isCancel }, b2cOnboardingResult.filter { !$0.isCancel }/*, loginResult.filter { !$0.isCancel }*/)
             .subscribe(onNext: { [weak self] output in
@@ -87,6 +87,15 @@ public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void
             .subscribe(onNext: { [weak self] result in
                 guard let `self` = self else { return }
                 self.b2cOnboardingResult.onNext(result)
+            })
+            .disposed(by: rx.disposeBag)
+    }
+    
+    public func login() {
+        coordinate(to: LoginCoordinatorPushable(root: self.root, xsrfToken: xsrfToken, container: self.container, biometricsManager: BiometricsManager()) )
+            .subscribe(onNext: { [weak self] result in
+                //guard let `self` = self else { return }
+                //self.loginResult.onNext(result)
             })
             .disposed(by: rx.disposeBag)
     }

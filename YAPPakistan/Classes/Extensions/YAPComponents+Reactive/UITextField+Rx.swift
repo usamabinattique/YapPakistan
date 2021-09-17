@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import RxCocoa
 
 extension Reactive where Base: UITextField {
     var borderColor: Binder<UIColor?> {
@@ -20,6 +21,20 @@ extension Reactive where Base: UITextField {
             if let color = attr {
                 view.setPlaceHolderTextColor(color)
             }
+        }
+    }
+}
+
+extension Reactive where Base: UITextField {
+    var isFirstResponder: ControlProperty<Bool> {
+        return value
+    }
+    var value: ControlProperty<Bool> {
+        return base.rx.controlProperty(editingEvents: [.editingDidBegin, .editingDidEnd]) { tf in
+            tf.isFirstResponder
+        } setter: { tf, value in
+            if value { tf.becomeFirstResponder() }
+            else { tf.resignFirstResponder() }
         }
     }
 }
