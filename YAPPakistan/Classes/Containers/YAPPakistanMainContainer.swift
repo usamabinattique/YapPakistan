@@ -8,19 +8,12 @@
 import Foundation
 import RxSwift
 import RxTheme
-
-public enum Environment {
-    case dev
-    case qa
-    case stg
-    case preprod
-    case prod
-}
+import YAPCore
 
 public struct YAPPakistanConfiguration {
-    let environment: Environment
+    let environment: AppEnvironment
 
-    public init(environment: Environment) {
+    public init(environment: AppEnvironment) {
         self.environment = environment
     }
 }

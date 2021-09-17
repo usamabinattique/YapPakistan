@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import RxDataSources
+import YAPCore
 
 protocol WaitingListRankViewModelInput {
     var firstVideoEnded: AnyObserver<Void> { get }
@@ -146,7 +147,7 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
             })
 
         sendInviteResult.withLatestFrom(customerId)
-            .map { appInviteWaitingList(referralManager.getReferralUrl(for: $0)) }
+            .map { appInviteWaitingList(referralManager.pkReferralURL(forInviter: $0)) }
             .bind(to: shareInfoSubject)
             .disposed(by: disposeBag)
 

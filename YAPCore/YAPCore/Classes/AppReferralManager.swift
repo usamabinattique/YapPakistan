@@ -7,19 +7,18 @@
 //
 
 import Foundation
-import Adjust
 
 public class AppReferralManager {
     private static let inviterIdKey = "REFERRAL_INVITER_ID"
     private static let invitationTimeKey = "REFERRAL_INVITATION_TIME"
 
-    private let environment: Environment
+    private let environment: AppEnvironment
 
-    public init(environment: Environment) {
+    public init(environment: AppEnvironment) {
         self.environment = environment
     }
 
-    func getReferralUrl(for inviterId: String, time: Date = Date()) -> String {
+    public func pkReferralURL(forInviter inviterId: String, time: Date = Date()) -> String {
         switch environment {
         case .dev:
             return "https://lwnq.adj.st?adjust_t=wbcz4y5_fj4r46p&customer_id=\(inviterId)&time=\(refferalTimeString())"
@@ -41,12 +40,12 @@ public class AppReferralManager {
         return dateFormatter.string(from: Date())
     }
     
-    func saveReferralInformation(inviterId: String, time: String) {
+    public func saveReferralInformation(inviterId: String, time: String) {
         UserDefaults.standard.set(inviterId, forKey: Self.inviterIdKey)
         UserDefaults.standard.set(time, forKey: Self.invitationTimeKey)
     }
     
-    func removeReferralInformation() {
+    public func removeReferralInformation() {
         UserDefaults.standard.removeObject(forKey: Self.inviterIdKey)
         UserDefaults.standard.removeObject(forKey: Self.invitationTimeKey)
     }
@@ -64,7 +63,7 @@ public class AppReferralManager {
         saveReferralInformation(inviterId: inviter, time: invitationTime)
     }
     
-    var isReferralInformationAvailable: Bool {
+    public var isReferralInformationAvailable: Bool {
         guard (UserDefaults.standard.object(forKey: Self.inviterIdKey) as? String) != nil,
               (UserDefaults.standard.object(forKey: Self.invitationTimeKey) as? String) != nil else {
             return false
@@ -73,11 +72,11 @@ public class AppReferralManager {
         return true
     }
     
-    var inviterId: String? {
+    public var inviterId: String? {
         UserDefaults.standard.object(forKey: Self.inviterIdKey) as? String
     }
     
-    var invitationTime: Date? {
+    public var invitationTime: Date? {
         guard let timeString = UserDefaults.standard.object(forKey: Self.invitationTimeKey) as? String,
               let timeInterval = Double(timeString) else {
             return nil
@@ -86,7 +85,7 @@ public class AppReferralManager {
         return Date(timeIntervalSince1970: timeInterval)
     }
     
-    var invitationTimeString: String? {
+    public var invitationTimeString: String? {
         return UserDefaults.standard.object(forKey: Self.invitationTimeKey) as? String
     }
 }

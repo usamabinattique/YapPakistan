@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import YAPCore
 
 protocol EnterEmailViewModelInput {
     var textObserver: AnyObserver<String?> { get }
