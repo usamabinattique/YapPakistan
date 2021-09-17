@@ -13,7 +13,7 @@ import YAPComponents
 import YAPCore
 import PhoneNumberKit
 
-protocol LoginInOutsViewModel {
+protocol LoginViewModelInOuts {
     var mobileNumber:BehaviorRelay<String?> { get }
     var rememberMe:BehaviorRelay<Bool> { get }
     var isFirstResponder:BehaviorRelay<Bool> { get }
@@ -42,13 +42,13 @@ protocol LoginViewModelOutputs {
 protocol LoginViewModelType {
     var inputs: LoginViewModelInputs { get }
     var outputs: LoginViewModelOutputs { get }
-    var inouts: LoginInOutsViewModel { get }
+    var inouts: LoginViewModelInOuts { get }
 }
 
-class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOutputs, LoginInOutsViewModel {
+class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOutputs, LoginViewModelInOuts {
     
     var inputs: LoginViewModelInputs { return self }
-    var inouts: LoginInOutsViewModel { return self }
+    var inouts: LoginViewModelInOuts { return self }
     var outputs: LoginViewModelOutputs { return self }
     
     //inouts
@@ -151,12 +151,17 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
             })
             .do(onNext: {[unowned self] _ in self.progressSubject.onNext(true) })
             .flatMapLatest { self.repository.verifyUser(username: $0) }
+            .debug("verifyUser", trimOutput: false)
             .do(onNext: {[unowned self] _ in self.progressSubject.onNext(false) })
             .share()
         
-        let isVerificationSuccess = verifyUserRequest.elements().share(replay: 1, scope: .whileConnected)
-        //let verificationErrorMessage = "screen_sign_in_display_text_error_text".localized
-        isVerificationSuccess.filter { $0 == true }.withLatestFrom(mobileNumber)
+        verifyUserRequest.elements()
+            .filter { $0 == false }
+            .map({ _ in AppRoundedTextFieldValidation.invalid("screen_sign_in_display_text_error_text".localized) })
+            .bind(to: validationSubject)
+            .disposed(by: disposeBag)
+        
+        verifyUserRequest.elements().filter { $0 == true }.withLatestFrom(mobileNumber)
             .do(onNext: {
                 if credentialsManager.remembersId ?? true {
                     _ = credentialsManager.secure(passcode: $0 ?? "")
@@ -170,12 +175,14 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
         
         apiError.filter { [unowned self] error in !self.isErrorUserBlocked(error) }
             .map { AppRoundedTextFieldValidation.invalid($0.localizedDescription) }
-            .bind(to: validationSubject).disposed(by: disposeBag)
+            .bind(to: validationSubject)
+            .disposed(by: disposeBag)
         
         apiError.filter { [unowned self] error in self.isErrorUserBlocked(error) }
             .withLatestFrom(mobileNumber)
             .map { _ in ResultType.success(()) }
-            .bind(to: resultSubject).disposed(by: disposeBag)
+            .bind(to: resultSubject)
+            .disposed(by: disposeBag)
         
         rememberUsername(credentialsManager)
         
