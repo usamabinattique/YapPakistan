@@ -10,15 +10,18 @@ import Foundation
 import RxSwift
 import Alamofire
 
+
 public struct TransactionsClient: APIClient {
     
     public init() { }
-    public func upload(documents: [DocumentDataConvertible], route: YAPURLRequestConvertible, progressObserver: AnyObserver<Progress>?, otherFormValues formValues: [String: String]) -> Observable<APIResponseConvertible> {
+    public func upload(documents: [DocumentDataConvertible],
+                       route: YAPURLRequestConvertible,
+                       progressObserver: AnyObserver<Progress>?,
+                       otherFormValues formValues: [String: String]) -> Observable<APIResponseConvertible> {
         return Observable<APIResponseConvertible>.never()
     }
-    
+    // swiftlint:disable function_body_length
     public func request(route: YAPURLRequestConvertible) -> Observable<APIResponseConvertible> {
-        
         let response =
         """
             {
@@ -114,6 +117,7 @@ public struct TransactionsClient: APIClient {
         
         return Observable.of(APIResponse(code: 200, data: response.data(using: .utf8)!))
     }
+    // swiftlint:enable function_body_length
 }
 /*,
  {

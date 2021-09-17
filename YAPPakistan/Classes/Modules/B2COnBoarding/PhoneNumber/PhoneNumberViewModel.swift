@@ -96,7 +96,6 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     private var currentItem = 0
     private let phoneNumberKit = PhoneNumberKit()
     private var isFormatted = false
-    
     private var user: OnBoardingUser!
     private let repository: OnBoardingRepository
     
@@ -105,7 +104,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         self.user = user
 
         countryList.append(("Pakistan", "PK", "+92 ", CountryFlag.flag(forCountryCode: "PK")))
-        
+
         iconSubject.onNext(countryList.first?.flag)
         textSubject.onNext(self.attributed(text: countryList.first?.callingCode ?? ""))
         
@@ -120,7 +119,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
             .do(onNext: { [unowned self] in
                     self.isFormatted = $0.formatted}
             )
-        
+
         formattedText.map {
             let formated = $0.formatted
             return formated
@@ -130,7 +129,8 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         
         textWillChangeSubject.do(onNext: { [unowned self] (text, range, currentText) in
             let currentText = (currentText ?? "").replacingOccurrences(of: " ", with: "")
-            self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count-1 && (currentText.count + text.count < 14 || text.count == 0)) && (!self.isFormatted || text.count == 0)
+            self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count-1 &&
+                                        (currentText.count + text.count < 14 || text.count == 0)) && (!self.isFormatted || text.count == 0)
         }).subscribe().disposed(by: disposeBag)
         
         let request = sendSubject.filter {

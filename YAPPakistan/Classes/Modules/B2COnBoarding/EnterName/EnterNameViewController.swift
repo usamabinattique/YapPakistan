@@ -15,11 +15,32 @@ import RxTheme
 
 class EnterNameViewController: OnBoardinContainerChildViewController {
     
-    private lazy var headingLabel = UIFactory.makeLabel(font: .title2, alignment: .center, text: "screeen_name_display_text_title".localized, adjustFontSize: true)
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title2,
+                                                        alignment: .center,
+                                                        text: "screeen_name_display_text_title".localized,
+                                                        adjustFontSize: true)
     
-    private lazy var firstName = UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, placeholder: "screen_name_display_text_first_name".localized, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage:  UIImage(named: "icon_invalid", in: .yapPakistan), returnKeyType: .next, autocorrectionType: .no, autocapitalizationType: .words, keyboardType: .default, delegate: self)
+    private lazy var firstName = UIFactory.makeAppRoundedTextField(with: .regular,
+                                                                   errorFont: .micro,
+                                                                   placeholder: "screen_name_display_text_first_name".localized,
+                                                                   validImage: UIImage(named: "icon_check", in: .yapPakistan),
+                                                                   inValidImage:  UIImage(named: "icon_invalid", in: .yapPakistan),
+                                                                   returnKeyType: .next,
+                                                                   autocorrectionType: .no,
+                                                                   autocapitalizationType: .words,
+                                                                   keyboardType: .default,
+                                                                   delegate: self)
     
-    private lazy var lastName = UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, placeholder: "screen_name_display_text_last_name".localized, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage:  UIImage(named: "icon_invalid", in: .yapPakistan), returnKeyType: .next, autocorrectionType: .no, autocapitalizationType: .words, keyboardType: .default, delegate: self)
+    private lazy var lastName = UIFactory.makeAppRoundedTextField(with: .regular,
+                                                                  errorFont: .micro,
+                                                                  placeholder: "screen_name_display_text_last_name".localized,
+                                                                  validImage: UIImage(named: "icon_check", in: .yapPakistan),
+                                                                  inValidImage:  UIImage(named: "icon_invalid", in: .yapPakistan),
+                                                                  returnKeyType: .next,
+                                                                  autocorrectionType: .no,
+                                                                  autocapitalizationType: .words,
+                                                                  keyboardType: .default,
+                                                                  delegate: self)
     
     override var firstReponder: UITextField? { return firstName }
     

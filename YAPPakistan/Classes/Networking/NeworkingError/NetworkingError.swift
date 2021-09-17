@@ -90,4 +90,4 @@ public struct NetworkingAuthError: Codable {
 }
 
 public var baseUrl = BaseURL
-public var adminBaseUrl = BaseURLAdmin
+public var adminBaseUrl = baseURLAdmin

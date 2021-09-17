@@ -63,7 +63,11 @@ public class BaseService: Service {
             }
     }
     
-    public func upload<T>(apiClient: APIClient, documents: [DocumentDataConvertible], route: YAPURLRequestConvertible, progressObserver: AnyObserver<Progress>?, otherFormValues formValues: [String: String]) -> Observable<T> where T: Decodable, T: Encodable {
+    public func upload<T>(apiClient: APIClient,
+                          documents: [DocumentDataConvertible],
+                          route: YAPURLRequestConvertible,
+                          progressObserver: AnyObserver<Progress>?,
+                          otherFormValues formValues: [String: String]) -> Observable<T> where T: Decodable, T: Encodable {
         return apiClient.upload(documents: documents, route: route, progressObserver: progressObserver, otherFormValues: formValues).map { apiResponse -> APIResponseConvertible in
             guard 200...299 ~= apiResponse.code else {
                 throw NetworkErrorHandler.mapError(apiResponse.code, data: apiResponse.data)

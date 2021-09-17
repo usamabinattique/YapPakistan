@@ -8,7 +8,7 @@
 
 import Foundation
 
-
+// swiftlint:disable identifier_name
 public enum AccountError: Error {
     case notVerified
 }
@@ -228,13 +228,6 @@ public extension Account {
         self.qrCodeId = account.qrCodeId
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
-    }
-}
-
-// MARK: - Mocked Extension
-public extension Account {
-    static var mocked: Account {
-        return Account.init(uuid: "12312321", iban: "AE545646464646", accountNumber: "1000000212120", accountType: .b2cAccount, defaultProfile: true, companyName: nil, packageName: nil, status: "Active", active: true, documentsVerified: true, companyType: nil, soleProprietary: true, _accountStatus: AccountStatus.onboarded.rawValue, customer: Customer(uuid: "12312321", _email: "email@domain.com", countryCode: "", mobileNo: "213123123", firstName: "Aftab", lastName: "Iqbal", companyName: nil, emailVerified: true, mobileNoVerified: true, status: "Active", dob: "", passportNo: nil, nationality: nil, imageURL: nil, customerId: nil, homeCountry: nil, founder: false, customerColor: nil), bank: Bank(id: 1, name: "UBL", bankCode: "1234", swiftCode: "1234", address: "Iris Watson P.O. Box 283 8562 Fusce Rd. Frederick Nebraska 20620 (372) 587-2335"), _parnterBankStatus: PartnerBankStatus.activated.rawValue, createdDate: "2019-08-07T12:15:47", parentAccount: nil, otpBlocked: nil, _eidExpiryStatus: nil, eidNotificationContent: nil, _freezeCode: nil, _freezeInitiator: nil, _partnerBankApprovalDate: nil, qrCodeId: nil, documentSubmissionDate: nil)
     }
 }
 

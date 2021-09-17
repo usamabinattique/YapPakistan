@@ -17,7 +17,15 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
     
     private lazy var headingLabel = UIFactory.makeLabel(font: .title2, alignment: .center, text: "screen_phone_number_display_text_title".localized, adjustFontSize: true)
     
-    private lazy var mobileNumber = UIFactory.makeAppRoundedTextField(with: .regular, errorFont: .micro, validImage: UIImage(named: "icon_check", in: .yapPakistan), inValidImage: UIImage(named: "icon_invalid", in: .yapPakistan), leftIcon: nil, displaysIcon:true, returnKeyType:.send, autocorrectionType:.no, keyboardType:.asciiCapableNumberPad, delegate:self)
+    private lazy var mobileNumber = UIFactory.makeAppRoundedTextField(with: .regular,
+                                                                      errorFont: .micro,
+                                                                      validImage: UIImage(named: "icon_check", in: .yapPakistan),
+                                                                      inValidImage: UIImage(named: "icon_invalid", in: .yapPakistan),
+                                                                      leftIcon: nil,
+                                                                      displaysIcon: true, returnKeyType:.send,
+                                                                      autocorrectionType: .no,
+                                                                      keyboardType: .asciiCapableNumberPad,
+                                                                      delegate: self)
     
     private lazy var countryPicker: RxAppPickerView = {
         return RxAppPickerView()

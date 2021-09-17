@@ -146,7 +146,9 @@ class ReferredFriendsViewController: UIViewController {
             self.panModalSetNeedsLayoutUpdate()
         }).disposed(by: disposeBag)
 
-        viewModel.outputs.friendList.bind(to: tableView.rx.items(cellIdentifier: ReferredFriendCell.defaultIdentifier, cellType: ReferredFriendCell.self)) { [weak self] (_, viewModel: ReferredFriendViewModelType, cell) in
+        viewModel.outputs.friendList.bind(to: tableView.rx.items(cellIdentifier: ReferredFriendCell.defaultIdentifier,
+                                                                 cellType: ReferredFriendCell.self)) {
+            [weak self] (_, viewModel: ReferredFriendViewModelType, cell) in
             guard let self = self else { return }
             cell.configure(with: self.themeService, viewModel: viewModel)
         }.disposed(by: disposeBag)

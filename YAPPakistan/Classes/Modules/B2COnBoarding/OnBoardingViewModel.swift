@@ -64,7 +64,7 @@ class OnBoardingViewModel: OnBoardingViewModelInput, OnBoardingViewModelOutput, 
             }
             //self.timeTaken = Date().timeIntervalSince1970 - self.startTime
         }).disposed(by: disposeBag)
-        
+
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterBackground), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterForeground), name: UIApplication.didBecomeActiveNotification, object: nil)
         
@@ -73,12 +73,12 @@ class OnBoardingViewModel: OnBoardingViewModelInput, OnBoardingViewModelOutput, 
 }
 
 private extension OnBoardingViewModel {
-    
+
     @objc func willEnterBackground() {
         guard  startTime != 0 else { return }
-        timeElappsed = timeElappsed + (Date().timeIntervalSince1970 - startTime)
+        timeElappsed += (Date().timeIntervalSince1970 - startTime)
     }
-    
+
     @objc func didEnterForeground() {
         startTime = Date().timeIntervalSince1970
     }

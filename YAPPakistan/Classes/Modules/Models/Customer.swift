@@ -8,7 +8,7 @@
 
 import Foundation
 import PhoneNumberKit
-
+// swiftlint:disable identifier_name
 public struct Customer: Codable {
     public var email: String { _email ?? "" }
     
@@ -119,10 +119,6 @@ private extension Customer {
 
 // MARK: - Mocked
 public extension Customer {
-    static var mocked: Customer {
-        return Customer(uuid: "", _email: "john@mailinator.com", countryCode: "", mobileNo: "+92212365847475", firstName: "John", lastName: "Doe", companyName: "Dell, Inc.", emailVerified: true, mobileNoVerified: true, status: "", dob: "", passportNo: nil, nationality: nil, imageURL: nil, customerId: nil, homeCountry: nil, founder: false, customerColor: "A682FF")
-    }
-    
     var homeCountry2Digit: String {
         guard let homeCountry = homeCountry else { return "AE" }
         guard homeCountry.count != 2 else { return homeCountry }

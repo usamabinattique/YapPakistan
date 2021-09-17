@@ -10,12 +10,8 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-/* extension Reactive where Base: UIView {
-    func tap() -> Observable<Void> {
-        return tapGesture().when(.recognized).mapToVoid()
-    }
-} */
-
+// swiftlint:disable identifier_name
+// swiftlint:disable line_length
 protocol OptionalType {
     associatedtype Wrapped
 

@@ -279,7 +279,8 @@ extension PasscodeViewController {
     private func passcodeBinding() {
    /*     passcodeKeys.rx.output.do(onNext: {[unowned self] _ in self.inValidCredentialsMessageLabel.isHidden = true })
             .scan("") { lastValue, newValue -> String in
-                if newValue == String(UnicodeScalar(0)) { return "" } else if newValue == String(UnicodeScalar(8)) { return String(lastValue.dropLast()) } else if lastValue.count >= 6 { return  lastValue } else { return lastValue + newValue }
+                if newValue == String(UnicodeScalar(0)) { return "" } else if newValue == String(UnicodeScalar(8))
+         { return String(lastValue.dropLast()) } else if lastValue.count >= 6 { return  lastValue } else { return lastValue + newValue }
                 
         }.bind(to: viewModel.inputs.passcodeObserver).disposed(by: passcodeDisposeBag)
         
