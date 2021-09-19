@@ -76,6 +76,13 @@ public final class YAPPakistanMainContainer {
                                authorizationProvider: authorizationProvider)
     }
 
+    func makeReachedQueueTopViewController() -> ReachedQueueTopViewController {
+        let viewModel = ReachedQueueTopViewModel()
+        let viewController = ReachedQueueTopViewController(themeService: themeService, viewModel: viewModel)
+
+        return viewController
+    }
+
     public func makeDummyViewController(xsrfToken: String) -> UIViewController {
         let customerService = CustomersService(apiConfig: makeAPIConfiguration(),
                                                authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
