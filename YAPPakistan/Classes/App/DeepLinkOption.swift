@@ -11,8 +11,8 @@ struct DeepLinkURLConstants {
   static let SignUp = "signUp"
 }
 
-enum DeepLinkOption:DeepLinkOptionType {
-  
+enum DeepLinkOption: DeepLinkOptionType {
+
   case onboarding
   case items
   case settings
@@ -20,21 +20,21 @@ enum DeepLinkOption:DeepLinkOptionType {
   case terms
   case signUp
   case item(String?)
-  
+
   static func build(with userActivity: NSUserActivity) -> DeepLinkOption? {
     if userActivity.activityType == NSUserActivityTypeBrowsingWeb,
       let url = userActivity.webpageURL,
       let _ = URLComponents(url: url, resolvingAgainstBaseURL: true) {
-      //TODO: extract string and match with DeepLinkURLConstants
+      // TODO: extract string and match with DeepLinkURLConstants
     }
     return nil
   }
-  
-  static func build(with dict: [String:AnyObject]?) -> DeepLinkOption? {
+
+  static func build(with dict: [String: AnyObject]?) -> DeepLinkOption? {
     guard let id = dict?["launch_id"] as? String else { return nil }
-    
+
     let itemID = dict?["item_id"] as? String
-    
+
     switch id {
       case DeepLinkURLConstants.Onboarding: return .onboarding
       case DeepLinkURLConstants.Items: return .items

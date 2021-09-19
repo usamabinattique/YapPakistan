@@ -13,21 +13,21 @@ enum AuthRouter<T: Codable>: YAPURLRequestConvertible, Convertible {
     case reauthenticate(RouterInput<T>)
     case switchToken(RouterInput<T>)
     case logout(RouterInput<T>)
-    
-    var authHeaders: [String : String] {
+
+    var authHeaders: [String: String] {
         switch self {
         case .authenticate(let input), .reauthenticate(let input), .switchToken(let input), .logout(let input):
-            return input.headers ?? [String:String]()
+            return input.headers ?? [String: String]()
         }
     }
-    
+
     private var method: YAPHTTPMethod {
         switch self {
         case .authenticate, .reauthenticate, .switchToken, .logout:
             return .post
         }
     }
-    
+
     private var path: String {
         switch self {
         case .authenticate:
@@ -40,7 +40,7 @@ enum AuthRouter<T: Codable>: YAPURLRequestConvertible, Convertible {
             return "/auth/oauth/oidc/logout"
         }
     }
-    
+
     private var input: RouterInput<T>? {
         switch self {
         case .authenticate(let input):
@@ -53,7 +53,7 @@ enum AuthRouter<T: Codable>: YAPURLRequestConvertible, Convertible {
             return input
         }
     }
-    
+
     func asURLRequest() throws -> URLRequest {
         return try urlRequest(path: path, method: method, input: input)
     }

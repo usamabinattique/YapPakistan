@@ -31,7 +31,7 @@ class ReferredFriendsViewModel: ReferredFriendsViewModelInput, ReferredFriendsVi
     private static let colors = [
         (Color(hex: "#f44774"), Color(hex: "#f44774")),
         (Color(hex: "#478df4"), Color(hex: "#478df4")),
-        (Color(hex: "#fc6253"), Color(hex: "#f57f17")),
+        (Color(hex: "#fc6253"), Color(hex: "#f57f17"))
     ]
 
     private let disposeBag = DisposeBag()
@@ -92,7 +92,7 @@ class ReferredFriendsViewModel: ReferredFriendsViewModelInput, ReferredFriendsVi
             .bind(to: hidesFriendsSubject)
             .disposed(by: disposeBag)
 
-        let inviteeViewModels = invitees.enumerated().map { (index, invitee) -> ReferredFriendViewModel in
+        let inviteeViewModels = invitees.enumerated().map { index, invitee -> ReferredFriendViewModel in
             let colorIndex = index % Self.colors.count
 
             return ReferredFriendViewModel(friendName: invitee.inviteeCustomerName,

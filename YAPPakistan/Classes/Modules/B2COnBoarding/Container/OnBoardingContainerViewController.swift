@@ -12,23 +12,22 @@ import RxCocoa
 import RxSwift
 import RxTheme
 
-
 class OnBoardingContainerViewController: KeyboardAvoidingViewController {
-    
+
     private lazy var sendButton = UIFactory.makeAppRoundedButton(
         with: .large,
         title: "common_button_next".localized
     )
-    
+
     private var themeService: ThemeService<AppTheme>!
     private var viewModel: OnBoardingContainerViewModelType!
     private var childNavigation: UINavigationController?
     private var childView: UIView?
-    
-    init(themeService: ThemeService<AppTheme> ,viewModel: OnBoardingContainerViewModelType, childNavigation: UINavigationController?) {
-        
+
+    init(themeService: ThemeService<AppTheme>, viewModel: OnBoardingContainerViewModelType, childNavigation: UINavigationController?) {
+
         super.init(nibName: nil, bundle: nil)
-        
+
         self.viewModel = viewModel
         self.themeService = themeService
         self.childNavigation = childNavigation
@@ -38,10 +37,10 @@ class OnBoardingContainerViewController: KeyboardAvoidingViewController {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setupViews()
         setupTheme()
         setupCostraints()
@@ -54,7 +53,7 @@ class OnBoardingContainerViewController: KeyboardAvoidingViewController {
 fileprivate extension OnBoardingContainerViewController {
     func setupViews() {
         view.addSubview(sendButton)
-        
+
         childView?.translatesAutoresizingMaskIntoConstraints = false
         if childView != nil, childNavigation != nil {
             addChild(childNavigation!)
@@ -62,7 +61,7 @@ fileprivate extension OnBoardingContainerViewController {
         }
         childNavigation?.didMove(toParent: self)
     }
-    
+
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
@@ -71,15 +70,15 @@ fileprivate extension OnBoardingContainerViewController {
             .bind({ UIColor($0.primaryExtraLight) }, to: [sendButton.rx.titleColor(for: .normal)])
             .disposed(by: rx.disposeBag)
     }
-    
+
     func setupCostraints() {
-        
+
         sendButton
             .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 25)
             .centerHorizontallyInSuperview()
             .height(constant: 52)
             .width(constant: 192)
-        
+
         childView?
             .alignEdgesWithSuperview([.left, .right, .top])
             .toTopOf(sendButton)

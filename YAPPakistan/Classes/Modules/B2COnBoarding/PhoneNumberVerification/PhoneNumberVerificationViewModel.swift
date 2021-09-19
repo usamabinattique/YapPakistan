@@ -10,7 +10,6 @@ import Foundation
 import RxSwift
 import YAPComponents
 
-
 protocol PhoneNumberVerificationViewModelInput {
     var textObserver: AnyObserver<String?> { get }
     var viewAppearedObserver: AnyObserver<Bool> { get }
@@ -42,7 +41,7 @@ protocol PhoneNumberVerificationViewModelType {
 class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, PhoneNumberVerificationViewModelOutput, PhoneNumberVerificationViewModelType {
     var inputs: PhoneNumberVerificationViewModelInput { return self }
     var outputs: PhoneNumberVerificationViewModelOutput { return self }
-    
+
     private let textSubject = BehaviorSubject<String?>(value: nil)
     private let viewAppearedSubject = PublishSubject<Bool>()
     private let validSubject = BehaviorSubject<Bool>(value: false)
@@ -58,7 +57,7 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
     private let stageSubject = PublishSubject<OnboardingStage>()
     private let resendSubject = PublishSubject<Void>()
     private let poppedSubject = PublishSubject<Void>()
-    
+
     // inputs
     var textObserver: AnyObserver<String?> { return textSubject.asObserver() }
     var viewAppearedObserver: AnyObserver<Bool> { return viewAppearedSubject.asObserver() }
@@ -66,7 +65,7 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
     var stageObserver: AnyObserver<OnboardingStage> { return stageSubject.asObserver() }
     var resendObserver: AnyObserver<Void> { return resendSubject.asObserver() }
     var poppedObserver: AnyObserver<Void> { return poppedSubject.asObserver() }
-    
+
     // outputs
     var valid: Observable<Bool> { return validSubject.asObservable() }
     var result: Observable<OnBoardingUser> { return resultSubject.asObservable() }
@@ -78,7 +77,7 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
     var progress: Observable<Float> { return progressSubject.asObservable() }
     var stage: Observable<OnboardingStage> { return stageSubject.asObservable() }
     var showAlert: Observable<String> { return showAlertSubject.asObservable() }
-    
+
     private let disposeBag = DisposeBag()
     private let phoneNumberText: String
     private var otpCode: String = ""
@@ -90,28 +89,28 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
     private let resendBlocked = BehaviorSubject<Bool>(value: false)
     private let repository: OnBoardingRepository
     private var otpForRequest: String?
-    
+
     init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser, otpTime: TimeInterval = 300) {
         self.repository = onBoardingRepository
         self.user = user
         self.otpTime = otpTime
         self.phoneNumberText = user.mobileNo.formattedValue ?? ""
         self.otpResendTime = otpTime
-        
+
         phoneNumberSubject.onNext( "screen_verify_phone_number_display_text_sub_title".localized + "\n" + phoneNumberText)
-        
+
         textSubject.map { [unowned self] text -> Bool in
             self.otpCode = text ?? ""
             return text?.count ?? 0 == 6
         }.bind(to: validSubject).disposed(by: disposeBag)
-        
+
         let viewAppeared = viewAppearedSubject.filter { $0 }
-        
+
         viewAppeared.map { [unowned self] _ -> Float in return self.user.accountType == .b2cAccount ? 0.4 : 0.428 }.bind(to: progressSubject).disposed(by: disposeBag)
         viewAppeared.map { [unowned self] _ in self.otpCode.count == 6 }.bind(to: validSubject).disposed(by: disposeBag)
-        
+
         let request = sendSubject.filter {
-            if case OnboardingStage.otp = $0 { return true}
+            if case OnboardingStage.otp = $0 { return true }
             return false
         }
 
@@ -119,22 +118,23 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
             self.endEdittingSubject.onNext(true)
             YAPProgressHud.showProgressHud()
         }).withLatestFrom(textSubject).unwrap().flatMap {[unowned self] text -> Observable<Event<OTPData>> in
-            guard let countryCode = user.mobileNo.countryCode, let number = user.mobileNo.number else { return .error(NetworkErrors.notFound)}
+            guard let countryCode = user.mobileNo.countryCode, let number = user.mobileNo.number else { return .error(NetworkErrors.notFound) }
             return self.repository.verifyOTP(countryCode: countryCode, mobileNo: number, otp: text)
         }.do(onNext: { _ in
             YAPProgressHud.hideProgressHud()
         }).share()
-        
+
         // request.elements().filter{ $0.isWaiting }.map{ Int($0.waitingListRank ?? "1") ?? 1 }.bind(to: waitingSubject).disposed(by: disposeBag)
-        
+
         request.elements().map{ $0.otpToken }
             .map { [weak self] in
                 self?.user.otpVerificationToken = $0
                 // AppAnalytics.shared.logEvent(OnBoardingEvent.otpCodeStarted())
-                return self?.user }.unwrap()
+                return self?.user
+            }.unwrap()
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
-        
+
         let resendReqeust = resendSubject.do(onNext: { self.endEdittingSubject.onNext(true) }).flatMap { [unowned self] _ -> Observable<Event<String?>> in
             YAPProgressHud.showProgressHud()
             return self.repository.resendOTP(countryCode: self.user.mobileNo.countryCode ?? "", mobileNo: self.user.mobileNo.number ?? "", accountType: user.accountType.rawValue)
@@ -148,7 +148,7 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
         }).map { _ in  "screen_verify_phone_number_display_text_resend_otp_success".localized }.bind(to: showAlertSubject).disposed(by: disposeBag)
 
         Observable.merge(request.errors(), resendReqeust.errors()).map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
-         
+
         request.errors().map{ error -> Bool in
             guard case let NetworkErrors.internalServerError(serverError) = error else { return false }
             guard serverError?.errors.first?.code == "1095" else { return false }
@@ -156,13 +156,13 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
         }
         .bind(to: resendBlocked)
         .disposed(by: disposeBag)
-        
+
         request.errors().map{ _ in nil }
             .do(onNext: { [unowned self] in self.otpForRequest = $0 })
             .bind(to: textSubject).disposed(by: disposeBag)
 
         startTimer()
-        
+
         poppedSubject.subscribe(onNext: { [unowned self] in
             self.completeSubscriptions()
         }).disposed(by: disposeBag)
@@ -173,12 +173,12 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
             .disposed(by: disposeBag)
         */
         resendTimeSubject.map{ $0.timeString }.bind(to: timerTextSubject).disposed(by: disposeBag)
-        
-        Observable.combineLatest(resendTimeSubject.map{ $0 == 0}, resendBlocked)
+
+        Observable.combineLatest(resendTimeSubject.map{ $0 == 0 }, resendBlocked)
             .map{ $0.0 && !$0.1 }
             .bind(to: resendActiveSubject)
             .disposed(by: disposeBag)
-        
+
         textSubject.unwrap()
             .filter{ [unowned self] in $0.count == 6 && self.otpForRequest != $0 }
             .do(onNext: { [unowned self] in self.otpForRequest = $0 }).map{ _ in .otp }
@@ -187,7 +187,7 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
 }
 
 private extension PhoneNumberVerificationViewModel {
-    
+
     func completeSubscriptions() {
         resultSubject.onCompleted()
         validSubject.onCompleted()
@@ -195,13 +195,13 @@ private extension PhoneNumberVerificationViewModel {
         progressSubject.onCompleted()
         sendSubject.dispose()
     }
-    
+
     func startTimer() {
         resendActiveSubject.onNext(false)
         otpResendTime = otpTime
         timerTextSubject.onNext(otpResendTime.timeString)
-        
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] (timer) in
+
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] timer in
             guard let `self` = self else {
                 timer.invalidate()
                 return
@@ -219,11 +219,11 @@ private extension PhoneNumberVerificationViewModel {
 }
 
 fileprivate extension TimeInterval {
-    
+
     var timeString: String {
-        let minutes = Int(self/60.0)
+        let minutes = Int(self / 60.0)
         let seconds = Int(self) % 60
-        
-        return String.init(format: "%02d:%02d", minutes, seconds)
+
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 }

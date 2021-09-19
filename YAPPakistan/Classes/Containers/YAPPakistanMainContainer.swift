@@ -35,7 +35,7 @@ public final class YAPPakistanMainContainer {
         self.themeService = AppTheme.service(initial: .light)
         self.credentialsStore = CredentialsManager()
     }
-    
+
     public func rootCoordinator(window: UIWindow) -> AppCoordinator {
         AppCoordinator(window: window, shortcutItem: nil, container: self)
     }
@@ -78,6 +78,13 @@ public final class YAPPakistanMainContainer {
     
     func makeAuthenticationService(xsrfToken: String) -> AuthenticationService {
         return AuthenticationService(apiClient: makeAPIClient(), authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+    }
+
+    func makeReachedQueueTopViewController() -> ReachedQueueTopViewController {
+        let viewModel = ReachedQueueTopViewModel()
+        let viewController = ReachedQueueTopViewController(themeService: themeService, viewModel: viewModel)
+
+        return viewController
     }
 
     public func makeDummyViewController(xsrfToken: String) -> UIViewController {

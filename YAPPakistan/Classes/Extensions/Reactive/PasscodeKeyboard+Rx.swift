@@ -10,7 +10,7 @@ import RxCocoa
 import YAPComponents
 
 extension Reactive where Base: PasscodeKeyboard {
-    
+
     var keyTapped: Observable<String> {
         let zero = base.zero.rx.titleTap
         let one = base.one.rx.titleTap
@@ -26,13 +26,10 @@ extension Reactive where Base: PasscodeKeyboard {
         let merged = Observable.merge(zero, one, two, three, four, five, six, seven, eight, nine).unwrap()
         return Observable.merge(merged, backspace) //, clear)
     }
-    
+
     var themeColor: Binder<UIColor> {
         return Binder(self.base) { keyboard, thColor -> Void in
             keyboard.themeColor = thColor
         }
     }
 }
-
-
-

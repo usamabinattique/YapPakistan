@@ -18,7 +18,7 @@ extension Response {
         case result = "data"
         case serverErrors = "errors"
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         result = try values.decode(T.self, forKey: .result)

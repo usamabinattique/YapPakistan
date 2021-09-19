@@ -40,17 +40,17 @@ public class InitialsImageView: UIView {
         super.init(frame: frame)
         commonInit()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
-    
+
     func commonInit() {
         setupViews()
         setupConstraints()
     }
-    
+
     // MARK: Lifecycle
 
     public override func layoutSubviews() {
@@ -60,7 +60,7 @@ public class InitialsImageView: UIView {
     }
 
     // MARK: View Setup
-    
+
     private func setupViews() {
         translatesAutoresizingMaskIntoConstraints = false
 
@@ -69,7 +69,7 @@ public class InitialsImageView: UIView {
         addSubview(addButtonContainer)
         addButtonContainer.addSubview(addButton)
     }
-    
+
     private func setupConstraints() {
         initialsLabel.centerInSuperView()
         imageView.centerInSuperView()

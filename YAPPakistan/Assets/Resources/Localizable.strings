@@ -76,10 +76,11 @@
 "screen_sign_in_button_sign_in_touch_id" = "Sign in with Touch ID";
 "screen_sign_in_display_text_error_text" = "That doesn't look right. Please try again";
 
-//MARK: Complete Verification FSS Screen
-"screen_complete_verification_fss_display_text_heading_text" = "you reached the top of the Queue!";
-"screen_complete_verification_fss_sub_heading_text" = "You are now ready to fully activate and begin using your YAP account.";
-"screen_complete_verification_fss_info_text" = "Make sure you have your Emirates ID at hand before we proceed";
+// MARK: Reached Queue Top Screen
+"screen_reached_queue_top_heading_text" = "%@, you reached the top of the Queue!";
+"screen_reached_queue_top_sub_heading_text" = "You are now ready to fully activate and begin using your YAP account.";
+"screen_reached_queue_top_info_text" = "Make sure you have your CNIC at hand before we proceed";
+"screen_reached_queue_top_button_complete_verification" = "Complete verification";
 
 // MARK: Phone number screen
 "screen_phone_number_display_text_title" = "What's your mobile number?";
