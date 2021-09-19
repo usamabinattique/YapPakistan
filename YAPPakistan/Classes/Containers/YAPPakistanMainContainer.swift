@@ -35,7 +35,7 @@ public final class YAPPakistanMainContainer {
         self.themeService = AppTheme.service(initial: .light)
         self.credentialsStore = CredentialsManager()
     }
-    
+
     public func rootCoordinator(window: UIWindow) -> AppCoordinator {
         AppCoordinator(window: window, shortcutItem: nil, container: self)
     }

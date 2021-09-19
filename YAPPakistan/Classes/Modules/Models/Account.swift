@@ -8,7 +8,7 @@
 
 import Foundation
 
-
+// swiftlint:disable identifier_name
 public enum AccountError: Error {
     case notVerified
 }
@@ -25,11 +25,11 @@ extension AccountError: LocalizedError {
 public struct ParentAccount: Codable {
     public let uuid: String
     public let _accountType: String
-    public var accountType: AccountType { AccountType(rawValue: _accountType) ?? .b2cAccount}
+    public var accountType: AccountType { AccountType(rawValue: _accountType) ?? .b2cAccount }
     public let customer: Customer
     public let status: String
     public let active: Bool
-    
+
     enum CodingKeys: String, CodingKey {
         case uuid, customer, status, active
         case _accountType = "accountType"
@@ -37,7 +37,7 @@ public struct ParentAccount: Codable {
 }
 
 public struct Account: Codable {
-    
+
     public let uuid: String
     public let iban: String?
     public let accountNumber: String?
@@ -66,33 +66,30 @@ public struct Account: Codable {
     private let _freezeInitiator: String?
     private let _partnerBankApprovalDate: String?
     public var _isWaiting: Bool?
-    public var partnerBankApprovalDate: Date? {
-        _partnerBankApprovalDate.map { DateFormatter.transactionDateFormatter.date(from: $0) } ?? nil
-    }
 
-    public var freezeCode: AccountFreezeCode { AccountFreezeCode.init(rawValue: _freezeCode ?? "") ?? .none }
-    public var freezeInitiator: AccountFreezeInitiator { AccountFreezeInitiator.init(rawValue: _freezeInitiator ?? "") ?? .none }
+    public var freezeCode: AccountFreezeCode { AccountFreezeCode(rawValue: _freezeCode ?? "") ?? .none }
+    public var freezeInitiator: AccountFreezeInitiator { AccountFreezeInitiator(rawValue: _freezeInitiator ?? "") ?? .none }
     public let qrCodeId: String?
     public let documentSubmissionDate: String?
-    
+
     public var isWaiting: Bool {
         return _isWaiting ?? false
     }
-    
+
     public var isUserVerfied: Bool {
         return accountStatus == .verificationSucceed || accountStatus == .cardActivated
     }
-    
+
     public var securedIBAN: String? {
         return (accountStatus == .verificationSucceed || accountStatus == .cardActivated) ? iban : String(repeating: "*", count: iban?.count ?? 0)
     }
-    
+
     public var securedBIC: String {
         return (accountStatus == .verificationSucceed || accountStatus == .cardActivated) ? bank.swiftCode : String(repeating: "*", count: bank.swiftCode.count)
     }
-    
+
     public var creationDate: Date? { DateFormatter.transactionDateFormatter.date(from: createdDate) }
-    
+
     private enum CodingKeys: String, CodingKey {
         case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active, documentsVerified, companyType, soleProprietary, customer, bank, parentAccount, otpBlocked
         case _accountStatus = "notificationStatuses"
@@ -108,7 +105,7 @@ public struct Account: Codable {
         case documentSubmissionDate = "additionalDocSubmitionDate"
         case _isWaiting = "isWaiting"
     }
-    
+
     public var isOTPBlocked: Bool { otpBlocked ?? false }
 }
 
@@ -142,7 +139,7 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
     }
-    
+
     init(account: Account, updatedEmail: String) {
         self.uuid = account.uuid
         self.iban = account.iban
@@ -171,7 +168,7 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
     }
-    
+
     init(account: Account, soleProprietary: Bool) {
         self.uuid = account.uuid
         self.iban = account.iban
@@ -200,7 +197,7 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
     }
-    
+
     init(account: Account, accountStatus: AccountStatus) {
         self.uuid = account.uuid
         self.iban = account.iban
@@ -228,13 +225,6 @@ public extension Account {
         self.qrCodeId = account.qrCodeId
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
-    }
-}
-
-// MARK: - Mocked Extension
-public extension Account {
-    static var mocked: Account {
-        return Account.init(uuid: "12312321", iban: "AE545646464646", accountNumber: "1000000212120", accountType: .b2cAccount, defaultProfile: true, companyName: nil, packageName: nil, status: "Active", active: true, documentsVerified: true, companyType: nil, soleProprietary: true, _accountStatus: AccountStatus.onboarded.rawValue, customer: Customer(uuid: "12312321", _email: "email@domain.com", countryCode: "", mobileNo: "213123123", firstName: "Aftab", lastName: "Iqbal", companyName: nil, emailVerified: true, mobileNoVerified: true, status: "Active", dob: "", passportNo: nil, nationality: nil, imageURL: nil, customerId: nil, homeCountry: nil, founder: false, customerColor: nil), bank: Bank(id: 1, name: "UBL", bankCode: "1234", swiftCode: "1234", address: "Iris Watson P.O. Box 283 8562 Fusce Rd. Frederick Nebraska 20620 (372) 587-2335"), _parnterBankStatus: PartnerBankStatus.activated.rawValue, createdDate: "2019-08-07T12:15:47", parentAccount: nil, otpBlocked: nil, _eidExpiryStatus: nil, eidNotificationContent: nil, _freezeCode: nil, _freezeInitiator: nil, _partnerBankApprovalDate: nil, qrCodeId: nil, documentSubmissionDate: nil)
     }
 }
 
@@ -340,15 +330,15 @@ public extension Account {
         guard let `iban` = iban else { return nil }
         return format(iban: iban)
     }
-    
+
     var maskedAndFormattedIBAN: String? {
         guard let `iban` = iban else { return nil }
         return format(iban: mask(iban: iban))
     }
-    
+
     var maskedAccountNumber: String? {
         guard let `accountNumber` = accountNumber else { return nil }
-        return accountNumber.dropLast(6)+"******"
+        return accountNumber.dropLast(6) + "******"
     }
 }
 

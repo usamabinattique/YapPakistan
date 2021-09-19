@@ -11,45 +11,44 @@ import RxSwift
 import RxCocoa
 import YAPComponents
 
-
-//TODO Login screen Needs to be refacrtor.
+// TODO Login screen Needs to be refacrtor.
 
 class LoginViewController: UIViewController {
-    
-    //var viewModel: LoginViewModelType!
-    
+
+    // var viewModel: LoginViewModelType!
+
     fileprivate lazy var logo: UIImageView = {
         let logo = UIImageView()
         logo.contentMode = .scaleAspectFit
-        logo.image = UIImage(named: "icon_app_logo", in:.yapPakistan)
+        logo.image = UIImage(named: "icon_app_logo", in: .yapPakistan)
         logo.translatesAutoresizingMaskIntoConstraints = false
         return logo
     }()
-    
+
     fileprivate lazy var headingLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.large
-        label.text =  "screen_sign_in_display_text_heading_text".localized
-        //label.textColor = UIColor.appColor(ofType: .greyDark)
+        label.text = "screen_sign_in_display_text_heading_text".localized
+        // label.textColor = UIColor.appColor(ofType: .greyDark)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
+
     lazy var usernameTextField: AppRoundedTextField = {
         let textfield = AppRoundedTextField()
-        textfield.placeholder =  "screen_sign_in_input_text_email_hint".localized
+        textfield.placeholder = "screen_sign_in_input_text_email_hint".localized
         textfield.autocorrectionType = .no
         textfield.autocapitalizationType = UITextAutocapitalizationType.none
         textfield.autocorrectionType = UITextAutocorrectionType.no
         textfield.translatesAutoresizingMaskIntoConstraints = false
         textfield.returnKeyType = .done
         textfield.clearButtonMode = .whileEditing
-        textfield.errorColor = .red    //.error
-        //textfield.placeholderColor = .blue //.greyDark
+        textfield.errorColor = .red    // .error
+        // textfield.placeholderColor = .blue //.greyDark
         return textfield
     }()
-    
+
     fileprivate lazy var backgroundImage: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
@@ -58,7 +57,7 @@ class LoginViewController: UIViewController {
         image.contentMode = .scaleAspectFill
         return image
     }()
-    
+
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -68,18 +67,18 @@ class LoginViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
-    
+
     fileprivate lazy var rememberId: UILabel = {
         let label = UILabel()
         label.font = UIFont.small
-        label.text =  "screen_sign_in_display_text_remember_id_text".localized
+        label.text = "screen_sign_in_display_text_remember_id_text".localized
         label.textColor = UIColor.black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
-    fileprivate lazy var rememberIdSwitch: UIAppSwitch = UIAppSwitchFactory.createUIAppSwitch(isOn: true, onImage: UIImage(named: "icon_check_primary_dark", in:.yapPakistan)?.asTemplate)
-    
+
+    fileprivate lazy var rememberIdSwitch: UIAppSwitch = UIAppSwitchFactory.createUIAppSwitch(isOn: true, onImage: UIImage(named: "icon_check_primary_dark", in: .yapPakistan)?.asTemplate)
+
     fileprivate lazy var signInButton: AppRoundedButton = {
         let button = AppRoundedButton()
         button.setTitle("screen_sign_in_button_sign_in".localized, for: .normal)
@@ -87,7 +86,7 @@ class LoginViewController: UIViewController {
         button.isEnabled = false
         return button
     }()
-    
+
     fileprivate lazy var signUpLabel: UIButton = {
         let label = UIButton()
         label.titleLabel?.font = UIFont.regular
@@ -97,52 +96,52 @@ class LoginViewController: UIViewController {
         let attributed = NSMutableAttributedString(string: text)
         attributed.addAttribute(.foregroundColor, value: UIColor.darkGray /*.appColor(ofType: .greyDark)*/, range: NSRange(location: 0, length: text.count))
         attributed.addAttributes([.foregroundColor: UIColor.blue /*.primary*/, .underlineStyle: NSUnderlineStyle.single.rawValue], range: (text as NSString).range(of: signUp))
-        
+
         label.setAttributedTitle(attributed, for: .normal)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
+
     var signInButtonBottomConstraint: NSLayoutConstraint!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        //bind(viewModel: viewModel)
+        // bind(viewModel: viewModel)
         setupSubViews()
         setupConstraints()
-        
+
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapAction)))
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //if UIScreen.screenType != .iPhone5 {
+        // if UIScreen.screenType != .iPhone5 {
             registerForKeyboardNotifications()
-        //}
-        
+        // }
+
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         removeForKeyboardNotifications()
     }
-    
+
     override func onTapBackButton() {
-        //viewModel.inputs.onSignUp.onNext(())
+        // viewModel.inputs.onSignUp.onNext(())
     }
-    
+
     @objc func tapAction() {
         view.endEditing(true)
     }
-    
+
 }
 
 extension LoginViewController {
-    
+
     fileprivate func setupSubViews() {
         view.backgroundColor = .white
-        //if let count = navigationController?.viewControllers.count, count > 1 { addBackButton() }
+        // if let count = navigationController?.viewControllers.count, count > 1 { addBackButton() }
         view.addSubview(backgroundImage)
         view.addSubview(logo)
         view.addSubview(headingLabel)
@@ -153,13 +152,13 @@ extension LoginViewController {
         view.addSubview(signInButton)
         view.addSubview(signUpLabel)
     }
-    
+
     fileprivate func setupConstraints() {
         let logoConstraints = [
             logo.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
             logo.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ]
-        
+
         let headingConstraints = [
             headingLabel.topAnchor.constraint(lessThanOrEqualTo: logo.bottomAnchor, constant: 32.6),
             headingLabel.topAnchor.constraint(greaterThanOrEqualTo: logo.bottomAnchor, constant: 15),
@@ -167,28 +166,28 @@ extension LoginViewController {
             view.trailingAnchor.constraint(equalTo: headingLabel.trailingAnchor),
             headingLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ]
-        
+
         usernameTextField
             .toBottomOf(headingLabel, .lessThanOrEqualTo, constant: 53)
             .toBottomOf(headingLabel, .greaterThanOrEqualTo, constant: 10)
             .alignEdgesWithSuperview([.left, .right], constants: [19, 19])
             .height(constant: 86)
-        
+
         let stackViewConstraints = [
             stackView.topAnchor.constraint(equalTo: usernameTextField.bottomAnchor, constant: 10),
             stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ]
-        
+
         let backgroundImageConstraints = [
             backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
             backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImage.heightAnchor.constraint(equalToConstant: 160),
             view.trailingAnchor.constraint(equalTo: backgroundImage.trailingAnchor)
-            
+
         ]
-        
+
         signInButtonBottomConstraint = signUpLabel.topAnchor.constraint(equalTo: signInButton.bottomAnchor, constant: 20)
-        
+
         let signInButtonContraints = [
             signInButtonBottomConstraint!,
             signInButton.topAnchor.constraint(greaterThanOrEqualTo: stackView.bottomAnchor, constant: 15),
@@ -196,14 +195,14 @@ extension LoginViewController {
             signInButton.widthAnchor.constraint(equalToConstant: 192),
             signInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ]
-        
+
         let signInLabelContraints = [
             view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: signUpLabel.bottomAnchor, constant: 30),
             signUpLabel.widthAnchor.constraint(equalToConstant: view.bounds.size.width),
             signUpLabel.heightAnchor.constraint(equalToConstant: 24),
             signUpLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ]
-        
+
         NSLayoutConstraint.activate(logoConstraints +
             headingConstraints +
             stackViewConstraints +
@@ -215,16 +214,16 @@ extension LoginViewController {
 }
 
 extension LoginViewController {
-    
+
     func removeForKeyboardNotifications() {
         NotificationCenter.default.removeObserver(self)
     }
-    
+
     func registerForKeyboardNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
+
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let keyboardHeight = keyboardSize.height
@@ -235,14 +234,14 @@ extension LoginViewController {
             }
         }
     }
-    
+
     @objc func keyboardWillHide(notification: NSNotification) {
         signInButtonBottomConstraint.constant = 20
         UIView.animate(withDuration: 1.0) {
             self.view.layoutIfNeeded()
         }
     }
-    
+
 }
 
 extension LoginViewController {

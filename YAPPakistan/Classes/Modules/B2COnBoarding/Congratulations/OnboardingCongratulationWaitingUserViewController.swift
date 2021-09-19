@@ -15,7 +15,7 @@ class OnboardingCongratulationWaitingUserViewController: OnboardingCongratulatio
         constraint.isActive = true
         return constraint
     }()
-    
+
     override func setup() {
         _ = rowHeight
         animateHeading()
@@ -24,21 +24,21 @@ class OnboardingCongratulationWaitingUserViewController: OnboardingCongratulatio
         animateFootnote()
         animateCompleteVerificationButton()
     }
-    
+
     override func addFootnoteTopConstraint() -> NSLayoutConstraint {
        return footnoteWairingUserTopConstraint
     }
-    
+
     override func rowHeightDivisor() -> CGFloat {
         return 90
     }
-    
+
     override func footNoteText() -> String {
         "screen_onboarding_congratulations_waiting_user_display_text_meeting_note".localized
     }
-    
+
     override func actionButtonText() -> String {
         "screen_onboarding_congratulations_waiting_user_button_complete_verification".localized
     }
-    
+
 }

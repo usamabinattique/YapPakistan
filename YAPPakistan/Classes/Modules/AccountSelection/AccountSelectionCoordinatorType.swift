@@ -12,15 +12,15 @@ import RxSwift
 import YAPCore
 
 public protocol AccountSelectionCoordinatorType: Coordinator<ResultType<Void>> {
-    
+
     var root: UINavigationController! { get }
     var result: PublishSubject<ResultType<Void>> { get }
-    //var loginResult: PublishSubject<ResultType<Void>> { get }
-    //var welcomeResult: PublishSubject<ResultType<Void>> { get }
+    // var loginResult: PublishSubject<ResultType<Void>> { get }
+    // var welcomeResult: PublishSubject<ResultType<Void>> { get }
     var b2cOnboardingResult: PublishSubject<ResultType<Void>> { get }
-    
-    //func login()
-    //func welcome()
+
+    // func login()
+    // func welcome()
     func b2cOnboarding()
 }
 
@@ -49,7 +49,7 @@ extension AccountSelectionCoordinatorType {
             .disposed(by: rx.disposeBag)
     }
     */
- 
+
     /*
     func login() {
         coordinate(to: LoginCoordinatorPushable(root: root))

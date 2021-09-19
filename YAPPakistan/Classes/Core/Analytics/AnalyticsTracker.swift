@@ -11,8 +11,8 @@ typealias AnalyticsParameter = [String: Any]
 typealias AnalyticsUserData = [String: String]
 
 protocol AnalyticsEvent {
-    var name: String {  get }
-    var payload: AnalyticsParameter? {  get }
+    var name: String { get }
+    var payload: AnalyticsParameter? { get }
 }
 
 protocol AnalyticsTrackerType {
@@ -23,9 +23,8 @@ class FirebaseAnalyticsTracker: AnalyticsTrackerType {
     init(userId: String?, userData: AnalyticsUserData?) {
     }
     func setUserData(userId: String, userData: AnalyticsUserData?) {
-        
+
     }
     func log(event: AnalyticsEvent) {
     }
 }
-

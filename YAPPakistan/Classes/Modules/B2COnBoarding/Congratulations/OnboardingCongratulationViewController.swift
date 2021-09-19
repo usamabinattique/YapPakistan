@@ -11,21 +11,20 @@ import YAPComponents
 import RxSwift
 import RxTheme
 
-
 public class OnboardingCongratulationViewController: UIViewController {
-    
+
     lazy var marginLayout: UILayoutGuide = {
         return view.layoutMarginsGuide
     }()
-    
+
     lazy var safeAreaHeight: CGFloat = {
         return view.bounds.height - (view.safeAreaInsets.top + view.safeAreaInsets.bottom)
     }()
-    
+
     lazy var rowHeight: CGFloat = {
         return safeAreaHeight / rowHeightDivisor()
     }()
-    
+
     lazy var headingLabel: MarqueeLabel = {
         let label = MarqueeLabel()
         label.textAlignment = .center
@@ -38,14 +37,14 @@ public class OnboardingCongratulationViewController: UIViewController {
         label.fadeLength = 10.0
         return label
     }()
-    
+
     lazy var headingLabelCenterYConstraint: NSLayoutConstraint = {
         headingLabel.sizeToFit()
         let constraint = headingLabel.topAnchor.constraint(equalTo: marginLayout.topAnchor, constant: (safeAreaHeight / 2.3))
         constraint.isActive = true
         return constraint
     }()
-    
+
     lazy var subheadingLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -57,14 +56,14 @@ public class OnboardingCongratulationViewController: UIViewController {
         label.transform = CGAffineTransform(scaleX: 0.7, y: 0.7)
         return label
     }()
-    
+
     lazy var subheadingLabelCenterYConstraint: NSLayoutConstraint = {
         subheadingLabel.sizeToFit()
         let constraint = subheadingLabel.topAnchor.constraint(equalTo: marginLayout.topAnchor, constant: (safeAreaHeight / 1.9) + rowHeight)
         constraint.isActive = true
         return constraint
     }()
-    
+
     lazy var paymentCardImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -75,7 +74,7 @@ public class OnboardingCongratulationViewController: UIViewController {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-    
+
     // MARK: - IBAN Header
     lazy var ibanHeaderLabel: UILabel = {
         let label = UILabel()
@@ -86,13 +85,13 @@ public class OnboardingCongratulationViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
+
     lazy var ibanHeaderLabelTopConstraint: NSLayoutConstraint = {
         let constraint = ibanHeaderLabel.topAnchor.constraint(equalTo: paymentCardImageView.bottomAnchor, constant: 100)
         constraint.isActive = true
         return constraint
     }()
-    
+
     // MARK: - IBAN
     lazy var ibanLabel: UILabel = {
         let label = UILabel()
@@ -101,7 +100,7 @@ public class OnboardingCongratulationViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-    
+
     // MARK: - IBAN view
     lazy var ibanView: UIView = {
         let view = UIView()
@@ -110,22 +109,22 @@ public class OnboardingCongratulationViewController: UIViewController {
         view.clipsToBounds = true
         view.alpha = 0
         view.layer.cornerRadius = 22
-        
+
         let label = ibanLabel
         view.addSubview(label)
         label.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         label.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         view.trailingAnchor.constraint(equalTo: label.trailingAnchor).isActive = true
-        
+
         return view
     }()
-    
+
     lazy var ibanViewTopConstraint: NSLayoutConstraint = {
         let constraint = ibanView.topAnchor.constraint(equalTo: ibanHeaderLabel.bottomAnchor, constant: 100)
         constraint.isActive = true
         return constraint
     }()
-    
+
     // MARK: - Footnote
     lazy var footnoteLabel: UILabel = {
         let label = UILabel()
@@ -134,65 +133,65 @@ public class OnboardingCongratulationViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.text =  footNoteText()
+        label.text = footNoteText()
         label.alpha = 0
         return label
     }()
-    
+
     lazy var footnoteTopConstraint: NSLayoutConstraint = {
         let constraint = footnoteLabel.topAnchor.constraint(equalTo: ibanView.bottomAnchor, constant: 50)
         constraint.isActive = true
         return constraint
     }()
-    
+
     // MARK: - Complete Verification Button
     lazy var completeVerificationButton: AppRoundedButton = {
         let button = AppRoundedButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.heightAnchor.constraint(equalToConstant: 52).isActive = true
-        button.setTitle( actionButtonText() , for: .normal)
+        button.setTitle( actionButtonText(), for: .normal)
         button.alpha = 0
         return button
     }()
-    
+
     lazy var completeVerificationButtonTopConstraint: NSLayoutConstraint = {
         let constraint = completeVerificationButton.topAnchor.constraint(equalTo: footnoteLabel.bottomAnchor, constant: 142)
         constraint.isActive = true
         return constraint
     }()
-    
+
     // MARK: - Properties
     var viewModel: OnboardingCongratulationViewModelType!
-    var themeService:ThemeService<AppTheme>!
-    
+    var themeService: ThemeService<AppTheme>!
+
     // MARK: - Initialization
-    
-    init(themeService:ThemeService<AppTheme>, viewModel: OnboardingCongratulationViewModelType) {
+
+    init(themeService: ThemeService<AppTheme>, viewModel: OnboardingCongratulationViewModelType) {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
+
     // MARK: - View Life Cycle
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
+
         setup()
         setupTheme()
         style()
         localize()
         bind()
     }
-    
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
     }
-    
+
     func setup() {
         _ = rowHeight
         animateHeading()
@@ -203,7 +202,7 @@ public class OnboardingCongratulationViewController: UIViewController {
         animateFootnote()
         animateCompleteVerificationButton()
     }
-    
+
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
@@ -211,23 +210,23 @@ public class OnboardingCongratulationViewController: UIViewController {
             .bind({ UIColor($0.primaryDark) }, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [subheadingLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [ibanLabel.rx.textColor])
-            .bind({ UIColor($0.greyLight).withAlphaComponent(0.5)}, to: [ibanView.rx.backgroundColor])
+            .bind({ UIColor($0.greyLight).withAlphaComponent(0.5) }, to: [ibanView.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [footnoteLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
-    
+
     func addFootnoteTopConstraint() -> NSLayoutConstraint {
         return footnoteTopConstraint
     }
-    
+
     func rowHeightDivisor() -> CGFloat {
         return 100
     }
-    
+
     func footNoteText() -> String {
         return "screen_onboarding_congratulations_display_text_meeting_note".localized
     }
-    
+
     func actionButtonText() -> String {
         "screen_onboarding_congratulations_button_complete_verification".localized
     }
@@ -235,15 +234,13 @@ public class OnboardingCongratulationViewController: UIViewController {
 
 // MARK: - Setup
 extension OnboardingCongratulationViewController {
-    
-    
-    
+
     fileprivate func setupUI() {
-        
+
     }
-    
+
     func animateHeading() {
-        
+
         view.addSubview(headingLabel)
         _ = headingLabelCenterYConstraint
         headingLabel.centerXAnchor.constraint(equalTo: marginLayout.centerXAnchor).isActive = true
@@ -258,8 +255,9 @@ extension OnboardingCongratulationViewController {
                        animations: {
                 self.headingLabel.alpha = 1
                 self.headingLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
-        }) { (_) in }
-        
+        }) { _ in
+        }
+
         UIView.animate(withDuration: 1,
                        delay: 2.2,
                        usingSpringWithDamping: 1,
@@ -268,14 +266,14 @@ extension OnboardingCongratulationViewController {
                        animations: {
                 self.headingLabelCenterYConstraint.constant = self.rowHeight
                 self.view.layoutIfNeeded()
-        }) { (_) in
+        }) { _ in
             //            self.headingLabel.restartLabel()
             //            self.headingLabel.type = .continuous
             //            self.headingLabel.speed = .duration(8.0)
             //            self.headingLabel.fadeLength = 10.0
         }
     }
-    
+
     func animateSubheading() {
         view.addSubview(subheadingLabel)
         _ = subheadingLabelCenterYConstraint
@@ -293,8 +291,9 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 self.subheadingLabel.alpha = 1
                 self.subheadingLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
-        }) { (_) in }
-        
+        }) { _ in
+        }
+
         UIView.animate(withDuration: 1,
                        delay: 2.5,
                        usingSpringWithDamping: 1,
@@ -304,9 +303,10 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 self.subheadingLabelCenterYConstraint.constant = self.rowHeight * 8
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
-    
+
     func animatePaymentCard() {
         view.addSubview(paymentCardImageView)
         paymentCardImageView.topAnchor.constraint(equalTo: subheadingLabel.bottomAnchor, constant: rowHeight).isActive = true
@@ -318,7 +318,7 @@ extension OnboardingCongratulationViewController {
             .scale(to: CGAffineTransform(scaleX: 1, y: 1), delay: 2.7, duration: 1.5, springWithDamping: 0.5, initialSpringVelocity: 5)
             ])
     }
-    
+
     fileprivate func animateIBANHeader() {
         view.addSubview(ibanHeaderLabel)
         ibanHeaderLabel.centerXAnchor.constraint(equalTo: marginLayout.centerXAnchor).isActive = true
@@ -327,7 +327,7 @@ extension OnboardingCongratulationViewController {
         ibanHeaderLabel.animate([
             .fadeIn(duration: 1, delay: 3)
             ])
-        
+
         UIView.animate(withDuration: 2,
                        delay: 3,
                        usingSpringWithDamping: 0.7,
@@ -335,11 +335,12 @@ extension OnboardingCongratulationViewController {
                        options: [.curveEaseOut],
                        animations: { [weak self] in
                 guard let `self` = self else { return }
-                self.ibanHeaderLabelTopConstraint.constant = 0 //self.rowHeight * 1.2
+                self.ibanHeaderLabelTopConstraint.constant = 0 // self.rowHeight * 1.2
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
-    
+
     fileprivate func animateIBANView() {
         view.addSubview(ibanView)
         ibanView.centerXAnchor.constraint(equalTo: marginLayout.centerXAnchor).isActive = true
@@ -350,7 +351,7 @@ extension OnboardingCongratulationViewController {
         ibanView.animate([
             .fadeIn(duration: 1, delay: 3.3)
             ])
-        
+
         UIView.animate(withDuration: 2,
                        delay: 3.3,
                        usingSpringWithDamping: 0.7,
@@ -360,9 +361,10 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 self.ibanViewTopConstraint.constant = self.rowHeight * 2.5
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
-    
+
     func animateFootnote() {
         view.addSubview(footnoteLabel)
         footnoteLabel.centerXAnchor.constraint(equalTo: marginLayout.centerXAnchor).isActive = true
@@ -382,9 +384,10 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 topConstraint.constant = self.rowHeight * 3.8
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
-    
+
     func animateCompleteVerificationButton() {
         view.addSubview(completeVerificationButton)
         completeVerificationButton.centerXAnchor.constraint(equalTo: marginLayout.centerXAnchor).isActive = true
@@ -404,15 +407,16 @@ extension OnboardingCongratulationViewController {
                 guard let `self` = self else { return }
                 self.completeVerificationButtonTopConstraint.constant = self.rowHeight * 3.8
                 self.view.layoutIfNeeded()
-        }) { (_) in }
+        }) { _ in
+        }
     }
-    
+
     fileprivate func style() {
-        
+
     }
-    
+
     fileprivate func localize() {
-        
+
     }
 }
 
@@ -424,41 +428,39 @@ extension OnboardingCongratulationViewController {
         bindIBAN()
         bindCompleteVerification()
     }
-    
+
     fileprivate func bindName() {
-         viewModel.outputs.name.map { String(format:  "screen_onboarding_congratulations_display_text_title".localized, $0) }.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
+         viewModel.outputs.name.map { String(format: "screen_onboarding_congratulations_display_text_title".localized, $0) }.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
     }
-    
+
     fileprivate func bindTimeInterval() {
          viewModel.outputs.onboardingInterval.subscribe(onNext: { [weak self] interval in
             if interval > 60 || interval <= 0 {
-                self?.subheadingLabel.text =  "screen_onboarding_congratulations_display_text_sub_title_no_interval".localized
+                self?.subheadingLabel.text = "screen_onboarding_congratulations_display_text_sub_title_no_interval".localized
                 self?.subheadingLabel.sizeToFit()
             } else {
                 let secondsInString = String(format: "%.0f", ceil(interval))
                 let maxValue = Int(secondsInString)!
-                let attributedString = NSMutableAttributedString(string: String(format:  "screen_onboarding_congratulations_display_text_sub_title".localized, secondsInString), attributes: [
+                let attributedString = NSMutableAttributedString(string: String(format: "screen_onboarding_congratulations_display_text_sub_title".localized, secondsInString), attributes: [
                     .font: UIFont.regular,
                     .foregroundColor: UIColor(self!.themeService.attrs.greyDark)
                     ])
                 attributedString.addAttributes([
                     .font: UIFont.systemFont(ofSize: 16.0, weight: .medium),
-                    .foregroundColor:UIColor(self!.themeService.attrs.primaryDark)
+                    .foregroundColor: UIColor(self!.themeService.attrs.primaryDark)
                     ], range: NSRange(location: 61, length: 9 + secondsInString.count))
                 self?.subheadingLabel.attributedText = attributedString
                 self?.subheadingLabel.sizeToFit()
-                
-                //crash on line bellow
-                //self?.subheadingLabel.animateCountDown(labels: Array((maxValue > 30 ? maxValue - 30 : 9)...maxValue).map({ String(format: "%02d", $0) }), withDuration: 2, inRange: NSRange(location: 61, length: secondsInString.count))
+
             }
         }).disposed(by: rx.disposeBag)
     }
-    
+
     fileprivate func bindIBAN() {
         viewModel.outputs.iban.bind(to: ibanLabel.rx.text).disposed(by: rx.disposeBag)
     }
-    
+
     fileprivate func bindCompleteVerification() {
-         completeVerificationButton.rx.tap.bind(to: viewModel.inputs.completeVerificationObserver).disposed(by: rx.disposeBag) 
+         completeVerificationButton.rx.tap.bind(to: viewModel.inputs.completeVerificationObserver).disposed(by: rx.disposeBag)
     }
 }

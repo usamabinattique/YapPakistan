@@ -8,6 +8,6 @@
 import Foundation
 
 struct ReferredFriendScreenPresented: AnalyticsEvent {
-    var name: String {  "ReferredFriendScreenPresented" }
-    var payload: AnalyticsParameter? {  nil }
+    var name: String { "ReferredFriendScreenPresented" }
+    var payload: AnalyticsParameter? { nil }
 }

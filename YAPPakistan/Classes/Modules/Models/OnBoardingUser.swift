@@ -30,8 +30,4 @@ extension OnBoardingUser {
         self.accountType = accountType
         isWaiting = false
     }
-    
-    static func mock() -> OnBoardingUser {
-        return OnBoardingUser(countryCode: "PK", accountType: .b2bAccount, firstName: "Zain", lastName: "Ul Abe Din", email: "zain@digitify", companyName: "Digitify (Pvt) Ltd.", mobileNo: PhoneNumber(formattedValue: "+92 343 4043339"), passcode: "115599", iban: "4560 0495 87** ****", timeTaken: 60, otpVerificationToken: nil, isWaiting: false)
-    }
 }

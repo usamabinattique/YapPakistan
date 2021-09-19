@@ -8,10 +8,10 @@
 
 import Foundation
 import PhoneNumberKit
-
+// swiftlint:disable identifier_name
 public struct Customer: Codable {
     public var email: String { _email ?? "" }
-    
+
     public let uuid: String
     let _email: String?
     public let countryCode: String?
@@ -30,11 +30,11 @@ public struct Customer: Codable {
     public let homeCountry: String?
     public let founder: Bool?
     public let customerColor: String?
-    
+
     public var isFounder: Bool {
         founder ?? false
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case uuid, countryCode, mobileNo, firstName, lastName, companyName, emailVerified, mobileNoVerified, status, dob, passportNo, nationality, customerId, homeCountry, customerColor
         case _email = "email"
@@ -96,8 +96,8 @@ public extension Customer {
         let mobileNumber = (countryCode ?? "") + mobileNo
         return formatePhoneNumber(mobileNumber).phoneNumber
     }
-    
-    //var accentColor: UIColor { customerColor.map { UIColor.init(hexString: $0) } ?? .primary }
+
+    // var accentColor: UIColor { customerColor.map { UIColor.init(hexString: $0) } ?? .primary }
 }
 
 private extension Customer {
@@ -119,10 +119,6 @@ private extension Customer {
 
 // MARK: - Mocked
 public extension Customer {
-    static var mocked: Customer {
-        return Customer(uuid: "", _email: "john@mailinator.com", countryCode: "", mobileNo: "+92212365847475", firstName: "John", lastName: "Doe", companyName: "Dell, Inc.", emailVerified: true, mobileNoVerified: true, status: "", dob: "", passportNo: nil, nationality: nil, imageURL: nil, customerId: nil, homeCountry: nil, founder: false, customerColor: "A682FF")
-    }
-    
     var homeCountry2Digit: String {
         guard let homeCountry = homeCountry else { return "AE" }
         guard homeCountry.count != 2 else { return homeCountry }

@@ -32,9 +32,6 @@ import Foundation
     }
 }
 
-
 public struct AppSettings {
     @UserDefaultsBacked<Bool>(wrappedValue: true, key: "App-Run-First-Time") public static var isAppRunFirstTime
 }
-
-

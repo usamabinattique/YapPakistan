@@ -14,7 +14,7 @@ public struct PagableResponse<T: Codable>: Codable {
     public let totalElements: Int
     public let isLast: Bool
     public let currentPage: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case content, totalPages, totalElements
         case isLast = "last"

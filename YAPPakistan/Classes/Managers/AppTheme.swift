@@ -35,61 +35,61 @@ public protocol Theme {
 }
 
 struct LightTheme: Theme {
-    var primary: Color              {   Color(hex: "#5E35B1")   }
-    var primaryLight: Color         {   Color(hex: "#7C4DFF")   }
-    var primaryExtraLight: Color    {   Color(hex: "#F0EDFF")   }
-    var primaryDark: Color          {   Color(hex: "#272262")   }
-    var primarySoft: Color          {   Color(hex: "#A682FF")   }
-    var primaryAlt: Color           {   Color(hex: "#BB42EB")   }
-    var grey: Color                 {   Color(hex: "#C9C8D8")   }
-    var greyDark: Color             {   Color(hex: "#9391B1")   }
-    var greyLight: Color            {   Color(hex: "#DAE0F0")   }
-    var greyExtraLight: Color       {   Color(hex: "#EDF0F8")   }
-    var success: Color              {   Color(hex: "#44D389")   }
-    var warning: Color              {   Color(hex: "#FFC430")   }
-    var error: Color                {   Color(hex: "#FF3B30")   }
-    var secondaryBlue: Color        {   Color(hex: "#478DF4")   }
-    var secondaryGreen: Color       {   Color(hex: "#00B9AE")   }
-    var secondaryOrange: Color      {   Color(hex: "#F57F17")   }
-    var secondaryMagenta: Color     {   Color(hex: "#F44774")   }
-    var initials: Color             {   Color(hex: "#7C4DFF")   }
-    var cell: Color                 {   Color(hex: "#F7F8FC")   }
-    var icon: Color                 {   Color(hex: "#5E35B1")   }
-    var iconHolder: Color           {   Color(hex: "#FFFFFF")   }
-    var backgroundColor: Color      {   Color(hex: "#FFFFFF")   }
+    var primary: Color              { Color(hex: "#5E35B1") }
+    var primaryLight: Color         { Color(hex: "#7C4DFF") }
+    var primaryExtraLight: Color    { Color(hex: "#F0EDFF") }
+    var primaryDark: Color          { Color(hex: "#272262") }
+    var primarySoft: Color          { Color(hex: "#A682FF") }
+    var primaryAlt: Color           { Color(hex: "#BB42EB") }
+    var grey: Color                 { Color(hex: "#C9C8D8") }
+    var greyDark: Color             { Color(hex: "#9391B1") }
+    var greyLight: Color            { Color(hex: "#DAE0F0") }
+    var greyExtraLight: Color       { Color(hex: "#EDF0F8") }
+    var success: Color              { Color(hex: "#44D389") }
+    var warning: Color              { Color(hex: "#FFC430") }
+    var error: Color                { Color(hex: "#FF3B30") }
+    var secondaryBlue: Color        { Color(hex: "#478DF4") }
+    var secondaryGreen: Color       { Color(hex: "#00B9AE") }
+    var secondaryOrange: Color      { Color(hex: "#F57F17") }
+    var secondaryMagenta: Color     { Color(hex: "#F44774") }
+    var initials: Color             { Color(hex: "#7C4DFF") }
+    var cell: Color                 { Color(hex: "#F7F8FC") }
+    var icon: Color                 { Color(hex: "#5E35B1") }
+    var iconHolder: Color           { Color(hex: "#FFFFFF") }
+    var backgroundColor: Color      { Color(hex: "#FFFFFF") }
 
 }
 
 struct DarkTheme: Theme {
-    //TODO: update these values for dark mode
-    var primary: Color              {   Color(hex: "#5E35B1")   }
-    var primaryLight: Color         {   Color(hex: "#7C4DFF")   }
-    var primaryExtraLight: Color    {   Color(hex: "#F0EDFF")   }
-    var primaryDark: Color          {   Color(hex: "#272262")   }
-    var primarySoft: Color          {   Color(hex: "#A682FF")   }
-    var primaryAlt: Color           {   Color(hex: "#BB42EB")   }
-    var grey: Color                 {   Color(hex: "#C9C8D8")   }
-    var greyDark: Color             {   Color(hex: "#9391B1")   }
-    var greyLight: Color            {   Color(hex: "#DAE0F0")   }
-    var greyExtraLight: Color       {   Color(hex: "#EDF0F8")   }
-    var success: Color              {   Color(hex: "#44D389")   }
-    var warning: Color              {   Color(hex: "#FFC430")   }
-    var error: Color                {   Color(hex: "#FF3B30")   }
-    var secondaryBlue: Color        {   Color(hex: "#478DF4")   }
-    var secondaryGreen: Color       {   Color(hex: "#00B9AE")   }
-    var secondaryOrange: Color      {   Color(hex: "#F57F17")   }
-    var secondaryMagenta: Color     {   Color(hex: "#F44774")   }
-    var initials: Color             {   Color(hex: "#7C4DFF")   }
-    var cell: Color                 {   Color(hex: "#F7F8FC")   }
-    var icon: Color                 {   Color(hex: "#5E35B1")   }
-    var iconHolder: Color           {   Color(hex: "#FFFFFF")   }
-    var backgroundColor: Color      {   Color(hex: "#FFFFFF")   }
+    // TODO: update these values for dark mode
+    var primary: Color              { Color(hex: "#5E35B1") }
+    var primaryLight: Color         { Color(hex: "#7C4DFF") }
+    var primaryExtraLight: Color    { Color(hex: "#F0EDFF") }
+    var primaryDark: Color          { Color(hex: "#272262") }
+    var primarySoft: Color          { Color(hex: "#A682FF") }
+    var primaryAlt: Color           { Color(hex: "#BB42EB") }
+    var grey: Color                 { Color(hex: "#C9C8D8") }
+    var greyDark: Color             { Color(hex: "#9391B1") }
+    var greyLight: Color            { Color(hex: "#DAE0F0") }
+    var greyExtraLight: Color       { Color(hex: "#EDF0F8") }
+    var success: Color              { Color(hex: "#44D389") }
+    var warning: Color              { Color(hex: "#FFC430") }
+    var error: Color                { Color(hex: "#FF3B30") }
+    var secondaryBlue: Color        { Color(hex: "#478DF4") }
+    var secondaryGreen: Color       { Color(hex: "#00B9AE") }
+    var secondaryOrange: Color      { Color(hex: "#F57F17") }
+    var secondaryMagenta: Color     { Color(hex: "#F44774") }
+    var initials: Color             { Color(hex: "#7C4DFF") }
+    var cell: Color                 { Color(hex: "#F7F8FC") }
+    var icon: Color                 { Color(hex: "#5E35B1") }
+    var iconHolder: Color           { Color(hex: "#FFFFFF") }
+    var backgroundColor: Color      { Color(hex: "#FFFFFF") }
 }
 
 public enum AppTheme: ThemeProvider {
     case light
     case dark
-    
+
     public var associatedObject: Theme {
         switch self {
         case .dark:

@@ -38,7 +38,7 @@ extension AuthResponse {
         case result = "data"
         case serverErrors = "errors"
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         result = try values.decode(T.self, forKey: .result)
@@ -47,9 +47,9 @@ extension AuthResponse {
 }
 
 public class AuthBaseService {
-    
+
     let disposeBag = DisposeBag()
-    
+
     func request<T: Codable>(apiClient: APIClient, route: YAPURLRequestConvertible) -> Observable<T> {
         return apiClient.request(route: route).map { apiResponse -> T in
             let object: T = try self.validate(response: apiResponse)

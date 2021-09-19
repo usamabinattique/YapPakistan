@@ -9,7 +9,7 @@
 import Foundation
 import RxSwift
 import RxCocoa
-//import AppAnalytics
+// import AppAnalytics
 
 public enum BackButtonType {
     case backCircled
@@ -19,7 +19,7 @@ public enum BackButtonType {
 }
 
 public extension UIViewController {
-    //Avoid usind this method sometime it creats issues use this method avoidKeyboard(_ avoid: Bool) for keyboard dismissing
+// Avoid usind this method sometime it creats issues use this method avoidKeyboard(_ avoid: Bool) for keyboard dismissing
     func hideKeyboardWhenTappedAround() {
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
         tap.cancelsTouchesInView = false
@@ -35,53 +35,73 @@ public extension UIViewController {
 
 // MARK: - Alert view
 public extension UIViewController {
-    func showAlert(title: String = "", message: String, defaultButtonTitle: String = "OK", secondayButtonTitle: String? = nil, defaultButtonHandler: ((UIAlertAction) -> Void)? = nil, secondaryButtonHandler: ((UIAlertAction) -> Void)? = nil, completion: (() -> Void)? = nil) {
-        
+    func showAlert(title: String = "",
+                   message: String,
+                   defaultButtonTitle: String = "OK",
+                   secondayButtonTitle: String? = nil,
+                   defaultButtonHandler: ((UIAlertAction) -> Void)? = nil,
+                   secondaryButtonHandler: ((UIAlertAction) -> Void)? = nil,
+                   completion: (() -> Void)? = nil) {
+
         let alert = UIAlertController(title: title.localized, message: message, preferredStyle: .alert)
         let defaultAction = UIAlertAction(title: defaultButtonTitle, style: .default, handler: defaultButtonHandler)
         alert.addAction(defaultAction)
-        
+
         if secondayButtonTitle != nil {
-            let secondaryAction = UIAlertAction(title: secondayButtonTitle, style: .cancel, handler: secondaryButtonHandler)
-            alert.addAction(secondaryAction)
+            let action = UIAlertAction(title: secondayButtonTitle, style: .cancel, handler: secondaryButtonHandler)
+            alert.addAction(action)
         }
-        
+
         DispatchQueue.main.async { [weak self] in
             self?.present(alert, animated: true, completion: completion)
         }
     }
-    
-    func showAddBeneficiaryCancelAlert(title: String = "", message: String, cancelButtonTitle: String = "OK", confirmButtonTitle: String? = nil, cancelButtonHandler: ((UIAlertAction) -> Void)? = nil, confirmButtonHandler: ((UIAlertAction) -> Void)? = nil, completion: (() -> Void)? = nil) {
-        
+
+    func showAddBeneficiaryCancelAlert(title: String = "",
+                                       message: String,
+                                       cancelButtonTitle: String = "OK",
+                                       confirmButtonTitle: String? = nil,
+                                       cancelButtonHandler: ((UIAlertAction) -> Void)? = nil,
+                                       confirmButtonHandler: ((UIAlertAction) -> Void)? = nil,
+                                       completion: (() -> Void)? = nil) {
+
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let cancelAction = UIAlertAction(title: cancelButtonTitle, style: .default, handler: cancelButtonHandler)
         alert.addAction(cancelAction)
-        
+
         if confirmButtonHandler != nil {
             let confirmAction = UIAlertAction(title: confirmButtonTitle, style: .default, handler: confirmButtonHandler)
             alert.addAction(confirmAction)
         }
-        
+
         DispatchQueue.main.async { [weak self] in
             self?.present(alert, animated: true, completion: completion)
         }
     }
-    
+
     func hideAlertView() {
         (presentedViewController as? UIAlertController)?.dismiss(animated: true)
     }
-    
-    func showActionSheet(title: String = "", message: String, defaultButtonTitle: String = "OK", secondayButtonTitle: String? = nil, style: UIAlertController.Style = .actionSheet, secondaryButtonStyle: UIAlertAction.Style = .default, defaultButtonHandler: ((UIAlertAction) -> Void)? = nil, secondaryButtonHandler: ((UIAlertAction) -> Void)? = nil, completion: (() -> Void)? = nil) {
-        
+
+    func showActionSheet(title: String = "",
+                         message: String,
+                         defaultButtonTitle: String = "OK",
+                         secondayButtonTitle: String? = nil,
+                         style: UIAlertController.Style = .actionSheet,
+                         secondaryButtonStyle: UIAlertAction.Style = .default,
+                         defaultButtonHandler: ((UIAlertAction) -> Void)? = nil,
+                         secondaryButtonHandler: ((UIAlertAction) -> Void)? = nil,
+                         completion: (() -> Void)? = nil) {
+
         let alert = UIAlertController(title: title, message: message, preferredStyle: style)
         let defaultAction = UIAlertAction(title: defaultButtonTitle, style: .cancel, handler: defaultButtonHandler)
         alert.addAction(defaultAction)
-        
+
         if secondayButtonTitle != nil {
             let secondaryAction = UIAlertAction(title: secondayButtonTitle, style: secondaryButtonStyle, handler: secondaryButtonHandler)
             alert.addAction(secondaryAction)
         }
-        
+
         DispatchQueue.main.async { [weak self] in
             self?.present(alert, animated: true, completion: completion)
         }
@@ -101,9 +121,9 @@ extension UIViewController {
         navigationItem.leftBarButtonItem = nil
         navigationItem.hidesBackButton = true
     }
-    
+
     public func addBackButton(_ type: BackButtonType = .backCircled, backgroundColor: UIColor, tintColor: UIColor) {
-        
+
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
         button.setImage(UIImage(named: type == .backCircled || type == .backEmpty ? "icon_back" : "icon_close", in: .yapPakistan, compatibleWith: nil)?.asTemplate, for: .normal)
@@ -111,13 +131,13 @@ extension UIViewController {
         button.backgroundColor = type == .backCircled || type == .closeCircled ? backgroundColor : .clear
         button.layer.cornerRadius = 0.5 * button.bounds.size.width
         button.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
-        
+
         let backButton = UIBarButtonItem()
         backButton.customView = button
-        navigationItem.leftBarButtonItem  = backButton
+        navigationItem.leftBarButtonItem = backButton
         navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
-    
+
     /*
     public func addBackButtonWithOutNavBar(_ type: BackButtonType = .backCircled) {
         
@@ -132,8 +152,7 @@ extension UIViewController {
         button.clipsToBounds = true
         view.addSubview(button)
     } */
-    
-    
+
     @objc open func onTapBackButton() {
         fatalError("Add back action in viewController")
     }
@@ -143,7 +162,7 @@ extension UIViewController {
 
 extension UIViewController {
     @objc open func didPopFromNavigationController() {}
-    
+
     public var lastPresentedViewController: UIViewController? {
         return presentedViewController?.lastPresentedViewController ?? presentedViewController
     }
@@ -169,40 +188,42 @@ fileprivate extension UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(_keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(_keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
+
     func _removeKeyboardObserver() {
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
+
     @objc func _keyboardWillShow(notification: NSNotification) {
-        guard let responder = _firstResponderView(fromView: view), let originY = responder.superview?.convert(responder.frame.origin, to: nil).y, let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
-        
+        guard let responder = _firstResponderView(fromView: view),
+              let originY = responder.superview?.convert(responder.frame.origin, to: nil).y,
+              let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(_tapped(_:))))
-        
+
         let responderHeight = (UIApplication.shared.keyWindow?.bounds.size.height ?? 0) - (originY + responder.bounds.size.height)
-        
+
         let offset = responderHeight - (keyboardSize.height + 10)
-        
+
         guard offset < 0 else { return }
-        
+
         UIView.animate(withDuration: 0.25) { [weak self] in
             self?.view.frame.origin.y = offset
         }
     }
-    
+
     @objc func _tapped(_ sender: UIGestureRecognizer) {
         view.removeGestureRecognizer(sender)
         view.endEditing(true)
     }
-    
+
     @objc func _keyboardWillHide(notification: NSNotification?) {
         guard view.frame.origin.y != 0 else { return }
         UIView.animate(withDuration: 0.25) { [weak self] in
             self?.view.frame.origin.y = 0
         }
     }
-    
+
     func _firstResponderView(fromView view: UIView) -> UIView? {
         let responder = view.subviews.filter { $0.isFirstResponder }.first
         guard let responderView = responder else {
@@ -212,7 +233,7 @@ fileprivate extension UIViewController {
             }
             return nil
         }
-        
+
         return responderView
     }
 }

@@ -27,24 +27,24 @@ protocol WelcomeViewModelType {
 class WelcomeViewModel: WelcomeViewModelInput, WelcomeViewModelOutput, WelcomeViewModelType {
     var inputs: WelcomeViewModelInput { return self }
     var outputs: WelcomeViewModelOutput { return self }
-    
+
     private var getStartedSubject = PublishSubject<Void>()
     private var pageSelectedSubject = PublishSubject<Int>()
     private var pageViewModel: WelcomePageViewModelType!
-    
+
     // inputs
     var getStartedObserver: AnyObserver<Void> { return getStartedSubject.asObserver() }
-    
+
     // outputs
     var getStarted: Observable<Void> { return getStartedSubject.asObservable() }
     var pageSelected: Observable<Int> { return pageSelectedSubject.asObservable() }
     var welcomePageViewModel: WelcomePageViewModelType { return pageViewModel }
-    
+
     private let disposeBag = DisposeBag()
-    
+
     init() {
-        pageViewModel  = B2CWelcomPageViewModel()
-        
+        pageViewModel = B2CWelcomPageViewModel()
+
         pageViewModel.outputs.selectedPage.bind(to: pageSelectedSubject).disposed(by: disposeBag)
     }
 }

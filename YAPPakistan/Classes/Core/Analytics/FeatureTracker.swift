@@ -9,7 +9,7 @@ import Foundation
 
 protocol FeatureEvent {
     var token: String { get }
-    var payload: AnalyticsParameter? {  get }
+    var payload: AnalyticsParameter? { get }
 }
 
 protocol FeatureTrackerType {
@@ -20,9 +20,9 @@ class AdjustFeatureTracker: FeatureTrackerType {
     init(userId: String?, userData: AnalyticsUserData?) {
     }
     func setUserData(userId: String, userData: AnalyticsUserData?) {
-        
+
     }
     func log(event: FeatureEvent) {
-        
+
     }
 }

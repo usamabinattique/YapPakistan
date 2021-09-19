@@ -18,7 +18,7 @@ struct APIEndpoint<Body: Codable>: Convertible, YAPURLRequestConvertible {
     var headers: [String: String]
 
     init(_ method: YAPHTTPMethod, _ url: URL, _ path: String, pathVariables: [String]? = nil,
-         query: [String : String]? = nil, requestType: RequestType = .json, body: Body? = nil,
+         query: [String: String]? = nil, requestType: RequestType = .json, body: Body? = nil,
          headers: [String: String] = [:]) {
         self.method = method
         self.url = url

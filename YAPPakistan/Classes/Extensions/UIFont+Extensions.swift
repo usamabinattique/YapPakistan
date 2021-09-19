@@ -12,37 +12,37 @@ public enum AppFontWeight: Hashable {
     case ultraLight, thin, light, regular, medium, semibold, bold, heavy, black
 }
 
-public enum AppTextStyle:Hashable {
-    case title1 (_ weight:AppFontWeight = .regular )
-    case title2 (_ weight:AppFontWeight = .regular )
-    case title3 (_ weight:AppFontWeight = .regular )
-    case large  (_ weight:AppFontWeight = .regular )
-    case regular(_ weight:AppFontWeight = .regular )
-    case small  (_ weight:AppFontWeight = .regular )
-    case micro  (_ weight:AppFontWeight = .regular )
-    case nano   (_ weight:AppFontWeight = .regular )
+public enum AppTextStyle: Hashable {
+    case title1 (_ weight: AppFontWeight = .regular )
+    case title2 (_ weight: AppFontWeight = .regular )
+    case title3 (_ weight: AppFontWeight = .regular )
+    case large  (_ weight: AppFontWeight = .regular )
+    case regular(_ weight: AppFontWeight = .regular )
+    case small  (_ weight: AppFontWeight = .regular )
+    case micro  (_ weight: AppFontWeight = .regular )
+    case nano   (_ weight: AppFontWeight = .regular )
 }
 
 public extension UIFont {
-    static func title1 ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.title1(weight).font  }
-    static func title2 ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.title2(weight).font  }
-    static func title3 ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.title3(weight).font  }
-    static func large  ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.large(weight).font   }
-    static func regular( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.regular(weight).font }
-    static func small  ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.small(weight).font   }
-    static func micro  ( _ weight:AppFontWeight) -> UIFont { return AppTextStyle.micro(weight).font   }
-    
-    static var title1:  UIFont { return .title1( .regular) }
-    static var title2:  UIFont { return .title2( .regular) }
-    static var title3:  UIFont { return .title3( .regular) }
-    static var large:   UIFont { return .large(  .regular) }
+    static func title1 ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.title1(weight).font }
+    static func title2 ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.title2(weight).font }
+    static func title3 ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.title3(weight).font }
+    static func large  ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.large(weight).font }
+    static func regular( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.regular(weight).font }
+    static func small  ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.small(weight).font }
+    static func micro  ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.micro(weight).font }
+
+    static var title1: UIFont { return .title1( .regular) }
+    static var title2: UIFont { return .title2( .regular) }
+    static var title3: UIFont { return .title3( .regular) }
+    static var large: UIFont { return .large(  .regular) }
     static var regular: UIFont { return .regular(.regular) }
-    static var small:   UIFont { return .small(  .regular) }
-    static var micro:   UIFont { return .micro(  .regular) }
+    static var small: UIFont { return .small(  .regular) }
+    static var micro: UIFont { return .micro(  .regular) }
 }
 
 fileprivate extension AppTextStyle {
-    var fontSize:CGFloat {
+    var fontSize: CGFloat {
         switch self {
         case .title1:   return 28.0
         case .title2:   return 24.0
@@ -54,8 +54,8 @@ fileprivate extension AppTextStyle {
         case .nano:     return 10.0
         }
     }
-    
-    var font:UIFont {
+
+    var font: UIFont {
         switch self {
         case .title1 (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
         case .title2 (let wieght): return .systemFont(ofSize: fontSize, weight: wieght.systemFontWeight)
