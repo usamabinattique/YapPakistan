@@ -19,7 +19,7 @@ extension Reactive where Base: UIImageView {
         withPlaceholder placeholderImage: UIImage?,
         options: SDWebImageOptions = []
     ) -> Binder<URL?> {
-        return Binder(self.base, binding: { (imageView, url) in
+        return Binder(self.base, binding: { imageView, url in
             imageView
                 .sd_setImage(
                     with: url,

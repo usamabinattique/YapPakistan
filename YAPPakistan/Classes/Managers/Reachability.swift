@@ -19,7 +19,7 @@ private class ReachabilityManager: NSObject {
     static let shared = ReachabilityManager()
 
     fileprivate let reachSubject = ReplaySubject<Bool>.create(bufferSize: 1)
-    
+
     var reach: Observable<Bool> {
         return reachSubject.asObservable()
     }
@@ -27,7 +27,7 @@ private class ReachabilityManager: NSObject {
     override init() {
         super.init()
 
-        NetworkReachabilityManager.default?.startListening(onUpdatePerforming: { (status) in
+        NetworkReachabilityManager.default?.startListening(onUpdatePerforming: { status in
             switch status {
             case .reachable:
                 self.reachSubject.onNext(true)
@@ -37,4 +37,3 @@ private class ReachabilityManager: NSObject {
         })
     }
 }
-

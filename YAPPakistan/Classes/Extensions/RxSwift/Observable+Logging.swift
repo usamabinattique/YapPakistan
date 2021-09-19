@@ -11,7 +11,7 @@ import RxSwift
 extension Observable {
     func logError(prefix: String = "Error: ") -> Observable<Element> {
         return self.do(onNext: nil,
-                       onError: { (error) in
+                       onError: { error in
                         print("\(prefix)\(error)")
             },
                        onCompleted: nil,
@@ -22,7 +22,7 @@ extension Observable {
 
     func logServerError(message: String) -> Observable<Element> {
         return self.do(onNext: nil,
-                       onError: { (error) in
+                       onError: { error in
                         print("\(message)")
                         print("Error: \(error.localizedDescription). \n")
             },
@@ -32,7 +32,7 @@ extension Observable {
     }
 
     func logNext() -> Observable<Element> {
-        return self.do(onNext: { (element) in
+        return self.do(onNext: { element in
                 print("\(element)")
             },
                        onError: nil,
@@ -42,4 +42,3 @@ extension Observable {
 
     }
 }
-

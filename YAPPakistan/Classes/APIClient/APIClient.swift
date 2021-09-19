@@ -15,6 +15,8 @@ public typealias YAPHTTPMethod = HTTPMethod
 
 public protocol APIClient {
     func request(route: YAPURLRequestConvertible) -> Observable<APIResponseConvertible>
-    
-    func upload(documents: [DocumentDataConvertible], route: YAPURLRequestConvertible, progressObserver: AnyObserver<Progress>?, otherFormValues formValues: [String: String]) -> Observable<APIResponseConvertible>
+    func upload(documents: [DocumentDataConvertible],
+                route: YAPURLRequestConvertible,
+                progressObserver: AnyObserver<Progress>?,
+                otherFormValues formValues: [String: String]) -> Observable<APIResponseConvertible>
 }

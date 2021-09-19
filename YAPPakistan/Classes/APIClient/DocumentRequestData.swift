@@ -12,5 +12,5 @@ public struct DocumentRequestData: DocumentDataConvertible {
     public var data: Data
     public var name: String
     public var fileName: String
-    public var mimeType: String    
+    public var mimeType: String
 }

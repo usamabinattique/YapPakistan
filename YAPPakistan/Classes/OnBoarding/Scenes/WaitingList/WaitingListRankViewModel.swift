@@ -52,18 +52,21 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     private let behindNumberSubject = BehaviorSubject<String?>(value: "")
     private let behindYouTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_behind_text".localized)
     private let infoTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_info_text".localized)
-    private let boostUpTextSubject = BehaviorSubject<String>(value: "\("screen_waiting_list_rank_bump_me_up_info_text_top".localized)\n\("screen_waiting_list_rank_bump_me_up_info_text_bottom".localized)")
+    private let boostUpTextSubject = BehaviorSubject<String>(value: "\(bumpUpMessageTop)\n\(bumpUpMessageBottom)")
     private let seeInviteeButtonTitleSubject = BehaviorSubject<String>(value: String(format: "screen_waiting_list_rank_invitees_list_button_title_text".localized, 0))
     private let bumpMeUpButtonTitleSubject = BehaviorSubject<String>(value: "screen_waiting_list_rank_bump_me_up_text".localized)
 
     var inputs: WaitingListRankViewModelInput { self }
     var outputs: WaitingListRankViewModelOutput { self }
 
+    private static let bumpUpMessageTop = "screen_waiting_list_rank_bump_me_up_info_text_top".localized
+    private static let bumpUpMessageBottom = "screen_waiting_list_rank_bump_me_up_info_text_bottom".localized
+
     // MARK: Inputs
 
     var getRanking: AnyObserver<Bool> { getRankingSubject.asObserver() }
     var firstVideoEnded: AnyObserver<Void> { firstVideoEndedSubject.asObserver() }
-    
+
     // MARK: Outputs
 
     var loading: Observable<Bool> { loadingSubject.asObservable() }

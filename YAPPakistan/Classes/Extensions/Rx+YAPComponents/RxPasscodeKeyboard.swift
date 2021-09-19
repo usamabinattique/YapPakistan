@@ -9,12 +9,12 @@ import RxSwift
 import RxCocoa
 import YAPComponents
 
-public class RxPasscodeKeyboard:PasscodeKeyboard {
+public class RxPasscodeKeyboard: PasscodeKeyboard {
     public var clearTextSubject = PublishSubject<Void>()
 }
 
 extension Reactive where Base: RxPasscodeKeyboard {
-    
+
     var output: Observable<String> {
         let zero = base.zero.rx.titleTap
         let one = base.one.rx.titleTap
@@ -31,32 +31,29 @@ extension Reactive where Base: RxPasscodeKeyboard {
         let merged = Observable.merge(zero, one, two, three, four, five, six, seven, eight, nine).unwrap()
         return Observable.merge(merged, backspace, clear)
     }
-    
+
     var biometricsButtonTap: ControlEvent<Void> {
         return base.biomatryButton.rx.tap
     }
-    
+
     var biometryEnable: Binder<Bool> {
         return base.biomatryButton.rx.isEnabled
     }
-    
+
     var clearTextObserver: AnyObserver<Void> {
         return base.clearTextSubject.asObserver()
     }
-    
+
     var isEnabled: Binder<Bool> {
         return Binder(self.base) { keypad, isEnabled in
             [keypad.one, keypad.two, keypad.three, keypad.four, keypad.five, keypad.six, keypad.seven, keypad.eight, keypad.nine, keypad.zero, keypad.backButton]
                 .forEach { $0.isEnabled = isEnabled }
         }
     }
-    
+
     var themeColor: Binder<UIColor> {
         return Binder(self.base) { keyboard, thColor -> Void in
             keyboard.themeColor = thColor
         }
     }
 }
-
-
-
