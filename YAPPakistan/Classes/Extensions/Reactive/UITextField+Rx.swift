@@ -29,6 +29,7 @@ extension Reactive where Base: UITextField {
     var isFirstResponder: ControlProperty<Bool> {
         return value
     }
+    
     var value: ControlProperty<Bool> {
         return base.rx.controlProperty(editingEvents: [.editingDidBegin, .editingDidEnd]) { tf in
             tf.isFirstResponder

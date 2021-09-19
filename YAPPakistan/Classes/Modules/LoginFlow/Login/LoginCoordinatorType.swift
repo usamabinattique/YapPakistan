@@ -24,8 +24,4 @@ protocol LoginCoordinatorType: Coordinator<LoginResult> {
     var biometricsManager: BiometricsManager    { get }
     var result: PublishSubject<LoginResult>     { get }
     
-    //func saveDevice(credentials: Credentials, otpVerificationToken: String?) -> Observable<ResultType<Void>>
-    func biometryPermission(permissionType: SystemPermissionType, username: String, account: Observable<Account?>) -> Observable<ResultType<Void>>
-    func notificationPermission(account: Observable<Account?>) -> Observable<ResultType<Void>>
-    
 }

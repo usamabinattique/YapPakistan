@@ -124,26 +124,13 @@ fileprivate extension LoginViewController {
     func setupBindings() {
         guard let viewModel = viewModel else { return }
         
-        (rememberIDSwitch.rx.isOn <-> viewModel.inouts.rememberMe).disposed(by: rx.disposeBag)
-        (mobileNumber.rx.text <-> viewModel.inouts.mobileNumber).disposed(by: rx.disposeBag)
-        (mobileNumber.rx.isFirstResponder <-> viewModel.inouts.isFirstResponder).disposed(by: rx.disposeBag)
+        rememberIDSwitch.rx.isOn.bind(to: viewModel.inputs.rememberMeObserver).disposed(by: rx.disposeBag)
+        mobileNumber.rx.text.bind(to: viewModel.inputs.mobileNumberObserver).disposed(by: rx.disposeBag)
+        mobileNumber.rx.isFirstResponder.bind(to: viewModel.inputs.isFirstResponderObserver).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.flag
-            .map({UIImage(named: $0, in: .yapPakistan)})
-            .bind(to: mobileNumber.leftIcon.rx.image(for: .normal))
-            .disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.progress
-            .bind(to: rx.progress)
-            .disposed(by: rx.disposeBag)
-        
-        let validation = viewModel.outputs.validationResult.share()
-        validation.map{$0 == .valid}
-            .bind(to: signInButton.rx.isEnabled)
-            .disposed(by: rx.disposeBag)
-        validation
-            .bind(to: mobileNumber.rx.validation)
-            .disposed(by: rx.disposeBag)
+        viewModel.outputs.rememberMe.bind(to: rememberIDSwitch.rx.isOn).disposed(by: rx.disposeBag)
+        viewModel.outputs.mobileNumber.bind(to: mobileNumber.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.isFirstResponder.bind(to: mobileNumber.rx.isFirstResponder).disposed(by: rx.disposeBag)
         
         signInButton.rx.tap
             .bind(to: viewModel.inputs.signInObserver)
@@ -153,6 +140,23 @@ fileprivate extension LoginViewController {
             .disposed(by: rx.disposeBag)
         backButton?.rx.tap
             .map{.cancel}.bind(to: viewModel.inputs.backObserver)
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.flag
+            .map({UIImage(named: $0, in: .yapPakistan)})
+            .bind(to: mobileNumber.leftIcon.rx.image(for: .normal))
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.progress
+            .bind(to: rx.loader)
+            .disposed(by: rx.disposeBag)
+        
+        let validation = viewModel.outputs.validationResult.share()
+        validation.map{$0 == .valid}
+            .bind(to: signInButton.rx.isEnabled)
+            .disposed(by: rx.disposeBag)
+        validation
+            .bind(to: mobileNumber.rx.validation)
             .disposed(by: rx.disposeBag)
         
         view.rx.tapGesture()

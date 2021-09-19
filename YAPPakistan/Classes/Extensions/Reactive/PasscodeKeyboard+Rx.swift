@@ -9,10 +9,6 @@ import RxSwift
 import RxCocoa
 import YAPComponents
 
-//public class PasscodeKeyboard:PasscodeKeyboard {
-//    public var clearTextSubject = PublishSubject<Void>()
-//}
-
 extension Reactive where Base: PasscodeKeyboard {
     
     var keyTapped: Observable<String> {
@@ -27,30 +23,9 @@ extension Reactive where Base: PasscodeKeyboard {
         let eight = base.eight.rx.titleTap
         let nine = base.nine.rx.titleTap
         let backspace = base.backButton.rx.tap.map { _ in String(UnicodeScalar(8)) }
-        //let clear = base.clearTextSubject.map { _ in String(UnicodeScalar(0)) }
         let merged = Observable.merge(zero, one, two, three, four, five, six, seven, eight, nine).unwrap()
         return Observable.merge(merged, backspace) //, clear)
     }
-    
-    //var biometricsButtonTap: ControlEvent<Void> {
-    //    return base.biomatryButton.rx.tap
-    //}
-    
-    //var biometryEnable: Binder<Bool> {
-    //    return base.biomatryButton.rx.isEnabled
-    //}
-    
-    //var clearTextObserver: AnyObserver<Void> {
-    //   return base.clearTextSubject.asObserver()
-    //}
-    
-    //var isEnabled: Binder<Bool> {
-    //    return Binder(self.base) { keypad, isEnabled in
-    //        keypad.isUserInteractionEnabled = isEnabled
-    //[keypad.one, keypad.two, keypad.three, keypad.four, keypad.five, keypad.six, keypad.seven, keypad.eight, keypad.nine, keypad.zero, keypad.backButton]
-    //    .forEach { $0.isEnabled = isEnabled }
-    //    }
-    //}
     
     var themeColor: Binder<UIColor> {
         return Binder(self.base) { keyboard, thColor -> Void in

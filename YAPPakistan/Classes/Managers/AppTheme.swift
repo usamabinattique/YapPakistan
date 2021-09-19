@@ -43,7 +43,7 @@ struct LightTheme: Theme {
     var primaryAlt: Color           {   Color(hex: "#BB42EB")   }
     var grey: Color                 {   Color(hex: "#C9C8D8")   }
     var greyDark: Color             {   Color(hex: "#9391B1")   }
-    var greyLight: Color            {   Color(hex: "#DADFEF")  }
+    var greyLight: Color            {   Color(hex: "#DAE0F0")   }
     var greyExtraLight: Color       {   Color(hex: "#EDF0F8")   }
     var success: Color              {   Color(hex: "#44D389")   }
     var warning: Color              {   Color(hex: "#FFC430")   }

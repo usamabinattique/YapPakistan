@@ -26,7 +26,7 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
         self.xsrfToken = xsrfToken
         self.root = root
         self.container = container
-        self.biometricsManager = BiometricsManager()
+        self.biometricsManager = biometricsManager
         
     }
     
@@ -39,7 +39,6 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
         root.navigationBar.setBackgroundImage(UIImage(), for: .default)
         root.navigationBar.shadowImage = UIImage()
         root.navigationBar.isTranslucent = true
-        //root.navigationBar.tintColor = .primary
         root.navigationBar.isHidden = false
         root.pushViewController(loginViewController, animated: true)
         
@@ -57,51 +56,10 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
                 self.result.onNext(.cancel)
                 self.result.onCompleted()
             } else {
-                //self.accountSelection()
+                //Account selection flow
             }
         }).disposed(by: rx.disposeBag)
         
-        /*
-        let passcodeScreen = viewModel.outputs.success.flatMap { [unowned self] params -> Observable<ResultType<Void>> in
-            return self.navigateToPasscode(username: params.0, isUserBlocked: params.1)
-        }
-        
-        Observable.merge(passcodeScreen, accountSelectionResult)
-            .subscribe(onNext: { [weak self] result in
-                guard let `self` = self else { return }
-                self.result.onNext(result)
-                self.result.onCompleted()
-            }).disposed(by: rx.disposeBag)
-        */
         return result
-    }
-}
-
-
-
-extension LoginCoordinatorType {
-    
-    func biometryPermission(permissionType: SystemPermissionType, username: String = "", account: Observable<Account?>) -> Observable<ResultType<Void>> {
-        
-        let viewModel: SystemPermissionViewModelType = SystemPermissionViewModel(permissionType: permissionType, account: account)
-        let viewController = SystemPermissionViewController(themeService: container.themeService, viewModel: viewModel, username: username)
-        self.root.pushViewController(viewController, animated: true)
-        
-        viewModel.outputs.thanks.subscribe(onNext: { (_) in
-            //Do your stuff here
-        }).disposed(by: rx.disposeBag)
-        
-        return Observable.merge(viewModel.outputs.thanks, viewModel.outputs.success).map {_ in ResultType.success(()) }
-    }
-    
-    func notificationPermission(account: Observable<Account?>) -> Observable<ResultType<Void>> {
-        let viewModel: SystemPermissionViewModelType = SystemPermissionViewModel(permissionType: .notification, account: account)
-        let viewController = SystemPermissionViewController(themeService: container.themeService, viewModel: viewModel)
-        
-        self.root.pushViewController(viewController, animated: true)
-        viewModel.outputs.thanks.subscribe(onNext: { (_) in
-            
-        }).disposed(by: rx.disposeBag)
-        return Observable.merge(viewModel.outputs.thanks.map { ResultType.success(()) }, viewModel.outputs.success.map { ResultType.success(())})
     }
 }

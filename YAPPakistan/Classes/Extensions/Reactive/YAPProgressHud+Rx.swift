@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 
 extension Reactive where Base: UIViewController {
-    var progress:Binder<Bool> {
+    var loader:Binder<Bool> {
         return Binder<Bool>.init(self.base) { _, value in
             if value { YAPProgressHud.showProgressHud() }
             else { YAPProgressHud.hideProgressHud() }
