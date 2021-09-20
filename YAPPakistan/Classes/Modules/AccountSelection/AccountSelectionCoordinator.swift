@@ -90,7 +90,7 @@ public class AccountSelectionCoordinatorReplaceable: Coordinator<ResultType<Void
     }
     
     public func login() {
-        coordinate(to: LoginCoordinatorPushable(root: self.root, xsrfToken: xsrfToken, container: self.container, biometricsManager: BiometricsManager()) )
+        coordinate(to: LoginCoordinatorPushable(root: self.root, xsrfToken: xsrfToken, container: self.container) )
             .subscribe(onNext: { [weak self] result in
                 //guard let `self` = self else { return }
                 //self.loginResult.onNext(result)

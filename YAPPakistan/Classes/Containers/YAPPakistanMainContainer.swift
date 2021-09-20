@@ -93,3 +93,22 @@ public final class YAPPakistanMainContainer {
         return UIViewController()
     }
 }
+
+
+extension YAPPakistanMainContainer {
+    
+    func makeLoginRepository(_ xsrfToken:String) -> LoginRepository {
+        return LoginRepository(customerService: self.makeCustomersService(xsrfToken: xsrfToken), authenticationService: makeAuthenticationService(xsrfToken: xsrfToken), messageService: makeMessagesService(xsrfToken: xsrfToken))
+    }
+    
+    func makeLoginViewModel(_ xsrfToken:String, user:OnBoardingUser = OnBoardingUser(accountType: .b2cAccount)) -> LoginViewModelType {
+        let loginRepository = makeLoginRepository(xsrfToken)
+        return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore, user: user)
+    }
+    
+    func makeLoginViewController(_ xsrfToken:String, user:OnBoardingUser = OnBoardingUser(accountType: .b2cAccount), isBackButton: Bool = true) -> LoginViewController {
+        let viewModel = makeLoginViewModel(xsrfToken, user:user)
+        return LoginViewController(themeService: self.themeService, viewModel: viewModel, isBackButton: isBackButton)
+    }
+    
+}

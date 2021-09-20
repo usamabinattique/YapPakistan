@@ -10,7 +10,6 @@ import Foundation
 import RxSwift
 import YAPCore
 
-
 enum LoginResult {
     case onboarding
     case dashboard(session: Session)
@@ -18,10 +17,9 @@ enum LoginResult {
 }
 
 protocol LoginCoordinatorType: Coordinator<LoginResult> {
-    
+
     var root: UINavigationController!           { get }
     var container:YAPPakistanMainContainer!     { get }
-    var biometricsManager: BiometricsManager    { get }
     var result: PublishSubject<LoginResult>     { get }
-    
+
 }
