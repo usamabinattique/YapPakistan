@@ -14,27 +14,22 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
 
     var root: UINavigationController!
     var container: YAPPakistanMainContainer!
-    private let xsrfToken: String
-
     var result = PublishSubject<LoginResult>()
 
     init(root: UINavigationController,
          xsrfToken: String,
          container: YAPPakistanMainContainer
     ){
-        self.xsrfToken = xsrfToken
         self.root = root
         self.container = container
+        self.container.xsrfToken = xsrfToken
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<LoginResult> {
 
-        let viewModel = container.makeLoginViewModel(xsrfToken)
-        let loginViewController = container.makeLoginViewController(xsrfToken)
+        let viewModel = container.makeLoginViewModel(loginRepository: container.makeLoginRepository())
+        let loginViewController = container.makeLoginViewController(viewModel: viewModel)
 
-        root.interactivePopGestureRecognizer?.isEnabled = false
-        root.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        root.navigationBar.shadowImage = UIImage()
         root.navigationBar.isTranslucent = true
         root.navigationBar.isHidden = false
         root.pushViewController(loginViewController, animated: true)
