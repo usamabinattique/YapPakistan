@@ -11,7 +11,7 @@ import RxSwift
 import UIKit
 
 protocol WelcomePageChildViewModelInput {
-    
+
 }
 
 protocol WelcomePageChildViewModelOutput {
@@ -28,18 +28,18 @@ protocol WelcomePageChildViewModelType {
 class WelcomePageChildViewModel: WelcomePageChildViewModelInput, WelcomePageChildViewModelOutput, WelcomePageChildViewModelType {
     var inputs: WelcomePageChildViewModelInput { return self }
     var outputs: WelcomePageChildViewModelOutput { return self }
-    
+
     fileprivate var headingSubject = BehaviorSubject<String>(value: "")
     fileprivate var detailsSubject = BehaviorSubject<String>(value: "")
     fileprivate var imageSubject = BehaviorSubject<UIImage?>(value: nil)
-    
+
     // inputs
-    
+
     // outputs
     var heading: Observable<String> { return headingSubject.asObservable() }
     var details: Observable<String> { return detailsSubject.asObservable() }
     var image: Observable<UIImage?> { return imageSubject.asObservable() }
-    
+
     init(heading: String, details: String, image: UIImage?) {
         headingSubject.onNext(heading)
         detailsSubject.onNext(details)

@@ -26,22 +26,22 @@ protocol AccountSelectionViewModelType {
 }
 
 class AccountSelectionViewModel: AccountSelectionViewModelInput, AccountSelectionViewModelOutput, AccountSelectionViewModelType {
-    
+
     var inputs: AccountSelectionViewModelInput { return self }
     var outputs: AccountSelectionViewModelOutput { return self }
-    
+
     private let personalSubject = PublishSubject<Void>()
     private let businessSubject = PublishSubject<Void>()
     private let signInSubject = PublishSubject<Void>()
-    
+
     // inputs
     var personalObserver: AnyObserver<Void> { return personalSubject.asObserver() }
     var businessObserver: AnyObserver<Void> { return businessSubject.asObserver() }
     var signInObserver: AnyObserver<Void> { return signInSubject.asObserver() }
-    
+
     // outputs
     var personal: Observable<Void> { return personalSubject.asObservable() }
     var business: Observable<Void> { return businessSubject.asObservable() }
     var signIn: Observable<Void> { return signInSubject.asObservable() }
-    
+
 }

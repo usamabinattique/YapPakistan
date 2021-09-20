@@ -11,6 +11,7 @@ import RxSwift
 import YAPComponents
 import YAPCore
 
+// swiftlint:disable function_body_length
 protocol EnterEmailViewModelInput {
     var textObserver: AnyObserver<String?> { get }
     var sendObserver: AnyObserver<OnboardingStage> { get }
@@ -48,14 +49,14 @@ protocol EnterEmailViewModelType {
 class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, EnterEmailViewModelType {
     var inputs: EnterEmailViewModelInput { return self }
     var outputs: EnterEmailViewModelOutput { return self }
-    
+
     private let textSubject = PublishSubject<String?>()
     private let sendSubject = PublishSubject<OnboardingStage>()
     private let keyboardNextSubject = PublishSubject<Void>()
     private let viewAppearedSubject = BehaviorSubject<Bool>(value: false)
     private let deviceRegistrationSubject = PublishSubject<OnBoardingUser>()
     private let demographicsSuccessSubject = PublishSubject<Void>()
-    
+
     private let emailValidationSubject = BehaviorSubject<AppRoundedTextFieldValidation>(value: .neutral)
     private let validSubject = BehaviorSubject<Bool>(value: false)
     private let resultSubject = PublishSubject<(user: OnBoardingUser, session: Session)>()
@@ -69,8 +70,8 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     private let verificationTextSubject = BehaviorSubject<String>(value: "")
     private let emailVerifiedSubject = PublishSubject<Void>()
     private let poppedSubject = PublishSubject<Void>()
-    
-    // inputs
+
+    // inputs  
     var textObserver: AnyObserver<String?> { return textSubject.asObserver() }
     var sendObserver: AnyObserver<OnboardingStage> { return sendSubject.asObserver() }
     var keyboardNextObserver: AnyObserver<Void> { return keyboardNextSubject.asObserver() }
@@ -79,7 +80,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     var stageObserver: AnyObserver<OnboardingStage> { return stageSubject.asObserver() }
     var demographicsSuccessObserver: AnyObserver<Void> { return demographicsSuccessSubject.asObserver() }
     var poppedObserver: AnyObserver<Void> { return poppedSubject.asObserver() }
-    
+
     // outputs
     var emailValidation: Observable<AppRoundedTextFieldValidation> { return emailValidationSubject.asObservable() }
     var valid: Observable<Bool> { return validSubject.asObservable() }
@@ -94,9 +95,9 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     var stage: Observable<OnboardingStage> { return stageSubject.asObservable() }
     var demographicsSuccess: Observable<Void> { return demographicsSuccessSubject.asObservable() }
     var verificationText: Observable<String> { return verificationTextSubject.asObservable() }
-    
+
     private var user: OnBoardingUser
-    private var session:Session!
+    private var session: Session!
     private let disposeBag = DisposeBag()
     private var isValidInput = false
     private var isEmailSend = false
@@ -116,16 +117,16 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         self.sessionProvider = sessionProvider
         self.repository = onBoardingRepository
         self.user = user
-        
+
         let appeared = viewAppearedSubject.filter { $0 }
         appeared.map { [unowned self] _ in self.isValidInput }.bind(to: validSubject).disposed(by: disposeBag)
         appeared.map { [unowned self] _ in self.user.accountType == .b2cAccount ? 0.8 : 0.142 }.bind(to: progressSubject).disposed(by: disposeBag)
-        
+
         let textValid = textSubject.do(onNext: { [unowned self] in
             self.user.email = $0
             self.isValidInput = ValidationService.shared.validateEmail($0)
         }).map { [unowned self] _ in self.isValidInput }
-        
+
         textValid.bind(to: validSubject).disposed(by: disposeBag)
         textValid.map { $0 ? .valid : .neutral }.bind(to: emailValidationSubject).disposed(by: disposeBag)
 
@@ -154,7 +155,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                                                    otpToken: self.user.otpVerificationToken ?? "")
             }
             .share()
-        
+
         request.errors()
             .do(onNext: { _ in
                 YAPProgressHud.hideProgressHud()
@@ -225,7 +226,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                 AuthenticationManager.shared.setJWT(token)
                 let refreshAccount = SessionManager.current.refreshAccount().share()
                 let refreshCards = SessionManager.current.refreshCards().share()
-                
+
                 Observable.zip(refreshAccount, refreshCards)
                     .subscribe {  _ in
                         YAPProgressHud.hideProgressHud()
@@ -254,21 +255,31 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .disposed(by: disposeBag)
         */
 
-        keyboardNextSubject.withLatestFrom(validSubject).filter { $0 }.map {_ in OnboardingStage.email }.bind(to: sendSubject).disposed(by: disposeBag)
-        
+        keyboardNextSubject.withLatestFrom(validSubject)
+            .filter { $0 }
+            .map { _ in OnboardingStage.email }
+            .bind(to: sendSubject)
+            .disposed(by: disposeBag)
+
         subHeadingHiddenSubject.onNext(self.user.accountType == .b2cAccount)
-        
+
         let sharedDemographics = demographicsSuccessSubject.share().do(onNext: { _ in
             YAPProgressHud.hideProgressHud()
         })
-        
+
         sharedDemographics.map { .emailVerify }.bind(to: stageSubject).disposed(by: disposeBag)
-        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? self.b2cCofirmationText : self.b2bConfirmationText }.bind(to: verificationTextSubject).disposed(by: disposeBag)
-        sharedDemographics.map { _ in  "screen_email_verification_display_text_title".localized }.bind(to: headingSubject).disposed(by: disposeBag)
-        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? 1.0 : 0.285}.bind(to: progressSubject).disposed(by: disposeBag)
-        
+        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? self.b2cCofirmationText : self.b2bConfirmationText }
+            .bind(to: verificationTextSubject)
+            .disposed(by: disposeBag)
+        sharedDemographics.map { _ in  "screen_email_verification_display_text_title".localized }
+            .bind(to: headingSubject)
+            .disposed(by: disposeBag)
+        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? 1.0 : 0.285 }
+            .bind(to: progressSubject)
+            .disposed(by: disposeBag)
+
         headingSubject.onNext(self.user.accountType == .b2cAccount ?  "screen_enter_email_b2c_display_text_title".localized :  "screen_enter_email_b2b_display_text_title".localized)
-        
+
         poppedSubject.subscribe(onNext: { [unowned self] in
             self.resultSubject.onCompleted()
             self.validSubject.onCompleted()
@@ -278,12 +289,6 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             self.sendSubject.dispose()
         }).disposed(by: disposeBag)
 
-        /* resultSubject.withLatestFrom(textSubject)
-            .map { (email) -> AppEvent in
-                AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmail())
-                return OnBoardingEvent.emailEntered(["email" : email ?? ""])
-        }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
-        */
     }
 
     private func refreshAccount() {
@@ -307,10 +312,14 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
 
 private extension EnterEmailViewModel {
     var b2cCofirmationText: String {
-        return String(format: "%@, %@ %@\n\n%@", user.firstName ?? "",  "screen_email_verification_b2c_display_text_email_sent".localized, user.email ?? "",  "screen_email_verification_b2c_display_text_email_confirmation".localized)
+        return String(format: "%@, %@ %@\n\n%@",
+                      user.firstName ?? "", "screen_email_verification_b2c_display_text_email_sent".localized, user.email ?? "",
+                      "screen_email_verification_b2c_display_text_email_confirmation".localized)
     }
-    
+
     var b2bConfirmationText: String {
-        return String(format: "%@ %@. %@",  "screen_email_verification_b2b_display_text_email_sent".localized, user.email ?? "",  "screen_email_verification_b2b_display_text_email_confirmation".localized)
+        return String(format: "%@ %@. %@",
+                      "screen_email_verification_b2b_display_text_email_sent".localized, user.email ?? "",
+                      "screen_email_verification_b2b_display_text_email_confirmation".localized)
     }
 }

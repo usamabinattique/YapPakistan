@@ -12,19 +12,19 @@ public func format(iban: String) -> String {
     var chuncks = [String]()
     var chunck = ""
     (0..<iban.count).forEach{
-        
+
         chunck.append(iban[$0])
-        
-        if $0 != 0, ($0+1) % 4 == 0 {
+
+        if $0 != 0, ($0 + 1) % 4 == 0 {
             chuncks.append(chunck)
             chunck = ""
         }
     }
-    
+
     if chunck.count > 0 {
         chuncks.append(chunck)
     }
-    
+
     return chuncks.joined(separator: " ")
 }
 
@@ -57,5 +57,5 @@ public func mask(username: String) -> String {
 public func formattedCardNumber(cardNumber: String) -> String {
     let stride: Int = 4
     let separator: Character = " "
-    return String(cardNumber.enumerated().map { $0 > 0 && $0 % stride == 0 ? [separator, $1] : [$1]}.joined())
+    return String(cardNumber.enumerated().map { $0 > 0 && $0 % stride == 0 ? [separator, $1] : [$1] }.joined())
 }

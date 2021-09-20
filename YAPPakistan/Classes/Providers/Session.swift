@@ -15,7 +15,7 @@ public class Session {
 
     private let guestToken: String
     private var sessionToken: String
-    
+
     private let disposeBag = DisposeBag()
     private var tokenSubject: BehaviorSubject<String>
 

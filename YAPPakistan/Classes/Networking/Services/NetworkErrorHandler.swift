@@ -56,12 +56,12 @@ extension NetworkErrors {
 }
 
 class NetworkErrorHandler {
-    
+
     static func decode<T: Codable>(data: Data) throws -> T {
         let decoder = JSONDecoder()
         return try decoder.decode(T.self, from: data)
     }
-    
+
     static func mapError(_ code: Int, data: Data) -> NetworkErrors {
         switch code {
         case 401:

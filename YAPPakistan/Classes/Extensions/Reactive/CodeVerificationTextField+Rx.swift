@@ -12,7 +12,7 @@ import YAPComponents
 extension Reactive where Base: CodeVerificationTextField {
     var clear: Binder<Void> {
         return Binder(self.base) { textFiled, _ -> Void in
-            ///will upate this latter
+            /// will upate this latter
             textFiled.clearText()
         }
     }

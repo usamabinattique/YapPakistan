@@ -19,7 +19,7 @@ extension Reactive where Base: UIImageView {
         withPlaceholder placeholderImage: UIImage?,
         options: SDWebImageOptions = []
     ) -> Binder<URL?> {
-        return Binder(self.base, binding: { (imageView, url) in
+        return Binder(self.base, binding: { imageView, url in
             imageView
                 .sd_setImage(
                     with: url,
@@ -30,33 +30,3 @@ extension Reactive where Base: UIImageView {
         })
     }
 }
-
-/*
-extension ImageCache: ReactiveCompatible {}
-
-extension Reactive where Base: ImageCache {
-
-    func retrieveCacheSize() -> Observable<Int> {
-        return Single.create { single in
-            self.base.calculateDiskStorageSize { (result) in
-                do {
-                    single(.success(Int(try result.get())))
-                } catch {
-                    single(.error(error))
-                }
-            }
-            return Disposables.create { }
-        }.asObservable()
-    }
-
-    public func clearCache() -> Observable<Void> {
-        return Single.create { single in
-            self.base.clearMemoryCache()
-            self.base.clearDiskCache(completion: {
-                single(.success(()))
-            })
-            return Disposables.create { }
-        }.asObservable()
-    }
-}
-*/

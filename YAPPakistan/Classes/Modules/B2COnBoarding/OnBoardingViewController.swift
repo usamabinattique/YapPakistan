@@ -13,17 +13,17 @@ import RxSwift
 import RxTheme
 
 class OnBoardingViewController: UIViewController {
-    
+
     private lazy var progressView = UIFactory.makeOnBoardingProgressView(
         with: UIImage(named: "icon_back", in: .yapPakistan),
         completionImage: UIImage(named: "icon_check", in: .yapPakistan)
     )
-    
+
     private var childView: UIView?
     private var childNavigation: UINavigationController?
     private var viewModel: OnBoardingViewModelType!
     private var themeService: ThemeService<AppTheme>!
-    
+
     init(themeService: ThemeService<AppTheme>, viewModel: OnBoardingViewModelType, withChildNavigation childNav: UINavigationController) {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
@@ -31,11 +31,11 @@ class OnBoardingViewController: UIViewController {
         self.childNavigation = childNav
         self.childView = childNav.view
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -43,12 +43,12 @@ class OnBoardingViewController: UIViewController {
         setupTheme()
         bindViews()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel.inputs.startTimeObserver.onNext(())
     }
-    
+
     @objc func tapAction() {
         view.endEditing(true)
     }
@@ -61,26 +61,26 @@ fileprivate extension OnBoardingViewController {
     func setupViews() {
         view.addSubview(progressView)
         childView?.translatesAutoresizingMaskIntoConstraints = false
-        if childView != nil,  childNavigation != nil {
+        if childView != nil, childNavigation != nil {
             addChild(childNavigation!)
             view.addSubview(childView!)
         }
         childNavigation?.didMove(toParent: self)
-        
+
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapAction)))
     }
-    
+
     func setupContraints() {
         progressView
             .alignEdgesWithSuperview([.left, .right], constant: 25)
             .alignEdgeWithSuperviewSafeArea(.top, constant: 20)
             .height(constant: 40)
-        
+
         childView?
             .toBottomOf(progressView)
             .alignEdgesWithSuperview([.left, .right, .bottom])
     }
-    
+
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
@@ -99,4 +99,3 @@ fileprivate extension OnBoardingViewController {
         progressView.rx.tapBack.bind(to: viewModel.inputs.backTapObserver).disposed(by: rx.disposeBag)
     }
 }
- 

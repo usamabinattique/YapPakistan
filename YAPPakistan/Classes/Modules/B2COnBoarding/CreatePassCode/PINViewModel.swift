@@ -49,13 +49,13 @@ public protocol PINViewModelType {
 }
 
 open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutputs {
-    
+
     // MARK: - Properties
     public var inputs: PINViewModelInputs { return self }
     public var outputs: PINViewModelOutputs { return self }
-    
-    /*
-     MARK: - Subjects
+
+    // MARK: - Subjects
+     /*
      Define only those Subject required to satisfy inputs and outputs.
      All subjects should be internal unless needed otherwise
      */
@@ -81,16 +81,16 @@ open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutpu
     internal let requestForgotPINSubject = PublishSubject<OTPVerificationResult>()
     internal let verifyForgotPINSubject = PublishSubject<Void>()
     internal let hideNavigationBarSubject = BehaviorSubject<Bool>(value: true)
-    
+
     // MARK: - Inputs - Implementation of "inputs" protocol
     public var pinObserver: AnyObserver<String?> { return pinSubject.asObserver() }
     public var pinChangeObserver: AnyObserver<String> { return pinChangeSubject.asObserver() }
     public var actionObserver: AnyObserver<Void> { return actionSubject.asObserver() }
     public var termsAndConditionsActionObserver: AnyObserver<Void> { return termsAndConditionsActionSubject.asObserver() }
     public var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
-    public var forgotPasscodeObserver: AnyObserver<Void> {return forgotPasscodeSubject.asObserver() }
+    public var forgotPasscodeObserver: AnyObserver<Void> { return forgotPasscodeSubject.asObserver() }
     public var requestForgotPINObserver: AnyObserver<OTPVerificationResult> { return requestForgotPINSubject.asObserver() }
-    
+
     // MARK: - Outputs - Implementation of "outputs" protocol
     public var passcodeSuccess: Observable<String> { return passcodeSuccessSubject.asObservable() }
     public var result: Observable<String> { return resultSubject.asObservable() }
@@ -111,16 +111,16 @@ open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutpu
     public var verifyForgotPIN: Observable<Void> { return verifyForgotPINSubject.asObservable() }
     public var openTermsAndCondtions: Observable<Void> { termsAndConditionsActionSubject.asObservable() }
     public var hideNavigationBar: Observable<Bool>{ return hideNavigationBarSubject.asObservable() }
-    
+
     // MARK: Internal Properties and ViewModels
     public let disposeBag = DisposeBag()
     private let pinRange: ClosedRange<Int>
-    
+
     // MARK: - Init
     public init(pinRange: ClosedRange<Int>) {
-        
+
         self.pinRange = pinRange
-        
+
         pinChangeSubject.withLatestFrom(Observable.combineLatest(pinChangeSubject, pinSubject))
             .map{ keyStroke, pin -> String in
                 var pin = pin ?? ""
@@ -133,16 +133,17 @@ open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutpu
                         pin += keyStroke
                     }
                 }
-                return pin }.bind(to: pinSubject)
+                return pin
+            }.bind(to: pinSubject)
             .disposed(by: disposeBag)
-        
+
         pinSubject.map { [unowned self] pin -> Bool in
             guard let pin = pin else { return false }
             return self.pinRange.contains(pin.count)
-            }
+        }
             .bind(to: pinValidSubject)
             .disposed(by: disposeBag)
-        
+
         pinSubject
             .map {
                 let attributed = NSMutableAttributedString(string: $0 ?? "")
@@ -151,12 +152,12 @@ open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutpu
             }
             .bind(to: pinTextSubject)
             .disposed(by: disposeBag)
-        
+
         backSubject.subscribe(onCompleted: { [unowned self] in
             self.resultSubject.onCompleted()
         }).disposed(by: disposeBag)
     }
-    
+
    public func createTermsAndConditions(text: String) -> NSAttributedString {
         let attributedText = NSMutableAttributedString(string: text)
         let termsAndConditions = text.components(separatedBy: "\n").last ?? ""

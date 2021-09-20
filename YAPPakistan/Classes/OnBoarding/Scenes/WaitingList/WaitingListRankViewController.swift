@@ -66,7 +66,11 @@ class WaitingListRankViewController: UIViewController {
         return button
     }()
 
-    private lazy var containerStackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fillProportionally, spacing: 16, arrangedSubviews: [boostUpLabel, seeInviteesButton])
+    private lazy var containerStackView = UIFactory.makeStackView(axis: .vertical,
+                                                                  alignment: .center,
+                                                                  distribution: .fillProportionally,
+                                                                  spacing: 16,
+                                                                  arrangedSubviews: [boostUpLabel, seeInviteesButton])
 
     private lazy var bumpMeUpButton: UIButton = {
         let button = AppRoundedButton()
