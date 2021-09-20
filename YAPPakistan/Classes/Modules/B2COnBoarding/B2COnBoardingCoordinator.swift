@@ -51,6 +51,7 @@ public class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
         let viewController = OnBoardingViewController(themeService: container.themeService, viewModel: viewModel, withChildNavigation: containerNavigation)
 
         root.pushViewController(viewController, animated: true)
+        root.isNavigationBarHidden = true
 
         viewModel.backTap.do(onNext: { [weak self] in
             if self?.childContainerNavigation.viewControllers.count ?? 0 > 1 {

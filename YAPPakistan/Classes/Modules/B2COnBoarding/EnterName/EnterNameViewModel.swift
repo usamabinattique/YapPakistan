@@ -117,15 +117,16 @@ class EnterNameViewModel: EnterNameViewModelInput, EnterNameViewModelOutput, Ent
         allowedFirstNameInputSubject.map { $0 ? nil :  "screen_name_special_character_error".localized }.bind(to: firstNameErrorSubject).disposed(by: disposeBag)
         allowedLastNameInputSubject.map { $0 ? nil :  "screen_name_special_character_error".localized }.bind(to: lastNameErrorSubject).disposed(by: disposeBag)
 
-        Observable.merge(isFirstNameValid.map { $0 ? .valid : .neutral },
-                         allowedFirstNameInputSubject.filter { !$0 }
-                            .map { _ in .invalid })
-            .bind(to: firstNameValidationSubject)
+        Observable.merge(isFirstNameValid.map { $0 ? .valid : .neutral }, allowedFirstNameInputSubject.filter { !$0 }.map { _ in .invalid(nil) }).bind(to: firstNameValidationSubject).disposed(by: disposeBag)
+
+        Observable.merge(isLastNameValid.map { $0 ? .valid : .neutral }, allowedLastNameInputSubject.filter { !$0 }.map { _ in .invalid(nil) }).bind(to: lastNameValidationSubject).disposed(by: disposeBag)
+
+        keyboardNextSubject
+            .withLatestFrom(validSubject)
+            .filter { $0 }
+            .map { _ in .name }
+            .bind(to: sendSubject)
             .disposed(by: disposeBag)
-
-        Observable.merge(isLastNameValid.map { $0 ? .valid : .neutral }, allowedLastNameInputSubject.filter { !$0 }.map { _ in .invalid }).bind(to: lastNameValidationSubject).disposed(by: disposeBag)
-
-        keyboardNextSubject.withLatestFrom(validSubject).filter { $0 }.map { _ in .name }.bind(to: sendSubject).disposed(by: disposeBag)
 
         sendSubject.filter { $0 == .name }.map { [unowned self] _ in self.user }.bind(to: resultSubject).disposed(by: disposeBag)
 

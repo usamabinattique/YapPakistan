@@ -19,8 +19,8 @@ public class PINViewController: UIViewController {
 
     // MARK: - Init
     public init(themeService: ThemeService<AppTheme>, viewModel: PINViewModelType, isCreatePasscode: Bool? = false) {
-        self.viewModel = viewModel
         self.themeService = themeService
+        self.viewModel = viewModel
         self.isCreatePasscode = isCreatePasscode ?? false
         disposeBag = DisposeBag()
         super.init(nibName: nil, bundle: nil)
@@ -31,30 +31,21 @@ public class PINViewController: UIViewController {
     }
 
     // MARK: - Views
-    // .primaryDark, textStyle: .title3
+    private lazy var holdingView = UIFactory.makeView()
     private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
-
-    private lazy var holdingView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
-    private lazy var dottedView: PasscodeDottedView = PasscodeDottedView().setHidden(true).setTranslatesAutoresizingMask(false)
     private lazy var codeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, charSpace: 10)
-
-    // collor: .error
-    private lazy var errorLabel: UILabel = UIFactory.makeLabel(font: .regular, alignment: .center)
-
-    // DefaultOPT 831095
-    private lazy var pinKeyboard: RxPasscodeKeyboard = {
-        let keyPad = RxPasscodeKeyboard()
-
+    private lazy var errorLabel: UILabel = UIFactory.makeLabel(font:.regular, alignment: .center)
+    private lazy var pinKeyboard: PasscodeKeyboard = {
+        let keyPad = PasscodeKeyboard()
+    
         var imageName: String = (BiometryType.faceID == BiometricsManager().deviceBiometryType) ?
             "icon_face_id":"icon_touch_id"
         keyPad.biomatryButton.setImage(UIImage(named: imageName, in: .yapPakistan, compatibleWith: nil), for: .normal)
 
-        keyPad.backButton.setImage(UIImage(named: "icon_delete_purple", in: .yapPakistan, compatibleWith: nil)?.asTemplate, for: .normal)
+        keyPad.backButton.setImage(UIImage(named: "icon_delete_purple",
+                                           in: .yapPakistan,
+                                           compatibleWith: nil)?.asTemplate,
+                                   for: .normal)
 
         return keyPad
     }()
@@ -112,9 +103,7 @@ fileprivate extension PINViewController {
 
     func setupViews() {
 
-        holdingView.addSubview(dottedView)
         holdingView.addSubview(codeLabel)
-
         holdingView.addSubview(errorLabel)
         view.addSubview(headingLabel)
         view.addSubview(holdingView)
@@ -134,7 +123,6 @@ fileprivate extension PINViewController {
             .bind({ UIColor($0.greyDark       ) }, to: [termsAndCondtionsLabel.rx.textColor])
             .bind({ UIColor($0.primary        ) }, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
             .bind({ UIColor($0.primary        ) }, to: [pinKeyboard.rx.themeColor])
-            .bind({ UIColor($0.primary        ) }, to: [dottedView.rx.themeColor])
             .bind({ UIColor($0.primaryDark    ) }, to: [codeLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
@@ -162,19 +150,14 @@ fileprivate extension PINViewController {
         headingLabel
             .toBottomOf(spacer1)
             .alignEdgesWithSuperview([.left, .right], constant: 20)
-
-        dottedView
-            .centerHorizontallyInSuperview()
-            .alignEdgesWithSuperview([.top])
-            .height(constant: 20)
-
+    
         codeLabel
             .centerHorizontallyInSuperview()
             .alignEdgesWithSuperview([.top])
             .height(constant: 20)
 
         errorLabel
-            .toBottomOf(dottedView, constant: 3)
+            .toBottomOf(codeLabel, constant: 3)
             .centerHorizontallyInSuperview()
             .alignEdgesWithSuperview([.bottom])
             .height(constant: 20)
@@ -228,12 +211,12 @@ fileprivate extension PINViewController {
     func bind() {
         // viewModel.outputs.pinText.map{ $0?.string.count ?? 0 }.bind(to: dottedView.rx.characters).disposed(by: disposeBag)
 
-        viewModel.outputs.pinText.map({ $0?.string }).bind(to: codeLabel.rx.text).disposed(by: disposeBag)
+        viewModel.outputs.pinText.map({$0?.string}).bind(to: codeLabel.rx.text).disposed(by: disposeBag)
 
         viewModel.outputs.pinValid.bind(to: createPINButton.rx.isEnabled).disposed(by: disposeBag)
         createPINButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: disposeBag)
 
-        pinKeyboard.rx.output.bind(to: viewModel.inputs.pinChangeObserver).disposed(by: disposeBag)
+        pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.pinChangeObserver).disposed(by: disposeBag)
 
         viewModel.outputs.error.bind(to: errorLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.pinText.map { _ -> String? in nil }.bind(to: errorLabel.rx.text).disposed(by: disposeBag)
@@ -248,7 +231,7 @@ fileprivate extension PINViewController {
 
         viewModel.outputs.shake
             .subscribe(onNext: { [unowned self] in
-                self.dottedView.animate([Animation.shake(duration: 0.1)])
+                self.codeLabel.animate([Animation.shake(duration: 0.1)])
                 UINotificationFeedbackGenerator().notificationOccurred(.error)
             })
             .disposed(by: disposeBag)
@@ -259,9 +242,7 @@ fileprivate extension PINViewController {
     }
 
     func bindTranslations() {
-        viewModel.outputs.headingText.do(onNext: { string in
-            print(string)
-        }).bind(to: headingLabel.rx.text).disposed(by: disposeBag)
+        viewModel.outputs.headingText.bind(to: headingLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.termsAndConditionsText.subscribe(onNext: {[weak self] in
             if $0 == nil { self?.termsAndCondtionsLabel.isHidden = true }
             self?.termsAndCondtionsLabel.text = $0?.string

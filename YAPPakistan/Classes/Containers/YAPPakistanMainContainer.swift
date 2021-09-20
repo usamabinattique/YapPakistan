@@ -29,6 +29,7 @@ public final class YAPPakistanMainContainer {
     let configuration: YAPPakistanConfiguration
     let themeService: ThemeService<AppTheme>
     let credentialsStore: CredentialsStoreType
+    var xsrfToken:String! = nil
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
@@ -75,6 +76,10 @@ public final class YAPPakistanMainContainer {
                                apiConfig: makeAPIConfiguration(),
                                authorizationProvider: authorizationProvider)
     }
+    
+    func makeAuthenticationService(xsrfToken: String) -> AuthenticationService {
+        return AuthenticationService(apiClient: makeAPIClient(), authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+    }
 
     func makeReachedQueueTopViewController() -> ReachedQueueTopViewController {
         let viewModel = ReachedQueueTopViewModel()
@@ -88,4 +93,19 @@ public final class YAPPakistanMainContainer {
                                                authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
         return UIViewController()
     }
+}
+
+extension YAPPakistanMainContainer {
+    func makeLoginRepository() -> LoginRepository {
+        return LoginRepository(customerService: self.makeCustomersService(xsrfToken: xsrfToken), authenticationService: makeAuthenticationService(xsrfToken: xsrfToken), messageService: makeMessagesService(xsrfToken: xsrfToken))
+    }
+
+    func makeLoginViewModel(loginRepository:LoginRepository, user:OnBoardingUser = OnBoardingUser(accountType: .b2cAccount)) -> LoginViewModelType {
+        return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore, user: user)
+    }
+
+    func makeLoginViewController(viewModel:LoginViewModelType, isBackButton: Bool = true) -> LoginViewController {
+        return LoginViewController(themeService: self.themeService, viewModel: viewModel, isBackButton: isBackButton)
+    }
+    
 }

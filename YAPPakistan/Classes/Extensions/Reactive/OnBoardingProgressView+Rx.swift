@@ -27,20 +27,6 @@ extension Reactive where Base: OnBoardingProgressView {
         }
     }
 
-    /*
-    var disableBackButton: Binder<Bool> {
-        return Binder(self.base) { progressView, isDisabled -> Void in
-            isDisabled ? progressView.disableBackButton() : progressView.enableBackButton()
-        }
-    }
-
-    var hideBackButton: Binder<Bool> {
-        return Binder(self.base) { progressView, isHidden -> Void in
-            isHidden ? progressView.hideBackButton() : progressView.showBackButton()
-        }
-    }
-    */
-
     var tintColor: Binder<UIColor?> {
         return Binder(self.base) { view, attr in
             view.tintColor = attr

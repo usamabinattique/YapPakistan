@@ -16,18 +16,20 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
 
     private lazy var headingLabel = UIFactory.makeLabel(font: .title2, alignment: .center, text: "screen_phone_number_display_text_title".localized, adjustFontSize: true)
 
-    private lazy var mobileNumber = UIFactory.makeAppRoundedTextField(with: .regular,
-                                                                      errorFont: .micro,
-                                                                      validImage: UIImage(named: "icon_check", in: .yapPakistan),
-                                                                      inValidImage: UIImage(named: "icon_invalid", in: .yapPakistan),
-                                                                      leftIcon: nil,
-                                                                      displaysIcon: true, returnKeyType: .send,
-                                                                      autocorrectionType: .no,
-                                                                      keyboardType: .asciiCapableNumberPad,
-                                                                      delegate: self)
+    private lazy var mobileNumber = UIFactory.makeAppRoundedTextField(
+        with: .regular,
+        errorFont: .micro,
+        validImage: UIImage(named: "icon_check", in: .yapPakistan),
+        inValidImage: UIImage(named: "icon_invalid", in: .yapPakistan),
+        displaysIcon:true,
+        returnKeyType:.send,
+        autocorrectionType:.no,
+        keyboardType:.asciiCapableNumberPad,
+        delegate:self
+    )
 
-    private lazy var countryPicker: RxAppPickerView = {
-        return RxAppPickerView()
+    private lazy var countryPicker: AppPickerView = {
+        return AppPickerView()
     }()
 
     private lazy var countryTextField: UITextField = {
@@ -130,7 +132,7 @@ private extension PhoneNumberViewController {
         countryPicker.rx.itemSelected.map { $0.row }.bind(to: viewModel.inputs.countrySelectionObserver).disposed(by: rx.disposeBag)
 
         viewModel.outputs.showError.bind(to: mobileNumber.errorLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid }.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
+        viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid(nil) }.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.endEditting.bind(to: view.rx.endEditting).disposed(by: rx.disposeBag)
     }
 }

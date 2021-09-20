@@ -11,12 +11,15 @@ import Foundation
 public protocol CredentialsStoreType {
 
     var isCredentialsAvailable: Bool { get }
+    var remembersId: Bool? { get }
 
     @discardableResult
     func secureCredentials(username: String, passcode: String) -> Bool
     func getUsername() -> String?
     func getPasscode(username: String) -> String?
     func secure(passcode: String) -> Bool
+    func clearUsername() -> Bool
+    func setRemembersId(_ remembers: Bool) -> Bool
 }
 
 public class CredentialsManager: CredentialsStoreType {
@@ -36,6 +39,12 @@ public class CredentialsManager: CredentialsStoreType {
 
     public func secure(passcode: String) -> Bool {
         false
+    }
+
+    public func clearUsername() -> Bool {
+        guard !(remembersId ?? false) else { return false }
+        //return keychainManager.removeObject(forKey: usernameKey)
+        return false
     }
 
 }

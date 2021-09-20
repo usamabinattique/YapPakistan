@@ -1,5 +1,5 @@
 //
-//  UIAppSwitch+Rx.swift
+//  AppSwitch+Rx.swift
 //  YAPPakistan
 //
 //  Created by Tayyab on 10/09/2021.
@@ -10,7 +10,7 @@ import RxCocoa
 import RxSwift
 import YAPComponents
 
-extension Reactive where Base: UIAppSwitch {
+extension Reactive where Base: AppSwitch {
     /// Reactive wrapper for `isOn` property.
     var isOn: ControlProperty<Bool> {
         return value
