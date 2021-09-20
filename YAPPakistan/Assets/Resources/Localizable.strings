@@ -147,3 +147,10 @@
 "screen_email_verification_b2c_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
 "screen_email_verification_b2b_display_text_email_sent" = "you should now receive an email on";
 "screen_email_verification_b2b_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
+
+//MARK: Light Dashboard screen
+"screen_light_dashboard_button_logout" = "Logout";
+"screen_light_dashboard_button_touch_id" = "Touch ID";
+"screen_light_dashboard_button_face_id" = "Face ID";
+"screen_light_dashboard_display_text_heading_text" = "Light Dashboard";
+"screen_lite_dashboard_button_complete_verification" = "Complete verification";
