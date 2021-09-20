@@ -34,12 +34,6 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
         root.navigationBar.isHidden = false
         root.pushViewController(loginViewController, animated: true)
 
-        viewModel.outputs.result.filter({$0.isCancel}).subscribe(onNext: { [unowned self] _ in
-            self.root.popViewController(animated: true)
-            self.result.onNext(.cancel)
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
-
         viewModel.outputs.signUp.subscribe(onNext: { [unowned self] in
             if self.root.viewControllers.count > 1, self.root.viewControllers[self.root.viewControllers.count - 2] is AccountSelectionViewController {
                 self.root.popViewController(animated: true)
@@ -50,7 +44,25 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
                 //Account selection flow
             }
         }).disposed(by: rx.disposeBag)
+        
+        let logInResult = viewModel.outputs.result.share()
+        
+        logInResult.filter({ $0.isCancel }).subscribe(onNext: { [unowned self] _ in
+            self.root.popViewController(animated: true)
+            self.result.onNext(.cancel)
+            self.result.onCompleted()
+        }).disposed(by: rx.disposeBag)
+        
+        logInResult.filter({ $0.isSuccess != nil }).subscribe(onNext: {[weak self] _ in
+            self?.passcode()
+        }).disposed(by: rx.disposeBag)
 
         return result
+    }
+    
+    func passcode() {
+        coordinate(to: container.makePasscodeCoordinator(root: root)).subscribe( onNext: { result in
+            print("Moved to passcode screen")
+        }).disposed(by: rx.disposeBag)
     }
 }

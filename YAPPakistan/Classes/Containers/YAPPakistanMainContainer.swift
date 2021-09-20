@@ -97,10 +97,13 @@ public final class YAPPakistanMainContainer {
 
 extension YAPPakistanMainContainer {
     func makeLoginRepository() -> LoginRepository {
-        return LoginRepository(customerService: self.makeCustomersService(xsrfToken: xsrfToken), authenticationService: makeAuthenticationService(xsrfToken: xsrfToken), messageService: makeMessagesService(xsrfToken: xsrfToken))
+        return LoginRepository(customerService: self.makeCustomersService(xsrfToken: xsrfToken),
+                               authenticationService: makeAuthenticationService(xsrfToken: xsrfToken),
+                               messageService: makeMessagesService(xsrfToken: xsrfToken))
     }
 
-    func makeLoginViewModel(loginRepository:LoginRepository, user:OnBoardingUser = OnBoardingUser(accountType: .b2cAccount)) -> LoginViewModelType {
+    func makeLoginViewModel(loginRepository:LoginRepository,
+                            user:OnBoardingUser = OnBoardingUser(accountType: .b2cAccount)) -> LoginViewModelType {
         return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore, user: user)
     }
 
@@ -108,4 +111,26 @@ extension YAPPakistanMainContainer {
         return LoginViewController(themeService: self.themeService, viewModel: viewModel, isBackButton: isBackButton)
     }
     
+}
+
+extension YAPPakistanMainContainer {
+    func makeBiometricsService() -> BiometricsManager {
+        return BiometricsManager()
+    }
+    
+    func makeVerifyPasscodeViewModel(repository: LoginRepository) -> VerifyPasscodeViewModelType {
+        return VerifyPasscodeViewModel(repository: repository)
+    }
+    
+    func makePINViewController(viewModel:VerifyPasscodeViewModelType,
+                               biometricsService: BiometricsManager = BiometricsManager(),
+                               isCreatePasscode:Bool = false) -> VerifyPasscodeViewController {
+        return VerifyPasscodeViewController(themeService: themeService,
+                                            viewModel: viewModel,
+                                            biometricsService: biometricsService)
+    }
+    
+    func makePasscodeCoordinator(root:UINavigationController) -> PasscodeCoordinator  {
+        PasscodeCoordinator(root: root, xsrfToken: xsrfToken, container: self)
+    }
 }
