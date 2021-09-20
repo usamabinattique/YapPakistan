@@ -7,9 +7,9 @@
 //
 
 import Foundation
-import YAPPakistan
+import YAPCore
 
-extension YAPPakistan.Environment {
+extension AppEnvironment {
     static var current: Self {
         return .dev
     }

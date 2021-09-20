@@ -54,20 +54,6 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
             print(result)
         }.disposed(by: rx.disposeBag)
     }
-
-    func showDummyController() {
-        if let value = HTTPCookieStorage.shared.cookies?.filter({ $0.name == "XSRF-TOKEN" }).first?.value {
-            // start onboarding, signin, signup flow
-            // let vc = container.makeDummyViewController(xsrfToken: value)
-        }
-
-        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
-        let viewModel = WaitingListRankViewModel(onBoardingRepository: onBoardingRepository)
-        let viewController = WaitingListRankViewController(themeService: container.themeService,
-                                                           viewModel: viewModel)
-
-        window.rootViewController = viewController
-    }
 }
 
 // MARK: NAVIGATIONS

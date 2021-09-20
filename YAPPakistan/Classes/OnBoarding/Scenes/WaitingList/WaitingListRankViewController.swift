@@ -267,5 +267,18 @@ class WaitingListRankViewController: UIViewController {
         viewModel.outputs.bumpMeUpButtonTitle
             .bind(to: bumpMeUpButton.rx.title(for: .normal))
             .disposed(by: disposeBag)
+
+        bumpMeUpButton.rx.tap
+            .bind(to: viewModel.inputs.bumpMeUp)
+            .disposed(by: disposeBag)
+
+        viewModel.outputs.shareInfo
+            .subscribe(onNext: { [unowned self] text in
+                let activityViewController = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+                activityViewController.popoverPresentationController?.sourceView = self.view
+
+                self.present(activityViewController, animated: true, completion: nil)
+            })
+            .disposed(by: disposeBag)
     }
 }

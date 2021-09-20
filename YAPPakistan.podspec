@@ -71,7 +71,10 @@ Pod::Spec.new do |s|
   s.dependency 'RxDataSources', '5.0.0'
   s.dependency 'RxOptional', '5.0.2'
   s.dependency 'RxTheme', '5.0.4'
-  
+
+  #MARK: Analytics
+  s.dependency 'Adjust', '4.29.5'
+
   #MARK: UI
   s.dependency 'SwiftyGif', '5.4.0'
   s.dependency 'PhoneNumberKit', '3.3.3'

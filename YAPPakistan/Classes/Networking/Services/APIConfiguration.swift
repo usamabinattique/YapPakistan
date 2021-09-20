@@ -6,11 +6,12 @@
 //
 
 import Foundation
+import YAPCore
 
 public struct APIConfiguration {
     public let baseURL: URL
 
-    init(environment: Environment) {
+    init(environment: AppEnvironment) {
         switch environment {
         case .dev:
             self.baseURL = URL(string: "https://pk-dev.yap.co")!

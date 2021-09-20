@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import YAPCore
 
 // swiftlint:disable function_body_length
 protocol EnterEmailViewModelInput {
@@ -39,6 +40,8 @@ protocol EnterEmailViewModelOutput {
 }
 
 protocol EnterEmailViewModelType {
+    typealias OnAuthenticateClosure = (Session, inout OnBoardingRepository?, inout AccountProvider?) -> Void
+
     var inputs: EnterEmailViewModelInput { get }
     var outputs: EnterEmailViewModelOutput { get }
 }
@@ -98,15 +101,18 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     private let disposeBag = DisposeBag()
     private var isValidInput = false
     private var isEmailSend = false
-    private let repository: OnBoardingRepository
+    private var repository: OnBoardingRepository!
 
     private let sessionProvider: SessionProviderType
     private let credentialsStore: CredentialsStoreType
+    private var accountProvider: AccountProvider?
 
     init(credentialsStore: CredentialsStoreType,
+         referralManager: AppReferralManager,
          sessionProvider: SessionProviderType,
          onBoardingRepository: OnBoardingRepository,
-         user: OnBoardingUser) {
+         user: OnBoardingUser,
+         onAuthenticate: @escaping OnAuthenticateClosure) {
         self.credentialsStore = credentialsStore
         self.sessionProvider = sessionProvider
         self.repository = onBoardingRepository
@@ -183,21 +189,30 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                                         accountType: user.accountType.rawValue)
         }.share()
 
-        saveProfileRequest.elements().subscribe(onNext: { [weak self] jwt in
-            YAPProgressHud.hideProgressHud()
+        saveProfileRequest.elements()
+            .do(onNext: { [weak self] jwt in
+                guard let self = self,
+                      let passcode = self.user.passcode,
+                      let phoneNumber = self.user.mobileNo.serverFormattedValue else {
+                    return
+                }
 
-            guard let self = self,
-                  let passcode = self.user.passcode,
-                  let phoneNumber = self.user.mobileNo.serverFormattedValue else {
-                return
+                self.session = self.sessionProvider.makeUserSession(jwt: jwt)
+                self.credentialsStore.secureCredentials(username: phoneNumber, passcode: passcode)
+                self.isEmailSend = true
+
+                onAuthenticate(self.session, &self.repository, &self.accountProvider)
+
+                self.refreshAccount()
+            })
+            .filter { _ in referralManager.isReferralInformationAvailable }
+            .flatMap { _ in
+                self.repository.saveReferralInvitation(inviterCustomerId: referralManager.inviterId ?? "", referralDate: referralManager.invitationTimeString ?? "")
             }
-
-            self.session = self.sessionProvider.makeUserSession(jwt: jwt)
-            self.credentialsStore.secureCredentials(username: phoneNumber, passcode: passcode)
-
-            self.isEmailSend = true
-
-        }).disposed(by: disposeBag)
+            .elements()
+            .do(onNext: { _ in referralManager.removeReferralInformation() })
+            .subscribe()
+            .disposed(by: disposeBag)
 
         saveProfileRequest.errors()
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
@@ -274,6 +289,24 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             self.sendSubject.dispose()
         }).disposed(by: disposeBag)
 
+    }
+
+    private func refreshAccount() {
+        guard let accountProvider = accountProvider else {
+            return assertionFailure()
+        }
+
+        accountProvider.refreshAccount()
+        accountProvider.currentAccount
+            .unwrap()
+            .do(onNext: { [weak self] in
+                YAPProgressHud.hideProgressHud()
+
+                self?.user.iban = $0.iban
+                self?.user.isWaiting = $0.isWaiting
+            })
+            .subscribe()
+            .disposed(by: disposeBag)
     }
 }
 
