@@ -6,9 +6,11 @@
 //  Copyright (c) 2021 Tayyab Akram. All rights reserved.
 //
 
-import UIKit
+import Adjust
 import RxSwift
+import UIKit
 import YAPCore
+import YAPPakistan
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -24,6 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        configureAdjust()
+
         window = UIWindow(frame: UIScreen.main.bounds)
         let shortcutItem = launchOptions?[.shortcutItem] as? UIApplicationShortcutItem
         appCoordinate(shortcutItem)
@@ -33,7 +37,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        let referralManager = AppReferralManager(environment: .current)
+        referralManager.parseReferralUrl(userActivity.webpageURL)
+
+        return true
+    }
+
+    func configureAdjust() {
+        let adjustAppToken = AppConstants.Adjust.appToken
+
+        var environment = ADJEnvironmentProduction
+        #if DEBUG
+        environment = ADJEnvironmentSandbox
+        #endif
+
+        guard let adjustConfig = ADJConfig(appToken: adjustAppToken, environment: environment) else { return }
+
+        #if DEBUG
+        adjustConfig.logLevel = ADJLogLevelVerbose
+        #endif
+
+        Adjust.appDidLaunch(adjustConfig)
+    }
 }
-
-
-

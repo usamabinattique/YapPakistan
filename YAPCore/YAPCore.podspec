@@ -19,7 +19,7 @@ Pod::Spec.new do |spec|
                         :tag => spec.version.to_s }
                         
   spec.ios.deployment_target = '11.0'
-  spec.source_files = 'YAPCore/Coordinator/**/*'
+  spec.source_files = 'YAPCore/Classes/**/*'
   
     #MARK: RxSwift Extension
   spec.dependency 'RxSwift', '6.2.0'

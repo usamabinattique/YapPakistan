@@ -144,7 +144,9 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
 
         textWillChangeSubject.do(onNext: { [unowned self] (text, range, currentText) in
             let currentText = (currentText ?? "").replacingOccurrences(of: " ", with: "")
-            self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count-1 && (currentText.count + text.count < 14 || text.count == 0)) && (!self.isFormatted || text.count == 0)
+            self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count-1
+                                        && (currentText.count + text.count < 14 || text.count == 0))
+                && (!self.isFormatted || text.count == 0)
         }).subscribe().disposed(by: disposeBag)
 
         let verifyUserRequest = signInSubject.withLatestFrom(mobileNumberSubject.asObservable())

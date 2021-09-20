@@ -15,7 +15,6 @@ import YAPComponents
 public class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
     private let container: YAPPakistanMainContainer
     private let xsrfToken: String
-    private var session: Session!
 
     internal weak var root: UINavigationController!
     private var containerNavigation: UINavigationController!
@@ -180,11 +179,10 @@ private extension B2COnBoardingCoordinator {
     }
 
     func navigateToEnterEmail(user: OnBoardingUser) {
-        let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
-        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
+        let enterEmailViewController = container.makeEnterEmailController(xsrfToken: xsrfToken, user: user)
+        let enterEmailViewModel: EnterEmailViewModelType! = enterEmailViewController.viewModel
 
-        let enterEmailViewModel = EnterEmailViewModel(credentialsStore: container.credentialsStore, sessionProvider: sessionProvider, onBoardingRepository: onBoardingRepository, user: user)
-        childContainerNavigation.pushViewController(EnterEmailViewController(themeService: container.themeService, viewModel: enterEmailViewModel), animated: true)
+        childContainerNavigation.pushViewController(enterEmailViewController, animated: true)
 
         enterEmailViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
             self.viewModel.inputs.progressObserver.onNext(progress)
@@ -207,11 +205,10 @@ private extension B2COnBoardingCoordinator {
         demographicsResultSubject.bind(to: enterEmailViewModel.inputs.demographicsSuccessObserver).disposed(by: rx.disposeBag)
 
         enterEmailViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
-            self.session = result.session
             var user = result.user
             user.timeTaken = self.viewModel.time
-            // user.isWaiting == true ?
-            self.navigateToWaitingUserCongratulation(user: user)
+            //user.isWaiting == true ?
+            self.navigateToWaitingUserCongratulation(user: user, session: result.session)
             //: self.navigateToCongratulation(user: user)
                 // AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailSuccess())
         }).disposed(by: rx.disposeBag)
@@ -229,8 +226,8 @@ private extension B2COnBoardingCoordinator {
             // AppAnalytics.shared.logEvent(OnBoardingEvent.completeVerification())
         }).disposed(by: rx.disposeBag)
     }
-
-    func navigateToWaitingUserCongratulation(user: OnBoardingUser) {
+    
+    func navigateToWaitingUserCongratulation(user: OnBoardingUser, session: Session) {
         let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
         let congratulationViewController = OnboardingCongratulationWaitingUserViewController(themeService: container.themeService, viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: rx.disposeBag)
@@ -241,7 +238,7 @@ private extension B2COnBoardingCoordinator {
         containerNavigation.pushViewController(congratulationViewController, animated: true)
 
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
-            self?.navigateToWaitingListRank()
+            self?.navigateToWaitingListRank(session: session)
         }).disposed(by: rx.disposeBag)
     }
 
@@ -256,13 +253,8 @@ private extension B2COnBoardingCoordinator {
         }).disposed(by: rx.disposeBag)
     }
 
-    func navigateToWaitingListRank() {
-        let customersService = container.makeCustomersService(authorizationProvider: session)
-        let messagesService = container.makeMessagesService(authorizationProvider: session)
-        let onBoardingRepository = OnBoardingRepository(customersService: customersService, messagesService: messagesService)
-        let viewModel = WaitingListRankViewModel(onBoardingRepository: onBoardingRepository)
-        let viewController = WaitingListRankViewController(themeService: container.themeService, viewModel: viewModel)
-
+    func navigateToWaitingListRank(session: Session) {
+        let viewController = container.makeWaitingListController(session: session)
         root.pushViewController(viewController, animated: true)
     }
 

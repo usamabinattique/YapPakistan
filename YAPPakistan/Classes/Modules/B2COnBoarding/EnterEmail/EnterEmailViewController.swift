@@ -45,8 +45,8 @@ class EnterEmailViewController: OnBoardinContainerChildViewController {
     fileprivate lazy var verificationLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, alpha: 0, adjustFontSize: true)
 
     override var firstReponder: UITextField? { email }
-
-    fileprivate var viewModel: EnterEmailViewModelType!
+    
+    var viewModel: EnterEmailViewModelType!
     fileprivate var themeService: ThemeService<AppTheme>!
     fileprivate var onBoardingStage: OnboardingStage = .email
 

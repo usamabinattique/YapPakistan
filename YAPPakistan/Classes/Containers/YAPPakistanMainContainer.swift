@@ -8,19 +8,12 @@
 import Foundation
 import RxSwift
 import RxTheme
-
-public enum Environment {
-    case dev
-    case qa
-    case stg
-    case preprod
-    case prod
-}
+import YAPCore
 
 public struct YAPPakistanConfiguration {
-    let environment: Environment
+    let environment: AppEnvironment
 
-    public init(environment: Environment) {
+    public init(environment: AppEnvironment) {
         self.environment = environment
     }
 }
@@ -29,12 +22,14 @@ public final class YAPPakistanMainContainer {
     let configuration: YAPPakistanConfiguration
     let themeService: ThemeService<AppTheme>
     let credentialsStore: CredentialsStoreType
+    let referralManager: AppReferralManager
     var xsrfToken:String! = nil
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
         self.themeService = AppTheme.service(initial: .light)
         self.credentialsStore = CredentialsManager()
+        self.referralManager = AppReferralManager(environment: configuration.environment)
     }
 
     public func rootCoordinator(window: UIWindow) -> AppCoordinator {
@@ -86,6 +81,35 @@ public final class YAPPakistanMainContainer {
         let viewController = ReachedQueueTopViewController(themeService: themeService, viewModel: viewModel)
 
         return viewController
+    }
+
+    func makeOnBoardingRepository(xsrfToken: String) -> OnBoardingRepository {
+        let customersService = makeCustomersService(xsrfToken: xsrfToken)
+        let messagesService = makeMessagesService(xsrfToken: xsrfToken)
+        let onBoardingRepository = OnBoardingRepository(customersService: customersService, messagesService: messagesService)
+
+        return onBoardingRepository
+    }
+
+    func makeEnterEmailController(xsrfToken: String, user: OnBoardingUser) -> EnterEmailViewController {
+        let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
+        let onBoardingRepository = makeOnBoardingRepository(xsrfToken: xsrfToken)
+
+        let enterEmailViewModel = EnterEmailViewModel(credentialsStore: credentialsStore,
+                                                      referralManager: referralManager,
+                                                      sessionProvider: sessionProvider,
+                                                      onBoardingRepository: onBoardingRepository, user: user) { session, onBoardingRepository, accountProvider in
+            let sessionContainer = UserSessionContainer(parent: self, session: session)
+            onBoardingRepository = sessionContainer.makeOnBoardingRepository()
+            accountProvider = sessionContainer.accountProvider
+        }
+
+        return EnterEmailViewController(themeService: themeService, viewModel: enterEmailViewModel)
+    }
+
+    func makeWaitingListController(session: Session) -> WaitingListRankViewController {
+        let sessionContainer = UserSessionContainer(parent: self, session: session)
+        return sessionContainer.makeWaitingListController()
     }
 
     public func makeDummyViewController(xsrfToken: String) -> UIViewController {
