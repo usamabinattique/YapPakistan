@@ -183,7 +183,9 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
      func createTermsAndConditions(text: String) -> NSAttributedString {
         let attributedText = NSMutableAttributedString(string: text)
         let termsAndConditions = text.components(separatedBy: "\n").last ?? ""
-        attributedText.addAttribute(.foregroundColor, value: UIColor.blue/*appColor(ofType: .primary)*/, range: NSRange(location: text.count - termsAndConditions.count, length: termsAndConditions.count))
+        attributedText.addAttribute(.foregroundColor, value: UIColor.blue/*appColor(ofType: .primary)*/,
+                                    range: NSRange(location: text.count - termsAndConditions.count,
+                                                   length: termsAndConditions.count))
         attributedText.addAttribute(.foregroundColor, value: UIColor.darkGray /*appColor(ofType: .greyDark)*/, range: NSRange(location: 0, length: text.count - termsAndConditions.count))
         return attributedText
     }
@@ -201,6 +203,7 @@ fileprivate extension VerifyPasscodeViewModel {
             .share()
         
         let loginResponse = loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }
+        //let loginResponse = loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }.unwrap()
 
         loginResponse
             .do(onNext: { elem in

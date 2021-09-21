@@ -10,13 +10,13 @@ import RxSwift
 import YAPCore
 
 class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
-    private let container: YAPPakistanMainContainer
+    private let container: UserSessionContainer
     private let window: UIWindow?
 
     private let resultSubject = PublishSubject<ResultType<Void>>()
     private var root: UINavigationController!
 
-    init(container: YAPPakistanMainContainer, window: UIWindow) {
+    init(container: UserSessionContainer, window: UIWindow) {
         self.container = container
         self.window = window
     }

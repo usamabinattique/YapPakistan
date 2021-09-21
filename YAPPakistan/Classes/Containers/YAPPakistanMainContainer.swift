@@ -77,11 +77,8 @@ public final class YAPPakistanMainContainer {
         return AuthenticationService(apiClient: makeAPIClient(), authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
     }
 
-    func makeReachedQueueTopViewController() -> ReachedQueueTopViewController {
-        let viewModel = ReachedQueueTopViewModel()
-        let viewController = ReachedQueueTopViewController(themeService: themeService, viewModel: viewModel)
-
-        return viewController
+    func makeAuthenticationService(authorizationProvider: ServiceAuthorizationProviderType) -> AuthenticationService {
+        return AuthenticationService(apiClient: makeAPIClient(), authorizationProvider: authorizationProvider)
     }
 
     func makeOnBoardingRepository(xsrfToken: String) -> OnBoardingRepository {
