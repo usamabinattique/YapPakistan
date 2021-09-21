@@ -12,11 +12,17 @@ import PhoneNumberKit
 import YAPComponents
 import YAPCore
 import PhoneNumberKit
+import YAPCore
+
+struct RequestResponse {
+    var userName:String
+    var isBlocked:Bool
+}
 
 protocol LoginViewModelInputs {
     var signInObserver: AnyObserver<Void> { get }
     var signUpObserver: AnyObserver<Void> { get }
-    var backObserver: AnyObserver<ResultType<Void>> { get }
+    var backObserver: AnyObserver<ResultType<RequestResponse>> { get }
     var textWillChangeObserver: AnyObserver<TextChange> { get }
 
     var mobileNumberObserver: AnyObserver<String?> { get }
@@ -29,7 +35,9 @@ protocol LoginViewModelOutputs {
 
     var signIn: Observable<Void> { get }
     var signUp: Observable<Void> { get }
-    var result:Observable<ResultType<Void>> { get }
+    
+    var result:Observable<ResultType<RequestResponse>> { get }
+    
     var flag: Observable<String> { get }
     var shouldChange: Bool { get }
     var progress: Observable<Bool> { get }
@@ -54,7 +62,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     // inputs
     var signInObserver: AnyObserver<Void> { return signInSubject.asObserver() }
     var signUpObserver: AnyObserver<Void> { return signUpSubject.asObserver() }
-    var backObserver: AnyObserver<ResultType<Void>> { return resultSubject.asObserver() }
+    var backObserver: AnyObserver<ResultType<RequestResponse>> { return resultSubject.asObserver() }
     var textWillChangeObserver: AnyObserver<TextChange> { return textWillChangeSubject.asObserver() }
     var mobileNumberObserver: AnyObserver<String?> { return mobileNumberSubject.asObserver() }
     var rememberMeObserver: AnyObserver<Bool> { return rememberMeSubject.asObserver() }
@@ -65,7 +73,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     var signUp: Observable<Void> { return signUpSubject.asObservable() }
     var flag: Observable<String> {return flagSubject.asObservable()}
     var shouldChange: Bool { return shouldChangeSub }
-    var result: Observable<ResultType<Void>> { return resultSubject.asObservable() }
+    var result: Observable<ResultType<RequestResponse>> { return resultSubject.asObservable() }
     var progress: Observable<Bool> { return progressSubject.asObservable() }
     var validationResult: Observable<AppRoundedTextFieldValidation> { validationSubject.asObservable() }
     var localizedText: Observable<LocalizedText> { return localizedTextSubject.asObservable() }
@@ -79,7 +87,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     private let signInSubject = PublishSubject<Void>()
     private let signUpSubject = PublishSubject<Void>()
     private let flagSubject = BehaviorSubject<String>(value: "")
-    private let resultSubject = PublishSubject<ResultType<Void>>()
+    private let resultSubject = PublishSubject<ResultType<RequestResponse>>()
     private let progressSubject = PublishSubject<Bool>()
     private let validationSubject = BehaviorSubject<AppRoundedTextFieldValidation>(value: .neutral)
     private let localizedTextSubject:BehaviorSubject<LocalizedText>
@@ -167,7 +175,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
                     _ = credentialsManager.secure(passcode: $0 ?? "")
                 }
             })
-            .map { _ in ResultType.success(()) }
+            .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: false)) }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
 
@@ -180,7 +188,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
 
         apiError.filter { [unowned self] error in self.isErrorUserBlocked(error) }
             .withLatestFrom(mobileNumberSubject)
-            .map { _ in ResultType.success(()) }
+            .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: true)) }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
 
@@ -210,7 +218,6 @@ private extension LoginViewModel {
         rememberMeSubject
             .do(onNext: {
                 if !$0 {
-                    // TODO: the method is need to be implemented
                      _ = credentialsManager.clearUsername()
                 }
             })

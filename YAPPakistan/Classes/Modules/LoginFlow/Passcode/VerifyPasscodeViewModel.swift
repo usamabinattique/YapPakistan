@@ -6,6 +6,7 @@
 //
 
 import RxSwift
+import YAPCore
 //public typealias OTPVerificationResult = (token: String?, phoneNumber: String?)
 
 public protocol VerifyPasscodeViewModelInputs {
@@ -125,12 +126,22 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     private let repository: LoginRepository
     private let pinRange: ClosedRange<Int>
     private let disposeBag = DisposeBag()
+    private let credentialsManager: CredentialsManager!
+    private let username: String!
+    private let sessionCreator: SessionProviderType!
     
     // MARK: - Init
-    init(repository: LoginRepository, pinRange: ClosedRange<Int> = 4...6) {
+    init( repository: LoginRepository,
+          credentialsManager: CredentialsManager,
+          username: String,
+          sessionCreator: SessionProviderType,
+          pinRange: ClosedRange<Int> = 4...6) {
         
         self.repository = repository
         self.pinRange = pinRange
+        self.credentialsManager = credentialsManager
+        self.username = username
+        self.sessionCreator = sessionCreator
         
         self.localizedTextSubject = BehaviorSubject(value:(
             "screen_enter_passcode_display_text_title".localized,
@@ -190,10 +201,24 @@ fileprivate extension VerifyPasscodeViewModel {
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
         
-        loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }.unwrap()
-            .filter{ $0.isEmpty }
+        let loginResponse = loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }.unwrap()
+
+        loginResponse.filter{ $0.isEmpty }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
+        
+        loginResponse.filter{ !($0.isEmpty ) }
+            .map{ self.sessionCreator.makeUserSession(jwt: $0) }
+            .do(onNext: { [weak self] session in
+                self?.loaderSubject.onNext(false)
+                //self?.resultSubject.onNext(PasscodeResult.dashboard(session: session))
+            })
+            .withLatestFrom(pinTextSubject)
+            .subscribe(onNext: { [unowned self] passcode in
+                if !self.credentialsManager.isCredentialsAvailable {
+                    self.credentialsManager.secureCredentials(username: self.username, passcode: passcode ?? "")
+                }
+            }).disposed(by: disposeBag)
         
         //.withLatestFrom(Observable.combineLatest(usernameSubject, passcodeSubject))
         //.map{ Credentials(username: $0.0, passcode: $0.1) }

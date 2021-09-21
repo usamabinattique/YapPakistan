@@ -53,14 +53,19 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
         
-        logInResult.filter({ $0.isSuccess != nil }).subscribe(onNext: {[weak self] _ in
-            self?.passcode()
-        }).disposed(by: rx.disposeBag)
+        logInResult.filter({ $0.isSuccess != nil })
+            .map({$0.isSuccess})
+            .unwrap()
+            .subscribe(onNext: { [weak self] result in
+                //self?.passcode()
+                self?.navigateToPasscode(username: result.userName, isUserBlocked: result.isBlocked)
+            })
+            .disposed(by: rx.disposeBag)
 
         return result
     }
     
-    func passcode() {
+    func navigateToPasscode(username: String, isUserBlocked: Bool) {
         coordinate(to: container.makePasscodeCoordinator(root: root)).subscribe( onNext: { result in
             print("Moved to passcode screen")
         }).disposed(by: rx.disposeBag)
