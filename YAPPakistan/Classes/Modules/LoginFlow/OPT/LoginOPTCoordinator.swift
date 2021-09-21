@@ -101,7 +101,7 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
 
     func reachedQueueTop() {
         let window = root.view.window ?? UIWindow()
-        let coordinator = ReachedQueueTopCoordinator(container: container, window: window)
+        let coordinator = ReachedQueueTopCoordinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe( onNext: { result in
             print("Moved to passcode screen")

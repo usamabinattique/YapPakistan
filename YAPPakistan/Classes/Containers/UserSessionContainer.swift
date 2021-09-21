@@ -54,6 +54,14 @@ public final class UserSessionContainer {
         return WaitingListRankViewController(themeService: parent.themeService, viewModel: viewModel)
     }
 
+    func makeReachedQueueTopViewController() -> ReachedQueueTopViewController {
+        let viewModel = ReachedQueueTopViewModel(accountProvider: accountProvider)
+        let viewController = ReachedQueueTopViewController(themeService: parent.themeService,
+                                                           viewModel: viewModel)
+
+        return viewController
+    }
+
     func makeLiteDashboardViewController() -> LiteDashboardViewController {
         let viewModel = LiteDashboardViewModel(accountProvider: accountProvider,
                                                biometricsManager: biometricsManager,
