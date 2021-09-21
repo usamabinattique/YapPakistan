@@ -40,5 +40,8 @@ public class LoginRepository {
     public func generateLoginOTP(username: String, passcode: String, deviceId: String) -> Observable<Event<String?>> {
         customerService.generateLoginOTP(username: username, passcode: passcode, deviceID: deviceId).materialize()
     }
-    
+
+    public func logout(deviceUUID: String) -> Observable<Event<[String: String]?>> {
+        return authenticationService.logout(deviceUUID: deviceUUID).materialize()
+    }
 }
