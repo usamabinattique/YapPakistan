@@ -19,6 +19,7 @@ public protocol CredentialsStoreType {
     func getPasscode(username: String) -> String?
     func secure(passcode: String) -> Bool
     func clearUsername() -> Bool
+    @discardableResult
     func setRemembersId(_ remembers: Bool) -> Bool
 }
 

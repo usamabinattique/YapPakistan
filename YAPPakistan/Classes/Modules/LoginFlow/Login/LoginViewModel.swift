@@ -89,22 +89,21 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     private let isFirstResponderSubject: BehaviorSubject<Bool> = BehaviorSubject(value: false)
 
     // properties
-    private let disposeBag: DisposeBag = DisposeBag()
     private var countryList = [(name: String, code: String, callingCode: String, flag: String)]()
-    private var user: OnBoardingUser!
-    private let phoneNumberKit = PhoneNumberKit()
-    private var isFormatted = false
     private var currentItem = 0
+    
+    private let disposeBag: DisposeBag = DisposeBag()
     private let credentialsManager: CredentialsStoreType
-    private let repository: LoginRepository
+    private let repository: LoginRepositoryType
+    private let phoneNumberKit:PhoneNumberKit
 
-    init( repository: LoginRepository,
+    init( repository: LoginRepositoryType,
           credentialsManager: CredentialsStoreType,
-          user: OnBoardingUser) {
+          phoneNumberKit:PhoneNumberKit ) {
 
         self.repository = repository
         self.credentialsManager = credentialsManager
-        self.user = user
+        self.phoneNumberKit = phoneNumberKit
 
         self.localizedTextSubject = BehaviorSubject(value:(
             heading: "screen_sign_in_display_text_heading_text".localized,
@@ -117,17 +116,13 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
         countryList.append(("Pakistan", "PK", "+92 ", "PK"))
 
         flagSubject.onNext(countryList.first?.flag ?? "")
-        // mobileNumberSubject.onNext(countryList.first?.callingCode ?? "+92 ")
+        mobileNumberSubject.onNext(countryList.first?.callingCode ?? "+92 ")
 
         let selectNumber = mobileNumberSubject
             .distinctUntilChanged()
             .debug("HHHH", trimOutput: true)
-            .do(onNext: {[unowned self] in self.user.mobileNo.formattedValue = $0 }
-        ).map { [unowned self] in
-            self.formatePhoneNumber($0 ?? "")
-        }.do(onNext: { [unowned self] in
-                self.isFormatted = $0.formatted }
-        ).share()
+            .map { [unowned self] in self.formatePhoneNumber($0 ?? "")}
+            .share()
 
         selectNumber
             .map { $0.phoneNumber }
@@ -135,19 +130,19 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
                 DispatchQueue.main.async { self.mobileNumberSubject.onNext(string) }
             }).disposed(by: disposeBag)
 
-        selectNumber.map { [unowned self] _ in
-            self.isFormatted ? AppRoundedTextFieldValidation.valid:.neutral
-        }.merge(with: isFirstResponderSubject.distinctUntilChanged().map { [unowned self] _ in
-            self.isFormatted ? AppRoundedTextFieldValidation.valid:.neutral
-        }).bind(to: validationSubject)
-        .disposed(by: disposeBag)
-
-        textWillChangeSubject.do(onNext: { [unowned self] (text, range, currentText) in
-            let currentText = (currentText ?? "").replacingOccurrences(of: " ", with: "")
-            self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count-1
-                                        && (currentText.count + text.count < 14 || text.count == 0))
-                && (!self.isFormatted || text.count == 0)
-        }).subscribe().disposed(by: disposeBag)
+        Observable.combineLatest(selectNumber, isFirstResponderSubject)
+            .map { $0.0.formatted ? AppRoundedTextFieldValidation.valid:.neutral }
+            .bind(to: validationSubject)
+            .disposed(by: disposeBag)
+        
+        Observable.combineLatest(selectNumber, textWillChangeSubject)
+            .do(onNext: {
+                let ctext = $0.1.currentText?.replacingOccurrences(of: " ", with: "") ?? ""
+                let res1 = $0.1.range.location > self.countryList[self.currentItem].callingCode.count - 1
+                let res2 = (ctext.count + $0.1.text.count < 14 || $0.1.text.count == 0)
+                let res3 = (!$0.0.formatted || $0.1.text.count == 0)
+                self.shouldChangeSub =  (res1 && res2) && res3
+            }).subscribe().disposed(by: disposeBag)
 
         let verifyUserRequest = signInSubject.withLatestFrom(mobileNumberSubject.asObservable())
             .map({ ($0 ?? "")

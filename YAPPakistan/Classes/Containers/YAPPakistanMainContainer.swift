@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RxTheme
 import YAPCore
+import PhoneNumberKit
 
 public struct YAPPakistanConfiguration {
     let environment: AppEnvironment
@@ -128,7 +129,7 @@ extension YAPPakistanMainContainer {
 
     func makeLoginViewModel(loginRepository:LoginRepository,
                             user:OnBoardingUser = OnBoardingUser(accountType: .b2cAccount)) -> LoginViewModelType {
-        return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore, user: user)
+        return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore, phoneNumberKit: PhoneNumberKit())
     }
 
     func makeLoginViewController(viewModel:LoginViewModelType, isBackButton: Bool = true) -> LoginViewController {
