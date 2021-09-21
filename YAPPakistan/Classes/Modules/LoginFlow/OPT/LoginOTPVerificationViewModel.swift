@@ -16,7 +16,12 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
     private let deviceId: String = UIDevice.current.identifierForVendor?.uuidString ?? ""
     private let sessionCreator: SessionProviderType
     var timerDisposable: Disposable?
-    
+
+    private let onLoginClosure: OnLoginClosure
+
+    private var session: Session!
+    private var accountProvider: AccountProvider?
+
     init(action: OTPAction, heading: NSAttributedString? = nil,
          subheading: NSAttributedString,
          image: UIImage? = nil,
@@ -29,13 +34,17 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
          backButtonImage: BackButtonType = .backEmpty,
          username: String,
          passcode: String,
-         sessionCreator: SessionProviderType) {
+         sessionCreator: SessionProviderType,
+         onLogin: @escaping OnLoginClosure) {
         
         self.username = username
         self.passcode = passcode
         self.sessionCreator = sessionCreator
+        self.onLoginClosure = onLogin
         
-        super.init(action: action, heading: heading, subheading: subheading, image: image, badge: badge, otpTime: otpTime, otpLength: otpLength, resendTries: resendTries, repository: repository, mobileNo: mobileNo, backButtonImage: backButtonImage)
+        super.init(action: action, heading: heading, subheading: subheading, image: image,
+                   badge: badge, otpTime: otpTime, otpLength: otpLength, resendTries: resendTries,
+                   repository: repository, mobileNo: mobileNo, backButtonImage: backButtonImage)
         
         viewAppearedSubject.filter{ $0 }.bind(to: editingSubject).disposed(by: disposeBag)
         timerDisposable = startTimer()
@@ -88,17 +97,42 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
                 .do(onNext: { [unowned self] in self.otpForRequest = $0 })
                 .bind(to: textSubject).disposed(by: disposeBag)
         
-        verifyRequest.elements().map{ $0?.components(separatedBy: "%")}
-            .unwrap()
-            .map { componenets -> (String?, String? ,Session) in
+        let loggedIn = verifyRequest.elements()
+            .map{ $0?.components(separatedBy: "%")}.unwrap()
+            .do(onNext: { componenets in
                 let token = componenets.first
-                var session: Session?
+
                 if let jwt = componenets.count > 1 ? componenets.last : nil {
-                    session = self.sessionCreator.makeUserSession(jwt: jwt)
+                    self.session = self.sessionCreator.makeUserSession(jwt: jwt)
                 }
-                return (token, nil, session!)
-            }
-        .bind(to: resultSubject).disposed(by: disposeBag)
+
+                self.onLoginClosure(self.session, &self.accountProvider)
+                self.refreshAccount()
+            })
     }
-    
+
+    private func refreshAccount() {
+        guard let accountProvider = accountProvider else {
+            return assertionFailure()
+        }
+
+        accountProvider.refreshAccount()
+        accountProvider.currentAccount
+            .unwrap()
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .subscribe(onNext: { account in
+                if account.isWaiting {
+                    self.loginResultSubject.onNext(.waiting)
+                } else if (account.iban ?? "").isEmpty {
+                    self.loginResultSubject.onNext(.allowed)
+                } else if (account.isOTPBlocked) {
+                    self.loginResultSubject.onNext(.blocked)
+                } else {
+                    self.loginResultSubject.onNext(.dashboard)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
 }

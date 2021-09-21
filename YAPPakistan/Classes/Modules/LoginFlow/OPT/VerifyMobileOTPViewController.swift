@@ -261,7 +261,9 @@ private extension VerifyMobileOTPViewController {
             .map { [unowned self] image, heading -> UIImage? in
                 if image != nil { return image! } else if heading != nil {
                     self.logoImageView.layoutIfNeeded()
-                    ///return UIImage.imageSnap(text: heading!.string, color: .appColor(ofType: .greyLight), textColor: .appColor(ofType: .greyDark), bounds: self.logoImageView.bounds, contentMode: self.logoImageView.contentMode)
+                    // return UIImage.imageSnap(text: heading!.string, color: .appColor(ofType: .greyLight),
+                    //                          textColor: .appColor(ofType: .greyDark), bounds:
+                    //                             self.logoImageView.bounds, contentMode: self.logoImageView.contentMode)
                     return UIImage()
                 } else { return nil }
         }.bind(to: logoImageView.rx.image)

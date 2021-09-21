@@ -55,6 +55,7 @@ public protocol VerifyMobileOTPViewModelOutput {
     var generateOTP: Observable<Void> { get }
     var otp: Observable<String?> { get }
     var result: Observable<OTPVerificationResultType> { get }
+    var loginResult: Observable<LoginOPTVerificationResult> { get }
     var timerText: Observable<String> { get }
     var resendActive: Observable<Bool> { get }
     var generateOTPError: Observable<String> { get }
@@ -68,6 +69,8 @@ public protocol VerifyMobileOTPViewModelOutput {
 }
 
 public protocol VerifyMobileOTPViewModelType {
+    typealias OnLoginClosure = (Session, inout AccountProvider?) -> Void
+
     var inputs: VerifyMobileOTPViewModelInput { get }
     var outputs: VerifyMobileOTPViewModelOutput { get }
 }
@@ -81,6 +84,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     public let viewAppearedSubject = PublishSubject<Bool>()
     private let validSubject = BehaviorSubject<Bool>(value: false)
     public let resultSubject = PublishSubject<OTPVerificationResultType>()
+    public let loginResultSubject = PublishSubject<LoginOPTVerificationResult>()
     public let sendSubject = PublishSubject<Void>()
     private let timerTextSubject = BehaviorSubject<String>(value: "00:10")
     private let timerSubject: BehaviorSubject<TimeInterval>
@@ -123,6 +127,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     public var generateOTP: Observable<Void> { return generateOTPSubject.asObservable() }
     public var otp: Observable<String?> { return otpSubject.asObservable() }
     public var result: Observable<OTPVerificationResultType> { return resultSubject.asObservable() }
+    public var loginResult: Observable<LoginOPTVerificationResult> { return loginResultSubject.asObservable() }
     public var timerText: Observable<String> { return timerTextSubject.asObservable() }
     public var resendActive: Observable<Bool> { return resendActiveSubject.asObservable() }
     public var generateOTPError: Observable<String> { return generateOTPErrorSubject.asObservable() }

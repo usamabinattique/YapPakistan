@@ -10,9 +10,12 @@ import RxSwift
 import YAPCore
 import UIKit
 
-enum LoginOPTVerificationResult {
+public enum LoginOPTVerificationResult {
+    case waiting
+    case allowed
     case onboarding
-    case dashboard(session: Session)
+    case blocked
+    case dashboard
     case cancel
 }
 
@@ -29,6 +32,8 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
     var root: UINavigationController!
     var container: YAPPakistanMainContainer!
     var result = PublishSubject<LoginOPTVerificationResult>()
+
+    private var sessionContainer: UserSessionContainer!
 
     init(root: UINavigationController,
          xsrfToken: String,
@@ -56,14 +61,51 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
                                                  subheading: NSAttributedString(string: otpMessage),
                                                  image: appLogo,
                                                  repository: otpRepository,
-                                                 username: "00923331699972", //credentials.username,
+                                                 username: "00923121111125", //credentials.username,
                                                  passcode: "1212", //credentials.passcode,
-                                                 sessionCreator: sessionProvider)
+                                                 sessionCreator: sessionProvider,
+                                                 onLogin: { session, accountProvider in
+                                                    self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
+                                                    accountProvider = self.sessionContainer.accountProvider
+                                                })
         let viewController =  VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
-        
+
+        viewModel.outputs.loginResult.subscribe(onNext: { result in
+            switch result {
+            case .waiting:
+                self.waitingList()
+            case .allowed:
+                self.reachedQueueTop()
+            case .dashboard:
+                self.dashboard()
+            case .cancel:
+                self.root.popViewController()
+            default:
+                // FIXME: Handle other cases
+                break
+            }
+        }).disposed(by: rx.disposeBag)
+
         root.pushViewController(viewController)
 
         return result
     }
-    
+
+    func waitingList() {
+        let viewController = container.makeWaitingListController(session: sessionContainer.session)
+        root.viewControllers = [viewController]
+    }
+
+    func reachedQueueTop() {
+        let window = root.view.window ?? UIWindow()
+        let coordinator = ReachedQueueTopCoordinator(container: container, window: window)
+
+        coordinate(to: coordinator).subscribe( onNext: { result in
+            print("Moved to passcode screen")
+        }).disposed(by: rx.disposeBag)
+    }
+
+    func dashboard() {
+
+    }
 }

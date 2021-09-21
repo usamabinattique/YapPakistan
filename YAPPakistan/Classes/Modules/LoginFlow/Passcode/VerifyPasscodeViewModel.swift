@@ -172,7 +172,9 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     public func createTermsAndConditions(text: String) -> NSAttributedString {
         let attributedText = NSMutableAttributedString(string: text)
         let termsAndConditions = text.components(separatedBy: "\n").last ?? ""
-        attributedText.addAttribute(.foregroundColor, value: UIColor.blue/*appColor(ofType: .primary)*/, range: NSRange(location: text.count - termsAndConditions.count, length: termsAndConditions.count))
+        attributedText.addAttribute(.foregroundColor, value: UIColor.blue/*appColor(ofType: .primary)*/,
+                                    range: NSRange(location: text.count - termsAndConditions.count,
+                                                   length: termsAndConditions.count))
         attributedText.addAttribute(.foregroundColor, value: UIColor.darkGray /*appColor(ofType: .greyDark)*/, range: NSRange(location: 0, length: text.count - termsAndConditions.count))
         return attributedText
     }
@@ -185,13 +187,14 @@ fileprivate extension VerifyPasscodeViewModel {
         let loginRequest = actionSubject.withLatestFrom(pinText)
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .flatMap { pinCode in
-                self.repository.authenticate(username: "00923331599998", password: pinCode ?? "", deviceId: UIDevice.deviceID)
+                self.repository.authenticate(username: "00923121111125", password: "1212", deviceId: UIDevice.deviceID)
             }
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
         
-        loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }.unwrap()
-            .filter{ $0.isEmpty }
+        loginRequest.elements()
+            .unwrap()
+            .map { ($0["id_token"] ?? "") ?? "" }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
         
