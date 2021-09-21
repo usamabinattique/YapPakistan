@@ -124,7 +124,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
         countryList.append(("Pakistan", "PK", "+92 ", "PK"))
 
         flagSubject.onNext(countryList.first?.flag ?? "")
-        mobileNumberSubject.onNext(countryList.first?.callingCode ?? "+92 ")
+        //mobileNumberSubject.onNext(countryList.first?.callingCode ?? "+92 ")
 
         let selectNumber = mobileNumberSubject
             .distinctUntilChanged()
@@ -196,7 +196,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
 
         guard let username = credentialsManager.getUsername() else { return }
 
-        mobileNumberSubject.onNext(username)
+        //mobileNumberSubject.onNext(username)
 
         guard credentialsManager.isCredentialsAvailable else {
             _ = credentialsManager.clearUsername()

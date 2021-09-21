@@ -149,6 +149,8 @@ extension VerifyMobileOTPViewController {
             .bind({ UIColor($0.greyDark) }, to: [ subHeadingLabel.rx.textColor ])
             .bind({ UIColor($0.greyDark) }, to: [ timerLabel.rx.textColor ])
             .bind({ UIColor($0.primary) }, to: [ resendButton.rx.titleColor(for: .normal) ])
+            .bind({ UIColor($0.primary) }, to: [ sendButton.rx.enabledBackgroundColor ])
+            .bind({ UIColor($0.greyLight) }, to: [ sendButton.rx.disabledBackgroundColor ])
             .disposed(by: rx.disposeBag)
     }
     

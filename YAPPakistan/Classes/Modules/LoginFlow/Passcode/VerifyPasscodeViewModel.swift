@@ -126,21 +126,21 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     private let repository: LoginRepository
     private let pinRange: ClosedRange<Int>
     private let disposeBag = DisposeBag()
-    private let credentialsManager: CredentialsManager!
+    private let credentialsManager: CredentialsStoreType!
     private let username: String!
     private let sessionCreator: SessionProviderType!
     
     // MARK: - Init
     init( repository: LoginRepository,
-          credentialsManager: CredentialsManager,
-          username: String,
+          credentialsManager: CredentialsStoreType,
+          //username: String,
           sessionCreator: SessionProviderType,
           pinRange: ClosedRange<Int> = 4...6) {
         
         self.repository = repository
         self.pinRange = pinRange
         self.credentialsManager = credentialsManager
-        self.username = username
+        self.username = credentialsManager.getUsername() ?? ""
         self.sessionCreator = sessionCreator
         
         self.localizedTextSubject = BehaviorSubject(value:(
@@ -193,19 +193,23 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
 fileprivate extension VerifyPasscodeViewModel {
     func bindUserAuthentication(repository: LoginRepository) {
         
-        let loginRequest = actionSubject.withLatestFrom(pinText)
+        let loginRequest = actionSubject.withLatestFrom(pinTextSubject)
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-            .flatMap { pinCode in
-                self.repository.authenticate(username: "00923331599998", password: pinCode ?? "", deviceId: UIDevice.deviceID)
+            .flatMap { [unowned self] pinCode in
+                self.repository.authenticate(username: self.username ?? "", password: pinCode ?? "", deviceId: UIDevice.deviceID)
             }
+            .debug()
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
         
         let loginResponse = loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }.unwrap()
 
-        loginResponse.filter{ $0.isEmpty }
-            .bind(to: resultSubject)
-            .disposed(by: disposeBag)
+        //loginResponse.filter{ !$0.isEmpty }
+         //   .do(onNext: { elem in
+         //       print(elem)
+         //   })
+         //   .bind(to: resultSubject)
+        //  .disposed(by: disposeBag)
         
         loginResponse.filter{ !($0.isEmpty ) }
             .map{ self.sessionCreator.makeUserSession(jwt: $0) }
@@ -213,12 +217,16 @@ fileprivate extension VerifyPasscodeViewModel {
                 self?.loaderSubject.onNext(false)
                 //self?.resultSubject.onNext(PasscodeResult.dashboard(session: session))
             })
-            .withLatestFrom(pinTextSubject)
-            .subscribe(onNext: { [unowned self] passcode in
-                if !self.credentialsManager.isCredentialsAvailable {
-                    self.credentialsManager.secureCredentials(username: self.username, passcode: passcode ?? "")
-                }
-            }).disposed(by: disposeBag)
+            .withLatestFrom(pinTextSubject).unwrap()
+            .do(onNext: { [unowned self] passcode in
+                self.credentialsManager.secureCredentials(username: self.username, passcode: passcode)
+            }).bind(to: resultSubject)
+            .disposed(by: disposeBag)
+        
+            //.subscribe(onNext: {
+            //if !self.credentialsManager.isCredentialsAvailable {
+            //}
+            //}).disposed(by: disposeBag)
         
         //.withLatestFrom(Observable.combineLatest(usernameSubject, passcodeSubject))
         //.map{ Credentials(username: $0.0, passcode: $0.1) }

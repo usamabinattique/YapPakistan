@@ -49,6 +49,9 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
         //let credentials = container.credentialsStore
         let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
         
+        let userName = container.credentialsStore.getUsername() ?? ""
+        let passcode = container.credentialsStore.getPasscode(username: userName) ?? ""
+        
         let otpRepository = OTPRepository(messageService: MessagesService(apiConfig: apiConfig, authorizationProvider: authService),
                                           customerService: CustomersService(apiConfig: apiConfig, authorizationProvider: authService))
         let viewModel = LoginOTPVerificationViewModel(action: .deviceVerification,
@@ -56,8 +59,8 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
                                                  subheading: NSAttributedString(string: otpMessage),
                                                  image: appLogo,
                                                  repository: otpRepository,
-                                                 username: "00923331699972", //credentials.username,
-                                                 passcode: "1212", //credentials.passcode,
+                                                 username: userName,
+                                                 passcode: passcode,
                                                  sessionCreator: sessionProvider)
         let viewController =  VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         
