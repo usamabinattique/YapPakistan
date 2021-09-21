@@ -90,31 +90,30 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
             
-            verifyRequest.errors().map{ error -> Bool in
-                guard case let NetworkErrors.internalServerError(serverError) = error else { return false }
-                guard serverError?.errors.first?.code == "1095" else { return false }
-                return true
-            }
-            .bind(to: otpBlocked)
-            .disposed(by: disposeBag)
+        verifyRequest.errors().map{ error -> Bool in
+            guard case let NetworkErrors.internalServerError(serverError) = error else { return false }
+            guard serverError?.errors.first?.code == "1095" else { return false }
+            return true
+        }
+        .bind(to: otpBlocked)
+        .disposed(by: disposeBag)
 
-            verifyRequest.errors().map { $0.localizedDescription }.bind(to: errorSuject).disposed(by: disposeBag)
-            verifyRequest.errors().map { _ in nil }
-                .do(onNext: { [unowned self] in self.otpForRequest = $0 })
-                .bind(to: textSubject).disposed(by: disposeBag)
+        verifyRequest.errors().map { $0.localizedDescription }.bind(to: errorSuject).disposed(by: disposeBag)
+        verifyRequest.errors().map { _ in nil }
+            .do(onNext: { [unowned self] in self.otpForRequest = $0 })
+            .bind(to: textSubject).disposed(by: disposeBag)
         
-        let loggedIn = verifyRequest.elements()
-            .map{ $0?.components(separatedBy: "%")}.unwrap()
-            .do(onNext: { componenets in
-                let token = componenets.first
+        verifyRequest.elements().subscribe(onNext: { data in
+            guard let componenets = data?.components(separatedBy: "%") else { return }
+            let token = componenets.first
 
-                if let jwt = componenets.count > 1 ? componenets.last : nil {
-                    self.session = self.sessionCreator.makeUserSession(jwt: jwt)
-                }
+            if let jwt = componenets.count > 1 ? componenets.last : nil {
+                self.session = self.sessionCreator.makeUserSession(jwt: jwt)
+            }
 
-                self.onLoginClosure(self.session, &self.accountProvider)
-                self.refreshAccount()
-            })
+            self.onLoginClosure(self.session, &self.accountProvider)
+            self.refreshAccount()
+        }).disposed(by: disposeBag)
     }
 
     private func refreshAccount() {
@@ -133,7 +132,7 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
                     self.loginResultSubject.onNext(.waiting)
                 } else if (account.iban ?? "").isEmpty {
                     self.loginResultSubject.onNext(.allowed)
-                } else if (account.isOTPBlocked) {
+                } else if account.isOTPBlocked {
                     self.loginResultSubject.onNext(.blocked)
                 } else {
                     self.loginResultSubject.onNext(.dashboard)
