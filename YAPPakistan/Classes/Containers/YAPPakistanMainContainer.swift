@@ -144,7 +144,7 @@ extension YAPPakistanMainContainer {
     }
     
     func makeVerifyPasscodeViewModel(repository: LoginRepository, sessionCreator: SessionProviderType) -> VerifyPasscodeViewModelType {
-        return VerifyPasscodeViewModel(repository: repository, credentialsManager: credentialsStore, sessionCreator: sessionCreator)
+        return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "", repository: repository, credentialsManager: credentialsStore, sessionCreator: sessionCreator)
     }
     
     func makePINViewController(viewModel:VerifyPasscodeViewModelType,

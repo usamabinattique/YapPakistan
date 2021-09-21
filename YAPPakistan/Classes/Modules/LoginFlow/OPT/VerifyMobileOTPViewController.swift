@@ -72,6 +72,8 @@ public class VerifyMobileOTPViewController: UIViewController {
         return button
     }()
     
+    private var backButton:UIButton!
+    
     private lazy var stackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 10)
     
     private var themeService: ThemeService<AppTheme>!
@@ -105,7 +107,7 @@ public class VerifyMobileOTPViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        addBackButton(of: .backEmpty)
+        backButton = addBackButton(of: .closeEmpty)
         setupViews()
         setupTheme()
         setupConstraints()
@@ -116,10 +118,6 @@ public class VerifyMobileOTPViewController: UIViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel.inputs.viewAppearedObserver.onNext(true)
-    }
-    
-    public override func onTapBackButton() {
-        viewModel.inputs.backObserver.onNext(())
     }
     
     @objc func tapAction() {
@@ -151,6 +149,11 @@ extension VerifyMobileOTPViewController {
             .bind({ UIColor($0.primary) }, to: [ resendButton.rx.titleColor(for: .normal) ])
             .bind({ UIColor($0.primary) }, to: [ sendButton.rx.enabledBackgroundColor ])
             .bind({ UIColor($0.greyLight) }, to: [ sendButton.rx.disabledBackgroundColor ])
+            .disposed(by: rx.disposeBag)
+        
+        guard let backButton = backButton else { return }
+        themeService.rx
+            .bind({ UIColor($0.primary) }, to: [backButton.rx.tintColor])
             .disposed(by: rx.disposeBag)
     }
     
@@ -234,6 +237,9 @@ extension VerifyMobileOTPViewController {
 
 private extension VerifyMobileOTPViewController {
     func bindViews() {
+        
+        backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        
         bindOTPGenerationError()
         codeTextField.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: disposeBag)
         viewModel.outputs.timerText.bind(to: timerLabel.rx.text).disposed(by: disposeBag)

@@ -41,7 +41,7 @@ public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
     }
 
     public func authenticate<T: Codable>(username: String, password: String, deviceId: String) -> Observable<T> {
-        let params = ["client_id": username, "client_secret": password, "grant_type": "client_credentials", "device_id": deviceId, "isInternalUser":"true"]
+        let params = ["client_id": username, "client_secret": password, "grant_type": "client_credentials", "device_id": deviceId] //, "isInternalUser":"true"]
         let input: RouterInput<[String: String]> = RouterInput(body: params, query: nil, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)
         let authRoute = AuthRouter.authenticate(input)
         return request(apiClient: apiClient, route: authRoute)

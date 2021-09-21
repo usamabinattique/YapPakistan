@@ -153,10 +153,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
             }).subscribe().disposed(by: disposeBag)
 
         let verifyUserRequest = signInSubject.withLatestFrom(mobileNumberSubject.asObservable())
-            .map({ ($0 ?? "")
-                    .replacingOccurrences(of: "+", with: "00")
-                    .replacingOccurrences(of: " ", with: "")
-            })
+            .map({ $0?.toSimpleUserId ?? "" })
             .do(onNext: {[unowned self] _ in self.progressSubject.onNext(true) })
             .flatMapLatest { self.repository.verifyUser(username: $0) }
             .debug("verifyUser", trimOutput: false)
@@ -170,10 +167,9 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
             .disposed(by: disposeBag)
 
         verifyUserRequest.elements().filter { $0 == true }.withLatestFrom(mobileNumberSubject)
-            .do(onNext: {
-                if credentialsManager.remembersId ?? true {
-                    _ = credentialsManager.secure(passcode: $0 ?? "")
-                }
+            .do(onNext: { [unowned self] userName in
+                let user = userName?.toSimpleUserId ?? ""
+                self.credentialsManager.secureCredentials(username: user, passcode: "")
             })
             .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: false)) }
             .bind(to: resultSubject)
@@ -194,8 +190,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
 
         rememberUsername(credentialsManager)
 
-        guard let username = credentialsManager.getUsername() else { return }
-
+        //guard let username = credentialsManager.getUsername() else { return }
         //mobileNumberSubject.onNext(username)
 
         guard credentialsManager.isCredentialsAvailable else {
@@ -216,11 +211,7 @@ private extension LoginViewModel {
     func rememberUsername(_ credentialsManager: CredentialsStoreType) {
         rememberMeSubject.onNext(credentialsManager.remembersId ?? true)
         rememberMeSubject
-            .do(onNext: {
-                if !$0 {
-                     _ = credentialsManager.clearUsername()
-                }
-            })
+            .do(onNext: { if !$0 { _ = credentialsManager.clearUsername() } })
             .subscribe(onNext: { credentialsManager.setRemembersId($0) })
             .disposed(by: disposeBag)
     }
@@ -235,3 +226,9 @@ private extension LoginViewModel {
     }
 }
 
+
+extension String {
+    var toSimpleUserId:String {
+        return self.replacingOccurrences(of: "+", with: "00").replacingOccurrences(of: " ", with: "")
+    }
+}

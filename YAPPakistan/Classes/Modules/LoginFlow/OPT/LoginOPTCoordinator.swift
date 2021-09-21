@@ -64,6 +64,16 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
                                                  sessionCreator: sessionProvider)
         let viewController =  VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         
+        viewModel.back.subscribe(onNext: { [weak self] in
+            self?.result.onNext(.cancel)
+            self?.result.onCompleted()
+            
+            let count = self?.root.viewControllers.count ?? 2
+            self?.root.viewControllers.remove(at: count - 2)
+            
+            self?.root.popViewController(animated: true)
+        }).disposed(by: rx.disposeBag)
+        
         root.pushViewController(viewController)
 
         return result
