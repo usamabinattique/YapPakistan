@@ -145,20 +145,29 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func generateLoginOTP<T: Codable>(username: String, passcode: String, deviceID: String) -> Observable<T> {
-        
-        //TODO this will go in body
-        let request = ["clientId" : username, "clientSecret": passcode, "deviceId": deviceID]
-        
-        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/demographics/device-login", query: request, headers: authorizationProvider.authorizationHeaders)
+        let request = [
+            "clientId": username,
+            "clientSecret": passcode,
+            "deviceId": deviceID
+        ]
+
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/demographics/device-login",
+                                body: request, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func verifyLoginOTP<T: Codable>(username: String, passcode: String, deviceID: String, otp: String) -> Observable<T> {
-        let request = ["clientId" : username, "clientSecret": passcode, "deviceId": deviceID, "otp": otp]
-        
-        let route = APIEndpoint<String>(.put, apiConfig.customersURL, "/api/demographics/device-login", query: request, headers: authorizationProvider.authorizationHeaders)
-        
+        let body = [
+            "clientId": username,
+            "clientSecret": passcode,
+            "deviceId": deviceID,
+            "otp": otp
+        ]
+
+        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/demographics/device-login",
+                                body: body, headers: authorizationProvider.authorizationHeaders)
+
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

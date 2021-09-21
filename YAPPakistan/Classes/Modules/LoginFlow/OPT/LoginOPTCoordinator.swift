@@ -25,7 +25,7 @@ protocol LoginOPTCoordinatorType: Coordinator<LoginOPTVerificationResult> {
 }
 
 class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoordinatorType {
-    
+    let xsrfToken: String
     var root: UINavigationController!
     var container: YAPPakistanMainContainer!
     var result = PublishSubject<LoginOPTVerificationResult>()
@@ -34,6 +34,7 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
          xsrfToken: String,
          container: YAPPakistanMainContainer
     ){
+        self.xsrfToken = xsrfToken
         self.root = root
         self.container = container
         self.container.xsrfToken = xsrfToken
@@ -46,7 +47,7 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
         let authService = container.makeAuthorizationProvider(xsrfToken: container.xsrfToken)
         let apiConfig = container.makeAPIConfiguration()
         //let credentials = container.credentialsStore
-        let sessionCreator = UserSessionContainer(parent: container, session: Session(guestToken: "", sessionToken: ""))
+        let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
         
         let otpRepository = OTPRepository(messageService: MessagesService(apiConfig: apiConfig, authorizationProvider: authService),
                                           customerService: CustomersService(apiConfig: apiConfig, authorizationProvider: authService))
@@ -57,7 +58,7 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
                                                  repository: otpRepository,
                                                  username: "00923331699972", //credentials.username,
                                                  passcode: "1212", //credentials.passcode,
-                                                 sessionCreator: sessionCreator as! SessionProviderType)
+                                                 sessionCreator: sessionProvider)
         let viewController =  VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         
         root.pushViewController(viewController)
