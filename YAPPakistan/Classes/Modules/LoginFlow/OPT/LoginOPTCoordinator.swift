@@ -103,12 +103,17 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
         let window = root.view.window ?? UIWindow()
         let coordinator = ReachedQueueTopCoordinator(container: sessionContainer, window: window)
 
-        coordinate(to: coordinator).subscribe( onNext: { result in
-            print("Moved to passcode screen")
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            print("Moved to reached top of the queue")
         }).disposed(by: rx.disposeBag)
     }
 
     func dashboard() {
+        let window = root.view.window ?? UIWindow()
+        let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            print("Moved to lite dashboard")
+        }).disposed(by: rx.disposeBag)
     }
 }

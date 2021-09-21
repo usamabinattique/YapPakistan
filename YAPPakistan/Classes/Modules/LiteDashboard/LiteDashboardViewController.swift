@@ -71,7 +71,7 @@ class LiteDashboardViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.inputs.viewAppearObserver.onNext(())
+        // viewModel.inputs.viewAppearObserver.onNext(())
     }
 
     // MARK: View Setup
