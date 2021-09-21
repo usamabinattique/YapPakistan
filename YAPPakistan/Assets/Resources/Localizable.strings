@@ -152,3 +152,9 @@
 "screen_enter_passcode_display_text_title" = "Enter your passcode to access your account​";
 "screen_create_passcode_button_signin" = "Sign in";
 "screen_create_passcode_button_forgot_passcode" = "Forgot passcode?";
+
+//MARK: Generic OTP
+"screen_device_registration_otp_button_resend_otp" = "Resend code";
+"screen_device_registration_otp_button_send" = "Send";
+"screen_device_registration_otp_display_header_message" = "Verify your mobile number";
+"screen_device_registration_otp_display_text_message" = "Enter the OTP sent to your registered mobile number to complete login";
