@@ -29,7 +29,7 @@ public protocol CustomerServiceType {
                                        deviceModel: String,
                                        osType: String,
                                        osVersion: String,
-                                       token: String ) -> Observable<T>
+                                       token: String?) -> Observable<T>
 
     func fetchAccounts<T: Codable>() -> Observable<T>
 
@@ -83,11 +83,12 @@ public class CustomersService: BaseService, CustomerServiceType {
 
     public func saveDemographics<T: Codable>(action: String, deviceId: String, deviceName: String,
                                              deviceModel: String, osType: String, osVersion: String,
-                                             token: String) -> Observable<T> {
+                                             token: String?) -> Observable<T> {
         let body = SaveDemographicsRequest(action: action, deviceId: deviceId,
                                            deviceName: deviceName, deviceModel: deviceModel,
                                            osType: osType, osVersion: osVersion, token: token)
-        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/demographics", body: body, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/demographics/", body: body,
+                                headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
