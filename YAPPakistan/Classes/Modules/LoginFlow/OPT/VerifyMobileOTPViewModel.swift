@@ -69,7 +69,7 @@ public protocol VerifyMobileOTPViewModelOutput {
 }
 
 public protocol VerifyMobileOTPViewModelType {
-    typealias OnLoginClosure = (Session, inout AccountProvider?) -> Void
+    typealias OnLoginClosure = (Session, inout AccountProvider?, inout DemographicsRepositoryType?) -> Void
 
     var inputs: VerifyMobileOTPViewModelInput { get }
     var outputs: VerifyMobileOTPViewModelOutput { get }

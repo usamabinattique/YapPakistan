@@ -10,12 +10,6 @@ import RxSwift
 import YAPCore
 import UIKit
 
-enum PasscodeVerificationResult {
-    case onboarding
-    case dashboard(session: Session)
-    case cancel
-}
-
 protocol PasscodeCoordinatorType: Coordinator<PasscodeVerificationResult> {
 
     var root: UINavigationController! { get }
@@ -30,6 +24,8 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
     var container: YAPPakistanMainContainer!
     var result = PublishSubject<PasscodeVerificationResult>()
 
+    private var sessionContainer: UserSessionContainer!
+
     init(root: UINavigationController,
          xsrfToken: String,
          container: YAPPakistanMainContainer
@@ -42,7 +38,10 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
         
         let sessionCreator = SessionProvider(xsrfToken: container.xsrfToken)
-        let viewModel = container.makeVerifyPasscodeViewModel(repository: container.makeLoginRepository(), sessionCreator: sessionCreator)
+        let viewModel = container.makeVerifyPasscodeViewModel { session, accountProvider in
+            self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
+            accountProvider = self.sessionContainer.accountProvider
+        }
         
         let loginViewController = container.makePINViewController(viewModel: viewModel)
 
@@ -62,14 +61,21 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
                 self?.optVerification()
             }).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.result
-            .filter { $0.isSuccess?.session != nil }
-            .map { $0.isSuccess?.session }.unwrap()
-            .withUnretained(self)
-            .subscribe(onNext: {
-                $0.0.result.onNext(.dashboard(session: $0.1))
-                $0.0.result.onCompleted()
-                // root.popViewController(animated: true)
+        viewModel.outputs.loginResult
+            .subscribe(onNext: { result in 
+                switch result {
+                case .waiting:
+                    self.waitingList()
+                case .allowed:
+                    self.reachedQueueTop()
+                case .dashboard:
+                    self.dashboard()
+                case .cancel:
+                    self.root.popViewController()
+                default:
+                    // FIXME: Handle other cases
+                    break
+                }
             }).disposed(by: rx.disposeBag)
 
         return result
@@ -86,5 +92,27 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
                 default: break
             }}).disposed(by: rx.disposeBag)
     }
-    
+
+    func waitingList() {
+        let viewController = container.makeWaitingListController(session: sessionContainer.session)
+        root.viewControllers = [viewController]
+    }
+
+    func reachedQueueTop() {
+        let window = root.view.window ?? UIWindow()
+        let coordinator = ReachedQueueTopCoordinator(container: sessionContainer, window: window)
+
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            print("Moved to reached top of the queue")
+        }).disposed(by: rx.disposeBag)
+    }
+
+    func dashboard() {
+        let window = root.view.window ?? UIWindow()
+        let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
+
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            print("Moved to lite dashboard")
+        }).disposed(by: rx.disposeBag)
+    }
 }

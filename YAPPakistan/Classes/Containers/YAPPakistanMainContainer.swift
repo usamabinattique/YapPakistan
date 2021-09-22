@@ -96,10 +96,11 @@ public final class YAPPakistanMainContainer {
         let enterEmailViewModel = EnterEmailViewModel(credentialsStore: credentialsStore,
                                                       referralManager: referralManager,
                                                       sessionProvider: sessionProvider,
-                                                      onBoardingRepository: onBoardingRepository, user: user) { session, onBoardingRepository, accountProvider in
+                                                      onBoardingRepository: onBoardingRepository, user: user) { session, accountProvider, onBoardingRepository, demographicsRepository in
             let sessionContainer = UserSessionContainer(parent: self, session: session)
-            onBoardingRepository = sessionContainer.makeOnBoardingRepository()
             accountProvider = sessionContainer.accountProvider
+            onBoardingRepository = sessionContainer.makeOnBoardingRepository()
+            demographicsRepository = sessionContainer.makeDemographicsRepository()
         }
 
         return EnterEmailViewController(themeService: themeService, viewModel: enterEmailViewModel)
@@ -139,9 +140,13 @@ extension YAPPakistanMainContainer {
     func makeBiometricsService() -> BiometricsManager {
         return BiometricsManager()
     }
-    
-    func makeVerifyPasscodeViewModel(repository: LoginRepository, sessionCreator: SessionProviderType) -> VerifyPasscodeViewModelType {
-        return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "", repository: repository, credentialsManager: credentialsStore, sessionCreator: sessionCreator)
+
+    func makeVerifyPasscodeViewModel(onLogin: @escaping VerifyPasscodeViewModelType.OnLoginClosure) -> VerifyPasscodeViewModelType {
+        return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "",
+                                       repository: makeLoginRepository(),
+                                       credentialsManager: credentialsStore,
+                                       sessionCreator: SessionProvider(xsrfToken: xsrfToken),
+                                       onLogin: onLogin)
     }
     
     func makePINViewController(viewModel:VerifyPasscodeViewModelType,
