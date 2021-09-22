@@ -120,6 +120,7 @@ fileprivate extension LoginViewController {
             .bind({ UIColor($0.greyDark       ) }, to: [signUpLabel.rx.textColor])
             .bind({ UIColor($0.primary        ) }, to: [rememberIDSwitch.rx.onTintColor])
             .bind({ UIColor($0.greyLight      ) }, to: [rememberIDSwitch.rx.offTintColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [rememberIDLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
 
         guard let backButton = backButton else { return }
