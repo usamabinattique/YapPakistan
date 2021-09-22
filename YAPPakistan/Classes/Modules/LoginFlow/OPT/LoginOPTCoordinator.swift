@@ -47,7 +47,6 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
 
     override func start(with option: DeepLinkOptionType?) -> Observable<LoginOPTVerificationResult> {
         
-        let otpMessage =  "screen_device_registration_otp_display_text_message".localized
         let appLogo = UIImage(named: "icon_app_logo")
         let authService = container.makeAuthorizationProvider(xsrfToken: container.xsrfToken)
         let apiConfig = container.makeAPIConfiguration()
@@ -57,11 +56,14 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
         let userName = container.credentialsStore.getUsername() ?? ""
         let passcode = container.credentialsStore.getPasscode(username: userName) ?? ""
         
+        let headingString = "screen_device_registration_otp_display_header_message".localized
+        let otpMessage = String(format: "screen_device_registration_otp_display_givn_text_message".localized, userName.toFormatedNumber)
+        
         let otpRepository = OTPRepository(messageService: MessagesService(apiConfig: apiConfig, authorizationProvider: authService),
                                           customerService: CustomersService(apiConfig: apiConfig, authorizationProvider: authService))
         let viewModel = LoginOTPVerificationViewModel(action: .deviceVerification,
-                                                 heading: nil,
-                                                 subheading: NSAttributedString(string: otpMessage),
+                                                 heading: headingString,
+                                                 subheading: otpMessage,
                                                  image: appLogo,
                                                  repository: otpRepository,
                                                  username: userName,

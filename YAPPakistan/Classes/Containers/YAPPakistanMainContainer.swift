@@ -130,8 +130,8 @@ extension YAPPakistanMainContainer {
         return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore, phoneNumberKit: PhoneNumberKit())
     }
 
-    func makeLoginViewController(viewModel:LoginViewModelType, isBackButton: Bool = true) -> LoginViewController {
-        return LoginViewController(themeService: self.themeService, viewModel: viewModel, isBackButton: isBackButton)
+    func makeLoginViewController(viewModel:LoginViewModelType) -> LoginViewController {
+        return LoginViewController(themeService: self.themeService, viewModel: viewModel)
     }
     
 }

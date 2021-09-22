@@ -126,6 +126,15 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
             "screen_create_passcode_button_forgot_passcode".localized
         ))
         
+        backSubject.do(onNext: { [weak self] in
+            self?.credentialsManager.setRemembersId(false)
+            self?.credentialsManager.clearUsername()
+        }).flatMap({[unowned self] _ in
+            self.repository.logout(deviceUUID: UIDevice.deviceID)
+        })
+        .subscribe()
+        .disposed(by: disposeBag)
+        
         let pinText = pinTextSubject.distinctUntilChanged().share()
         
         pinText.map({ [unowned self] in ($0 ?? "").count >= self.pinRange.lowerBound })

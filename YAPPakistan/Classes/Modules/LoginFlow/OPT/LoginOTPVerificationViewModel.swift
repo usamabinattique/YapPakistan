@@ -24,8 +24,8 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
     private let saveDeviceSubject = PublishSubject<Void>()
     private var demographicsRepository: DemographicsRepositoryType!
 
-    init(action: OTPAction, heading: NSAttributedString? = nil,
-         subheading: NSAttributedString,
+    init(action: OTPAction, heading: String? = nil,
+         subheading: String,
          image: UIImage? = nil,
          badge: UIImage? = nil,
          otpTime: TimeInterval = 10,
@@ -50,6 +50,7 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
         
         viewAppearedSubject.filter{ $0 }.bind(to: editingSubject).disposed(by: disposeBag)
         timerDisposable = startTimer()
+        
         
     }
 

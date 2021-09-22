@@ -20,6 +20,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
 
     private let userSession = PublishSubject<ResultType<Void>>()
     private var xsrfToken = ""
+    let credentialStore = CredentialsManager()
 
     public init(window: UIWindow,
                 shortcutItem: UIApplicationShortcutItem?,
@@ -31,9 +32,21 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        reposiotry.fetchXSRFToken().subscribe(onNext: { _ in
+        reposiotry.fetchXSRFToken().subscribe(onNext: { [unowned self] _ in
             self.xsrfToken = HTTPCookieStorage.shared.cookies?.filter({ $0.name == "XSRF-TOKEN" }).first?.value ?? ""
+            
+        if !UserDefaults.standard.bool(forKey: "isSecondLogin") {
             self.accountSelection()
+            _ = credentialStore.setRemembersId(false)
+            _ = credentialStore.clearUsername()
+        } else if self.credentialStore.credentialsAvailable() {
+            self.verifyPasscode()
+        } else {
+            self.loginScreen()
+        }
+            
+        UserDefaults.standard.setValue(true, forKey: "isSecondLogin")
+            
         }).disposed(by: rx.disposeBag)
 
         // self.showDummyController()
@@ -54,6 +67,19 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
             print(result)
         }.disposed(by: rx.disposeBag)
     }
+    
+    func verifyPasscode() {
+        coordinate(to: PasscodeCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
+            print(result)
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    func loginScreen() {
+        coordinate(to: LoginCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
+            print(result)
+        }).disposed(by: rx.disposeBag)
+    }
+    
 }
 
 // MARK: NAVIGATIONS

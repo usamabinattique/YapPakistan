@@ -40,11 +40,11 @@ class LoginViewController: UIViewController {
     private var viewModel: LoginViewModelType!
     private var themeService:ThemeService<AppTheme>!
 
-    init(themeService:ThemeService<AppTheme>, viewModel: LoginViewModelType, isBackButton:Bool) {
+    init(themeService:ThemeService<AppTheme>, viewModel: LoginViewModelType) {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
-        if isBackButton { self.backButton = self.addBackButton() }
+        if (self.navigationController?.viewControllers.count ?? 0) > 1 { self.backButton = self.addBackButton() }
     }
 
     required init?(coder: NSCoder) { super.init(coder: coder) }
