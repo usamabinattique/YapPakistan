@@ -152,3 +152,10 @@
 "screen_enter_passcode_display_text_title" = "Enter your passcode to access your account​";
 "screen_create_passcode_button_signin" = "Sign in";
 "screen_create_passcode_button_forgot_passcode" = "Forgot passcode?";
+
+//MARK: Light Dashboard screen
+"screen_light_dashboard_button_logout" = "Logout";
+"screen_light_dashboard_button_touch_id" = "Touch ID";
+"screen_light_dashboard_button_face_id" = "Face ID";
+"screen_light_dashboard_display_text_heading_text" = "Light Dashboard";
+"screen_lite_dashboard_button_complete_verification" = "Complete verification";
