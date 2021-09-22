@@ -25,5 +25,5 @@ struct SaveDemographicsRequest: Codable {
     var deviceModel: String
     var osType: String
     var osVersion: String
-    var token: String
+    var token: String?
 }

@@ -21,6 +21,9 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
     private var session: Session!
     private var accountProvider: AccountProvider?
 
+    private let saveDeviceSubject = PublishSubject<Void>()
+    private var demographicsRepository: DemographicsRepositoryType!
+
     init(action: OTPAction, heading: NSAttributedString? = nil,
          subheading: NSAttributedString,
          image: UIImage? = nil,
@@ -48,13 +51,6 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
         viewAppearedSubject.filter{ $0 }.bind(to: editingSubject).disposed(by: disposeBag)
         timerDisposable = startTimer()
         
-        
-        //YAPProgressHud.showProgressHud()
-        //repository
-        //    .generateLoginOTP(username: username, passcode: passcode, deviceId: UIDevice.deviceID)
-        //    .debug()
-        //    .subscribe( onNext: { _ in YAPProgressHud.hideProgressHud() })
-        //    .disposed(by: disposeBag)
     }
 
     override func generateOneTimePasscode(mobileNo: String) {
@@ -112,9 +108,14 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
                 self.session = self.sessionCreator.makeUserSession(jwt: jwt)
             }
 
-            self.onLoginClosure(self.session, &self.accountProvider)
+            self.onLoginClosure(self.session, &self.accountProvider, &self.demographicsRepository)
+            self.saveDeviceSubject.onNext(())
             self.refreshAccount()
         }).disposed(by: disposeBag)
+
+        saveDeviceSubject.flatMap { _ in
+            return self.demographicsRepository.saveDemographics(action: "LOGIN", token: nil)
+        }.subscribe().disposed(by: disposeBag)
     }
 
     private func refreshAccount() {
@@ -122,9 +123,9 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             return assertionFailure()
         }
 
-        accountProvider.refreshAccount()
         accountProvider.currentAccount
             .unwrap()
+            .take(1)
             .do(onNext: { _ in
                 YAPProgressHud.hideProgressHud()
             })
