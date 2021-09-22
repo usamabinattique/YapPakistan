@@ -130,9 +130,9 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             return assertionFailure()
         }
 
-        accountProvider.refreshAccount()
         accountProvider.currentAccount
             .unwrap()
+            .take(1)
             .do(onNext: { _ in
                 YAPProgressHud.hideProgressHud()
             })

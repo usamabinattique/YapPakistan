@@ -318,7 +318,6 @@ fileprivate extension VerifyPasscodeViewModel {
             return assertionFailure()
         }
 
-        accountProvider.refreshAccount()
         accountProvider.currentAccount
             .unwrap()
             .take(1)
