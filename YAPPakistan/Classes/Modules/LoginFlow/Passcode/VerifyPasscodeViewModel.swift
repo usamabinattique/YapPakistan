@@ -8,6 +8,15 @@
 import RxSwift
 import YAPCore
 
+public enum PasscodeVerificationResult {
+    case waiting
+    case allowed
+    case onboarding
+    case blocked
+    case dashboard
+    case cancel
+}
+
 struct VerificationResponse {
     var optRequired:Bool = false
     var session:Session!
@@ -22,6 +31,8 @@ protocol VerifyPasscodeViewModelInputs {
 
 protocol VerifyPasscodeViewModelOutputs {
     typealias LocalizedText = (heading: String, signIn: String, forgot:String)
+
+    var loginResult: Observable<PasscodeVerificationResult> { get }
     var result: Observable<ResultType<VerificationResponse>> { get }
     var pinValid: Observable<Bool> { get }
     var pinText: Observable<String?> { get }
@@ -33,6 +44,8 @@ protocol VerifyPasscodeViewModelOutputs {
 }
 
  protocol VerifyPasscodeViewModelType {
+    typealias OnLoginClosure = (Session, inout AccountProvider?) -> Void
+
     var inputs: VerifyPasscodeViewModelInputs { get }
     var outputs: VerifyPasscodeViewModelOutputs { get }
 }
@@ -52,6 +65,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     // MARK: - Outputs - Implementation of "outputs" protocol
      var pinText: Observable<String?> { return pinTextSubject.map({ String($0?.map{ _ in Character("\u{25CF}") } ?? []) }).asObservable() }
      var error: Observable<String> { return errorSubject.asObservable() }
+     var loginResult: Observable<PasscodeVerificationResult> { return loginResultSubject.asObservable() }
      var result: Observable<ResultType<VerificationResponse>> { return resultSubject.asObservable() }
      var pinValid: Observable<Bool> { return pinValidSubject.asObservable() }
      var back: Observable<Void> { return backSubject.asObservable() }
@@ -61,7 +75,8 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     var shake: Observable<Void> { return shakeSubject.asObservable() }
     
     // MARK: - Subjects
-    
+
+    fileprivate let loginResultSubject = PublishSubject<PasscodeVerificationResult>()
     fileprivate let resultSubject = PublishSubject<ResultType<VerificationResponse>>()
     fileprivate let pinValidSubject = BehaviorSubject<Bool>(value: false)
     fileprivate let pinTextSubject = BehaviorSubject<String?>(value: nil)
@@ -82,14 +97,20 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     private let sessionCreator: SessionProviderType!
     private let username: String
     private var isUserBlocked: Bool = false
-    
+
+    private let onLoginClosure: OnLoginClosure
+
+    private var session: Session!
+    private var accountProvider: AccountProvider?
+
     // MARK: - Init
     init( username: String,
           isUserBlocked: Bool = false,
           repository: LoginRepository,
           credentialsManager: CredentialsStoreType,
           sessionCreator: SessionProviderType,
-          pinRange: ClosedRange<Int> = 4...6) {
+          pinRange: ClosedRange<Int> = 4...6,
+          onLogin: @escaping OnLoginClosure) {
         
         self.username = username
         self.isUserBlocked = isUserBlocked
@@ -97,6 +118,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
         self.pinRange = pinRange
         self.credentialsManager = credentialsManager
         self.sessionCreator = sessionCreator
+        self.onLoginClosure = onLogin
         
         self.localizedTextSubject = BehaviorSubject(value:(
             "screen_enter_passcode_display_text_title".localized,
@@ -169,12 +191,19 @@ fileprivate extension VerifyPasscodeViewModel {
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
         
-        let loginResponseSuccess = loginResponse.unwrap().filter{ !($0.isEmpty ) }.withUnretained(self)
+
+        let loginResponseSuccess = loginResponse.unwrap().filter{ !($0.isEmpty ) }
             
-        loginResponseSuccess.map{ $0.0.sessionCreator.makeUserSession(jwt: $0.1) }
-            .map{ ResultType.success(VerificationResponse(session: $0)) }
-            .bind(to: resultSubject)
-            .disposed(by: disposeBag)
+        //loginResponseSuccess.withUnretained(self).map{ $0.0.sessionCreator.makeUserSession(jwt: $0.1) }
+        //    .map{ ResultType.success(VerificationResponse(session: $0)) }
+        //    .bind(to: resultSubject)
+        //    .disposed(by: disposeBag)
+        
+        loginResponseSuccess.subscribe(onNext: { token in
+            self.session = self.sessionCreator.makeUserSession(jwt: token)
+            self.onLoginClosure(self.session, &self.accountProvider)
+            self.refreshAccount()
+        }).disposed(by: disposeBag)
         
         let apiError = loginRequest.errors()
             .withUnretained(self)
@@ -201,6 +230,28 @@ fileprivate extension VerifyPasscodeViewModel {
             .bind(to: errorSubject)
             .disposed(by: disposeBag)
         
+    }
+
+    private func refreshAccount() {
+        guard let accountProvider = accountProvider else {
+            return assertionFailure()
+        }
+
+        accountProvider.currentAccount
+            .unwrap()
+            .take(1)
+            .subscribe(onNext: { account in
+                if account.isWaiting {
+                    self.loginResultSubject.onNext(.waiting)
+                } else if (account.iban ?? "").isEmpty {
+                    self.loginResultSubject.onNext(.allowed)
+                } else if account.isOTPBlocked {
+                    self.loginResultSubject.onNext(.blocked)
+                } else {
+                    self.loginResultSubject.onNext(.dashboard)
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
 
