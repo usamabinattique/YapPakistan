@@ -57,7 +57,7 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
         let passcode = container.credentialsStore.getPasscode(username: userName) ?? ""
         
         let headingString = "screen_device_registration_otp_display_header_message".localized
-        let otpMessage = String(format: "screen_device_registration_otp_display_givn_text_message".localized, userName)
+        let otpMessage = String(format: "screen_device_registration_otp_display_givn_text_message".localized, userName.toFormatedNumber)
         
         let otpRepository = OTPRepository(messageService: MessagesService(apiConfig: apiConfig, authorizationProvider: authService),
                                           customerService: CustomersService(apiConfig: apiConfig, authorizationProvider: authService))
