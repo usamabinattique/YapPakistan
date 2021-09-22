@@ -6,16 +6,12 @@
 //
 
 import RxSwift
-//public typealias OTPVerificationResult = (token: String?, phoneNumber: String?)
 
 public protocol VerifyPasscodeViewModelInputs {
     var keyPressObserver: AnyObserver<String> { get }
     var actionObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
     var forgotPasscodeObserver: AnyObserver<Void> { get }
-    
-    //var pinObserver: AnyObserver<String?> { get }
-    //var requestForgotPINObserver: AnyObserver<OTPVerificationResult> { get }
 }
 
 public protocol VerifyPasscodeViewModelOutputs {
@@ -27,22 +23,6 @@ public protocol VerifyPasscodeViewModelOutputs {
     var back: Observable<Void> { get }
     var loader: Observable<Bool> { get }
     var localizedText: Observable<LocalizedText> { get }
-    
-    
-    //var passcodeSuccess: Observable<String> { get }
-    //var headingText: Observable<String?> { get }
-    //var termsAndConditionsText: Observable<NSAttributedString?> { get }
-    //var actionTitle: Observable<String?> { get }
-    //var shake: Observable<Void> { get }
-    //var enableBack: Observable<(Bool, BackButtonType)> { get }
-    //var username: Observable<String> { get }
-    //var forgotPasscode: Observable<Void> { get }
-    //var backImage: Observable<BackButtonType> { get }
-    //var forgotPasscodeEnable: Observable<Bool?> { get }
-    //var requestForgotPIN: Observable<OTPVerificationResult> { get }
-    //var verifyForgotPIN: Observable<Void> { get }
-    //var openTermsAndCondtions: Observable<Void> { get }
-    //var hideNavigationBar: Observable<Bool>{ get }
 }
 
 public protocol VerifyPasscodeViewModelType {
@@ -62,9 +42,6 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     public var actionObserver: AnyObserver<Void> { return actionSubject.asObserver() }
     public var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     public var forgotPasscodeObserver: AnyObserver<Void> { return forgotPasscodeSubject.asObserver() }
-    //public var pinObserver: AnyObserver<String?> { return pinSubject.asObserver() }
-    //public var termsAndConditionsActionObserver: AnyObserver<Void> { return termsAndConditionsActionSubject.asObserver() }
-    //public var requestForgotPINObserver: AnyObserver<OTPVerificationResult> { return requestForgotPINSubject.asObserver() }
     
     // MARK: - Outputs - Implementation of "outputs" protocol
     public var pinText: Observable<String?> { return pinTextSubject.map({ String($0?.map{ _ in Character("\u{25CF}") } ?? []) }).asObservable() }
@@ -76,25 +53,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     public var loader: Observable<Bool> { return loaderSubject.asObservable() }
     public var localizedText: Observable<LocalizedText> { return self.localizedTextSubject.asObservable() }
     
-    //public var passcodeSuccess: Observable<String> { return passcodeSuccessSubject.asObservable() }
-    //public var headingText: Observable<String?> { return headingTextSubject.asObservable() }
-    //public var termsAndConditionsText: Observable<NSAttributedString?> { return termsAndConditionsSubject.asObservable() }
-    //public var actionTitle: Observable<String?> { return actionTitleSubject.asObservable() }
-    //public var shake: Observable<Void> { return shakeSubject.asObservable() }
-    //public var enableBack: Observable<(Bool, BackButtonType)> { return enableBackSubject.asObservable() }
-    //public var username: Observable<String> { return usernameSubject.asObservable() }
-    //public var backImage: Observable<BackButtonType> { return backImageSubject.asObservable() }
-    //public var forgotPasscodeEnable: Observable<Bool?> { return forgotPasscodeEnableSubject.asObservable() }
-    //public var requestForgotPIN: Observable<OTPVerificationResult> { return requestForgotPINSubject.asObservable() }
-    //public var verifyForgotPIN: Observable<Void> { return verifyForgotPINSubject.asObservable() }
-    //public var openTermsAndCondtions: Observable<Void> { termsAndConditionsActionSubject.asObservable() }
-    //public var hideNavigationBar: Observable<Bool>{ return hideNavigationBarSubject.asObservable() }
-    
     // MARK: - Subjects
-    /*
-     Define only those Subject required to satisfy inputs and outputs.
-     All subjects should be internal unless needed otherwise
-     */
     fileprivate let resultSubject = PublishSubject<String>()
     fileprivate let pinValidSubject = BehaviorSubject<Bool>(value: false)
     fileprivate let pinTextSubject = BehaviorSubject<String?>(value: nil)
@@ -105,21 +64,6 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     fileprivate let forgotPasscodeSubject = PublishSubject<Void>()
     fileprivate let loaderSubject = PublishSubject<Bool>()
     fileprivate let localizedTextSubject:BehaviorSubject<LocalizedText>
-    
-    //internal let passcodeSuccessSubject = PublishSubject<String>()
-    //public let headingTextSubject = BehaviorSubject<String?>(value: nil)
-    //public let termsAndConditionsSubject = BehaviorSubject<NSAttributedString?>(value: nil)
-    //internal let termsAndConditionsActionSubject = PublishSubject<Void>()
-    //public let actionTitleSubject = BehaviorSubject<String?>(value: nil)
-    //public let shakeSubject = PublishSubject<Void>()
-    //public let pinSubject = BehaviorSubject<String?>(value: nil)
-    //public let enableBackSubject = BehaviorSubject<(Bool, BackButtonType)>(value: (true, .backCircled))
-    //internal let usernameSubject = BehaviorSubject<String>(value: "")
-    //public let backImageSubject = BehaviorSubject<BackButtonType>(value: .backCircled)
-    //internal let forgotPasscodeEnableSubject = BehaviorSubject<Bool?>(value: nil)
-    //internal let requestForgotPINSubject = PublishSubject<OTPVerificationResult>()
-    //internal let verifyForgotPINSubject = PublishSubject<Void>()
-    //internal let hideNavigationBarSubject = BehaviorSubject<Bool>(value: true)
     
     // MARK: Internal Properties and ViewModels
     private let repository: LoginRepository
@@ -155,26 +99,8 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
         pinTextSubject.map({ [unowned self] in ($0 ?? "").count >= self.pinRange.lowerBound })
             .bind(to: pinValidSubject)
             .disposed(by: disposeBag)
-        
-        /*
-        actionSubject.withLatestFrom(pinText)
-            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-            .flatMap { pinCode in
-                self.repository.authenticate(username: "00923331599998", password: pinCode ?? "", deviceId: "123")
-            }
-            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
-            .subscribe(onNext: { result in
-                print(result)
-            }).disposed(by: disposeBag) */
+
         bindUserAuthentication(repository: repository)
-    }
-    
-    public func createTermsAndConditions(text: String) -> NSAttributedString {
-        let attributedText = NSMutableAttributedString(string: text)
-        let termsAndConditions = text.components(separatedBy: "\n").last ?? ""
-        attributedText.addAttribute(.foregroundColor, value: UIColor.blue/*appColor(ofType: .primary)*/, range: NSRange(location: text.count - termsAndConditions.count, length: termsAndConditions.count))
-        attributedText.addAttribute(.foregroundColor, value: UIColor.darkGray /*appColor(ofType: .greyDark)*/, range: NSRange(location: 0, length: text.count - termsAndConditions.count))
-        return attributedText
     }
 }
 
@@ -195,9 +121,6 @@ fileprivate extension VerifyPasscodeViewModel {
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
         
-        //.withLatestFrom(Observable.combineLatest(usernameSubject, passcodeSubject))
-        //.map{ Credentials(username: $0.0, passcode: $0.1) }
-        
         let apiError = loginRequest.errors().withUnretained(self).share()
         let invalidCredentials = apiError.map({ $0.0.inValidCredentials(error: $0.1) })  // invalidCredentials
             .filter({ $0.0 == true })
@@ -206,8 +129,7 @@ fileprivate extension VerifyPasscodeViewModel {
             .map({ $0.1.localizedDescription }) // errorSubject
         let optBlocked = apiError.filter{ $0.0.isOTPBlocked(error: $0.1) }
             .map{ ($0.1 as? AuthenticationError)?.errorDescription }.unwrap() // OTP Blocked: Alert message
-        //let IncorrectAttemptsReached = apiError.filter { $0.0.isErrorAuthFailure(error: $0.1) }
-        //    .map { $0.0.getIncorrectAttemptsHoldTime(error: $0.1) } // Timer Invervels
+        
         let accountLocked = apiError.filter { $0.0.isErrorAccountLocked(error: $0.1) }
             .map({ $0.1.localizedDescription })
         let accountFreezed = apiError.filter { $0.0.isErrorAccountFreeze(error: $0.1) }
@@ -216,30 +138,6 @@ fileprivate extension VerifyPasscodeViewModel {
         Observable.merge(invalidCredentials, errorOther, optBlocked, accountLocked, accountFreezed)
             .bind(to: errorSubject)
             .disposed(by: disposeBag)
-        
-        /* timerSubject
-            .map { [unowned self] timeInterval -> String? in
-                if timeInterval == 0 { return nil }
-                return self.timeString(prefix:  "screen_verify_passcode_text_incorrect_attempts".localized, timeInterval: timeInterval) }
-            .bind(to: incorrectAttemptsReachedSubject)
-            .disposed(by: disposeBag)
-        
-        
-        timerSubject.filter { $0 == 0 }.map { _ in () }.bind(to: clearPasscodeSubject).disposed(by: disposeBag)
-        
-        clearPasscodeSubject.map { _ in "" }.bind(to: passcodeSubject).disposed(by: disposeBag)
-        
-        validPasscodeSubject.bind(to: isConfirmEnabledSubject).disposed(by: disposeBag) */
-        
-        // Combined error handling
-        /* Observable.from([
-            incorrectAttemptsReachedError.map { _ in true },
-            accountLockedError.map { _ in true },
-            accountFreezeError.map { _ in true },
-            isExistingAccountBlockedSubject,
-            timerSubject.filter { $0 == 0 }.map { _ in false }
-        ]).merge().bind(to: isKeypadLockedSubject).disposed(by: disposeBag) */
-    
     }
 }
 
@@ -299,15 +197,6 @@ fileprivate extension VerifyPasscodeViewModel {
         }
         return nil
     }
-    
-    /* func startTimer(duration: TimeInterval) -> Disposable {
-        let timer = Observable<NSInteger>.timer(RxTimeInterval.microseconds(0), period: RxTimeInterval.seconds(1), scheduler: MainScheduler.instance)
-        return timer.do(onNext: { [weak self] timer in
-            if duration - TimeInterval(timer) < 0 {
-                self?.timerDisposable?.dispose()
-            }
-        }).map { duration - TimeInterval($0) }.bind(to: timerSubject)
-    } */
     
     func timeString(prefix: String, timeInterval: TimeInterval) -> String {
         let minutes = Int(timeInterval/60.0)
