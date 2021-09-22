@@ -44,13 +44,13 @@ class LoginViewController: UIViewController {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
-        if (self.navigationController?.viewControllers.count ?? 0) > 1 { self.backButton = self.addBackButton() }
     }
 
     required init?(coder: NSCoder) { super.init(coder: coder) }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        if (self.navigationController?.viewControllers.count ?? 0) > 1 { self.backButton = self.addBackButton() }
         setupSubViews()
         setupResources()
         setupTheme()
