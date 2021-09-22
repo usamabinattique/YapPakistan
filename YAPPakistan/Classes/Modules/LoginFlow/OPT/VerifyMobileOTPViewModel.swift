@@ -48,8 +48,8 @@ public protocol VerifyMobileOTPViewModelInput {
 public protocol VerifyMobileOTPViewModelOutput {
     var back: Observable<Void> { get }
     var valid: Observable<Bool> { get }
-    var heading: Observable<NSAttributedString?> { get }
-    var subheading: Observable<NSAttributedString?> { get }
+    var heading: Observable<String?> { get }
+    var subheading: Observable<String?> { get }
     var badge: Observable<UIImage?> { get }
     var image: Observable<UIImage?> { get }
     var generateOTP: Observable<Void> { get }
@@ -91,8 +91,8 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     private let resendTimeSubject: BehaviorSubject<TimeInterval>
     private let resendTriesSubject: BehaviorSubject<Int>
     private let resendActiveSubject = BehaviorSubject<Bool>(value: false)
-    private let headingSubject: BehaviorSubject<NSAttributedString?>
-    private let subheadingSubject: BehaviorSubject<NSAttributedString?>
+    private let headingSubject: BehaviorSubject<String?>
+    private let subheadingSubject: BehaviorSubject<String?>
     private let badgeSubject: Observable<UIImage?>
     private let imageSubject: Observable<UIImage?>
     private let otpSubject: BehaviorSubject<String?>
@@ -120,8 +120,8 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     // outputs
     public var back: Observable<Void> { return backSubject.asObservable() }
     public var valid: Observable<Bool> { return validSubject.asObservable() }
-    public var heading: Observable<NSAttributedString?> { return headingSubject.asObservable() }
-    public var subheading: Observable<NSAttributedString?> { return subheadingSubject.asObservable() }
+    public var heading: Observable<String?> { return headingSubject.asObservable() }
+    public var subheading: Observable<String?> { return subheadingSubject.asObservable() }
     public var badge: Observable<UIImage?> { return badgeSubject.asObservable() }
     public var image: Observable<UIImage?> { return imageSubject.asObservable() }
     public var generateOTP: Observable<Void> { return generateOTPSubject.asObservable() }
@@ -146,8 +146,8 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     public var otpForRequest: String?
     
     public init(action: OTPAction,
-                heading: NSAttributedString? = nil,
-                subheading: NSAttributedString,
+                heading: String? = nil,
+                subheading: String,
                 image: UIImage? = nil,
                 badge: UIImage? = nil,
                 otpTime: TimeInterval = 10,
