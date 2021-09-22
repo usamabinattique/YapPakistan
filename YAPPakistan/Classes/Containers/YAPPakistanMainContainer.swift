@@ -139,9 +139,13 @@ extension YAPPakistanMainContainer {
     func makeBiometricsService() -> BiometricsManager {
         return BiometricsManager()
     }
-    
-    func makeVerifyPasscodeViewModel(repository: LoginRepository, sessionCreator: SessionProviderType) -> VerifyPasscodeViewModelType {
-        return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "", repository: repository, credentialsManager: credentialsStore, sessionCreator: sessionCreator)
+
+    func makeVerifyPasscodeViewModel(onLogin: @escaping VerifyPasscodeViewModelType.OnLoginClosure) -> VerifyPasscodeViewModelType {
+        return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "",
+                                       repository: makeLoginRepository(),
+                                       credentialsManager: credentialsStore,
+                                       sessionCreator: SessionProvider(xsrfToken: xsrfToken),
+                                       onLogin: onLogin)
     }
     
     func makePINViewController(viewModel:VerifyPasscodeViewModelType,

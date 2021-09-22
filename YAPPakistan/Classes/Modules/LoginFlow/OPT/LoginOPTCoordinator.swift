@@ -67,9 +67,10 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
                                                  username: userName,
                                                  passcode: passcode,
                                                  sessionCreator: sessionProvider,
-                                                 onLogin: { session, accountProvider in
+                                                 onLogin: { session, accountProvider, demographicsRepository in
                                                     self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
                                                     accountProvider = self.sessionContainer.accountProvider
+                                                    demographicsRepository = self.sessionContainer.makeDemographicsRepository()
                                                 })
         let viewController =  VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         

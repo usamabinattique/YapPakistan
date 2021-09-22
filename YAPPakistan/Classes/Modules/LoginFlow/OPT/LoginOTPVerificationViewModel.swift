@@ -21,6 +21,9 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
     private var session: Session!
     private var accountProvider: AccountProvider?
 
+    private let saveDeviceSubject = PublishSubject<Void>()
+    private var demographicsRepository: DemographicsRepositoryType!
+
     init(action: OTPAction, heading: NSAttributedString? = nil,
          subheading: NSAttributedString,
          image: UIImage? = nil,
@@ -112,9 +115,14 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
                 self.session = self.sessionCreator.makeUserSession(jwt: jwt)
             }
 
-            self.onLoginClosure(self.session, &self.accountProvider)
+            self.onLoginClosure(self.session, &self.accountProvider, &self.demographicsRepository)
+            self.saveDeviceSubject.onNext(())
             self.refreshAccount()
         }).disposed(by: disposeBag)
+
+        saveDeviceSubject.flatMap { _ in
+            return self.demographicsRepository.saveDemographics(action: "LOGIN", token: nil)
+        }.subscribe().disposed(by: disposeBag)
     }
 
     private func refreshAccount() {
