@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import YAPCore
 
 protocol LiteDashboardViewModelInputs {
     var resultObserver: AnyObserver<Void> { get }
@@ -84,6 +85,7 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManager,
+         credentialStore: CredentialsStoreType,
          repository: LoginRepository) {
         self.biometrySuject = BehaviorSubject(value: biometricsManager.isBiometryEnabled(for: ""))
         self.biometrySupportedSuject = BehaviorSubject(value: biometricsManager.isBiometrySupported)
@@ -100,7 +102,12 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
         logoutRequest.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
 
         logoutRequest.elements()
-            .do(onNext: { _ in /* FIXME: Reset all managers. */ })
+            .do(onNext: { _ in
+                credentialStore.setRemembersId(false)
+                credentialStore.clearUsername()
+
+                // FIXME: Reset all managers.
+            })
             .map { _ in () }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
