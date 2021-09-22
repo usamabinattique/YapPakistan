@@ -44,13 +44,13 @@ class LoginViewController: UIViewController {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
-        if (self.navigationController?.viewControllers.count ?? 0) > 1 { self.backButton = self.addBackButton() }
     }
 
     required init?(coder: NSCoder) { super.init(coder: coder) }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        if (self.navigationController?.viewControllers.count ?? 0) > 1 { self.backButton = self.addBackButton() }
         setupSubViews()
         setupResources()
         setupTheme()
@@ -120,6 +120,7 @@ fileprivate extension LoginViewController {
             .bind({ UIColor($0.greyDark       ) }, to: [signUpLabel.rx.textColor])
             .bind({ UIColor($0.primary        ) }, to: [rememberIDSwitch.rx.onTintColor])
             .bind({ UIColor($0.greyLight      ) }, to: [rememberIDSwitch.rx.offTintColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [rememberIDLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
 
         guard let backButton = backButton else { return }
