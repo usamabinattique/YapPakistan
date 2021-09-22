@@ -205,8 +205,18 @@ fileprivate extension VerifyPasscodeViewModel {
             .share()
         
         let loginResponse = loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }
+        
+        loginResponse
+            .withLatestFrom(self.pinTextSubject).withLatestFrom(pinTextSubject).unwrap().withUnretained(self)
+            .subscribe(onNext: { $0.0.credentialsManager.secureCredentials(username: $0.0.username, passcode: $0.1 ) })
+            .disposed(by: disposeBag)
+        
         //let loginResponse = loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }.unwrap()
-
+        
+        loginResponse.withLatestFrom(pinTextSubject).unwrap().withUnretained(self)
+            .subscribe(onNext: { $0.0.credentialsManager.secureCredentials(username: $0.0.username, passcode: $0.1 ) })
+            .disposed(by: disposeBag)
+        
         loginResponse
             .do(onNext: { elem in
                 print(elem)
@@ -223,10 +233,6 @@ fileprivate extension VerifyPasscodeViewModel {
         loginResponseSuccess.map{ $0.0.sessionCreator.makeUserSession(jwt: $0.1) }
             .map{ ResultType.success(VerificationResponse(session: $0)) }
             .bind(to: resultSubject)
-            .disposed(by: disposeBag)
-            
-        loginResponseSuccess.withLatestFrom(pinTextSubject).unwrap().withUnretained(self)
-            .subscribe(onNext: { $0.0.credentialsManager.secureCredentials(username: $0.0.username, passcode: $0.1 ) })
             .disposed(by: disposeBag)
         
         //.withLatestFrom(Observable.combineLatest(usernameSubject, passcodeSubject))
