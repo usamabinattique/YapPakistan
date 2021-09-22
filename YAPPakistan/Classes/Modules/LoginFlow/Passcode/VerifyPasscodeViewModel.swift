@@ -7,7 +7,6 @@
 
 import RxSwift
 import YAPCore
-// typealias OTPVerificationResult = (token: String?, phoneNumber: String?)
 
 struct VerificationResponse {
     var optRequired:Bool = false
@@ -19,9 +18,6 @@ protocol VerifyPasscodeViewModelInputs {
     var actionObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
     var forgotPasscodeObserver: AnyObserver<Void> { get }
-    
-    //var pinObserver: AnyObserver<String?> { get }
-    //var requestForgotPINObserver: AnyObserver<OTPVerificationResult> { get }
 }
 
 protocol VerifyPasscodeViewModelOutputs {
@@ -34,22 +30,6 @@ protocol VerifyPasscodeViewModelOutputs {
     var loader: Observable<Bool> { get }
     var localizedText: Observable<LocalizedText> { get }
     var shake: Observable<Void> { get }
-    
-    
-    //var passcodeSuccess: Observable<String> { get }
-    //var headingText: Observable<String?> { get }
-    //var termsAndConditionsText: Observable<NSAttributedString?> { get }
-    //var actionTitle: Observable<String?> { get }
-    //var shake: Observable<Void> { get }
-    //var enableBack: Observable<(Bool, BackButtonType)> { get }
-    //var username: Observable<String> { get }
-    //var forgotPasscode: Observable<Void> { get }
-    //var backImage: Observable<BackButtonType> { get }
-    //var forgotPasscodeEnable: Observable<Bool?> { get }
-    //var requestForgotPIN: Observable<OTPVerificationResult> { get }
-    //var verifyForgotPIN: Observable<Void> { get }
-    //var openTermsAndCondtions: Observable<Void> { get }
-    //var hideNavigationBar: Observable<Bool>{ get }
 }
 
  protocol VerifyPasscodeViewModelType {
@@ -58,7 +38,6 @@ protocol VerifyPasscodeViewModelOutputs {
 }
 
 open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeViewModelInputs, VerifyPasscodeViewModelOutputs {
-    
     
     // MARK: - Properties
      var inputs: VerifyPasscodeViewModelInputs { return self }
@@ -69,9 +48,6 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
      var actionObserver: AnyObserver<Void> { return actionSubject.asObserver() }
      var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
      var forgotPasscodeObserver: AnyObserver<Void> { return forgotPasscodeSubject.asObserver() }
-    // var pinObserver: AnyObserver<String?> { return pinSubject.asObserver() }
-    // var termsAndConditionsActionObserver: AnyObserver<Void> { return termsAndConditionsActionSubject.asObserver() }
-    // var requestForgotPINObserver: AnyObserver<OTPVerificationResult> { return requestForgotPINSubject.asObserver() }
     
     // MARK: - Outputs - Implementation of "outputs" protocol
      var pinText: Observable<String?> { return pinTextSubject.map({ String($0?.map{ _ in Character("\u{25CF}") } ?? []) }).asObservable() }
@@ -84,25 +60,8 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
      var localizedText: Observable<LocalizedText> { return self.localizedTextSubject.asObservable() }
     var shake: Observable<Void> { return shakeSubject.asObservable() }
     
-    // var passcodeSuccess: Observable<String> { return passcodeSuccessSubject.asObservable() }
-    // var headingText: Observable<String?> { return headingTextSubject.asObservable() }
-    // var termsAndConditionsText: Observable<NSAttributedString?> { return termsAndConditionsSubject.asObservable() }
-    // var actionTitle: Observable<String?> { return actionTitleSubject.asObservable() }
-    // var shake: Observable<Void> { return shakeSubject.asObservable() }
-    // var enableBack: Observable<(Bool, BackButtonType)> { return enableBackSubject.asObservable() }
-    // var username: Observable<String> { return usernameSubject.asObservable() }
-    // var backImage: Observable<BackButtonType> { return backImageSubject.asObservable() }
-    // var forgotPasscodeEnable: Observable<Bool?> { return forgotPasscodeEnableSubject.asObservable() }
-    // var requestForgotPIN: Observable<OTPVerificationResult> { return requestForgotPINSubject.asObservable() }
-    // var verifyForgotPIN: Observable<Void> { return verifyForgotPINSubject.asObservable() }
-    // var openTermsAndCondtions: Observable<Void> { termsAndConditionsActionSubject.asObservable() }
-    // var hideNavigationBar: Observable<Bool>{ return hideNavigationBarSubject.asObservable() }
-    
     // MARK: - Subjects
-    /*
-     Define only those Subject required to satisfy inputs and outputs.
-     All subjects should be internal unless needed otherwise
-     */
+    
     fileprivate let resultSubject = PublishSubject<ResultType<VerificationResponse>>()
     fileprivate let pinValidSubject = BehaviorSubject<Bool>(value: false)
     fileprivate let pinTextSubject = BehaviorSubject<String?>(value: nil)
@@ -114,20 +73,6 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
     fileprivate let loaderSubject = PublishSubject<Bool>()
     fileprivate let localizedTextSubject:BehaviorSubject<LocalizedText>
     fileprivate let shakeSubject = PublishSubject<Void>()
-    
-    //internal let passcodeSuccessSubject = PublishSubject<String>()
-    // let headingTextSubject = BehaviorSubject<String?>(value: nil)
-    // let termsAndConditionsSubject = BehaviorSubject<NSAttributedString?>(value: nil)
-    //internal let termsAndConditionsActionSubject = PublishSubject<Void>()
-    // let actionTitleSubject = BehaviorSubject<String?>(value: nil)
-    // let pinSubject = BehaviorSubject<String?>(value: nil)
-    // let enableBackSubject = BehaviorSubject<(Bool, BackButtonType)>(value: (true, .backCircled))
-    //internal let usernameSubject = BehaviorSubject<String>(value: "")
-    // let backImageSubject = BehaviorSubject<BackButtonType>(value: .backCircled)
-    //internal let forgotPasscodeEnableSubject = BehaviorSubject<Bool?>(value: nil)
-    //internal let requestForgotPINSubject = PublishSubject<OTPVerificationResult>()
-    //internal let verifyForgotPINSubject = PublishSubject<Void>()
-    //internal let hideNavigationBarSubject = BehaviorSubject<Bool>(value: true)
     
     // MARK: Internal Properties and ViewModels
     private let repository: LoginRepository
@@ -166,6 +111,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType, VerifyPasscodeV
             .disposed(by: disposeBag)
         
         keyPressSubject.withLatestFrom(Observable.combineLatest(keyPressSubject, pinTextSubject))
+            .do(onNext: {[unowned self] _ in errorSubject.onNext("") })
             .debug("PINOB", trimOutput: false)
             .map { (keyStroke, pin) -> String in
                 var pin = pin ?? ""
@@ -211,16 +157,11 @@ fileprivate extension VerifyPasscodeViewModel {
             .subscribe(onNext: { $0.0.credentialsManager.secureCredentials(username: $0.0.username, passcode: $0.1 ) })
             .disposed(by: disposeBag)
         
-        //let loginResponse = loginRequest.elements().unwrap().map { $0["id_token"] ?? "" }.unwrap()
-        
         loginResponse.withLatestFrom(pinTextSubject).unwrap().withUnretained(self)
             .subscribe(onNext: { $0.0.credentialsManager.secureCredentials(username: $0.0.username, passcode: $0.1 ) })
             .disposed(by: disposeBag)
         
         loginResponse
-            .do(onNext: { elem in
-                print(elem)
-            })
             .filter{ $0?.isEmpty ?? true }
             .map({
                     _ in ResultType.success(VerificationResponse(optRequired: true))
@@ -234,9 +175,6 @@ fileprivate extension VerifyPasscodeViewModel {
             .map{ ResultType.success(VerificationResponse(session: $0)) }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
-        
-        //.withLatestFrom(Observable.combineLatest(usernameSubject, passcodeSubject))
-        //.map{ Credentials(username: $0.0, passcode: $0.1) }
         
         let apiError = loginRequest.errors()
             .withUnretained(self)
@@ -252,9 +190,6 @@ fileprivate extension VerifyPasscodeViewModel {
             .map({ $0.1 })
         let optBlocked = apiError.filter{ $0.0.isOTPBlocked(error: $0.1) }
             .map{ ($0.1 as? AuthenticationError)?.errorDescription }.unwrap()
-                
-        //let IncorrectAttemptsReached = apiError.filter { $0.0.isErrorAuthFailure(error: $0.1) }
-        //    .map { $0.0.getIncorrectAttemptsHoldTime(error: $0.1) } // Timer Invervels
         
         let accountLocked = apiError.filter { $0.0.isErrorAccountLocked(error: $0.1) }
             .map({ $0.1.localizedDescription })
@@ -266,29 +201,6 @@ fileprivate extension VerifyPasscodeViewModel {
             .bind(to: errorSubject)
             .disposed(by: disposeBag)
         
-        /* timerSubject
-            .map { [unowned self] timeInterval -> String? in
-                if timeInterval == 0 { return nil }
-                return self.timeString(prefix:  "screen_verify_passcode_text_incorrect_attempts".localized, timeInterval: timeInterval) }
-            .bind(to: incorrectAttemptsReachedSubject)
-            .disposed(by: disposeBag)
-        
-        
-        timerSubject.filter { $0 == 0 }.map { _ in () }.bind(to: clearPasscodeSubject).disposed(by: disposeBag)
-        
-        clearPasscodeSubject.map { _ in "" }.bind(to: passcodeSubject).disposed(by: disposeBag)
-        
-        validPasscodeSubject.bind(to: isConfirmEnabledSubject).disposed(by: disposeBag) */
-        
-        // Combined error handling
-        /* Observable.from([
-            incorrectAttemptsReachedError.map { _ in true },
-            accountLockedError.map { _ in true },
-            accountFreezeError.map { _ in true },
-            isExistingAccountBlockedSubject,
-            timerSubject.filter { $0 == 0 }.map { _ in false }
-        ]).merge().bind(to: isKeypadLockedSubject).disposed(by: disposeBag) */
-    
     }
 }
 
@@ -348,15 +260,6 @@ fileprivate extension VerifyPasscodeViewModel {
         }
         return nil
     }
-    
-    /* func startTimer(duration: TimeInterval) -> Disposable {
-        let timer = Observable<NSInteger>.timer(RxTimeInterval.microseconds(0), period: RxTimeInterval.seconds(1), scheduler: MainScheduler.instance)
-        return timer.do(onNext: { [weak self] timer in
-            if duration - TimeInterval(timer) < 0 {
-                self?.timerDisposable?.dispose()
-            }
-        }).map { duration - TimeInterval($0) }.bind(to: timerSubject)
-    } */
     
     func timeString(prefix: String, timeInterval: TimeInterval) -> String {
         let minutes = Int(timeInterval/60.0)
