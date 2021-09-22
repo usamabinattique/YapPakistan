@@ -198,7 +198,9 @@ fileprivate extension VerifyPasscodeViewModel {
         let loginRequest = actionSubject.withLatestFrom(pinTextSubject).unwrap()
             .withUnretained(self)
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-            .flatMap { $0.0.repository.authenticate(username: $0.0.username, password: $0.1, deviceId: UIDevice.deviceID) }
+            .flatMap {
+                $0.0.repository.authenticate(username: $0.0.username, password: $0.1, deviceId: UIDevice.deviceID)
+            }
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
         
@@ -210,7 +212,9 @@ fileprivate extension VerifyPasscodeViewModel {
                 print(elem)
             })
             .filter{ $0?.isEmpty ?? true }
-            .map({_ in ResultType.success(VerificationResponse(optRequired: true))})
+            .map({
+                    _ in ResultType.success(VerificationResponse(optRequired: true))
+            })
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
         

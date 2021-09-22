@@ -56,9 +56,11 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.result.subscribe(onNext: { [weak self] _ in
-            self?.optVerification()
-        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.result
+            .filter { $0.isSuccess?.optRequired ?? true}
+            .subscribe(onNext: { [weak self] _ in
+                self?.optVerification()
+            }).disposed(by: rx.disposeBag)
 
         return result
     }

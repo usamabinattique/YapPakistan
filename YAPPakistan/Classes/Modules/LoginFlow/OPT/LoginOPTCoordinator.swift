@@ -73,6 +73,8 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
                                                 })
         let viewController =  VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         
+        root.pushViewController(viewController)
+        
         viewModel.back.subscribe(onNext: { [weak self] in
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
