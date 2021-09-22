@@ -115,16 +115,6 @@ fileprivate extension VerifyPasscodeViewController {
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
         signinButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
 
-        //
-        //
-        //
-        //viewModel.outputs.pinText.map { _ -> String? in nil }.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
-        //viewModel.outputs.shake
-        //    .subscribe(onNext: { [unowned self] in
-        //        self.codeLabel.animate([Animation.shake(duration: 0.1)])
-        //        UINotificationFeedbackGenerator().notificationOccurred(.error)
-        //    })
-        //    .disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {
