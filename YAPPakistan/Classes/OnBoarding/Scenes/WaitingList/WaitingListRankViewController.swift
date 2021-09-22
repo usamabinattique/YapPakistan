@@ -35,7 +35,14 @@ class WaitingListRankViewController: UIViewController {
 
     private lazy var placeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
-    private lazy var rankView: RankView = RankView()
+    private lazy var rankView: RankView = {
+        let rankView = RankView()
+        rankView.minimumDigits = 7
+        rankView.boxSpacing = 4
+        rankView.minimumBoxWidth = 40
+        rankView.maximumBoxWidth = 40
+        return rankView
+    }()
 
     private lazy var behindNumberLabel = UIFactory.makeLabel(font: .large, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
