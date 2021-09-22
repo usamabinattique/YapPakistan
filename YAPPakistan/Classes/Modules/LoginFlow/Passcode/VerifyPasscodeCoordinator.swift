@@ -111,8 +111,9 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
         let window = root.view.window ?? UIWindow()
         let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
-        coordinate(to: coordinator).subscribe(onNext: { _ in
-            print("Moved to lite dashboard")
+        coordinate(to: coordinator).subscribe(onNext: { result in
+            self.result.onNext(.cancel)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
 }

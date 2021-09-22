@@ -124,7 +124,8 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
         let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            print("Moved to lite dashboard")
+            self.result.onNext(.cancel)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
 }

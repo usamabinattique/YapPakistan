@@ -15,7 +15,7 @@ public class DemoAppCoordinator: Coordinator<ResultType<Void>> {
     private let window: UIWindow
     private var navigationController: UINavigationController?
     private var shortcutItem: UIApplicationShortcutItem?
-    private let result: Observable<ResultType> = PublishSubject<ResultType<Void>>()
+    private let result = PublishSubject<ResultType<Void>>()
     private let container: DemoApplicationContainer = DemoApplicationContainer(store: CredentialsManager())
     
     public init(window:UIWindow, shortcutItem:UIApplicationShortcutItem?) {
@@ -57,7 +57,8 @@ extension DemoAppCoordinator {
         self.coordinate(to: container.makePKApplication(window: window)).subscribe(onNext: { result in
             switch result {
             case .success:
-                ()
+                self.result.onNext(.success(()))
+                self.result.onCompleted()
             case .cancel:
                 ()
             }
