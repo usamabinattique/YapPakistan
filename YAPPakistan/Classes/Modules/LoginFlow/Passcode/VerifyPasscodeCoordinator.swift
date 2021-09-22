@@ -78,9 +78,13 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
     func optVerification() {
         
         coordinate(to: LoginOPTCoordinator(root: root, xsrfToken: container.xsrfToken, container: container))
-            .subscribe(onNext: { result in
-                print(result)
-            }).disposed(by: rx.disposeBag)
+            .subscribe(onNext: { [weak self] result in switch result {
+                case .cancel:
+                    self?.root.popViewController(animated: true)
+                    self?.result.onNext(.cancel)
+                    self?.result.onCompleted()
+                default: break
+            }}).disposed(by: rx.disposeBag)
     }
     
 }

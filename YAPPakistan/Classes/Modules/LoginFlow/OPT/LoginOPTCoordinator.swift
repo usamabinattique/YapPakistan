@@ -79,8 +79,8 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
             
-            let count = self?.root.viewControllers.count ?? 2
-            self?.root.viewControllers.remove(at: count - 2)
+            //let count = self?.root.viewControllers.count ?? 2
+            //self?.root.viewControllers.remove(at: count - 2)
             
             self?.root.popViewController(animated: true)
         }).disposed(by: rx.disposeBag)
