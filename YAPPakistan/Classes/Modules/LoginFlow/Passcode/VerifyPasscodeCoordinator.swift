@@ -61,6 +61,16 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
             .subscribe(onNext: { [weak self] _ in
                 self?.optVerification()
             }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.result
+            .filter { $0.isSuccess?.session != nil }
+            .map { $0.isSuccess?.session }.unwrap()
+            .withUnretained(self)
+            .subscribe(onNext: {
+                $0.0.result.onNext(.dashboard(session: $0.1))
+                $0.0.result.onCompleted()
+                // root.popViewController(animated: true)
+            }).disposed(by: rx.disposeBag)
 
         return result
     }
