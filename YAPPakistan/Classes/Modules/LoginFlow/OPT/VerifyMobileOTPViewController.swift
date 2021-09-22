@@ -107,7 +107,6 @@ public class VerifyMobileOTPViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        backButton = addBackButton(of: .closeCircled)
         setupViews()
         setupTheme()
         setupConstraints()
@@ -130,6 +129,7 @@ public class VerifyMobileOTPViewController: UIViewController {
 
 extension VerifyMobileOTPViewController {
     func setupViews() {
+        backButton = addBackButton(of: .backEmpty)
         view.addSubview(stackView)
         stackView.addArrangedSubview(logoImageView)
         stackView.addArrangedSubview(headingLabel)
@@ -148,7 +148,7 @@ extension VerifyMobileOTPViewController {
             .bind({ UIColor($0.greyDark) }, to: [ timerLabel.rx.textColor ])
             .bind({ UIColor($0.primary) }, to: [ resendButton.rx.titleColor(for: .normal) ])
             .bind({ UIColor($0.primary) }, to: [ sendButton.rx.enabledBackgroundColor ])
-            .bind({ UIColor($0.greyLight) }, to: [ sendButton.rx.disabledBackgroundColor ])
+            .bind({ UIColor($0.greyDark) }, to: [ sendButton.rx.disabledBackgroundColor ])
             .disposed(by: rx.disposeBag)
         
         guard let backButton = backButton else { return }
@@ -277,11 +277,11 @@ private extension VerifyMobileOTPViewController {
         }.bind(to: logoImageView.rx.image)
         .disposed(by: disposeBag)
         
-        viewModel.outputs.backImage
-        .subscribe(onNext: { [unowned self] image in
-            self.addBackButton(of: image)
-        })
-        .disposed(by: disposeBag)
+        //viewModel.outputs.backImage
+        //.subscribe(onNext: { [unowned self] image in
+        //    self.addBackButton(of: image)
+        //})
+        //.disposed(by: disposeBag)
         
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
         viewModel.outputs.error.map{ _ in }.bind(to: codeTextField.rx.clear).disposed(by: disposeBag)

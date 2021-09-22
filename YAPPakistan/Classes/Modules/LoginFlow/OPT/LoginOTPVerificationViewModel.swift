@@ -52,16 +52,16 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
         timerDisposable = startTimer()
         
         
-        YAPProgressHud.showProgressHud()
-        repository
-            .generateLoginOTP(username: username, passcode: passcode, deviceId: UIDevice.deviceID)
-            .debug()
-            .subscribe( onNext: { _ in YAPProgressHud.hideProgressHud() })
-            .disposed(by: disposeBag)
+        //YAPProgressHud.showProgressHud()
+        //repository
+        //    .generateLoginOTP(username: username, passcode: passcode, deviceId: UIDevice.deviceID)
+        //    .debug()
+        //    .subscribe( onNext: { _ in YAPProgressHud.hideProgressHud() })
+        //    .disposed(by: disposeBag)
     }
 
     override func generateOneTimePasscode(mobileNo: String) {
-        let generateOTPRequest = generateOTPSubject.skip(1)
+        let generateOTPRequest = generateOTPSubject
             .do(onNext: { YAPProgressHud.showProgressHud() })
             .flatMap { [unowned self] _ -> Observable<Event<String?>> in
                 return self.repository.generateLoginOTP(username: self.username, passcode: self.passcode, deviceId: UIDevice.deviceID) }
@@ -78,7 +78,7 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             self.timerDisposable = self.startTimer()
         }).map { _ in true }.bind(to: editingSubject).disposed(by: disposeBag)
         
-        generateOTPRequest.elements().map { _ in "New OTP has been generated successfully" }.bind(to: showAlertSubject).disposed(by: disposeBag)
+        generateOTPRequest.skip(1).elements().map { _ in "New OTP has been generated successfully" }.bind(to: showAlertSubject).disposed(by: disposeBag)
     }
     
     override func verifyOneTimePasscode(mobileNo: String) {
