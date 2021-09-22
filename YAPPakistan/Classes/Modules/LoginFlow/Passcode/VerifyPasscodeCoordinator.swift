@@ -84,13 +84,18 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
     func optVerification() {
         
         coordinate(to: LoginOPTCoordinator(root: root, xsrfToken: container.xsrfToken, container: container))
-            .subscribe(onNext: { [weak self] result in switch result {
+            .subscribe(onNext: { [weak self] result in
+                switch result {
                 case .cancel:
                     self?.root.popViewController(animated: true)
                     self?.result.onNext(.cancel)
                     self?.result.onCompleted()
+                case .logout:
+                    self?.result.onNext(.logout)
+                    self?.result.onCompleted()
                 default: break
-            }}).disposed(by: rx.disposeBag)
+                }
+            }).disposed(by: rx.disposeBag)
     }
 
     func waitingList() {
@@ -112,7 +117,7 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
         let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { result in
-            self.result.onNext(.cancel)
+            self.result.onNext(.logout)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
@@ -158,7 +163,10 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         viewModel.outputs.back.subscribe(onNext: { [unowned self] in
             
             self.coordinate(to: LoginCoordinatorReplaceable(window: window, xsrfToken: container.xsrfToken, container: container))
-                .subscribe()
+                .subscribe(onNext: { result in
+                    self.result.onNext(.logout)
+                    self.result.onCompleted()
+                })
                 .disposed(by: self.rx.disposeBag)
             
             self.result.onNext(.cancel)
@@ -194,13 +202,18 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
     func optVerification() {
         
         coordinate(to: LoginOPTCoordinator(root: root, xsrfToken: container.xsrfToken, container: container))
-            .subscribe(onNext: { [weak self] result in switch result {
+            .subscribe(onNext: { [weak self] result in
+                switch result {
                 case .cancel:
                     self?.root.popViewController(animated: true)
                     self?.result.onNext(.cancel)
                     self?.result.onCompleted()
+                case .logout:
+                    self?.result.onNext(.logout)
+                    self?.result.onCompleted()
                 default: break
-            }}).disposed(by: rx.disposeBag)
+                }
+            }).disposed(by: rx.disposeBag)
     }
 
     func waitingList() {
@@ -222,7 +235,8 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            print("Moved to lite dashboard")
+            self.result.onNext(.cancel)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
 }

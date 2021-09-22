@@ -17,6 +17,7 @@ public enum LoginOPTVerificationResult {
     case blocked
     case dashboard
     case cancel
+    case logout
 }
 
 protocol LoginOPTCoordinatorType: Coordinator<LoginOPTVerificationResult> {
@@ -126,7 +127,7 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
         let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            self.result.onNext(.cancel)
+            self.result.onNext(.logout)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
