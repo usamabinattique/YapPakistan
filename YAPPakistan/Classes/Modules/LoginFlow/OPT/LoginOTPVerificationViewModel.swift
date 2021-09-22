@@ -51,13 +51,6 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
         viewAppearedSubject.filter{ $0 }.bind(to: editingSubject).disposed(by: disposeBag)
         timerDisposable = startTimer()
         
-        
-        //YAPProgressHud.showProgressHud()
-        //repository
-        //    .generateLoginOTP(username: username, passcode: passcode, deviceId: UIDevice.deviceID)
-        //    .debug()
-        //    .subscribe( onNext: { _ in YAPProgressHud.hideProgressHud() })
-        //    .disposed(by: disposeBag)
     }
 
     override func generateOneTimePasscode(mobileNo: String) {

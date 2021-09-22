@@ -14,66 +14,14 @@ import RxTheme
 
 public class VerifyMobileOTPViewController: UIViewController {
     
-    private lazy var logoImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
-    }()
-    
-    private lazy var headingLabel: UILabel = {
-        let label = UILabel()
-        label.font = .title2
-        label.textAlignment = .center
-        label.adjustsFontSizeToFitWidth = true
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var subHeadingLabel: UILabel = {
-        let label = UILabel()
-        label.font = .regular
-        label.textAlignment = .center
-        label.numberOfLines = 2
-        label.lineBreakMode = .byWordWrapping
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var codeTextField: CodeVerificationTextField = {
-        let codeTextField = CodeVerificationTextField()
-        codeTextField.numberOfTextFields = 6
-        codeTextField.delegate = self
-        return codeTextField
-    }()
-    
-    private lazy var timerLabel: UILabel = {
-        let label = UILabel()
-        label.font = .micro
-        label.textAlignment = .center
-        label.text = "5:00"
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    private lazy var resendButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
-        button.titleLabel?.font = .large
-        button.setTitle( "screen_device_registration_otp_button_resend_otp".localized, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
-    private lazy var sendButton: AppRoundedButton = {
-        let button = AppRoundedButton()
-        button.title =  "screen_device_registration_otp_button_send".localized
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    
+    private lazy var logoImageView = UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title2, alignment: .center, adjustFontSize: true)
+    private lazy var subHeadingLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 2, lineBreakMode: .byWordWrapping)
+    private lazy var codeTextField = UIFactory.makeCodeVerificationTextField(fields: 6, delegate: self)
+    private lazy var timerLabel = UIFactory.makeLabel(font: .micro, alignment: .center)
+    private lazy var resendButton = UIFactory.makeButton(with: .large, backgroundColor: .clear)
+    private lazy var sendButton = UIFactory.makeAppRoundedButton(with: .regular)
     private var backButton:UIButton!
-    
     private lazy var stackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 10)
     
     private var themeService: ThemeService<AppTheme>!
@@ -109,6 +57,7 @@ public class VerifyMobileOTPViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupTheme()
+        setupLocalizedStrings()
         setupConstraints()
         bindViews()
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapAction)))
@@ -157,6 +106,12 @@ extension VerifyMobileOTPViewController {
             .disposed(by: rx.disposeBag)
     }
     
+    func setupLocalizedStrings() {
+        resendButton.setTitle("screen_device_registration_otp_button_resend_otp".localized, for: .normal)
+        sendButton.setTitle("screen_device_registration_otp_button_send".localized, for: .normal)
+        timerLabel.text = "5:00"
+    }
+    
     func setupConstraints() {
         
         stackView
@@ -197,10 +152,6 @@ extension VerifyMobileOTPViewController {
         sendButtonBottomConstraint.isActive = true
         
     }
-    
-//    func render() {
-////        logoImageView.roundView()
-//    }
 }
 
 extension VerifyMobileOTPViewController {
@@ -269,19 +220,10 @@ private extension VerifyMobileOTPViewController {
             .map { [unowned self] image, heading -> UIImage? in
                 if image != nil { return image! } else if heading != nil {
                     self.logoImageView.layoutIfNeeded()
-                    // return UIImage.imageSnap(text: heading!.string, color: .appColor(ofType: .greyLight),
-                    //                          textColor: .appColor(ofType: .greyDark), bounds:
-                    //                             self.logoImageView.bounds, contentMode: self.logoImageView.contentMode)
                     return UIImage()
                 } else { return nil }
         }.bind(to: logoImageView.rx.image)
         .disposed(by: disposeBag)
-        
-        //viewModel.outputs.backImage
-        //.subscribe(onNext: { [unowned self] image in
-        //    self.addBackButton(of: image)
-        //})
-        //.disposed(by: disposeBag)
         
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
         viewModel.outputs.error.map{ _ in }.bind(to: codeTextField.rx.clear).disposed(by: disposeBag)
@@ -297,11 +239,7 @@ private extension VerifyMobileOTPViewController {
         let retry = viewModel.outputs.generateOTPError.flatMap {  message -> Observable<Bool> in
             return Observable<Bool>.create { [weak self] observer in
                 let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
-//                alert.addAction(UIAlertAction(title:  "Retry".localized, style: .default, handler: { _ in
-//                    observer.onNext(true)
-//                }))
                 alert.addAction(UIAlertAction(title:  "Ok".localized, style: .cancel, handler: { _ in
-//                    observer.onNext(false)
                 }))
                 self?.present(alert, animated: true, completion: nil)
                 return Disposables.create()
