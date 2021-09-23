@@ -11,7 +11,7 @@ import YAPCore
 
 class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
     private let container: UserSessionContainer
-    private let window: UIWindow?
+    private let window: UIWindow
 
     private let resultSubject = PublishSubject<ResultType<Void>>()
     private var root: UINavigationController!
@@ -29,7 +29,10 @@ class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
         root.navigationBar.isTranslucent = true
         root.navigationBar.isHidden = true
 
-        self.window?.rootViewController = self.root
+        window.rootViewController = root
+        window.makeKeyAndVisible()
+
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
 
         return resultSubject
     }
