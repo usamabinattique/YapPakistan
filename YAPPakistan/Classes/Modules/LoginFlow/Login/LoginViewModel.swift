@@ -153,7 +153,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
             }).subscribe().disposed(by: disposeBag)
 
         let verifyUserRequest = signInSubject.withLatestFrom(mobileNumberSubject.asObservable())
-            .map({ $0?.toSimpleNumber ?? "" })
+            .map({ $0?.toSimplePhoneNumber ?? "" })
             .do(onNext: {[unowned self] _ in self.progressSubject.onNext(true) })
             .flatMapLatest {
                 self.repository.verifyUser(username: $0)
@@ -170,7 +170,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
 
         verifyUserRequest.elements().filter { $0 == true }.withLatestFrom(mobileNumberSubject)
             .do(onNext: { [unowned self] userName in
-                let user = userName?.toSimpleNumber ?? ""
+                let user = userName?.toSimplePhoneNumber ?? ""
                 self.credentialsManager.secureCredentials(username: user, passcode: "")
             })
             .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: false)) }
@@ -225,24 +225,5 @@ private extension LoginViewModel {
             return (formattedNumber, true)
         }
         return (phoneNumber, false)
-    }
-}
-
-
-extension String {
-    var toSimpleNumber:String {
-        return self.replacingOccurrences(of: "+", with: "00").replacingOccurrences(of: " ", with: "")
-    }
-    
-    var toFormatedNumber:String {
-        guard self.count > 2 else { return self }
-        
-        let phoneNumberKit = PhoneNumberKit()
-        if let pNumber = try? phoneNumberKit.parse(self) {
-            let formattedNumber = phoneNumberKit.format(pNumber, toType: .international)
-            return formattedNumber
-        }
-        
-        return self
     }
 }
