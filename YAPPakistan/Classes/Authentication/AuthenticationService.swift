@@ -24,27 +24,32 @@ public protocol AuthenticationServiceType {
 }
 
 public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
-
+    private let apiConfig: APIConfiguration
     private let apiClient: APIClient
     private let authorizationProvider: ServiceAuthorizationProviderType
 
-    public init(apiClient: APIClient = WebClient(), authorizationProvider: ServiceAuthorizationProviderType) {
+    public init(apiConfig: APIConfiguration,
+                apiClient: APIClient,
+                authorizationProvider: ServiceAuthorizationProviderType) {
+        self.apiConfig = apiConfig
         self.apiClient = apiClient
         self.authorizationProvider = authorizationProvider
     }
 
     public func reauthenticate<T: Codable>(token: String) -> Observable<T> {
         let params = ["grant_type": "refresh", "id_token": token]
-        let input: RouterInput<[String: String]> = RouterInput(body: params, query: nil, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)
-        let authRoute = AuthRouter.reauthenticate(input)
-        return request(apiClient: apiClient, route: authRoute)
+        let route = APIEndpoint(.post, apiConfig.authURL, "/oauth/oidc/token", body: params,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return request(apiClient: apiClient, route: route)
     }
 
     public func authenticate<T: Codable>(username: String, password: String, deviceId: String) -> Observable<T> {
         let params = ["client_id": username, "client_secret": password, "grant_type": "client_credentials", "device_id": deviceId] //, "isInternalUser":"true"]
-        let input: RouterInput<[String: String]> = RouterInput(body: params, query: nil, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)
-        let authRoute = AuthRouter.authenticate(input)
-        return request(apiClient: apiClient, route: authRoute)
+        let route = APIEndpoint(.post, apiConfig.authURL, "/oauth/oidc/login-token", body: params,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return request(apiClient: apiClient, route: route)
     }
 
     public func saveProfile<T: Codable>(firstName: String,
@@ -57,16 +62,18 @@ public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
 
     func switchToken<T: Codable>(uuid: String) -> Observable<T> {
         let params = ["account_uuid": uuid]
-        let input: RouterInput<Int> = RouterInput(body: nil, query: params, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)
-        let authRoute = AuthRouter.switchToken(input)
-        return request(apiClient: apiClient, route: authRoute)
+        let route = APIEndpoint(.post, apiConfig.authURL, "/oauth/oidc/switch-profile", body: params,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return request(apiClient: apiClient, route: route)
     }
 
     public func logout<T: Codable>(deviceUUID: String) -> Observable<T> {
         let params = ["uuid": deviceUUID]
-        let input: RouterInput<Int> = RouterInput(body: nil, query: params, pathVariables: nil, headers: authorizationProvider.authorizationHeaders)
-        let authRoute = AuthRouter.logout(input)
-        return request(apiClient: apiClient, route: authRoute)
+        let route = APIEndpoint(.post, apiConfig.authURL, "/oauth/oidc/logout", body: params,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return request(apiClient: apiClient, route: route)
     }
 }
 

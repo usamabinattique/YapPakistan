@@ -26,6 +26,10 @@ public struct APIConfiguration {
         }
     }
 
+    public var authURL: URL {
+        return baseURL.appendingPathComponent("/auth")
+    }
+
     public var messagesURL: URL {
         return baseURL.appendingPathComponent("/messages")
     }

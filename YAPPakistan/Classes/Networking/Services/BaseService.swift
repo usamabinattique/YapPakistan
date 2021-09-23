@@ -16,13 +16,13 @@ public class BaseService: Service {
     /// Private
     private let disposeBag = DisposeBag()
     /// Internal
-    let apiClient: APIClient
     let apiConfig: APIConfiguration
+    let apiClient: APIClient
     let authorizationProvider: ServiceAuthorizationProviderType
 
     // MARK: INITIALIZER
-    public init(apiClient: APIClient = WebClient(),
-                apiConfig: APIConfiguration,
+    public init(apiConfig: APIConfiguration,
+                apiClient: APIClient,
                 authorizationProvider: ServiceAuthorizationProviderType) {
         self.apiClient = apiClient
         self.apiConfig = apiConfig

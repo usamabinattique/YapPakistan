@@ -17,7 +17,7 @@ public final class UserSessionContainer {
         self.parent = parent
         self.session = session
 
-        let authService = AuthenticationService(authorizationProvider: session)
+        let authService = parent.makeAuthenticationService(authorizationProvider: session)
         let customersService = parent.makeCustomersService(authorizationProvider: session)
         let repository = AccountRepository(authenticationService: authService, customerService: customersService)
 

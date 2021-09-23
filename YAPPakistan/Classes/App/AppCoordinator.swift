@@ -16,7 +16,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     private var shortcutItem: UIApplicationShortcutItem?
     private let result = PublishSubject<ResultType<Void>>()
     private let container: YAPPakistanMainContainer
-    let reposiotry = SplashRepository(service: XSRFService())
+    let reposiotry: SplashRepository
 
     private let userSession = PublishSubject<ResultType<Void>>()
     private var xsrfToken = ""
@@ -28,6 +28,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
         self.window = window
         self.shortcutItem = shortcutItem
         self.container = container
+        self.reposiotry = container.makeSplashRepository()
         super.init()
     }
 
