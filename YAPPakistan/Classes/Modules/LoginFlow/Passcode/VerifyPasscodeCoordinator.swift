@@ -239,7 +239,7 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            self.result.onNext(.cancel)
+            self.result.onNext(.logout)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
