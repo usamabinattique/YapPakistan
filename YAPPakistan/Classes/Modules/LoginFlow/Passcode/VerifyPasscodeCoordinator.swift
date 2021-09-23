@@ -112,7 +112,8 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
         let coordinator = ReachedQueueTopCoordinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            print("Moved to reached top of the queue")
+            self.result.onNext(.logout)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
 

@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 
 protocol ReachedQueueTopViewModelInput {
-    var completeVerification: AnyObserver<Void> { get }
+    var completeVerificationObserver: AnyObserver<Void> { get }
 }
 
 protocol ReachedQueueTopViewModelOutput {
@@ -17,6 +17,7 @@ protocol ReachedQueueTopViewModelOutput {
     var subHeading: Observable<String> { get }
     var infoText: Observable<String> { get }
     var verificationButtonTitle: Observable<String> { get }
+    var completeVerification: Observable<Void> { get }
 }
 
 protocol ReachedQueueTopViewModelType {
@@ -41,7 +42,7 @@ class ReachedQueueTopViewModel: ReachedQueueTopViewModelInput, ReachedQueueTopVi
 
     // MARK: Inputs
 
-    var completeVerification: AnyObserver<Void> { completeVerificationSubject.asObserver() }
+    var completeVerificationObserver: AnyObserver<Void> { completeVerificationSubject.asObserver() }
 
     // MARK: Outputs
 
@@ -49,6 +50,7 @@ class ReachedQueueTopViewModel: ReachedQueueTopViewModelInput, ReachedQueueTopVi
     var subHeading: Observable<String> { subHeadingSubject.asObservable() }
     var infoText: Observable<String> { infoTextSubject.asObservable() }
     var verificationButtonTitle: Observable<String> { verificationButtonTitleSubject.asObservable() }
+    var completeVerification: Observable<Void> { completeVerificationSubject.asObservable() }
 
     init(accountProvider: AccountProvider) {
         accountProvider.currentAccount.subscribe(onNext: { account in
