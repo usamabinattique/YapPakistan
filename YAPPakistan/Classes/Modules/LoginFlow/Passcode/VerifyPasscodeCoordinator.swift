@@ -42,7 +42,7 @@ class PasscodeCoordinator: Coordinator<PasscodeVerificationResult>, PasscodeCoor
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
         
         let viewModel = container.makeVerifyPasscodeViewModel(repository: container.makeLoginRepository())
-        let loginViewController = container.makePINViewController(viewModel: viewModel)
+        let loginViewController = container.makeVerifyPasscodeViewController(viewModel: viewModel)
 
         root.navigationBar.isTranslucent = true
         root.navigationBar.isHidden = false

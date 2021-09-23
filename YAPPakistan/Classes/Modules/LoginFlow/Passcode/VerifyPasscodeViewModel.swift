@@ -111,7 +111,7 @@ fileprivate extension VerifyPasscodeViewModel {
         let loginRequest = actionSubject.withLatestFrom(pinText)
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .flatMap { pinCode in
-                self.repository.authenticate(username: "00923331599998", password: pinCode ?? "", deviceId: UIDevice.deviceID)
+                self.repository.authenticate(username: "00923331599998", password: pinCode ?? "", deviceId: UIDevice.deviceId)
             }
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
@@ -139,11 +139,6 @@ fileprivate extension VerifyPasscodeViewModel {
             .bind(to: errorSubject)
             .disposed(by: disposeBag)
     }
-}
-
-//MARK: Helpers
-fileprivate extension UIDevice {
-    static var deviceID:String { UIDevice.current.identifierForVendor?.uuidString ?? "" }
 }
 
 fileprivate extension VerifyPasscodeViewModel {

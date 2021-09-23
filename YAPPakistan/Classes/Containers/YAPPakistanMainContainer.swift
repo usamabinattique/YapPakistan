@@ -142,7 +142,7 @@ extension YAPPakistanMainContainer {
 }
 
 extension YAPPakistanMainContainer {
-    func makeBiometricsService() -> BiometricsManager {
+    func makeBiometricsManager() -> BiometricsManager {
         return BiometricsManager()
     }
     
@@ -150,7 +150,7 @@ extension YAPPakistanMainContainer {
         return VerifyPasscodeViewModel(repository: repository)
     }
     
-    func makePINViewController(viewModel:VerifyPasscodeViewModelType,
+    func makeVerifyPasscodeViewController(viewModel:VerifyPasscodeViewModelType,
                                biometricsService: BiometricsManager = BiometricsManager(),
                                isCreatePasscode:Bool = false) -> VerifyPasscodeViewController {
         return VerifyPasscodeViewController(themeService: themeService,
