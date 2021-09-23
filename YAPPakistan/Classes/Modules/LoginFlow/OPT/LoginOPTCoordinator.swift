@@ -109,8 +109,12 @@ class LoginOPTCoordinator: Coordinator<LoginOPTVerificationResult>, LoginOPTCoor
     }
 
     func waitingList() {
-        let viewController = container.makeWaitingListController(session: sessionContainer.session)
-        root.viewControllers = [viewController]
+        let window = root.view.window ?? UIWindow()
+        let coordinator = WaitingListRankCoordinator(container: sessionContainer, window: window)
+
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            print("Moved to on login OTP")
+        }).disposed(by: rx.disposeBag)
     }
 
     func reachedQueueTop() {
