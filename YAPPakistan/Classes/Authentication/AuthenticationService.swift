@@ -62,16 +62,18 @@ public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
 
     func switchToken<T: Codable>(uuid: String) -> Observable<T> {
         let params = ["account_uuid": uuid]
-        let route = APIEndpoint(.post, apiConfig.authURL, "/oauth/oidc/switch-profile", body: params,
-                                headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.post, apiConfig.authURL, "/oauth/oidc/switch-profile",
+                                        query: params,
+                                        headers: authorizationProvider.authorizationHeaders)
 
         return request(apiClient: apiClient, route: route)
     }
 
     public func logout<T: Codable>(deviceUUID: String) -> Observable<T> {
         let params = ["uuid": deviceUUID]
-        let route = APIEndpoint(.post, apiConfig.authURL, "/oauth/oidc/logout", body: params,
-                                headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.post, apiConfig.authURL, "/oauth/oidc/logout",
+                                        query: params,
+                                        headers: authorizationProvider.authorizationHeaders)
 
         return request(apiClient: apiClient, route: route)
     }
