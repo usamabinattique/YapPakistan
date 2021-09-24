@@ -16,7 +16,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     private var shortcutItem: UIApplicationShortcutItem?
     private let result = PublishSubject<ResultType<Void>>()
     private let container: YAPPakistanMainContainer
-    let reposiotry = SplashRepository(service: XSRFService())
+    let reposiotry: SplashRepository
 
     private let userSession = PublishSubject<ResultType<Void>>()
     private var xsrfToken = ""
@@ -27,6 +27,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
         self.window = window
         self.shortcutItem = shortcutItem
         self.container = container
+        self.reposiotry = container.makeSplashRepository()
         super.init()
     }
 
@@ -58,19 +59,22 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
 
     func accountSelection() { // -> Observable<ResultType<Void>> {
         coordinate(to: AccountSelectionCoordinatorReplaceable(container: container, xsrfToken: xsrfToken, window: window)).subscribe { result in
-            print(result)
+            self.result.onNext(.success(()))
+            self.result.onCompleted()
         }.disposed(by: rx.disposeBag)
     }
     
     func verifyPasscode() {
         coordinate(to: PasscodeCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
-            print(result)
+            self.result.onNext(.success(()))
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
     
     func loginScreen() {
         coordinate(to: LoginCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
-            print(result)
+            self.result.onNext(.success(()))
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
     

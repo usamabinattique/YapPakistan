@@ -39,7 +39,7 @@ public protocol Convertible {
 
 public extension Convertible {
 
-    func urlRequest<T: Codable>(with url: URL = BaseURL, path: String, method: YAPHTTPMethod, requestType: RequestType = .json, input: RouterInput<T>?) throws -> URLRequest {
+    func urlRequest<T: Codable>(with url: URL, path: String, method: YAPHTTPMethod, requestType: RequestType = .json, input: RouterInput<T>?) throws -> URLRequest {
 
         let url = try constructAPIUrl(with: url, path: path, input: input)
         var urlRequest = URLRequest(url: url)

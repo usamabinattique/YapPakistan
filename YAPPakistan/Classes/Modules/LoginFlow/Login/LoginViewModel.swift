@@ -142,7 +142,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
             .map { $0.0.formatted ? AppRoundedTextFieldValidation.valid:.neutral }
             .bind(to: validationSubject)
             .disposed(by: disposeBag)
-        
+
         Observable.combineLatest(selectNumber, textWillChangeSubject)
             .do(onNext: {
                 let ctext = $0.1.currentText?.replacingOccurrences(of: " ", with: "") ?? ""

@@ -35,21 +35,11 @@ public class PINViewController: UIViewController {
     private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
     private lazy var codeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, charSpace: 10)
     private lazy var errorLabel: UILabel = UIFactory.makeLabel(font:.regular, alignment: .center)
-    private lazy var pinKeyboard: PasscodeKeyboard = {
-        let keyPad = PasscodeKeyboard()
-    
-        var imageName: String = (BiometryType.faceID == BiometricsManager().deviceBiometryType) ?
-            "icon_face_id":"icon_touch_id"
-        keyPad.biomatryButton.setImage(UIImage(named: imageName, in: .yapPakistan, compatibleWith: nil), for: .normal)
-
-        keyPad.backButton.setImage(UIImage(named: "icon_delete_purple",
-                                           in: .yapPakistan,
-                                           compatibleWith: nil)?.asTemplate,
-                                   for: .normal)
-
-        return keyPad
-    }()
-
+    private lazy var pinKeyboard = UIFactory.makePasscodeKeyboard(
+        font: .title2,
+        biomatryImage: UIImage(named:  (BiometryType.faceID == BiometricsManager().deviceBiometryType) ? "icon_face_id":"icon_touch_id", in: .yapPakistan),
+        backImage: UIImage(named: "icon_delete_purple", in: .yapPakistan)
+    )
     // with: .greyDark
     private lazy var termsAndCondtionsLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     private lazy var termsAndCondtionsButton = UIFactory.makeButton(with: .micro, title: "screen_create_passcode_display_button_terms_and_conditions".localized)

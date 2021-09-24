@@ -10,7 +10,7 @@ import Foundation
 import RxSwift
 import RxSwiftExt
 import Alamofire
-
+/*
 final class YAPB2BRequestInterceptor: Alamofire.RequestInterceptor {
 
     private let authorizationProvider: ServiceAuthorizationProviderType
@@ -56,3 +56,4 @@ final class YAPB2BRequestInterceptor: Alamofire.RequestInterceptor {
 
     }
 }
+*/

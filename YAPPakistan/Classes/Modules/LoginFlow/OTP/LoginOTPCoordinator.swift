@@ -17,6 +17,7 @@ public enum LoginOTPVerificationResult {
     case blocked
     case dashboard
     case cancel
+    case logout
 }
 
 protocol LoginOTPCoordinatorType: Coordinator<LoginOTPVerificationResult> {
@@ -69,11 +70,11 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
         let viewController = container.makeVerifyMobileOTPViewController(viewModel: viewModel)
 
         root.pushViewController(viewController)
-        
+
         viewModel.back.subscribe(onNext: { [weak self] in
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
-            
+
             self?.root.popViewController(animated: true)
         }).disposed(by: rx.disposeBag)
 
@@ -97,8 +98,12 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
     }
 
     func waitingList() {
-        let viewController = container.makeWaitingListController(session: sessionContainer.session)
-        root.viewControllers = [viewController]
+        let window = root.view.window ?? UIWindow()
+        let coordinator = WaitingListRankCoordinator(container: sessionContainer, window: window)
+
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            print("Moved to on login OTP")
+        }).disposed(by: rx.disposeBag)
     }
 
     func reachedQueueTop() {
@@ -106,7 +111,8 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
         let coordinator = ReachedQueueTopCoordinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            print("Moved to reached top of the queue")
+            self.result.onNext(.logout)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
 
@@ -115,7 +121,8 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
         let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            print("Moved to lite dashboard")
+            self.result.onNext(.logout)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
 }

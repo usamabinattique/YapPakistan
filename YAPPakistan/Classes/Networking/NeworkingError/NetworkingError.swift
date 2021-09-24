@@ -89,5 +89,5 @@ public struct NetworkingAuthError: Codable {
     public let error: AuthErrorDetail
 }
 
-public var baseUrl = BaseURL
-public var adminBaseUrl = baseURLAdmin
+// public var baseUrl = BaseURL
+// public var adminBaseUrl = baseURLAdmin

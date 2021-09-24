@@ -33,6 +33,8 @@ public protocol CustomerServiceType {
 
     func fetchAccounts<T: Codable>() -> Observable<T>
 
+    func assignIBAN<T: Codable>(countryCode: String, mobileNo: String) -> Observable<T>
+
     func saveInvite<T: Codable>( inviterCustomerId: String,
                                  referralDate: String) -> Observable<T>
 
@@ -95,6 +97,17 @@ public class CustomersService: BaseService, CustomerServiceType {
 
     public func fetchAccounts<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/accounts", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func assignIBAN<T: Codable>(countryCode: String, mobileNo: String) -> Observable<T> {
+        let body = [
+            "countryCode": countryCode,
+            "mobileNo": mobileNo
+        ]
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/v2/profile", body: body,
+                                headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }

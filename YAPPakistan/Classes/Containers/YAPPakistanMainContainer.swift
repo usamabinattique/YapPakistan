@@ -38,7 +38,7 @@ public final class YAPPakistanMainContainer {
     }
 
     func makeAPIClient() -> APIClient {
-        return WebClient()
+        return WebClient(apiConfig: makeAPIConfiguration())
     }
 
     func makeAPIConfiguration() -> APIConfiguration {
@@ -49,36 +49,49 @@ public final class YAPPakistanMainContainer {
         return GuestServiceAuthorization(xsrf: xsrfToken)
     }
 
+    func makeXSRFService() -> XSRFService {
+        return XSRFService(apiConfig: makeAPIConfiguration(),
+                           apiClient: makeAPIClient())
+    }
+
     func makeCustomersService(xsrfToken: String) -> CustomersService {
-        return CustomersService(apiClient: makeAPIClient(),
-                                apiConfig: makeAPIConfiguration(),
+        return CustomersService(apiConfig: makeAPIConfiguration(),
+                                apiClient: makeAPIClient(),
                                 authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
     }
 
     func makeCustomersService(authorizationProvider: ServiceAuthorizationProviderType) -> CustomersService {
-        return CustomersService(apiClient: makeAPIClient(),
-                                apiConfig: makeAPIConfiguration(),
+        return CustomersService(apiConfig: makeAPIConfiguration(),
+                                apiClient: makeAPIClient(),
                                 authorizationProvider: authorizationProvider)
     }
 
     func makeMessagesService(xsrfToken: String) -> MessagesService {
-        return MessagesService(apiClient: makeAPIClient(),
-                               apiConfig: makeAPIConfiguration(),
+        return MessagesService(apiConfig: makeAPIConfiguration(),
+                               apiClient: makeAPIClient(),
                                authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
     }
 
     func makeMessagesService(authorizationProvider: ServiceAuthorizationProviderType) -> MessagesService {
-        return MessagesService(apiClient: makeAPIClient(),
-                               apiConfig: makeAPIConfiguration(),
+        return MessagesService(apiConfig: makeAPIConfiguration(),
+                               apiClient: makeAPIClient(),
                                authorizationProvider: authorizationProvider)
     }
-    
+
     func makeAuthenticationService(xsrfToken: String) -> AuthenticationService {
-        return AuthenticationService(apiClient: makeAPIClient(), authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+        return AuthenticationService(apiConfig: makeAPIConfiguration(),
+                                     apiClient: makeAPIClient(),
+                                     authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
     }
 
     func makeAuthenticationService(authorizationProvider: ServiceAuthorizationProviderType) -> AuthenticationService {
-        return AuthenticationService(apiClient: makeAPIClient(), authorizationProvider: authorizationProvider)
+        return AuthenticationService(apiConfig: makeAPIConfiguration(),
+                                     apiClient: makeAPIClient(),
+                                     authorizationProvider: authorizationProvider)
+    }
+
+    func makeSplashRepository() -> SplashRepository {
+        return SplashRepository(service: makeXSRFService())
     }
 
     func makeOnBoardingRepository(xsrfToken: String) -> OnBoardingRepository {
@@ -113,6 +126,7 @@ public final class YAPPakistanMainContainer {
 
     public func makeDummyViewController(xsrfToken: String) -> UIViewController {
         let customerService = CustomersService(apiConfig: makeAPIConfiguration(),
+                                               apiClient: makeAPIClient(),
                                                authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
         return UIViewController()
     }
@@ -185,7 +199,7 @@ extension YAPPakistanMainContainer {
 
         return LoginOTPVerificationViewModel(action: .deviceVerification,
                                                       heading: headingKey.localized,
-                                                      subheading: String(format: otpMessageKey, userName.toFormatedPhoneNumber),
+                                                      subheading: String(format: otpMessageKey.localized, userName.toFormatedPhoneNumber),
                                                       image: logo,
                                                       repository: otpRepository,
                                                       username: userName,

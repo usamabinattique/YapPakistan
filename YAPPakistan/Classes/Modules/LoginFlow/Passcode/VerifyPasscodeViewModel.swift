@@ -15,6 +15,7 @@ public enum PasscodeVerificationResult {
     case blocked
     case dashboard
     case cancel
+    case logout
 }
 
 struct VerificationResponse {

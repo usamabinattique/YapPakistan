@@ -1,8 +1,8 @@
 //
-//  PasscodeCoordinatorPushable.swift
-//  Alamofire
+//  PasscodeCoordinatorReplaceable.swift
+//  YAPPakistan
 //
-//  Created by Sarmad on 20/09/2021.
+//  Created by Sarmad on 23/09/2021.
 //
 
 import Foundation
@@ -10,27 +10,19 @@ import RxSwift
 import YAPCore
 import UIKit
 
-protocol PasscodeCoordinatorType: Coordinator<PasscodeVerificationResult> {
-
-    var root: UINavigationController! { get }
-    var container:YAPPakistanMainContainer! { get }
-    var result: PublishSubject<PasscodeVerificationResult> { get }
-
-}
-
-class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, PasscodeCoordinatorType {
-    
+class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, PasscodeCoordinatorType {
+    var window: UIWindow!
     var root: UINavigationController!
     var container: YAPPakistanMainContainer!
     var result = PublishSubject<PasscodeVerificationResult>()
 
     private var sessionContainer: UserSessionContainer!
 
-    init(root: UINavigationController,
+    init(window: UIWindow,
          xsrfToken: String,
          container: YAPPakistanMainContainer
     ){
-        self.root = root
+        self.window = window
         self.container = container
         self.container.xsrfToken = xsrfToken
     }
@@ -41,17 +33,28 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
             self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
             accountProvider = self.sessionContainer.accountProvider
         }
+        let loginViewController = container.makeVerifyPasscodeViewController(viewModel: viewModel)
 
-        let verifyPasscodeViewController = container.makeVerifyPasscodeViewController(viewModel: viewModel)
-
+        root = UINavigationController(rootViewController: loginViewController)
+        root.interactivePopGestureRecognizer?.isEnabled = false
+        root.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        root.navigationBar.shadowImage = UIImage()
         root.navigationBar.isTranslucent = true
         root.navigationBar.isHidden = false
-        root.pushViewController(verifyPasscodeViewController, animated: true)
-        
-        viewModel.outputs.back.subscribe(onNext: { [weak self] in
-            self?.root.popViewController(animated: true)
-            self?.result.onNext(.cancel)
-            self?.result.onCompleted()
+
+        self.window.rootViewController = self.root
+
+        viewModel.outputs.back.subscribe(onNext: { [unowned self] in
+
+            self.coordinate(to: LoginCoordinatorReplaceable(window: window, xsrfToken: container.xsrfToken, container: container))
+                .subscribe(onNext: { result in
+                    self.result.onNext(.logout)
+                    self.result.onCompleted()
+                })
+                .disposed(by: self.rx.disposeBag)
+
+            self.result.onNext(.cancel)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
 
         viewModel.outputs.result
@@ -59,9 +62,9 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
             .subscribe(onNext: { [weak self] _ in
                 self?.optVerification()
             }).disposed(by: rx.disposeBag)
-        
+
         viewModel.outputs.loginResult
-            .subscribe(onNext: { result in 
+            .subscribe(onNext: { result in
                 switch result {
                 case .waiting:
                     self.waitingList()
@@ -81,20 +84,29 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
     }
 
     func optVerification() {
-        
+
         coordinate(to: LoginOTPCoordinator(root: root, xsrfToken: container.xsrfToken, container: container))
-            .subscribe(onNext: { [weak self] result in switch result {
+            .subscribe(onNext: { [weak self] result in
+                switch result {
                 case .cancel:
                     self?.root.popViewController(animated: true)
                     self?.result.onNext(.cancel)
                     self?.result.onCompleted()
+                case .logout:
+                    self?.result.onNext(.logout)
+                    self?.result.onCompleted()
                 default: break
-            }}).disposed(by: rx.disposeBag)
+                }
+            }).disposed(by: rx.disposeBag)
     }
 
     func waitingList() {
-        let viewController = container.makeWaitingListController(session: sessionContainer.session)
-        root.viewControllers = [viewController]
+        let window = root.view.window ?? UIWindow()
+        let coordinator = WaitingListRankCoordinator(container: sessionContainer, window: window)
+
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            print("Moved to on verify passcode")
+        }).disposed(by: rx.disposeBag)
     }
 
     func reachedQueueTop() {
@@ -102,7 +114,8 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
         let coordinator = ReachedQueueTopCoordinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            print("Moved to reached top of the queue")
+            self.result.onNext(.logout)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
 
@@ -111,7 +124,8 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
         let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
-            print("Moved to lite dashboard")
+            self.result.onNext(.logout)
+            self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }
 }
