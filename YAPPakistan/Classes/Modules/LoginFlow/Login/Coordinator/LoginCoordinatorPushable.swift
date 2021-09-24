@@ -46,10 +46,10 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
 
         let logInResult = viewModel.outputs.result.share()
 
-        logInResult.filter({ $0.isCancel }).subscribe(onNext: { [unowned self] _ in
-            self.root.popViewController(animated: true)
-            self.result.onNext(.cancel)
-            self.result.onCompleted()
+        logInResult.filter({ $0.isCancel }).subscribe(onNext: { [weak self] _ in
+            self?.root.popViewController(animated: true)
+            self?.result.onNext(.cancel)
+            self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
 
         logInResult.filter({ $0.isSuccess != nil })
