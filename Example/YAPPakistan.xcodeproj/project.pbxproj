@@ -17,6 +17,15 @@
 		0D51951226E3A4B600B81639 /* YAPPakistan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951126E3A4B600B81639 /* YAPPakistan.swift */; };
 		0D51951626E3A5B000B81639 /* DemoAppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */; };
 		0D51951C26E3A78500B81639 /* DemoApplicationContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */; };
+		0DEEE11E26F9C54B00BABB41 /* FeatureFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE11D26F9C54B00BABB41 /* FeatureFlag.swift */; };
+		0DEEE12226F9CC4500BABB41 /* DefaultFeatureFlags.json in Resources */ = {isa = PBXBuildFile; fileRef = 0DEEE12126F9CC4500BABB41 /* DefaultFeatureFlags.json */; };
+		0DEEE12926FC635000BABB41 /* FeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE12826FC635000BABB41 /* FeatureFlagProvider.swift */; };
+		0DEEE12F26FC637600BABB41 /* LocalFeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE12E26FC637600BABB41 /* LocalFeatureFlagProvider.swift */; };
+		0DEEE13326FC639100BABB41 /* RemoteFeatureFlagLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE13226FC639100BABB41 /* RemoteFeatureFlagLoader.swift */; };
+		0DEEE13726FC63BB00BABB41 /* RemoteFallbackToLocalFeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE13626FC63BB00BABB41 /* RemoteFallbackToLocalFeatureFlagProvider.swift */; };
+		0DEEE13B26FC63D600BABB41 /* FeatureFlagResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE13A26FC63D600BABB41 /* FeatureFlagResponse.swift */; };
+		0DEEE19526FDBC5800BABB41 /* FeatureFlagFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19426FDBC5800BABB41 /* FeatureFlagFileManager.swift */; };
+		0DEEE19926FDE28100BABB41 /* DefaultFeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */; };
 		5680335A26E7E36D00D5C183 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
@@ -50,6 +59,15 @@
 		0D51951126E3A4B600B81639 /* YAPPakistan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YAPPakistan.swift; sourceTree = "<group>"; };
 		0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoAppCoordinator.swift; sourceTree = "<group>"; };
 		0D51951B26E3A78500B81639 /* DemoApplicationContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoApplicationContainer.swift; sourceTree = "<group>"; };
+		0DEEE11D26F9C54B00BABB41 /* FeatureFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlag.swift; sourceTree = "<group>"; };
+		0DEEE12126F9CC4500BABB41 /* DefaultFeatureFlags.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = DefaultFeatureFlags.json; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.json; };
+		0DEEE12826FC635000BABB41 /* FeatureFlagProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagProvider.swift; sourceTree = "<group>"; };
+		0DEEE12E26FC637600BABB41 /* LocalFeatureFlagProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFeatureFlagProvider.swift; sourceTree = "<group>"; };
+		0DEEE13226FC639100BABB41 /* RemoteFeatureFlagLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeatureFlagLoader.swift; sourceTree = "<group>"; };
+		0DEEE13626FC63BB00BABB41 /* RemoteFallbackToLocalFeatureFlagProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFallbackToLocalFeatureFlagProvider.swift; sourceTree = "<group>"; };
+		0DEEE13A26FC63D600BABB41 /* FeatureFlagResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagResponse.swift; sourceTree = "<group>"; };
+		0DEEE19426FDBC5800BABB41 /* FeatureFlagFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagFileManager.swift; sourceTree = "<group>"; };
+		0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultFeatureFlagProvider.swift; sourceTree = "<group>"; };
 		104557EF81E3374A8AEBE811 /* Pods-YAPPakistan_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YAPPakistan_Tests.debug.xcconfig"; path = "Target Support Files/Pods-YAPPakistan_Tests/Pods-YAPPakistan_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		2F1F7EC3BC2E8660EC391263 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		4E2F3A4320599AD33E9B3A27 /* YAPPakistan.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = YAPPakistan.podspec; path = ../YAPPakistan.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -121,6 +139,22 @@
 			path = KeychainManager;
 			sourceTree = "<group>";
 		};
+		0DEEE12726FC633300BABB41 /* FeatureFlag */ = {
+			isa = PBXGroup;
+			children = (
+				0DEEE12126F9CC4500BABB41 /* DefaultFeatureFlags.json */,
+				0DEEE12826FC635000BABB41 /* FeatureFlagProvider.swift */,
+				0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */,
+				0DEEE12E26FC637600BABB41 /* LocalFeatureFlagProvider.swift */,
+				0DEEE13226FC639100BABB41 /* RemoteFeatureFlagLoader.swift */,
+				0DEEE13626FC63BB00BABB41 /* RemoteFallbackToLocalFeatureFlagProvider.swift */,
+				0DEEE13A26FC63D600BABB41 /* FeatureFlagResponse.swift */,
+				0DEEE11D26F9C54B00BABB41 /* FeatureFlag.swift */,
+				0DEEE19426FDBC5800BABB41 /* FeatureFlagFileManager.swift */,
+			);
+			path = FeatureFlag;
+			sourceTree = "<group>";
+		};
 		332A5B5475A8B5F85A285429 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -186,6 +220,7 @@
 		607FACD21AFB9204008FA782 /* Example for YAPPakistan */ = {
 			isa = PBXGroup;
 			children = (
+				0DEEE12726FC633300BABB41 /* FeatureFlag */,
 				5680335726E7E32900D5C183 /* App */,
 				0D51948126E1ECC300B81639 /* Modules */,
 				5680335926E7E34500D5C183 /* YAPPakistan */,
@@ -332,6 +367,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				0DEEE12226F9CC4500BABB41 /* DefaultFeatureFlags.json in Resources */,
 				0D51950826E1FA5000B81639 /* LaunchScreen.storyboard in Resources */,
 				607FACDB1AFB9204008FA782 /* (null) in Resources */,
 				607FACE01AFB9204008FA782 /* (null) in Resources */,
@@ -471,17 +507,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0DEEE13B26FC63D600BABB41 /* FeatureFlagResponse.swift in Sources */,
 				0D51950E26E39F1B00B81639 /* CredentialsManager.swift in Sources */,
 				7D7BA3FD26EF65590007074C /* AppEnvironment.swift in Sources */,
 				0D51949F26E1ED3800B81639 /* SplashViewController.swift in Sources */,
 				0D51951226E3A4B600B81639 /* YAPPakistan.swift in Sources */,
 				0D51951C26E3A78500B81639 /* DemoApplicationContainer.swift in Sources */,
+				0DEEE12F26FC637600BABB41 /* LocalFeatureFlagProvider.swift in Sources */,
+				0DEEE19926FDE28100BABB41 /* DefaultFeatureFlagProvider.swift in Sources */,
+				0DEEE13726FC63BB00BABB41 /* RemoteFallbackToLocalFeatureFlagProvider.swift in Sources */,
 				5680335A26E7E36D00D5C183 /* ViewController.swift in Sources */,
 				0D5194A026E1ED3800B81639 /* SplashCoordinator.swift in Sources */,
+				0DEEE13326FC639100BABB41 /* RemoteFeatureFlagLoader.swift in Sources */,
 				0D5194C126E1F3FC00B81639 /* KeychainItemAccessibility.swift in Sources */,
+				0DEEE19526FDBC5800BABB41 /* FeatureFlagFileManager.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				0D51951626E3A5B000B81639 /* DemoAppCoordinator.swift in Sources */,
+				0DEEE11E26F9C54B00BABB41 /* FeatureFlag.swift in Sources */,
 				7D7A880526F45FD1004CAEE3 /* AppConstants.swift in Sources */,
+				0DEEE12926FC635000BABB41 /* FeatureFlagProvider.swift in Sources */,
 				0D5194A126E1ED3800B81639 /* SplashViewModel.swift in Sources */,
 				0D5194DA26E1F3FF00B81639 /* KeychainManager.swift in Sources */,
 			);

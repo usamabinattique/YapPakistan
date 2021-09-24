@@ -14,7 +14,7 @@ extension Observable {
     }
 
     func logServerError(message: String) -> Observable<Element> {
-        return self.do(onError: { (error) in
+        return self.do(onError: { error in
             print("\(message)")
             print("Error: \(error.localizedDescription). \n")
         })
