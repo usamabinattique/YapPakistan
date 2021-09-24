@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RxTheme
 import YAPCore
+import PhoneNumberKit
 
 public struct YAPPakistanConfiguration {
     let environment: AppEnvironment
@@ -80,13 +81,6 @@ public final class YAPPakistanMainContainer {
         return AuthenticationService(apiClient: makeAPIClient(), authorizationProvider: authorizationProvider)
     }
 
-    func makeReachedQueueTopViewController() -> ReachedQueueTopViewController {
-        let viewModel = ReachedQueueTopViewModel()
-        let viewController = ReachedQueueTopViewController(themeService: themeService, viewModel: viewModel)
-
-        return viewController
-    }
-
     func makeOnBoardingRepository(xsrfToken: String) -> OnBoardingRepository {
         let customersService = makeCustomersService(xsrfToken: xsrfToken)
         let messagesService = makeMessagesService(xsrfToken: xsrfToken)
@@ -102,10 +96,11 @@ public final class YAPPakistanMainContainer {
         let enterEmailViewModel = EnterEmailViewModel(credentialsStore: credentialsStore,
                                                       referralManager: referralManager,
                                                       sessionProvider: sessionProvider,
-                                                      onBoardingRepository: onBoardingRepository, user: user) { session, onBoardingRepository, accountProvider in
+                                                      onBoardingRepository: onBoardingRepository, user: user) { session, accountProvider, onBoardingRepository, demographicsRepository in
             let sessionContainer = UserSessionContainer(parent: self, session: session)
-            onBoardingRepository = sessionContainer.makeOnBoardingRepository()
             accountProvider = sessionContainer.accountProvider
+            onBoardingRepository = sessionContainer.makeOnBoardingRepository()
+            demographicsRepository = sessionContainer.makeDemographicsRepository()
         }
 
         return EnterEmailViewController(themeService: themeService, viewModel: enterEmailViewModel)
@@ -132,11 +127,11 @@ extension YAPPakistanMainContainer {
 
     func makeLoginViewModel(loginRepository:LoginRepository,
                             user:OnBoardingUser = OnBoardingUser(accountType: .b2cAccount)) -> LoginViewModelType {
-        return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore, user: user)
+        return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore, phoneNumberKit: PhoneNumberKit())
     }
 
-    func makeLoginViewController(viewModel:LoginViewModelType, isBackButton: Bool = true) -> LoginViewController {
-        return LoginViewController(themeService: self.themeService, viewModel: viewModel, isBackButton: isBackButton)
+    func makeLoginViewController(viewModel:LoginViewModelType) -> LoginViewController {
+        return LoginViewController(themeService: self.themeService, viewModel: viewModel)
     }
     
 }
@@ -145,9 +140,13 @@ extension YAPPakistanMainContainer {
     func makeBiometricsManager() -> BiometricsManager {
         return BiometricsManager()
     }
-    
-    func makeVerifyPasscodeViewModel(repository: LoginRepository) -> VerifyPasscodeViewModelType {
-        return VerifyPasscodeViewModel(repository: repository)
+
+    func makeVerifyPasscodeViewModel(onLogin: @escaping VerifyPasscodeViewModelType.OnLoginClosure) -> VerifyPasscodeViewModelType {
+        return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "",
+                                       repository: makeLoginRepository(),
+                                       credentialsManager: credentialsStore,
+                                       sessionCreator: SessionProvider(xsrfToken: xsrfToken),
+                                       onLogin: onLogin)
     }
     
     func makeVerifyPasscodeViewController(viewModel:VerifyPasscodeViewModelType,
@@ -158,7 +157,44 @@ extension YAPPakistanMainContainer {
                                             biometricsService: biometricsService)
     }
     
-    func makePasscodeCoordinator(root:UINavigationController) -> PasscodeCoordinator  {
-        PasscodeCoordinator(root: root, xsrfToken: xsrfToken, container: self)
+    func makePasscodeCoordinator(root:UINavigationController) -> PasscodeCoordinatorPushable  {
+        PasscodeCoordinatorPushable(root: root, xsrfToken: xsrfToken, container: self)
+    }
+}
+
+
+extension YAPPakistanMainContainer {
+
+    func makeOTPRepository(messageService:MessagesService, customerService:CustomersService) -> OTPRepositoryType {
+        return OTPRepository(messageService: messageService, customerService: customerService)
+    }
+
+    func makeSessionProvider(xsrfToken:String) -> SessionProviderType {
+        SessionProvider(xsrfToken: xsrfToken)
+    }
+
+    func makeLoginOTPVerificationViewModel(otpRepository:OTPRepositoryType,
+                                           sessionProvider:SessionProviderType,
+                                           userName:String,
+                                           passcode:String,
+                                           logo:UIImage? = UIImage(named: "icon_app_logo", in: .yapPakistan),
+                                           headingKey:String = "screen_device_registration_otp_display_header_message",
+                                           otpMessageKey:String = "screen_device_registration_otp_display_givn_text_message",
+                                           onLogin:@escaping (Session, inout AccountProvider?, inout DemographicsRepositoryType?) -> Void
+    ) -> LoginOTPVerificationViewModel {
+
+        return LoginOTPVerificationViewModel(action: .deviceVerification,
+                                                      heading: headingKey.localized,
+                                                      subheading: String(format: otpMessageKey, userName.toFormatedPhoneNumber),
+                                                      image: logo,
+                                                      repository: otpRepository,
+                                                      username: userName,
+                                                      passcode: passcode,
+                                                      sessionCreator: sessionProvider,
+                                                      onLogin: onLogin )
+    }
+
+    func makeVerifyMobileOTPViewController(viewModel: LoginOTPVerificationViewModel) -> VerifyMobileOTPViewController {
+        return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }

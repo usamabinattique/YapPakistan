@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import RxSwiftExt
+import YAPCore
 
 enum NavigationType {
     case login

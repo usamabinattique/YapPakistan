@@ -12,11 +12,17 @@ import PhoneNumberKit
 import YAPComponents
 import YAPCore
 import PhoneNumberKit
+import YAPCore
+
+struct RequestResponse {
+    var userName:String
+    var isBlocked:Bool
+}
 
 protocol LoginViewModelInputs {
     var signInObserver: AnyObserver<Void> { get }
     var signUpObserver: AnyObserver<Void> { get }
-    var backObserver: AnyObserver<ResultType<Void>> { get }
+    var backObserver: AnyObserver<ResultType<RequestResponse>> { get }
     var textWillChangeObserver: AnyObserver<TextChange> { get }
 
     var mobileNumberObserver: AnyObserver<String?> { get }
@@ -29,7 +35,9 @@ protocol LoginViewModelOutputs {
 
     var signIn: Observable<Void> { get }
     var signUp: Observable<Void> { get }
-    var result:Observable<ResultType<Void>> { get }
+    
+    var result:Observable<ResultType<RequestResponse>> { get }
+    
     var flag: Observable<String> { get }
     var shouldChange: Bool { get }
     var progress: Observable<Bool> { get }
@@ -54,7 +62,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     // inputs
     var signInObserver: AnyObserver<Void> { return signInSubject.asObserver() }
     var signUpObserver: AnyObserver<Void> { return signUpSubject.asObserver() }
-    var backObserver: AnyObserver<ResultType<Void>> { return resultSubject.asObserver() }
+    var backObserver: AnyObserver<ResultType<RequestResponse>> { return resultSubject.asObserver() }
     var textWillChangeObserver: AnyObserver<TextChange> { return textWillChangeSubject.asObserver() }
     var mobileNumberObserver: AnyObserver<String?> { return mobileNumberSubject.asObserver() }
     var rememberMeObserver: AnyObserver<Bool> { return rememberMeSubject.asObserver() }
@@ -65,7 +73,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     var signUp: Observable<Void> { return signUpSubject.asObservable() }
     var flag: Observable<String> {return flagSubject.asObservable()}
     var shouldChange: Bool { return shouldChangeSub }
-    var result: Observable<ResultType<Void>> { return resultSubject.asObservable() }
+    var result: Observable<ResultType<RequestResponse>> { return resultSubject.asObservable() }
     var progress: Observable<Bool> { return progressSubject.asObservable() }
     var validationResult: Observable<AppRoundedTextFieldValidation> { validationSubject.asObservable() }
     var localizedText: Observable<LocalizedText> { return localizedTextSubject.asObservable() }
@@ -79,7 +87,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     private let signInSubject = PublishSubject<Void>()
     private let signUpSubject = PublishSubject<Void>()
     private let flagSubject = BehaviorSubject<String>(value: "")
-    private let resultSubject = PublishSubject<ResultType<Void>>()
+    private let resultSubject = PublishSubject<ResultType<RequestResponse>>()
     private let progressSubject = PublishSubject<Bool>()
     private let validationSubject = BehaviorSubject<AppRoundedTextFieldValidation>(value: .neutral)
     private let localizedTextSubject:BehaviorSubject<LocalizedText>
@@ -89,22 +97,21 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     private let isFirstResponderSubject: BehaviorSubject<Bool> = BehaviorSubject(value: false)
 
     // properties
-    private let disposeBag: DisposeBag = DisposeBag()
     private var countryList = [(name: String, code: String, callingCode: String, flag: String)]()
-    private var user: OnBoardingUser!
-    private let phoneNumberKit = PhoneNumberKit()
-    private var isFormatted = false
     private var currentItem = 0
+    
+    private let disposeBag: DisposeBag = DisposeBag()
     private let credentialsManager: CredentialsStoreType
-    private let repository: LoginRepository
+    private let repository: LoginRepositoryType
+    private let phoneNumberKit:PhoneNumberKit
 
-    init( repository: LoginRepository,
+    init( repository: LoginRepositoryType,
           credentialsManager: CredentialsStoreType,
-          user: OnBoardingUser) {
+          phoneNumberKit:PhoneNumberKit ) {
 
         self.repository = repository
         self.credentialsManager = credentialsManager
-        self.user = user
+        self.phoneNumberKit = phoneNumberKit
 
         self.localizedTextSubject = BehaviorSubject(value:(
             heading: "screen_sign_in_display_text_heading_text".localized,
@@ -117,17 +124,13 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
         countryList.append(("Pakistan", "PK", "+92 ", "PK"))
 
         flagSubject.onNext(countryList.first?.flag ?? "")
-        // mobileNumberSubject.onNext(countryList.first?.callingCode ?? "+92 ")
+        //mobileNumberSubject.onNext(countryList.first?.callingCode ?? "+92 ")
 
         let selectNumber = mobileNumberSubject
             .distinctUntilChanged()
             .debug("HHHH", trimOutput: true)
-            .do(onNext: {[unowned self] in self.user.mobileNo.formattedValue = $0 }
-        ).map { [unowned self] in
-            self.formatePhoneNumber($0 ?? "")
-        }.do(onNext: { [unowned self] in
-                self.isFormatted = $0.formatted }
-        ).share()
+            .map { [unowned self] in self.formatePhoneNumber($0 ?? "")}
+            .share()
 
         selectNumber
             .map { $0.phoneNumber }
@@ -135,27 +138,26 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
                 DispatchQueue.main.async { self.mobileNumberSubject.onNext(string) }
             }).disposed(by: disposeBag)
 
-        selectNumber.map { [unowned self] _ in
-            self.isFormatted ? AppRoundedTextFieldValidation.valid:.neutral
-        }.merge(with: isFirstResponderSubject.distinctUntilChanged().map { [unowned self] _ in
-            self.isFormatted ? AppRoundedTextFieldValidation.valid:.neutral
-        }).bind(to: validationSubject)
-        .disposed(by: disposeBag)
-
-        textWillChangeSubject.do(onNext: { [unowned self] (text, range, currentText) in
-            let currentText = (currentText ?? "").replacingOccurrences(of: " ", with: "")
-            self.shouldChangeSub = (range.location > self.countryList[self.currentItem].callingCode.count-1
-                                        && (currentText.count + text.count < 14 || text.count == 0))
-                && (!self.isFormatted || text.count == 0)
-        }).subscribe().disposed(by: disposeBag)
+        Observable.combineLatest(selectNumber, isFirstResponderSubject)
+            .map { $0.0.formatted ? AppRoundedTextFieldValidation.valid:.neutral }
+            .bind(to: validationSubject)
+            .disposed(by: disposeBag)
+        
+        Observable.combineLatest(selectNumber, textWillChangeSubject)
+            .do(onNext: {
+                let ctext = $0.1.currentText?.replacingOccurrences(of: " ", with: "") ?? ""
+                let res1 = $0.1.range.location > self.countryList[self.currentItem].callingCode.count - 1
+                let res2 = (ctext.count + $0.1.text.count < 14 || $0.1.text.count == 0)
+                let res3 = (!$0.0.formatted || $0.1.text.count == 0)
+                self.shouldChangeSub =  (res1 && res2) && res3
+            }).subscribe().disposed(by: disposeBag)
 
         let verifyUserRequest = signInSubject.withLatestFrom(mobileNumberSubject.asObservable())
-            .map({ ($0 ?? "")
-                    .replacingOccurrences(of: "+", with: "00")
-                    .replacingOccurrences(of: " ", with: "")
-            })
+            .map({ $0?.toSimplePhoneNumber ?? "" })
             .do(onNext: {[unowned self] _ in self.progressSubject.onNext(true) })
-            .flatMapLatest { self.repository.verifyUser(username: $0) }
+            .flatMapLatest {
+                self.repository.verifyUser(username: $0)
+            }
             .debug("verifyUser", trimOutput: false)
             .do(onNext: {[unowned self] _ in self.progressSubject.onNext(false) })
             .share()
@@ -167,12 +169,11 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
             .disposed(by: disposeBag)
 
         verifyUserRequest.elements().filter { $0 == true }.withLatestFrom(mobileNumberSubject)
-            .do(onNext: {
-                if credentialsManager.remembersId ?? true {
-                    _ = credentialsManager.secure(passcode: $0 ?? "")
-                }
+            .do(onNext: { [unowned self] userName in
+                let user = userName?.toSimplePhoneNumber ?? ""
+                self.credentialsManager.secureCredentials(username: user, passcode: "")
             })
-            .map { _ in ResultType.success(()) }
+            .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: false)) }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
 
@@ -185,15 +186,14 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
 
         apiError.filter { [unowned self] error in self.isErrorUserBlocked(error) }
             .withLatestFrom(mobileNumberSubject)
-            .map { _ in ResultType.success(()) }
+            .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: true)) }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
 
         rememberUsername(credentialsManager)
 
-        guard let username = credentialsManager.getUsername() else { return }
-
-        mobileNumberSubject.onNext(username)
+        //guard let username = credentialsManager.getUsername() else { return }
+        //mobileNumberSubject.onNext(username)
 
         guard credentialsManager.isCredentialsAvailable else {
             _ = credentialsManager.clearUsername()
@@ -213,12 +213,7 @@ private extension LoginViewModel {
     func rememberUsername(_ credentialsManager: CredentialsStoreType) {
         rememberMeSubject.onNext(credentialsManager.remembersId ?? true)
         rememberMeSubject
-            .do(onNext: {
-                if !$0 {
-                    // TODO: the method is need to be implemented
-                     _ = credentialsManager.clearUsername()
-                }
-            })
+            .do(onNext: { if !$0 { _ = credentialsManager.clearUsername() } })
             .subscribe(onNext: { credentialsManager.setRemembersId($0) })
             .disposed(by: disposeBag)
     }
@@ -232,4 +227,3 @@ private extension LoginViewModel {
         return (phoneNumber, false)
     }
 }
-

@@ -31,14 +31,21 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        reposiotry.fetchXSRFToken().subscribe(onNext: { _ in
+        reposiotry.fetchXSRFToken().subscribe(onNext: { [unowned self] _ in
             self.xsrfToken = HTTPCookieStorage.shared.cookies?.filter({ $0.name == "XSRF-TOKEN" }).first?.value ?? ""
-            self.accountSelection()
-        }).disposed(by: rx.disposeBag)
 
-        // self.showDummyController()
-        // self.accountSelection()
-        // self.onboarding()
+        if AppSettings.isAppRunFirstTime {
+            self.accountSelection()
+            _ = container.credentialsStore.setRemembersId(false)
+            _ = container.credentialsStore.clearUsername()
+            AppSettings.isAppRunFirstTime = false
+        } else if container.credentialsStore.credentialsAvailable() {
+            self.verifyPasscode()
+        } else {
+            self.loginScreen()
+        }
+            
+        }).disposed(by: rx.disposeBag)
 
         return result
     }
@@ -54,34 +61,17 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
             print(result)
         }.disposed(by: rx.disposeBag)
     }
-}
-
-// MARK: NAVIGATIONS
-extension AppCoordinator {
-    func showWelcomeScreen(authorization: GuestServiceAuthorization) {
-        /* self.coordinate(to: WelcomeScreenCoordinator(window: self.window))
-            .subscribe(onNext: { [unowned self] result in
-                switch result {
-                case .onboarding:
-                    startB2BRegistration(authorization: authorization)
-                case .login:
-                    showLoginScreen(authorization: authorization)
-                }
-            })
-            .disposed(by: rx.disposeBag) */
+    
+    func verifyPasscode() {
+        coordinate(to: PasscodeCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
+            print(result)
+        }).disposed(by: rx.disposeBag)
     }
-}
-
-// MARK: HELPERS
-fileprivate extension AppCoordinator {
-//    func splashDidComplete(shortcutItem: UIApplicationShortcutItem?)  -> Observable<ResultType<NavigationType>> {
-//         return self.coordinate(
-//            to: SplashCoordinator (
-//                window: window,
-//                shortcutItem: shortcutItem,
-//                store: CredentialsManager(),
-//                repository: SplashRepository(service: XSRFService() )
-//            )
-//        )
-//    }
+    
+    func loginScreen() {
+        coordinate(to: LoginCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
+            print(result)
+        }).disposed(by: rx.disposeBag)
+    }
+    
 }

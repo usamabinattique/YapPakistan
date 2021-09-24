@@ -9,7 +9,14 @@
 import Foundation
 import RxSwift
 
-public class LoginRepository {
+public protocol LoginRepositoryType: AnyObject {
+    func verifyUser(username: String) -> Observable<Event<Bool>>
+    func verifyPasscode(passcode: String) -> Observable<Event<String?>>
+    func authenticate(username: String, password: String, deviceId: String) -> Observable<Event<[String: String?]?>>
+    func generateLoginOTP(username: String, passcode: String, deviceId: String) -> Observable<Event<String?>>
+}
+
+public class LoginRepository: LoginRepositoryType {
     
     private let customerService: CustomersService
     private let authenticationService: AuthenticationServiceType

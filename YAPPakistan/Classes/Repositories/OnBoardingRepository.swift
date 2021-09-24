@@ -8,7 +8,26 @@
 import Foundation
 import RxSwift
 
-class OnBoardingRepository {
+protocol OnBoardingRepositoryType {
+    func signUpOTP(countryCode: String, mobileNo: String, accountType: String) -> Observable<Event<String?>>
+    func resendOTP(countryCode: String, mobileNo: String, accountType: String) -> Observable<Event<String?>>
+    func verifyOTP(countryCode: String, mobileNo: String, otp: String) -> Observable<Event<OTPData>>
+    func signUpEmail(email: String, accountType: String, otpToken: String) -> Observable<Event<String?>>
+    func saveProfile(countryCode: String,
+                     mobileNo: String,
+                     passcode: String,
+                     firstName: String,
+                     lastName: String,
+                     email: String,
+                     token: String,
+                     whiteListed: Bool,
+                     accountType: String) -> Observable<Event<String>>
+    func saveInvite(inviterCustomerId: String, referralDate: String) -> Observable<Event<String?>>
+    func getWaitingListRanking() -> Observable<Event<WaitingListRank?>>
+    func saveReferralInvitation(inviterCustomerId: String, referralDate: String) -> Observable<Event<String?>>
+}
+
+class OnBoardingRepository:OnBoardingRepositoryType {
     private let customersService: CustomersService
     private let messagesService: MessagesService
 

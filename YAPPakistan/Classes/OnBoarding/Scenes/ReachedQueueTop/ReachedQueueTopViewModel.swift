@@ -50,7 +50,10 @@ class ReachedQueueTopViewModel: ReachedQueueTopViewModelInput, ReachedQueueTopVi
     var infoText: Observable<String> { infoTextSubject.asObservable() }
     var verificationButtonTitle: Observable<String> { verificationButtonTitleSubject.asObservable() }
 
-    init() {
-        headingSubject.onNext(String(format: "screen_reached_queue_top_heading_text".localized, "Said"))
+    init(accountProvider: AccountProvider) {
+        accountProvider.currentAccount.subscribe(onNext: { account in
+            let name = account?.customer.firstName ?? ""
+            self.headingSubject.onNext(String(format: "screen_reached_queue_top_heading_text".localized, name))
+        }).disposed(by: disposeBag)
     }
 }

@@ -109,6 +109,7 @@ fileprivate extension VerifyPasscodeViewController {
         viewModel.outputs.pinValid.bind(to: signinButton.rx.isEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
+        viewModel.outputs.shake.subscribe(onNext: { [weak self] in self?.codeLabel.shake() }).disposed(by: rx.disposeBag)
         
         backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)

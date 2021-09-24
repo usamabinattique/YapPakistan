@@ -25,7 +25,14 @@ public final class UserSessionContainer {
     }
 
     // MARK: Repositories
-    
+
+    func makeDemographicsRepository() -> DemographicsRepositoryType {
+        let customersService = parent.makeCustomersService(authorizationProvider: session)
+        let repository = DemographicsRepository(customersService: customersService)
+
+        return repository
+    }
+
     func makeOnBoardingRepository() -> OnBoardingRepository {
         let customersService = parent.makeCustomersService(authorizationProvider: session)
         let messagesService = parent.makeMessagesService(authorizationProvider: session)
@@ -52,6 +59,14 @@ public final class UserSessionContainer {
         let viewModel = WaitingListRankViewModel(accountProvider: accountProvider, referralManager: parent.referralManager, onBoardingRepository: onBoardingRepository)
 
         return WaitingListRankViewController(themeService: parent.themeService, viewModel: viewModel)
+    }
+
+    func makeReachedQueueTopViewController() -> ReachedQueueTopViewController {
+        let viewModel = ReachedQueueTopViewModel(accountProvider: accountProvider)
+        let viewController = ReachedQueueTopViewController(themeService: parent.themeService,
+                                                           viewModel: viewModel)
+
+        return viewController
     }
 
     func makeLiteDashboardViewController() -> LiteDashboardViewController {

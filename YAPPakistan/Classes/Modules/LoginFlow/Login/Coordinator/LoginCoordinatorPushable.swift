@@ -1,9 +1,8 @@
 //
-//  LoginCoordinator.swift
-//  App
+//  LoginCoordinatorPushable.swift
+//  YAPPakistan
 //
-//  Created by Wajahat Hassan on 21/06/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Sarmad on 23/09/2021.
 //
 
 import Foundation
@@ -44,23 +43,28 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
                 //Account selection flow
             }
         }).disposed(by: rx.disposeBag)
-        
+
         let logInResult = viewModel.outputs.result.share()
-        
+
         logInResult.filter({ $0.isCancel }).subscribe(onNext: { [unowned self] _ in
             self.root.popViewController(animated: true)
             self.result.onNext(.cancel)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
-        
-        logInResult.filter({ $0.isSuccess != nil }).subscribe(onNext: {[weak self] _ in
-            self?.passcode()
-        }).disposed(by: rx.disposeBag)
+
+        logInResult.filter({ $0.isSuccess != nil })
+            .map({$0.isSuccess})
+            .unwrap()
+            .subscribe(onNext: { [weak self] result in
+                //self?.passcode()
+                self?.navigateToPasscode(username: result.userName, isUserBlocked: result.isBlocked)
+            })
+            .disposed(by: rx.disposeBag)
 
         return result
     }
-    
-    func passcode() {
+
+    func navigateToPasscode(username: String, isUserBlocked: Bool) {
         coordinate(to: container.makePasscodeCoordinator(root: root)).subscribe( onNext: { result in
             print("Moved to passcode screen")
         }).disposed(by: rx.disposeBag)
