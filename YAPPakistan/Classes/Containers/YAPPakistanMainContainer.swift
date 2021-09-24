@@ -192,8 +192,8 @@ extension YAPPakistanMainContainer {
                                            userName:String,
                                            passcode:String,
                                            logo:UIImage? = UIImage(named: "icon_app_logo", in: .yapPakistan),
-                                           headingKey:String = "screen_device_registration_otp_display_header_message",
-                                           otpMessageKey:String = "screen_device_registration_otp_display_givn_text_message",
+                                           headingKey:String = "screen_device_registration_otp_display_header_message".localized,
+                                           otpMessageKey:String = "screen_device_registration_otp_display_givn_text_message".localized,
                                            onLogin:@escaping (Session, inout AccountProvider?, inout DemographicsRepositoryType?) -> Void
     ) -> LoginOTPVerificationViewModel {
 
