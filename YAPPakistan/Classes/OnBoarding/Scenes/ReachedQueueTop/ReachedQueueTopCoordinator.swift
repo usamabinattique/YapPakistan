@@ -16,6 +16,8 @@ class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
     private let resultSubject = PublishSubject<ResultType<Void>>()
     private var root: UINavigationController!
 
+    private let disposeBag = DisposeBag()
+
     init(container: UserSessionContainer, window: UIWindow) {
         self.container = container
         self.window = window
@@ -23,6 +25,7 @@ class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         let viewController = container.makeReachedQueueTopViewController()
+        let viewModel = viewController.viewModel
 
         root = UINavigationController(rootViewController: viewController)
         root.interactivePopGestureRecognizer?.isEnabled = false
@@ -34,6 +37,20 @@ class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
 
         UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
 
+        viewModel?.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
+            self?.navigateToDashboard()
+        }).disposed(by: disposeBag)
+        
         return resultSubject
+    }
+
+    private func navigateToDashboard() {
+        let window = root.view.window ?? UIWindow()
+        let coordinator = LiteDashboardCoodinator(container: container, window: window)
+
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            self.resultSubject.onNext(ResultType.success(()))
+            self.resultSubject.onCompleted()
+        }).disposed(by: rx.disposeBag)
     }
 }

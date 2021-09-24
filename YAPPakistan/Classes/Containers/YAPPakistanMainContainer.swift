@@ -151,7 +151,7 @@ extension YAPPakistanMainContainer {
 }
 
 extension YAPPakistanMainContainer {
-    func makeBiometricsService() -> BiometricsManager {
+    func makeBiometricsManager() -> BiometricsManager {
         return BiometricsManager()
     }
 
@@ -163,7 +163,7 @@ extension YAPPakistanMainContainer {
                                        onLogin: onLogin)
     }
     
-    func makePINViewController(viewModel:VerifyPasscodeViewModelType,
+    func makeVerifyPasscodeViewController(viewModel:VerifyPasscodeViewModelType,
                                biometricsService: BiometricsManager = BiometricsManager(),
                                isCreatePasscode:Bool = false) -> VerifyPasscodeViewController {
         return VerifyPasscodeViewController(themeService: themeService,
@@ -171,7 +171,44 @@ extension YAPPakistanMainContainer {
                                             biometricsService: biometricsService)
     }
     
-    func makePasscodeCoordinator(root:UINavigationController) -> PasscodeCoordinator  {
-        PasscodeCoordinator(root: root, xsrfToken: xsrfToken, container: self)
+    func makePasscodeCoordinator(root:UINavigationController) -> PasscodeCoordinatorPushable  {
+        PasscodeCoordinatorPushable(root: root, xsrfToken: xsrfToken, container: self)
+    }
+}
+
+
+extension YAPPakistanMainContainer {
+
+    func makeOTPRepository(messageService:MessagesService, customerService:CustomersService) -> OTPRepositoryType {
+        return OTPRepository(messageService: messageService, customerService: customerService)
+    }
+
+    func makeSessionProvider(xsrfToken:String) -> SessionProviderType {
+        SessionProvider(xsrfToken: xsrfToken)
+    }
+
+    func makeLoginOTPVerificationViewModel(otpRepository:OTPRepositoryType,
+                                           sessionProvider:SessionProviderType,
+                                           userName:String,
+                                           passcode:String,
+                                           logo:UIImage? = UIImage(named: "icon_app_logo", in: .yapPakistan),
+                                           headingKey:String = "screen_device_registration_otp_display_header_message",
+                                           otpMessageKey:String = "screen_device_registration_otp_display_givn_text_message",
+                                           onLogin:@escaping (Session, inout AccountProvider?, inout DemographicsRepositoryType?) -> Void
+    ) -> LoginOTPVerificationViewModel {
+
+        return LoginOTPVerificationViewModel(action: .deviceVerification,
+                                                      heading: headingKey.localized,
+                                                      subheading: String(format: otpMessageKey, userName.toFormatedPhoneNumber),
+                                                      image: logo,
+                                                      repository: otpRepository,
+                                                      username: userName,
+                                                      passcode: passcode,
+                                                      sessionCreator: sessionProvider,
+                                                      onLogin: onLogin )
+    }
+
+    func makeVerifyMobileOTPViewController(viewModel: LoginOTPVerificationViewModel) -> VerifyMobileOTPViewController {
+        return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }

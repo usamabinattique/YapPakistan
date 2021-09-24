@@ -72,7 +72,8 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             self.timerDisposable = self.startTimer()
         }).map { _ in true }.bind(to: editingSubject).disposed(by: disposeBag)
         
-        generateOTPRequest.skip(1).elements().map { _ in "New OTP has been generated successfully" }.bind(to: showAlertSubject).disposed(by: disposeBag)
+        generateOTPRequest.skip(1).elements().map { _ in "screen_login_otp_genration_success".localized }
+            .bind(to: showAlertSubject).disposed(by: disposeBag)
     }
     
     override func verifyOneTimePasscode(mobileNo: String) {

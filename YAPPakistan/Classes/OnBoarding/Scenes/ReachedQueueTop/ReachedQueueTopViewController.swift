@@ -43,7 +43,7 @@ class ReachedQueueTopViewController: UIViewController {
     private var themeService: ThemeService<AppTheme>!
 
     private let disposeBag = DisposeBag()
-    private var viewModel: ReachedQueueTopViewModelType!
+    private(set) var viewModel: ReachedQueueTopViewModelType!
 
     // MARK: Initialization
 
@@ -167,6 +167,10 @@ class ReachedQueueTopViewController: UIViewController {
 
         viewModel.outputs.verificationButtonTitle
             .bind(to: completeVerificationButton.rx.title())
+            .disposed(by: disposeBag)
+
+        completeVerificationButton.rx.tap
+            .bind(to: viewModel.inputs.completeVerificationObserver)
             .disposed(by: disposeBag)
     }
 }

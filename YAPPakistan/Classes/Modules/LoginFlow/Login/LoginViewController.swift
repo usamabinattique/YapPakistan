@@ -14,7 +14,7 @@ import RxTheme
 
 class LoginViewController: UIViewController {
 
-    private var backButton:UIButton?
+    private var backButton: UIButton?
     private lazy var topImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var logo = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var headingLabel = UIFactory.makeLabel(font: .large, alignment: .center)
@@ -30,17 +30,17 @@ class LoginViewController: UIViewController {
                                                           spacing: 10 )
     private lazy var mobileNumber = UIFactory.makeAppRoundedTextField( with: .regular,
                                                                        errorFont: .micro,
-                                                                       displaysIcon:true,
-                                                                       returnKeyType:.send,
-                                                                       autocorrectionType:.no,
-                                                                       keyboardType:.asciiCapableNumberPad,
+                                                                       displaysIcon: true,
+                                                                       returnKeyType: .send,
+                                                                       autocorrectionType: .no,
+                                                                       keyboardType: .asciiCapableNumberPad,
                                                                        delegate: self )
 
     private var signInButtonBottomConstraint: NSLayoutConstraint!
     private var viewModel: LoginViewModelType!
-    private var themeService:ThemeService<AppTheme>!
+    private var themeService: ThemeService<AppTheme>!
 
-    init(themeService:ThemeService<AppTheme>, viewModel: LoginViewModelType) {
+    init(themeService: ThemeService<AppTheme>, viewModel: LoginViewModelType) {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
@@ -70,7 +70,7 @@ class LoginViewController: UIViewController {
         removeForKeyboardNotifications()
         mobileNumber.resignFirstResponder()
     }
-}
+ }
 
 fileprivate extension LoginViewController {
 
@@ -89,15 +89,15 @@ fileprivate extension LoginViewController {
     }
 
     func setupResources() {
-        logo.image = UIImage(named: "icon_app_logo", in:.yapPakistan)
+        logo.image = UIImage(named: "icon_app_logo", in: .yapPakistan)
         mobileNumber.validInputImage = UIImage(named: "icon_check", in: .yapPakistan)
         mobileNumber.invalidInputImage = UIImage(named: "icon_invalid", in: .yapPakistan)
         topImage.image = UIImage(named: "image_backgound", in: .yapPakistan)
-        rememberIDSwitch.onImage = UIImage(named: "icon_check", in:.yapPakistan)?.asTemplate
+        rememberIDSwitch.onImage = UIImage(named: "icon_check", in: .yapPakistan)?.asTemplate
     }
 
     func setupLocalizedStrings() {
-        viewModel.outputs.localizedText.withUnretained(self).subscribe { (self, string) in
+        viewModel.outputs.localizedText.withUnretained(self).subscribe { `self`, string in
             self.headingLabel.text = string.heading
             self.rememberIDLabel.text = string.remember
             self.signUpLabel.text = string.create
@@ -140,7 +140,7 @@ fileprivate extension LoginViewController {
         viewModel.outputs.isFirstResponder.bind(to: mobileNumber.rx.isFirstResponder).disposed(by: rx.disposeBag)
 
         viewModel.outputs.flag
-            .map({UIImage(named: $0, in: .yapPakistan)})
+            .map({ UIImage(named: $0, in: .yapPakistan) })
             .bind(to: mobileNumber.leftIcon.rx.image(for: .normal))
             .disposed(by: rx.disposeBag)
 
@@ -149,7 +149,7 @@ fileprivate extension LoginViewController {
             .disposed(by: rx.disposeBag)
 
         let validation = viewModel.outputs.validationResult.share()
-        validation.map{$0 == .valid}
+        validation.map{ $0 == .valid }
             .bind(to: signInButton.rx.isEnabled)
             .disposed(by: rx.disposeBag)
         validation
@@ -168,12 +168,12 @@ fileprivate extension LoginViewController {
             .bind(to: viewModel.inputs.signUpObserver)
             .disposed(by: rx.disposeBag)
         backButton?.rx.tap
-            .map{.cancel}.bind(to: viewModel.inputs.backObserver)
+            .map{ .cancel }.bind(to: viewModel.inputs.backObserver)
             .disposed(by: rx.disposeBag)
 
         // MARK: Other Bindings
         view.rx.tapGesture()
-            .map({_ in true})
+            .map({ _ in true })
             .bind(to: view.rx.endEditting)
             .disposed(by: rx.disposeBag)
     }
@@ -185,7 +185,7 @@ fileprivate extension LoginViewController {
         logo.alignEdge(.bottom, withView: topImage, constant: 3)
             .centerHorizontallyInSuperview()
 
-        headingLabel.toBottomOf(logo ,constant: 32)
+        headingLabel.toBottomOf(logo, constant: 32)
             .alignEdgesWithSuperview([.left, .right], constant: 19)
             .centerHorizontallyInSuperview()
 
@@ -211,12 +211,14 @@ fileprivate extension LoginViewController {
             .centerHorizontallyInSuperview()
             .toBottomOf(signInButton, constant: 20, assignTo: &signInButtonBottomConstraint)
     }
-}
+ }
 
-//MARK: Keyboard Notifications
+// MARK: Keyboard Notifications
 extension LoginViewController {
     @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        if let keyboardSize = (
+            notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        )?.cgRectValue {
             let keyboardHeight = keyboardSize.height
             let signUpLableOrigin = view.bounds.size.height - signUpContainer.frame.origin.y
             signInButtonBottomConstraint.constant = ((keyboardHeight - signUpLableOrigin) + 20)
@@ -232,23 +234,31 @@ extension LoginViewController {
             self.view.layoutIfNeeded()
         }
     }
-}
+ }
 
-//MARK:- other private tasks
+// MARK: - other private tasks
 fileprivate extension LoginViewController {
     func removeForKeyboardNotifications() {
         NotificationCenter.default.removeObserver(self)
     }
 
     func registerForKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShow),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillHide),
+                                               name: UIResponder.keyboardWillHideNotification,
+                                               object: nil)
     }
-}
+ }
 
-extension LoginViewController:UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+extension LoginViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField,
+                   shouldChangeCharactersIn range: NSRange,
+                   replacementString string: String) -> Bool {
         viewModel.inputs.textWillChangeObserver.onNext((string, range, textField.text))
         return viewModel.outputs.shouldChange
     }
-}
+ }

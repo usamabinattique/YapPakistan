@@ -88,7 +88,11 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
          credentialStore: CredentialsStoreType,
          repository: LoginRepository) {
         self.biometrySuject = BehaviorSubject(value: biometricsManager.isBiometryEnabled(for: ""))
-        self.biometrySupportedSuject = BehaviorSubject(value: biometricsManager.isBiometrySupported)
+        self.biometrySupportedSuject = BehaviorSubject(value: false)
+        //
+        // FIXME: Enable this after implementing biometrics.
+        //      self.biometrySupportedSuject = BehaviorSubject(value: biometricsManager.isBiometrySupported)
+        //
         self.biometryTitleSuject = BehaviorSubject(value: biometricsManager.deviceBiometryType.title)
 
         let logoutRequest = logoutSubject
