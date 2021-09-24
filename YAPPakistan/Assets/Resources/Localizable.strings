@@ -148,6 +148,11 @@
 "screen_email_verification_b2b_display_text_email_sent" = "you should now receive an email on";
 "screen_email_verification_b2b_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
 
+//MARK: Enter passcode screen
+"screen_enter_passcode_display_text_title" = "Enter your passcode to access your account​";
+"screen_create_passcode_button_signin" = "Sign in";
+"screen_create_passcode_button_forgot_passcode" = "Forgot passcode?";
+
 //MARK: Light Dashboard screen
 "screen_light_dashboard_button_logout" = "Logout";
 "screen_light_dashboard_button_touch_id" = "Touch ID";
