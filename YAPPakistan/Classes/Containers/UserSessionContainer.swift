@@ -17,7 +17,7 @@ public final class UserSessionContainer {
         self.parent = parent
         self.session = session
 
-        let authService = AuthenticationService(authorizationProvider: session)
+        let authService = parent.makeAuthenticationService(authorizationProvider: session)
         let customersService = parent.makeCustomersService(authorizationProvider: session)
         let repository = AccountRepository(authenticationService: authService, customerService: customersService)
 
@@ -25,7 +25,22 @@ public final class UserSessionContainer {
     }
 
     // MARK: Repositories
-    
+
+    func makeAccountRepository() -> AccountRepository {
+        let authService = parent.makeAuthenticationService(authorizationProvider: session)
+        let customersService = parent.makeCustomersService(authorizationProvider: session)
+        let repository = AccountRepository(authenticationService: authService, customerService: customersService)
+
+        return repository
+    }
+
+    func makeDemographicsRepository() -> DemographicsRepositoryType {
+        let customersService = parent.makeCustomersService(authorizationProvider: session)
+        let repository = DemographicsRepository(customersService: customersService)
+
+        return repository
+    }
+
     func makeOnBoardingRepository() -> OnBoardingRepository {
         let customersService = parent.makeCustomersService(authorizationProvider: session)
         let messagesService = parent.makeMessagesService(authorizationProvider: session)
@@ -54,9 +69,19 @@ public final class UserSessionContainer {
         return WaitingListRankViewController(themeService: parent.themeService, viewModel: viewModel)
     }
 
+    func makeReachedQueueTopViewController() -> ReachedQueueTopViewController {
+        let viewModel = ReachedQueueTopViewModel(accountProvider: accountProvider,
+                                                 accountRepository: makeAccountRepository())
+        let viewController = ReachedQueueTopViewController(themeService: parent.themeService,
+                                                           viewModel: viewModel)
+
+        return viewController
+    }
+
     func makeLiteDashboardViewController() -> LiteDashboardViewController {
         let viewModel = LiteDashboardViewModel(accountProvider: accountProvider,
                                                biometricsManager: biometricsManager,
+                                               credentialStore: parent.credentialsStore,
                                                repository: makeLoginRepository())
         let viewController = LiteDashboardViewController(themeService: parent.themeService,
                                                          viewModel: viewModel)

@@ -43,7 +43,7 @@ class ReachedQueueTopViewController: UIViewController {
     private var themeService: ThemeService<AppTheme>!
 
     private let disposeBag = DisposeBag()
-    private var viewModel: ReachedQueueTopViewModelType!
+    private(set) var viewModel: ReachedQueueTopViewModelType!
 
     // MARK: Initialization
 
@@ -151,7 +151,7 @@ class ReachedQueueTopViewController: UIViewController {
     }
 
     // MARK: Binding
-    
+
     private func bindViewModel() {
         viewModel.outputs.heading
             .bind(to: heading.rx.text)
@@ -168,5 +168,18 @@ class ReachedQueueTopViewController: UIViewController {
         viewModel.outputs.verificationButtonTitle
             .bind(to: completeVerificationButton.rx.title())
             .disposed(by: disposeBag)
+
+        completeVerificationButton.rx.tap
+            .bind(to: viewModel.inputs.completeVerificationObserver)
+            .disposed(by: disposeBag)
+
+        viewModel.outputs.error.subscribe(onNext: { [weak self] error in
+            self?.showAlert(title: "", message: error,
+                            defaultButtonTitle: "common_button_ok".localized,
+                            secondayButtonTitle: nil,
+                            defaultButtonHandler: { _ in },
+                            secondaryButtonHandler: nil,
+                            completion: nil)
+        }).disposed(by: disposeBag)
     }
 }

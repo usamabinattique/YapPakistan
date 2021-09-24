@@ -254,8 +254,13 @@ private extension B2COnBoardingCoordinator {
     }
 
     func navigateToWaitingListRank(session: Session) {
-        let viewController = container.makeWaitingListController(session: session)
-        root.pushViewController(viewController, animated: true)
+        let sessionContainer = UserSessionContainer(parent: container, session: session)
+        let window = root.view.window ?? UIWindow()
+        let coordinator = WaitingListRankCoordinator(container: sessionContainer, window: window)
+
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            print("Moved to on boarding")
+        }).disposed(by: rx.disposeBag)
     }
 
     /*

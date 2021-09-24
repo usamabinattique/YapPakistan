@@ -49,7 +49,7 @@ extension NetworkErrors {
             return "Sorry, that doesn't look right."
 //            return AppTranslation.shared.translation(forKey: "common_display_text_fallback_error_message")
         default:
-            return "Sorry, that doesn't look right."
+            return "Looks like you're offline. Please reconnect and refresh to continue using YAP."
 //            return AppTranslation.shared.translation(forKey: "common_display_text_fallback_error_message")
         }
     }

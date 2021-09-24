@@ -125,26 +125,41 @@ extension UIViewController {
     public func addBackButton(_ type: BackButtonType = .backCircled, backgroundColor: UIColor, tintColor: UIColor) {
 
         let button = UIButton()
-        button.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
+        button.frame = CGRect(x: 6, y: 0, width: 35, height: 35)
         button.setImage(UIImage(named: type == .backCircled || type == .backEmpty ? "icon_back" : "icon_close", in: .yapPakistan, compatibleWith: nil)?.asTemplate, for: .normal)
         button.tintColor = type == .backCircled || type == .closeCircled /*|| SessionManager.current.currentAccountType != .b2cAccount*/ ? tintColor : backgroundColor
         button.backgroundColor = type == .backCircled || type == .closeCircled ? backgroundColor : .clear
         button.layer.cornerRadius = 0.5 * button.bounds.size.width
         button.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
-
+        
+        let view:UIView = {
+            let view = UIView(frame: CGRect(x: 0, y: 0, width: 41, height: 35))
+            view.backgroundColor = .clear
+            return view
+        }()
+        view.addSub(view: button)
+        
         let backButton = UIBarButtonItem()
-        backButton.customView = button
+        backButton.customView = view
         navigationItem.leftBarButtonItem = backButton
         navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
 
     public func addBackButton(of type: BackButtonType = .backCircled) -> UIButton? {
         let button = UIButton()
-        button.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
+        button.frame = CGRect(x: 6, y: 0, width: 35, height: 35)
         button.setImage(UIImage(named: type == .backCircled || type == .backEmpty ? "icon_back" : "icon_close", in: .yapPakistan, compatibleWith: nil)?.asTemplate, for: .normal)
         button.layer.cornerRadius = 0.5 * button.bounds.size.width
+        
+        let view:UIView = {
+            let view = UIView(frame: CGRect(x: 0, y: 0, width: 41, height: 35))
+            view.backgroundColor = .clear
+            return view
+        }()
+        view.addSub(view: button)
+        
         let backButton = UIBarButtonItem()
-        backButton.customView = button
+        backButton.customView = view
         navigationItem.leftBarButtonItem  = backButton
         navigationController?.interactivePopGestureRecognizer?.delegate = nil
         return button

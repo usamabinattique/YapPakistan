@@ -14,16 +14,18 @@ import Alamofire
 public protocol XSRFServiceType {
     func fetchXSRFToken() -> Observable<Bool>
 }
-public class XSRFService: XSRFServiceType  {
 
+public class XSRFService: XSRFServiceType  {
+    private let apiConfig: APIConfiguration
     private let apiClient: APIClient
 
-    public init(apiClient: APIClient = WebClient()) {
+    public init(apiConfig: APIConfiguration, apiClient: APIClient) {
+        self.apiConfig = apiConfig
         self.apiClient = apiClient
     }
 
     func request(apiClient: APIClient, route: YAPURLRequestConvertible) -> Observable<Bool> {
-        let route = XSRFRouter.xsrf
+        let route = APIEndpoint<String>(.get, apiConfig.authURL, "/login")
         let response = apiClient.request(route: route)
         return response.flatMap { apiResponse -> Observable<Bool> in
             return Observable.create { observer in
@@ -46,7 +48,7 @@ public class XSRFService: XSRFServiceType  {
     }
 
     public func fetchXSRFToken() -> Observable<Bool> {
-        let route = XSRFRouter.xsrf
+        let route = APIEndpoint<String>(.get, apiConfig.authURL, "/login")
         return request(apiClient: apiClient, route: route)
     }
 

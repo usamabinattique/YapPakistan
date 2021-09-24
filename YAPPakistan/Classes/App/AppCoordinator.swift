@@ -16,7 +16,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     private var shortcutItem: UIApplicationShortcutItem?
     private let result = PublishSubject<ResultType<Void>>()
     private let container: YAPPakistanMainContainer
-    let reposiotry = SplashRepository(service: XSRFService())
+    let reposiotry: SplashRepository
 
     private let userSession = PublishSubject<ResultType<Void>>()
     private var xsrfToken = ""
@@ -27,18 +27,26 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
         self.window = window
         self.shortcutItem = shortcutItem
         self.container = container
+        self.reposiotry = container.makeSplashRepository()
         super.init()
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        reposiotry.fetchXSRFToken().subscribe(onNext: { _ in
+        reposiotry.fetchXSRFToken().subscribe(onNext: { [unowned self] _ in
             self.xsrfToken = HTTPCookieStorage.shared.cookies?.filter({ $0.name == "XSRF-TOKEN" }).first?.value ?? ""
-            self.accountSelection()
-        }).disposed(by: rx.disposeBag)
 
-        // self.showDummyController()
-        // self.accountSelection()
-        // self.onboarding()
+        if AppSettings.isAppRunFirstTime {
+            self.accountSelection()
+            _ = container.credentialsStore.setRemembersId(false)
+            _ = container.credentialsStore.clearUsername()
+            AppSettings.isAppRunFirstTime = false
+        } else if container.credentialsStore.credentialsAvailable() {
+            self.verifyPasscode()
+        } else {
+            self.loginScreen()
+        }
+            
+        }).disposed(by: rx.disposeBag)
 
         return result
     }
@@ -51,37 +59,23 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
 
     func accountSelection() { // -> Observable<ResultType<Void>> {
         coordinate(to: AccountSelectionCoordinatorReplaceable(container: container, xsrfToken: xsrfToken, window: window)).subscribe { result in
-            print(result)
+            self.result.onNext(.success(()))
+            self.result.onCompleted()
         }.disposed(by: rx.disposeBag)
     }
-}
-
-// MARK: NAVIGATIONS
-extension AppCoordinator {
-    func showWelcomeScreen(authorization: GuestServiceAuthorization) {
-        /* self.coordinate(to: WelcomeScreenCoordinator(window: self.window))
-            .subscribe(onNext: { [unowned self] result in
-                switch result {
-                case .onboarding:
-                    startB2BRegistration(authorization: authorization)
-                case .login:
-                    showLoginScreen(authorization: authorization)
-                }
-            })
-            .disposed(by: rx.disposeBag) */
+    
+    func verifyPasscode() {
+        coordinate(to: PasscodeCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
+            self.result.onNext(.success(()))
+            self.result.onCompleted()
+        }).disposed(by: rx.disposeBag)
     }
-}
-
-// MARK: HELPERS
-fileprivate extension AppCoordinator {
-//    func splashDidComplete(shortcutItem: UIApplicationShortcutItem?)  -> Observable<ResultType<NavigationType>> {
-//         return self.coordinate(
-//            to: SplashCoordinator (
-//                window: window,
-//                shortcutItem: shortcutItem,
-//                store: CredentialsManager(),
-//                repository: SplashRepository(service: XSRFService() )
-//            )
-//        )
-//    }
+    
+    func loginScreen() {
+        coordinate(to: LoginCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
+            self.result.onNext(.success(()))
+            self.result.onCompleted()
+        }).disposed(by: rx.disposeBag)
+    }
+    
 }

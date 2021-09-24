@@ -35,6 +35,8 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
 
         window.rootViewController = root
         window.makeKeyAndVisible()
+
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
         
         viewModel.outputs.result.subscribe(onNext: { [weak self] in
             self?.result.onNext(ResultType.success($0))

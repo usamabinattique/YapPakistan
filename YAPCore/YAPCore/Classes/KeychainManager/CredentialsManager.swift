@@ -9,13 +9,17 @@
 import Foundation
 
 public protocol CredentialsStoreType {
+    var remembersId: Bool? { get }
     var isCredentialsAvailable: Bool {  get }
     var userCountry: String? {  get }
-    @discardableResult
-    func secureCredentials(username: String, passcode: String) -> Bool
+    
+    @discardableResult func secureCredentials(username: String, passcode: String) -> Bool
     func getUsername() -> String?
     func getPasscode(username: String) -> String?
-    func secure(passcode: String) -> Bool
+    @discardableResult func secure(passcode: String) -> Bool
+    @discardableResult func clearUsername() -> Bool
+    @discardableResult func setRemembersId(_ remembers: Bool) -> Bool
+    @discardableResult func credentialsAvailable() -> Bool
 }
 
 

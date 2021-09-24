@@ -40,7 +40,7 @@ protocol EnterEmailViewModelOutput {
 }
 
 protocol EnterEmailViewModelType {
-    typealias OnAuthenticateClosure = (Session, inout OnBoardingRepository?, inout AccountProvider?) -> Void
+    typealias OnAuthenticateClosure = (Session, inout AccountProvider?, inout OnBoardingRepository?, inout DemographicsRepositoryType?) -> Void
 
     var inputs: EnterEmailViewModelInput { get }
     var outputs: EnterEmailViewModelOutput { get }
@@ -106,6 +106,9 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
     private let sessionProvider: SessionProviderType
     private let credentialsStore: CredentialsStoreType
     private var accountProvider: AccountProvider?
+
+    private let saveDeviceSubject = PublishSubject<Void>()
+    private var demographicsRepository: DemographicsRepositoryType!
 
     init(credentialsStore: CredentialsStoreType,
          referralManager: AppReferralManager,
@@ -201,8 +204,8 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                 self.credentialsStore.secureCredentials(username: phoneNumber, passcode: passcode)
                 self.isEmailSend = true
 
-                onAuthenticate(self.session, &self.repository, &self.accountProvider)
-
+                onAuthenticate(self.session, &self.accountProvider, &self.repository, &self.demographicsRepository)
+                self.saveDeviceSubject.onNext(())
                 self.refreshAccount()
             })
             .filter { _ in referralManager.isReferralInformationAvailable }
@@ -289,6 +292,9 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             self.sendSubject.dispose()
         }).disposed(by: disposeBag)
 
+        saveDeviceSubject.flatMap { _ in
+            return self.demographicsRepository.saveDemographics(action: "SIGNUP", token: nil)
+        }.subscribe().disposed(by: disposeBag)
     }
 
     private func refreshAccount() {
@@ -296,9 +302,9 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             return assertionFailure()
         }
 
-        accountProvider.refreshAccount()
         accountProvider.currentAccount
             .unwrap()
+            .take(1)
             .do(onNext: { [weak self] in
                 YAPProgressHud.hideProgressHud()
 
