@@ -8,7 +8,6 @@
 
 import Foundation
 import RxSwift
-import PhoneNumberKit
 import YAPComponents
 
 typealias TextChange = (text: String, range: NSRange, currentText: String?)
@@ -94,7 +93,6 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     private var countryList = [(name: String, code: String, callingCode: String, flag: UIImage?)]()
     private let disposeBag = DisposeBag()
     private var currentItem = 0
-    private let phoneNumberKit = PhoneNumberKit()
     private var isFormatted = false
     private var user: OnBoardingUser!
     private let repository: OnBoardingRepository
@@ -113,19 +111,21 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         countrySelectionSubject.map { [unowned self] index in self.attributed(text: self.countryList[index].callingCode) }.bind(to: textSubject).disposed(by: disposeBag)
         countrySelectionSubject.do(onNext: { [unowned self] in self.currentItem = $0 }).map { [unowned self] index in self.countryList[index].flag }.bind(to: iconSubject).disposed(by: disposeBag)
 
-        let formattedText = textObserverSubject.do(onNext: {[unowned self] in
-            self.user.mobileNo.formattedValue = $0})
-            .map { [unowned self] in self.formatePhoneNumber($0 ?? "") }
-            .do(onNext: { [unowned self] in
-                    self.isFormatted = $0.formatted}
-            )
+        let formattedText = textObserverSubject
+            .do(onNext: {[unowned self] in self.user.mobileNo.formattedValue = $0})
+            .unwrap()
+            .map { $0.toFormatedPhone }
+            .do(onNext: { [unowned self] in self.isFormatted = $0.isFormated} )
 
-        formattedText.map {
-            let formated = $0.formatted
-            return formated
-        }.bind(to: validSubject).disposed(by: disposeBag)
-        formattedText.map { $0.formatted ? .valid : .neutral }.bind(to: validationSubject).disposed(by: disposeBag)
-        formattedText.map { [unowned self] in self.attributed(text: $0.phoneNumber) }.bind(to: textSubject).disposed(by: disposeBag)
+        formattedText.map { return $0.isFormated }
+            .bind(to: validSubject)
+            .disposed(by: disposeBag)
+        formattedText.map { $0.isFormated ? .valid : .neutral }
+            .bind(to: validationSubject)
+            .disposed(by: disposeBag)
+        formattedText.map { [unowned self] in self.attributed(text: $0.number) }
+            .bind(to: textSubject)
+            .disposed(by: disposeBag)
 
         textWillChangeSubject.do(onNext: { [unowned self] text, range, currentText in
             let currentText = (currentText ?? "").replacingOccurrences(of: " ", with: "")
@@ -171,29 +171,10 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
             self.progressSubject.onCompleted()
             self.sendSubject.dispose()
         }).disposed(by: disposeBag)
-        /*
-        resultSubject
-            .map{ [unowned self] _ in self.user.mobileNo }
-            .map{ OnBoardingEvent.phoneNumberEntered(["phoneNumber" : [$0.countryCode, $0.number].compactMap{ $0 }.joined()])}
-            .bind(to: AppAnalytics.shared.rx.logEvent)
-            .disposed(by: disposeBag)
-        */
-        // AppAnalytics.shared.logEvent(OnBoardingEvent.phoneNumberStart())
     }
 }
 
 private extension PhoneNumberViewModel {
-    func formatePhoneNumber(_ phoneNumber: String) -> (phoneNumber: String, formatted: Bool) {
-        do {
-            let pNumber = try phoneNumberKit.parse(phoneNumber)
-            let formattedNumber = phoneNumberKit.format(pNumber, toType: .international)
-            return (formattedNumber, true)
-        } catch {
-//            print("error occurred while formatting phone number: \(error)")
-        }
-        return (phoneNumber, false)
-    }
-
     func attributed(text: String) -> NSAttributedString {
         let length = text.components(separatedBy: " ").first?.count ?? 0
         let attributed = NSMutableAttributedString(string: text)

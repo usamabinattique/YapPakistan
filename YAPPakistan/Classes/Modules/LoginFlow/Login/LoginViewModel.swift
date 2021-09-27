@@ -8,15 +8,12 @@
 import Foundation
 import RxSwift
 import RxCocoa
-import PhoneNumberKit
 import YAPComponents
-import YAPCore
-import PhoneNumberKit
 import YAPCore
 
 struct RequestResponse {
-    var userName:String
-    var isBlocked:Bool
+    var userName: String
+    var isBlocked: Bool
 }
 
 protocol LoginViewModelInputs {
@@ -31,12 +28,12 @@ protocol LoginViewModelInputs {
 }
 
 protocol LoginViewModelOutputs {
-    typealias LocalizedText = (heading: String, remember: String, signIn: String, create:String, signUp: String)
+    typealias LocalizedText = (heading: String, remember: String, signIn: String, create: String, signUp: String)
 
     var signIn: Observable<Void> { get }
     var signUp: Observable<Void> { get }
     
-    var result:Observable<ResultType<RequestResponse>> { get }
+    var result: Observable<ResultType<RequestResponse>> { get }
     
     var flag: Observable<String> { get }
     var shouldChange: Bool { get }
@@ -90,7 +87,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     private let resultSubject = PublishSubject<ResultType<RequestResponse>>()
     private let progressSubject = PublishSubject<Bool>()
     private let validationSubject = BehaviorSubject<AppRoundedTextFieldValidation>(value: .neutral)
-    private let localizedTextSubject:BehaviorSubject<LocalizedText>
+    private let localizedTextSubject: BehaviorSubject<LocalizedText>
 
     private let mobileNumberSubject: BehaviorSubject<String?> = BehaviorSubject(value: "+92 ")
     private let rememberMeSubject: BehaviorSubject<Bool> = BehaviorSubject(value: false)
@@ -103,17 +100,16 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     private let disposeBag: DisposeBag = DisposeBag()
     private let credentialsManager: CredentialsStoreType
     private let repository: LoginRepositoryType
-    private let phoneNumberKit:PhoneNumberKit
+    //private let phoneNumberKit: PhoneNumberKit
 
     init( repository: LoginRepositoryType,
-          credentialsManager: CredentialsStoreType,
-          phoneNumberKit:PhoneNumberKit ) {
+          credentialsManager: CredentialsStoreType) {
 
         self.repository = repository
         self.credentialsManager = credentialsManager
-        self.phoneNumberKit = phoneNumberKit
+        //self.phoneNumberKit = phoneNumberKit
 
-        self.localizedTextSubject = BehaviorSubject(value:(
+        self.localizedTextSubject = BehaviorSubject(value: (
             heading: "screen_sign_in_display_text_heading_text".localized,
             remember: "screen_sign_in_display_text_remember_id_text".localized,
             signIn: "screen_sign_in_button_sign_in".localized,
@@ -129,17 +125,18 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
         let selectNumber = mobileNumberSubject
             .distinctUntilChanged()
             .debug("HHHH", trimOutput: true)
-            .map { [unowned self] in self.formatePhoneNumber($0 ?? "")}
+            .unwrap()
+            .map { $0.toFormatedPhone }
             .share()
 
         selectNumber
-            .map { $0.phoneNumber }
+            .map { $0.number }
             .subscribe(onNext: { string in
                 DispatchQueue.main.async { self.mobileNumberSubject.onNext(string) }
             }).disposed(by: disposeBag)
 
         Observable.combineLatest(selectNumber, isFirstResponderSubject)
-            .map { $0.0.formatted ? AppRoundedTextFieldValidation.valid:.neutral }
+            .map { $0.0.isFormated ? AppRoundedTextFieldValidation.valid: .neutral }
             .bind(to: validationSubject)
             .disposed(by: disposeBag)
 
@@ -148,7 +145,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
                 let ctext = $0.1.currentText?.replacingOccurrences(of: " ", with: "") ?? ""
                 let res1 = $0.1.range.location > self.countryList[self.currentItem].callingCode.count - 1
                 let res2 = (ctext.count + $0.1.text.count < 14 || $0.1.text.count == 0)
-                let res3 = (!$0.0.formatted || $0.1.text.count == 0)
+                let res3 = (!$0.0.isFormated || $0.1.text.count == 0)
                 self.shouldChangeSub =  (res1 && res2) && res3
             }).subscribe().disposed(by: disposeBag)
 
@@ -216,14 +213,5 @@ private extension LoginViewModel {
             .do(onNext: { if !$0 { _ = credentialsManager.clearUsername() } })
             .subscribe(onNext: { credentialsManager.setRemembersId($0) })
             .disposed(by: disposeBag)
-    }
-
-    func formatePhoneNumber(_ phoneNumber: String) -> (phoneNumber: String, formatted: Bool) {
-
-        if let pNumber = try? phoneNumberKit.parse(phoneNumber) {
-            let formattedNumber = phoneNumberKit.format(pNumber, toType: .international)
-            return (formattedNumber, true)
-        }
-        return (phoneNumber, false)
     }
 }

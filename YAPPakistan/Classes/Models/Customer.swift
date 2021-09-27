@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import PhoneNumberKit
 // swiftlint:disable identifier_name
 public struct Customer: Codable {
     public var email: String { _email ?? "" }
@@ -90,39 +89,5 @@ public extension Customer {
 public extension Customer {
     var fullName: String? {
         return (firstName.count > 0 ? firstName + " " + lastName : lastName).trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    var fullMobileNo: String {
-        let mobileNumber = (countryCode ?? "") + mobileNo
-        return formatePhoneNumber(mobileNumber).phoneNumber
-    }
-
-    // var accentColor: UIColor { customerColor.map { UIColor.init(hexString: $0) } ?? .primary }
-}
-
-private extension Customer {
-    func formatePhoneNumber(_ phoneNumber: String) -> (phoneNumber: String, formatted: Bool) {
-        do {
-            let pNumber = try PhoneNumberKit().parse(phoneNumber)
-            let formattedNumber = PhoneNumberKit().format(pNumber, toType: .international)
-            return (formattedNumber, true)
-        } catch {
-            //            print("error occurred while formatting phone number: \(error)")
-        }
-        let range = (phoneNumber as NSString).range(of: "00")
-        if range.location == 0 {
-            return ((phoneNumber as NSString).replacingCharacters(in: range, with: "+"), false)
-        }
-        return (phoneNumber, false)
-    }
-}
-
-// MARK: - Mocked
-public extension Customer {
-    var homeCountry2Digit: String {
-        guard let homeCountry = homeCountry else { return "AE" }
-        guard homeCountry.count != 2 else { return homeCountry }
-        let countryCode = ResourceManager.appCountries?.filter{ $0.alpha3Code == homeCountry }.first?.alpha2Code
-        return countryCode ?? "AE"
     }
 }
