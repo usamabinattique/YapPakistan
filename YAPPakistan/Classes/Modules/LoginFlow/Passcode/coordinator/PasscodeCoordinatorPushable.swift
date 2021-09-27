@@ -47,7 +47,7 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
         }).disposed(by: rx.disposeBag)
 
         viewModel.outputs.result
-            .filter { $0.isSuccess?.optRequired ?? true}
+            .filter { $0.isSuccess?.optRequired ?? true }
             .subscribe(onNext: { [weak self] _ in
                 self?.optVerification()
             }).disposed(by: rx.disposeBag)
