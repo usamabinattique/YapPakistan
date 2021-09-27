@@ -8,27 +8,27 @@
 
 import RxSwift
 
-protocol AccountSelectionViewModelInput {
+protocol WelcomeViewModelInput {
     var personalObserver: AnyObserver<Void> { get }
     var businessObserver: AnyObserver<Void> { get }
     var signInObserver: AnyObserver<Void> { get }
 }
 
-protocol AccountSelectionViewModelOutput {
+protocol WelcomeViewModelOutput {
     var personal: Observable<Void> { get }
     var business: Observable<Void> { get }
     var signIn: Observable<Void> { get }
 }
 
 protocol AccountSelectionViewModelType {
-    var inputs: AccountSelectionViewModelInput { get }
-    var outputs: AccountSelectionViewModelOutput { get }
+    var inputs: WelcomeViewModelInput { get }
+    var outputs: WelcomeViewModelOutput { get }
 }
 
-class AccountSelectionViewModel: AccountSelectionViewModelInput, AccountSelectionViewModelOutput, AccountSelectionViewModelType {
+class WelcomeViewModel: WelcomeViewModelInput, WelcomeViewModelOutput, AccountSelectionViewModelType {
 
-    var inputs: AccountSelectionViewModelInput { return self }
-    var outputs: AccountSelectionViewModelOutput { return self }
+    var inputs: WelcomeViewModelInput { return self }
+    var outputs: WelcomeViewModelOutput { return self }
 
     private let personalSubject = PublishSubject<Void>()
     private let businessSubject = PublishSubject<Void>()

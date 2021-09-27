@@ -40,7 +40,7 @@ class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorTyp
         self.window.rootViewController = self.root
 
         viewModel.outputs.signUp.flatMapLatest({ [unowned self] _ in
-            self.coordinate(to: AccountSelectionCoordinatorReplaceable(container: container, xsrfToken: container.xsrfToken, window: window))
+            self.coordinate(to: WelcomeCoordinatorReplaceable(container: container, xsrfToken: container.xsrfToken, window: window))
         }).do(onNext:{ [weak self] _ in
             self?.result.onCompleted()
         })
@@ -62,7 +62,7 @@ class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorTyp
     }
 
     func coordinateToWelcome() {
-        coordinate(to: AccountSelectionCoordinatorReplaceable(container: container, xsrfToken: container.xsrfToken, window: window)).subscribe(onNext: { [weak self] _ in
+        coordinate(to: WelcomeCoordinatorReplaceable(container: container, xsrfToken: container.xsrfToken, window: window)).subscribe(onNext: { [weak self] _ in
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
     }

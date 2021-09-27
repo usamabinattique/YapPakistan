@@ -34,7 +34,7 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
         root.pushViewController(loginViewController, animated: true)
 
         viewModel.outputs.signUp.subscribe(onNext: { [unowned self] in
-            if self.root.viewControllers.count > 1, self.root.viewControllers[self.root.viewControllers.count - 2] is AccountSelectionViewController {
+            if self.root.viewControllers.count > 1, self.root.viewControllers[self.root.viewControllers.count - 2] is WelcomeViewController {
                 self.root.popViewController(animated: true)
                 self.root.navigationBar.isHidden = true
                 self.result.onNext(.cancel)
