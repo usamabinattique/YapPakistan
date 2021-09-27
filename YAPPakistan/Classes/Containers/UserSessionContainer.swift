@@ -60,6 +60,13 @@ public final class UserSessionContainer {
         return loginRepository
     }
 
+    func makeKYCRepository() -> KYCRepository {
+        let customersService = parent.makeCustomersService(authorizationProvider: session)
+        let kycRepository = KYCRepository(customersService: customersService)
+
+        return kycRepository
+    }
+
     // MARK: Controllers
 
     func makeWaitingListController() -> WaitingListRankViewController {
