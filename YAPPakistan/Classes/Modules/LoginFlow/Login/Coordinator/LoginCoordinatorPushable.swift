@@ -34,13 +34,12 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
         root.pushViewController(loginViewController, animated: true)
 
         viewModel.outputs.signUp.subscribe(onNext: { [unowned self] in
-            if self.root.viewControllers.count > 1, self.root.viewControllers[self.root.viewControllers.count - 2] is WelcomeViewController {
+            if self.root.viewControllers.count > 1,
+               self.root.viewControllers[self.root.viewControllers.count - 2] is WelcomeViewController {
                 self.root.popViewController(animated: true)
                 self.root.navigationBar.isHidden = true
                 self.result.onNext(.cancel)
                 self.result.onCompleted()
-            } else {
-                //Account selection flow
             }
         }).disposed(by: rx.disposeBag)
 
@@ -53,10 +52,9 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
         }).disposed(by: rx.disposeBag)
 
         logInResult.filter({ $0.isSuccess != nil })
-            .map({$0.isSuccess})
+            .map({ $0.isSuccess })
             .unwrap()
             .subscribe(onNext: { [weak self] result in
-                //self?.passcode()
                 self?.navigateToPasscode(username: result.userName, isUserBlocked: result.isBlocked)
             })
             .disposed(by: rx.disposeBag)

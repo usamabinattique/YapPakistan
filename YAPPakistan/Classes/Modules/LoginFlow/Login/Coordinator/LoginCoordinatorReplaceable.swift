@@ -40,8 +40,11 @@ class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorTyp
         self.window.rootViewController = self.root
 
         viewModel.outputs.signUp.flatMapLatest({ [unowned self] _ in
-            self.coordinate(to: WelcomeCoordinatorReplaceable(container: container, xsrfToken: container.xsrfToken, window: window))
-        }).do(onNext:{ [weak self] _ in
+            self.coordinate(to: WelcomeCoordinatorReplaceable(
+                                container: container,
+                                xsrfToken: container.xsrfToken,
+                                window: window ))
+        }).do(onNext: { [weak self] _ in
             self?.result.onCompleted()
         })
         .subscribe()
@@ -50,21 +53,23 @@ class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorTyp
         let logInResult = viewModel.outputs.result.share()
 
         logInResult.filter({ $0.isSuccess != nil })
-            .map({$0.isSuccess})
+            .map({ $0.isSuccess })
             .unwrap()
             .subscribe(onNext: { [weak self] result in
                 self?.navigateToPasscode(username: result.userName, isUserBlocked: result.isBlocked)
             })
             .disposed(by: rx.disposeBag)
 
-
         return result
     }
 
     func coordinateToWelcome() {
-        coordinate(to: WelcomeCoordinatorReplaceable(container: container, xsrfToken: container.xsrfToken, window: window)).subscribe(onNext: { [weak self] _ in
-            self?.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        coordinate(to: WelcomeCoordinatorReplaceable(
+                    container: container,
+                    xsrfToken: container.xsrfToken,
+                    window: window ))
+        .subscribe(onNext: { [weak self] _ in self?.result.onCompleted() })
+        .disposed(by: rx.disposeBag)
     }
 
     func navigateToPasscode(username: String, isUserBlocked: Bool) {
