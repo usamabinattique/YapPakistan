@@ -199,7 +199,7 @@ extension YAPPakistanMainContainer {
 
         return LoginOTPVerificationViewModel(action: .deviceVerification,
                                                       heading: headingKey.localized,
-                                                      subheading: String(format: otpMessageKey, userName.toFormatedPhoneNumber),
+                                                      subheading: String(format: otpMessageKey.localized, userName.toFormatedPhoneNumber),
                                                       image: logo,
                                                       repository: otpRepository,
                                                       username: userName,

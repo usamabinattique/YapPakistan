@@ -37,10 +37,10 @@ class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
 
         UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
 
-        viewModel?.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
+        viewModel?.outputs.success.subscribe(onNext: { [weak self] _ in
             self?.navigateToDashboard()
         }).disposed(by: disposeBag)
-        
+
         return resultSubject
     }
 
