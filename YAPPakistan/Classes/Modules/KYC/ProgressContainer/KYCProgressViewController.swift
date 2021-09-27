@@ -23,6 +23,7 @@ class KYCProgressViewController: UIViewController {
         progressView.showsCompletionView = true
         progressView.backImage = UIImage(named: "icon_back", in: .yapPakistan)
         progressView.completionImage = UIImage(named: "icon_check", in: .yapPakistan)
+        progressView.isHidden = true
         return progressView
     }()
 
@@ -34,7 +35,7 @@ class KYCProgressViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var childNavigation: UINavigationController!
     private var childView: UIView!
-    
+
     // MARK: Initialization
     
     init(themeService: ThemeService<AppTheme>,
