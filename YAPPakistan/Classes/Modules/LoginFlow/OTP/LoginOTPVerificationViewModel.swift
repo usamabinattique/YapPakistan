@@ -10,7 +10,6 @@ import RxSwift
 import YAPComponents
 
 class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
-    
     private let username: String
     private let passcode: String
     private let sessionCreator: SessionProviderType
@@ -24,7 +23,8 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
     private let saveDeviceSubject = PublishSubject<Void>()
     private var demographicsRepository: DemographicsRepositoryType!
 
-    init(action: OTPAction, heading: String? = nil,
+    init(action: OTPAction,
+         heading: String? = nil,
          subheading: String,
          image: UIImage? = nil,
          badge: UIImage? = nil,
@@ -38,30 +38,31 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
          passcode: String,
          sessionCreator: SessionProviderType,
          onLogin: @escaping OnLoginClosure) {
-        
+
         self.username = username
         self.passcode = passcode
         self.sessionCreator = sessionCreator
         self.onLoginClosure = onLogin
-        
+
         super.init(action: action, heading: heading, subheading: subheading, image: image,
                    badge: badge, otpTime: otpTime, otpLength: otpLength, resendTries: resendTries,
-                   repository: repository, mobileNo: mobileNo, backButtonImage: backButtonImage)
-        
+                   repository: repository, mobileNo: mobileNo, passcode: passcode, backButtonImage: backButtonImage)
+
         viewAppearedSubject.filter{ $0 }.bind(to: editingSubject).disposed(by: disposeBag)
         timerDisposable = startTimer()
-        
-        
     }
 
     override func generateOneTimePasscode(mobileNo: String) {
         let generateOTPRequest = generateOTPSubject
             .do(onNext: { YAPProgressHud.showProgressHud() })
             .flatMap { [unowned self] _ -> Observable<Event<String?>> in
-                return self.repository.generateLoginOTP(username: self.username, passcode: self.passcode, deviceId: UIDevice.deviceID) }
-            .do(onNext: {_ in YAPProgressHud.hideProgressHud() })
+                return self.repository.generateLoginOTP(username: self.username,
+                                                        passcode: self.passcode,
+                                                        deviceId: UIDevice.deviceID)
+            }
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
-        
+
         generateOTPRequest.errors()
             .map { $0.localizedDescription }
             .bind(to: generateOTPErrorSubject)
@@ -71,24 +72,27 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             self.timerDisposable?.dispose()
             self.timerDisposable = self.startTimer()
         }).map { _ in true }.bind(to: editingSubject).disposed(by: disposeBag)
-        
+
         generateOTPRequest.skip(1).elements().map { _ in "screen_login_otp_genration_success".localized }
             .bind(to: showAlertSubject).disposed(by: disposeBag)
     }
-    
-    override func verifyOneTimePasscode(mobileNo: String) {
-        
+
+    override func verifyOneTimePasscode(mobileNo: String, passcode: String) {
+
         let verifyRequest = sendSubject.withLatestFrom(textSubject.unwrap())
-            .do(onNext: {[unowned self] _ in
+            .do(onNext: { [unowned self] _ in
                 self.editingSubject.onNext(false)
                 YAPProgressHud.showProgressHud()
             })
             .flatMap { [unowned self] text -> Observable<Event<String?>> in
-                self.repository.verifyLoginOTP(username: self.username, passcode: self.passcode, deviceId: UIDevice.deviceID, otp: text)
+                self.repository.verifyLoginOTP(username: self.username,
+                                               passcode: self.passcode,
+                                               deviceId: UIDevice.deviceID,
+                                               otp: text)
             }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
-            
+
         verifyRequest.errors().map{ error -> Bool in
             guard case let NetworkErrors.internalServerError(serverError) = error else { return false }
             guard serverError?.errors.first?.code == "1095" else { return false }
@@ -101,11 +105,9 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
         verifyRequest.errors().map { _ in nil }
             .do(onNext: { [unowned self] in self.otpForRequest = $0 })
             .bind(to: textSubject).disposed(by: disposeBag)
-        
+
         verifyRequest.elements().subscribe(onNext: { data in
             guard let componenets = data?.components(separatedBy: "%") else { return }
-            let token = componenets.first
-
             if let jwt = componenets.count > 1 ? componenets.last : nil {
                 self.session = self.sessionCreator.makeUserSession(jwt: jwt)
             }

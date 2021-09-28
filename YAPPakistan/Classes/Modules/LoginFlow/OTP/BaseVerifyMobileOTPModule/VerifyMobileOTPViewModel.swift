@@ -1,9 +1,9 @@
 //
-//  VerifyMobileOTPViewModel.swift
-//  YAPKit
+// VerifyMobileOTPViewModel.swift
+// YAPKit
 //
-//  Created by Hussaan S on 28/06/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+// Created by Hussaan S on 28/06/2019.
+// Copyright © 2019 YAP. All rights reserved.
 //
 
 import Foundation
@@ -33,7 +33,7 @@ public enum OTPAction: String, Codable {
     case rmtBeneficiary = "RMT_BENEFICIARY"
     case nonRmtBeneficiary = "SWIFT_BENEFICIARY"
     case cashPickupBeneficiary = "CASHPAYOUT_BENEFICIARY"
-    
+
 }
 
 public protocol VerifyMobileOTPViewModelInput {
@@ -69,16 +69,20 @@ public protocol VerifyMobileOTPViewModelOutput {
 }
 
 public protocol VerifyMobileOTPViewModelType {
-    typealias OnLoginClosure = (Session, inout AccountProvider?, inout DemographicsRepositoryType?) -> Void
+    typealias OnLoginClosure = (Session,
+                                inout AccountProvider?,
+                                inout DemographicsRepositoryType?) -> Void
 
     var inputs: VerifyMobileOTPViewModelInput { get }
     var outputs: VerifyMobileOTPViewModelOutput { get }
 }
 
-open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobileOTPViewModelOutput, VerifyMobileOTPViewModelType {
+open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
+                                     VerifyMobileOTPViewModelOutput,
+                                     VerifyMobileOTPViewModelType {
     public var inputs: VerifyMobileOTPViewModelInput { return self }
     public var outputs: VerifyMobileOTPViewModelOutput { return self }
-    
+
     private let backSubject = PublishSubject<Void>()
     public let textSubject = BehaviorSubject<String?>(value: nil)
     public let viewAppearedSubject = PublishSubject<Bool>()
@@ -86,7 +90,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     public let resultSubject = PublishSubject<OTPVerificationResultType>()
     public let loginResultSubject = PublishSubject<LoginOTPVerificationResult>()
     public let sendSubject = PublishSubject<Void>()
-    private let timerTextSubject = BehaviorSubject<String>(value: "00:10")
+    private let timerTextSubject = BehaviorSubject<String>(value: "00: 10")
     private let timerSubject: BehaviorSubject<TimeInterval>
     private let resendTimeSubject: BehaviorSubject<TimeInterval>
     private let resendTriesSubject: BehaviorSubject<Int>
@@ -108,7 +112,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     private let mobileNoSubject = BehaviorSubject<String?>(value: nil)
     public let showAlertSubject = PublishSubject<String>()
     private let backImageSubject = BehaviorSubject<BackButtonType>(value: .backEmpty)
-    
+
     // inputs
     public var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     public var textObserver: AnyObserver<String?> { return textSubject.asObserver() }
@@ -116,7 +120,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     public var sendObserver: AnyObserver<Void> { return sendSubject.asObserver() }
     public var resendOTPObserver: AnyObserver<Void> { return resendOTPSubject.asObserver() }
     public var generateOTPObserver: AnyObserver<Void> { return generateOTPSubject.asObserver() }
-    
+
     // outputs
     public var back: Observable<Void> { return backSubject.asObservable() }
     public var valid: Observable<Bool> { return validSubject.asObservable() }
@@ -138,13 +142,13 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
     public var mobileNo: Observable<String?> { return mobileNoSubject.asObservable() }
     public var showAlert: Observable<String> { return showAlertSubject.asObservable() }
     public var backImage: Observable<BackButtonType> { return backImageSubject.asObservable() }
-    
+
     public let disposeBag = DisposeBag()
     private var viewAvailable = false
     public let repository: OTPRepositoryType
     public let otpBlocked = BehaviorSubject<Bool>(value: false)
     public var otpForRequest: String?
-    
+
     public init(action: OTPAction,
                 heading: String? = nil,
                 subheading: String,
@@ -155,6 +159,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
                 resendTries: Int = 4,
                 repository: OTPRepositoryType,
                 mobileNo: String = "",
+                passcode: String,
                 backButtonImage: BackButtonType = .backEmpty) {
         self.headingSubject = BehaviorSubject(value: heading)
         self.subheadingSubject = BehaviorSubject(value: subheading)
@@ -169,88 +174,93 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
         self.otpActionSubject = BehaviorSubject(value: action)
         self.imageFlagSubject = BehaviorSubject(value: image != nil)
         self.backImageSubject.onNext(backButtonImage)
-        
-        Observable.combineLatest(textSubject, otpLengthSubject).map { $0.0?.count ?? 0 == $0.1 }.bind(to: validSubject).disposed(by: disposeBag)
-        
+
+        Observable.combineLatest(textSubject, otpLengthSubject)
+            .map { $0.0?.count ?? 0 == $0.1 }.bind(to: validSubject)
+            .disposed(by: disposeBag)
+
         generateOneTimePasscode(mobileNo: mobileNo)
-        verifyOneTimePasscode(mobileNo: mobileNo)
-        
-        Observable.combineLatest(otpBlocked, timerSubject.map{ $0 <= 0})
+        verifyOneTimePasscode(mobileNo: mobileNo, passcode:passcode)
+
+        Observable.combineLatest(otpBlocked, timerSubject.map{ $0 <= 0 })
             .map{ !$0.0 && $0.1 }
             .bind(to: resendActiveSubject)
             .disposed(by: disposeBag)
-       
+
         timerSubject.filter { $0 >= 0 }
             .map(timeString)
             .bind(to: timerTextSubject)
             .disposed(by: disposeBag)
-        
+
         resendOTPSubject.withLatestFrom(resendTimeSubject)
             .bind(to: timerSubject)
             .disposed(by: disposeBag)
-        
+
         textSubject.unwrap()
             .filter{ [unowned self] in $0.count == otpLength && self.otpForRequest != $0 }
             .do(onNext: { [unowned self] in self.otpForRequest = $0 }).map{ _ in }
             .bind(to: sendObserver)
             .disposed(by: disposeBag)
     }
-    
+
     open func generateOneTimePasscode(mobileNo: String) {
         let generateOTPRequest = generateOTPSubject
             .do(onNext: { YAPProgressHud.showProgressHud() })
             .withLatestFrom(otpActionSubject).flatMap { [unowned self] otpAction -> Observable<Event<String?>> in
-                //return self.repository.generateLoginOTP(username: mobileNo, passcode: "1212", deviceId: UIDevice.current.identifierForVendor?.uuidString ?? "")
                 return self.repository.generateOTP(action: otpAction!, mobileNumber: mobileNo)
             }
-            .do(onNext: {_ in
-                YAPProgressHud.hideProgressHud() })
+            .do(onNext: { _ in
+                    YAPProgressHud.hideProgressHud() })
             .share()
-        
+
         generateOTPRequest.errors().map {
             $0.localizedDescription
-            
+
         }.bind(to: generateOTPErrorSubject).disposed(by: disposeBag)
-        
+
         var timerDisposable: Disposable?
-        
+
         generateOTPRequest.elements().do(onNext: { _ in
             timerDisposable?.dispose()
             timerDisposable = self.startTimer()
         }).map { _ in true }.bind(to: editingSubject).disposed(by: disposeBag)
-        
-        generateOTPRequest.elements().skip(1).map { _ in "New OTP has been generated successfully" }.bind(to: showAlertSubject).disposed(by: disposeBag)
+
+        generateOTPRequest.elements()
+            .skip(1)
+            .map { _ in "screen_login_otp_genration_success".localized }
+            .bind(to: showAlertSubject)
+            .disposed(by: disposeBag)
     }
-    
-    open func verifyOneTimePasscode(mobileNo: String) {
-        
+
+    open func verifyOneTimePasscode(mobileNo: String, passcode:String) {
+
         let verifyRequest = sendSubject
             .withLatestFrom(Observable.combineLatest(textSubject.unwrap(), otpActionSubject))
-            .do(onNext: {[unowned self] _ in
+            .do(onNext: { [unowned self] _ in
                 self.editingSubject.onNext(false)
                 YAPProgressHud.showProgressHud()
             })
-            .flatMap { [unowned self] text, action -> Observable<Event<String?>> in
-                ///self.repository.verifyOTP(text, action: action!, mobileNumber: mobileNo)
-                return self.repository.generateLoginOTP(username: mobileNo, passcode: "1212", deviceId: UIDevice.current.identifierForVendor?.uuidString ?? "")
+            .flatMap { [unowned self] _ -> Observable<Event<String?>> in
+                return self.repository
+                    .generateLoginOTP(username: mobileNo, passcode: "1212", deviceId: UIDevice.deviceId)
             }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
-        
+
         let isOtpBlocked = verifyRequest.errors().map{ error -> Bool in
             guard case let NetworkErrors.internalServerError(serverError) = error else { return false }
             guard serverError?.errors.first?.code == "1095" else { return false }
             return true
         }
-        
+
         isOtpBlocked.bind(to: otpBlocked).disposed(by: disposeBag)
-        
+
         Observable.merge(isOtpBlocked.filter{ !$0 }.map{ _ in })
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .withLatestFrom(verifyRequest.errors()).map{ $0.localizedDescription }
             .bind(to: errorSuject)
             .disposed(by: disposeBag)
-        
+
         verifyRequest.errors().map { _ in nil }
             .do(onNext: { [unowned self] in self.otpForRequest = $0 })
             .bind(to: textSubject).disposed(by: disposeBag)
@@ -267,9 +277,11 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput, VerifyMobile
 }
 
 public extension VerifyMobileOTPViewModel {
-    
+
     func startTimer() -> Disposable {
-        let timer = Observable<NSInteger>.timer(RxTimeInterval.milliseconds(0), period: RxTimeInterval.seconds(1), scheduler: MainScheduler.instance)
+        let timer = Observable<NSInteger>.timer(RxTimeInterval.milliseconds(0),
+                                                period: RxTimeInterval.seconds(1),
+                                                scheduler: MainScheduler.instance)
         return Observable.combineLatest(timer, resendTimeSubject)
             .map { $0.1 - TimeInterval($0.0) }
             .bind(to: timerSubject)
@@ -278,12 +290,9 @@ public extension VerifyMobileOTPViewModel {
 
 // TODO: globalize extension to TimeInterval
 fileprivate extension VerifyMobileOTPViewModel {
-    
     func timeString(timeInterval: TimeInterval) -> String {
-        let minutes = Int(timeInterval/60.0)
+        let minutes = Int(timeInterval / 60.0)
         let seconds = Int(timeInterval) % 60
-        
-        return String.init(format: "%02d:%02d", minutes, seconds)
+        return String(format: "%02d: %02d", minutes, seconds)
     }
-    
 }

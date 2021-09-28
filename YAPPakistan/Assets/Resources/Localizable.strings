@@ -12,7 +12,7 @@
 "common_button_confirm" = "Confirm";
 "common_display_text_retry" = "Retry";
 "common_display_text_error_no_internet" = "Looks like you're offline. Please reconnect and refresh to continue using YAP.";
-"common_display_text_emirates_id" = "Emirates ID";
+"common_display_text_cnic" = "CNIC";
 "common_button_go_to_dashbaord" = "Go to dashboard";
 "common_button_re_scan" = "Re-scan Emirates ID";
 "common_display_text_gender_male" = "Male";
@@ -169,3 +169,10 @@
 "screen_light_dashboard_button_face_id" = "Face ID";
 "screen_light_dashboard_display_text_heading_text" = "Light Dashboard";
 "screen_lite_dashboard_button_complete_verification" = "Complete verification";
+
+// MARK: - KYC Home screen
+"screen_kyc_home_display_text_screen_title" = "Complete verification";
+"screen_kyc_home_display_text_sub_heading" = "%@, please scan your CNIC";
+"screen_kyc_home_button_skip" = "Skip and go to dashboard";
+"screen_kyc_home_button_skip_no_dashboard" = "Skip and go to dashboard";
+"screen_kyc_home_cnic_scan" = "Tap to scan your CNIC";

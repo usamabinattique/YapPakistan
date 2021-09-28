@@ -55,6 +55,8 @@ public protocol CustomerServiceType {
                                            passcode: String,
                                            deviceID: String,
                                            otp: String) -> Observable<T>
+
+    func fetchDocument<T: Codable>(byType documentType: String) -> Observable<T>
 }
 
     
@@ -183,5 +185,14 @@ public class CustomersService: BaseService, CustomerServiceType {
                                 body: body, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func fetchDocument<T: Codable>(byType documentType: String) -> Observable<T> {
+        let params = ["documentType": documentType]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/document-information",
+                                        query: params,
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: apiClient, route: route)
     }
 }
