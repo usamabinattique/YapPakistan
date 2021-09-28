@@ -46,7 +46,9 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
 
         viewModel.outputs.back.subscribe(onNext: { [unowned self] in
 
-            self.coordinate(to: LoginCoordinatorReplaceable(window: window, xsrfToken: container.xsrfToken, container: container))
+            self.coordinate(to: LoginCoordinatorReplaceable(window: window,
+                                                            xsrfToken: container.xsrfToken,
+                                                            container: container))
                 .subscribe(onNext: { result in
                     self.result.onNext(.logout)
                     self.result.onCompleted()
@@ -58,10 +60,9 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         }).disposed(by: rx.disposeBag)
 
         viewModel.outputs.result
-            .filter { $0.isSuccess?.optRequired ?? true}
-            .subscribe(onNext: { [weak self] _ in
-                self?.optVerification()
-            }).disposed(by: rx.disposeBag)
+            .filter({ $0.isSuccess?.optRequired ?? true })
+            .subscribe(onNext: { [weak self] _ in self?.optVerification() })
+            .disposed(by: rx.disposeBag)
 
         viewModel.outputs.loginResult
             .subscribe(onNext: { result in

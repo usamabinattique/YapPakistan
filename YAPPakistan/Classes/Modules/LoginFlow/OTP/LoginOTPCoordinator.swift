@@ -23,7 +23,7 @@ public enum LoginOTPVerificationResult {
 protocol LoginOTPCoordinatorType: Coordinator<LoginOTPVerificationResult> {
 
     var root: UINavigationController! { get }
-    var container:YAPPakistanMainContainer! { get }
+    var container: YAPPakistanMainContainer! { get }
     var result: PublishSubject<LoginOTPVerificationResult> { get }
 
 }
@@ -48,8 +48,10 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
 
     override func start(with option: DeepLinkOptionType?) -> Observable<LoginOTPVerificationResult> {
 
-        let otpRepository = container.makeOTPRepository(messageService: container.makeMessagesService(xsrfToken: xsrfToken),
-                                                        customerService: container.makeCustomersService(xsrfToken: xsrfToken))
+        let otpRepository = container.makeOTPRepository(
+            messageService: container.makeMessagesService(xsrfToken: xsrfToken),
+            customerService: container.makeCustomersService(xsrfToken: xsrfToken)
+        )
         let sessionProvider = container.makeSessionProvider(xsrfToken: xsrfToken)
         let username = container.credentialsStore.getUsername() ?? ""
         let passcode = container.credentialsStore.getPasscode(username: username) ?? ""
@@ -64,7 +66,6 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
                 self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
                 accountProvider = self.sessionContainer.accountProvider
                 demographicsRepository = self.sessionContainer.makeDemographicsRepository()
-
             }
 
         let viewController = container.makeVerifyMobileOTPViewController(viewModel: viewModel)

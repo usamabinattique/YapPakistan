@@ -34,29 +34,27 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
         root.pushViewController(loginViewController, animated: true)
 
         viewModel.outputs.signUp.subscribe(onNext: { [unowned self] in
-            if self.root.viewControllers.count > 1, self.root.viewControllers[self.root.viewControllers.count - 2] is AccountSelectionViewController {
+            if self.root.viewControllers.count > 1,
+               self.root.viewControllers[self.root.viewControllers.count - 2] is WelcomeViewController {
                 self.root.popViewController(animated: true)
                 self.root.navigationBar.isHidden = true
                 self.result.onNext(.cancel)
                 self.result.onCompleted()
-            } else {
-                //Account selection flow
             }
         }).disposed(by: rx.disposeBag)
 
         let logInResult = viewModel.outputs.result.share()
 
-        logInResult.filter({ $0.isCancel }).subscribe(onNext: { [unowned self] _ in
-            self.root.popViewController(animated: true)
-            self.result.onNext(.cancel)
-            self.result.onCompleted()
+        logInResult.filter({ $0.isCancel }).subscribe(onNext: { [weak self] _ in
+            self?.root.popViewController(animated: true)
+            self?.result.onNext(.cancel)
+            self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
 
         logInResult.filter({ $0.isSuccess != nil })
-            .map({$0.isSuccess})
+            .map({ $0.isSuccess })
             .unwrap()
             .subscribe(onNext: { [weak self] result in
-                //self?.passcode()
                 self?.navigateToPasscode(username: result.userName, isUserBlocked: result.isBlocked)
             })
             .disposed(by: rx.disposeBag)

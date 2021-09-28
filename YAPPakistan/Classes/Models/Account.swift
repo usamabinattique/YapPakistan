@@ -275,14 +275,7 @@ public enum EmiratesIdStatus: String, Codable {
 }
 
 public enum AccountType: String, Codable {
-    case b2bAccount = "B2B_ACCOUNT"
     case b2cAccount = "B2C_ACCOUNT"
-    case b2bSubAccount = "B2B_SUB_ACCOUNT"
-    case b2cSubAccount = "B2C_SUB_ACCOUNT"
-    case household = "B2C_HOUSEHOLD"
-    case partner = "PARTNER"
-    case master = "MASTER"
-    case admin = "ADMIN"
 }
 
 public enum PartnerBankStatus: String, Codable {

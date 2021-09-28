@@ -11,7 +11,7 @@ import UIKit
 import RxSwift
 import YAPCore
 
-public protocol AccountSelectionCoordinatorType: Coordinator<ResultType<Void>> {
+public protocol WelcomeCoordinatorType: Coordinator<ResultType<Void>> {
 
     var root: UINavigationController! { get }
     var result: PublishSubject<ResultType<Void>> { get }
@@ -24,7 +24,7 @@ public protocol AccountSelectionCoordinatorType: Coordinator<ResultType<Void>> {
     func b2cOnboarding()
 }
 
-extension AccountSelectionCoordinatorType {
+extension WelcomeCoordinatorType {
     /*
     func welcome() {
 //        coordinate(to: B2CKYCCoordinator(root: root)).subscribe().disposed(by: rx.disposeBag)
