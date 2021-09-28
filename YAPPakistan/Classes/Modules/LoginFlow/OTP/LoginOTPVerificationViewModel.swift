@@ -46,7 +46,7 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
 
         super.init(action: action, heading: heading, subheading: subheading, image: image,
                    badge: badge, otpTime: otpTime, otpLength: otpLength, resendTries: resendTries,
-                   repository: repository, mobileNo: mobileNo, backButtonImage: backButtonImage)
+                   repository: repository, mobileNo: mobileNo, passcode: passcode, backButtonImage: backButtonImage)
 
         viewAppearedSubject.filter{ $0 }.bind(to: editingSubject).disposed(by: disposeBag)
         timerDisposable = startTimer()
@@ -77,7 +77,7 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             .bind(to: showAlertSubject).disposed(by: disposeBag)
     }
 
-    override func verifyOneTimePasscode(mobileNo: String) {
+    override func verifyOneTimePasscode(mobileNo: String, passcode: String) {
 
         let verifyRequest = sendSubject.withLatestFrom(textSubject.unwrap())
             .do(onNext: { [unowned self] _ in

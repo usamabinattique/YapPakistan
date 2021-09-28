@@ -159,6 +159,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
                 resendTries: Int = 4,
                 repository: OTPRepositoryType,
                 mobileNo: String = "",
+                passcode: String,
                 backButtonImage: BackButtonType = .backEmpty) {
         self.headingSubject = BehaviorSubject(value: heading)
         self.subheadingSubject = BehaviorSubject(value: subheading)
@@ -179,7 +180,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .disposed(by: disposeBag)
 
         generateOneTimePasscode(mobileNo: mobileNo)
-        verifyOneTimePasscode(mobileNo: mobileNo)
+        verifyOneTimePasscode(mobileNo: mobileNo, passcode:passcode)
 
         Observable.combineLatest(otpBlocked, timerSubject.map{ $0 <= 0 })
             .map{ !$0.0 && $0.1 }
@@ -226,12 +227,12 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
 
         generateOTPRequest.elements()
             .skip(1)
-            .map { _ in "New OTP has been generated successfully" }
+            .map { _ in "screen_login_otp_genration_success".localized }
             .bind(to: showAlertSubject)
             .disposed(by: disposeBag)
     }
 
-    open func verifyOneTimePasscode(mobileNo: String) {
+    open func verifyOneTimePasscode(mobileNo: String, passcode:String) {
 
         let verifyRequest = sendSubject
             .withLatestFrom(Observable.combineLatest(textSubject.unwrap(), otpActionSubject))
