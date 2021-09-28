@@ -102,4 +102,23 @@ public final class UserSessionContainer {
 
         return viewController
     }
+
+    func makeKYCProgressViewController(navigationController: UINavigationController) -> KYCProgressViewController {
+        let viewModel = KYCProgressViewModel()
+        let viewController = KYCProgressViewController(themeService: themeService,
+                                                       viewModel: viewModel,
+                                                       withChildNavigation: navigationController)
+
+        return viewController
+    }
+
+    func makeKYCHomeViewController(initiatedFromDashboard: Bool) -> KYCHomeViewController {
+        let kycRepository = makeKYCRepository()
+        let viewModel = KYCHomeViewModel(accountProvider: accountProvider,
+                                         kycRepository: kycRepository,
+                                         initiatedFromDashboard: initiatedFromDashboard)
+        let viewController = KYCHomeViewController(themeService: themeService, viewModel: viewModel)
+
+        return viewController
+    }
 }
