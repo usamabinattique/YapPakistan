@@ -202,6 +202,11 @@ class KYCHomeViewController: UIViewController {
             }, secondaryButtonHandler: nil, completion: nil)
         }).disposed(by: disposeBag)
 
+        viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
+            self?.showAlert(title: "", message: error,
+                            defaultButtonTitle: "common_button_ok".localized)
+        }).disposed(by: disposeBag)
+
         cardView.rx.tap
             .bind(to: viewModel.inputs.cardObserver)
             .disposed(by: disposeBag)
