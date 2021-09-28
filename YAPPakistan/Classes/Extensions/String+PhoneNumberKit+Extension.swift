@@ -13,7 +13,7 @@ extension String {
         return self.replacingOccurrences(of: "+", with: "00").replacingOccurrences(of: " ", with: "")
     }
 
-    var toFormatedPhoneNumber:String {
+    var toFormatedPhoneNumber: String {
         guard self.count > 2 else { return self }
 
         let phoneNumberKit = PhoneNumberKit()
@@ -23,5 +23,14 @@ extension String {
         }
 
         return self
+    }
+
+    var toFormatedPhone:(number: String, isFormated: Bool) {
+        let phoneNumberKit = PhoneNumberKit()
+        if let pNumber = try? phoneNumberKit.parse(self) {
+            let formattedNumber = phoneNumberKit.format(pNumber, toType: .international)
+            return (formattedNumber, true)
+        }
+        return (self, false)
     }
 }

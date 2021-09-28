@@ -13,7 +13,7 @@ import AVKit
 import RxTheme
 import YAPComponents
 
-class AccountSelectionViewController: UIViewController {
+class WelcomeViewController: UIViewController {
 
     // MARK: UI Components
     fileprivate lazy var signInContainer = UIFactory.makeView(alpha: 0).setHidden(true)
@@ -100,7 +100,7 @@ class AccountSelectionViewController: UIViewController {
 
 // MARK: Setup video
 
-private extension AccountSelectionViewController {
+private extension WelcomeViewController {
 
     @objc
     func resetVideo() {
@@ -137,7 +137,7 @@ private extension AccountSelectionViewController {
 
 // MARK: View setup
 
-private extension AccountSelectionViewController {
+private extension WelcomeViewController {
 
     func setupSubViews() {
         view.layer
@@ -229,7 +229,7 @@ private extension AccountSelectionViewController {
 
 // MARK: Binding
 
-private extension AccountSelectionViewController {
+private extension WelcomeViewController {
 
     func bindViews() {
         getStartedButton.rx.tap.bind(to: viewModel.inputs.personalObserver).disposed(by: rx.disposeBag)
@@ -239,7 +239,7 @@ private extension AccountSelectionViewController {
 
 // MARK: Captions animation
 
-private extension AccountSelectionViewController {
+private extension WelcomeViewController {
 
     @objc
     func animationCaption() {

@@ -58,7 +58,7 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func accountSelection() { // -> Observable<ResultType<Void>> {
-        coordinate(to: AccountSelectionCoordinatorReplaceable(container: container, xsrfToken: xsrfToken, window: window)).subscribe { result in
+        coordinate(to: WelcomeCoordinatorReplaceable(container: container, xsrfToken: xsrfToken, window: window)).subscribe { result in
             self.result.onNext(.success(()))
             self.result.onCompleted()
         }.disposed(by: rx.disposeBag)
