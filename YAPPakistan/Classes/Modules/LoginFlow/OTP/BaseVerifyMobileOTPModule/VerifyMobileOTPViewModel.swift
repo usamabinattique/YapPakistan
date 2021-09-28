@@ -227,7 +227,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
 
         generateOTPRequest.elements()
             .skip(1)
-            .map { _ in "screen_login_otp_genration_success".localized }
+            .map { _ in "screen_otp_genration_success".localized }
             .bind(to: showAlertSubject)
             .disposed(by: disposeBag)
     }
@@ -242,7 +242,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             })
             .flatMap { [unowned self] _ -> Observable<Event<String?>> in
                 return self.repository
-                    .generateLoginOTP(username: mobileNo, passcode: "1212", deviceId: UIDevice.deviceId)
+                    .generateLoginOTP(username: mobileNo, passcode: passcode, deviceId: UIDevice.deviceId)
             }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()

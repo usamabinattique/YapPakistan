@@ -1,15 +1,15 @@
 //
-//  LoginOTPVerificationViewModel.swift
+//  ForgotOTPVerificationViewModel.swift
 //  YAPPakistan
 //
-//  Created by Sarmad on 20/09/2021.
+//  Created by Sarmad on 28/09/2021.
 //
 
 import Foundation
 import RxSwift
 import YAPComponents
 
-class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
+class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
     private let username: String
     private let passcode: String
     private let sessionCreator: SessionProviderType
@@ -147,3 +147,4 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             .disposed(by: disposeBag)
     }
 }
+
