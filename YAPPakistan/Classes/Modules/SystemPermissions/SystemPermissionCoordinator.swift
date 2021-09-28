@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import YAPCore
 
 public enum SystemPermissionType: String {
     case faceID = "Face ID"
@@ -16,20 +17,29 @@ public enum SystemPermissionType: String {
 
 public class SystemPermissionCoordinator: Coordinator<Void> {
     
-    var root: UINavigationController
-    var permissionType: SystemPermissionType
-    let account: Observable<Account?>
-    
-    public init(root: UINavigationController, type: SystemPermissionType, account: Observable<Account?>) {
+    let root: UINavigationController
+    let permissionType: SystemPermissionType
+    let container: YAPPakistanMainContainer
+    let account: Observable<Account?>?
+
+    public init(root: UINavigationController,
+                type: SystemPermissionType,
+                account: Observable<Account?>?,
+                container: YAPPakistanMainContainer) {
         self.root = root
         self.permissionType = type
         self.account = account
+        self.container = container
     }
-    
-    public override func start() -> Observable<Void> {
-        let viewModel: SystemPermissionViewModelType = SystemPermissionViewModel(permissionType: permissionType, account: self.account)
-        let viewController = SystemPermissionViewController(viewModel: viewModel)
-        
+
+    public override func start(with option: DeepLinkOptionType?) -> Observable<Void> {
+        let  notificationManager = NotificationManager()
+        let viewModel = SystemPermissionViewModel(permissionType: permissionType,
+                                                  account: self.account,
+                                                  notificationManager: notificationManager)
+        let viewController = SystemPermissionViewController(themeService: container.themeService,
+                                                            viewModel: viewModel,
+                                                            notificationManager: notificationManager)
         root.pushViewController(viewController, animated: true)
         return Observable.never()
     }
