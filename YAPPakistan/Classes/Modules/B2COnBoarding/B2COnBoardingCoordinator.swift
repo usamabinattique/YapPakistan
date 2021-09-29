@@ -127,7 +127,7 @@ private extension B2COnBoardingCoordinator {
 
     func navigateToCreatePasscode(user: OnBoardingUser) {
         let createPasscodeViewModel = CreatePasscodeViewModel()
-        let createPasscodeViewController = PINViewController(themeService: container.themeService, viewModel: createPasscodeViewModel, isCreatePasscode: true)
+        let createPasscodeViewController = PINViewController(themeService: container.themeService, viewModel: createPasscodeViewModel)
         let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: createPasscodeViewController)
         nav.modalPresentationStyle = .fullScreen
         root.present(nav, animated: true, completion: nil)

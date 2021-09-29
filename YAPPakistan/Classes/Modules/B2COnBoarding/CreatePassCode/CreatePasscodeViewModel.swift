@@ -26,6 +26,6 @@ public class CreatePasscodeViewModel: PINViewModel {
                 self.errorSubject.onNext(error.localizedDescription)
             }
         })
-            .disposed(by: disposeBag)
+        .disposed(by: disposeBag)
     }
 }
