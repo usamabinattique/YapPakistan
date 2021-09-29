@@ -93,6 +93,8 @@ class KYCHomeViewController: UIViewController {
         bindViewModel()
 
         viewModel.inputs.documentsUploadObserver.onNext(())
+
+//        AppAnalytics.shared.logEvent(KYCEvent.scanStart())
     }
 
     // MARK: View Setup
@@ -138,6 +140,7 @@ class KYCHomeViewController: UIViewController {
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
             .alignEdge(.top, withView: subHeadingLabel, .lessThanOrEqualTo, constant: 100)
             .alignEdge(.top, withView: subHeadingLabel, .greaterThanOrEqualTo, constant: 50)
+            .height(constant: 116)
 
         bottomStack
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
