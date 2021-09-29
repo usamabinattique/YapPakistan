@@ -108,7 +108,9 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
     public let errorSuject = PublishSubject<String>()
     public let editingSubject = PublishSubject<Bool>()
     private let imageFlagSubject: BehaviorSubject<Bool>
-    private let OTPResultSubject = PublishSubject<String>()
+
+    let OTPResultSubject = PublishSubject<String>()
+
     private let mobileNoSubject = BehaviorSubject<String?>(value: nil)
     public let showAlertSubject = PublishSubject<String>()
     private let backImageSubject = BehaviorSubject<BackButtonType>(value: .backEmpty)
@@ -232,8 +234,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .disposed(by: disposeBag)
     }
 
-    open func verifyOneTimePasscode(mobileNo: String, passcode:String) {
-
+    open func verifyOneTimePasscode(mobileNo: String, passcode: String) {
         let verifyRequest = sendSubject
             .withLatestFrom(Observable.combineLatest(textSubject.unwrap(), otpActionSubject))
             .do(onNext: { [unowned self] _ in

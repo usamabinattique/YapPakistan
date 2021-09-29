@@ -69,6 +69,10 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
                 }
             }).disposed(by: rx.disposeBag)
 
+        viewModel.outputs.forgot.withUnretained(self)
+            .subscribe(onNext: { $0.0.forgotOTPVerification() })
+            .disposed(by: rx.disposeBag)
+
         return result
     }
 

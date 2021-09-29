@@ -215,3 +215,38 @@ extension YAPPakistanMainContainer {
         return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }
+
+extension YAPPakistanMainContainer {
+    func makeForgotOTPCoordinator(root: UINavigationController) -> ForgotOTPCoordinator  {
+        return ForgotOTPCoordinator(root: root, xsrfToken: xsrfToken, container: self)
+    }
+
+    func makeForgotOTPViewController () -> VerifyMobileOTPViewController {
+
+        let messageService = self.makeMessagesService(xsrfToken: xsrfToken)
+        let customerService = self.makeCustomersService(xsrfToken: xsrfToken)
+        let otpRepository: OTPRepositoryType = makeOTPRepository(messageService: messageService, customerService: customerService)
+
+        let sessionProvider: SessionProviderType = makeSessionProvider(xsrfToken: xsrfToken)
+
+        let logo: UIImage? = UIImage(named: "icon_app_logo", in: .yapPakistan)
+        let headingKey: String = "screen_device_registration_otp_display_header_message"
+        let otpMessageKey: String = "screen_device_registration_otp_display_givn_text_message"
+
+        let mobileNo: String = credentialsStore.getUsername() ?? ""
+        let passcode: String = credentialsStore.getPasscode(username: mobileNo) ?? ""
+
+        let viewModel = ForgotOTPVerificationViewModel(action: OTPAction.forgotPassword,
+                                                       heading: headingKey.localized,
+                                                       subheading: String(format: otpMessageKey.localized,
+                                                                          mobileNo.toFormatedPhoneNumber),
+                                                       image: logo,
+                                                       repository: otpRepository,
+                                                       mobileNo: mobileNo,
+                                                       username: mobileNo,
+                                                       passcode: passcode,
+                                                       sessionCreator: sessionProvider)
+
+        return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+}

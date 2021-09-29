@@ -13,6 +13,8 @@ public protocol OTPRepositoryType {
     func generateOTP(action: OTPAction, mobileNumber: String) -> Observable<Event<String?>>
     func generateLoginOTP(username: String, passcode: String, deviceId: String) -> Observable<Event<String?>>
     func verifyLoginOTP(username: String, passcode: String, deviceId: String, otp: String) -> Observable<Event<String?>>
+    func generateForgotOTP(username: String) -> Observable<Event<String?>>
+    func verifyForgotOTP(username: String, otp: String) -> Observable<Event<String?>>
 }
 
 public class OTPRepository: OTPRepositoryType {
@@ -29,12 +31,20 @@ public class OTPRepository: OTPRepositoryType {
     public func generateOTP(action: OTPAction, mobileNumber: String) -> Observable<Event<String?>> {
         return messageService.generateOTP(action: action.rawValue, mobileNumber: mobileNumber).materialize()
     }
-    
+
     public func generateLoginOTP(username: String, passcode: String, deviceId: String) -> Observable<Event<String?>> {
         customerService.generateLoginOTP(username: username, passcode: passcode, deviceID: deviceId).materialize()
     }
     
     public func verifyLoginOTP(username: String, passcode: String, deviceId: String, otp: String) -> Observable<Event<String?>> {
         customerService.verifyLoginOTP(username: username, passcode: passcode, deviceID: deviceId, otp: otp).materialize()
+    }
+
+    public func generateForgotOTP(username: String) -> Observable<Event<String?>> {
+        messageService.generateForgotOTP(username: username).materialize()
+    }
+
+    public func verifyForgotOTP(username: String, otp: String) -> Observable<Event<String?>> {
+        messageService.verifyForgotOTP(username: username, otp: otp).materialize()
     }
 }

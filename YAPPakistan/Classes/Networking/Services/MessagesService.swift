@@ -13,6 +13,8 @@ public protocol MessageServiceType: AnyObject {
     func resendOTP<T: Codable>(countryCode: String, mobileNo: String, accountType: String) -> Observable<T>
     func verifyOTP<T: Codable>(countryCode: String, mobileNo: String, otp: String) -> Observable<T>
     func generateOTP<T>(action: String, mobileNumber: String?) -> RxSwift.Observable<T> where T : Decodable, T : Encodable
+    func generateForgotOTP<T: Codable>(username: String) -> Observable<T>
+    func verifyForgotOTP<T: Codable>(username: String, otp: String) -> Observable<T>
 }
 
 public class MessagesService: BaseService, MessageServiceType {
@@ -46,5 +48,30 @@ public class MessagesService: BaseService, MessageServiceType {
         }
         let route = APIEndpoint(.post, apiConfig.messagesURL, "/api/otp/sign-up/verify", pathVariables: pathVariables, body:body, headers:authorizationProvider.authorizationHeaders)
         return self.request(apiClient: apiClient, route: route)
+    }
+
+    public func generateForgotOTP<T: Codable>(username: String) -> Observable<T> {
+        let request = [
+            "destination": username,
+            "emailOTP": "false"
+        ]
+
+        let route = APIEndpoint(.post, apiConfig.messagesURL, "/api/otp/action/forgot-password",
+                                body: request, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func verifyForgotOTP<T: Codable>(username: String, otp: String) -> Observable<T> {
+        let request = [
+            "otp": otp,
+            "destination": username,
+            "emailOTP": "false"
+        ]
+
+        let route = APIEndpoint(.put, apiConfig.messagesURL, "/api/otp/action/forgot-password",
+                                body: request, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
     }
 }

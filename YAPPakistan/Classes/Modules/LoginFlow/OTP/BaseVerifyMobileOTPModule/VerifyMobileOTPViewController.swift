@@ -31,9 +31,9 @@ public class VerifyMobileOTPViewController: UIViewController {
                                                                     spacing: 10)
 
     private var themeService: ThemeService<AppTheme>!
-    private var viewModel: VerifyMobileOTPViewModelType!
     private let disposeBag = DisposeBag()
     private var sendButtonBottomConstraint: NSLayoutConstraint!
+    var viewModel: VerifyMobileOTPViewModelType!
 
     public init(themeService: ThemeService<AppTheme>, viewModel: VerifyMobileOTPViewModelType) {
         self.viewModel = viewModel
@@ -232,7 +232,7 @@ private extension VerifyMobileOTPViewController {
         viewModel.outputs.showAlert.subscribe(onNext: { [weak self] in
             self?.showAlert(title: "",
                             message: $0,
-                            defaultButtonTitle: "Ok",
+                            defaultButtonTitle: "common_button_ok".localized,
                             secondayButtonTitle: nil,
                             defaultButtonHandler: { [weak self] _ in
                 _ = self?.codeTextField.becomeFirstResponder()

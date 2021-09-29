@@ -15,8 +15,6 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
     private let sessionCreator: SessionProviderType
     var timerDisposable: Disposable?
 
-    private let onLoginClosure: OnLoginClosure
-
     private var session: Session!
     private var accountProvider: AccountProvider?
 
@@ -36,13 +34,11 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
          backButtonImage: BackButtonType = .backEmpty,
          username: String,
          passcode: String,
-         sessionCreator: SessionProviderType,
-         onLogin: @escaping OnLoginClosure) {
-
+         sessionCreator: SessionProviderType) {
+        
         self.username = username
         self.passcode = passcode
         self.sessionCreator = sessionCreator
-        self.onLoginClosure = onLogin
 
         super.init(action: action, heading: heading, subheading: subheading, image: image,
                    badge: badge, otpTime: otpTime, otpLength: otpLength, resendTries: resendTries,
@@ -56,9 +52,7 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
         let generateOTPRequest = generateOTPSubject
             .do(onNext: { YAPProgressHud.showProgressHud() })
             .flatMap { [unowned self] _ -> Observable<Event<String?>> in
-                return self.repository.generateLoginOTP(username: self.username,
-                                                        passcode: self.passcode,
-                                                        deviceId: UIDevice.deviceID)
+                return self.repository.generateForgotOTP(username: mobileNo)
             }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
@@ -84,11 +78,8 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
                 self.editingSubject.onNext(false)
                 YAPProgressHud.showProgressHud()
             })
-            .flatMap { [unowned self] text -> Observable<Event<String?>> in
-                self.repository.verifyLoginOTP(username: self.username,
-                                               passcode: self.passcode,
-                                               deviceId: UIDevice.deviceID,
-                                               otp: text)
+            .flatMap { [unowned self] otp -> Observable<Event<String?>> in
+                self.repository.verifyForgotOTP(username: mobileNo, otp: otp)
             }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
@@ -106,16 +97,7 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
             .do(onNext: { [unowned self] in self.otpForRequest = $0 })
             .bind(to: textSubject).disposed(by: disposeBag)
 
-        verifyRequest.elements().subscribe(onNext: { data in
-            guard let componenets = data?.components(separatedBy: "%") else { return }
-            if let jwt = componenets.count > 1 ? componenets.last : nil {
-                self.session = self.sessionCreator.makeUserSession(jwt: jwt)
-            }
-
-            self.onLoginClosure(self.session, &self.accountProvider, &self.demographicsRepository)
-            self.saveDeviceSubject.onNext(())
-            self.refreshAccount()
-        }).disposed(by: disposeBag)
+        verifyRequest.elements().unwrap().bind(to: OTPResultSubject).disposed(by: disposeBag)
 
         saveDeviceSubject.flatMap { _ in
             return self.demographicsRepository.saveDemographics(action: "LOGIN", token: nil)
