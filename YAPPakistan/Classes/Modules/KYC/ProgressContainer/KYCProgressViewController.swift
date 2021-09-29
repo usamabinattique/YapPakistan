@@ -23,7 +23,6 @@ class KYCProgressViewController: UIViewController {
         progressView.showsCompletionView = true
         progressView.backImage = UIImage(named: "icon_back", in: .yapPakistan)
         progressView.completionImage = UIImage(named: "icon_check", in: .yapPakistan)
-        progressView.isHidden = true
         return progressView
     }()
 
@@ -37,7 +36,7 @@ class KYCProgressViewController: UIViewController {
     private var childView: UIView!
 
     // MARK: Initialization
-    
+
     init(themeService: ThemeService<AppTheme>,
          viewModel: KYCProgressViewModelType,
          withChildNavigation childNav: UINavigationController) {
@@ -94,8 +93,12 @@ class KYCProgressViewController: UIViewController {
     // MARK: Binding
 
     private func bindViewModel() {
+        viewModel.outputs.hidesProgress
+            .bind(to: progressView.rx.isHidden)
+            .disposed(by: disposeBag)
+
         viewModel.outputs.progress
-            .bind(to: progressView.rx.progress)
+            .bind(to: progressView.rx.progressWithoutAnimation)
             .disposed(by: disposeBag)
 
         viewModel.outputs.progress

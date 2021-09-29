@@ -17,6 +17,14 @@ extension Reactive where Base: OnBoardingProgressView {
         }
     }
 
+    var progressWithoutAnimation: Binder<Float> {
+        return Binder(self.base) { progressView, progress -> Void in
+            UIView.performWithoutAnimation {
+                progressView.setProgress(progress)
+            }
+        }
+    }
+
     var tapBack: ControlEvent<Void> {
         return self.base.backButton.rx.tap
     }
