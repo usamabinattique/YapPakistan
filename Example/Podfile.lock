@@ -3,6 +3,7 @@ PODS:
     - Adjust/Core (= 4.29.5)
   - Adjust/Core (4.29.5)
   - Alamofire (5.4.3)
+  - CardScanner (1.2.2)
   - Differentiator (5.0.0)
   - HWPanModal (0.8.9)
   - PhoneNumberKit (3.3.3):
@@ -74,6 +75,7 @@ PODS:
   - YAPPakistan (0.1.0):
     - Adjust (= 4.29.5)
     - Alamofire (= 5.4.3)
+    - CardScanner
     - HWPanModal (= 0.8.9)
     - PhoneNumberKit (= 3.3.3)
     - RxCocoa (= 6.2.0)
@@ -95,6 +97,8 @@ DEPENDENCIES:
   - YAPPakistan (from `../`)
 
 SPEC REPOS:
+  https://bitbucket.org/mb28/privatetrunk.git:
+    - CardScanner
   trunk:
     - Adjust
     - Alamofire
@@ -124,6 +128,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Adjust: 5cab100ac05eebde8141b48a2acffd6b5ce0564b
   Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
+  CardScanner: 7ca407023270f72788fe0e664de5d99b0bd7baf5
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
   HWPanModal: 259f6916c706b3f63003a325ad1bdfbe913b0fdc
   PhoneNumberKit: 4ce83273551c4d2ae10b7361162f4283dd02835f
@@ -140,8 +145,8 @@ SPEC CHECKSUMS:
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   YAPComponents: 973a1d656d519b7de5e0f2bbc5bdba4466014b60
   YAPCore: 0557b67171d41c611085fcaa8a885e9a29552744
-  YAPPakistan: fb4d557509fe21d5c3222de9f97eb23ccd6945a1
+  YAPPakistan: 91eb950704a0db39828815da1e3baf1ff4faa2b3
 
-PODFILE CHECKSUM: 3103623bdd8c4436e4f8e91ea84c7122a7ab660f
+PODFILE CHECKSUM: c55282bf4c906c05daa1f870ba67bd7b0cdccdbf
 
 COCOAPODS: 1.10.1
