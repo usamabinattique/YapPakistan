@@ -17,12 +17,10 @@ class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorTyp
     var result = PublishSubject<LoginResult>()
 
     init(window: UIWindow,
-         xsrfToken: String,
          container: YAPPakistanMainContainer
     ){
         self.window = window
         self.container = container
-        self.container.xsrfToken = xsrfToken
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<LoginResult> {

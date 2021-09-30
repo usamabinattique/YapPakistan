@@ -16,23 +16,19 @@ class CreateNewPasscodeViewModel: PasscodeViewModel {
     var username: String
     var token: String
 
-
     init(repository: PINRepositoryType,
          credentialsManager: CredentialsStoreType,
          username: String,
-         token: String
+         token: String,
+         passcodeViewStrings: PasscodeViewStrings,
+         pinRange: ClosedRange<Int>
     ) {
         self.repository = repository
         self.credentialsManager = credentialsManager
         self.username = username
         self.token = token
 
-        let pinRange: ClosedRange<Int> = 4...6
-        let strings = PasscodeViewStrings(heading: "screen_create_passcode_display_text_title".localized,
-                                          agrement: "screen_create_passcode_display_text_terms_and_conditions".localized,
-                                          terms: "screen_create_passcode_display_button_terms_and_conditions".localized,
-                                          action: "screen_create_passcode_button_create_new_passcode".localized)
-        super.init(pinRange: pinRange, localizeableKeys: strings)
+        super.init(pinRange: pinRange, localizeableKeys: passcodeViewStrings)
 
         let changePasscodeRequest = actionSubject.withLatestFrom(pinTextSubject).unwrap().withUnretained(self)
             .do(onNext: { $0.0.loaderSubject.onNext(true) })

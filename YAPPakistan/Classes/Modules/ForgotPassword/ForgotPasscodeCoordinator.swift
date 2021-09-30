@@ -17,7 +17,7 @@ protocol ForgotPasscodeCoordinatorType: Coordinator<ResultType<Void>> {
 }
 
 class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCoordinatorType {
-    let xsrfToken: String
+
     var root: UINavigationController!
     var container: YAPPakistanMainContainer!
     var result = PublishSubject<ResultType<Void>>()
@@ -25,19 +25,13 @@ class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCo
     private var sessionContainer: UserSessionContainer!
 
     init(root: UINavigationController,
-         xsrfToken: String,
          container: YAPPakistanMainContainer
-    ){
-        self.xsrfToken = xsrfToken
+    ) {
         self.root = root
         self.container = container
-        self.container.xsrfToken = xsrfToken
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-
-        /*let viewModel = container
-            .makeForgotOTPVerificationViewModel() */
 
         let viewController = container.makeForgotOTPViewController()
         let viewModel = viewController.viewModel as? ForgotOTPVerificationViewModel
