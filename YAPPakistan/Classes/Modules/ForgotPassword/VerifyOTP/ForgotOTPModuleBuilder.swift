@@ -15,7 +15,6 @@ struct ForgotOTPModuleBuilder {
         let customerService = container.makeCustomersService(xsrfToken: container.xsrfToken)
         let otpRepository = container.makeOTPRepository(messageService: messageService,
                                                         customerService: customerService)
-        let sessionProvider = container.makeSessionProvider(xsrfToken: container.xsrfToken)
 
         let logo: UIImage? = UIImage(named: "icon_app_logo", in: .yapPakistan)
         let heading: String = "screen_device_registration_otp_display_header_message".localized
