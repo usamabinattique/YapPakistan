@@ -93,8 +93,6 @@ class KYCHomeViewController: UIViewController {
         bindViewModel()
 
         viewModel.inputs.documentsUploadObserver.onNext(())
-
-//        AppAnalytics.shared.logEvent(KYCEvent.scanStart())
     }
 
     // MARK: View Setup
