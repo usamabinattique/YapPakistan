@@ -12,7 +12,7 @@ import YAPCore
 import CardScanner
 
 class KYCCoordinator: Coordinator<ResultType<Void>> {
-    var container: UserSessionContainer
+    var container: KYCFeatureContainer
     var root: UINavigationController!
     var currentRoot: UINavigationController!
     var result = PublishSubject<ResultType<Void>>()
@@ -25,7 +25,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
     let disposeBag = DisposeBag()
 
-    init(container: UserSessionContainer,
+    init(container: KYCFeatureContainer,
          root: UINavigationController,
          cnicUploadObserver: AnyObserver<Void>? = nil,
          initiatedFromDashboard: Bool = true) {

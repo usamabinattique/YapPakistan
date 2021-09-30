@@ -18,7 +18,7 @@ enum CNICScanType: Equatable {
 }
 
 class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
-    private let container: UserSessionContainer
+    private let container: KYCFeatureContainer
     private let root: UINavigationController!
     private let scannerResultSubject = PublishSubject<ResultType<IdentityScannerResult>>()
     private var scanner: IdentityScanner!
@@ -26,7 +26,7 @@ class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
     let presentationCompletion = PublishSubject<Void>()
     let scanType: CNICScanType!
 
-    init(container: UserSessionContainer, root: UINavigationController!, scanType: CNICScanType) {
+    init(container: KYCFeatureContainer, root: UINavigationController!, scanType: CNICScanType) {
         self.container = container
         self.root = root
         self.scanType = scanType
