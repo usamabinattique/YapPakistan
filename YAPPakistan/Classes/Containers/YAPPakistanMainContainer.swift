@@ -23,7 +23,8 @@ public final class YAPPakistanMainContainer {
     let themeService: ThemeService<AppTheme>
     let credentialsStore: CredentialsStoreType
     let referralManager: AppReferralManager
-    var xsrfToken: String! = nil
+
+    private(set) var xsrfToken: String!
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
@@ -133,6 +134,21 @@ public final class YAPPakistanMainContainer {
                              authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
         return UIViewController()
     }
+
+    public func makeWelcomeCoordinator(xsrfToken: String, window: UIWindow) -> WelcomeCoordinatorReplaceable {
+        self.xsrfToken = xsrfToken
+        return WelcomeCoordinatorReplaceable(container: self, xsrfToken: xsrfToken, window: window)
+    }
+
+    func makePasscodeCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> PasscodeCoordinatorReplaceable {
+        self.xsrfToken = xsrfToken
+        return PasscodeCoordinatorReplaceable(window: window, container: self)
+    }
+
+    func makeLoginCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> LoginCoordinatorReplaceable {
+        self.xsrfToken = xsrfToken
+        return LoginCoordinatorReplaceable(window: window, container: self)
+    }
 }
 
 extension YAPPakistanMainContainer {
@@ -218,35 +234,10 @@ extension YAPPakistanMainContainer {
 
 extension YAPPakistanMainContainer {
     func makeForgotPasscodeCoordinator(root: UINavigationController) -> ForgotPasscodeCoordinator  {
-        return ForgotPasscodeCoordinator(root: root, xsrfToken: xsrfToken, container: self)
+        return ForgotPasscodeCoordinator(root: root, container: self)
     }
 
     func makeForgotOTPViewController () -> VerifyMobileOTPViewController {
-
-        let messageService = self.makeMessagesService(xsrfToken: xsrfToken)
-        let customerService = self.makeCustomersService(xsrfToken: xsrfToken)
-        let otpRepository: OTPRepositoryType = makeOTPRepository(messageService: messageService, customerService: customerService)
-
-        let sessionProvider: SessionProviderType = makeSessionProvider(xsrfToken: xsrfToken)
-
-        let logo: UIImage? = UIImage(named: "icon_app_logo", in: .yapPakistan)
-        let headingKey: String = "screen_device_registration_otp_display_header_message"
-        let otpMessageKey: String = "screen_device_registration_otp_display_givn_text_message"
-
-        let mobileNo: String = credentialsStore.getUsername() ?? ""
-        let passcode: String = credentialsStore.getPasscode(username: mobileNo) ?? ""
-
-        let viewModel = ForgotOTPVerificationViewModel(action: OTPAction.forgotPassword,
-                                                       heading: headingKey.localized,
-                                                       subheading: String(format: otpMessageKey.localized,
-                                                                          mobileNo.toFormatedPhoneNumber),
-                                                       image: logo,
-                                                       repository: otpRepository,
-                                                       mobileNo: mobileNo,
-                                                       username: mobileNo,
-                                                       passcode: passcode,
-                                                       sessionCreator: sessionProvider)
-
-        return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
+        return ForgotOTPModuleBuilder(container: self).viewController()
     }
 }

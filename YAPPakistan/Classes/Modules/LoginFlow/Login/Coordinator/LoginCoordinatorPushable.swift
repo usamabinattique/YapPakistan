@@ -16,12 +16,10 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
     var result = PublishSubject<LoginResult>()
 
     init(root: UINavigationController,
-         xsrfToken: String,
          container: YAPPakistanMainContainer
     ){
         self.root = root
         self.container = container
-        self.container.xsrfToken = xsrfToken
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<LoginResult> {

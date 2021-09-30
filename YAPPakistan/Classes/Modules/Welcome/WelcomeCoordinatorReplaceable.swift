@@ -81,7 +81,9 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>>, Welco
     }
 
     public func b2cOnboarding() {
-        coordinate(to: B2COnBoardingCoordinator(container: container, xsrfToken: xsrfToken, navigationController: self.root))
+        coordinate(to: B2COnBoardingCoordinator(container: container,
+                                                xsrfToken: xsrfToken,
+                                                navigationController: self.root))
             .subscribe(onNext: { [weak self] result in
                 guard let `self` = self else { return }
                 self.b2cOnboardingResult.onNext(result)
@@ -90,7 +92,7 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>>, Welco
     }
     
     public func login() {
-        coordinate(to: LoginCoordinatorPushable(root: self.root, xsrfToken: xsrfToken, container: self.container) )
+        coordinate(to: LoginCoordinatorPushable(root: self.root, container: self.container) )
             .subscribe(onNext: { [weak self] _ in
                 self?.result.onNext(.success(()))
                 self?.result.onCompleted()
