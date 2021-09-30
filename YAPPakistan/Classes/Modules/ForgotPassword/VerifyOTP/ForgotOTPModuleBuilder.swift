@@ -31,8 +31,7 @@ struct ForgotOTPModuleBuilder {
                                                        repository: otpRepository,
                                                        mobileNo: mobileNo,
                                                        username: mobileNo,
-                                                       passcode: passcode,
-                                                       sessionCreator: sessionProvider)
+                                                       passcode: passcode)
 
         return VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
     }
