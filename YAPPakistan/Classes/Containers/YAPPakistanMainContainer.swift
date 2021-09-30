@@ -264,4 +264,9 @@ extension YAPPakistanMainContainer {
                                                    token: token)
         return PasscodeViewController(themeService: themeService, viewModel: viewModel)
     }
+
+    func makePasscodeSuccessViewController() ->PasscodeSuccessViewController {
+        let viewModel = PasscodeSuccessViewModel()
+        return PasscodeSuccessViewController(themeService: themeService, viewModel: viewModel)
+    }
 }

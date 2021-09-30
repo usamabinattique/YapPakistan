@@ -79,10 +79,9 @@ class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCo
     }
 
     func successScreen() {
-        let viewModel = PasscodeSuccessViewModel()
-        let viewController = PasscodeSuccessViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewController = container.makePasscodeSuccessViewController()
 
-        viewModel.outputs.action.withUnretained(self)
+        viewController.viewModel.outputs.action.withUnretained(self)
             .subscribe(onNext: {
                 let count = $0.0.root.viewControllers.count
                 $0.0.root.viewControllers.remove(at: count - 2)
@@ -92,6 +91,7 @@ class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCo
                 $0.0.result.onCompleted()
             })
             .disposed(by: rx.disposeBag)
+        
         self.root.pushViewController(viewController)
     }
 }
