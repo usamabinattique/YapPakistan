@@ -217,8 +217,8 @@ extension YAPPakistanMainContainer {
 }
 
 extension YAPPakistanMainContainer {
-    func makeForgotOTPCoordinator(root: UINavigationController) -> ForgotOTPCoordinator  {
-        return ForgotOTPCoordinator(root: root, xsrfToken: xsrfToken, container: self)
+    func makeForgotPasscodeCoordinator(root: UINavigationController) -> ForgotPasscodeCoordinator  {
+        return ForgotPasscodeCoordinator(root: root, xsrfToken: xsrfToken, container: self)
     }
 
     func makeForgotOTPViewController () -> VerifyMobileOTPViewController {
