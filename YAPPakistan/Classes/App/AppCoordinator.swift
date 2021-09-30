@@ -19,7 +19,6 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     let reposiotry: SplashRepository
 
     private let userSession = PublishSubject<ResultType<Void>>()
-    private var xsrfToken = ""
 
     public init(window: UIWindow,
                 shortcutItem: UIApplicationShortcutItem?,
@@ -32,50 +31,54 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        reposiotry.fetchXSRFToken().subscribe(onNext: { [unowned self] _ in
-            self.xsrfToken = HTTPCookieStorage.shared.cookies?.filter({ $0.name == "XSRF-TOKEN" }).first?.value ?? ""
+        reposiotry.fetchXSRFToken()
+            .subscribe(onNext: { [unowned self] _ in
 
-        if AppSettings.isAppRunFirstTime {
-            self.accountSelection()
-            _ = container.credentialsStore.setRemembersId(false)
-            _ = container.credentialsStore.clearUsername()
-            AppSettings.isAppRunFirstTime = false
-        } else if container.credentialsStore.credentialsAvailable() {
-            self.verifyPasscode()
-        } else {
-            self.loginScreen()
-        }
-            
-        }).disposed(by: rx.disposeBag)
+                let xsrfToken = HTTPCookieStorage.shared.cookies?.first(where: { $0.name == "XSRF-TOKEN" })?.value ?? ""
+
+                if AppSettings.isAppRunFirstTime {
+                    prepareFirstTimeLaunch(xsrfToken: xsrfToken)
+                } else if container.credentialsStore.credentialsAvailable() {
+                    verifyPasscode(xsrfToken: xsrfToken)
+                } else {
+                    loginScreen(xsrfToken: xsrfToken)
+                }
+
+            }).disposed(by: rx.disposeBag)
 
         return result
     }
 
-    func onboarding() {
-        let viewModel = OnBoardingViewModel()
-        let viewController = OnBoardingViewController(themeService: container.themeService, viewModel: viewModel, withChildNavigation: UINavigationController())
-        window.rootViewController = viewController
-    }
-
-    func accountSelection() { // -> Observable<ResultType<Void>> {
-        coordinate(to: WelcomeCoordinatorReplaceable(container: container, xsrfToken: xsrfToken, window: window)).subscribe { result in
+    func welcome(xsrfToken: String) {
+        coordinate(to: container.makeWelcomeCoordinator(xsrfToken: xsrfToken, window: window)).subscribe { result in
             self.result.onNext(.success(()))
             self.result.onCompleted()
         }.disposed(by: rx.disposeBag)
     }
-    
-    func verifyPasscode() {
-        coordinate(to: PasscodeCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
-            self.result.onNext(.success(()))
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+
+    func verifyPasscode(xsrfToken: String) {
+        coordinate(to: container.makePasscodeCoordinatorReplaceable(xsrfToken: xsrfToken, window: window))
+            .subscribe(onNext: { result in
+                self.result.onNext(.success(()))
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
     }
-    
-    func loginScreen() {
-        coordinate(to: LoginCoordinatorReplaceable(window: window, xsrfToken: xsrfToken, container: container)).subscribe(onNext: { result in
-            self.result.onNext(.success(()))
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+
+    func loginScreen(xsrfToken: String) {
+        coordinate(to: container.makeLoginCoordinatorReplaceable(xsrfToken: xsrfToken, window: window))
+            .subscribe(onNext: { result in
+                self.result.onNext(.success(()))
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
     }
-    
+}
+
+// MARK: Helpers
+fileprivate extension AppCoordinator {
+    func prepareFirstTimeLaunch(xsrfToken: String) {
+        self.welcome(xsrfToken: xsrfToken)
+        _ = container.credentialsStore.setRemembersId(false)
+        _ = container.credentialsStore.clearUsername()
+        AppSettings.isAppRunFirstTime = false
+    }
 }

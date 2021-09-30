@@ -12,14 +12,7 @@ import YAPComponents
 class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
     private let username: String
     private let passcode: String
-    private let sessionCreator: SessionProviderType
     var timerDisposable: Disposable?
-
-    private var session: Session!
-    private var accountProvider: AccountProvider?
-
-    private let saveDeviceSubject = PublishSubject<Void>()
-    private var demographicsRepository: DemographicsRepositoryType!
 
     init(action: OTPAction,
          heading: String? = nil,
@@ -35,10 +28,9 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
          username: String,
          passcode: String,
          sessionCreator: SessionProviderType) {
-        
+
         self.username = username
         self.passcode = passcode
-        self.sessionCreator = sessionCreator
 
         super.init(action: action, heading: heading, subheading: subheading, image: image,
                    badge: badge, otpTime: otpTime, otpLength: otpLength, resendTries: resendTries,
@@ -98,35 +90,6 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
             .bind(to: textSubject).disposed(by: disposeBag)
 
         verifyRequest.elements().unwrap().bind(to: OTPResultSubject).disposed(by: disposeBag)
-
-        saveDeviceSubject.flatMap { _ in
-            return self.demographicsRepository.saveDemographics(action: "LOGIN", token: nil)
-        }.subscribe().disposed(by: disposeBag)
-    }
-
-    private func refreshAccount() {
-        guard let accountProvider = accountProvider else {
-            return assertionFailure()
-        }
-
-        accountProvider.currentAccount
-            .unwrap()
-            .take(1)
-            .do(onNext: { _ in
-                YAPProgressHud.hideProgressHud()
-            })
-            .subscribe(onNext: { account in
-                if account.isWaiting {
-                    self.loginResultSubject.onNext(.waiting)
-                } else if (account.iban ?? "").isEmpty {
-                    self.loginResultSubject.onNext(.allowed)
-                } else if account.isOTPBlocked {
-                    self.loginResultSubject.onNext(.blocked)
-                } else {
-                    self.loginResultSubject.onNext(.dashboard)
-                }
-            })
-            .disposed(by: disposeBag)
     }
 }
 

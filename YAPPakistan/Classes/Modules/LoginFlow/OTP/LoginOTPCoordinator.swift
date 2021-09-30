@@ -29,7 +29,7 @@ protocol LoginOTPCoordinatorType: Coordinator<LoginOTPVerificationResult> {
 }
 
 class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoordinatorType {
-    let xsrfToken: String
+
     var root: UINavigationController!
     var container: YAPPakistanMainContainer!
     var result = PublishSubject<LoginOTPVerificationResult>()
@@ -37,22 +37,19 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
     private var sessionContainer: UserSessionContainer!
 
     init(root: UINavigationController,
-         xsrfToken: String,
          container: YAPPakistanMainContainer
     ){
-        self.xsrfToken = xsrfToken
         self.root = root
         self.container = container
-        self.container.xsrfToken = xsrfToken
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<LoginOTPVerificationResult> {
 
         let otpRepository = container.makeOTPRepository(
-            messageService: container.makeMessagesService(xsrfToken: xsrfToken),
-            customerService: container.makeCustomersService(xsrfToken: xsrfToken)
+            messageService: container.makeMessagesService(xsrfToken: self.container.xsrfToken),
+            customerService: container.makeCustomersService(xsrfToken: self.container.xsrfToken)
         )
-        let sessionProvider = container.makeSessionProvider(xsrfToken: xsrfToken)
+        let sessionProvider = container.makeSessionProvider(xsrfToken: self.container.xsrfToken)
         let username = container.credentialsStore.getUsername() ?? ""
         let passcode = container.credentialsStore.getPasscode(username: username) ?? ""
 

@@ -24,7 +24,6 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
     ){
         self.root = root
         self.container = container
-        self.container.xsrfToken = xsrfToken
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
@@ -78,7 +77,7 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
 
     func optVerification() {
 
-        coordinate(to: LoginOTPCoordinator(root: root, xsrfToken: container.xsrfToken, container: container))
+        coordinate(to: LoginOTPCoordinator(root: root, container: container))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .cancel:

@@ -19,12 +19,10 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
     private var sessionContainer: UserSessionContainer!
 
     init(window: UIWindow,
-         xsrfToken: String,
          container: YAPPakistanMainContainer
     ){
         self.window = window
         self.container = container
-        self.container.xsrfToken = xsrfToken
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
@@ -47,7 +45,6 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         viewModel.outputs.back.subscribe(onNext: { [unowned self] in
 
             self.coordinate(to: LoginCoordinatorReplaceable(window: window,
-                                                            xsrfToken: container.xsrfToken,
                                                             container: container))
                 .subscribe(onNext: { result in
                     self.result.onNext(.logout)
@@ -90,7 +87,7 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
 
     func optVerification() {
 
-        coordinate(to: LoginOTPCoordinator(root: root, xsrfToken: container.xsrfToken, container: container))
+        coordinate(to: LoginOTPCoordinator(root: root, container: container))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .cancel:
