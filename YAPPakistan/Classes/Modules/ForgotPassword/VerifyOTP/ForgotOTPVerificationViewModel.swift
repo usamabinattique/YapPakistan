@@ -26,8 +26,7 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
          mobileNo: String = "",
          backButtonImage: BackButtonType = .backEmpty,
          username: String,
-         passcode: String,
-         sessionCreator: SessionProviderType) {
+         passcode: String) {
 
         self.username = username
         self.passcode = passcode
