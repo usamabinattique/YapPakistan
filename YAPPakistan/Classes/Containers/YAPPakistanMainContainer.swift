@@ -250,8 +250,7 @@ extension YAPPakistanMainContainer {
         return CreateNewPasscodeBuilder(container: self, token: token).viewController()
     }
 
-    func makePasscodeSuccessViewController() ->PasscodeSuccessViewController {
-        let viewModel = PasscodeSuccessViewModel()
-        return PasscodeSuccessViewController(themeService: themeService, viewModel: viewModel)
+    func makePasscodeSuccessViewController() -> PasscodeSuccessViewController {
+        return PasscodeSuccessModuleBuilder(container: self).viewController()
     }
 }

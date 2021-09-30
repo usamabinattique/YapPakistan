@@ -46,9 +46,15 @@ class PasscodeSuccessViewModel: PasscodeSuccessViewModelType,
     private var subHeadingTitleSubject: BehaviorSubject<String?>
     private var actionButtonTitleSubject: BehaviorSubject<String?>
 
-    init(actionButtonTitle: String = "") {
-        headingTitleSubject = BehaviorSubject(value: "screen_passcode_success_display_text_heading".localized)
-        subHeadingTitleSubject = BehaviorSubject(value: "screen_passcode_success_display_text_sub_heading".localized)
-        actionButtonTitleSubject = BehaviorSubject(value: "common_button_Done".localized)
+    init(passcodeSuccessViewStrings: PasscodeSuccessViewStrings) {
+        headingTitleSubject = BehaviorSubject(value: passcodeSuccessViewStrings.heading)
+        subHeadingTitleSubject = BehaviorSubject(value: passcodeSuccessViewStrings.subHeading)
+        actionButtonTitleSubject = BehaviorSubject(value: passcodeSuccessViewStrings.action)
     }
+}
+
+struct PasscodeSuccessViewStrings {
+    var heading: String
+    var subHeading: String
+    var action: String
 }
