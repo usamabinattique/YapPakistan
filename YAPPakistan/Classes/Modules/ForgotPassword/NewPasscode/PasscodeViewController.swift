@@ -206,6 +206,7 @@ fileprivate extension PasscodeViewController {
         viewModel.outputs.pinText.bind(to: codeLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.pinValid.bind(to: createPINButton.rx.isEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
         viewModel.outputs.shake
             .subscribe(onNext: { [unowned self] in
                 self.codeLabel.animate([Animation.shake(duration: 0.1)])

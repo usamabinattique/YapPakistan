@@ -57,6 +57,8 @@ public protocol CustomerServiceType {
                                            otp: String) -> Observable<T>
 
     func fetchDocument<T: Codable>(byType documentType: String) -> Observable<T>
+
+    func newPassword<T: Codable>(username: String, token: String, password: String) -> Observable<T>
 }
 
     
@@ -194,5 +196,18 @@ public class CustomersService: BaseService, CustomerServiceType {
                                         headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: apiClient, route: route)
+    }
+
+    public func newPassword<T: Codable>(username: String, token: String, password: String) -> Observable<T> {
+        let body = [
+            "mobileNo": username,
+            "token": token,
+            "newPassword": password
+        ]
+
+        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/forgot-password",
+                                body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
     }
 }

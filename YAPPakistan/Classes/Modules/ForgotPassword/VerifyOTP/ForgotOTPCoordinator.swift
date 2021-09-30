@@ -58,17 +58,19 @@ class ForgotOTPCoordinator: Coordinator<ForgotOTPVerificationResult>, ForgotOTPC
         }).disposed(by: rx.disposeBag)
 
         viewModel?.OTPResult.subscribe(onNext: { result in
-            self.newPassword(token:result)
+            self.newPassword(token: result)
         }).disposed(by: rx.disposeBag)
 
         return result
     }
 
-    func newPassword(token:String) {
-        let vm = CreateNewPasscodeViewModel()
-        let vc = PasscodeViewController(themeService: container.themeService, viewModel: vm)
+    func newPassword(token: String) {
+        let pinrepo = PINRepository(customerService: container.makeCustomersService(xsrfToken: container.xsrfToken))
+        let username = container.credentialsStore.getUsername() ?? ""
+        let viewModel = CreateNewPasscodeViewModel(repository: pinrepo, credentialsManager: container.credentialsStore, username: username, token: token)
+        let viewController = PasscodeViewController(themeService: container.themeService, viewModel: viewModel)
 
-        vm.outputs.back.withUnretained(self)
+        viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: {
                 let count = $0.0.root.viewControllers.count
                 $0.0.root.viewControllers.remove(at: count - 2)
@@ -77,6 +79,15 @@ class ForgotOTPCoordinator: Coordinator<ForgotOTPVerificationResult>, ForgotOTPC
                 $0.0.result.onCompleted()
             })
             .disposed(by: rx.disposeBag)
-        self.root.pushViewController(vc)
+
+        viewModel.outputs.result.withUnretained(self)
+            .subscribe(onNext: { [weak self]_ in self?.successScreen() })
+            .disposed(by: rx.disposeBag)
+
+        self.root.pushViewController(viewController)
+    }
+
+    func successScreen() {
+        print("Password changed successfully")
     }
 }
