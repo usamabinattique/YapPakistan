@@ -91,4 +91,3 @@ class ForgotOTPVerificationViewModel: VerifyMobileOTPViewModel {
         verifyRequest.elements().unwrap().bind(to: OTPResultSubject).disposed(by: disposeBag)
     }
 }
-
