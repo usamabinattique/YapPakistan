@@ -53,6 +53,20 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             }
         }).disposed(by: disposeBag)
     }
+
+    func navigateToReview(cnicOCR: CNICOCR) {
+        let coordinator = KYCReviewCoordinator(container: container, root: root, cnicOCR: cnicOCR)
+
+        coordinate(to: coordinator).subscribe(onNext: { result in
+            switch result {
+            case .success:
+                // FIXME: Questions flow.
+                break
+            case .cancel:
+                break
+            }
+        })
+    }
 }
 
 class KYCCoordinatorPushable: KYCCoordinator {
