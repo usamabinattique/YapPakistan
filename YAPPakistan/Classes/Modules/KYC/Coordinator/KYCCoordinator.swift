@@ -65,7 +65,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             case .cancel:
                 break
             }
-        })
+        }).disposed(by: disposeBag)
     }
 }
 
@@ -79,6 +79,7 @@ class KYCCoordinatorPushable: KYCCoordinator {
 
         let progressViewController = container.makeKYCProgressViewController(navigationController: navigationController)
         let progressViewModel: KYCProgressViewModelType! = progressViewController.viewModel
+        progressViewModel.inputs.hideProgressObserver.onNext(true)
 
         root.pushViewController(progressViewController, animated: true)
         rootViewController = homeViewController
@@ -93,6 +94,12 @@ class KYCCoordinatorPushable: KYCCoordinator {
                 self?.scanCard(nil,
                                progressViewModel: progressViewModel,
                                homeViewModel: homeViewModel)
+            })
+            .disposed(by: disposeBag)
+
+        homeViewModel.outputs.cnicOCR
+            .subscribe(onNext: { [weak self] cnicOCR in
+                self?.navigateToReview(cnicOCR: cnicOCR)
             })
             .disposed(by: disposeBag)
 
