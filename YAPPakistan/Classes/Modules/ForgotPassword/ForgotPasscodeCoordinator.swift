@@ -59,12 +59,9 @@ class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCo
     }
 
     func newPassword(token: String) {
-        let pinrepo = PINRepository(customerService: container.makeCustomersService(xsrfToken: container.xsrfToken))
-        let username = container.credentialsStore.getUsername() ?? ""
-        let viewModel = CreateNewPasscodeViewModel(repository: pinrepo, credentialsManager: container.credentialsStore, username: username, token: token)
-        let viewController = PasscodeViewController(themeService: container.themeService, viewModel: viewModel)
+        let passcodeViewController = container.makePasscodeViewController(token: token)
 
-        viewModel.outputs.back.withUnretained(self)
+        passcodeViewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: {
                 let count = $0.0.root.viewControllers.count
                 $0.0.root.viewControllers.remove(at: count - 2)
@@ -74,11 +71,11 @@ class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCo
             })
             .disposed(by: rx.disposeBag)
 
-        viewModel.outputs.result.withUnretained(self)
+        passcodeViewController.viewModel.outputs.result.withUnretained(self)
             .subscribe(onNext: { [weak self]_ in self?.successScreen() })
             .disposed(by: rx.disposeBag)
 
-        self.root.pushViewController(viewController)
+        self.root.pushViewController(passcodeViewController)
     }
 
     func successScreen() {

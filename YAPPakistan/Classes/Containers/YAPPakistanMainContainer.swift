@@ -249,4 +249,19 @@ extension YAPPakistanMainContainer {
 
         return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
     }
+
+    func makePINRepository() -> PINRepositoryType {
+        let customersService = makeCustomersService(xsrfToken: xsrfToken)
+        return PINRepository(customerService: customersService)
+    }
+
+    func makePasscodeViewController(token:String) -> PasscodeViewController {
+        let pinRepository = makePINRepository()
+        let username = credentialsStore.getUsername() ?? ""
+        let viewModel = CreateNewPasscodeViewModel(repository: pinRepository,
+                                                   credentialsManager: credentialsStore,
+                                                   username: username,
+                                                   token: token)
+        return PasscodeViewController(themeService: themeService, viewModel: viewModel)
+    }
 }
