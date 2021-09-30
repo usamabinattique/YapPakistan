@@ -10,23 +10,17 @@ import RxSwift
 import YAPCore
 import UIKit
 
-public enum ForgotOTPVerificationResult {
-    case cancel
-}
-
-protocol ForgotOTPCoordinatorType: Coordinator<ForgotOTPVerificationResult> {
-
+protocol ForgotPasscodeCoordinatorType: Coordinator<ResultType<Void>> {
     var root: UINavigationController! { get }
     var container: YAPPakistanMainContainer! { get }
-    var result: PublishSubject<ForgotOTPVerificationResult> { get }
-
+    var result: PublishSubject<ResultType<Void>> { get }
 }
 
-class ForgotOTPCoordinator: Coordinator<ForgotOTPVerificationResult>, ForgotOTPCoordinatorType {
+class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCoordinatorType {
     let xsrfToken: String
     var root: UINavigationController!
     var container: YAPPakistanMainContainer!
-    var result = PublishSubject<ForgotOTPVerificationResult>()
+    var result = PublishSubject<ResultType<Void>>()
 
     private var sessionContainer: UserSessionContainer!
 
@@ -40,7 +34,7 @@ class ForgotOTPCoordinator: Coordinator<ForgotOTPVerificationResult>, ForgotOTPC
         self.container.xsrfToken = xsrfToken
     }
 
-    override func start(with option: DeepLinkOptionType?) -> Observable<ForgotOTPVerificationResult> {
+    override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
         /*let viewModel = container
             .makeForgotOTPVerificationViewModel() */
@@ -65,12 +59,9 @@ class ForgotOTPCoordinator: Coordinator<ForgotOTPVerificationResult>, ForgotOTPC
     }
 
     func newPassword(token: String) {
-        let pinrepo = PINRepository(customerService: container.makeCustomersService(xsrfToken: container.xsrfToken))
-        let username = container.credentialsStore.getUsername() ?? ""
-        let viewModel = CreateNewPasscodeViewModel(repository: pinrepo, credentialsManager: container.credentialsStore, username: username, token: token)
-        let viewController = PasscodeViewController(themeService: container.themeService, viewModel: viewModel)
+        let passcodeViewController = container.makePasscodeViewController(token: token)
 
-        viewModel.outputs.back.withUnretained(self)
+        passcodeViewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: {
                 let count = $0.0.root.viewControllers.count
                 $0.0.root.viewControllers.remove(at: count - 2)
@@ -80,11 +71,11 @@ class ForgotOTPCoordinator: Coordinator<ForgotOTPVerificationResult>, ForgotOTPC
             })
             .disposed(by: rx.disposeBag)
 
-        viewModel.outputs.result.withUnretained(self)
+        passcodeViewController.viewModel.outputs.result.withUnretained(self)
             .subscribe(onNext: { [weak self]_ in self?.successScreen() })
             .disposed(by: rx.disposeBag)
 
-        self.root.pushViewController(viewController)
+        self.root.pushViewController(passcodeViewController)
     }
 
     func successScreen() {

@@ -21,7 +21,7 @@ protocol PasscodeCoordinatorType: Coordinator<PasscodeVerificationResult> {
 
 extension PasscodeCoordinatorType {
     func forgotOTPVerification() {
-        coordinate(to: container.makeForgotOTPCoordinator(root: root) )
+        coordinate(to: container.makeForgotPasscodeCoordinator(root: root) )
             .subscribe(onNext: { result in
                 
             })

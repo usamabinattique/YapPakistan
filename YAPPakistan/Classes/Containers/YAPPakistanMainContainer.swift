@@ -217,8 +217,8 @@ extension YAPPakistanMainContainer {
 }
 
 extension YAPPakistanMainContainer {
-    func makeForgotOTPCoordinator(root: UINavigationController) -> ForgotOTPCoordinator  {
-        return ForgotOTPCoordinator(root: root, xsrfToken: xsrfToken, container: self)
+    func makeForgotPasscodeCoordinator(root: UINavigationController) -> ForgotPasscodeCoordinator  {
+        return ForgotPasscodeCoordinator(root: root, xsrfToken: xsrfToken, container: self)
     }
 
     func makeForgotOTPViewController () -> VerifyMobileOTPViewController {
@@ -248,5 +248,20 @@ extension YAPPakistanMainContainer {
                                                        sessionCreator: sessionProvider)
 
         return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+
+    func makePINRepository() -> PINRepositoryType {
+        let customersService = makeCustomersService(xsrfToken: xsrfToken)
+        return PINRepository(customerService: customersService)
+    }
+
+    func makePasscodeViewController(token:String) -> PasscodeViewController {
+        let pinRepository = makePINRepository()
+        let username = credentialsStore.getUsername() ?? ""
+        let viewModel = CreateNewPasscodeViewModel(repository: pinRepository,
+                                                   credentialsManager: credentialsStore,
+                                                   username: username,
+                                                   token: token)
+        return PasscodeViewController(themeService: themeService, viewModel: viewModel)
     }
 }
