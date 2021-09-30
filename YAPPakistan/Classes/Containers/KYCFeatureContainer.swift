@@ -53,12 +53,12 @@ public final class KYCFeatureContainer {
         return viewController
     }
 
-    func makeKYCHomeViewController(initiatedFromDashboard: Bool) -> KYCHomeViewController {
+    func makeKYCHomeViewController() -> KYCHomeViewController {
         let kycRepository = makeKYCRepository()
         let viewModel = KYCHomeViewModel(accountProvider: accountProvider,
-                                         kycRepository: kycRepository,
-                                         initiatedFromDashboard: initiatedFromDashboard)
-        let viewController = KYCHomeViewController(themeService: themeService, viewModel: viewModel)
+                                         kycRepository: kycRepository)
+        let viewController = KYCHomeViewController(themeService: themeService,
+                                                   viewModel: viewModel)
 
         return viewController
     }

@@ -14,33 +14,20 @@ import CardScanner
 class KYCCoordinator: Coordinator<ResultType<Void>> {
     var container: KYCFeatureContainer
     var root: UINavigationController!
-    var currentRoot: UINavigationController!
     var result = PublishSubject<ResultType<Void>>()
-    var errorResult = PublishSubject<Void>()
-    var informationReviewResult = PublishSubject<Void>()
-    var successResult: PublishSubject<Void> = PublishSubject<Void>()
-    var rootViewController: UIViewController
-    var cnicUploadObserver: AnyObserver<Void>?
-    var initiatedFromDashboard: Bool = true
 
     let disposeBag = DisposeBag()
 
     init(container: KYCFeatureContainer,
-         root: UINavigationController,
-         cnicUploadObserver: AnyObserver<Void>? = nil,
-         initiatedFromDashboard: Bool = true) {
+         root: UINavigationController) {
         self.container = container
-        self.rootViewController = root
         self.root = root
-        self.currentRoot = root
-        self.cnicUploadObserver = cnicUploadObserver
-        self.initiatedFromDashboard = initiatedFromDashboard
     }
 
     func scanCard(_ presentationCompletion: (() -> Void)?,
                   progressViewModel: KYCProgressViewModelType,
                   homeViewModel: KYCHomeViewModelType) {
-        let scanCoordinator = CNICScanCoordinator(container: container, root: currentRoot, scanType: .new)
+        let scanCoordinator = CNICScanCoordinator(container: container, root: root, scanType: .new)
         scanCoordinator.presentationCompletion
             .subscribe(onNext: { presentationCompletion?() })
             .disposed(by: disposeBag)
@@ -57,7 +44,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
 class KYCCoordinatorPushable: KYCCoordinator {
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let homeViewController = container.makeKYCHomeViewController(initiatedFromDashboard: initiatedFromDashboard)
+        let homeViewController = container.makeKYCHomeViewController()
         let homeViewModel = homeViewController.viewModel
 
         let navigationController = UINavigationController(rootViewController: homeViewController)
@@ -67,8 +54,6 @@ class KYCCoordinatorPushable: KYCCoordinator {
         let progressViewModel: KYCProgressViewModelType! = progressViewController.viewModel
 
         root.pushViewController(progressViewController, animated: true)
-        rootViewController = homeViewController
-        currentRoot = navigationController
 
         homeViewModel.outputs.skip.subscribe(onNext: { [unowned self] _ in
             self.result.onNext(ResultType.success(()))
@@ -81,25 +66,6 @@ class KYCCoordinatorPushable: KYCCoordinator {
                                homeViewModel: homeViewModel)
             })
             .disposed(by: disposeBag)
-
-        informationReviewResult
-            .bind(to: homeViewModel.inputs.documentsUploadObserver)
-            .disposed(by: disposeBag)
-
-        errorResult.subscribe(onNext: { [weak self] in
-            self?.result.onNext(ResultType.success(()))
-            self?.result.onCompleted()
-        }).disposed(by: disposeBag)
-
-        successResult.subscribe(onNext: { [weak self] in
-            self?.result.onNext(ResultType.success(()))
-            self?.result.onCompleted()
-        }).disposed(by: disposeBag)
-
-        informationReviewResult
-            .subscribe(onNext: { _ in
-                // FIXME: Perform navigation.
-            }).disposed(by: disposeBag)
 
         let backSubscription = progressViewModel.outputs.backTap.subscribe(onNext: { [weak self] in
             if navigationController.viewControllers.count > 1 {
