@@ -251,5 +251,18 @@ class KYCInitialReviewViewController: UIViewController {
         viewModel.outputs.issueDateValue
             .bind(to: issueDateField.rx.text)
             .disposed(by: disposeBag)
+
+        viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
+            self?.showAlert(title: "", message: error,
+                            defaultButtonTitle: "common_button_ok".localized)
+        }).disposed(by: disposeBag)
+
+        confirmButton.rx.tap
+            .bind(to: viewModel.inputs.confirmObserver)
+            .disposed(by: disposeBag)
+
+        reScanButton.rx.tap
+            .bind(to: viewModel.inputs.rescanObserver)
+            .disposed(by: disposeBag)
     }
 }

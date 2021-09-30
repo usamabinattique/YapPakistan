@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import YAPComponents
 
 protocol KYCInitialReviewViewModelInput {
     var issueDateObserver: AnyObserver<Date> { get }
@@ -19,6 +20,9 @@ protocol KYCInitialReviewViewModelOutput {
     var cnicNumber: Observable<String> { get }
     var issueDateTitle: Observable<String> { get }
     var issueDateValue: Observable<String> { get }
+    var cnicInfo: Observable<CNICInfo> { get }
+    var showError: Observable<String> { get }
+    var rescan: Observable<Void> { get }
 }
 
 protocol KYCInitialReviewViewModelType {
@@ -36,7 +40,9 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
     private var cnicNumberSubject = BehaviorSubject<String>(value: "")
     private var issueDateTitleSubject = BehaviorSubject<String>(value: "")
     private var issueDateValueSubject = BehaviorSubject<String>(value: "")
-    private var issueDateSubject = PublishSubject<Date>()
+    private var issueDateSubject = BehaviorSubject<Date>(value: Date())
+    private var cnicInfoSubject = PublishSubject<CNICInfo>()
+    private let showErrorSubject = PublishSubject<String>()
 
     private var confirmSubject = PublishSubject<Void>()
     private var rescanSubject = PublishSubject<Void>()
@@ -56,7 +62,8 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
     var cnicNumber: Observable<String> { cnicNumberSubject.asObservable() }
     var issueDateTitle: Observable<String> { issueDateTitleSubject.asObservable() }
     var issueDateValue: Observable<String> { issueDateValueSubject.asObservable() }
-    var confirm: Observable<Void> { confirmSubject.asObservable() }
+    var cnicInfo: Observable<CNICInfo> { cnicInfoSubject.asObservable() }
+    var showError: Observable<String> { return showErrorSubject.asObservable() }
     var rescan: Observable<Void> { rescanSubject.asObservable() }
 
     // MARK: Initialization
@@ -84,5 +91,31 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
         if let date = cnicOCR.parsedIssueDate {
             issueDateSubject.onNext(date)
         }
+
+        let cnicRequest = confirmSubject.withLatestFrom(issueDateSubject)
+            .do(onNext: { _ in
+                YAPProgressHud.showProgressHud()
+            })
+            .flatMap { issueDate -> Observable<Event<CNICInfo?>> in
+                let cnic = cnicOCR.cnicNumber.replace(string: "-", replacement: "")
+                let dateFormatter = DateFormatter.serverReadableDateFromatter
+                let dateOfIssuance = dateFormatter.string(from: issueDate)
+
+                return kycRepository.performNadraVerification(cnic: cnic, dateOfIssuance: dateOfIssuance)
+            }
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .share()
+
+        cnicRequest.elements()
+            .unwrap()
+            .bind(to: cnicInfoSubject)
+            .disposed(by: disposeBag)
+
+        cnicRequest.errors()
+            .map { $0.localizedDescription }
+            .bind(to: showErrorSubject)
+            .disposed(by: disposeBag)
     }
 }
