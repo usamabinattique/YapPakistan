@@ -30,6 +30,7 @@
 "common_display_text_copy" = "Copy";
 "common_display_text_currency" = "AED";
 "common_button_ok" = "OK";
+"common_button_Done" = "Done";
 
 "" = "";
 
@@ -176,3 +177,7 @@
 "screen_kyc_home_button_skip" = "Skip and go to dashboard";
 "screen_kyc_home_button_skip_no_dashboard" = "Skip and go to dashboard";
 "screen_kyc_home_cnic_scan" = "Tap to scan your CNIC";
+
+// MARK: - Passcode Success screen
+"screen_passcode_success_display_text_heading" = "You're all set";
+"screen_passcode_success_display_text_sub_heading" = "Your new passcode has been created successfully";

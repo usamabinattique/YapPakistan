@@ -88,6 +88,19 @@ class ForgotOTPCoordinator: Coordinator<ForgotOTPVerificationResult>, ForgotOTPC
     }
 
     func successScreen() {
-        print("Password changed successfully")
+        let viewModel = PasscodeSuccessViewModel()
+        let viewController = PasscodeSuccessViewController(themeService: container.themeService, viewModel: viewModel)
+
+        viewModel.outputs.action.withUnretained(self)
+            .subscribe(onNext: {
+                let count = $0.0.root.viewControllers.count
+                $0.0.root.viewControllers.remove(at: count - 2)
+                $0.0.root.viewControllers.remove(at: count - 2)
+                $0.0.root.popViewController(animated: true)
+                $0.0.result.onNext(.cancel)
+                $0.0.result.onCompleted()
+            })
+            .disposed(by: rx.disposeBag)
+        self.root.pushViewController(viewController)
     }
 }
