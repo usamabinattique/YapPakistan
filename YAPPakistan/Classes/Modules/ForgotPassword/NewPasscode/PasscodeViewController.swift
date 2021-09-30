@@ -81,7 +81,7 @@ fileprivate extension PasscodeViewController {
     }
 
     func bindTranslations() {
-        viewModel.outputs.localizedText.withUnretained(self).subscribe(onNext:{ `self`, string in
+        viewModel.outputs.localizedText.withUnretained(self).subscribe(onNext: { `self`, string in
             self.headingLabel.text = string.heading
             self.termsAndCondtionsLabel.text = string.agrement
             self.termsAndCondtionsButton.setTitle(string.terms, for: .normal)
@@ -121,7 +121,6 @@ fileprivate extension PasscodeViewController {
     }
 
     func setupConstraints() {
-
         let spacer1 = UIFactory.makeView()
         let spacer2 = UIFactory.makeView()
         let spacer3 = UIFactory.makeView()
@@ -195,7 +194,6 @@ fileprivate extension PasscodeViewController {
             .width(constant: 240)
             .alignEdgeWithSuperviewSafeArea(.bottom,
                                             constant: bottomSafeArea)
-
     }
 }
 
@@ -219,4 +217,3 @@ fileprivate extension PasscodeViewController {
         backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
     }
 }
-

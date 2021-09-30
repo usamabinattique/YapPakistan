@@ -41,25 +41,25 @@ protocol PasscodeViewModelType {
 class PasscodeViewModel: PasscodeViewModelType, PasscodeViewModelInputs, PasscodeViewModelOutputs {
 
     // MARK: - Properties
-    public var inputs: PasscodeViewModelInputs { return self }
-    public var outputs: PasscodeViewModelOutputs { return self }
+    public var inputs: PasscodeViewModelInputs { self }
+    public var outputs: PasscodeViewModelOutputs { self }
 
     // MARK: - Inputs - Implementation of "inputs" protocol
-    public var keyPressObserver: AnyObserver<String> { return keyPressSubject.asObserver() }
-    public var actionObserver: AnyObserver<Void> { return actionSubject.asObserver() }
-    public var termsAndConditionsActionObserver: AnyObserver<Void> { return termsAndConditionsActionSubject.asObserver() }
-    public var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
+    public var keyPressObserver: AnyObserver<String> { keyPressSubject.asObserver() }
+    public var actionObserver: AnyObserver<Void> { actionSubject.asObserver() }
+    public var termsAndConditionsActionObserver: AnyObserver<Void> { termsAndConditionsActionSubject.asObserver() }
+    public var backObserver: AnyObserver<Void> { backSubject.asObserver() }
 
     // MARK: - Outputs - Implementation of "outputs" protocol
-    public var result: Observable<String> { return resultSubject.asObservable() }
-    public var pinValid: Observable<Bool> { return pinValidSubject.asObservable() }
-    public var pinText: Observable<String?> { return pinTextSubject.asObservable() }
-    public var error: Observable<String> { return errorSubject.asObservable() }
-    public var shake: Observable<Void> { return shakeSubject.asObservable() }
-    public var back: Observable<Void> { return backSubject.asObservable() }
+    public var result: Observable<String> { resultSubject.asObservable() }
+    public var pinValid: Observable<Bool> { pinValidSubject.asObservable() }
+    public var pinText: Observable<String?> { pinTextSubject.asObservable() }
+    public var error: Observable<String> { errorSubject.asObservable() }
+    public var shake: Observable<Void> { shakeSubject.asObservable() }
+    public var back: Observable<Void> { backSubject.asObservable() }
     public var openTermsAndCondtions: Observable<Void> { termsAndConditionsActionSubject.asObservable() }
-    public var loader: Observable<Bool> { return loaderSubject.asObservable() }
-    public var localizedText: Observable<PasscodeViewStrings> { return localizedTextSubject.asObservable()}
+    public var loader: Observable<Bool> { loaderSubject.asObservable() }
+    public var localizedText: Observable<PasscodeViewStrings> { localizedTextSubject.asObservable() }
 
     // MARK: - Subjects
     public let resultSubject = PublishSubject<String>()
@@ -79,14 +79,15 @@ class PasscodeViewModel: PasscodeViewModelType, PasscodeViewModelInputs, Passcod
     private let pinRange: ClosedRange<Int>
 
     // MARK: - Init
-    public init(pinRange: ClosedRange<Int>, localizeableKeys:PasscodeViewStrings) {
+    public init(pinRange: ClosedRange<Int>, localizeableKeys: PasscodeViewStrings) {
 
         self.pinRange = pinRange
-        self.localizedTextSubject = BehaviorSubject<PasscodeViewStrings>
-            .init(value: PasscodeViewStrings(heading: localizeableKeys.heading,
-                                                  agrement: localizeableKeys.agrement,
-                                                  terms: localizeableKeys.terms,
-                                                  action: localizeableKeys.action))
+        self.localizedTextSubject = BehaviorSubject<PasscodeViewStrings>(value: PasscodeViewStrings(
+            heading: localizeableKeys.heading,
+            agrement: localizeableKeys.agrement,
+            terms: localizeableKeys.terms,
+            action: localizeableKeys.action
+        ))
 
         keyPressSubject.withLatestFrom(Observable.combineLatest(keyPressSubject, pinTextSubject))
             .do(onNext: { [unowned self] _ in errorSubject.onNext("") })
