@@ -18,4 +18,9 @@ class KYCRepository {
     func fetchDocument(byType documentType: String) -> Observable<Event<Document?>> {
         return customersService.fetchDocument(byType: documentType).materialize()
     }
+
+    func detectCNICInfo(_ documents: [(data: Data, format: String)],
+                        progressObserver: AnyObserver<Progress>? = nil) -> Observable<Event<CNICOCR?>> {
+        return customersService.detectCNICInfo(documents, progressObserver: progressObserver).materialize()
+    }
 }
