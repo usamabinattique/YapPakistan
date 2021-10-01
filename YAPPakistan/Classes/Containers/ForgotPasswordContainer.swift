@@ -43,4 +43,7 @@ public final class ForgotPasswordContainer {
         return CreateNewPasscodeBuilder(container: self, token: token).viewController()
     }
 
+    func makePasscodeSuccessViewController() -> PasscodeSuccessViewController {
+        return PasscodeSuccessModuleBuilder(container: self).viewController()
+    }
 }
