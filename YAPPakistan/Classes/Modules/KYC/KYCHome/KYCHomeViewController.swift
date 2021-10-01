@@ -138,6 +138,7 @@ class KYCHomeViewController: UIViewController {
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
             .alignEdge(.top, withView: subHeadingLabel, .lessThanOrEqualTo, constant: 100)
             .alignEdge(.top, withView: subHeadingLabel, .greaterThanOrEqualTo, constant: 50)
+            .height(constant: 116)
 
         bottomStack
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
@@ -200,6 +201,11 @@ class KYCHomeViewController: UIViewController {
                 guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }, secondaryButtonHandler: nil, completion: nil)
+        }).disposed(by: disposeBag)
+
+        viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
+            self?.showAlert(title: "", message: error,
+                            defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: disposeBag)
 
         cardView.rx.tap

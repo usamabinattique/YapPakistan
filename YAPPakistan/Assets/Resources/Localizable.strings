@@ -181,3 +181,11 @@
 // MARK: - Passcode Success screen
 "screen_passcode_success_display_text_heading" = "You're all set";
 "screen_passcode_success_display_text_sub_heading" = "Your new passcode has been created successfully";
+
+// MARK: KYC Initial Review Screen
+"screen_kyc_initial_review_screen_title" = "Complete verification";
+"screen_kyc_initial_review_screen_subtitle" = "Thanks %@! Verify your details are exactly as per your CNIC.";
+"screen_kyc_initial_review_cnic_number" = "CNIC Number";
+"screen_kyc_initial_review_issue_date" = "Issue date";
+"screen_kyc_initial_review_rescan" = "Re-scan CNIC";
+

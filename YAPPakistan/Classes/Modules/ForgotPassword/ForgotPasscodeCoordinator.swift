@@ -12,20 +12,20 @@ import UIKit
 
 protocol ForgotPasscodeCoordinatorType: Coordinator<ResultType<Void>> {
     var root: UINavigationController! { get }
-    var container: YAPPakistanMainContainer! { get }
+    var container: ForgotPasswordContainer! { get }
     var result: PublishSubject<ResultType<Void>> { get }
 }
 
 class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCoordinatorType {
 
     var root: UINavigationController!
-    var container: YAPPakistanMainContainer!
+    var container: ForgotPasswordContainer!
     var result = PublishSubject<ResultType<Void>>()
 
     private var sessionContainer: UserSessionContainer!
 
     init(root: UINavigationController,
-         container: YAPPakistanMainContainer
+         container: ForgotPasswordContainer
     ) {
         self.root = root
         self.container = container

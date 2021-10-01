@@ -18,4 +18,13 @@ class KYCRepository {
     func fetchDocument(byType documentType: String) -> Observable<Event<Document?>> {
         return customersService.fetchDocument(byType: documentType).materialize()
     }
+
+    func detectCNICInfo(_ documents: [(data: Data, format: String)],
+                        progressObserver: AnyObserver<Progress>? = nil) -> Observable<Event<CNICOCR?>> {
+        return customersService.detectCNICInfo(documents, progressObserver: progressObserver).materialize()
+    }
+
+    func performNadraVerification(cnic: String, dateOfIssuance: String) -> Observable<Event<CNICInfo?>> {
+        return customersService.performNadraVerification(cnic: cnic, dateOfIssuance: dateOfIssuance).materialize()
+    }
 }

@@ -19,10 +19,10 @@ public protocol OTPRepositoryType {
 
 public class OTPRepository: OTPRepositoryType {
     
-    private let messageService: MessageServiceType
+    private let messageService: MessagesServiceType
     private let customerService: CustomerServiceType
     
-    public init(messageService: MessageServiceType,
+    public init(messageService: MessagesServiceType,
                 customerService: CustomerServiceType) {
         self.messageService = messageService
         self.customerService = customerService

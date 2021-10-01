@@ -224,9 +224,8 @@ class WaitingListRankViewController: UIViewController {
         viewModel.outputs.animationFile.subscribe(onNext: { [weak self] fileName in
             let nameOnly = fileName.deletingPathExtension
             let extensionOnly = fileName.pathExtension
-            let bundle = Bundle(for: Self.self)
 
-            self?.videoPlayerView.playVideoWithFileName(nameOnly, ofType: extensionOnly, in: bundle)
+            self?.videoPlayerView.playVideoWithFileName(nameOnly, ofType: extensionOnly, in: .yapPakistan)
         }).disposed(by: disposeBag)
 
         videoPlayerView.videoPlayedToEnd

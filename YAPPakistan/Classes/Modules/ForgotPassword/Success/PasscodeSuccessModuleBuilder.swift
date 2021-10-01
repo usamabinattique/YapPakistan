@@ -8,7 +8,7 @@
 import Foundation
 
 struct PasscodeSuccessModuleBuilder {
-    let container: YAPPakistanMainContainer
+    let container: ForgotPasswordContainer
 
     func viewController() -> PasscodeSuccessViewController {
         let strings = PasscodeSuccessViewStrings(

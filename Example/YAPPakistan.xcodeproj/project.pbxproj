@@ -25,9 +25,9 @@
 		0DEEE19926FDE28100BABB41 /* DefaultFeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */; };
 		5680335A26E7E36D00D5C183 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACDB1AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		607FACDB1AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
-		607FACE01AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		607FACE01AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		7D7A880526F45FD1004CAEE3 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7A880426F45FD1004CAEE3 /* AppConstants.swift */; };
 		7D7BA3FD26EF65590007074C /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7BA3FC26EF65590007074C /* AppEnvironment.swift */; };
@@ -121,16 +121,6 @@
 				0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */,
 			);
 			path = Modules;
-			sourceTree = "<group>";
-		};
-		0D5194A626E1F2CA00B81639 /* KeychainManager */ = {
-			isa = PBXGroup;
-			children = (
-				0D51950D26E39F1B00B81639 /* CredentialsManager.swift */,
-				0D5194A426E1F2CA00B81639 /* KeychainItemAccessibility.swift */,
-				0D5194A526E1F2CA00B81639 /* KeychainManager.swift */,
-			);
-			path = KeychainManager;
 			sourceTree = "<group>";
 		};
 		0DEEE12726FC633300BABB41 /* FeatureFlag */ = {
@@ -282,6 +272,7 @@
 				607FACCE1AFB9204008FA782 /* Resources */,
 				5A3548D0B3CBF3F023C75BE9 /* [CP] Embed Pods Frameworks */,
 				0D50F64E26F2023500C531AF /* Swift Lint */,
+				FD7F7F07C1705B9E18EF9DBB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -362,8 +353,8 @@
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				0DEEE12226F9CC4500BABB41 /* DefaultFeatureFlags.json in Resources */,
 				0D51950826E1FA5000B81639 /* LaunchScreen.storyboard in Resources */,
-				607FACDB1AFB9204008FA782 /* (null) in Resources */,
-				607FACE01AFB9204008FA782 /* (null) in Resources */,
+				607FACDB1AFB9204008FA782 /* BuildFile in Resources */,
+				607FACE01AFB9204008FA782 /* BuildFile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -442,7 +433,6 @@
 				"${BUILT_PRODUCTS_DIR}/SwiftyGif/SwiftyGif.framework",
 				"${BUILT_PRODUCTS_DIR}/YAPComponents/YAPComponents.framework",
 				"${BUILT_PRODUCTS_DIR}/YAPCore/YAPCore.framework",
-				"${BUILT_PRODUCTS_DIR}/YAPPakistan/YAPPakistan.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -464,7 +454,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyGif.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YAPComponents.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YAPCore.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YAPPakistan.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -493,6 +482,26 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		FD7F7F07C1705B9E18EF9DBB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-YAPPakistan_Example/Pods-YAPPakistan_Example-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/CardScanner/IdentityScanner.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/YAPPakistan/YAPPakistan.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/IdentityScanner.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/YAPPakistan.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-YAPPakistan_Example/Pods-YAPPakistan_Example-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -501,7 +510,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0DEEE13B26FC63D600BABB41 /* FeatureFlagResponse.swift in Sources */,
-				0D51950E26E39F1B00B81639 /* CredentialsManager.swift in Sources */,
 				7D7BA3FD26EF65590007074C /* AppEnvironment.swift in Sources */,
 				0D51949F26E1ED3800B81639 /* SplashViewController.swift in Sources */,
 				0D51951226E3A4B600B81639 /* YAPPakistan.swift in Sources */,
@@ -512,7 +520,6 @@
 				5680335A26E7E36D00D5C183 /* ViewController.swift in Sources */,
 				0D5194A026E1ED3800B81639 /* SplashCoordinator.swift in Sources */,
 				0DEEE13326FC639100BABB41 /* RemoteFeatureFlagLoader.swift in Sources */,
-				0D5194C126E1F3FC00B81639 /* KeychainItemAccessibility.swift in Sources */,
 				0DEEE19526FDBC5800BABB41 /* FeatureFlagFileManager.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 				0D51951626E3A5B000B81639 /* DemoAppCoordinator.swift in Sources */,

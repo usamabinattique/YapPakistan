@@ -7,6 +7,7 @@
 //
 
 import AVFoundation
+import CardScanner
 import Foundation
 import RxSwift
 import YAPComponents
@@ -16,6 +17,7 @@ protocol KYCHomeViewModelInput {
     var skipObserver: AnyObserver<Void> { get }
     var cardObserver: AnyObserver<Void> { get }
     var documentsUploadObserver: AnyObserver<Void> { get }
+    var detectOCRObserver: AnyObserver<IdentityDocument> { get }
 }
 
 protocol KYCHomeViewModelOutput {
@@ -24,6 +26,7 @@ protocol KYCHomeViewModelOutput {
     var nextButtonEnabled: Observable<Bool> { get }
     var showPermissionAlert: Observable<Void> { get }
     var eidValidation: Observable<KYCDocumentView.Validation> { get }
+    var cnicOCR: Observable<CNICOCR> { get }
     var next: Observable<Void> { get }
     var skip: Observable<Void> { get }
     var scanCard: Observable<Void> { get }
@@ -49,12 +52,14 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     private var cardSubject = PublishSubject<Void>()
     private var cardObserverSubject = PublishSubject<Void>()
     private let documentsUploadSubject = PublishSubject<Void>()
+    private let detectOCRSubject = PublishSubject<IdentityDocument>()
 
     private var subHeadingSubject = BehaviorSubject<String>(value: "")
     private var skipTextSubject = BehaviorSubject<String>(value: "")
     private var nextButtonEnabledSubject = BehaviorSubject<Bool>(value: false)
     private var showPermissionAlertSubject = PublishSubject<Void>()
     private let eidValidationSubject = BehaviorSubject<KYCDocumentView.Validation>(value: .notDetermined)
+    private let cnicOCRSubject = PublishSubject<CNICOCR>()
     private let showErrorSubject = PublishSubject<String>()
 
     // MARK: Inputs
@@ -63,6 +68,7 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     var skipObserver: AnyObserver<Void> { return skipSubject.asObserver() }
     var cardObserver: AnyObserver<Void> { return cardObserverSubject.asObserver() }
     var documentsUploadObserver: AnyObserver<Void> { return documentsUploadSubject.asObserver() }
+    var detectOCRObserver: AnyObserver<IdentityDocument> { return detectOCRSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -74,18 +80,17 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     var nextButtonEnabled: Observable<Bool> { return nextButtonEnabledSubject.asObservable() }
     var showPermissionAlert: Observable<Void> { return showPermissionAlertSubject.asObservable() }
     var eidValidation: Observable<KYCDocumentView.Validation> { return eidValidationSubject.asObservable() }
+    var cnicOCR: Observable<CNICOCR> { return cnicOCRSubject.asObservable() }
     var showError: Observable<String> { return showErrorSubject.asObservable() }
 
     // MARK: - Init
 
-    init(accountProvider: AccountProvider, kycRepository: KYCRepository, initiatedFromDashboard: Bool) {
+    init(accountProvider: AccountProvider, kycRepository: KYCRepository) {
         let account = accountProvider.currentAccount.unwrap()
         account.map { String(format: "screen_kyc_home_display_text_sub_heading".localized, $0.customer.firstName) }
             .bind(to: subHeadingSubject).disposed(by: disposeBag)
 
-        skipTextSubject.onNext(initiatedFromDashboard
-                                ? "screen_kyc_home_button_skip".localized
-                                : "screen_kyc_home_button_skip_no_dashboard".localized)
+        skipTextSubject.onNext("screen_kyc_home_button_skip_no_dashboard".localized)
         nextButtonEnabledSubject.onNext(false)
 
         cardObserverSubject.subscribe(onNext: { [weak self] in
@@ -114,6 +119,32 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
         request.elements()
             .map { $0?.isExpired ?? true ? .notDetermined : .valid }
             .bind(to: eidValidationSubject)
+            .disposed(by: disposeBag)
+
+        let ocrRequest = detectOCRSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .flatMap { identityDocument -> Observable<Event<CNICOCR?>> in
+                let frontImage = identityDocument.frontSide?.cropedImage
+                guard let imageData = frontImage?.jpegData(compressionQuality: 0.5) else {
+                    return .empty()
+                }
+
+                return kycRepository.detectCNICInfo([(imageData, "image/jpg")])
+            }
+            .do(onNext: { [weak self] _ in
+                YAPProgressHud.hideProgressHud()
+                self?.documentsUploadObserver.onNext(())
+            })
+            .share()
+
+        ocrRequest.elements()
+            .unwrap()
+            .bind(to: cnicOCRSubject)
+            .disposed(by: disposeBag)
+
+        ocrRequest.errors()
+            .map { $0.localizedDescription }
+            .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
     }
 }
