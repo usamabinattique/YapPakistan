@@ -115,6 +115,7 @@ fileprivate extension VerifyPasscodeViewController {
         backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
         signinButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
+        forgotButton.rx.tap.bind(to: viewModel.inputs.forgotPasscodeObserver).disposed(by: rx.disposeBag)
 
     }
 

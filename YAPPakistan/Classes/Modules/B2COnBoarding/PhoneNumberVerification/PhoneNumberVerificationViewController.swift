@@ -167,9 +167,13 @@ private extension PhoneNumberVerificationViewController {
         viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
         viewModel.outputs.showError.map{ _ in }.bind(to: codeTextField.rx.clear).disposed(by: rx.disposeBag)
         viewModel.outputs.showAlert.do(onNext: { [weak self] text in
-            self?.showAlert(title: "", message: text, defaultButtonTitle: "Ok", secondayButtonTitle: nil, defaultButtonHandler: { [weak self] _ in
-                _ = self?.codeTextField.becomeFirstResponder()
-            }, secondaryButtonHandler: nil, completion: nil)
+            self?.showAlert(title: "",
+                            message: text,
+                            defaultButtonTitle: "common_button_ok".localized,
+                            secondayButtonTitle: nil,
+                            defaultButtonHandler: { [weak self] _ in _ = self?.codeTextField.becomeFirstResponder() },
+                            secondaryButtonHandler: nil,
+                            completion: nil )
         }).subscribe().disposed(by: rx.disposeBag)
 
         viewModel.outputs.resendActive.bind(to: resendButton.rx.isEnabled).disposed(by: rx.disposeBag)
