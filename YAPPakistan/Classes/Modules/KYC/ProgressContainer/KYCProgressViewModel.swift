@@ -10,12 +10,14 @@ import Foundation
 import RxSwift
 
 protocol KYCProgressViewModelInput {
+    var hideProgressObserver: AnyObserver<Bool> { get }
     var backTapObserver: AnyObserver<Void> { get }
     var progressObserver: AnyObserver<Float> { get }
     var popppedObserver: AnyObserver<Void> { get }
 }
 
 protocol KYCProgressViewModelOutput {
+    var hidesProgress: Observable<Bool> { get }
     var progress: Observable<Float> { get }
     var progressCompletion: Observable<Bool> { get }
     var backTap: Observable<Void> { get }
@@ -27,6 +29,7 @@ protocol KYCProgressViewModelType {
 }
 
 class KYCProgressViewModel: KYCProgressViewModelInput, KYCProgressViewModelOutput, KYCProgressViewModelType {
+    private let hideProgressSubject = BehaviorSubject<Bool>(value: false)
     private let progressSubject = BehaviorSubject<Float>(value: 0)
     private let progressCompletionSubject = PublishSubject<Bool>()
     private let backTapSubject = PublishSubject<Void>()
@@ -36,11 +39,13 @@ class KYCProgressViewModel: KYCProgressViewModelInput, KYCProgressViewModelOutpu
     var outputs: KYCProgressViewModelOutput { self }
 
     // Inputs
+    var hideProgressObserver: AnyObserver<Bool> { hideProgressSubject.asObserver() }
     var backTapObserver: AnyObserver<Void> { backTapSubject.asObserver() }
     var progressObserver: AnyObserver<Float> { progressSubject.asObserver() }
     var popppedObserver: AnyObserver<Void> { poppedSubject.asObserver()}
 
     // Outputs
+    var hidesProgress: Observable<Bool> { hideProgressSubject.asObservable() }
     var progressCompletion: Observable<Bool> { progressCompletionSubject.asObservable() }
     var progress: Observable<Float> { progressSubject.asObservable() }
     var backTap: Observable<Void> { backTapSubject.asObservable() }

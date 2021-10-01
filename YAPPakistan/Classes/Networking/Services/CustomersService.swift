@@ -229,4 +229,15 @@ public class CustomersService: BaseService, CustomerServiceType {
 
         return upload(apiClient: apiClient, documents: docs, route: route, progressObserver: progressObserver, otherFormValues: [:])
     }
+
+    func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T> {
+        let body = [
+            "cnic": cnic,
+            "dateOfIssuance": dateOfIssuance
+        ]
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/kyc/document-data",
+                                body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return request(apiClient: apiClient, route: route)
+    }
 }

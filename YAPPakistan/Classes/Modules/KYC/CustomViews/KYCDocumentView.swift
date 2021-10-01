@@ -197,7 +197,7 @@ private extension KYCDocumentView {
             .alignEdgeWithSuperview(.left, constant: 20)
             .width(constant: 42)
             .height(constant: 42)
-            .alignEdge(.top, withView: topStack)
+            .centerVerticallyInSuperview()
 
         validationImage
             .alignEdgeWithSuperview(.right, constant: 20)
@@ -207,7 +207,8 @@ private extension KYCDocumentView {
 
         horizontalStack
             .toRightOf(iconImage, constant: 23)
-            .alignEdgesWithSuperview([.top, .bottom, .right], constants: [33, 33, 20])
+            .alignEdgesWithSuperview([.right], constants: [20])
+            .centerVerticallyInSuperview()
 
         editButton
             .alignEdge(.centerX, withView: validationImage)
