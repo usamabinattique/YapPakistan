@@ -184,3 +184,15 @@
 "screen_kyc_initial_review_cnic_number" = "CNIC Number";
 "screen_kyc_initial_review_issue_date" = "Issue date";
 "screen_kyc_initial_review_rescan" = "Re-scan CNIC";
+
+// MARK: KYC Review Details Screen
+
+"screen_kyc_review_details_screen_title" = "Review details";
+"screen_kyc_review_details_screen_subtitle" = "Your details should be accurate to your CNIC.";
+"screen_kyc_review_details_cnic_number" = "CNIC Number";
+"screen_kyc_review_details_full_name" = "Full name as per CNIC";
+"screen_kyc_review_details_gender" = "Gender";
+"screen_kyc_review_details_dob" = "Date of birth";
+"screen_kyc_review_details_issue_date" = "Issue date";
+"screen_kyc_review_details_expiry_date" = "Expiry date";
+"screen_kyc_review_details_residential_address" = "Residential Address";
