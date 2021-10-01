@@ -17,7 +17,7 @@ public class VerifyPasscodeViewController: UIViewController {
     private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
     private lazy var holdingView = UIFactory.makeView()
     private lazy var codeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, charSpace: 10)
-    private lazy var errorLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
+    private lazy var errorLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0)
     private lazy var pinKeyboard = UIFactory.makePasscodeKeyboard(font: .title2)
     private lazy var signinButton = UIFactory.makeAppRoundedButton(with: .regular)
     private lazy var forgotButton = UIFactory.makeButton(with: .regular)
