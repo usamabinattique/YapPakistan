@@ -30,6 +30,7 @@
 "common_display_text_copy" = "Copy";
 "common_display_text_currency" = "AED";
 "common_button_ok" = "OK";
+"common_button_Done" = "Done";
 
 "" = "";
 
@@ -97,7 +98,7 @@
 "screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our";
 "screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
 "screen_create_passcode_button_create_passcode" = "Create passcode";
-"screen_create_passcode_button_create_new_passcode" = "Set passcode";
+"screen_create_passcode_button_create_new_passcode" = "Create new passcode";
 "screen_create_passcode_display_text_error_sequence" = "Sequential numbers are not allowed";
 "screen_create_passcode_display_text_error_same_digits" = "Repetitive numbers are not allowed";
 
@@ -161,7 +162,7 @@
 "screen_device_registration_otp_display_header_message" = "Verify your mobile number";
 "screen_device_registration_otp_display_text_message" = "Enter the OTP sent to your registered mobile number to complete login";
 "screen_device_registration_otp_display_givn_text_message" = "We've sent a verification code to \n%@";
-"screen_login_otp_genration_success" = "New OTP has been generated successfully";
+"screen_otp_genration_success" = "New OTP has been generated successfully";
 
 //MARK: Light Dashboard screen
 "screen_light_dashboard_button_logout" = "Logout";
@@ -177,8 +178,11 @@
 "screen_kyc_home_button_skip_no_dashboard" = "Skip and go to dashboard";
 "screen_kyc_home_cnic_scan" = "Tap to scan your CNIC";
 
-// MARK: KYC Initial Review Screen
+// MARK: - Passcode Success screen
+"screen_passcode_success_display_text_heading" = "You're all set";
+"screen_passcode_success_display_text_sub_heading" = "Your new passcode has been created successfully";
 
+// MARK: KYC Initial Review Screen
 "screen_kyc_initial_review_screen_title" = "Complete verification";
 "screen_kyc_initial_review_screen_subtitle" = "Thanks %@! Verify your details are exactly as per your CNIC.";
 "screen_kyc_initial_review_cnic_number" = "CNIC Number";

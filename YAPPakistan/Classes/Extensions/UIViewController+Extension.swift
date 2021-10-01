@@ -37,7 +37,7 @@ public extension UIViewController {
 public extension UIViewController {
     func showAlert(title: String = "",
                    message: String,
-                   defaultButtonTitle: String = "OK",
+                   defaultButtonTitle: String = "common_button_ok".localized,
                    secondayButtonTitle: String? = nil,
                    defaultButtonHandler: ((UIAlertAction) -> Void)? = nil,
                    secondaryButtonHandler: ((UIAlertAction) -> Void)? = nil,
@@ -59,7 +59,7 @@ public extension UIViewController {
 
     func showAddBeneficiaryCancelAlert(title: String = "",
                                        message: String,
-                                       cancelButtonTitle: String = "OK",
+                                       cancelButtonTitle: String = "common_button_ok".localized,
                                        confirmButtonTitle: String? = nil,
                                        cancelButtonHandler: ((UIAlertAction) -> Void)? = nil,
                                        confirmButtonHandler: ((UIAlertAction) -> Void)? = nil,
@@ -85,7 +85,7 @@ public extension UIViewController {
 
     func showActionSheet(title: String = "",
                          message: String,
-                         defaultButtonTitle: String = "OK",
+                         defaultButtonTitle: String = "common_button_ok".localized,
                          secondayButtonTitle: String? = nil,
                          style: UIAlertController.Style = .actionSheet,
                          secondaryButtonStyle: UIAlertAction.Style = .default,

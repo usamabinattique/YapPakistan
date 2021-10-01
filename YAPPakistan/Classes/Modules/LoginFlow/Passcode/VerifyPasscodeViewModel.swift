@@ -42,6 +42,7 @@ protocol VerifyPasscodeViewModelOutputs {
     var loader: Observable<Bool> { get }
     var localizedText: Observable<LocalizedText> { get }
     var shake: Observable<Void> { get }
+    var forgot: Observable<Void> { get }
 }
 
 protocol VerifyPasscodeViewModelType {
@@ -79,6 +80,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
     var loader: Observable<Bool> { return loaderSubject.asObservable() }
     var localizedText: Observable<LocalizedText> { return self.localizedTextSubject.asObservable() }
     var shake: Observable<Void> { return shakeSubject.asObservable() }
+    var forgot: Observable<Void> { return forgotPasscodeSubject.asObservable() }
 
     // MARK: - Subjects
 

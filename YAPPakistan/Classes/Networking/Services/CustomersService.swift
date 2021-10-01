@@ -58,8 +58,10 @@ public protocol CustomerServiceType {
 
     func fetchDocument<T: Codable>(byType documentType: String) -> Observable<T>
 
+    func newPassword<T: Codable>(username: String, token: String, password: String) -> Observable<T>
     func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
                                     progressObserver: AnyObserver<Progress>?) -> Observable<T>
+    func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T>
 }
 
     
@@ -199,21 +201,17 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: apiClient, route: route)
     }
 
-    private func fileInfo(from format: String) -> (String, String, String) {
-        switch format {
-        case "image/jpg":
-            return ("files", "image.jpg", format)
-        case "image/png":
-            return ("files", "image.png", format)
-        case "image/tiff":
-            return ("files", "file.tiff", format)
-        case "video/mp4":
-            return ("files", "video.mp4", format)
-        case "application/pdf":
-            return ("files", "file.pdf", format)
-        default:
-            return ("", "", format)
-        }
+    public func newPassword<T: Codable>(username: String, token: String, password: String) -> Observable<T> {
+        let body = [
+            "mobileNo": username,
+            "token": token,
+            "newPassword": password
+        ]
+
+        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/forgot-password",
+                                body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
     }
 
     public func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
@@ -227,10 +225,14 @@ public class CustomersService: BaseService, CustomerServiceType {
         let route = APIEndpoint<String>(.post, apiConfig.baseURL, "/digi-ocr/detect/",
                                         headers: authorizationProvider.authorizationHeaders)
 
-        return upload(apiClient: apiClient, documents: docs, route: route, progressObserver: progressObserver, otherFormValues: [:])
+        return upload(apiClient: apiClient,
+                      documents: docs,
+                      route: route,
+                      progressObserver: progressObserver,
+                      otherFormValues: [:])
     }
 
-    func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T> {
+    public func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T> {
         let body = [
             "cnic": cnic,
             "dateOfIssuance": dateOfIssuance
@@ -267,5 +269,25 @@ public class CustomersService: BaseService, CustomerServiceType {
 
         return upload(apiClient: apiClient, documents: docs, route: route,
                       progressObserver: nil, otherFormValues: formData)
+    }
+}
+
+// MARK: Helpers
+fileprivate extension CustomersService {
+    func fileInfo(from format: String) -> (String, String, String) {
+        switch format {
+        case "image/jpg":
+            return ("files", "image.jpg", format)
+        case "image/png":
+            return ("files", "image.png", format)
+        case "image/tiff":
+            return ("files", "file.tiff", format)
+        case "video/mp4":
+            return ("files", "video.mp4", format)
+        case "application/pdf":
+            return ("files", "file.pdf", format)
+        default:
+            return ("", "", format)
+        }
     }
 }
