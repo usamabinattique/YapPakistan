@@ -18,7 +18,7 @@ enum CNICScanType: Equatable {
 }
 
 class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
-    private let container: UserSessionContainer
+    private let container: KYCFeatureContainer
     private let root: UINavigationController!
     private let scannerResultSubject = PublishSubject<ResultType<IdentityScannerResult>>()
     private var scanner: IdentityScanner!
@@ -26,7 +26,7 @@ class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
     let presentationCompletion = PublishSubject<Void>()
     let scanType: CNICScanType!
 
-    init(container: UserSessionContainer, root: UINavigationController!, scanType: CNICScanType) {
+    init(container: KYCFeatureContainer, root: UINavigationController!, scanType: CNICScanType) {
         self.container = container
         self.root = root
         self.scanType = scanType
@@ -56,22 +56,19 @@ class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
 
 private extension CNICScanCoordinator {
     func settings() {
-        let alert = UIAlertController(title: "Camera access",
-                                      message: "Camera access is required to scan documents",
-                                      preferredStyle: .alert)
-
-        alert.addAction(UIAlertAction(title: "Settings", style: .default, handler: { [weak self] _ in
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-            self?.scannerResultSubject.onNext(.cancel)
-            self?.scannerResultSubject.onCompleted()
-        }))
-
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { [weak self] _ in
-            self?.scannerResultSubject.onNext(.cancel)
-            self?.scannerResultSubject.onCompleted()
-        }))
-
-        root.present(alert, animated: true)
+        root.showAlert(
+            title: "common_display_text_permission_denied".localized,
+            message: "common_display_text_permission_camera".localized,
+            defaultButtonTitle: "common_button_settings".localized,
+            secondayButtonTitle: "common_button_cancel".localized,
+            defaultButtonHandler: { [weak self] _ in
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                self?.scannerResultSubject.onNext(.cancel)
+                self?.scannerResultSubject.onCompleted()
+            }, secondaryButtonHandler: { [weak self] _ in
+                self?.scannerResultSubject.onNext(.cancel)
+                self?.scannerResultSubject.onCompleted()
+            })
     }
 
     func requestPermissions() {

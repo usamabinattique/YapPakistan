@@ -10,14 +10,14 @@ import RxSwift
 import YAPCore
 
 class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
-    private let container: UserSessionContainer
+    private let container: KYCFeatureContainer
     private let root: UINavigationController!
     private let cnicOCR: CNICOCR
 
     private let resultSubject = PublishSubject<ResultType<Void>>()
     private let disposeBag = DisposeBag()
 
-    init(container: UserSessionContainer,
+    init(container: KYCFeatureContainer,
          root: UINavigationController,
          cnicOCR: CNICOCR) {
         self.container = container

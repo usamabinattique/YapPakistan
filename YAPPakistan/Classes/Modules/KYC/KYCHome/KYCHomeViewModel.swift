@@ -85,14 +85,12 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
 
     // MARK: - Init
 
-    init(accountProvider: AccountProvider, kycRepository: KYCRepository, initiatedFromDashboard: Bool) {
+    init(accountProvider: AccountProvider, kycRepository: KYCRepository) {
         let account = accountProvider.currentAccount.unwrap()
         account.map { String(format: "screen_kyc_home_display_text_sub_heading".localized, $0.customer.firstName) }
             .bind(to: subHeadingSubject).disposed(by: disposeBag)
 
-        skipTextSubject.onNext(initiatedFromDashboard
-                                ? "screen_kyc_home_button_skip".localized
-                                : "screen_kyc_home_button_skip_no_dashboard".localized)
+        skipTextSubject.onNext("screen_kyc_home_button_skip_no_dashboard".localized)
         nextButtonEnabledSubject.onNext(false)
 
         cardObserverSubject.subscribe(onNext: { [weak self] in

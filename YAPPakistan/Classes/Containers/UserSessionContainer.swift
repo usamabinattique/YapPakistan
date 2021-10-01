@@ -31,6 +31,12 @@ public final class UserSessionContainer {
         return parent.themeService
     }
 
+    // MARK: Services
+
+    func makeCustomersService() -> CustomersService {
+        return parent.makeCustomersService(authorizationProvider: session)
+    }
+
     // MARK: Repositories
 
     func makeAccountRepository() -> AccountRepository {
@@ -99,35 +105,6 @@ public final class UserSessionContainer {
                                                repository: makeLoginRepository())
         let viewController = LiteDashboardViewController(themeService: parent.themeService,
                                                          viewModel: viewModel)
-
-        return viewController
-    }
-
-    func makeKYCProgressViewController(navigationController: UINavigationController) -> KYCProgressViewController {
-        let viewModel = KYCProgressViewModel()
-        let viewController = KYCProgressViewController(themeService: themeService,
-                                                       viewModel: viewModel,
-                                                       withChildNavigation: navigationController)
-
-        return viewController
-    }
-
-    func makeKYCHomeViewController(initiatedFromDashboard: Bool) -> KYCHomeViewController {
-        let kycRepository = makeKYCRepository()
-        let viewModel = KYCHomeViewModel(accountProvider: accountProvider,
-                                         kycRepository: kycRepository,
-                                         initiatedFromDashboard: initiatedFromDashboard)
-        let viewController = KYCHomeViewController(themeService: themeService, viewModel: viewModel)
-
-        return viewController
-    }
-
-    func makeKYCInitialReviewViewController(cnicOCR: CNICOCR) -> KYCInitialReviewViewController {
-        let viewModel = KYCInitialReviewViewModel(accountProvider: accountProvider,
-                                                  kycRepository: makeKYCRepository(),
-                                                  cnicOCR: cnicOCR)
-        let viewController = KYCInitialReviewViewController(themeService: themeService,
-                                                            viewModel: viewModel)
 
         return viewController
     }
