@@ -53,7 +53,7 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
     private func navigateToKYC() {
         let kycContainer = KYCFeatureContainer(parent: container)
 
-        coordinate(to: KYCCoordinatorPushable(container: kycContainer, root: self.root))
+        coordinate(to: KYCCoordinator(container: kycContainer, root: self.root))
             .subscribe(onNext: { result in
                 switch result {
                 case .success:
