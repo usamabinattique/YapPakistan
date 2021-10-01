@@ -9,7 +9,12 @@ import Foundation
 
 public extension Bundle {
     private class YAPPakistanBundle {  }
+
     static var yapPakistan: Bundle {
-        Bundle(for: YAPPakistanBundle.self)
+        let mainBundle = Bundle(for: YAPPakistanBundle.self)
+        let bundlePath = mainBundle.path(forResource: "YAPPakistan", ofType: "bundle")
+        let libBundle = Bundle(path: bundlePath ?? "")
+
+        return libBundle ?? mainBundle
     }
 }

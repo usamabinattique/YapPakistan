@@ -31,6 +31,12 @@ public final class UserSessionContainer {
         return parent.themeService
     }
 
+    // MARK: Services
+
+    func makeCustomersService() -> CustomersService {
+        return parent.makeCustomersService(authorizationProvider: session)
+    }
+
     // MARK: Repositories
 
     func makeAccountRepository() -> AccountRepository {

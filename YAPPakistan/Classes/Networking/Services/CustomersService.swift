@@ -57,6 +57,9 @@ public protocol CustomerServiceType {
                                            otp: String) -> Observable<T>
 
     func fetchDocument<T: Codable>(byType documentType: String) -> Observable<T>
+
+    func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
+                                    progressObserver: AnyObserver<Progress>?) -> Observable<T>
 }
 
     
@@ -194,5 +197,36 @@ public class CustomersService: BaseService, CustomerServiceType {
                                         headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: apiClient, route: route)
+    }
+
+    private func fileInfo(from format: String) -> (String, String, String) {
+        switch format {
+        case "image/jpg":
+            return ("files", "image.jpg", format)
+        case "image/png":
+            return ("files", "image.png", format)
+        case "image/tiff":
+            return ("files", "file.tiff", format)
+        case "video/mp4":
+            return ("files", "video.mp4", format)
+        case "application/pdf":
+            return ("files", "file.pdf", format)
+        default:
+            return ("", "", format)
+        }
+    }
+
+    public func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
+                                           progressObserver: AnyObserver<Progress>? = nil) -> Observable<T> {
+        var docs: [DocumentUploadRequest] = []
+        for document in documents {
+            let info = fileInfo(from: document.format)
+            docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
+        }
+
+        let route = APIEndpoint<String>(.post, apiConfig.baseURL, "/digi-ocr/detect/",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient, documents: docs, route: route, progressObserver: progressObserver, otherFormValues: [:])
     }
 }

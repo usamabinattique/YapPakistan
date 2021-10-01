@@ -32,29 +32,32 @@ Pod::Spec.new do |s|
 
   s.source_files = 'YAPPakistan/Classes/**/*'
   
-  #s.resource_bundles = {
-  #  'YAPPakistan' => ['YAPPakistan/Assets/**/*']
-  #}
-  
-  #s.resource_bundles = {
-  #  'YAPPakistan' => ['YAPPakistan/Assets/*']
-  #}
-  
-  s.resources = [ 'YAPPakistan/Assets/**/*.gif',
-                  'YAPPakistan/Assets/**/*.jpg',
-                  'YAPPakistan/Assets/**/*.jpeg',
-                  'YAPPakistan/Assets/**/*.json',
-                  'YAPPakistan/Assets/**/*.mp4',
-                  'YAPPakistan/Assets/**/*.png',
-                  'YAPPakistan/Assets/**/*.strings',
-                  'YAPPakistan/Assets/**/*.xcassets',
-                  'YAPPakistan/Assets/**/*.swift']
+  s.resource_bundles = {
+    'YAPPakistan' => [
+      'YAPPakistan/Assets/Resources/*.gif',
+      'YAPPakistan/Assets/Resources/**/*.jpg',
+      'YAPPakistan/Assets/Resources/**/*.jpeg',
+      'YAPPakistan/Assets/Resources/**/*.json',
+      'YAPPakistan/Assets/Resources/**/*.mp4',
+      'YAPPakistan/Assets/Resources/**/*.png',
+      'YAPPakistan/Assets/Resources/**/*.strings',
+      'YAPPakistan/Assets/Assets.xcassets']
+  }
+
+#  s.resources = [ 'YAPPakistan/Assets/**/*.gif',
+#                  'YAPPakistan/Assets/**/*.jpg',
+#                  'YAPPakistan/Assets/**/*.jpeg',
+#                  'YAPPakistan/Assets/**/*.json',
+#                  'YAPPakistan/Assets/**/*.mp4',
+#                  'YAPPakistan/Assets/**/*.png',
+#                  'YAPPakistan/Assets/**/*.strings',
+#                  'YAPPakistan/Assets/**/*.xcassets']
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   # s.dependency 'AFNetworking', '~> 2.3'
   
-  #s.static_framework = true
+  s.static_framework = true
 
   #MARK: YapUIKIT
   s.dependency 'YAPComponents'
@@ -85,5 +88,8 @@ Pod::Spec.new do |s|
   
   #MARK: Swift Extension
   s.dependency 'SwifterSwift', '5.2.0'
-  
+
+  #MARK: Card Scanner
+  s.dependency 'CardScanner'
+
 end
