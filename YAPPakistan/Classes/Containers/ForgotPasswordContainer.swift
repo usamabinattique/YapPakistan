@@ -18,11 +18,15 @@ public final class ForgotPasswordContainer {
 
     // MARK: Properties
     var mainContainer: YAPPakistanMainContainer { parent }
-    var themeService: ThemeService<AppTheme> { parent.themeService }
-    var credentialsStore:CredentialsStoreType { parent.credentialsStore }
+    var themeService: ThemeService<AppTheme> { mainContainer.themeService }
+    var credentialsStore: CredentialsStoreType { mainContainer.credentialsStore }
 
     // MARK: Repositry
-    func makeOTPRepository() -> OTPRepositoryType  { mainContainer.makeOTPRepository() }
+    func makeOTPRepository() -> OTPRepositoryType { mainContainer.makeOTPRepository() }
+
+    func makePINRepository() -> PINRepositoryType {
+        PINRepository(customerService: mainContainer.makeCustomersService())
+    }
 
     // MARK: Coordinator
     func makeForgotPasscodeCoordinator(root: UINavigationController) -> ForgotPasscodeCoordinator  {
@@ -35,5 +39,8 @@ public final class ForgotPasswordContainer {
         return ForgotOTPModuleBuilder(container: self).viewController()
     }
 
-}
+    func makePasscodeViewController(token: String) -> PasscodeViewController {
+        return CreateNewPasscodeBuilder(container: self, token: token).viewController()
+    }
 
+}

@@ -46,13 +46,33 @@ class ForgotPasscodeCoordinator: Coordinator<ResultType<Void>>, ForgotPasscodeCo
         }).disposed(by: rx.disposeBag)
 
         viewModel?.OTPResult.subscribe(onNext: { result in
-            print(result)
+            self.newPassword(token: result)
         }).disposed(by: rx.disposeBag)
 
         return result
     }
 
     func newPassword(token: String) {
+        let passcodeViewController = container.makePasscodeViewController(token: token)
 
+        passcodeViewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: {
+                let count = $0.0.root.viewControllers.count
+                $0.0.root.viewControllers.remove(at: count - 2)
+                $0.0.root.popViewController(animated: true)
+                $0.0.result.onNext(.cancel)
+                $0.0.result.onCompleted()
+            })
+            .disposed(by: rx.disposeBag)
+
+        passcodeViewController.viewModel.outputs.result.withUnretained(self)
+            .subscribe(onNext: { [weak self]_ in self?.successScreen() })
+            .disposed(by: rx.disposeBag)
+
+        self.root.pushViewController(passcodeViewController)
+    }
+
+    func successScreen() {
+        print("Password changed successfully")
     }
 }

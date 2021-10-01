@@ -97,7 +97,7 @@
 "screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our";
 "screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
 "screen_create_passcode_button_create_passcode" = "Create passcode";
-"screen_create_passcode_button_create_new_passcode" = "Set passcode";
+"screen_create_passcode_button_create_new_passcode" = "Create new passcode";
 "screen_create_passcode_display_text_error_sequence" = "Sequential numbers are not allowed";
 "screen_create_passcode_display_text_error_same_digits" = "Repetitive numbers are not allowed";
 

@@ -58,8 +58,10 @@ public protocol CustomerServiceType {
 
     func fetchDocument<T: Codable>(byType documentType: String) -> Observable<T>
 
+    func newPassword<T: Codable>(username: String, token: String, password: String) -> Observable<T>
     func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
                                     progressObserver: AnyObserver<Progress>?) -> Observable<T>
+    func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T>
 }
 
     
@@ -199,7 +201,52 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: apiClient, route: route)
     }
 
-    private func fileInfo(from format: String) -> (String, String, String) {
+    public func newPassword<T: Codable>(username: String, token: String, password: String) -> Observable<T> {
+        let body = [
+            "mobileNo": username,
+            "token": token,
+            "newPassword": password
+        ]
+
+        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/forgot-password",
+                                body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
+                                           progressObserver: AnyObserver<Progress>? = nil) -> Observable<T> {
+        var docs: [DocumentUploadRequest] = []
+        for document in documents {
+            let info = fileInfo(from: document.format)
+            docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
+        }
+
+        let route = APIEndpoint<String>(.post, apiConfig.baseURL, "/digi-ocr/detect/",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient,
+                      documents: docs,
+                      route: route,
+                      progressObserver: progressObserver,
+                      otherFormValues: [:])
+    }
+
+    public func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T> {
+        let body = [
+            "cnic": cnic,
+            "dateOfIssuance": dateOfIssuance
+        ]
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/kyc/document-data",
+                                body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return request(apiClient: apiClient, route: route)
+    }
+}
+
+// MARK: Helpers
+fileprivate extension CustomersService {
+    func fileInfo(from format: String) -> (String, String, String) {
         switch format {
         case "image/jpg":
             return ("files", "image.jpg", format)
@@ -214,30 +261,5 @@ public class CustomersService: BaseService, CustomerServiceType {
         default:
             return ("", "", format)
         }
-    }
-
-    public func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
-                                           progressObserver: AnyObserver<Progress>? = nil) -> Observable<T> {
-        var docs: [DocumentUploadRequest] = []
-        for document in documents {
-            let info = fileInfo(from: document.format)
-            docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
-        }
-
-        let route = APIEndpoint<String>(.post, apiConfig.baseURL, "/digi-ocr/detect/",
-                                        headers: authorizationProvider.authorizationHeaders)
-
-        return upload(apiClient: apiClient, documents: docs, route: route, progressObserver: progressObserver, otherFormValues: [:])
-    }
-
-    func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T> {
-        let body = [
-            "cnic": cnic,
-            "dateOfIssuance": dateOfIssuance
-        ]
-        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/kyc/document-data",
-                                body: body, headers: authorizationProvider.authorizationHeaders)
-
-        return request(apiClient: apiClient, route: route)
     }
 }

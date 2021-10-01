@@ -42,7 +42,8 @@ public class CredentialsManager: CredentialsStoreType {
         guard let passcodeData = passcode.data(using: .utf8), let username = getUsername() else { return false }
         return keychainManager.set(passcodeData, forKey: username, withAccessibility: .whenPasscodeSetThisDeviceOnly)
     }
-    
+
+    @discardableResult 
     public func secure(passcode: String, username: String) -> Bool {
         guard let passcodeData = passcode.data(using: .utf8) else { return false }
         return keychainManager.set(passcodeData, forKey: username, withAccessibility: .whenPasscodeSetThisDeviceOnly)
