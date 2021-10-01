@@ -16,3 +16,12 @@ struct CNICOCR: Codable {
         case issueDate = "issue_date"
     }
 }
+
+extension CNICOCR {
+    var parsedIssueDate: Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy"
+
+        return formatter.date(from: issueDate)
+    }
+}

@@ -176,3 +176,11 @@
 "screen_kyc_home_button_skip" = "Skip and go to dashboard";
 "screen_kyc_home_button_skip_no_dashboard" = "Skip and go to dashboard";
 "screen_kyc_home_cnic_scan" = "Tap to scan your CNIC";
+
+// MARK: KYC Initial Review Screen
+
+"screen_kyc_initial_review_screen_title" = "Complete verification";
+"screen_kyc_initial_review_screen_subtitle" = "Thanks %@! Verify your details are exactly as per your CNIC.";
+"screen_kyc_initial_review_cnic_number" = "CNIC Number";
+"screen_kyc_initial_review_issue_date" = "Issue date";
+"screen_kyc_initial_review_rescan" = "Re-scan CNIC";

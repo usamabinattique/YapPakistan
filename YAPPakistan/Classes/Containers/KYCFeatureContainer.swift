@@ -62,4 +62,14 @@ public final class KYCFeatureContainer {
 
         return viewController
     }
+
+    func makeKYCInitialReviewViewController(cnicOCR: CNICOCR) -> KYCInitialReviewViewController {
+        let viewModel = KYCInitialReviewViewModel(accountProvider: accountProvider,
+                                                  kycRepository: makeKYCRepository(),
+                                                  cnicOCR: cnicOCR)
+        let viewController = KYCInitialReviewViewController(themeService: themeService,
+                                                            viewModel: viewModel)
+
+        return viewController
+    }
 }
