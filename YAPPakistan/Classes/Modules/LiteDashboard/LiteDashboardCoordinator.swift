@@ -45,19 +45,16 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
 
     fileprivate func presentDashBoardController() {
         let viewController = container.makeLiteDashboardViewController()
-        let viewModel: LiteDashboardViewModelType = viewController.viewModel
-
         self.root.pushViewController(viewController, animated: false)
+        UIView.transition(with: self.window, duration: 0.8, options: [.transitionFlipFromRight, .curveEaseInOut]) { }
 
-        UIView.transition(with: self.window, duration: 1, options: [.transitionFlipFromRight, .curveEaseInOut]) { }
-
-        viewModel.outputs.result
+        viewController.viewModel.outputs.result
             .withUnretained(self)
             .subscribe(onNext: { $0.0.resultSuccess() })
             .disposed(by: disposeBag)
 
-        viewModel.outputs.completeVerification
-            .subscribe(onNext: { /* FIXME: Navigate to verification flow.*/ })
+        viewController.viewModel.outputs.completeVerification
+            .subscribe(onNext: { [weak self] in self?.navigateToKYC() })
             .disposed(by: disposeBag)
     }
 
@@ -83,6 +80,19 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
                 .subscribe(onNext: { $0.0.presentDashBoardController() })
                 .disposed(by: rx.disposeBag)
         }
+    }
+
+    private func navigateToKYC() {
+        let kycContainer = KYCFeatureContainer(parent: container)
+        coordinate(to: KYCCoordinatorPushable(container: kycContainer, root: self.root))
+            .subscribe(onNext: { result in
+                switch result {
+                case .success:
+                    self.root.popToRootViewController(animated: true)
+                case .cancel:
+                    break
+                }
+            }).disposed(by: self.disposeBag)
     }
 }
 

@@ -23,7 +23,8 @@ public final class YAPPakistanMainContainer {
     let themeService: ThemeService<AppTheme>
     let credentialsStore: CredentialsStoreType
     let referralManager: AppReferralManager
-    var xsrfToken: String! = nil
+
+    private(set) var xsrfToken: String!
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
@@ -44,7 +45,7 @@ public final class YAPPakistanMainContainer {
         return APIConfiguration(environment: configuration.environment)
     }
 
-    func makeAuthorizationProvider(xsrfToken: String) -> ServiceAuthorizationProviderType {
+    func makeAuthorizationProvider() -> ServiceAuthorizationProviderType {
         return GuestServiceAuthorization(xsrf: xsrfToken)
     }
 
@@ -53,10 +54,10 @@ public final class YAPPakistanMainContainer {
                            apiClient: makeAPIClient())
     }
 
-    func makeCustomersService(xsrfToken: String) -> CustomersService {
+    func makeCustomersService() -> CustomersService {
         return CustomersService(apiConfig: makeAPIConfiguration(),
                                 apiClient: makeAPIClient(),
-                                authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+                                authorizationProvider: makeAuthorizationProvider())
     }
 
     func makeCustomersService(authorizationProvider: ServiceAuthorizationProviderType) -> CustomersService {
@@ -65,10 +66,10 @@ public final class YAPPakistanMainContainer {
                                 authorizationProvider: authorizationProvider)
     }
 
-    func makeMessagesService(xsrfToken: String) -> MessagesService {
+    func makeMessagesService() -> MessagesService {
         return MessagesService(apiConfig: makeAPIConfiguration(),
                                apiClient: makeAPIClient(),
-                               authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+                               authorizationProvider: makeAuthorizationProvider())
     }
 
     func makeMessagesService(authorizationProvider: ServiceAuthorizationProviderType) -> MessagesService {
@@ -77,10 +78,10 @@ public final class YAPPakistanMainContainer {
                                authorizationProvider: authorizationProvider)
     }
 
-    func makeAuthenticationService(xsrfToken: String) -> AuthenticationService {
+    func makeAuthenticationService() -> AuthenticationService {
         return AuthenticationService(apiConfig: makeAPIConfiguration(),
                                      apiClient: makeAPIClient(),
-                                     authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+                                     authorizationProvider: makeAuthorizationProvider())
     }
 
     func makeAuthenticationService(authorizationProvider: ServiceAuthorizationProviderType) -> AuthenticationService {
@@ -93,18 +94,18 @@ public final class YAPPakistanMainContainer {
         return SplashRepository(service: makeXSRFService())
     }
 
-    func makeOnBoardingRepository(xsrfToken: String) -> OnBoardingRepository {
-        let customersService = makeCustomersService(xsrfToken: xsrfToken)
-        let messagesService = makeMessagesService(xsrfToken: xsrfToken)
+    func makeOnBoardingRepository() -> OnBoardingRepository {
+        let customersService = makeCustomersService()
+        let messagesService = makeMessagesService()
         let onBoardingRepository = OnBoardingRepository(customersService: customersService,
                                                         messagesService: messagesService)
 
         return onBoardingRepository
     }
 
-    func makeEnterEmailController(xsrfToken: String, user: OnBoardingUser) -> EnterEmailViewController {
+    func makeEnterEmailController(user: OnBoardingUser) -> EnterEmailViewController {
         let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
-        let onBoardingRepository = makeOnBoardingRepository(xsrfToken: xsrfToken)
+        let onBoardingRepository = makeOnBoardingRepository()
 
         let enterEmailViewModel = EnterEmailViewModel(
             credentialsStore: credentialsStore,
@@ -127,19 +128,34 @@ public final class YAPPakistanMainContainer {
         return sessionContainer.makeWaitingListController()
     }
 
-    public func makeDummyViewController(xsrfToken: String) -> UIViewController {
+    public func makeDummyViewController() -> UIViewController {
         _ = CustomersService(apiConfig: makeAPIConfiguration(),
                              apiClient: makeAPIClient(),
-                             authorizationProvider: makeAuthorizationProvider(xsrfToken: xsrfToken))
+                             authorizationProvider: makeAuthorizationProvider())
         return UIViewController()
+    }
+
+    public func makeWelcomeCoordinator(xsrfToken: String, window: UIWindow) -> WelcomeCoordinatorReplaceable {
+        self.xsrfToken = xsrfToken
+        return WelcomeCoordinatorReplaceable(container: self, xsrfToken: xsrfToken, window: window)
+    }
+
+    func makePasscodeCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> PasscodeCoordinatorReplaceable {
+        self.xsrfToken = xsrfToken
+        return PasscodeCoordinatorReplaceable(window: window, container: self)
+    }
+
+    func makeLoginCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> LoginCoordinatorReplaceable {
+        self.xsrfToken = xsrfToken
+        return LoginCoordinatorReplaceable(window: window, container: self)
     }
 }
 
 extension YAPPakistanMainContainer {
     func makeLoginRepository() -> LoginRepository {
-        return LoginRepository(customerService: self.makeCustomersService(xsrfToken: xsrfToken),
-                               authenticationService: makeAuthenticationService(xsrfToken: xsrfToken),
-                               messageService: makeMessagesService(xsrfToken: xsrfToken))
+        return LoginRepository(customerService: self.makeCustomersService(),
+                               authenticationService: makeAuthenticationService(),
+                               messageService: makeMessagesService())
     }
 
     func makeLoginViewModel(loginRepository: LoginRepository,
@@ -180,11 +196,13 @@ extension YAPPakistanMainContainer {
 }
 
 extension YAPPakistanMainContainer {
-    func makeOTPRepository(messageService: MessagesService, customerService: CustomersService) -> OTPRepositoryType {
+    func makeOTPRepository() -> OTPRepositoryType {
+        let messageService = makeMessagesService()
+        let customerService = makeCustomersService()
         return OTPRepository(messageService: messageService, customerService: customerService)
     }
 
-    func makeSessionProvider(xsrfToken: String) -> SessionProviderType {
+    func makeSessionProvider() -> SessionProviderType {
         SessionProvider(xsrfToken: xsrfToken)
     }
 

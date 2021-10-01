@@ -108,7 +108,9 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
     public let errorSuject = PublishSubject<String>()
     public let editingSubject = PublishSubject<Bool>()
     private let imageFlagSubject: BehaviorSubject<Bool>
-    private let OTPResultSubject = PublishSubject<String>()
+
+    let OTPResultSubject = PublishSubject<String>()
+
     private let mobileNoSubject = BehaviorSubject<String?>(value: nil)
     public let showAlertSubject = PublishSubject<String>()
     private let backImageSubject = BehaviorSubject<BackButtonType>(value: .backEmpty)
@@ -159,6 +161,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
                 resendTries: Int = 4,
                 repository: OTPRepositoryType,
                 mobileNo: String = "",
+                passcode: String,
                 backButtonImage: BackButtonType = .backEmpty) {
         self.headingSubject = BehaviorSubject(value: heading)
         self.subheadingSubject = BehaviorSubject(value: subheading)
@@ -179,7 +182,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .disposed(by: disposeBag)
 
         generateOneTimePasscode(mobileNo: mobileNo)
-        verifyOneTimePasscode(mobileNo: mobileNo)
+        verifyOneTimePasscode(mobileNo: mobileNo, passcode:passcode)
 
         Observable.combineLatest(otpBlocked, timerSubject.map{ $0 <= 0 })
             .map{ !$0.0 && $0.1 }
@@ -226,13 +229,12 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
 
         generateOTPRequest.elements()
             .skip(1)
-            .map { _ in "New OTP has been generated successfully" }
+            .map { _ in "screen_otp_genration_success".localized }
             .bind(to: showAlertSubject)
             .disposed(by: disposeBag)
     }
 
-    open func verifyOneTimePasscode(mobileNo: String) {
-
+    open func verifyOneTimePasscode(mobileNo: String, passcode: String) {
         let verifyRequest = sendSubject
             .withLatestFrom(Observable.combineLatest(textSubject.unwrap(), otpActionSubject))
             .do(onNext: { [unowned self] _ in
@@ -241,7 +243,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             })
             .flatMap { [unowned self] _ -> Observable<Event<String?>> in
                 return self.repository
-                    .generateLoginOTP(username: mobileNo, passcode: "1212", deviceId: UIDevice.deviceId)
+                    .generateLoginOTP(username: mobileNo, passcode: passcode, deviceId: UIDevice.deviceId)
             }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()

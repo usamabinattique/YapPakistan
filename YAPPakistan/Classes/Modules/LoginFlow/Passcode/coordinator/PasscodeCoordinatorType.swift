@@ -15,4 +15,19 @@ protocol PasscodeCoordinatorType: Coordinator<PasscodeVerificationResult> {
     var container:YAPPakistanMainContainer! { get }
     var result: PublishSubject<PasscodeVerificationResult> { get }
 
+    func forgotOTPVerification()
+
+}
+
+extension PasscodeCoordinatorType {
+    func forgotOTPVerification() {
+        
+        let forgotPasswordContainer = ForgotPasswordContainer(parent: self.container)
+
+        coordinate(to: forgotPasswordContainer.makeForgotPasscodeCoordinator(root: root) )
+            .subscribe(onNext: { result in
+                
+            })
+            .disposed(by: rx.disposeBag)
+    }
 }

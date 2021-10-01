@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import RxTheme
 
 public final class UserSessionContainer {
     let parent: YAPPakistanMainContainer
@@ -22,6 +23,18 @@ public final class UserSessionContainer {
         let repository = AccountRepository(authenticationService: authService, customerService: customersService)
 
         self.accountProvider = AccountProvider(repository: repository)
+    }
+
+    // MARK: Properties
+
+    var themeService: ThemeService<AppTheme> {
+        return parent.themeService
+    }
+
+    // MARK: Services
+
+    func makeCustomersService() -> CustomersService {
+        return parent.makeCustomersService(authorizationProvider: session)
     }
 
     // MARK: Repositories
@@ -58,6 +71,13 @@ public final class UserSessionContainer {
                                               messageService: messagesService)
 
         return loginRepository
+    }
+
+    func makeKYCRepository() -> KYCRepository {
+        let customersService = parent.makeCustomersService(authorizationProvider: session)
+        let kycRepository = KYCRepository(customersService: customersService)
+
+        return kycRepository
     }
 
     // MARK: Controllers
