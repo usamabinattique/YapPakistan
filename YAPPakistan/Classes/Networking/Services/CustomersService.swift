@@ -252,13 +252,14 @@ public class CustomersService: BaseService, CustomerServiceType {
         }
 
         let formData = [
+            "documentType": documentType,
             "identityNo": identityNo,
             "nationality": nationality,
             "fullName": fullName,
             "gender": gender,
             "dob": dob,
             "dateIssue": dateIssue,
-            "dateExpiry": dateExpiry,
+            "dateExpiry": dateExpiry
         ]
 
         let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/v2/documents",
