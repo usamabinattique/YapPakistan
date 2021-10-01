@@ -27,4 +27,13 @@ class KYCRepository {
     func performNadraVerification(cnic: String, dateOfIssuance: String) -> Observable<Event<CNICInfo?>> {
         return customersService.performNadraVerification(cnic: cnic, dateOfIssuance: dateOfIssuance).materialize()
     }
+
+    func saveDocuments(_ documents: [(data: Data, format: String)], documentType: String,
+                       identityNo: String, nationality: String, fullName: String, gender: String,
+                       dob: String, dateIssue: String, dateExpiry: String) -> Observable<Event<String?>> {
+        return customersService.saveDocuments(documents, documentType: documentType,
+                                              identityNo: identityNo, nationality: nationality,
+                                              fullName: fullName, gender: gender, dob: dob,
+                                              dateIssue: dateIssue, dateExpiry: dateExpiry).materialize()
+    }
 }

@@ -240,4 +240,31 @@ public class CustomersService: BaseService, CustomerServiceType {
 
         return request(apiClient: apiClient, route: route)
     }
+
+    public func saveDocuments<T: Codable>(_ documents: [(data: Data, format: String)],
+                                          documentType: String, identityNo: String,
+                                          nationality: String, fullName: String, gender: String,
+                                          dob: String, dateIssue: String, dateExpiry: String) -> Observable<T> {
+        var docs: [DocumentUploadRequest] = []
+        for document in documents {
+            let info = fileInfo(from: document.format)
+            docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
+        }
+
+        let formData = [
+            "identityNo": identityNo,
+            "nationality": nationality,
+            "fullName": fullName,
+            "gender": gender,
+            "dob": dob,
+            "dateIssue": dateIssue,
+            "dateExpiry": dateExpiry,
+        ]
+
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/v2/documents",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient, documents: docs, route: route,
+                      progressObserver: nil, otherFormValues: formData)
+    }
 }
