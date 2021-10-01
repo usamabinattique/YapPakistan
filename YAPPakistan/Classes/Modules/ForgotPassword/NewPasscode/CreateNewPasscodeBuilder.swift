@@ -8,7 +8,7 @@
 import Foundation
 
 struct CreateNewPasscodeBuilder {
-    let container: YAPPakistanMainContainer
+    let container: ForgotPasswordContainer
     let token: String
 
     func viewController() -> PasscodeViewController {

@@ -266,7 +266,7 @@ private extension VerifyMobileOTPViewController {
         let retry = viewModel.outputs.generateOTPError.flatMap { message -> Observable<Bool> in
             return Observable<Bool>.create { [weak self] _ in
                 let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Ok".localized, style: .cancel, handler: { _ in
+                alert.addAction(UIAlertAction(title: "common_button_ok".localized, style: .cancel, handler: { _ in
                 }))
                 self?.present(alert, animated: true, completion: nil)
                 return Disposables.create()

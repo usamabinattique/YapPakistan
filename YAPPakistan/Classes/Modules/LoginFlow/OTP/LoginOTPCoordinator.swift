@@ -45,11 +45,8 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
 
     override func start(with option: DeepLinkOptionType?) -> Observable<LoginOTPVerificationResult> {
 
-        let otpRepository = container.makeOTPRepository(
-            messageService: container.makeMessagesService(xsrfToken: self.container.xsrfToken),
-            customerService: container.makeCustomersService(xsrfToken: self.container.xsrfToken)
-        )
-        let sessionProvider = container.makeSessionProvider(xsrfToken: self.container.xsrfToken)
+        let otpRepository = container.makeOTPRepository()
+        let sessionProvider = container.makeSessionProvider()
         let username = container.credentialsStore.getUsername() ?? ""
         let passcode = container.credentialsStore.getPasscode(username: username) ?? ""
 

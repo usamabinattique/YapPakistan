@@ -73,7 +73,7 @@ public class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
 private extension B2COnBoardingCoordinator {
 
     func navigateToPhoneNumber(user: OnBoardingUser) {
-        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
+        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(), messagesService: container.makeMessagesService())
 
         let phoneNumberViewModel = PhoneNumberViewModel(onBoardingRepository: onBoardingRepository, user: user)
         let phoneNumberViewController = PhoneNumberViewController(themeService: container.themeService, viewModel: phoneNumberViewModel)
@@ -100,11 +100,13 @@ private extension B2COnBoardingCoordinator {
     }
 
     func navigateToPhoneNumberVerification(user: OnBoardingUser) {
-        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(xsrfToken: xsrfToken), messagesService: container.makeMessagesService(xsrfToken: xsrfToken))
-
-        let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository: onBoardingRepository, user: user)
-        let phoneNumberVerificationController = PhoneNumberVerificationViewController(themeService: container.themeService, viewModel: verificationViewModel)
-        childContainerNavigation.pushViewController(phoneNumberVerificationController, animated: true)
+        let onBoardingRepository = OnBoardingRepository(customersService: container.makeCustomersService(),
+                                                        messagesService: container.makeMessagesService())
+        let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository: onBoardingRepository,
+                                                                     user: user)
+        let phoneVerificationController = PhoneNumberVerificationViewController(themeService: container.themeService,
+                                                                                viewModel: verificationViewModel)
+        childContainerNavigation.pushViewController(phoneVerificationController, animated: true)
 
         verificationViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
             self.viewModel.inputs.progressObserver.onNext(progress)
@@ -179,7 +181,7 @@ private extension B2COnBoardingCoordinator {
     }
 
     func navigateToEnterEmail(user: OnBoardingUser) {
-        let enterEmailViewController = container.makeEnterEmailController(xsrfToken: xsrfToken, user: user)
+        let enterEmailViewController = container.makeEnterEmailController(user: user)
         let enterEmailViewModel: EnterEmailViewModelType! = enterEmailViewController.viewModel
 
         childContainerNavigation.pushViewController(enterEmailViewController, animated: true)

@@ -37,16 +37,30 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
         window.makeKeyAndVisible()
 
         UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
-        
+
         viewModel.outputs.result.subscribe(onNext: { [weak self] in
             self?.result.onNext(ResultType.success($0))
             self?.result.onCompleted()
         }).disposed(by: disposeBag)
 
         viewModel.outputs.completeVerification.subscribe(onNext: { [weak self] in
-            // FIXME: Navigate to verification flow.
+            self?.navigateToKYC()
         }).disposed(by: disposeBag)
 
         return result
+    }
+
+    private func navigateToKYC() {
+        let kycContainer = KYCFeatureContainer(parent: container)
+
+        coordinate(to: KYCCoordinatorPushable(container: kycContainer, root: self.root))
+            .subscribe(onNext: { result in
+                switch result {
+                case .success:
+                    self.root.popToRootViewController(animated: true)
+                case .cancel:
+                    break
+                }
+            }).disposed(by: self.disposeBag)
     }
 }
