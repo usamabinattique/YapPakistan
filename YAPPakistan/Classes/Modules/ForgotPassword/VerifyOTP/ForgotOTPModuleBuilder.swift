@@ -8,13 +8,10 @@
 import Foundation
 
 struct ForgotOTPModuleBuilder {
-    let container: YAPPakistanMainContainer
+    let container: ForgotPasswordContainer
 
     func viewController() -> VerifyMobileOTPViewController {
-        let messageService = container.makeMessagesService(xsrfToken: container.xsrfToken)
-        let customerService = container.makeCustomersService(xsrfToken: container.xsrfToken)
-        let otpRepository = container.makeOTPRepository(messageService: messageService,
-                                                        customerService: customerService)
+        let otpRepository = container.makeOTPRepository()
 
         let logo: UIImage? = UIImage(named: "icon_app_logo", in: .yapPakistan)
         let heading: String = "screen_device_registration_otp_display_header_message".localized
