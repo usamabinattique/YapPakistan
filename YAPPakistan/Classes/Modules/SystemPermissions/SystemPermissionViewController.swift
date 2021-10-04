@@ -21,11 +21,9 @@ class SystemPermissionViewController: UIViewController {
     fileprivate lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
     fileprivate lazy var subHeadingLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0)
     fileprivate lazy var termsLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 2)
-    fileprivate lazy var termsButton = UIFactory
-        .makeButton(with: .small, title: "screen_system_permission_text_terms_and_conditions".localized)
+    fileprivate lazy var termsButton = UIFactory.makeButton(with: .small)
     fileprivate lazy var permissionButton = UIFactory.makeAppRoundedButton(with: .regular)
-    fileprivate lazy var thanksButton = UIFactory
-        .makeButton(with: .regular, title: "screen_system_permission_text_denied".localized)
+    fileprivate lazy var thanksButton = UIFactory.makeButton(with: .regular)
 
     fileprivate var themeService: ThemeService<AppTheme>!
     fileprivate let viewModel: SystemPermissionViewModelType
@@ -53,10 +51,11 @@ class SystemPermissionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        bind(viewModel: viewModel)
         setupSubViews()
         setupTheme()
+        setupTranslations()
         setupConstraints()
+        setupBindings()
     }
 
     @objc private func openTermsAndConditions() {
@@ -92,68 +91,41 @@ extension SystemPermissionViewController {
             .disposed(by: rx.disposeBag)
     }
 
-    fileprivate func setupConstraints() {
-        let iconConstraints = [
-            icon.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 75),
-            icon.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ]
-
-        let headingConstraints = [
-            headingLabel.topAnchor.constraint(equalTo: icon.bottomAnchor, constant: 47),
-            headingLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            view.trailingAnchor.constraint(equalTo: headingLabel.trailingAnchor, constant: 30)
-        ]
-
-        let subHeadingConstraints = [
-            subHeadingLabel.topAnchor.constraint(equalTo: headingLabel.bottomAnchor, constant: 20),
-            subHeadingLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            view.trailingAnchor.constraint(equalTo: subHeadingLabel.trailingAnchor, constant: 30)
-        ]
-
-        let termsConditionDescriptionConstraints = [
-            termsButton.topAnchor.constraint(equalTo: termsLabel.bottomAnchor, constant: 0),
-            termsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            view.trailingAnchor.constraint(equalTo: termsLabel.trailingAnchor, constant: 25)
-        ]
-
-        let termsConditionButtonConstraints = [
-            permissionButton.topAnchor.constraint(equalTo: termsButton.bottomAnchor, constant: 31),
-            termsButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
-            view.trailingAnchor.constraint(equalTo: termsButton.trailingAnchor, constant: 25)
-        ]
-
-        let permissionButtonConstraints = [
-            widthConstraint!,
-            thanksButton.topAnchor.constraint(equalTo: permissionButton.bottomAnchor, constant: 23),
-            permissionButton.heightAnchor.constraint(equalToConstant: 52),
-            permissionButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ]
-
-        let thanksButtonContraints = [
-            view.safeAreaLayoutGuide.bottomAnchor.constraint(equalTo: thanksButton.bottomAnchor, constant: 30),
-            thanksButton.widthAnchor.constraint(equalToConstant: view.bounds.size.width),
-            thanksButton.heightAnchor.constraint(equalToConstant: 24),
-            thanksButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ]
-
-        NSLayoutConstraint.activate(
-            iconConstraints +
-                headingConstraints +
-                subHeadingConstraints +
-                termsConditionDescriptionConstraints +
-                termsConditionButtonConstraints +
-                permissionButtonConstraints +
-                thanksButtonContraints
-        )
-
+    func setupTranslations() {
+        termsButton.setTitle("screen_system_permission_text_terms_and_conditions".localized, for: .normal)
+        thanksButton.setTitle("screen_system_permission_text_denied".localized, for: .normal)
     }
 
+    fileprivate func setupConstraints() {
+        icon.alignEdgesWithSuperview([.safeAreaTop], constant: 75)
+            .centerHorizontallyInSuperview()
+
+        headingLabel.toBottomOf(icon, constant: 47)
+            .alignEdgesWithSuperview([.left, .right], constant: 30)
+
+        subHeadingLabel.toBottomOf(headingLabel, constant: 20)
+            .alignEdgesWithSuperview([.left, .right], constant: 30)
+
+        thanksButton.alignEdgesWithSuperview([.left, .right, .safeAreaBottom], constants: [0, 0, 30])
+            .height(constant: 24)
+
+        permissionButton.toTopOf(thanksButton, constant: 23)
+            .centerHorizontallyInSuperview()
+            .height(constant: 52)
+
+        termsButton.toTopOf(permissionButton, constant: 31)
+            .alignEdgesWithSuperview([.left, .right], constant: 25)
+
+        termsLabel.toTopOf(termsButton)
+            .alignEdgesWithSuperview([.left, .right], constant: 25)
+
+        widthConstraint?.isActive = true    // Permission button width
+    }
 }
 
 extension SystemPermissionViewController {
 
-    fileprivate func bind(viewModel: SystemPermissionViewModelType?) {
-        guard let `viewModel` = viewModel else { return }
+    fileprivate func setupBindings() {
         bindDisplayableText(viewModel: viewModel)
         bindLoader(viewModel: viewModel)
         bindPermissionType(viewModel: viewModel)

@@ -233,3 +233,9 @@ extension YAPPakistanMainContainer {
         return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }
+
+extension YAPPakistanMainContainer {
+    func makeSystemPermissionViewController(permissionType: SystemPermissionType) -> SystemPermissionViewController {
+        return SystemPermissionModuleBuilder(container: self, permissionType: permissionType).viewController()
+    }
+}

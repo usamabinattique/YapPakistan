@@ -89,7 +89,7 @@ class SystemPermissionViewModel: SystemPermissionViewModelType,
 
     // MARK: Init
     init(permissionType: SystemPermissionType,
-         account: Observable<Account?>?,
+         account: Observable<Account?>? = nil,
          notificationManager: NotificationManager
     ) {
         permissionTypeSubject = BehaviorSubject(value: permissionType)

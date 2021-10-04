@@ -33,13 +33,7 @@ public class SystemPermissionCoordinator: Coordinator<Void> {
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<Void> {
-        let  notificationManager = NotificationManager()
-        let viewModel = SystemPermissionViewModel(permissionType: permissionType,
-                                                  account: self.account,
-                                                  notificationManager: notificationManager)
-        let viewController = SystemPermissionViewController(themeService: container.themeService,
-                                                            viewModel: viewModel,
-                                                            notificationManager: notificationManager)
+        let viewController = container.makeSystemPermissionViewController(permissionType: self.permissionType)
         root.pushViewController(viewController, animated: true)
         return Observable.never()
     }
