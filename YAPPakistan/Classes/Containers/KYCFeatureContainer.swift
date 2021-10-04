@@ -43,6 +43,15 @@ public final class KYCFeatureContainer {
         return kycRepository
     }
 
+    // MARK: Coordinators
+
+    func makeKYCReviewCoordinator(root: UINavigationController,
+                                  identityDocument: IdentityDocument,
+                                  cnicOCR: CNICOCR) -> KYCReviewCoordinator {
+        return KYCReviewCoordinator(container: self, root: root,
+                                    identityDocument: identityDocument, cnicOCR: cnicOCR)
+    }
+
     // MARK: Controllers
 
     func makeKYCProgressViewController(navigationController: UINavigationController) -> KYCProgressViewController {
