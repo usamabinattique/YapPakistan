@@ -12,11 +12,13 @@ import YAPCore
 import CardScanner
 
 class KYCCoordinator: Coordinator<ResultType<Void>> {
-    var container: KYCFeatureContainer
-    var root: UINavigationController!
-    var result = PublishSubject<ResultType<Void>>()
+    private let container: KYCFeatureContainer
+    private let root: UINavigationController!
 
-    let disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
+    private let result = PublishSubject<ResultType<Void>>()
+
+    private var identityDocument: IdentityDocument?
 
     init(container: KYCFeatureContainer,
          root: UINavigationController) {
@@ -24,39 +26,6 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         self.root = root
     }
 
-    func scanCard(_ presentationCompletion: (() -> Void)?,
-                  progressViewModel: KYCProgressViewModelType,
-                  homeViewModel: KYCHomeViewModelType) {
-        let scanCoordinator = CNICScanCoordinator(container: container, root: root, scanType: .new)
-        scanCoordinator.presentationCompletion
-            .subscribe(onNext: { presentationCompletion?() })
-            .disposed(by: disposeBag)
-
-        coordinate(to: scanCoordinator).subscribe(onNext: { result in
-            if case let ResultType.success(result) = result {
-                if let identityDocument = result.identityDocument {
-                    homeViewModel.inputs.detectOCRObserver.onNext(identityDocument)
-                }
-            }
-        }).disposed(by: disposeBag)
-    }
-
-    func navigateToReview(cnicOCR: CNICOCR) {
-        let coordinator = KYCReviewCoordinator(container: container, root: root, cnicOCR: cnicOCR)
-
-        coordinate(to: coordinator).subscribe(onNext: { result in
-            switch result {
-            case .success:
-                // FIXME: Questions flow.
-                break
-            case .cancel:
-                break
-            }
-        }).disposed(by: disposeBag)
-    }
-}
-
-class KYCCoordinatorPushable: KYCCoordinator {
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         let homeViewController = container.makeKYCHomeViewController()
         let homeViewModel = homeViewController.viewModel
@@ -76,34 +45,59 @@ class KYCCoordinatorPushable: KYCCoordinator {
 
         homeViewModel.outputs.scanCard
             .subscribe(onNext: { [weak self] _ in
-                self?.scanCard(nil,
-                               progressViewModel: progressViewModel,
-                               homeViewModel: homeViewModel)
+                self?.scanCard(homeViewModel: homeViewModel)
             })
             .disposed(by: disposeBag)
 
         homeViewModel.outputs.cnicOCR
             .subscribe(onNext: { [weak self] cnicOCR in
-                self?.navigateToReview(cnicOCR: cnicOCR)
+                self?.navigateToReview(kycMainController: progressViewController, cnicOCR: cnicOCR)
             })
             .disposed(by: disposeBag)
 
-        let backSubscription = progressViewModel.outputs.backTap.subscribe(onNext: { [weak self] in
-            if navigationController.viewControllers.count > 1 {
-                let viewController = navigationController.popViewController(animated: true)
-                viewController?.didPopFromNavigationController()
-
-                var remainingControllers = navigationController.viewControllers.count
-                remainingControllers = remainingControllers > 0 ? remainingControllers : 1
-
-                progressViewModel.inputs.progressObserver.onNext(Float(remainingControllers) / 7)
-            } else {
-                progressViewModel.inputs.popppedObserver.onNext(())
-                self?.root.popViewController(animated: true)
-            }
-        })
-        backSubscription.disposed(by: disposeBag)
-
         return result
+    }
+
+    private func scanCard(homeViewModel: KYCHomeViewModelType) {
+        let scanCoordinator = CNICScanCoordinator(container: container, root: root, scanType: .new)
+
+        coordinate(to: scanCoordinator).subscribe(onNext: { [weak self] result in
+            if case let ResultType.success(result) = result {
+                if let identityDocument = result.identityDocument {
+                    self?.identityDocument = identityDocument
+                    homeViewModel.inputs.detectOCRObserver.onNext(identityDocument)
+                }
+            }
+        }).disposed(by: disposeBag)
+    }
+
+    private func navigateToReview(kycMainController: UIViewController, cnicOCR: CNICOCR) {
+        guard let identityDocument = identityDocument else {
+            return
+        }
+
+        let coordinator = container.makeKYCReviewCoordinator(root: root,
+                                                             identityDocument: identityDocument,
+                                                             cnicOCR: cnicOCR)
+
+        coordinate(to: coordinator).subscribe(onNext: { [weak self] result in
+            guard let self = self else { return }
+
+            switch result {
+            case .success:
+                var viewControllers = self.root.viewControllers
+
+                if let index = viewControllers.lastIndex(of: kycMainController) {
+                    viewControllers.removeSubrange(index + 1 ..< viewControllers.count)
+                }
+
+                self.root.setViewControllers(viewControllers, animated: true)
+
+                // FIXME: Initiate questions flow.
+
+            case .cancel:
+                break
+            }
+        }).disposed(by: disposeBag)
     }
 }
