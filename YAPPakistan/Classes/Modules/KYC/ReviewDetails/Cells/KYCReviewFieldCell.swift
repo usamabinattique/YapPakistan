@@ -10,7 +10,7 @@ import RxTheme
 import UIKit
 import YAPComponents
 
-class KYCReviewFieldCell: UITableViewCell {
+class KYCReviewFieldCell: UITableViewCell, ReusableView {
 
     // MARK: Views
 
@@ -30,8 +30,6 @@ class KYCReviewFieldCell: UITableViewCell {
     }()
 
     // MARK: Properties
-
-    static var defaultIdentifier: String { "KYCReviewFieldCell" }
 
     private var themeService: ThemeService<AppTheme>!
 
