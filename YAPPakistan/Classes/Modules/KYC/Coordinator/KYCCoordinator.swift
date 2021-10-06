@@ -55,6 +55,12 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: disposeBag)
 
+        homeViewModel.outputs.nextCheckPoint
+            .subscribe(onNext: { _ in
+                // FIXME :
+            })
+            .disposed(by: disposeBag)
+
         return result
     }
 

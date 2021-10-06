@@ -12,6 +12,10 @@ import Foundation
 import RxSwift
 import YAPComponents
 
+enum CheckPoint {
+    case questions
+}
+
 protocol KYCHomeViewModelInput {
     var nextObserver: AnyObserver<Void> { get }
     var skipObserver: AnyObserver<Void> { get }
@@ -27,7 +31,7 @@ protocol KYCHomeViewModelOutput {
     var showPermissionAlert: Observable<Void> { get }
     var eidValidation: Observable<KYCDocumentView.Validation> { get }
     var cnicOCR: Observable<CNICOCR> { get }
-    var next: Observable<Void> { get }
+    var nextCheckPoint: Observable<CheckPoint> { get }
     var skip: Observable<Void> { get }
     var scanCard: Observable<Void> { get }
     var showError: Observable<String> { get }
@@ -48,6 +52,7 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     var outputs: KYCHomeViewModelOutput { return self }
 
     private var nextSubject = PublishSubject<Void>()
+    private var nextCheckPointSubject = PublishSubject<CheckPoint>()
     private var skipSubject = PublishSubject<Void>()
     private var cardSubject = PublishSubject<Void>()
     private var cardObserverSubject = PublishSubject<Void>()
@@ -72,7 +77,7 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     
     // MARK: Outputs
 
-    var next: Observable<Void> { return nextSubject.asObservable() }
+    var nextCheckPoint: Observable<CheckPoint> { return nextCheckPointSubject.asObservable() }
     var skip: Observable<Void> { return skipSubject.asObservable() }
     var scanCard: Observable<Void> { return cardSubject.asObservable() }
     var subHeadingText: Observable<String> { return subHeadingSubject.asObservable() }
@@ -97,7 +102,9 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             self?.getCameraPermissions()
         }).disposed(by: disposeBag)
 
-        eidValidationSubject.map { $0 == .valid }.bind(to: nextButtonEnabledSubject).disposed(by: disposeBag)
+        eidValidationSubject.map {
+            $0 == .valid
+        }.bind(to: nextButtonEnabledSubject).disposed(by: disposeBag)
 
         let request = documentsUploadSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
@@ -120,6 +127,8 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .map { $0?.isExpired ?? true ? .notDetermined : .valid }
             .bind(to: eidValidationSubject)
             .disposed(by: disposeBag)
+
+        nextSubject.map({ _ in CheckPoint.questions }).bind(to: nextCheckPointSubject).disposed(by: disposeBag)
 
         let ocrRequest = detectOCRSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
