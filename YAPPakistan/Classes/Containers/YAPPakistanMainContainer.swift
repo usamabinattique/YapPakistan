@@ -177,6 +177,7 @@ extension YAPPakistanMainContainer {
     -> VerifyPasscodeViewModelType {
         return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "",
                                        repository: makeLoginRepository(),
+                                       biometricsManager: BiometricsManager(),
                                        credentialsManager: credentialsStore,
                                        sessionCreator: SessionProvider(xsrfToken: xsrfToken),
                                        onLogin: onLogin)
@@ -235,7 +236,11 @@ extension YAPPakistanMainContainer {
 }
 
 extension YAPPakistanMainContainer {
-    func makeSystemPermissionViewController(permissionType: SystemPermissionType) -> SystemPermissionViewController {
-        return SystemPermissionModuleBuilder(container: self, permissionType: permissionType).viewController()
+    func makeNotificationPermissionViewController() -> SystemPermissionViewController {
+        return NotificationPermissionModuleBuilder(container: self).viewController()
+    }
+
+    func makeBiometricPermissionViewController() -> SystemPermissionViewController {
+        return BiometricPermissionModuleBuilder(container: self).viewController()
     }
 }

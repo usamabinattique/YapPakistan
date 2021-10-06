@@ -33,30 +33,28 @@ public class BiometricsManager {
 
     public init() {
         guard deviceBiometryType == .none else { return }
-        setBiometryPermission(isPrompt: false, phone: "", email: "")
+        setBiometryPermission(isPrompt: false, phone: "")
     }
 
-    public func isBiometryPermissionPrompt(for username: String) -> Bool {
-        return  UserDefaults.standard.bool(forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + username)
+    public func isBiometryPermissionPrompt(for phone: String) -> Bool {
+        return  UserDefaults.standard.bool(forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + phone)
     }
 
-    public func setBiometryPermission(isPrompt: Bool, phone: String, email: String) {
+    public func setBiometryPermission(isPrompt: Bool, phone: String) {
         UserDefaults.standard.set(isPrompt, forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + phone)
-        UserDefaults.standard.set(isPrompt, forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + email)
     }
 
-    public func isBiometryEnabled(for username: String) -> Bool {
-       return  UserDefaults.standard.bool(forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + username)
+    public func isBiometryEnabled(for phone: String) -> Bool {
+       return  UserDefaults.standard.bool(forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + phone)
     }
 
-    public func setBiometry(isEnabled: Bool, phone: String, email: String) {
+    public func setBiometry(isEnabled: Bool, phone: String) {
         UserDefaults.standard.set(isEnabled, forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + phone)
-        UserDefaults.standard.set(isEnabled, forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + email)
     }
 
-    public func deleteBiometryForUser(username: String) {
-        UserDefaults.standard.removeObject(forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + username)
-        UserDefaults.standard.removeObject(forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + username)
+    public func deleteBiometryForUser(phone: String) {
+        UserDefaults.standard.removeObject(forKey: "USER_DEFAULTS_KEY_BIOMETRY_STATUS" + phone)
+        UserDefaults.standard.removeObject(forKey: "USER_DEFAULTS_KEY_BIOMETRY_PERMISSION_PROMPT" + phone)
     }
 
     public var isBiometrySupported: Bool {

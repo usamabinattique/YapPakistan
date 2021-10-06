@@ -32,15 +32,41 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
-        if isNeededBiometryPermissionPrompt {
-            bioMetricPermission()
-        } else if !notifManager.isNotificationPermissionPrompt {
-            notificationPermission()
-        } else {
-            presentDashBoardController()
-        }
+        presentDashBoardController()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { self.bioMetricPermission() }
 
         return result
+    }
+
+    fileprivate func bioMetricPermission() {
+        guard isNeededBiometryPermissionPrompt else {
+            notificationPermission()
+            return
+        }
+
+        let viewController = container.parent.makeBiometricPermissionViewController()
+        viewController.modalPresentationStyle = .fullScreen
+
+        self.root.present(viewController, animated: true, completion: nil)
+
+        viewController.viewModel.outputs.thanks.merge(with: viewController.viewModel.outputs.success)
+            .subscribe(onNext: { [weak self] _ in
+                self?.root.dismiss(animated: true) { [weak self] in self?.notificationPermission() }
+            })
+            .disposed(by: rx.disposeBag)
+    }
+
+    fileprivate func notificationPermission() {
+        guard !self.notifManager.isNotificationPermissionPrompt else { return }
+
+        let viewController = container.parent.makeNotificationPermissionViewController()
+        viewController.modalPresentationStyle = .fullScreen
+
+        self.root.present(viewController, animated: true, completion: nil)
+
+        viewController.viewModel.outputs.thanks.merge(with: viewController.viewModel.outputs.success)
+            .subscribe(onNext: { [weak self] _ in self?.root.dismiss(animated: true, completion: nil) })
+            .disposed(by: rx.disposeBag)
     }
 
     fileprivate func presentDashBoardController() {
@@ -56,30 +82,6 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.completeVerification
             .subscribe(onNext: { [weak self] in self?.navigateToKYC() })
             .disposed(by: disposeBag)
-    }
-
-    fileprivate func bioMetricPermission() {
-        let coordinator = SystemPermissionCoordinator(root: root,
-                                                      type: biometricType(),
-                                                      account: container.accountProvider.currentAccount,
-                                                      container: container.parent)
-        coordinate(to: coordinator)
-            .withUnretained(self)
-            .subscribe(onNext: { $0.0.notificationPermission() })
-            .disposed(by: rx.disposeBag)
-    }
-
-    fileprivate func notificationPermission() {
-        if !self.notifManager.isNotificationPermissionPrompt {
-            let coordinator = SystemPermissionCoordinator(root: root,
-                                                          type: .notification,
-                                                          account: container.accountProvider.currentAccount,
-                                                          container: container.parent)
-            coordinate(to: coordinator)
-                .withUnretained(self)
-                .subscribe(onNext: { $0.0.presentDashBoardController() })
-                .disposed(by: rx.disposeBag)
-        }
     }
 
     private func navigateToKYC() {
@@ -117,8 +119,8 @@ extension LiteDashboardCoodinator {
         self.result.onCompleted()
     }
 
-    fileprivate func biometricType() -> SystemPermissionType {
-        let biomType = self.container.biometricsManager.deviceBiometryType == .touchID
-        return biomType ? .touchID : .faceID
-    }
+//    fileprivate func biometricType() -> SystemPermissionType {
+//        let biomType = self.container.biometricsManager.deviceBiometryType == .touchID
+//        return biomType ? .touchID : .faceID
+//    }
 }
