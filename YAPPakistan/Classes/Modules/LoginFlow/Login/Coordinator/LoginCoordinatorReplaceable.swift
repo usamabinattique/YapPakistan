@@ -71,7 +71,7 @@ class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorTyp
     }
 
     func navigateToPasscode(username: String, isUserBlocked: Bool) {
-        coordinate(to: container.makePasscodeCoordinator(root: root)).subscribe( onNext: { result in
+        coordinate(to: container.makePasscodeCoordinator(root: root, isUserBlocked: isUserBlocked)).subscribe( onNext: { result in
             self.result.onNext(.cancel)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)

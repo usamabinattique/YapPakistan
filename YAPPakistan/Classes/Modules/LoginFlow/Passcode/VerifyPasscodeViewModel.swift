@@ -113,7 +113,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
 
     // MARK: - Init
     init( username: String,
-          isUserBlocked: Bool = false,
+          isUserBlocked: Bool,
           repository: LoginRepository,
           credentialsManager: CredentialsStoreType,
           sessionCreator: SessionProviderType,
@@ -149,7 +149,9 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
             .bind(to: pinValidSubject)
             .disposed(by: disposeBag)
 
-        keyPressSubject.withLatestFrom(Observable.combineLatest(keyPressSubject, pinTextSubject))
+        keyPressSubject
+            .filter({ [unowned self] _ in !self.isUserBlocked })
+            .withLatestFrom(Observable.combineLatest(keyPressSubject, pinTextSubject))
             .do(onNext: { [unowned self] _ in errorSubject.onNext("") })
             .debug("PINOB", trimOutput: false)
             .map { keyStroke, pin -> String in
@@ -161,6 +163,10 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
                 }
                 return pin
             }.bind(to: pinTextSubject).disposed(by: disposeBag)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [unowned self] in if isUserBlocked {
+            errorSubject.onNext("screen_enter_passcode_display_text_user_blocked".localized)
+        } }
 
         bindUserAuthentication(repository: repository)
     }
