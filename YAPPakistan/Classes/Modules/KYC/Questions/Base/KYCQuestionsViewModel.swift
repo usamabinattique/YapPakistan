@@ -23,7 +23,9 @@ protocol KYCQuestionViewModelInput {
 protocol KYCQuestionViewModelOutput {
     var optionViewModels: Observable<[KYCQuestionCellViewModel]> { get }
     var showError: Observable<String> { get }
+    var isNextEnable: Observable<Bool> { get }
     var next: Observable<Void> { get }
+    var loader: Observable<Bool> { get }
     var strings: Observable<KYCStrings> { get }
 }
 
@@ -34,16 +36,13 @@ protocol KYCQuestionViewModelType {
 
 class KYCQuestionViewModel: KYCQuestionViewModelInput, KYCQuestionViewModelOutput, KYCQuestionViewModelType {
 
-    // MARK: Properties
-
-    private let disposeBag = DisposeBag()
-
-    //private let cnicNumberSubject = BehaviorSubject<String>(value: "")
-    private var optionViewModelsSubject = BehaviorSubject<[KYCQuestionCellViewModel]>(value: [])
-    private let showErrorSubject = PublishSubject<String>()
-    private var nextSubject = PublishSubject<Void>()
-    private var successSubject = PublishSubject<Void>()
-    private var stringsSubject: BehaviorSubject<KYCStrings>
+    var optionViewModelsSubject = BehaviorSubject<[KYCQuestionCellViewModel]>(value: [])
+    let showErrorSubject = PublishSubject<String>()
+    var isNextEnableSubject = BehaviorSubject<Bool>(value: false)
+    var nextSubject = PublishSubject<Void>()
+    var successSubject = PublishSubject<Void>()
+    var loaderSubject = BehaviorSubject<Bool>(value: false)
+    var stringsSubject: BehaviorSubject<KYCStrings>
 
     var inputs: KYCQuestionViewModelInput { return self }
     var outputs: KYCQuestionViewModelOutput { return self }
@@ -54,25 +53,41 @@ class KYCQuestionViewModel: KYCQuestionViewModelInput, KYCQuestionViewModelOutpu
     // MARK: Outputs
     var optionViewModels: Observable<[KYCQuestionCellViewModel]> { optionViewModelsSubject.asObservable() }
     var showError: Observable<String> { showErrorSubject.asObservable() }
-    var next: Observable<Void> { nextSubject.asObservable() } // FIXME should be successSubject
+    var isNextEnable: Observable<Bool> { isNextEnableSubject.asObservable() }
+    var next: Observable<Void> { successSubject.asObservable() } // FIXME should be successSubject
+    var loader: Observable<Bool> { loaderSubject.asObserver() }
     var strings: Observable<KYCStrings> { stringsSubject.asObservable() }
+
+    // MARK: Properties
+    var accountProvider: AccountProvider!
+    let disposeBag = DisposeBag()
+    private let cellViewModel:Observable<[KYCQuestionCellViewModel]>
 
     // MARK: Initialization
 
     init(accountProvider: AccountProvider,
-         kycRepository: KYCRepository,
+         cellViewModel: Observable<[KYCQuestionCellViewModel]>,
          strings: KYCStrings) {
-        self.stringsSubject = BehaviorSubject<KYCStrings>(value: strings)
-        notifyFields()
-    }
 
-    private func notifyFields() {
-        optionViewModelsSubject.onNext([
-            KYCQuestionCellViewModel(value: "One"),
-            KYCQuestionCellViewModel(value: "Two"),
-            KYCQuestionCellViewModel(value: "Three"),
-            KYCQuestionCellViewModel(value: "Four")
-        ])
+        self.accountProvider = accountProvider
+        self.stringsSubject = BehaviorSubject<KYCStrings>(value: strings)
+        self.cellViewModel = cellViewModel.share()
+
+        self.cellViewModel
+            .bind(to: optionViewModelsSubject)
+            .disposed(by: disposeBag)
+
+        self.cellViewModel.subscribe(onNext: { vms in
+            let oss =  vms.map({ $0.outputs.selected })
+
+            oss.forEach { [unowned self] isSelected in
+                isSelected.filter({ $0 })
+                    .distinctUntilChanged()
+                    .bind(to: self.isNextEnableSubject).disposed(by: self.disposeBag)
+            }
+
+        }).disposed(by: disposeBag)
+        
     }
 
     private func bindSaveRequest(identityDocument: IdentityDocument,

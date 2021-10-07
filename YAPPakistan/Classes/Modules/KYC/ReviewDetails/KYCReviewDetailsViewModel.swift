@@ -97,7 +97,8 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                 }
 
                 let documentType = "CNIC"
-                let identityNo = cnicNumber.replace(string: "-", replacement: "")
+                let identityNo = randomString()     // cnicNumber.replace(string: "-", replacement: "")
+                                                    // FIXME this temporary for testing
                 let nationality = "PAK"
                 let fullName = cnicInfo.name
                 let gender = cnicInfo.gender

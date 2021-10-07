@@ -55,9 +55,14 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
-        homeViewController.viewModel.outputs.nextCheckPoint.filter({ $0 == .questions })
+        homeViewController.viewModel.outputs.next.filter({ $0 == .secretQuestionPending })
             .withUnretained(self)
             .subscribe(onNext: { $0.0.motherNameQuestion() })
+            .disposed(by: rx.disposeBag)
+
+        homeViewController.viewModel.outputs.next.filter({ $0 == .selfiePending })
+            .withUnretained(self)
+            .subscribe(onNext: { $0.0.selfiePending() })
             .disposed(by: rx.disposeBag)
 
         addChildVC(homeViewController)
@@ -99,9 +104,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                 self.root.setViewControllers(viewControllers, animated: true)
 
                 // FIXME: Initiate questions flow.
+                self.motherNameQuestion()
 
-            case .cancel:
-                break
+            case .cancel: break
             }
         }).disposed(by: rx.disposeBag)
     }
@@ -110,9 +115,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let strings = KYCStrings(title: "screen_kyc_questions_mothers_name".localized,
                                  subHeading: "screen_kyc_questions_reason".localized,
                                  next: "common_button_next".localized )
-        let viewModel = KYCQuestionViewModel(accountProvider: container.accountProvider,
-                                             kycRepository: container.makeKYCRepository(),
-                                             strings: strings)
+        let viewModel = MotherMaidenNamesViewModel(accountProvider: container.accountProvider,
+                                                   kycRepository: container.makeKYCRepository(),
+                                                   strings: strings)
         let viewController = KYCQuestionsViewController(themeService: container.themeService, viewModel: viewModel)
 
         viewModel.outputs.next.withUnretained(self)
@@ -127,12 +132,26 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let strings = KYCStrings(title: "screen_kyc_questions_city_of_birth".localized,
                                  subHeading: "screen_kyc_questions_reason".localized,
                                  next: "common_button_next".localized )
-        let viewModel = KYCQuestionViewModel(accountProvider: container.accountProvider,
+        let viewModel = CityOfBirthNamesViewModel(accountProvider: container.accountProvider,
                                              kycRepository: container.makeKYCRepository(),
                                              strings: strings)
+        viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { [unowned self] _ in
+                let viewControllers = self.kycProgressViewController.childNavigation.viewControllers
+                self.kycProgressViewController.childNavigation.setViewControllers([viewControllers.first!], animated: true)
+                self.selfiePending()
+            })
+            .disposed(by: rx.disposeBag)
+
         let viewController = KYCQuestionsViewController(themeService: container.themeService, viewModel: viewModel)
 
         addChildVC(viewController, progress: 0.75)
+    }
+
+    // MARK: Checkpoint Selfie Pending
+    func selfiePending() {
+        let viewController = SelfieViewController()
+        addChildVC(viewController, progress: 0.86)
     }
 }
 

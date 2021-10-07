@@ -83,10 +83,21 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
 
     // MARK: Init
 
+    var accountProvider: AccountProvider!
+    var biometricsManager: BiometricsManager!
+    var credentialStore: CredentialsStoreType!
+    var repository: LoginRepository!
+
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManager,
          credentialStore: CredentialsStoreType,
          repository: LoginRepository) {
+
+        self.accountProvider = accountProvider
+        self.biometricsManager = biometricsManager
+        self.credentialStore = credentialStore
+        self.repository = repository
+
         self.biometrySuject = BehaviorSubject(value: biometricsManager.isBiometryEnabled(for: ""))
         self.biometrySupportedSuject = BehaviorSubject(value: false)
         //
@@ -96,7 +107,10 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
         self.biometryTitleSuject = BehaviorSubject(value: biometricsManager.deviceBiometryType.title)
 
         let logoutRequest = logoutSubject
-            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .do(onNext: { [unowned self] _ in
+                self.biometricsManager.deleteBiometryForUser(username: credentialStore.getUsername() ?? "")
+                YAPProgressHud.showProgressHud()
+            })
             .flatMap { _ -> Observable<Event<[String: String]?>> in
                 return repository.logout(deviceUUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
             }
@@ -117,7 +131,7 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
             .disposed(by: disposeBag)
 
         accountProvider.currentAccount
-            .map{ $0?.accountStatus ?? .onboarded != .onboarded }
+            .map{ _ in false /* $0?.accountStatus ?? .onboarded != .onboarded */ }
             .bind(to: completeVerificationHiddenSubject)
             .disposed(by: disposeBag)
 

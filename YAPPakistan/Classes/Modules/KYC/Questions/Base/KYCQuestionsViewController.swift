@@ -18,6 +18,7 @@ class KYCQuestionsViewController: UIViewController {
     private lazy var subHeadingLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     private lazy var tableView = UIFactory.makeTableView(allowsSelection: true)
     private lazy var nextButton = UIFactory.makeAppRoundedButton(with: .regular)
+
     //private lazy var tableView: UITableView = {
     //    let tableView = UITableView()
     //    tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -114,14 +115,18 @@ class KYCQuestionsViewController: UIViewController {
                             defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: rx.disposeBag)
 
-
-
         viewModel.outputs.optionViewModels
             .bind(to: tableView.rx.items(cellIdentifier:KYCQuestionCell.defaultIdentifier, cellType: KYCQuestionCell.self)) {
             [weak self] (_, viewModel: KYCQuestionCellViewModelType, cell) in
             guard let self = self else { return }
             cell.configure(with: self.themeService, viewModel: viewModel)
         }.disposed(by: rx.disposeBag)
+
+        viewModel.outputs.isNextEnable
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: rx.disposeBag)
+
+        viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
 
         nextButton.rx.tap
             .bind(to: viewModel.inputs.nextObserver)

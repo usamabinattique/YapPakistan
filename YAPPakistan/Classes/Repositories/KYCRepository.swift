@@ -37,7 +37,17 @@ class KYCRepository {
                                               dateIssue: dateIssue, dateExpiry: dateExpiry).materialize()
     }
 
-    func getMotherMaidenNames() -> Observable<Event<String?>> {
+    func getMotherMaidenNames() -> Observable<Event<[String]>> {
         return customersService.getMotherMaidenNames().materialize()
+    }
+
+    func getCityOfBirthNames() -> Observable<Event<[String]>> {
+        return customersService.getCityOfBirthNames().materialize()
+    }
+
+    func verifySecretQuestions(motherMaidenName: String, cityOfBirth: String ) -> Observable<Event<String>> {
+        return customersService
+            .verifySecretQuestions(motherMaidenName:motherMaidenName, cityOfBirth: cityOfBirth )
+            .materialize()
     }
 }
