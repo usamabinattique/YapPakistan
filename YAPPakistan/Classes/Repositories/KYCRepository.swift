@@ -36,4 +36,8 @@ class KYCRepository {
                                               fullName: fullName, gender: gender, dob: dob,
                                               dateIssue: dateIssue, dateExpiry: dateExpiry).materialize()
     }
+
+    func getMotherMaidenNames() -> Observable<Event<String?>> {
+        return customersService.getMotherMaidenNames().materialize()
+    }
 }

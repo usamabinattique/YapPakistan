@@ -10,15 +10,21 @@ import Foundation
 import RxSwift
 import YAPComponents
 
+struct KYCStrings {
+    var title: String
+    var subHeading: String
+    var next: String
+}
+
 protocol KYCQuestionViewModelInput {
     var nextObserver: AnyObserver<Void> { get }
 }
 
 protocol KYCQuestionViewModelOutput {
-    var cnicNumber: Observable<String> { get }
-    var cnicFields: Observable<[KYCQuestionCellViewModel]> { get }
+    var optionViewModels: Observable<[KYCQuestionCellViewModel]> { get }
     var showError: Observable<String> { get }
     var next: Observable<Void> { get }
+    var strings: Observable<KYCStrings> { get }
 }
 
 protocol KYCQuestionViewModelType {
@@ -32,48 +38,40 @@ class KYCQuestionViewModel: KYCQuestionViewModelInput, KYCQuestionViewModelOutpu
 
     private let disposeBag = DisposeBag()
 
-    private let cnicNumberSubject = BehaviorSubject<String>(value: "")
-    private var cnicFieldsSubject = BehaviorSubject<[KYCQuestionCellViewModel]>(value: [])
+    //private let cnicNumberSubject = BehaviorSubject<String>(value: "")
+    private var optionViewModelsSubject = BehaviorSubject<[KYCQuestionCellViewModel]>(value: [])
     private let showErrorSubject = PublishSubject<String>()
-
     private var nextSubject = PublishSubject<Void>()
     private var successSubject = PublishSubject<Void>()
+    private var stringsSubject: BehaviorSubject<KYCStrings>
 
     var inputs: KYCQuestionViewModelInput { return self }
     var outputs: KYCQuestionViewModelOutput { return self }
 
     // MARK: Inputs
-
     var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
 
     // MARK: Outputs
-
-    var cnicNumber: Observable<String> { cnicNumberSubject.asObservable() }
-    var cnicFields: Observable<[KYCQuestionCellViewModel]> { cnicFieldsSubject.asObservable() }
+    var optionViewModels: Observable<[KYCQuestionCellViewModel]> { optionViewModelsSubject.asObservable() }
     var showError: Observable<String> { showErrorSubject.asObservable() }
-    var next: Observable<Void> { successSubject.asObservable() }
+    var next: Observable<Void> { nextSubject.asObservable() } // FIXME should be successSubject
+    var strings: Observable<KYCStrings> { stringsSubject.asObservable() }
 
     // MARK: Initialization
 
     init(accountProvider: AccountProvider,
          kycRepository: KYCRepository,
-         identityDocument: IdentityDocument,
-         cnicNumber: String,
-         cnicInfo: CNICInfo) {
-        notifyFields(cnicNumber: cnicNumber, cnicInfo: cnicInfo)
-        bindSaveRequest(identityDocument: identityDocument, cnicNumber: cnicNumber, cnicInfo: cnicInfo,
-                        kycRepository: kycRepository, accountProvider: accountProvider)
+         strings: KYCStrings) {
+        self.stringsSubject = BehaviorSubject<KYCStrings>(value: strings)
+        notifyFields()
     }
 
-    private func notifyFields(cnicNumber: String, cnicInfo: CNICInfo) {
-        cnicNumberSubject.onNext(cnicNumber)
-        cnicFieldsSubject.onNext([
-            KYCQuestionCellViewModel(value: cnicInfo.name),
-            KYCQuestionCellViewModel(value: cnicInfo.gender),
-            KYCQuestionCellViewModel(value: parseDate(cnicInfo.dob)),
-            KYCQuestionCellViewModel(value: parseDate(cnicInfo.issueDate)),
-            KYCQuestionCellViewModel(value: parseDate(cnicInfo.expiryDate)),
-            KYCQuestionCellViewModel(value: cnicInfo.residentialAddress)
+    private func notifyFields() {
+        optionViewModelsSubject.onNext([
+            KYCQuestionCellViewModel(value: "One"),
+            KYCQuestionCellViewModel(value: "Two"),
+            KYCQuestionCellViewModel(value: "Three"),
+            KYCQuestionCellViewModel(value: "Four")
         ])
     }
 

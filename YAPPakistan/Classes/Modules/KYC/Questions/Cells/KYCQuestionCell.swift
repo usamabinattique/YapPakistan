@@ -20,7 +20,7 @@ class KYCQuestionCell: UITableViewCell, ReusableView {
     // MARK: Properties
 
     private var themeService: ThemeService<AppTheme>!
-    private var viewModel: ReferredFriendViewModelType!
+    private var viewModel: KYCQuestionCellViewModelType!
     private var disposeBag = DisposeBag()
 
     // MARK: Initialization
@@ -47,11 +47,22 @@ class KYCQuestionCell: UITableViewCell, ReusableView {
 
     // MARK: Cell selection
 
+    fileprivate func animateCellSelection() {
+        if self.isSelected {
+            UIView.animate(withDuration: 0.3) { [weak self] in guard let self = self else { return }
+                self.containerView.backgroundColor = UIColor(self.themeService.attrs.greyExtraLight)
+            }
+        } else {
+            UIView.animate(withDuration: 0.5) { [weak self] in guard let self = self else { return }
+                self.containerView.backgroundColor = .clear
+            }
+        }
+    }
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        UIView.animate(withDuration: 1) { [weak self] in guard let self = self else { return }
-            self.containerView.backgroundColor = self.isSelected ? UIColor(self.themeService.attrs.greyLight):.clear
-        }
+        self.viewModel.inputs.selectedObserver.onNext(self.isSelected)
+        animateCellSelection()
     }
 
     // MARK: View Setup
@@ -74,19 +85,19 @@ class KYCQuestionCell: UITableViewCell, ReusableView {
     // MARK: Theming
 
     private func setupTheme(with themeService: ThemeService<AppTheme>) {
-        themeService.rx
-            .bind({ UIColor($0.primary) }, to: valueLabel.rx.textColor)
+        self.themeService = themeService
+        self.themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: valueLabel.rx.textColor)
             .bind({ UIColor($0.greyLight) }, to: containerView.rx.borderColor)
-            .bind({ UIColor($0.primary) }, to: valueLabel.rx.textColor)
+            .bind({ UIColor($0.backgroundColor) }, to: rx.backgroundColor)
             .disposed(by: disposeBag)
     }
 
     // MARK: Binding
 
     private func bindViewModel(_ viewModel: KYCQuestionCellViewModelType) {
-        viewModel.outputs.value
-            .bind(to: valueLabel.rx.text)
-            .disposed(by: disposeBag)
+        self.viewModel = viewModel
+        self.viewModel.outputs.value.bind(to: valueLabel.rx.text).disposed(by: disposeBag)
     }
 
     // MARK: Configuration
@@ -96,4 +107,3 @@ class KYCQuestionCell: UITableViewCell, ReusableView {
         bindViewModel(viewModel)
     }
 }
-

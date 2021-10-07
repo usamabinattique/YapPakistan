@@ -14,10 +14,17 @@ class KYCQuestionsViewController: UIViewController {
 
     // MARK: Views
 
-    private lazy var titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
+    private lazy var titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
     private lazy var subHeadingLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     private lazy var tableView = UIFactory.makeTableView(allowsSelection: true)
     private lazy var nextButton = UIFactory.makeAppRoundedButton(with: .regular)
+    //private lazy var tableView: UITableView = {
+    //    let tableView = UITableView()
+    //    tableView.translatesAutoresizingMaskIntoConstraints = false
+    //    tableView.separatorStyle = .none
+    //    tableView.allowsSelection = false
+    //    return tableView
+    //}()
 
     // MARK: Properties
 
@@ -59,9 +66,13 @@ class KYCQuestionsViewController: UIViewController {
     }
 
     private func setupResources() {
-        titleLabel.text = "screen_kyc_review_details_screen_title".localized
-        subHeadingLabel.text = "screen_kyc_review_details_screen_subtitle".localized
-        nextButton.setTitle("common_button_next".localized, for: .normal)
+        viewModel.outputs.strings.withUnretained(self)
+            .subscribe(onNext: {
+                $0.0.titleLabel.text = $0.1.title
+                $0.0.subHeadingLabel.text = $0.1.subHeading
+                $0.0.nextButton.setTitle($0.1.next, for: .normal)
+            })
+            .disposed(by: rx.disposeBag)
     }
 
     private func setupTheme() {
@@ -85,9 +96,10 @@ class KYCQuestionsViewController: UIViewController {
         tableView
             .alignEdgesWithSuperview([.left, .right])
             .toBottomOf(subHeadingLabel, constant: 10)
-            .toTopOf(nextButton, constant: 10)
+            //.toTopOf(nextButton, constant: 10)
 
         nextButton
+            .toBottomOf(tableView, constant: 10)
             .alignEdgeWithSuperviewSafeArea(.bottom, constant: 15)
             .centerHorizontallyInSuperview()
             .width(constant: 190)
@@ -102,8 +114,10 @@ class KYCQuestionsViewController: UIViewController {
                             defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.cnicFields.bind(to: tableView.rx.items(cellIdentifier: KYCQuestionCell.defaultIdentifier,
-                                                                 cellType: KYCQuestionCell.self)) {
+
+
+        viewModel.outputs.optionViewModels
+            .bind(to: tableView.rx.items(cellIdentifier:KYCQuestionCell.defaultIdentifier, cellType: KYCQuestionCell.self)) {
             [weak self] (_, viewModel: KYCQuestionCellViewModelType, cell) in
             guard let self = self else { return }
             cell.configure(with: self.themeService, viewModel: viewModel)

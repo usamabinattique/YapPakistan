@@ -270,6 +270,12 @@ public class CustomersService: BaseService, CustomerServiceType {
         return upload(apiClient: apiClient, documents: docs, route: route,
                       progressObserver: nil, otherFormValues: formData)
     }
+
+    public func getMotherMaidenNames<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/getMotherMaidenNames", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
 }
 
 // MARK: Helpers

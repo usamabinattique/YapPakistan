@@ -14,67 +14,66 @@ import CardScanner
 class KYCCoordinator: Coordinator<ResultType<Void>> {
     private let container: KYCFeatureContainer
     private let root: UINavigationController!
-
-    private let disposeBag = DisposeBag()
     private let result = PublishSubject<ResultType<Void>>()
 
+    private lazy var kycProgressViewController = makeKYCProgressViewController()
     private var identityDocument: IdentityDocument?
+    private var kycHomeViewModel: KYCHomeViewModelType!
 
     init(container: KYCFeatureContainer,
          root: UINavigationController) {
         self.container = container
         self.root = root
+        super.init()
+        setupPogressViewController()
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let homeViewController = container.makeKYCHomeViewController()
-        let homeViewModel = homeViewController.viewModel
-
-        let navigationController = UINavigationController(rootViewController: homeViewController)
-        navigationController.navigationBar.isHidden = true
-
-        let progressViewController = container.makeKYCProgressViewController(navigationController: navigationController)
-        let progressViewModel: KYCProgressViewModelType! = progressViewController.viewModel
-        progressViewModel.inputs.hideProgressObserver.onNext(true)
-
-        root.pushViewController(progressViewController, animated: true)
-
-        homeViewModel.outputs.skip.subscribe(onNext: { [unowned self] _ in
-            self.result.onNext(ResultType.success(()))
-        }).disposed(by: disposeBag)
-
-        homeViewModel.outputs.scanCard
-            .subscribe(onNext: { [weak self] _ in
-                self?.scanCard(homeViewModel: homeViewModel)
-            })
-            .disposed(by: disposeBag)
-
-        homeViewModel.outputs.cnicOCR
-            .subscribe(onNext: { [weak self] cnicOCR in
-                self?.navigateToReview(kycMainController: progressViewController, cnicOCR: cnicOCR)
-            })
-            .disposed(by: disposeBag)
-
-        homeViewModel.outputs.nextCheckPoint
-            .subscribe(onNext: { _ in
-                // FIXME :
-            })
-            .disposed(by: disposeBag)
-
+        kycHome()
         return result
     }
 
-    private func scanCard(homeViewModel: KYCHomeViewModelType) {
+    func kycHome() {
+
+        let homeViewController = container.makeKYCHomeViewController()
+        kycHomeViewModel = homeViewController.viewModel
+
+        homeViewController.viewModel.outputs.skip.withUnretained(self)
+            .subscribe(onNext: {
+                $0.0.root.popViewController(animated: true)
+                $0.0.result.onNext(.success(()))
+                $0.0.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
+
+        homeViewController.viewModel.outputs.scanCard.withUnretained(self)
+            .subscribe(onNext: { $0.0.scanCard() })
+            .disposed(by: rx.disposeBag)
+
+        homeViewController.viewModel.outputs.cnicOCR.withUnretained(self)
+            .subscribe(onNext: {
+                $0.0.navigateToReview(kycMainController: $0.0.kycProgressViewController, cnicOCR: $0.1)
+            })
+            .disposed(by: rx.disposeBag)
+
+        homeViewController.viewModel.outputs.nextCheckPoint.filter({ $0 == .questions })
+            .withUnretained(self)
+            .subscribe(onNext: { $0.0.motherNameQuestion() })
+            .disposed(by: rx.disposeBag)
+
+        addChildVC(homeViewController)
+    }
+
+    private func scanCard() {
         let scanCoordinator = CNICScanCoordinator(container: container, root: root, scanType: .new)
 
         coordinate(to: scanCoordinator).subscribe(onNext: { [weak self] result in
             if case let ResultType.success(result) = result {
                 if let identityDocument = result.identityDocument {
                     self?.identityDocument = identityDocument
-                    homeViewModel.inputs.detectOCRObserver.onNext(identityDocument)
+                    self?.kycHomeViewModel.inputs.detectOCRObserver.onNext(identityDocument)
                 }
             }
-        }).disposed(by: disposeBag)
+        }).disposed(by: rx.disposeBag)
     }
 
     private func navigateToReview(kycMainController: UIViewController, cnicOCR: CNICOCR) {
@@ -104,6 +103,70 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             case .cancel:
                 break
             }
-        }).disposed(by: disposeBag)
+        }).disposed(by: rx.disposeBag)
+    }
+
+    func motherNameQuestion() {
+        let strings = KYCStrings(title: "screen_kyc_questions_mothers_name".localized,
+                                 subHeading: "screen_kyc_questions_reason".localized,
+                                 next: "common_button_next".localized )
+        let viewModel = KYCQuestionViewModel(accountProvider: container.accountProvider,
+                                             kycRepository: container.makeKYCRepository(),
+                                             strings: strings)
+        let viewController = KYCQuestionsViewController(themeService: container.themeService, viewModel: viewModel)
+
+        viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { $0.0.cityQuestion() })
+            .disposed(by: rx.disposeBag)
+
+        addChildVC(viewController, progress: 0.5)
+
+    }
+
+    func cityQuestion() {
+        let strings = KYCStrings(title: "screen_kyc_questions_city_of_birth".localized,
+                                 subHeading: "screen_kyc_questions_reason".localized,
+                                 next: "common_button_next".localized )
+        let viewModel = KYCQuestionViewModel(accountProvider: container.accountProvider,
+                                             kycRepository: container.makeKYCRepository(),
+                                             strings: strings)
+        let viewController = KYCQuestionsViewController(themeService: container.themeService, viewModel: viewModel)
+
+        addChildVC(viewController, progress: 0.75)
+    }
+}
+
+// MARK: Helpers
+
+fileprivate extension KYCCoordinator {
+    func addChildVC(_ viewController: UIViewController, progress: Float? = nil ) {
+        if progress == nil {
+            kycProgressViewController.childNavigation.pushViewController(viewController, animated: false)
+            kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(true)
+        } else {
+            kycProgressViewController.childNavigation.pushViewController(viewController, animated: true)
+            kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(false)
+            kycProgressViewController.viewModel.inputs.progressObserver.onNext(progress!)
+        }
+    }
+
+    private func setupPogressViewController() {
+        self.root.pushViewController(self.kycProgressViewController, animated: true)
+        kycProgressViewController.viewModel.outputs.backTap.withUnretained(self)
+            .subscribe(onNext: {
+                $0.0.kycProgressViewController.childNavigation.popViewController(animated: true)
+                let count = $0.0.kycProgressViewController.childNavigation.viewControllers.count
+                $0.0.kycProgressViewController.viewModel.inputs.progressObserver.onNext(Float(count) / 4)
+                if count <= 1 {
+                    $0.0.kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(true)
+                }
+            })
+            .disposed(by: rx.disposeBag)
+    }
+
+    func makeKYCProgressViewController() -> KYCProgressViewController {
+        let childNav = UINavigationController()
+        childNav.navigationBar.isHidden = true
+        return self.container.makeKYCProgressViewController(navigationController: childNav)
     }
 }
