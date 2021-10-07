@@ -28,6 +28,7 @@ protocol VerifyPasscodeViewModelInputs {
     var actionObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
     var forgotPasscodeObserver: AnyObserver<Void> { get }
+    var biometricObserver: AnyObserver<Void> { get }
 }
 
 protocol VerifyPasscodeViewModelOutputs {
@@ -43,6 +44,7 @@ protocol VerifyPasscodeViewModelOutputs {
     var localizedText: Observable<LocalizedText> { get }
     var shake: Observable<Void> { get }
     var forgot: Observable<Void> { get }
+    var biometryEnabled: Observable<Bool> { get }
 }
 
 protocol VerifyPasscodeViewModelType {
@@ -65,6 +67,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
     var actionObserver: AnyObserver<Void> { return actionSubject.asObserver() }
     var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     var forgotPasscodeObserver: AnyObserver<Void> { return forgotPasscodeSubject.asObserver() }
+    var biometricObserver: AnyObserver<Void> { return biometricSubject.asObserver() }
 
     // MARK: - Outputs - Implementation of "outputs" protocol
     var pinText: Observable<String?> { return pinTextSubject
@@ -81,6 +84,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
     var localizedText: Observable<LocalizedText> { return self.localizedTextSubject.asObservable() }
     var shake: Observable<Void> { return shakeSubject.asObservable() }
     var forgot: Observable<Void> { return forgotPasscodeSubject.asObservable() }
+    var biometryEnabled: Observable<Bool> { return biometryEnabledSubject.asObserver() }
 
     // MARK: - Subjects
 
@@ -96,6 +100,8 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
     fileprivate let loaderSubject = PublishSubject<Bool>()
     fileprivate let localizedTextSubject: BehaviorSubject<LocalizedText>
     fileprivate let shakeSubject = PublishSubject<Void>()
+    fileprivate let biometryEnabledSubject = BehaviorSubject<Bool>(value: false)
+    fileprivate let biometricSubject = PublishSubject<Void>()
 
     // MARK: Internal Properties and ViewModels
     private let repository: LoginRepository
@@ -115,6 +121,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
     init( username: String,
           isUserBlocked: Bool,
           repository: LoginRepository,
+          biometricsManager:BiometricsManager,
           credentialsManager: CredentialsStoreType,
           sessionCreator: SessionProviderType,
           pinRange: ClosedRange<Int> = 4...6,
@@ -164,11 +171,45 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
                 return pin
             }.bind(to: pinTextSubject).disposed(by: disposeBag)
 
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [unowned self] in if isUserBlocked {
             errorSubject.onNext("screen_enter_passcode_display_text_user_blocked".localized)
         } }
 
-        bindUserAuthentication(repository: repository)
+        // bindUserAuthentication(repository: repository)
+
+        let isBiometricAvailable = biometricsManager.isBiometryPermissionPrompt(for: username)
+            && biometricsManager.isBiometrySupported
+            && biometricsManager.isBiometryEnabled(for: username)
+
+        biometryEnabledSubject.onNext(isBiometricAvailable)
+
+        let biometicsAuthenticated = biometricSubject.withLatestFrom(biometryEnabledSubject).filter({ $0 }).map({ _ in () })
+            .flatMap({ () -> Observable<Event<Bool>> in
+                let reason = "screen_verify_passcode_display_text_biometrics_reason".localized + " "
+                    + mask(username: username)
+                return biometricsManager.biometricsAuthenticate(reason: reason).materialize()
+            })
+
+        biometicsAuthenticated.errors().map({ _ in false }).bind(to: biometryEnabledSubject).disposed(by: disposeBag)
+
+        let biometricLoginCredentials = biometicsAuthenticated.elements().filter({ $0 })
+            .withUnretained(self)
+            .map { (username:$0.0.username, password:$0.0.credentialsManager.getPasscode(username: $0.0.username)!) }
+            .share()
+
+        biometricLoginCredentials
+            .map({ $0.password })
+            .bind(to: pinTextSubject)
+            .disposed(by: disposeBag)
+
+        let loginCredentials = actionSubject.withLatestFrom(pinTextSubject).unwrap()
+            .withUnretained(self)
+            .map({ (username:$0.0.username, password:$0.1) })
+
+        bind(with: biometricLoginCredentials)
+        bind(with: loginCredentials)
+
     }
 
     func createTermsAndConditions(text: String) -> NSAttributedString {
@@ -187,14 +228,13 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
 }
 
 fileprivate extension VerifyPasscodeViewModel {
-    func bindUserAuthentication(repository: LoginRepository) {
+    func bind(with credentials: Observable<(username: String, password: String)>) {
 
-        let loginRequest = actionSubject.withLatestFrom(pinTextSubject).unwrap()
-            .withUnretained(self)
-            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-            .flatMap {
-                $0.0.repository.authenticate(username: $0.0.username, password: $0.1, deviceId: UIDevice.deviceID)
-            }
+        let loginRequest = credentials.withUnretained(self)
+            .do(onNext: { $0.0.loaderSubject.onNext(true) })
+            .flatMap { $0.0.repository.authenticate(username: $0.1.username,
+                                                    password: $0.1.password,
+                                                    deviceId: UIDevice.deviceID) }
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
 
@@ -247,7 +287,6 @@ fileprivate extension VerifyPasscodeViewModel {
             .do(onNext: { [weak self] _ in self?.pinTextSubject.onNext("") })
             .bind(to: errorSubject)
             .disposed(by: disposeBag)
-
     }
 
     private func refreshAccount() {

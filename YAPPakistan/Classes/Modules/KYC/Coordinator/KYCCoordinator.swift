@@ -76,8 +76,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             return
         }
 
-        let coordinator = KYCReviewCoordinator(container: container, root: root,
-                                               identityDocument: identityDocument, cnicOCR: cnicOCR)
+        let coordinator = container.makeKYCReviewCoordinator(root: root,
+                                                             identityDocument: identityDocument,
+                                                             cnicOCR: cnicOCR)
 
         coordinate(to: coordinator).subscribe(onNext: { [weak self] result in
             guard let self = self else { return }

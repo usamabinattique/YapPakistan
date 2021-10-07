@@ -60,6 +60,12 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
          identityDocument: IdentityDocument,
          cnicNumber: String,
          cnicInfo: CNICInfo) {
+        notifyFields(cnicNumber: cnicNumber, cnicInfo: cnicInfo)
+        bindSaveRequest(identityDocument: identityDocument, cnicNumber: cnicNumber, cnicInfo: cnicInfo,
+                        kycRepository: kycRepository, accountProvider: accountProvider)
+    }
+
+    private func notifyFields(cnicNumber: String, cnicInfo: CNICInfo) {
         cnicNumberSubject.onNext(cnicNumber)
         cnicFieldsSubject.onNext([
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_full_name".localized,
@@ -75,7 +81,13 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_residential_address".localized,
                                     value: cnicInfo.residentialAddress)
         ])
+    }
 
+    private func bindSaveRequest(identityDocument: IdentityDocument,
+                                 cnicNumber: String,
+                                 cnicInfo: CNICInfo,
+                                 kycRepository: KYCRepository,
+                                 accountProvider: AccountProvider) {
         let saveRequest = nextSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
             .flatMap { [weak self] _ -> Observable<Event<String?>> in
