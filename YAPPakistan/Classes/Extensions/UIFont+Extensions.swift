@@ -33,11 +33,17 @@ public extension UIFont {
     static func micro  ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.micro(weight).font }
 
     static var title1: UIFont { return .title1( .regular) }
+    /// Font size = 24
     static var title2: UIFont { return .title2( .regular) }
+    /// Font size = 21
     static var title3: UIFont { return .title3( .regular) }
+    /// Font size = 18
     static var large: UIFont { return .large(  .regular) }
+    /// Font size = 16
     static var regular: UIFont { return .regular(.regular) }
+    /// Font size = 14
     static var small: UIFont { return .small(  .regular) }
+    /// Font size = 12
     static var micro: UIFont { return .micro(  .regular) }
 }
 

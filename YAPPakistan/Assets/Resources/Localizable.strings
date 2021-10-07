@@ -216,3 +216,10 @@
 "screen_kyc_review_details_issue_date" = "Issue date";
 "screen_kyc_review_details_expiry_date" = "Expiry date";
 "screen_kyc_review_details_residential_address" = "Residential Address";
+
+
+// MARK: KYC Questions
+
+"screen_kyc_questions_mothers_name" = "Select your mother's maiden name";
+"screen_kyc_questions_city_of_birth" = "What is your city of birth?";
+"screen_kyc_questions_reason" = "We ask this for security purpose";
