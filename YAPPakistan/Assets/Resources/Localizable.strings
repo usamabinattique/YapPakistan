@@ -21,6 +21,7 @@
 "common_display_text_permission_denied" = "Permission denied!";
 "common_display_text_permission_camera" = "You have denied YAP access to camera. To allow YAP to use camera go to settings";
 "common_button_settings" = "Settings";
+"common_button_completed" = "Completed";
 "common_button_cancel" = "Cancel";
 "common_button_install" = "Install";
 "common_button_yes" = "Yes";

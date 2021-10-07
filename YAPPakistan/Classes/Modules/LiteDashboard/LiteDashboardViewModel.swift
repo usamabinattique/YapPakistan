@@ -108,7 +108,7 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
 
         let logoutRequest = logoutSubject
             .do(onNext: { [unowned self] _ in
-                self.biometricsManager.deleteBiometryForUser(username: credentialStore.getUsername() ?? "")
+                self.biometricsManager.deleteBiometryForUser(phone: credentialStore.getUsername() ?? "")
                 YAPProgressHud.showProgressHud()
             })
             .flatMap { _ -> Observable<Event<[String: String]?>> in
