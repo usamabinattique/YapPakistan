@@ -16,9 +16,12 @@ class LiteDashboardViewController: UIViewController {
 
     // MARK: Views
 
-    private lazy var logo: UIImageView = UIFactory.makeImageView(image: UIImage(named: "icon_app_logo", in: .yapPakistan), contentMode: .scaleAspectFit)
-
-    private lazy var headingLabel: UILabel = UIFactory.makeLabel(font: .title1, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var logo = UIFactory.makeImageView(image: UIImage(named: "icon_app_logo", in: .yapPakistan),
+                                                    contentMode: .scaleAspectFit)
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title1,
+                                                        alignment: .center,
+                                                        numberOfLines: 0,
+                                                        lineBreakMode: .byWordWrapping)
 
     private lazy var logoutButton = UIFactory.makeAppRoundedButton(with: .large)
 
