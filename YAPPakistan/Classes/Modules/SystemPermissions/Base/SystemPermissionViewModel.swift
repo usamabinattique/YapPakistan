@@ -43,7 +43,6 @@ class SystemPermissionViewModel: SystemPermissionViewModelType,
     // MARK: Outputs
     var termsConditions: Observable<Void> { return termsConditionsSubject.asObservable() }
     var thanks: Observable<Void> { return noThanksSubject.asObservable() }
-    // var icon: Observable<UIImage?> { return iconSubject.asObservable() }
     var loading: Observable<Bool> { return loadingSubject.asObservable() }
     var error: Observable<String> { return errorSubject.asObservable() }
     var success: Observable<Void> { return successSubject.asObservable() }
@@ -53,7 +52,6 @@ class SystemPermissionViewModel: SystemPermissionViewModelType,
     fileprivate var termsConditionsSubject = PublishSubject<Void>()
     fileprivate var permissionSubject = PublishSubject<Void>()
     fileprivate var noThanksSubject = PublishSubject<Void>()
-    // fileprivate var iconSubject = BehaviorSubject<UIImage?>(value: nil)
     fileprivate let loadingSubject = PublishSubject<Bool>()
     fileprivate let errorSubject = PublishSubject<String>()
     fileprivate let successSubject = PublishSubject<Void>()
