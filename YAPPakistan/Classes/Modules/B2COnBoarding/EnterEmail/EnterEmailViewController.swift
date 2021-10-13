@@ -29,7 +29,10 @@ class EnterEmailViewController: OnBoardinContainerChildViewController {
                                                                text: "screen_enter_email_b2b_display_text_sub_heading".localized,
                                                                adjustFontSize: true)
 
-    fileprivate lazy var stackView = UIFactory.makeStackView(axis: .vertical, alignment: .fill, distribution: .fillProportionally, spacing: 11)
+    fileprivate lazy var stackView = UIFactory.makeStackView(axis: .vertical,
+                                                             alignment: .fill,
+                                                             distribution: .fillProportionally,
+                                                             spacing: 11)
 
     fileprivate lazy var email = UIFactory.makeAppRoundedTextField(with: .regular,
                                                                    errorFont: .micro,
@@ -42,7 +45,12 @@ class EnterEmailViewController: OnBoardinContainerChildViewController {
                                                                    keyboardType: .emailAddress,
                                                                    delegate: self)
 
-    fileprivate lazy var verificationLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, alpha: 0, adjustFontSize: true)
+    fileprivate lazy var verificationLabel = UIFactory.makeLabel(font: .regular,
+                                                                 alignment: .center,
+                                                                 numberOfLines: 0,
+                                                                 lineBreakMode: .byWordWrapping,
+                                                                 alpha: 0,
+                                                                 adjustFontSize: true)
 
     override var firstReponder: UITextField? { email }
     

@@ -9,44 +9,67 @@ import UIKit
 import RxSwift
 import YAPCore
 
-public class AppCoordinator: Coordinator<ResultType<Void>> {
+public enum Flow {
+    case onboarding(formattedPhoneNumber: String)
+    case passcode(formattedPhoneNumber: String)
+}
+
+public final class AppCoordinator: Coordinator<ResultType<Void>> {
 
     private let window: UIWindow
     private var navigationController: UINavigationController?
     private var shortcutItem: UIApplicationShortcutItem?
     private let result = PublishSubject<ResultType<Void>>()
     private let container: YAPPakistanMainContainer
+    private let flow: Flow
     let reposiotry: SplashRepository
 
     private let userSession = PublishSubject<ResultType<Void>>()
 
     public init(window: UIWindow,
+                navigationController: UINavigationController,
                 shortcutItem: UIApplicationShortcutItem?,
-                container: YAPPakistanMainContainer) {
+                container: YAPPakistanMainContainer,
+                flow: Flow) {
         self.window = window
+        self.navigationController = navigationController
         self.shortcutItem = shortcutItem
         self.container = container
         self.reposiotry = container.makeSplashRepository()
+        self.flow = flow
         super.init()
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        reposiotry.fetchXSRFToken()
-            .subscribe(onNext: { [unowned self] _ in
-
-                let xsrfToken = HTTPCookieStorage.shared.cookies?.first(where: { $0.name == "XSRF-TOKEN" })?.value ?? ""
-
-                if AppSettings.isAppRunFirstTime {
-                    prepareFirstTimeLaunch(xsrfToken: xsrfToken)
-                } else if container.credentialsStore.credentialsAvailable() {
-                    verifyPasscode(xsrfToken: xsrfToken)
-                } else {
-                    loginScreen(xsrfToken: xsrfToken)
-                }
-
-            }).disposed(by: rx.disposeBag)
-
+        switch flow {
+        case .onboarding(let formattedPhoneNumber):
+            var user = OnBoardingUser(accountType: .b2cAccount)
+            user.mobileNo = PhoneNumber(formattedValue: formattedPhoneNumber)
+            onboarding(user: user)
+        case .passcode(let formattedPhoneNumber):
+            verifyPasscode(xsrfToken: "")
+        }
         return result
+    }
+
+    deinit {
+        print("AppCoordinator")
+    }
+
+    func onboarding(user: OnBoardingUser) {
+        self.coordinate(to:
+        container.makeOnboardingCoordinator(user: user,
+                                            navigationController: navigationController!)
+        ).subscribe(onNext: { [weak self] result in
+            switch result {
+            case .success:
+                ()
+            case .cancel:
+                self?.result.onNext(result)
+                self?.result.onCompleted()
+            }
+        })
+        .disposed(by: rx.disposeBag)
     }
 
     func welcome(xsrfToken: String) {
@@ -59,8 +82,14 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
     func verifyPasscode(xsrfToken: String) {
         coordinate(to: container.makePasscodeCoordinatorReplaceable(xsrfToken: xsrfToken, window: window))
             .subscribe(onNext: { result in
-                self.result.onNext(.success(()))
-                self.result.onCompleted()
+                switch result {
+                case .cancel:
+                    self.result.onNext(.cancel)
+                    self.result.onCompleted()
+                default:
+                    self.result.onNext(.success(()))
+                    self.result.onCompleted()
+                }
             }).disposed(by: rx.disposeBag)
     }
 
@@ -70,15 +99,5 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
                 self.result.onNext(.success(()))
                 self.result.onCompleted()
             }).disposed(by: rx.disposeBag)
-    }
-}
-
-// MARK: Helpers
-fileprivate extension AppCoordinator {
-    func prepareFirstTimeLaunch(xsrfToken: String) {
-        self.welcome(xsrfToken: xsrfToken)
-        _ = container.credentialsStore.setRemembersId(false)
-        _ = container.credentialsStore.clearUsername()
-        AppSettings.isAppRunFirstTime = false
     }
 }

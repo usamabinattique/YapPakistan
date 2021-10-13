@@ -10,21 +10,18 @@ import UIKit
 import RxSwift
 import YAPCore
 
-public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>>, WelcomeCoordinatorType {
+public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>> {
     private let container: YAPPakistanMainContainer
-    private let xsrfToken: String
-
     public var root: UINavigationController!
     public var result = PublishSubject<ResultType<Void>>()
-    // var loginResult = PublishSubject<ResultType<Void>>()
-    // var welcomeResult = PublishSubject<ResultType<Void>>()
     public var b2cOnboardingResult = PublishSubject<ResultType<Void>>()
 
     private let window: UIWindow
 
-    init(container: YAPPakistanMainContainer, xsrfToken: String, window: UIWindow) {
+    init(container: YAPPakistanMainContainer,
+         xsrfToken: String,
+         window: UIWindow) {
         self.container = container
-        self.xsrfToken = xsrfToken
         self.window = window
     }
 
@@ -40,23 +37,11 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>>, Welco
         root.navigationBar.isTranslucent = true
         root.navigationBar.isHidden = true
 
-        // UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: { [unowned self] in
         self.window.rootViewController = self.root
-        // })
 
         viewModel.outputs.personal.subscribe(onNext: {[unowned self] _ in
-            // AppAnalytics.shared.logEvent(OnBoardingEvent.getStarted(_params: nil))
             self.b2cOnboarding()
         }).disposed(by: rx.disposeBag)
-
-        /*
-         self.welcomeResult.map { $0.isSuccess }.unwrap()
-         .subscribe(onNext: { [weak self] _ in
-         guard let `self` = self else { return }
-         self.b2cOnboarding()
-         })
-         .disposed(by: rx.disposeBag)
-         */
     
         viewModel.outputs.signIn.subscribe(onNext: { [unowned self] _ in
             if let viewControllers = self.root?.viewControllers, viewControllers.count > 1, viewControllers[viewControllers.count - 2] is LoginViewController {
@@ -81,14 +66,14 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>>, Welco
     }
 
     public func b2cOnboarding() {
-        coordinate(to: B2COnBoardingCoordinator(container: container,
-                                                xsrfToken: xsrfToken,
-                                                navigationController: self.root))
-            .subscribe(onNext: { [weak self] result in
-                guard let `self` = self else { return }
-                self.b2cOnboardingResult.onNext(result)
-            })
-            .disposed(by: rx.disposeBag)
+//        coordinate(to: B2COnBoardingCoordinator(container: container,
+//                                                xsrfToken: xsrfToken,
+//                                                navigationController: self.root))
+//            .subscribe(onNext: { [weak self] result in
+//                guard let `self` = self else { return }
+//                self.b2cOnboardingResult.onNext(result)
+//            })
+//            .disposed(by: rx.disposeBag)
     }
     
     public func login() {

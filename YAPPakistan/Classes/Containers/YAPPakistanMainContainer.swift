@@ -23,8 +23,7 @@ public final class YAPPakistanMainContainer {
     let themeService: ThemeService<AppTheme>
     let credentialsStore: CredentialsStoreType
     let referralManager: AppReferralManager
-
-    private(set) var xsrfToken: String!
+    let mockToken: String = ""
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
@@ -33,8 +32,14 @@ public final class YAPPakistanMainContainer {
         self.referralManager = AppReferralManager(environment: configuration.environment)
     }
 
-    public func rootCoordinator(window: UIWindow) -> AppCoordinator {
-        AppCoordinator(window: window, shortcutItem: nil, container: self)
+    public func rootCoordinator(window: UIWindow,
+                                navigationController: UINavigationController,
+                                flow: Flow) -> AppCoordinator {
+        AppCoordinator(window: window,
+                       navigationController: navigationController,
+                       shortcutItem: nil,
+                       container: self,
+                       flow: flow)
     }
 
     func makeAPIClient() -> APIClient {
@@ -46,7 +51,7 @@ public final class YAPPakistanMainContainer {
     }
 
     func makeAuthorizationProvider() -> ServiceAuthorizationProviderType {
-        return GuestServiceAuthorization(xsrf: xsrfToken)
+        return GuestServiceAuthorization(xsrf: mockToken)
     }
 
     func makeXSRFService() -> XSRFService {
@@ -94,33 +99,18 @@ public final class YAPPakistanMainContainer {
         return SplashRepository(service: makeXSRFService())
     }
 
-    func makeOnBoardingRepository() -> OnBoardingRepository {
+    public func makeOnBoardingRepository() -> OnBoardingRepository {
         let customersService = makeCustomersService()
         let messagesService = makeMessagesService()
         let onBoardingRepository = OnBoardingRepository(customersService: customersService,
                                                         messagesService: messagesService)
-
         return onBoardingRepository
     }
 
-    func makeEnterEmailController(user: OnBoardingUser) -> EnterEmailViewController {
-        let sessionProvider = SessionProvider(xsrfToken: xsrfToken)
-        let onBoardingRepository = makeOnBoardingRepository()
-
-        let enterEmailViewModel = EnterEmailViewModel(
-            credentialsStore: credentialsStore,
-            referralManager: referralManager,
-            sessionProvider: sessionProvider,
-            onBoardingRepository: onBoardingRepository,
-            user: user
-        ) { session, accountProvider, onBoardingRepository, demographicsRepository in
-            let sessionContainer = UserSessionContainer(parent: self, session: session)
-            accountProvider = sessionContainer.accountProvider
-            onBoardingRepository = sessionContainer.makeOnBoardingRepository()
-            demographicsRepository = sessionContainer.makeDemographicsRepository()
-        }
-
-        return EnterEmailViewController(themeService: themeService, viewModel: enterEmailViewModel)
+    func makeOnboardingCoordinator(user: OnBoardingUser,
+                                   navigationController: UINavigationController) -> B2COnBoardingCoordinator {
+        let container = OnboardingContainer(user: user, parent: self)
+        return container.makeOnboardingCoordinator(navigationController: navigationController)
     }
 
     func makeWaitingListController(session: Session) -> WaitingListRankViewController {
@@ -136,23 +126,22 @@ public final class YAPPakistanMainContainer {
     }
 
     public func makeWelcomeCoordinator(xsrfToken: String, window: UIWindow) -> WelcomeCoordinatorReplaceable {
-        self.xsrfToken = xsrfToken
-        return WelcomeCoordinatorReplaceable(container: self, xsrfToken: xsrfToken, window: window)
+        return WelcomeCoordinatorReplaceable(container: self,
+                                             xsrfToken: mockToken,
+                                             window: window)
     }
 
     func makePasscodeCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> PasscodeCoordinatorReplaceable {
-        self.xsrfToken = xsrfToken
         return PasscodeCoordinatorReplaceable(window: window, container: self)
     }
 
     func makeLoginCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> LoginCoordinatorReplaceable {
-        self.xsrfToken = xsrfToken
         return LoginCoordinatorReplaceable(window: window, container: self)
     }
 }
 
 extension YAPPakistanMainContainer {
-    func makeLoginRepository() -> LoginRepository {
+    public func makeLoginRepository() -> LoginRepository {
         return LoginRepository(customerService: self.makeCustomersService(),
                                authenticationService: makeAuthenticationService(),
                                messageService: makeMessagesService())
@@ -178,7 +167,7 @@ extension YAPPakistanMainContainer {
         return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "",
                                        repository: makeLoginRepository(),
                                        credentialsManager: credentialsStore,
-                                       sessionCreator: SessionProvider(xsrfToken: xsrfToken),
+                                       sessionCreator: SessionProvider(xsrfToken: mockToken),
                                        onLogin: onLogin)
     }
 
@@ -191,7 +180,7 @@ extension YAPPakistanMainContainer {
     }
 
     func makePasscodeCoordinator(root: UINavigationController) -> PasscodeCoordinatorPushable  {
-        PasscodeCoordinatorPushable(root: root, xsrfToken: xsrfToken, container: self)
+        PasscodeCoordinatorPushable(root: root, xsrfToken: mockToken, container: self)
     }
 }
 
@@ -203,7 +192,7 @@ extension YAPPakistanMainContainer {
     }
 
     func makeSessionProvider() -> SessionProviderType {
-        SessionProvider(xsrfToken: xsrfToken)
+        SessionProvider(xsrfToken: mockToken)
     }
 
     func makeLoginOTPVerificationViewModel(

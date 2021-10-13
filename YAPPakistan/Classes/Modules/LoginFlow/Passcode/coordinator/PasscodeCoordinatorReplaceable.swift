@@ -43,15 +43,6 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         self.window.rootViewController = self.root
 
         viewModel.outputs.back.subscribe(onNext: { [unowned self] in
-
-            self.coordinate(to: LoginCoordinatorReplaceable(window: window,
-                                                            container: container))
-                .subscribe(onNext: { result in
-                    self.result.onNext(.logout)
-                    self.result.onCompleted()
-                })
-                .disposed(by: self.rx.disposeBag)
-
             self.result.onNext(.cancel)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)

@@ -19,7 +19,7 @@ enum LoginResult {
 protocol LoginCoordinatorType: Coordinator<LoginResult> {
 
     var root: UINavigationController!           { get }
-    var container:YAPPakistanMainContainer!     { get }
+    var container: YAPPakistanMainContainer!     { get }
     var result: PublishSubject<LoginResult>     { get }
 
 }
