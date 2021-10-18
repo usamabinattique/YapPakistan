@@ -1,6 +1,0 @@
-module Pods_YAPCore {
-  umbrella header "Pods-YAPCore-umbrella.h"
-
-  export *
-  module * { export * }
-}

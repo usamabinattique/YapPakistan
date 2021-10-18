@@ -31,9 +31,9 @@ class KYCProgressViewController: UIViewController {
     private var themeService: ThemeService<AppTheme>!
     private(set) var viewModel: KYCProgressViewModelType!
 
-    private let disposeBag = DisposeBag()
-    private var childNavigation: UINavigationController!
+    var childNavigation: UINavigationController!
     private var childView: UIView!
+    private let disposeBag = DisposeBag()
 
     // MARK: Initialization
 

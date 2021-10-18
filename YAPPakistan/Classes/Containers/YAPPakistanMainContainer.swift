@@ -132,7 +132,7 @@ public final class YAPPakistanMainContainer {
     }
 
     func makePasscodeCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> PasscodeCoordinatorReplaceable {
-        return PasscodeCoordinatorReplaceable(window: window, container: self)
+        return PasscodeCoordinatorReplaceable(window: window, container: self, isUserBlocked: false)
     }
 
     func makeLoginCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> LoginCoordinatorReplaceable {
@@ -162,25 +162,12 @@ extension YAPPakistanMainContainer {
         return BiometricsManager()
     }
 
-    func makeVerifyPasscodeViewModel(onLogin: @escaping VerifyPasscodeViewModelType.OnLoginClosure)
-    -> VerifyPasscodeViewModelType {
-        return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "",
-                                       repository: makeLoginRepository(),
-                                       credentialsManager: credentialsStore,
-                                       sessionCreator: SessionProvider(xsrfToken: mockToken),
-                                       onLogin: onLogin)
+    func makeVerifyPasscodeViewController(isUserBlocked: Bool, onLogin: @escaping VerifyPasscodeViewModel.OnLoginClosure) -> VerifyPasscodeViewController {
+        return VerifyPasscodeModuleBuilder(container: self, isUserBlocked: isUserBlocked, onLogin: onLogin).viewController()
     }
 
-    func makeVerifyPasscodeViewController(viewModel: VerifyPasscodeViewModelType,
-                                          biometricsService: BiometricsManager = BiometricsManager(),
-                                          isCreatePasscode: Bool = false) -> VerifyPasscodeViewController {
-        return VerifyPasscodeViewController(themeService: themeService,
-                                            viewModel: viewModel,
-                                            biometricsService: biometricsService)
-    }
-
-    func makePasscodeCoordinator(root: UINavigationController) -> PasscodeCoordinatorPushable  {
-        PasscodeCoordinatorPushable(root: root, xsrfToken: mockToken, container: self)
+    func makePasscodeCoordinator(root: UINavigationController, isUserBlocked: Bool) -> PasscodeCoordinatorPushable  {
+        PasscodeCoordinatorPushable(root: root, xsrfToken: "", container: self, isUserBlocked: isUserBlocked)
     }
 }
 
@@ -220,5 +207,15 @@ extension YAPPakistanMainContainer {
 
     func makeVerifyMobileOTPViewController(viewModel: LoginOTPVerificationViewModel) -> VerifyMobileOTPViewController {
         return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+}
+
+extension YAPPakistanMainContainer {
+    func makeNotificationPermissionViewController() -> SystemPermissionViewController {
+        return NotificationPermissionModuleBuilder(container: self).viewController()
+    }
+
+    func makeBiometricPermissionViewController() -> SystemPermissionViewController {
+        return BiometricPermissionModuleBuilder(container: self).viewController()
     }
 }

@@ -5,6 +5,7 @@
 //  Created by Tayyab on 30/09/2021.
 //
 
+import CardScanner
 import Foundation
 import RxTheme
 
@@ -42,6 +43,15 @@ public final class KYCFeatureContainer {
         return kycRepository
     }
 
+    // MARK: Coordinators
+
+    func makeKYCReviewCoordinator(root: UINavigationController,
+                                  identityDocument: IdentityDocument,
+                                  cnicOCR: CNICOCR) -> KYCReviewCoordinator {
+        return KYCReviewCoordinator(container: self, root: root,
+                                    identityDocument: identityDocument, cnicOCR: cnicOCR)
+    }
+
     // MARK: Controllers
 
     func makeKYCProgressViewController(navigationController: UINavigationController) -> KYCProgressViewController {
@@ -68,6 +78,17 @@ public final class KYCFeatureContainer {
                                                   kycRepository: makeKYCRepository(),
                                                   cnicOCR: cnicOCR)
         let viewController = KYCInitialReviewViewController(themeService: themeService,
+                                                            viewModel: viewModel)
+
+        return viewController
+    }
+
+    func makeKYCReviewDetailsViewController(identityDocument: IdentityDocument, cnicNumber: String, cnicInfo: CNICInfo) -> KYCReviewDetailsViewController {
+        let viewModel = KYCReviewDetailsViewModel(accountProvider: accountProvider,
+                                                  kycRepository: makeKYCRepository(),
+                                                  identityDocument: identityDocument,
+                                                  cnicNumber: cnicNumber, cnicInfo: cnicInfo)
+        let viewController = KYCReviewDetailsViewController(themeService: themeService,
                                                             viewModel: viewModel)
 
         return viewController

@@ -17,7 +17,7 @@ public class VerifyPasscodeViewController: UIViewController {
     private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
     private lazy var holdingView = UIFactory.makeView()
     private lazy var codeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, charSpace: 10)
-    private lazy var errorLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
+    private lazy var errorLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0)
     private lazy var pinKeyboard = UIFactory.makePasscodeKeyboard(font: .title2)
     private lazy var signinButton = UIFactory.makeAppRoundedButton(with: .regular)
     private lazy var forgotButton = UIFactory.makeButton(with: .regular)
@@ -108,6 +108,7 @@ fileprivate extension VerifyPasscodeViewController {
         viewModel.outputs.pinValid.bind(to: signinButton.rx.isEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
+        viewModel.outputs.biometryEnabled.bind(to: pinKeyboard.rx.biometryEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.shake
             .subscribe(onNext: { [weak self] in self?.codeLabel.shake() })
             .disposed(by: rx.disposeBag)
@@ -116,6 +117,7 @@ fileprivate extension VerifyPasscodeViewController {
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
         signinButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
         forgotButton.rx.tap.bind(to: viewModel.inputs.forgotPasscodeObserver).disposed(by: rx.disposeBag)
+        pinKeyboard.biomatryButton.rx.tap.bind(to: viewModel.inputs.biometricObserver).disposed(by: rx.disposeBag)
 
     }
 

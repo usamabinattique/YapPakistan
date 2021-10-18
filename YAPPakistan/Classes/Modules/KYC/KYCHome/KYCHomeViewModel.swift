@@ -12,6 +12,10 @@ import Foundation
 import RxSwift
 import YAPComponents
 
+ //enum AccountStatus:String, Hashable {
+ //   case questions, SELFIE_PENDING, other
+ //}
+
 protocol KYCHomeViewModelInput {
     var nextObserver: AnyObserver<Void> { get }
     var skipObserver: AnyObserver<Void> { get }
@@ -27,7 +31,7 @@ protocol KYCHomeViewModelOutput {
     var showPermissionAlert: Observable<Void> { get }
     var eidValidation: Observable<KYCDocumentView.Validation> { get }
     var cnicOCR: Observable<CNICOCR> { get }
-    var next: Observable<Void> { get }
+    var next: Observable<AccountStatus> { get }
     var skip: Observable<Void> { get }
     var scanCard: Observable<Void> { get }
     var showError: Observable<String> { get }
@@ -44,10 +48,14 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
 
     let disposeBag = DisposeBag()
 
+    let accountProvider: AccountProvider!
+    //let account: Observable<Account>!
+
     var inputs: KYCHomeViewModelInput { return self }
     var outputs: KYCHomeViewModelOutput { return self }
 
     private var nextSubject = PublishSubject<Void>()
+    private var nextCheckPointSubject = BehaviorSubject<AccountStatus?>(value: nil)
     private var skipSubject = PublishSubject<Void>()
     private var cardSubject = PublishSubject<Void>()
     private var cardObserverSubject = PublishSubject<Void>()
@@ -72,7 +80,7 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     
     // MARK: Outputs
 
-    var next: Observable<Void> { return nextSubject.asObservable() }
+    var next: Observable<AccountStatus> { return nextCheckPointSubject.unwrap().asObservable() }
     var skip: Observable<Void> { return skipSubject.asObservable() }
     var scanCard: Observable<Void> { return cardSubject.asObservable() }
     var subHeadingText: Observable<String> { return subHeadingSubject.asObservable() }
@@ -86,7 +94,10 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     // MARK: - Init
 
     init(accountProvider: AccountProvider, kycRepository: KYCRepository) {
-        let account = accountProvider.currentAccount.unwrap()
+
+        self.accountProvider = accountProvider
+        let account = self.accountProvider.currentAccount.unwrap()
+
         account.map { String(format: "screen_kyc_home_display_text_sub_heading".localized, $0.customer.firstName) }
             .bind(to: subHeadingSubject).disposed(by: disposeBag)
 
@@ -97,7 +108,9 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             self?.getCameraPermissions()
         }).disposed(by: disposeBag)
 
-        eidValidationSubject.map { $0 == .valid }.bind(to: nextButtonEnabledSubject).disposed(by: disposeBag)
+        eidValidationSubject.map {
+            $0 == .valid
+        }.bind(to: nextButtonEnabledSubject).disposed(by: disposeBag)
 
         let request = documentsUploadSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
@@ -120,6 +133,13 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .map { $0?.isExpired ?? true ? .notDetermined : .valid }
             .bind(to: eidValidationSubject)
             .disposed(by: disposeBag)
+
+        nextSubject.withUnretained(self)
+            .do(onNext: {_ in YAPProgressHud.showProgressHud() })
+            .flatMap({ $0.0.accountProvider.currentAccount })
+            .do(onNext: {_ in YAPProgressHud.hideProgressHud() })
+            .unwrap().map({ $0.accountStatus })
+            .bind(to: nextCheckPointSubject).disposed(by: disposeBag)
 
         let ocrRequest = detectOCRSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })

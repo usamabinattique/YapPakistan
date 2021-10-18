@@ -236,33 +236,11 @@ extension Account: Equatable {
 }
 
 public enum AccountStatus: String, Codable {
-    case invitationPending = "INVITE_PENDING"
-    case invitationDeclined = "INVITE_DECLINED"
-    case parentMobileVerficationPending = "PARNET_MOBILE_VERIFICATION_PENDING"
-    case pascodePending = "PASS_CODE_PENDING"
-    case emailPending = "EMAIL_PENDING"
     case onboarded = "ON_BOARDED"
-    case eidCaptured = "CAPTURED_EID"
-    case eidFailed = "EID_FAILED"
-    case addressCaptured = "CAPTURED_ADDRESS"
-    case verificationPending = "MEETING_SCHEDULED"
-    case birthInfoCollected = "BIRTH_INFO_COLLECTED"
-    case employmentInfoCompleted = "EMP_INFO_COMPLETED"
-    case fatcaGenerated = "FATCA_GENERATED"
-    case softKYCCompleted = "SOFT_KYC_DONE"
-    case softKYCFailed = "SOFT_KYC_FAILED"
-    case hardKYCDone = "HARD_KYC_DONE"
-    case physicalCardOrderd = "PHYSICAL_CARD_ORDERED"
-    case verificationSucceed = "MEETING_SUCCESS"
-    case verificationFailed = "MEETING_FAILED"
-    case cardActivated = "CARD_ACTIVATED"
-    case eidExpired = "EID_EXPIRED"
-    case eidRescanRequired = "EID_RESCAN_REQ"
-    case eidUpdated = "EID_UPDATED"
-    case additionalRequirementsPending = "ADDITIONAL_COMPLIANCE_INFO_REQ"
-    case additionalRequirementsRequired = "ADD_INFO_NOTIFICATION_DONE"
-    case additionalRequirementsProvided = "ADDITIONAL_COMPLIANCE_INFO_PROVIDED"
-    case additionalRequirementsSubmitted = "ADD_COMPLIANCE_INFO_SUBMITTED_BY_ADMIN"
+    case verificationSucceed = "MEETING_SUCCESS"    // FIXME is this in in use ?
+    case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
+    case selfiePending = "SELFIE_PENDING"
+    case secretQuestionPending = "SECRET_QUESTION_PENDING"
 }
 
 public enum EmiratesIdStatus: String, Codable {

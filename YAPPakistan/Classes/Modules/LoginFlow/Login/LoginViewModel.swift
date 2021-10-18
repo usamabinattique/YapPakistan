@@ -200,6 +200,10 @@ private extension LoginViewModel {
 
         apiError.filter { [unowned self] error in self.isErrorUserBlocked(error) }
             .withLatestFrom(mobileNumberSubject)
+            .do(onNext: { [unowned self] userName in
+                let user = userName?.toSimplePhoneNumber ?? ""
+                self.credentialsManager.secureCredentials(username: user, passcode: "")
+            })
             .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: true)) }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)

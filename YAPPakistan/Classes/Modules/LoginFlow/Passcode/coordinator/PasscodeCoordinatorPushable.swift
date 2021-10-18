@@ -15,43 +15,44 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
     var root: UINavigationController!
     var container: YAPPakistanMainContainer!
     var result = PublishSubject<PasscodeVerificationResult>()
+    var isUserBlocked:Bool
 
     private var sessionContainer: UserSessionContainer!
 
     init(root: UINavigationController,
          xsrfToken: String,
-         container: YAPPakistanMainContainer
+         container: YAPPakistanMainContainer,
+         isUserBlocked: Bool
     ){
         self.root = root
         self.container = container
+        self.isUserBlocked = isUserBlocked
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
 
-        let viewModel = container.makeVerifyPasscodeViewModel { session, accountProvider in
+        let viewController = container.makeVerifyPasscodeViewController(isUserBlocked: isUserBlocked) { session, accountProvider in
             self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
             accountProvider = self.sessionContainer.accountProvider
         }
 
-        let verifyPasscodeViewController = container.makeVerifyPasscodeViewController(viewModel: viewModel)
-
         root.navigationBar.isTranslucent = true
         root.navigationBar.isHidden = false
-        root.pushViewController(verifyPasscodeViewController, animated: true)
+        root.pushViewController(viewController, animated: true)
 
-        viewModel.outputs.back.subscribe(onNext: { [weak self] in
+        viewController.viewModel.outputs.back.subscribe(onNext: { [weak self] in
             self?.root.popViewController(animated: true)
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.result
+        viewController.viewModel.outputs.result
             .filter { $0.isSuccess?.optRequired ?? true }
             .subscribe(onNext: { [weak self] _ in
                 self?.optVerification()
             }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.loginResult
+        viewController.viewModel.outputs.loginResult
             .subscribe(onNext: { result in
                 switch result {
                 case .waiting:
@@ -68,7 +69,7 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
                 }
             }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.forgot.withUnretained(self)
+        viewController.viewModel.outputs.forgot.withUnretained(self)
             .subscribe(onNext: { $0.0.forgotOTPVerification() })
             .disposed(by: rx.disposeBag)
 

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>YAPPakDev</string>
+	<string>YAPPakQA</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>YAP would like to access camera to scan your document</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Use FaceID to unlock YAP</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Please allow access to save photos in your photo library</string>
 	<key>UILaunchStoryboardName</key>

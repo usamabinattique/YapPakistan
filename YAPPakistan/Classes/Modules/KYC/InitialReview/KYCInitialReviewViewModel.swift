@@ -97,7 +97,8 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
                 YAPProgressHud.showProgressHud()
             })
             .flatMap { issueDate -> Observable<Event<CNICInfo?>> in
-                let cnic = cnicOCR.cnicNumber.replace(string: "-", replacement: "")
+                let cnic = randomString()  //cnicOCR.cnicNumber.replace(string: "-", replacement: "")
+                                            // FIXME this temporary for testing
                 let dateFormatter = DateFormatter.serverReadableDateFromatter
                 let dateOfIssuance = dateFormatter.string(from: issueDate)
 
@@ -119,3 +120,21 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
             .disposed(by: disposeBag)
     }
 }
+
+func randomString(length: Int = 13)->String{
+
+    enum Stringbase {
+        static let ccc = Array("1234567890")
+        static let kkk = UInt32(ccc.count)
+    }
+
+    var result = [Character](repeating: "-", count: length)
+
+    for iii in 0..<length {
+        let rrr = Int(arc4random_uniform(Stringbase.kkk))
+        result[iii] = Stringbase.ccc[rrr]
+    }
+
+    return String(result)
+}
+
