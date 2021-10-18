@@ -146,32 +146,6 @@ extension PhoneNumberViewController: UITextFieldDelegate {
     }
 }
 
-extension Reactive where Base: UIView {
-    var backgroundColor: Binder<UIColor?> {
-        return Binder(self.base) { view, attr in
-            view.backgroundColor = attr
-        }
-    }
-
-    var showActivity: Binder<Bool> {
-        return Binder(self.base) { view, showActivity -> Void in
-            showActivity ? view.showProgressActivity() : view.hideProgressActivity()
-        }
-    }
-
-    var endEditting: Binder<Bool> {
-        return Binder(base) { view, end in
-            _ = view.endEditing(end)
-        }
-    }
-
-    var animateIsHidden: Binder<Bool> {
-        return Binder(base) { view, hidden in
-            view.animateIsHidden(hidden)
-        }
-    }
-}
-
 extension Reactive where Base: AppPickerView {
     var itemSelected: ControlEvent<(row: Int, component: Int)> {
         return base.pickerView.rx.itemSelected

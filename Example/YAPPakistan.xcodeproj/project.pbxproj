@@ -57,6 +57,7 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		7D7A880526F45FD1004CAEE3 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7A880426F45FD1004CAEE3 /* AppConstants.swift */; };
 		7D7BA3FD26EF65590007074C /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7BA3FC26EF65590007074C /* AppEnvironment.swift */; };
+		7DE3AA74271D9DE800A62E3F /* UIView+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE3AA73271D9DE800A62E3F /* UIView+Rx.swift */; };
 		9EB86386FE4EDBA38952F7DD /* Pods_YAPPakistan_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 861F77AB2702806C8679AE20 /* Pods_YAPPakistan_Example.framework */; };
 		CA19FA007DD6CBC56A5643F9 /* Pods_YAPPakistan_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F906C2EBEE9DE0E157C53C9D /* Pods_YAPPakistan_Tests.framework */; };
 /* End PBXBuildFile section */
@@ -130,6 +131,7 @@
 		7D42BA5A26F1F3E900F9CFAF /* YAP PK Dev.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "YAP PK Dev.entitlements"; sourceTree = "<group>"; };
 		7D7A880426F45FD1004CAEE3 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		7D7BA3FC26EF65590007074C /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		7DE3AA73271D9DE800A62E3F /* UIView+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Rx.swift"; sourceTree = "<group>"; };
 		861F77AB2702806C8679AE20 /* Pods_YAPPakistan_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YAPPakistan_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D491B7F23B2F59C1E7CD9D34 /* Pods-YAPPakistan_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YAPPakistan_Tests.release.xcconfig"; path = "Target Support Files/Pods-YAPPakistan_Tests/Pods-YAPPakistan_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		F906C2EBEE9DE0E157C53C9D /* Pods_YAPPakistan_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YAPPakistan_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -246,15 +248,16 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
-		0DD2D104270B097400DB2B00 /* Extension */ = {
+		0DD2D104270B097400DB2B00 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				0DC388962716AC6F0003A60F /* AppSwitch+Rx.swift */,
 				0DD2D105270B098A00DB2B00 /* UIColor+Extension.swift */,
 				0DC388762716AB8C0003A60F /* UITextField+Rx.swift */,
+				7DE3AA73271D9DE800A62E3F /* UIView+Rx.swift */,
 				0DC388922716AC110003A60F /* YAPProgressHud+Rx.swift */,
 			);
-			path = Extension;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		0DD2D127270B212200DB2B00 /* Provider */ = {
@@ -366,7 +369,7 @@
 			children = (
 				5680335726E7E32900D5C183 /* App */,
 				0DD2D12C270B23F300DB2B00 /* Container */,
-				0DD2D104270B097400DB2B00 /* Extension */,
+				0DD2D104270B097400DB2B00 /* Extensions */,
 				0DEEE12726FC633300BABB41 /* FeatureFlag */,
 				0DE24375270C5309009343D1 /* Model */,
 				0D51948126E1ECC300B81639 /* Modules */,
@@ -695,6 +698,7 @@
 				0D5194A026E1ED3800B81639 /* SplashCoordinator.swift in Sources */,
 				0DC38842271693640003A60F /* WelcomeCoordinator.swift in Sources */,
 				0DD2D082270AD63100DB2B00 /* PhoneNumberViewController.swift in Sources */,
+				7DE3AA74271D9DE800A62E3F /* UIView+Rx.swift in Sources */,
 				0DEEE13326FC639100BABB41 /* RemoteFeatureFlagLoader.swift in Sources */,
 				0DEEE19526FDBC5800BABB41 /* FeatureFlagFileManager.swift in Sources */,
 				0DD2D106270B098A00DB2B00 /* UIColor+Extension.swift in Sources */,
