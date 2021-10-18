@@ -22,7 +22,6 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let container: YAPPakistanMainContainer
     private let flow: Flow
-    let reposiotry: SplashRepository
 
     private let userSession = PublishSubject<ResultType<Void>>()
 
@@ -35,7 +34,6 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
         self.navigationController = navigationController
         self.shortcutItem = shortcutItem
         self.container = container
-        self.reposiotry = container.makeSplashRepository()
         self.flow = flow
         super.init()
     }
@@ -47,7 +45,7 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
             user.mobileNo = PhoneNumber(formattedValue: formattedPhoneNumber)
             onboarding(user: user)
         case .passcode(let formattedPhoneNumber):
-            verifyPasscode(xsrfToken: "")
+            verifyPasscode()
         }
         return result
     }
@@ -72,14 +70,14 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
         .disposed(by: rx.disposeBag)
     }
 
-    func welcome(xsrfToken: String) {
+    func welcome() {
         coordinate(to: container.makeWelcomeCoordinator(window: window)).subscribe { result in
             self.result.onNext(.success(()))
             self.result.onCompleted()
         }.disposed(by: rx.disposeBag)
     }
 
-    func verifyPasscode(xsrfToken: String) {
+    func verifyPasscode() {
         coordinate(to: container.makePasscodeCoordinatorReplaceable(window: window))
             .subscribe(onNext: { result in
                 switch result {
@@ -93,7 +91,7 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
             }).disposed(by: rx.disposeBag)
     }
 
-    func loginScreen(xsrfToken: String) {
+    func loginScreen() {
         coordinate(to: container.makeLoginCoordinatorReplaceable(window: window))
             .subscribe(onNext: { result in
                 self.result.onNext(.success(()))

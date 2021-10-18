@@ -53,11 +53,6 @@ public final class YAPPakistanMainContainer {
         return GuestServiceAuthorization()
     }
 
-    func makeXSRFService() -> XSRFService {
-        return XSRFService(apiConfig: makeAPIConfiguration(),
-                           apiClient: makeAPIClient())
-    }
-
     func makeCustomersService() -> CustomersService {
         return CustomersService(apiConfig: makeAPIConfiguration(),
                                 apiClient: makeAPIClient(),
@@ -92,10 +87,6 @@ public final class YAPPakistanMainContainer {
         return AuthenticationService(apiConfig: makeAPIConfiguration(),
                                      apiClient: makeAPIClient(),
                                      authorizationProvider: authorizationProvider)
-    }
-
-    func makeSplashRepository() -> SplashRepository {
-        return SplashRepository(service: makeXSRFService())
     }
 
     public func makeOnBoardingRepository() -> OnBoardingRepository {
