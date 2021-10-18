@@ -1,95 +1,61 @@
-#
-# Be sure to run `pod lib lint YAPPakistan.podspec' to ensure this is a
-# valid spec before submitting.
-#
-# Any lines starting with a # are optional, but their use is encouraged
-# To learn more about a Podspec see https://guides.cocoapods.org/syntax/podspec.html
-#
+Pod::Spec.new do |spec|
+  spec.name                  = 'YAPPakistan'
+  spec.version               = '0.1.0'
+  spec.summary               = 'YAP Pakistan Module'
 
-Pod::Spec.new do |s|
-  s.name             = 'YAPPakistan'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of YAPPakistan.'
+  spec.homepage              = 'https://bitbucket.org/mb28/ios-b2c-pk/'
+  spec.source                = { :git => 'https://bitbucket.org/mb28/ios-b2c-pk.git',
+                                 :tag => spec.version.to_s,
+                                 :submodules => false }
 
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
+  spec.license               = { :type => 'MIT', :file => 'LICENSE' }
+  spec.author                = { 'Tayyab Akram' => 'tayyab.akram@digitify.com' }
 
- # s.description      = <<-DESC
-#TODO: Add long description of the pod here.
-#                       DESC
+  spec.platform              = :ios
+  spec.ios.deployment_target = '11.4'
+  spec.swift_version         = '5.0'
 
-  s.homepage         = 'https://github.com/Tayyab Akram/YAPPakistan'
-  # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Tayyab Akram' => 'tayyab.akram@digitify.com' }
-  s.source           = { :git => 'https://github.com/Tayyab Akram/YAPPakistan.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  spec.source_files          = 'YAPPakistan/Classes/**/*'
+  spec.static_framework      = true
 
-  s.ios.deployment_target = '11.4'
-
-  s.source_files = 'YAPPakistan/Classes/**/*'
-  
-  s.resource_bundles = {
+  spec.resource_bundles = {
     'YAPPakistan' => [
+      'YAPPakistan/Assets/Assets.xcassets',
       'YAPPakistan/Assets/Resources/*.gif',
       'YAPPakistan/Assets/Resources/**/*.jpg',
       'YAPPakistan/Assets/Resources/**/*.jpeg',
       'YAPPakistan/Assets/Resources/**/*.json',
       'YAPPakistan/Assets/Resources/**/*.mp4',
       'YAPPakistan/Assets/Resources/**/*.png',
-      'YAPPakistan/Assets/Resources/**/*.strings',
-      'YAPPakistan/Assets/Assets.xcassets']
+      'YAPPakistan/Assets/Resources/**/*.strings']
   }
 
-#  s.resources = [ 'YAPPakistan/Assets/**/*.gif',
-#                  'YAPPakistan/Assets/**/*.jpg',
-#                  'YAPPakistan/Assets/**/*.jpeg',
-#                  'YAPPakistan/Assets/**/*.json',
-#                  'YAPPakistan/Assets/**/*.mp4',
-#                  'YAPPakistan/Assets/**/*.png',
-#                  'YAPPakistan/Assets/**/*.strings',
-#                  'YAPPakistan/Assets/**/*.xcassets']
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
-  
-  s.static_framework = true
-
-  #MARK: YapUIKIT
-  s.dependency 'YAPComponents'
-  s.dependency 'YAPCore'
-  
-  #MARK: Networking
-  s.dependency 'Alamofire', '5.4.3'
-  
-  #MARK: RxSwift Extension
-  s.dependency 'RxSwift', '6.2.0'
-  s.dependency 'RxCocoa', '6.2.0'
-  s.dependency 'RxSwiftExt', '6.0.1'
-  s.dependency 'RxGesture', '4.0.2'
-  s.dependency 'RxDataSources', '5.0.0'
-  s.dependency 'RxOptional', '5.0.2'
-  s.dependency 'RxTheme', '5.0.4'
-
   #MARK: Analytics
-  s.dependency 'Adjust', '4.29.5'
+  spec.dependency 'Adjust', '~> 4.0'
+
+  #MARK: Networking
+  spec.dependency 'Alamofire', '~> 5.0'
+
+  #MARK: Private
+  spec.dependency 'CardScanner', '~> 1.0'
+  spec.dependency 'YAPCore', '~> 0'
+  spec.dependency 'YAPComponents', '~> 0'
+
+  #MARK: Reactive
+  spec.dependency 'RxCocoa', '~> 6.0'
+  spec.dependency 'RxDataSources', '~> 5.0'
+  spec.dependency 'RxGesture', '~> 4.0'
+  spec.dependency 'RxOptional', '~> 5.0'
+  spec.dependency 'RxSwift', '~> 6.0'
+  spec.dependency 'RxSwiftExt', '~> 6.0'
+  spec.dependency 'RxTheme', '~> 5.0'
 
   #MARK: UI
-  s.dependency 'SwiftyGif', '5.4.0'
-  s.dependency 'PhoneNumberKit', '3.3.3'
-  s.dependency 'HWPanModal', '0.8.9'
-  
-  #MARK: UIImage
-  s.dependency 'SDWebImage', '5.11.1'
-  
-  #MARK: Swift Extension
-  s.dependency 'SwifterSwift', '5.2.0'
+  spec.dependency 'HWPanModal', '~> 0'
+  spec.dependency 'SDWebImage', '~> 5.0'
+  spec.dependency 'SwiftyGif', '~> 5.0'
 
-  #MARK: Card Scanner
-  s.dependency 'CardScanner'
-
+  #MARK: Utilities
+  spec.dependency 'PhoneNumberKit', '~> 3.0'
+  spec.dependency 'SwifterSwift', '~> 5.0'
 end
