@@ -224,3 +224,14 @@
 "screen_kyc_questions_mothers_name" = "Select your mother's maiden name";
 "screen_kyc_questions_city_of_birth" = "What is your city of birth?";
 "screen_kyc_questions_reason" = "We ask this for security purpose";
+
+// MARK: KYC Selfie
+
+"screen_kyc_take_selfie_title" = "Take a selfie";
+"screen_kyc_take_selfie_subtitle" = "Hold your device at eye level and look straight into the camera";
+"screen_kyc_take_selfie_tip" = "Tips: Take in good lighting and take off your glasses";
+
+"screen_kyc_review_selfie_title" = "Is this clear enough?";
+"screen_kyc_review_selfie_subtitle" = "Make sure your face is clear and the photo is not blurry";
+"screen_kyc_review_selfie_yesitsme" = "Yes, that's me!";
+"screen_kyc_review_selfie_retake" = "Retake selfie";

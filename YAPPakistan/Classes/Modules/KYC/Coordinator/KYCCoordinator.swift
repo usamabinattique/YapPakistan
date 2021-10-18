@@ -150,8 +150,28 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
     // MARK: Checkpoint Selfie Pending
     func selfiePending() {
-        let viewController = SelfieViewController()
-        addChildVC(viewController, progress: 0.86)
+        let viewController = TakeSelfieViewController(themeService: container.themeService,
+                                                      viewModel: TakeSelfieViewModel())
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.reviewSelfie() })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+    }
+
+    func reviewSelfie() {
+        let viewController = ReviewSelfieViewController(themeService: container.themeService,
+                                                        viewModel: ReviewSelfieViewModel())
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
     }
 }
 
