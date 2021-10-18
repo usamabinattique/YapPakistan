@@ -173,8 +173,8 @@ extension YAPPakistanMainContainer {
         return BiometricsManager()
     }
 
-    func makeVerifyPasscodeViewController(onLogin: @escaping VerifyPasscodeViewModel.OnLoginClosure) -> VerifyPasscodeViewController {
-        return VerifyPasscodeModuleBuilder(container: self, onLogin: onLogin).viewController()
+    func makeVerifyPasscodeViewController(isUserBlocked: Bool, onLogin: @escaping VerifyPasscodeViewModel.OnLoginClosure) -> VerifyPasscodeViewController {
+        return VerifyPasscodeModuleBuilder(container: self, isUserBlocked: isUserBlocked, onLogin: onLogin).viewController()
     }
 
     func makePasscodeCoordinator(root: UINavigationController, isUserBlocked:Bool) -> PasscodeCoordinatorPushable  {

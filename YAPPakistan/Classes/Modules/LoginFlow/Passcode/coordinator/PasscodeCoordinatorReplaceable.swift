@@ -29,7 +29,7 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
-        let viewController = container.makeVerifyPasscodeViewController { session, accountProvider in
+        let viewController = container.makeVerifyPasscodeViewController(isUserBlocked: isUserBlocked) { session, accountProvider in
             self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
             accountProvider = self.sessionContainer.accountProvider
         }

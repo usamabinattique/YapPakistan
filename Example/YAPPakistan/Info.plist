@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Use FaceID to unlock YAP</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -28,6 +26,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>YAP would like to access camera to scan your document</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Use FaceID to unlock YAP</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Please allow access to save photos in your photo library</string>
 	<key>UILaunchStoryboardName</key>

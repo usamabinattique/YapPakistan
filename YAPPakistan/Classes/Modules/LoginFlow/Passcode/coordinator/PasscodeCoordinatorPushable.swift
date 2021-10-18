@@ -22,7 +22,7 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
     init(root: UINavigationController,
          xsrfToken: String,
          container: YAPPakistanMainContainer,
-         isUserBlocked:Bool
+         isUserBlocked: Bool
     ){
         self.root = root
         self.container = container
@@ -31,7 +31,7 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
 
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
 
-        let viewController = container.makeVerifyPasscodeViewController{ session, accountProvider in
+        let viewController = container.makeVerifyPasscodeViewController(isUserBlocked: isUserBlocked) { session, accountProvider in
             self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
             accountProvider = self.sessionContainer.accountProvider
         }
