@@ -3,4 +3,4 @@
 	url = https://bitbucket.org/mb28/ios-yap-ui-kit.git
 [submodule "YAPCore"]
 	path = YAPCore
-	url = https://TayyabAkramDigitify@bitbucket.org/mb28/ios-yap-core.git
+	url = https://bitbucket.org/mb28/ios-yap-core.git
