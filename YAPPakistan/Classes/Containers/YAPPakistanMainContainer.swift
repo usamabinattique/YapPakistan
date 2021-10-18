@@ -142,7 +142,7 @@ public final class YAPPakistanMainContainer {
 
     func makePasscodeCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> PasscodeCoordinatorReplaceable {
         self.xsrfToken = xsrfToken
-        return PasscodeCoordinatorReplaceable(window: window, container: self)
+        return PasscodeCoordinatorReplaceable(window: window, container: self, isUserBlocked: false)
     }
 
     func makeLoginCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> LoginCoordinatorReplaceable {
@@ -173,12 +173,12 @@ extension YAPPakistanMainContainer {
         return BiometricsManager()
     }
 
-    func makeVerifyPasscodeViewController(onLogin: @escaping VerifyPasscodeViewModel.OnLoginClosure) -> VerifyPasscodeViewController {
-        return VerifyPasscodeModuleBuilder(container: self, onLogin: onLogin).viewController()
+    func makeVerifyPasscodeViewController(isUserBlocked: Bool, onLogin: @escaping VerifyPasscodeViewModel.OnLoginClosure) -> VerifyPasscodeViewController {
+        return VerifyPasscodeModuleBuilder(container: self, isUserBlocked: isUserBlocked, onLogin: onLogin).viewController()
     }
 
-    func makePasscodeCoordinator(root: UINavigationController) -> PasscodeCoordinatorPushable  {
-        PasscodeCoordinatorPushable(root: root, xsrfToken: xsrfToken, container: self)
+    func makePasscodeCoordinator(root: UINavigationController, isUserBlocked:Bool) -> PasscodeCoordinatorPushable  {
+        PasscodeCoordinatorPushable(root: root, xsrfToken: xsrfToken, container: self, isUserBlocked: isUserBlocked)
     }
 }
 

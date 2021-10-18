@@ -9,6 +9,7 @@ import Foundation
 
 struct VerifyPasscodeModuleBuilder {
     let container: YAPPakistanMainContainer
+    let isUserBlocked: Bool
     let onLogin: VerifyPasscodeViewModel.OnLoginClosure
 
     func viewController() -> VerifyPasscodeViewController {
@@ -20,6 +21,7 @@ struct VerifyPasscodeModuleBuilder {
         let sessionProvider = SessionProvider(xsrfToken: container.xsrfToken)
 
         let viewModel = VerifyPasscodeViewModel(username:  username,
+                                                isUserBlocked: isUserBlocked,
                                                 repository: loginRepository,
                                                 biometricsManager: biometricsManager,
                                                 credentialsManager: credentialsStore,

@@ -21,6 +21,7 @@
 "common_display_text_permission_denied" = "Permission denied!";
 "common_display_text_permission_camera" = "You have denied YAP access to camera. To allow YAP to use camera go to settings";
 "common_button_settings" = "Settings";
+"common_button_completed" = "Completed";
 "common_button_cancel" = "Cancel";
 "common_button_install" = "Install";
 "common_button_yes" = "Yes";
@@ -152,6 +153,7 @@
 
 //MARK: Enter passcode screen
 "screen_enter_passcode_display_text_title" = "Enter your passcode to access your account​";
+"screen_enter_passcode_display_text_user_blocked" = "Sorry, that's too many incorrect attempts. Click on Forgot passcode to set a new one.​";
 "screen_create_passcode_button_signin" = "Sign in";
 "screen_create_passcode_button_forgot_passcode" = "Forgot passcode?";
 
@@ -215,3 +217,10 @@
 "screen_kyc_review_details_issue_date" = "Issue date";
 "screen_kyc_review_details_expiry_date" = "Expiry date";
 "screen_kyc_review_details_residential_address" = "Residential Address";
+
+
+// MARK: KYC Questions
+
+"screen_kyc_questions_mothers_name" = "Select your mother's maiden name";
+"screen_kyc_questions_city_of_birth" = "What is your city of birth?";
+"screen_kyc_questions_reason" = "We ask this for security purpose";

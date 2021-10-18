@@ -270,6 +270,29 @@ public class CustomersService: BaseService, CustomerServiceType {
         return upload(apiClient: apiClient, documents: docs, route: route,
                       progressObserver: nil, otherFormValues: formData)
     }
+
+    public func getMotherMaidenNames<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/getMotherMaidenNames", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func getCityOfBirthNames<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/getCityOfBirthNames", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func verifySecretQuestions<T: Codable>(motherMaidenName: String, cityOfBirth: String ) -> Observable<T> {
+        let body:[String:String] = [
+            "motherMaidenName": motherMaidenName,
+            "cityOfBirth": cityOfBirth
+        ]
+
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/verifySecretQuestions", body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
 }
 
 // MARK: Helpers

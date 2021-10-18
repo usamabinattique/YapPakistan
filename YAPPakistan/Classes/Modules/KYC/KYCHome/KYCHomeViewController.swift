@@ -182,7 +182,7 @@ class KYCHomeViewController: UIViewController {
         viewModel.outputs.eidValidation
             .map { $0 == .valid
                 ? "common_display_text_cnic".localized
-                : "screen_kyc_home_cnic_scan".localized
+                : "common_button_completed".localized
             }
             .bind(to: cardView.rx.details)
             .disposed(by: disposeBag)

@@ -1,8 +1,8 @@
 //
-//  KYCReviewDetailsViewModel.swift
+//  KYCQuestionsViewModel.swift
 //  YAPPakistan
 //
-//  Created by Tayyab on 30/09/2021.
+//  Created by Sarmad on 06/10/2021.
 //
 
 import CardScanner
@@ -10,77 +10,84 @@ import Foundation
 import RxSwift
 import YAPComponents
 
-protocol KYCReviewDetailsViewModelInput {
+struct KYCStrings {
+    var title: String
+    var subHeading: String
+    var next: String
+}
+
+protocol KYCQuestionViewModelInput {
     var nextObserver: AnyObserver<Void> { get }
 }
 
-protocol KYCReviewDetailsViewModelOutput {
-    var cnicNumber: Observable<String> { get }
-    var cnicFields: Observable<[KYCReviewFieldViewModel]> { get }
+protocol KYCQuestionViewModelOutput {
+    var optionViewModels: Observable<[KYCQuestionCellViewModel]> { get }
     var showError: Observable<String> { get }
+    var isNextEnable: Observable<Bool> { get }
     var next: Observable<Void> { get }
+    var loader: Observable<Bool> { get }
+    var strings: Observable<KYCStrings> { get }
 }
 
-protocol KYCReviewDetailsViewModelType {
-    var inputs: KYCReviewDetailsViewModelInput { get }
-    var outputs: KYCReviewDetailsViewModelOutput { get }
+protocol KYCQuestionViewModelType {
+    var inputs: KYCQuestionViewModelInput { get }
+    var outputs: KYCQuestionViewModelOutput { get }
 }
 
-class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetailsViewModelOutput, KYCReviewDetailsViewModelType {
+class KYCQuestionViewModel: KYCQuestionViewModelInput, KYCQuestionViewModelOutput, KYCQuestionViewModelType {
 
-    // MARK: Properties
+    var optionViewModelsSubject = BehaviorSubject<[KYCQuestionCellViewModel]>(value: [])
+    let showErrorSubject = PublishSubject<String>()
+    var isNextEnableSubject = BehaviorSubject<Bool>(value: false)
+    var nextSubject = PublishSubject<Void>()
+    var successSubject = PublishSubject<Void>()
+    var loaderSubject = BehaviorSubject<Bool>(value: false)
+    var stringsSubject: BehaviorSubject<KYCStrings>
 
-    private let disposeBag = DisposeBag()
-
-    private let cnicNumberSubject = BehaviorSubject<String>(value: "")
-    private var cnicFieldsSubject = BehaviorSubject<[KYCReviewFieldViewModel]>(value: [])
-    private let showErrorSubject = PublishSubject<String>()
-
-    private var nextSubject = PublishSubject<Void>()
-    private var successSubject = PublishSubject<Void>()
-
-    var inputs: KYCReviewDetailsViewModelInput { return self }
-    var outputs: KYCReviewDetailsViewModelOutput { return self }
+    var inputs: KYCQuestionViewModelInput { return self }
+    var outputs: KYCQuestionViewModelOutput { return self }
 
     // MARK: Inputs
-
     var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
 
     // MARK: Outputs
-
-    var cnicNumber: Observable<String> { cnicNumberSubject.asObservable() }
-    var cnicFields: Observable<[KYCReviewFieldViewModel]> { cnicFieldsSubject.asObservable() }
+    var optionViewModels: Observable<[KYCQuestionCellViewModel]> { optionViewModelsSubject.asObservable() }
     var showError: Observable<String> { showErrorSubject.asObservable() }
-    var next: Observable<Void> { successSubject.asObservable() }
+    var isNextEnable: Observable<Bool> { isNextEnableSubject.asObservable() }
+    var next: Observable<Void> { successSubject.asObservable() } // FIXME should be successSubject
+    var loader: Observable<Bool> { loaderSubject.asObserver() }
+    var strings: Observable<KYCStrings> { stringsSubject.asObservable() }
+
+    // MARK: Properties
+    var accountProvider: AccountProvider!
+    let disposeBag = DisposeBag()
+    private let cellViewModel:Observable<[KYCQuestionCellViewModel]>
 
     // MARK: Initialization
 
     init(accountProvider: AccountProvider,
-         kycRepository: KYCRepository,
-         identityDocument: IdentityDocument,
-         cnicNumber: String,
-         cnicInfo: CNICInfo) {
-        notifyFields(cnicNumber: cnicNumber, cnicInfo: cnicInfo)
-        bindSaveRequest(identityDocument: identityDocument, cnicNumber: cnicNumber, cnicInfo: cnicInfo,
-                        kycRepository: kycRepository, accountProvider: accountProvider)
-    }
+         cellViewModel: Observable<[KYCQuestionCellViewModel]>,
+         strings: KYCStrings) {
 
-    private func notifyFields(cnicNumber: String, cnicInfo: CNICInfo) {
-        cnicNumberSubject.onNext(cnicNumber)
-        cnicFieldsSubject.onNext([
-            KYCReviewFieldViewModel(heading: "screen_kyc_review_details_full_name".localized,
-                                    value: cnicInfo.name),
-            KYCReviewFieldViewModel(heading: "screen_kyc_review_details_gender".localized,
-                                    value: cnicInfo.gender),
-            KYCReviewFieldViewModel(heading: "screen_kyc_review_details_dob".localized,
-                                    value: parseDate(cnicInfo.dob)),
-            KYCReviewFieldViewModel(heading: "screen_kyc_review_details_issue_date".localized,
-                                    value: parseDate(cnicInfo.issueDate)),
-            KYCReviewFieldViewModel(heading: "screen_kyc_review_details_expiry_date".localized,
-                                    value: parseDate(cnicInfo.expiryDate)),
-            KYCReviewFieldViewModel(heading: "screen_kyc_review_details_residential_address".localized,
-                                    value: cnicInfo.residentialAddress)
-        ])
+        self.accountProvider = accountProvider
+        self.stringsSubject = BehaviorSubject<KYCStrings>(value: strings)
+        self.cellViewModel = cellViewModel.share()
+
+        self.cellViewModel
+            .bind(to: optionViewModelsSubject)
+            .disposed(by: disposeBag)
+
+        self.cellViewModel.subscribe(onNext: { vms in
+            let oss =  vms.map({ $0.outputs.selected })
+
+            oss.forEach { [unowned self] isSelected in
+                isSelected.filter({ $0 })
+                    .distinctUntilChanged()
+                    .bind(to: self.isNextEnableSubject).disposed(by: self.disposeBag)
+            }
+
+        }).disposed(by: disposeBag)
+        
     }
 
     private func bindSaveRequest(identityDocument: IdentityDocument,
@@ -97,8 +104,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                 }
 
                 let documentType = "CNIC"
-                let identityNo = randomString()     // cnicNumber.replace(string: "-", replacement: "")
-                                                    // FIXME this temporary for testing
+                let identityNo = cnicNumber.replace(string: "-", replacement: "")
                 let nationality = "PAK"
                 let fullName = cnicInfo.name
                 let gender = cnicInfo.gender
