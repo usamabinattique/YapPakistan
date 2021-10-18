@@ -27,13 +27,12 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
 
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
 
-        let viewModel = container.makeVerifyPasscodeViewModel { session, accountProvider in
+        let viewController = container.makeVerifyPasscodeViewController { session, accountProvider in
             self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
             accountProvider = self.sessionContainer.accountProvider
         }
-        let loginViewController = container.makeVerifyPasscodeViewController(viewModel: viewModel)
 
-        root = UINavigationController(rootViewController: loginViewController)
+        root = UINavigationController(rootViewController: viewController)
         root.interactivePopGestureRecognizer?.isEnabled = false
         root.navigationBar.setBackgroundImage(UIImage(), for: .default)
         root.navigationBar.shadowImage = UIImage()
@@ -42,7 +41,7 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
 
         self.window.rootViewController = self.root
 
-        viewModel.outputs.back.subscribe(onNext: { [unowned self] in
+        viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] in
 
             self.coordinate(to: LoginCoordinatorReplaceable(window: window,
                                                             container: container))
@@ -56,12 +55,12 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.result
+        viewController.viewModel.outputs.result
             .filter({ $0.isSuccess?.optRequired ?? true })
             .subscribe(onNext: { [weak self] _ in self?.optVerification() })
             .disposed(by: rx.disposeBag)
 
-        viewModel.outputs.loginResult
+        viewController.viewModel.outputs.loginResult
             .subscribe(onNext: { result in
                 switch result {
                 case .waiting:
@@ -78,7 +77,7 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
                 }
             }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.forgot.withUnretained(self)
+        viewController.viewModel.outputs.forgot.withUnretained(self)
             .subscribe(onNext: { $0.0.forgotOTPVerification() })
             .disposed(by: rx.disposeBag)
 

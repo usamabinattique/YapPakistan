@@ -108,6 +108,7 @@ fileprivate extension VerifyPasscodeViewController {
         viewModel.outputs.pinValid.bind(to: signinButton.rx.isEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
+        viewModel.outputs.biometryEnabled.bind(to: pinKeyboard.rx.biometryEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.shake
             .subscribe(onNext: { [weak self] in self?.codeLabel.shake() })
             .disposed(by: rx.disposeBag)
@@ -116,6 +117,7 @@ fileprivate extension VerifyPasscodeViewController {
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
         signinButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
         forgotButton.rx.tap.bind(to: viewModel.inputs.forgotPasscodeObserver).disposed(by: rx.disposeBag)
+        pinKeyboard.biomatryButton.rx.tap.bind(to: viewModel.inputs.biometricObserver).disposed(by: rx.disposeBag)
 
     }
 

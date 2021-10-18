@@ -171,6 +171,21 @@
 "screen_light_dashboard_display_text_heading_text" = "Light Dashboard";
 "screen_lite_dashboard_button_complete_verification" = "Complete verification";
 
+//MARK: System Permission screen
+"screen_light_dashboard_button_touch_id" = "Touch ID";
+"screen_light_dashboard_button_face_id" = "Face ID";
+"screen_system_permission_text_title_face_id" = "Would you like to use Face ID to log in to your account?";
+"screen_system_permission_text_title_touch_id" = "Would you like to use Touch ID to log in to your account?";
+"screen_system_permission_text_title_notification" = "Would you like to give YAP access to send  you notifications?";
+"screen_system_permission_text_details_face_id" = "Make sure your device settings for Face ID are always on.";
+"screen_system_permission_text_details_touch_id" = "Make sure your device settings for Touch ID are always on.";
+"screen_system_permission_text_details_notification" = "We use push notifications to give you updates about all transactions and to send important reminders about your account";
+"screen_system_permission_text_title_terms_and_conditions" =   "By clicking “Use %@” you agree to our";
+"screen_system_permission_button_touch_id"  =  "Use %@";
+"screen_system_permission_text_denied"    = "No, thanks";
+"screen_system_permission_text_terms_and_conditions"  =  "Terms & Conditions";
+"screen_notification_permission_button_title"  =  "Yes, keep me up to date";
+
 // MARK: - KYC Home screen
 "screen_kyc_home_display_text_screen_title" = "Complete verification";
 "screen_kyc_home_display_text_sub_heading" = "%@, please scan your CNIC";
