@@ -173,22 +173,8 @@ extension YAPPakistanMainContainer {
         return BiometricsManager()
     }
 
-    func makeVerifyPasscodeViewModel(isUserBlocked:Bool, onLogin: @escaping VerifyPasscodeViewModelType.OnLoginClosure)
-    -> VerifyPasscodeViewModelType {
-        return VerifyPasscodeViewModel(username: credentialsStore.getUsername() ?? "",
-                                       isUserBlocked: isUserBlocked,
-                                       repository: makeLoginRepository(),
-                                       credentialsManager: credentialsStore,
-                                       sessionCreator: SessionProvider(xsrfToken: xsrfToken),
-                                       onLogin: onLogin)
-    }
-
-    func makeVerifyPasscodeViewController(viewModel: VerifyPasscodeViewModelType,
-                                          biometricsService: BiometricsManager = BiometricsManager(),
-                                          isCreatePasscode: Bool = false) -> VerifyPasscodeViewController {
-        return VerifyPasscodeViewController(themeService: themeService,
-                                            viewModel: viewModel,
-                                            biometricsService: biometricsService)
+    func makeVerifyPasscodeViewController(onLogin: @escaping VerifyPasscodeViewModel.OnLoginClosure) -> VerifyPasscodeViewController {
+        return VerifyPasscodeModuleBuilder(container: self, onLogin: onLogin).viewController()
     }
 
     func makePasscodeCoordinator(root: UINavigationController, isUserBlocked:Bool) -> PasscodeCoordinatorPushable  {
@@ -232,5 +218,15 @@ extension YAPPakistanMainContainer {
 
     func makeVerifyMobileOTPViewController(viewModel: LoginOTPVerificationViewModel) -> VerifyMobileOTPViewController {
         return VerifyMobileOTPViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+}
+
+extension YAPPakistanMainContainer {
+    func makeNotificationPermissionViewController() -> SystemPermissionViewController {
+        return NotificationPermissionModuleBuilder(container: self).viewController()
+    }
+
+    func makeBiometricPermissionViewController() -> SystemPermissionViewController {
+        return BiometricPermissionModuleBuilder(container: self).viewController()
     }
 }

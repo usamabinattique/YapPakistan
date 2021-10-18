@@ -69,27 +69,26 @@ PODS:
   - SwifterSwift/UIKit (5.2.0)
   - SwiftyGif (5.4.0)
   - YAPComponents (0.1.0)
-  - YAPCore (0.0.1):
-    - RxSwift (= 6.2.0)
-    - RxSwiftExt (= 6.0.1)
+  - YAPCore (0.1.0):
+    - RxSwift (~> 6.0)
   - YAPPakistan (0.1.0):
-    - Adjust (= 4.29.5)
-    - Alamofire (= 5.4.3)
-    - CardScanner
-    - HWPanModal (= 0.8.9)
-    - PhoneNumberKit (= 3.3.3)
-    - RxCocoa (= 6.2.0)
-    - RxDataSources (= 5.0.0)
-    - RxGesture (= 4.0.2)
-    - RxOptional (= 5.0.2)
-    - RxSwift (= 6.2.0)
-    - RxSwiftExt (= 6.0.1)
-    - RxTheme (= 5.0.4)
-    - SDWebImage (= 5.11.1)
-    - SwifterSwift (= 5.2.0)
-    - SwiftyGif (= 5.4.0)
-    - YAPComponents
-    - YAPCore
+    - Adjust (~> 4.0)
+    - Alamofire (~> 5.0)
+    - CardScanner (~> 1.0)
+    - HWPanModal (~> 0)
+    - PhoneNumberKit (~> 3.0)
+    - RxCocoa (~> 6.0)
+    - RxDataSources (~> 5.0)
+    - RxGesture (~> 4.0)
+    - RxOptional (~> 5.0)
+    - RxSwift (~> 6.0)
+    - RxSwiftExt (~> 6.0)
+    - RxTheme (~> 5.0)
+    - SDWebImage (~> 5.0)
+    - SwifterSwift (~> 5.0)
+    - SwiftyGif (~> 5.0)
+    - YAPComponents (~> 0)
+    - YAPCore (~> 0)
 
 DEPENDENCIES:
   - YAPComponents (from `../YAPComponents`)
@@ -144,8 +143,8 @@ SPEC CHECKSUMS:
   SwifterSwift: 334181863c416882d97b7a60c05054d9e4d799e2
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   YAPComponents: 973a1d656d519b7de5e0f2bbc5bdba4466014b60
-  YAPCore: 0557b67171d41c611085fcaa8a885e9a29552744
-  YAPPakistan: 91eb950704a0db39828815da1e3baf1ff4faa2b3
+  YAPCore: 5a4338ac7ae434e7c5a2afb3655e414cd9cc7e8d
+  YAPPakistan: 11192d4dc392140ecadc92130480ed01719ed67e
 
 PODFILE CHECKSUM: c55282bf4c906c05daa1f870ba67bd7b0cdccdbf
 
