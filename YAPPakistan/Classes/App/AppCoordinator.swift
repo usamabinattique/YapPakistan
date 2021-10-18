@@ -70,13 +70,6 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
         .disposed(by: rx.disposeBag)
     }
 
-    func welcome() {
-        coordinate(to: container.makeWelcomeCoordinator(window: window)).subscribe { result in
-            self.result.onNext(.success(()))
-            self.result.onCompleted()
-        }.disposed(by: rx.disposeBag)
-    }
-
     func verifyPasscode() {
         coordinate(to: container.makePasscodeCoordinatorReplaceable(window: window))
             .subscribe(onNext: { result in

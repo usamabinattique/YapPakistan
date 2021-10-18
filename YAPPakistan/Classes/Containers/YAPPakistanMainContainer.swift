@@ -108,10 +108,6 @@ public final class YAPPakistanMainContainer {
         return sessionContainer.makeWaitingListController()
     }
 
-    func makeWelcomeCoordinator(window: UIWindow) -> WelcomeCoordinatorReplaceable {
-        return WelcomeCoordinatorReplaceable(container: self, window: window)
-    }
-
     func makePasscodeCoordinatorReplaceable(window: UIWindow) -> PasscodeCoordinatorReplaceable {
         return PasscodeCoordinatorReplaceable(window: window, container: self, isUserBlocked: false)
     }
