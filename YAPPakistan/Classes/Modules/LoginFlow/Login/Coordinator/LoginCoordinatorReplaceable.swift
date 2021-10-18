@@ -10,21 +10,17 @@ import RxSwift
 import YAPCore
 
 class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorType {
-
-    var root: UINavigationController!
-    var window:UIWindow!
     var container: YAPPakistanMainContainer!
+    var window: UIWindow!
+    var root: UINavigationController!
     var result = PublishSubject<LoginResult>()
 
-    init(window: UIWindow,
-         container: YAPPakistanMainContainer
-    ){
-        self.window = window
+    init(container: YAPPakistanMainContainer, window: UIWindow) {
         self.container = container
+        self.window = window
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<LoginResult> {
-
         let viewModel = container.makeLoginViewModel(loginRepository: container.makeLoginRepository())
         let loginViewController = container.makeLoginViewController(viewModel: viewModel)
 
@@ -38,10 +34,7 @@ class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorTyp
         self.window.rootViewController = self.root
 
         viewModel.outputs.signUp.flatMapLatest({ [unowned self] _ in
-            self.coordinate(to: WelcomeCoordinatorReplaceable(
-                                container: container,
-                                xsrfToken: container.mockToken,
-                                window: window ))
+            self.coordinate(to: WelcomeCoordinatorReplaceable(container: container, window: window))
         }).do(onNext: { [weak self] _ in
             self?.result.onCompleted()
         })
@@ -62,12 +55,9 @@ class LoginCoordinatorReplaceable: Coordinator<LoginResult>, LoginCoordinatorTyp
     }
 
     func coordinateToWelcome() {
-        coordinate(to: WelcomeCoordinatorReplaceable(
-                    container: container,
-                    xsrfToken: container.mockToken,
-                    window: window ))
-        .subscribe(onNext: { [weak self] _ in self?.result.onCompleted() })
-        .disposed(by: rx.disposeBag)
+        coordinate(to: WelcomeCoordinatorReplaceable(container: container, window: window))
+            .subscribe(onNext: { [weak self] _ in self?.result.onCompleted() })
+            .disposed(by: rx.disposeBag)
     }
 
     func navigateToPasscode(username: String, isUserBlocked: Bool) {

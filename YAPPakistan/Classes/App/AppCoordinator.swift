@@ -73,14 +73,14 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func welcome(xsrfToken: String) {
-        coordinate(to: container.makeWelcomeCoordinator(xsrfToken: xsrfToken, window: window)).subscribe { result in
+        coordinate(to: container.makeWelcomeCoordinator(window: window)).subscribe { result in
             self.result.onNext(.success(()))
             self.result.onCompleted()
         }.disposed(by: rx.disposeBag)
     }
 
     func verifyPasscode(xsrfToken: String) {
-        coordinate(to: container.makePasscodeCoordinatorReplaceable(xsrfToken: xsrfToken, window: window))
+        coordinate(to: container.makePasscodeCoordinatorReplaceable(window: window))
             .subscribe(onNext: { result in
                 switch result {
                 case .cancel:
@@ -94,7 +94,7 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func loginScreen(xsrfToken: String) {
-        coordinate(to: container.makeLoginCoordinatorReplaceable(xsrfToken: xsrfToken, window: window))
+        coordinate(to: container.makeLoginCoordinatorReplaceable(window: window))
             .subscribe(onNext: { result in
                 self.result.onNext(.success(()))
                 self.result.onCompleted()

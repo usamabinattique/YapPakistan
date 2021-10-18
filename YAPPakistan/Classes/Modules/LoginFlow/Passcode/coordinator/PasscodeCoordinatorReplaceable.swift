@@ -44,8 +44,7 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         self.window.rootViewController = self.root
 
         viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] in
-            self.coordinate(to: LoginCoordinatorReplaceable(window: window,
-                                                            container: container))
+            self.coordinate(to: LoginCoordinatorReplaceable(container: container, window: window))
                 .subscribe(onNext: { result in
                     self.result.onNext(.logout)
                     self.result.onCompleted()

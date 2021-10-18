@@ -23,7 +23,6 @@ public final class YAPPakistanMainContainer {
     let themeService: ThemeService<AppTheme>
     let credentialsStore: CredentialsStoreType
     let referralManager: AppReferralManager
-    let mockToken: String = ""
 
     public init(configuration: YAPPakistanConfiguration) {
         self.configuration = configuration
@@ -51,7 +50,7 @@ public final class YAPPakistanMainContainer {
     }
 
     func makeAuthorizationProvider() -> ServiceAuthorizationProviderType {
-        return GuestServiceAuthorization(xsrf: mockToken)
+        return GuestServiceAuthorization()
     }
 
     func makeXSRFService() -> XSRFService {
@@ -118,25 +117,16 @@ public final class YAPPakistanMainContainer {
         return sessionContainer.makeWaitingListController()
     }
 
-    public func makeDummyViewController() -> UIViewController {
-        _ = CustomersService(apiConfig: makeAPIConfiguration(),
-                             apiClient: makeAPIClient(),
-                             authorizationProvider: makeAuthorizationProvider())
-        return UIViewController()
+    func makeWelcomeCoordinator(window: UIWindow) -> WelcomeCoordinatorReplaceable {
+        return WelcomeCoordinatorReplaceable(container: self, window: window)
     }
 
-    public func makeWelcomeCoordinator(xsrfToken: String, window: UIWindow) -> WelcomeCoordinatorReplaceable {
-        return WelcomeCoordinatorReplaceable(container: self,
-                                             xsrfToken: mockToken,
-                                             window: window)
-    }
-
-    func makePasscodeCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> PasscodeCoordinatorReplaceable {
+    func makePasscodeCoordinatorReplaceable(window: UIWindow) -> PasscodeCoordinatorReplaceable {
         return PasscodeCoordinatorReplaceable(window: window, container: self, isUserBlocked: false)
     }
 
-    func makeLoginCoordinatorReplaceable(xsrfToken: String, window: UIWindow) -> LoginCoordinatorReplaceable {
-        return LoginCoordinatorReplaceable(window: window, container: self)
+    func makeLoginCoordinatorReplaceable(window: UIWindow) -> LoginCoordinatorReplaceable {
+        return LoginCoordinatorReplaceable(container: self, window: window)
     }
 }
 
@@ -167,7 +157,7 @@ extension YAPPakistanMainContainer {
     }
 
     func makePasscodeCoordinator(root: UINavigationController, isUserBlocked: Bool) -> PasscodeCoordinatorPushable  {
-        PasscodeCoordinatorPushable(root: root, xsrfToken: "", container: self, isUserBlocked: isUserBlocked)
+        return PasscodeCoordinatorPushable(container: self, root: root, isUserBlocked: isUserBlocked)
     }
 }
 
@@ -179,7 +169,7 @@ extension YAPPakistanMainContainer {
     }
 
     func makeSessionProvider() -> SessionProviderType {
-        SessionProvider(xsrfToken: mockToken)
+        return SessionProvider()
     }
 
     func makeLoginOTPVerificationViewModel(

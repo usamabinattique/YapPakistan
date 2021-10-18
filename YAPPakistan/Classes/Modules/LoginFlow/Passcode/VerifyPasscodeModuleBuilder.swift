@@ -13,14 +13,13 @@ struct VerifyPasscodeModuleBuilder {
     let onLogin: VerifyPasscodeViewModel.OnLoginClosure
 
     func viewController() -> VerifyPasscodeViewController {
-
         let biometricsManager = container.makeBiometricsManager()
         let credentialsStore = container.credentialsStore
         let username = container.credentialsStore.getUsername() ?? ""
         let loginRepository = container.makeLoginRepository()
-        let sessionProvider = SessionProvider(xsrfToken: "")
+        let sessionProvider = container.makeSessionProvider()
 
-        let viewModel = VerifyPasscodeViewModel(username:  username,
+        let viewModel = VerifyPasscodeViewModel(username: username,
                                                 isUserBlocked: isUserBlocked,
                                                 repository: loginRepository,
                                                 biometricsManager: biometricsManager,
@@ -32,5 +31,4 @@ struct VerifyPasscodeModuleBuilder {
                                             viewModel: viewModel,
                                             biometricsService: biometricsManager)
     }
-
 }

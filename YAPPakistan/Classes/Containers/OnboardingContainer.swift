@@ -23,7 +23,7 @@ final class OnboardingContainer {
     }
 
     func makeEnterEmailController(user: OnBoardingUser) -> EnterEmailViewController {
-        let sessionProvider = SessionProvider(xsrfToken: parent.mockToken)
+        let sessionProvider = parent.makeSessionProvider()
         let onBoardingRepository = parent.makeOnBoardingRepository()
 
         let enterEmailViewModel = EnterEmailViewModel(

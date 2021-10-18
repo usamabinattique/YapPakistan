@@ -18,15 +18,12 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>> {
 
     private let window: UIWindow
 
-    init(container: YAPPakistanMainContainer,
-         xsrfToken: String,
-         window: UIWindow) {
+    init(container: YAPPakistanMainContainer, window: UIWindow) {
         self.container = container
         self.window = window
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-
         let viewModel = WelcomeViewModel()
         let viewController = WelcomeViewController(themeService: container.themeService, viewModel: viewModel)
 
