@@ -50,7 +50,6 @@
 		0DEEE13B26FC63D600BABB41 /* FeatureFlagResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE13A26FC63D600BABB41 /* FeatureFlagResponse.swift */; };
 		0DEEE19526FDBC5800BABB41 /* FeatureFlagFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19426FDBC5800BABB41 /* FeatureFlagFileManager.swift */; };
 		0DEEE19926FDE28100BABB41 /* DefaultFeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */; };
-		5680335A26E7E36D00D5C183 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -122,7 +121,6 @@
 		607FACD01AFB9204008FA782 /* YAP PK Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "YAP PK Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* YAPPakistan_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YAPPakistan_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -171,11 +169,11 @@
 		0D51948126E1ECC300B81639 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */,
+				0DD2D05A270AD63100DB2B00 /* B2COnBoarding */,
 				0DC38824271691A70003A60F /* Login */,
 				0D51948026E1ECC300B81639 /* Splash */,
 				0DC3881D271691330003A60F /* Welcome */,
-				0DD2D05A270AD63100DB2B00 /* B2COnBoarding */,
-				0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -211,11 +209,11 @@
 		0DD2D05A270AD63100DB2B00 /* B2COnBoarding */ = {
 			isa = PBXGroup;
 			children = (
-				0DD2D065270AD63100DB2B00 /* PhoneNumber */,
-				0DD2D068270AD63100DB2B00 /* OnBoardingViewController.swift */,
-				0DD2D069270AD63100DB2B00 /* Container */,
 				0DD2D074270AD63100DB2B00 /* B2COnBoardingCoordinator.swift */,
+				0DD2D069270AD63100DB2B00 /* Container */,
+				0DD2D068270AD63100DB2B00 /* OnBoardingViewController.swift */,
 				0DD2D075270AD63100DB2B00 /* OnBoardingViewModel.swift */,
+				0DD2D065270AD63100DB2B00 /* PhoneNumber */,
 			);
 			path = B2COnBoarding;
 			sourceTree = "<group>";
@@ -251,10 +249,10 @@
 		0DD2D104270B097400DB2B00 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				0DC388962716AC6F0003A60F /* AppSwitch+Rx.swift */,
 				0DD2D105270B098A00DB2B00 /* UIColor+Extension.swift */,
 				0DC388762716AB8C0003A60F /* UITextField+Rx.swift */,
 				0DC388922716AC110003A60F /* YAPProgressHud+Rx.swift */,
-				0DC388962716AC6F0003A60F /* AppSwitch+Rx.swift */,
 			);
 			path = Extension;
 			sourceTree = "<group>";
@@ -287,8 +285,8 @@
 		0DE2437A270C5349009343D1 /* Repository */ = {
 			isa = PBXGroup;
 			children = (
-				0DE2437B270C535D009343D1 /* OnBoardingRepository.swift */,
 				0DC388552716A6E70003A60F /* LoginRepository.swift */,
+				0DE2437B270C535D009343D1 /* OnBoardingRepository.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -296,16 +294,16 @@
 		0DEEE12726FC633300BABB41 /* FeatureFlag */ = {
 			isa = PBXGroup;
 			children = (
-				0DEEE12126F9CC4500BABB41 /* DefaultFeatureFlags.json */,
-				0DEEE12826FC635000BABB41 /* FeatureFlagProvider.swift */,
 				0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */,
-				0DEEE12E26FC637600BABB41 /* LocalFeatureFlagProvider.swift */,
-				0DEEE13226FC639100BABB41 /* RemoteFeatureFlagLoader.swift */,
-				0DEEE13626FC63BB00BABB41 /* RemoteFallbackToLocalFeatureFlagProvider.swift */,
-				0DEEE13A26FC63D600BABB41 /* FeatureFlagResponse.swift */,
+				0DEEE12126F9CC4500BABB41 /* DefaultFeatureFlags.json */,
 				0DEEE11D26F9C54B00BABB41 /* FeatureFlag.swift */,
 				0DEEE19426FDBC5800BABB41 /* FeatureFlagFileManager.swift */,
 				0DD2D123270B1EAD00DB2B00 /* FeatureFlagNames.swift */,
+				0DEEE12826FC635000BABB41 /* FeatureFlagProvider.swift */,
+				0DEEE13A26FC63D600BABB41 /* FeatureFlagResponse.swift */,
+				0DEEE12E26FC637600BABB41 /* LocalFeatureFlagProvider.swift */,
+				0DEEE13626FC63BB00BABB41 /* RemoteFallbackToLocalFeatureFlagProvider.swift */,
+				0DEEE13226FC639100BABB41 /* RemoteFeatureFlagLoader.swift */,
 			);
 			path = FeatureFlag;
 			sourceTree = "<group>";
@@ -328,7 +326,6 @@
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				7D7BA3FC26EF65590007074C /* AppEnvironment.swift */,
 				0D51951526E3A5B000B81639 /* DemoAppCoordinator.swift */,
-				607FACD71AFB9204008FA782 /* ViewController.swift */,
 			);
 			name = App;
 			sourceTree = "<group>";
@@ -347,7 +344,7 @@
 			children = (
 				7D42BA5A26F1F3E900F9CFAF /* YAP PK Dev.entitlements */,
 				607FACF51AFB993E008FA782 /* Podspec Metadata */,
-				607FACD21AFB9204008FA782 /* Example for YAPPakistan */,
+				607FACD21AFB9204008FA782 /* YAPPakistan */,
 				607FACE81AFB9204008FA782 /* Tests */,
 				607FACD11AFB9204008FA782 /* Products */,
 				332A5B5475A8B5F85A285429 /* Pods */,
@@ -364,23 +361,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		607FACD21AFB9204008FA782 /* Example for YAPPakistan */ = {
+		607FACD21AFB9204008FA782 /* YAPPakistan */ = {
 			isa = PBXGroup;
 			children = (
-				0DC388712716A94D0003A60F /* Services */,
-				0DE2437A270C5349009343D1 /* Repository */,
-				0DE24375270C5309009343D1 /* Model */,
-				0DD2D12C270B23F300DB2B00 /* Container */,
-				0DD2D127270B212200DB2B00 /* Provider */,
-				0DD2D104270B097400DB2B00 /* Extension */,
-				0DD2D0AF270B009300DB2B00 /* Theme */,
-				0DEEE12726FC633300BABB41 /* FeatureFlag */,
 				5680335726E7E32900D5C183 /* App */,
+				0DD2D12C270B23F300DB2B00 /* Container */,
+				0DD2D104270B097400DB2B00 /* Extension */,
+				0DEEE12726FC633300BABB41 /* FeatureFlag */,
+				0DE24375270C5309009343D1 /* Model */,
 				0D51948126E1ECC300B81639 /* Modules */,
+				0DD2D127270B212200DB2B00 /* Provider */,
+				0DE2437A270C5349009343D1 /* Repository */,
 				5680335826E7E32F00D5C183 /* Resources */,
+				0DC388712716A94D0003A60F /* Services */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				0DD2D0AF270B009300DB2B00 /* Theme */,
 			);
-			name = "Example for YAPPakistan";
 			path = YAPPakistan;
 			sourceTree = "<group>";
 		};
@@ -695,7 +691,6 @@
 				0DEEE19926FDE28100BABB41 /* DefaultFeatureFlagProvider.swift in Sources */,
 				0DEEE13726FC63BB00BABB41 /* RemoteFallbackToLocalFeatureFlagProvider.swift in Sources */,
 				0DC388562716A6E70003A60F /* LoginRepository.swift in Sources */,
-				5680335A26E7E36D00D5C183 /* ViewController.swift in Sources */,
 				0DD2D081270AD63100DB2B00 /* PhoneNumberViewModel.swift in Sources */,
 				0D5194A026E1ED3800B81639 /* SplashCoordinator.swift in Sources */,
 				0DC38842271693640003A60F /* WelcomeCoordinator.swift in Sources */,
