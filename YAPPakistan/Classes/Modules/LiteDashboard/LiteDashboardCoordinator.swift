@@ -119,9 +119,4 @@ extension LiteDashboardCoodinator {
         self.result.onNext( ResultType.success(()) )
         self.result.onCompleted()
     }
-
-//    fileprivate func biometricType() -> SystemPermissionType {
-//        let biomType = self.container.biometricsManager.deviceBiometryType == .touchID
-//        return biomType ? .touchID : .faceID
-//    }
 }

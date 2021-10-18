@@ -171,12 +171,9 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
                 return pin
             }.bind(to: pinTextSubject).disposed(by: disposeBag)
 
-
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [unowned self] in if isUserBlocked {
             errorSubject.onNext("screen_enter_passcode_display_text_user_blocked".localized)
         } }
-
-        // bindUserAuthentication(repository: repository)
 
         let isBiometricAvailable = biometricsManager.isBiometryPermissionPrompt(for: username)
             && biometricsManager.isBiometrySupported
@@ -209,7 +206,6 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
 
         bind(with: biometricLoginCredentials)
         bind(with: loginCredentials)
-
     }
 
     func createTermsAndConditions(text: String) -> NSAttributedString {
