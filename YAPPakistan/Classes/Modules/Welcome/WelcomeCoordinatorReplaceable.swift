@@ -41,6 +41,7 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
     
         viewModel.outputs.signIn.subscribe(onNext: { [unowned self] _ in
+            /*
             if let viewControllers = self.root?.viewControllers, viewControllers.count > 1, viewControllers[viewControllers.count - 2] is LoginViewController {
                 self.root.popViewController(animated: true)
                 self.root.navigationBar.isHidden = false
@@ -49,6 +50,7 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>> {
             } else {
                 self.login()
             }
+             */
         }).disposed(by: rx.disposeBag)
     
         Observable.merge(b2cOnboardingResult.filter { !$0.isCancel }, b2cOnboardingResult.filter { !$0.isCancel }/*, loginResult.filter { !$0.isCancel }*/)
@@ -71,14 +73,5 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>> {
 //                self.b2cOnboardingResult.onNext(result)
 //            })
 //            .disposed(by: rx.disposeBag)
-    }
-    
-    public func login() {
-        coordinate(to: LoginCoordinatorPushable(root: self.root, container: self.container) )
-            .subscribe(onNext: { [weak self] _ in
-                self?.result.onNext(.success(()))
-                self?.result.onCompleted()
-            })
-            .disposed(by: rx.disposeBag)
     }
 }

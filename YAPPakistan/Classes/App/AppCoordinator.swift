@@ -90,12 +90,4 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
                 }
             }).disposed(by: rx.disposeBag)
     }
-
-    func loginScreen() {
-        coordinate(to: container.makeLoginCoordinatorReplaceable(window: window))
-            .subscribe(onNext: { result in
-                self.result.onNext(.success(()))
-                self.result.onCompleted()
-            }).disposed(by: rx.disposeBag)
-    }
 }

@@ -115,10 +115,6 @@ public final class YAPPakistanMainContainer {
     func makePasscodeCoordinatorReplaceable(window: UIWindow) -> PasscodeCoordinatorReplaceable {
         return PasscodeCoordinatorReplaceable(window: window, container: self, isUserBlocked: false)
     }
-
-    func makeLoginCoordinatorReplaceable(window: UIWindow) -> LoginCoordinatorReplaceable {
-        return LoginCoordinatorReplaceable(container: self, window: window)
-    }
 }
 
 extension YAPPakistanMainContainer {
@@ -126,15 +122,6 @@ extension YAPPakistanMainContainer {
         return LoginRepository(customerService: self.makeCustomersService(),
                                authenticationService: makeAuthenticationService(),
                                messageService: makeMessagesService())
-    }
-
-    func makeLoginViewModel(loginRepository: LoginRepository,
-                            user: OnBoardingUser = OnBoardingUser(accountType: .b2cAccount)) -> LoginViewModelType {
-        return LoginViewModel(repository: loginRepository, credentialsManager: self.credentialsStore)
-    }
-
-    func makeLoginViewController(viewModel: LoginViewModelType) -> LoginViewController {
-        return LoginViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }
 
