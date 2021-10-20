@@ -35,7 +35,7 @@ public class VerifyMobileOTPViewController: UIViewController {
     private var sendButtonBottomConstraint: NSLayoutConstraint!
     var viewModel: VerifyMobileOTPViewModelType!
 
-    public init(themeService: ThemeService<AppTheme>, viewModel: VerifyMobileOTPViewModelType) {
+    init(themeService: ThemeService<AppTheme>, viewModel: VerifyMobileOTPViewModelType) {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
