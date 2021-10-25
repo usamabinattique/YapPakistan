@@ -42,7 +42,7 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
         return mobileNumber
     }
 
-    private var viewModel: PhoneNumberViewModelType!
+    var viewModel: PhoneNumberViewModelType!
     private var themeService: ThemeService<AppTheme>!
 
     init(themeService: ThemeService<AppTheme>, viewModel: PhoneNumberViewModelType) {
@@ -121,7 +121,7 @@ private extension PhoneNumberViewController {
         mobileNumber.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
         mobileNumber.leftIcon.rx.tap.bind(to: viewModel.inputs.iconTapObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.inputValidation.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
-        viewModel.outputs.icon.bind(to: mobileNumber.leftIcon.rx.image(for: .normal)).disposed(by: rx.disposeBag)
+        viewModel.outputs.icon.map({  UIImage(named: $0 ?? "") }).bind(to: mobileNumber.leftIcon.rx.image(for: .normal)).disposed(by: rx.disposeBag)
 
         Observable.merge(countryPicker.rx.cancel, countryPicker.rx.done.map { _ in }).subscribe(onNext: { [unowned self] in
             _ = self.mobileNumber.becomeFirstResponder()
@@ -143,5 +143,33 @@ extension PhoneNumberViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         viewModel.inputs.textWillChangeObserver.onNext((string, range, textField.text))
         return viewModel.outputs.shouldChange
+    }
+}
+
+extension Reactive where Base: AppPickerView {
+    var itemSelected: ControlEvent<(row: Int, component: Int)> {
+        return base.pickerView.rx.itemSelected
+    }
+
+    var done: Observable<[(row: Int, component: Int)]> {
+        return base.toolbaar.doneButton.rx.tap.map{ base.getSelectedIndexes() }
+    }
+
+    var cancel: Observable <Void> {
+        return base.toolbaar.cancelButton.rx.tap.asObservable()
+    }
+
+    func itemTitles<S: Sequence, O: ObservableType>
+        (_ source: O)
+        -> (_ titleForRow: @escaping (Int, S.Iterator.Element) -> String?)
+        -> Disposable where O.Element == S {
+            return base.pickerView.rx.itemTitles(source)
+    }
+
+    func itemAttributedTitles<S: Sequence, O: ObservableType>
+        (_ source: O)
+        -> (_ attributedTitleForRow: @escaping (Int, S.Iterator.Element) -> NSAttributedString?)
+        -> Disposable where O.Element == S {
+            return base.pickerView.rx.itemAttributedTitles(source)
     }
 }

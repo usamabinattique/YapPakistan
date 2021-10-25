@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import PhoneNumberKit
 
 typealias TextChange = (text: String, range: NSRange, currentText: String?)
 
@@ -26,7 +27,7 @@ protocol PhoneNumberViewModelInput {
 protocol PhoneNumberViewModelOutput {
     var text: Observable<NSAttributedString?> { get }
     var inputValidation: Observable<AppRoundedTextFieldValidation> { get }
-    var icon: Observable<UIImage?> { get }
+    var icon: Observable<String?> { get }
     var iconTapped: Observable<Void> { get }
     var countries: Observable<[String]> { get }
     var shouldChange: Bool { get }
@@ -51,7 +52,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     private let textObserverSubject = PublishSubject<String?>()
     private let validationSubject = BehaviorSubject<AppRoundedTextFieldValidation>(value: .neutral)
     private let iconTapSubject = PublishSubject<Void>()
-    private let iconSubject = BehaviorSubject<UIImage?>(value: nil)
+    private let iconSubject = BehaviorSubject<String?>(value: nil)
     private let countrySelectionSubject = PublishSubject<Int>()
     private let countriesSubject = BehaviorSubject<[String]>(value: [])
     private var shouldChangeSub = true
@@ -79,7 +80,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     // outputs
     var text: Observable<NSAttributedString?> { return textSubject.asObservable() }
     var inputValidation: Observable<AppRoundedTextFieldValidation> { return validationSubject.asObservable() }
-    var icon: Observable<UIImage?> { return iconSubject.asObservable() }
+    var icon: Observable<String?> { return iconSubject.asObservable() }
     var iconTapped: Observable<Void> { return iconTapSubject.asObservable() }
     var countries: Observable<[String]> { return countriesSubject.asObservable() }
     var shouldChange: Bool { return shouldChangeSub }
@@ -90,26 +91,31 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     var progress: Observable<Float> { return progressSubject.asObservable() }
     var stage: Observable<OnboardingStage> { return stageSubject.asObservable() }
 
-    private var countryList = [(name: String, code: String, callingCode: String, flag: UIImage?)]()
+    private var countryList = [Country]()
     private let disposeBag = DisposeBag()
     private var currentItem = 0
     private var isFormatted = false
     private var user: OnBoardingUser!
-    private let repository: OnBoardingRepository
+    private let repositoryProvider: (_ countryCode: String) -> OnBoardingRepositoryType
+    private let countryListProvider: CountryListProviderType
 
-    init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser) {
-        self.repository = onBoardingRepository
+    private var repository: OnBoardingRepositoryType?
+
+    init(repositoryProvider: @escaping (_ countryCode: String) -> OnBoardingRepositoryType,
+         user: OnBoardingUser,
+         countryListProvider: CountryListProviderType) {
+        self.repositoryProvider = repositoryProvider
         self.user = user
+        self.countryListProvider = countryListProvider
+        self.countryList = countryListProvider.list()
 
-        countryList.append(("Pakistan", "PK", "+92 ", CountryFlag.flag(forCountryCode: "PK")))
-
-        iconSubject.onNext(countryList.first?.flag)
+        iconSubject.onNext(countryList.first?.flagIconImageName)
         textSubject.onNext(self.attributed(text: countryList.first?.callingCode ?? ""))
 
         countriesSubject.onNext(countryList.map { $0.name })
         countrySelectionSubject.map { _ in false }.bind(to: validSubject).disposed(by: disposeBag)
         countrySelectionSubject.map { [unowned self] index in self.attributed(text: self.countryList[index].callingCode) }.bind(to: textSubject).disposed(by: disposeBag)
-        countrySelectionSubject.do(onNext: { [unowned self] in self.currentItem = $0 }).map { [unowned self] index in self.countryList[index].flag }.bind(to: iconSubject).disposed(by: disposeBag)
+        countrySelectionSubject.do(onNext: { [unowned self] in self.currentItem = $0 }).map { [unowned self] index in self.countryList[index].flagIconImageName }.bind(to: iconSubject).disposed(by: disposeBag)
 
         let formattedText = textObserverSubject
             .do(onNext: {[unowned self] in self.user.mobileNo.formattedValue = $0})
@@ -142,9 +148,10 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         })
         .map { [unowned self] _ in self.user.mobileNo }.unwrap().flatMap { [unowned self] phone -> Observable<Event<String?>> in
             YAPProgressHud.showProgressHud()
-
-            return self.repository.signUpOTP(countryCode: phone.countryCode ?? "", mobileNo: phone.number ?? "", accountType: user.accountType.rawValue)
-
+            self.repository = repositoryProvider("PK")
+            return self.repository!.signUpOTP(countryCode: phone.countryCode ?? "",
+                                              mobileNo: phone.number ?? "",
+                                              accountType: user.accountType.rawValue)
         }.do(onNext: {_ in
                 YAPProgressHud.hideProgressHud()
             }).share()
@@ -180,5 +187,32 @@ private extension PhoneNumberViewModel {
         let attributed = NSMutableAttributedString(string: text)
         attributed.addAttributes([NSAttributedString.Key.foregroundColor: UIColor.blue/*appColor(ofType: .primaryDark)*/.withAlphaComponent(0.5)], range: NSRange(location: 0, length: length))
         return attributed
+    }
+}
+
+extension String {
+    var toSimplePhoneNumber:String {
+        return self.replacingOccurrences(of: "+", with: "00").replacingOccurrences(of: " ", with: "")
+    }
+
+    var toFormatedPhoneNumber: String {
+        guard self.count > 2 else { return self }
+
+        let phoneNumberKit = PhoneNumberKit()
+        if let pNumber = try? phoneNumberKit.parse(self) {
+            let formattedNumber = phoneNumberKit.format(pNumber, toType: .international)
+            return formattedNumber
+        }
+
+        return self
+    }
+
+    var toFormatedPhone:(number: String, isFormated: Bool) {
+        let phoneNumberKit = PhoneNumberKit()
+        if let pNumber = try? phoneNumberKit.parse(self) {
+            let formattedNumber = phoneNumberKit.format(pNumber, toType: .international)
+            return (formattedNumber, true)
+        }
+        return (self, false)
     }
 }

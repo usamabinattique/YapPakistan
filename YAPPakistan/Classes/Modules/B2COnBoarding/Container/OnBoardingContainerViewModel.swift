@@ -37,7 +37,9 @@ protocol OnBoardingContainerViewModelType {
     var outputs: OnBoardingContainerViewModelOutput { get }
 }
 
-class OnBoardingContainerViewModel: OnBoardingContainerViewModelInput, OnBoardingContainerViewModelOutput, OnBoardingContainerViewModelType {
+final class OnBoardingContainerViewModel: OnBoardingContainerViewModelInput,
+                                          OnBoardingContainerViewModelOutput,
+                                          OnBoardingContainerViewModelType {
 
     var inputs: OnBoardingContainerViewModelInput { return self }
     var outputs: OnBoardingContainerViewModelOutput { return self }

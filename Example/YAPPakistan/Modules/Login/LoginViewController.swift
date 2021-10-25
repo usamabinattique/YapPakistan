@@ -1,9 +1,9 @@
 //
 //  LoginViewController.swift
-//  App
+//  YAPPakistan_Example
 //
-//  Created by Wajahat Hassan on 21/06/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Umer on 13/10/2021.
+//  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
 import UIKit
@@ -15,7 +15,7 @@ import RxTheme
 class LoginViewController: UIViewController {
 
     private var backButton: UIButton?
-    private lazy var topImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private lazy var topImage = UIFactory.makeImageView(contentMode: .scaleToFill)
     private lazy var logo = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var headingLabel = UIFactory.makeLabel(font: .large, alignment: .center)
     private lazy var rememberIDLabel = UIFactory.makeLabel(font: .small)
@@ -37,8 +37,8 @@ class LoginViewController: UIViewController {
                                                                        delegate: self )
 
     private var signInButtonBottomConstraint: NSLayoutConstraint!
-    private var viewModel: LoginViewModelType!
     private var themeService: ThemeService<AppTheme>!
+    var viewModel: LoginViewModelType!
 
     init(themeService: ThemeService<AppTheme>, viewModel: LoginViewModelType) {
         self.viewModel = viewModel

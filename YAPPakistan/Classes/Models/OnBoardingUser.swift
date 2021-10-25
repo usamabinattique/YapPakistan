@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal struct OnBoardingUser {
+struct OnBoardingUser {
     var countryCode: String?
     var accountType: AccountType
     var firstName: String?

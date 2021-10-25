@@ -1,9 +1,9 @@
 //
-//  AccountSelectionViewController.swift
-//  App
+//  WelcomeViewController.swift
+//  YAPPakistan_Example
 //
-//  Created by Zain on 18/06/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Umer on 13/10/2021.
+//  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
 import UIKit
@@ -30,10 +30,11 @@ class WelcomeViewController: UIViewController {
     fileprivate var currentCaption = 0
     fileprivate var stopped = true
 
-    fileprivate var viewModel: AccountSelectionViewModelType!
-    fileprivate var themeService: ThemeService<AppTheme>!
 
-    convenience init(themeService: ThemeService<AppTheme>, viewModel: AccountSelectionViewModelType) {
+    fileprivate var themeService: ThemeService<AppTheme>!
+    var viewModel: WelcomeViewModelType!
+
+    convenience init(themeService: ThemeService<AppTheme>, viewModel: WelcomeViewModelType) {
         self.init(nibName: nil, bundle: nil)
         self.themeService = themeService
         self.viewModel = viewModel
