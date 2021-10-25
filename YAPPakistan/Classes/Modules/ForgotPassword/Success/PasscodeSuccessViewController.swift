@@ -93,7 +93,7 @@ fileprivate extension PasscodeSuccessViewController {
         actionButton.alignEdgeWithSuperviewSafeArea(.bottom, constant: 30)
         actionButton.height(constant: 52)
         actionButton.width(constant: 192)
-        actionButton.horizontallyCenterWith(view)
+        actionButton.centerHorizontallyWith(view)
 
     }
 }

@@ -271,9 +271,9 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         })
 
         sharedDemographics.map { .emailVerify }.bind(to: stageSubject).disposed(by: disposeBag)
-        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? self.b2cCofirmationText : self.b2bConfirmationText }
-            .bind(to: verificationTextSubject)
-            .disposed(by: disposeBag)
+        //sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? self.b2cCofirmationText : self.b2bConfirmationText }
+        //    .bind(to: verificationTextSubject) //FIXME remove text and things according to new updates
+        //    .disposed(by: disposeBag)
         sharedDemographics.map { _ in  "screen_email_verification_display_text_title".localized }
             .bind(to: headingSubject)
             .disposed(by: disposeBag)

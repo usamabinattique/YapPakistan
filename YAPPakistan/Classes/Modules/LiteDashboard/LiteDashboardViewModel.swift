@@ -85,16 +85,19 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
 
     var accountProvider: AccountProvider!
     var biometricsManager: BiometricsManager!
+    var notificationManager: NotificationManager!
     var credentialStore: CredentialsStoreType!
     var repository: LoginRepository!
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManager,
+         notificationManager: NotificationManager,
          credentialStore: CredentialsStoreType,
          repository: LoginRepository) {
 
         self.accountProvider = accountProvider
         self.biometricsManager = biometricsManager
+        self.notificationManager = notificationManager
         self.credentialStore = credentialStore
         self.repository = repository
 
@@ -121,8 +124,11 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
 
         logoutRequest.elements()
             .do(onNext: { _ in
-                credentialStore.setRemembersId(false)
-                credentialStore.clearUsername()
+                let user = credentialStore.getUsername() ?? ""
+                self.biometricsManager.deleteBiometryForUser(phone: user)
+                self.notificationManager.deleteNotificationPermission()
+                self.credentialStore.setRemembersId(false)
+                self.credentialStore.clearUsername()
 
                 // FIXME: Reset all managers.
             })

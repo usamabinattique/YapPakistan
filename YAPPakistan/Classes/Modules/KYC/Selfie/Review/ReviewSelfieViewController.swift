@@ -14,7 +14,7 @@ class ReviewSelfieViewController: UIViewController {
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     private let selfieContainer = UIFactory.makeView().setCornerRadius(12).shaddow()
-    private let selfieImage = UIFactory.makeImageView().setCornerRadius(10)
+    private let selfieImage = UIFactory.makeImageView(contentMode: .scaleAspectFill).setCornerRadius(10)
     private let yesThatsMeButton = UIFactory.makeAppRoundedButton(with: .regular)
     private let retakeButton = UIFactory.makeButton(with: .regular)
     private let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
@@ -79,46 +79,53 @@ class ReviewSelfieViewController: UIViewController {
     }
 
     func setupBindings() {
+        viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
+            self?.showAlert(title: "", message: error,
+                            defaultButtonTitle: "common_button_ok".localized)
+        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.image.bind(to: selfieImage.rx.image).disposed(by: rx.disposeBag)
+        viewModel.outputs.loading.bind(to: rx.loader).disposed(by: rx.disposeBag)
+
         retakeButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
         yesThatsMeButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {
-        spacers[3]
+        spacers[0]
             .alignEdgesWithSuperview([.left, .right, .safeAreaTop])
 
         titleLabel
-            .toBottomOf(spacers[3])
+            .toBottomOf(spacers[0])
             .alignEdgesWithSuperview([.left, .right], constant: 25)
 
-        spacers[0]
+        spacers[1]
             .toBottomOf(titleLabel)
             .alignEdgesWithSuperview([.left, .right])
 
         selfieContainer
-            .toBottomOf(spacers[0])
+            .toBottomOf(spacers[1])
             .widthEqualToSuperView(multiplier: 219 / 375)
             .centerHorizontallyInSuperview()
             .aspectRatio(248 / 219)
         selfieImage
             .alignEdgesWithSuperview([.left, .right, .top, .bottom], constant: 12)
 
-        spacers[1]
+        spacers[2]
             .toBottomOf(selfieContainer)
             .alignEdgesWithSuperview([.left, .right])
 
         subTitleLabel
+            .toBottomOf(spacers[2])
             .widthEqualToSuperView(multiplier: 315 / 375)
             .centerHorizontallyInSuperview()
-            .toBottomOf(spacers[1], constant: 10)
 
-        spacers[2]
+        spacers[3]
             .toBottomOf(subTitleLabel)
             .alignEdgesWithSuperview([.left, .right])
 
         yesThatsMeButton
-            .toBottomOf(spacers[2])
+            .toBottomOf(spacers[3])
             .centerHorizontallyInSuperview()
             .width(constant: 200)
             .height(constant: 52)
@@ -128,9 +135,9 @@ class ReviewSelfieViewController: UIViewController {
             .alignEdgesWithSuperview([.safeAreaBottom], constant: 10)
             .centerHorizontallyInSuperview()
 
-        spacers[2]
+        spacers[3]
             .heightEqualTo(view: spacers[0], multiplier: 2)
             .heightEqualTo(view: spacers[1], multiplier: 2)
-            .heightEqualTo(view: spacers[3], multiplier: 2, constant: 30)
+            .heightEqualTo(view: spacers[2], multiplier: 2)
     }
 }

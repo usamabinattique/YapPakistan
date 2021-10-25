@@ -55,8 +55,8 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     private let animationFileSubject = BehaviorSubject<String>(value: "waitingListStart.mp4")
     private let firstVideoEndedSubject = PublishSubject<Void>()
     private let placeTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_place_text_heading".localized)
-    private let rankSubject = PublishSubject<String?>()
-    private let behindNumberSubject = BehaviorSubject<String?>(value: "")
+    private let rankSubject = BehaviorSubject<String?>(value: "0009999")
+    private let behindNumberSubject = BehaviorSubject<String?>(value: "0")
     private let behindYouTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_behind_text".localized)
     private let infoTextSubject = BehaviorSubject<String?>(value: "screen_waiting_list_rank_info_text".localized)
     private let boostUpTextSubject = BehaviorSubject<String>(value: "\(bumpUpMessageTop)\n\(bumpUpMessageBottom)")
@@ -68,8 +68,7 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
     var outputs: WaitingListRankViewModelOutput { self }
 
     private static let bumpUpMessageTop = "screen_waiting_list_rank_bump_me_up_info_text_top".localized
-    private static let bumpUpMessageBottom = "screen_waiting_list_rank_bump_me_up_info_text_bottom".localized
-
+    private static let bumpUpMessageBottom = String(format: "screen_waiting_list_rank_bump_me_up_info_text_bottom".localized, "0")
     // MARK: Inputs
 
     var firstVideoEnded: AnyObserver<Void> { firstVideoEndedSubject.asObserver() }

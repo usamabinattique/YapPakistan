@@ -24,6 +24,10 @@ public class NotificationManager {
         UserDefaults.standard.set(isPrompt, forKey: "USER_DEFAULTS_KEY_NOTIFICATION_PERMISSION_PROMPT")
     }
 
+    public func deleteNotificationPermission() {
+        UserDefaults.standard.removeObject(forKey: "USER_DEFAULTS_KEY_NOTIFICATION_PERMISSION_PROMPT")
+    }
+
     public func turnNotificationsOn(){
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             if settings.authorizationStatus == .authorized {

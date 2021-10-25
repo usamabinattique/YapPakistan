@@ -134,11 +134,10 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .bind(to: eidValidationSubject)
             .disposed(by: disposeBag)
 
-        nextSubject.withUnretained(self)
-            .do(onNext: {_ in YAPProgressHud.showProgressHud() })
-            .flatMap({ $0.0.accountProvider.currentAccount })
-            .do(onNext: {_ in YAPProgressHud.hideProgressHud() })
-            .unwrap().map({ $0.accountStatus })
+        nextSubject.withLatestFrom(self.accountProvider.currentAccount)
+            .unwrap().map({
+                $0.accountStatus
+            })
             .bind(to: nextCheckPointSubject).disposed(by: disposeBag)
 
         let ocrRequest = detectOCRSubject

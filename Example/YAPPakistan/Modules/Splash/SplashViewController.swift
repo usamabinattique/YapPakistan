@@ -70,13 +70,13 @@ extension SplashViewController {
     fileprivate func setupConstraints() {
         logo
             .centerVerticallyInSuperview()
-            .horizontallyCenterWith(view, assignTo:&logoCenterHorizonConstraint)
+            .centerHorizontallyWith(view, assignTo:&logoCenterHorizonConstraint)
             .width(constant: 110, assignTo:&logoWidthConstraint)
             .height(constant: 103,         assignTo:&logoHeightConstraint)
         
         dot
             .centerHorizontallyInSuperview()
-            .verticallyCenterWith(view, constant: 8)
+            .centerVerticallyWith(view, constant: 8)
             .width(constant: 13,         assignTo:&dotWidthConstraint)
             .height(constant: 13,         assignTo:&dotHeightConstraint)
     }

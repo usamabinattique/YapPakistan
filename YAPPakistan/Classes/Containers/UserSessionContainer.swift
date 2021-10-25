@@ -99,8 +99,10 @@ public final class UserSessionContainer {
     }
 
     func makeLiteDashboardViewController() -> LiteDashboardViewController {
+        let notificationManager = parent.makeNotificationManager()
         let viewModel = LiteDashboardViewModel(accountProvider: accountProvider,
                                                biometricsManager: biometricsManager,
+                                               notificationManager: notificationManager,
                                                credentialStore: parent.credentialsStore,
                                                repository: makeLoginRepository())
         let viewController = LiteDashboardViewController(themeService: parent.themeService,

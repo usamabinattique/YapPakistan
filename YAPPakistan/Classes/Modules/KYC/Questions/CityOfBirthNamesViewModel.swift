@@ -28,10 +28,27 @@ class CityOfBirthNamesViewModel:KYCQuestionViewModel {
 
         super.init(accountProvider: accountProvider, cellViewModel: cellViewModel, strings: strings)
 
-        nextSubject
+        let verifyResult = nextSubject
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .flatMap { self.kycRepository.verifySecretQuestions(motherMaidenName: "Rida", cityOfBirth: "Karachi") }
-            .map({ _ in () })
+            .share()
+            // .map({ _ in () })
+            // .bind(to: successSubject)
+            // .disposed(by: disposeBag)
+
+        let refreshAccountRequest = verifyResult.elements()
+            .flatMap { [unowned self] _ in self.accountProvider.refreshAccount() }
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+            .share()
+
+        refreshAccountRequest
             .bind(to: successSubject)
+            .disposed(by: disposeBag)
+
+        verifyResult.errors()
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+            .map { $0.localizedDescription }
+            .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
 
     }

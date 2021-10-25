@@ -38,7 +38,8 @@ public class AppCoordinator: Coordinator<ResultType<Void>> {
 
                 if AppSettings.isAppRunFirstTime {
                     prepareFirstTimeLaunch(xsrfToken: xsrfToken)
-                } else if container.credentialsStore.credentialsAvailable() {
+                } else if container.credentialsStore.remembersId == true &&
+                            container.credentialsStore.credentialsAvailable() {
                     verifyPasscode(xsrfToken: xsrfToken)
                 } else {
                     loginScreen(xsrfToken: xsrfToken)

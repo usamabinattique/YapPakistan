@@ -148,7 +148,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
 
         verifyUserRequest()
 
-        rememberUsername(credentialsManager)
+        // rememberUsername(credentialsManager)
 
         guard credentialsManager.isCredentialsAvailable else {
             _ = credentialsManager.clearUsername()
@@ -166,6 +166,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
 
 private extension LoginViewModel {
     func verifyUserRequest() {
+
         let verifyUserRequest = signInSubject.withLatestFrom(mobileNumberSubject.asObservable())
             .map({ $0?.toSimplePhoneNumber ?? "" })
             .do(onNext: { [unowned self] _ in self.progressSubject.onNext(true) })
@@ -182,13 +183,17 @@ private extension LoginViewModel {
             .bind(to: validationSubject)
             .disposed(by: disposeBag)
 
-        verifyUserRequest.elements().filter { $0 == true }.withLatestFrom(mobileNumberSubject)
+        let successResult = verifyUserRequest.elements().filter { $0 == true }
+        successResult.withLatestFrom(mobileNumberSubject)
             .do(onNext: { [unowned self] userName in
                 let user = userName?.toSimplePhoneNumber ?? ""
                 self.credentialsManager.secureCredentials(username: user, passcode: "")
             })
             .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: false)) }
             .bind(to: resultSubject)
+            .disposed(by: disposeBag)
+        successResult.withLatestFrom(rememberMeSubject).withUnretained(self)
+            .subscribe(onNext: { `self`, remember in self.credentialsManager.setRemembersId(remember) })
             .disposed(by: disposeBag)
 
         let apiError = verifyUserRequest.errors()
@@ -209,11 +214,11 @@ private extension LoginViewModel {
             .disposed(by: disposeBag)
     }
 
-    func rememberUsername(_ credentialsManager: CredentialsStoreType) {
-        rememberMeSubject.onNext(credentialsManager.remembersId ?? true)
-        rememberMeSubject
-            .do(onNext: { if !$0 { _ = credentialsManager.clearUsername() } })
-            .subscribe(onNext: { credentialsManager.setRemembersId($0) })
-            .disposed(by: disposeBag)
-    }
+//    func rememberUsername(_ credentialsManager: CredentialsStoreType) {
+//        rememberMeSubject.onNext(credentialsManager.remembersId ?? true)
+//        rememberMeSubject
+//            .do(onNext: { if !$0 { _ = credentialsManager.clearUsername() } })
+//            .subscribe(onNext: { credentialsManager.setRemembersId($0) })
+//            .disposed(by: disposeBag)
+//    }
 }

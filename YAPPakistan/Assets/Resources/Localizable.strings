@@ -235,3 +235,22 @@
 "screen_kyc_review_selfie_subtitle" = "Make sure your face is clear and the photo is not blurry";
 "screen_kyc_review_selfie_yesitsme" = "Yes, that's me!";
 "screen_kyc_review_selfie_retake" = "Retake selfie";
+
+// MARK: KYC CARD NAME
+
+"screen_kyc_card_title" = "What name would you like on your card?";
+"screen_kyc_card_subtitle" = "Please keep this as close to your real name.";
+"screen_kyc_card_is_it" = "Is it?";
+"screen_kyc_card_tip" = "We can only print 26 characters on the card, so if you have a long name, we suggest you use initials where possible.";
+"screen_kyc_card_thisisfine" = "This is fine!";
+"screen_kyc_card_editname" = "I'd like to edit my name";
+"screen_kyc_card_typeyourname" = "Type your full name";
+
+// MARK: KYC Address
+
+"screen_kyc_address_title" = "Your card is ready to be delivered!";
+"screen_kyc_address_subtitle" = "Confirm this is your address, you can change it anytime";
+"screen_kyc_address_taplocation" = "Tap map to confirm location";
+"screen_kyc_address_address" = "Address";
+"screen_kyc_address_flatbuilding" = "Flat number/ Building name";
+"screen_kyc_address_city" = "City";

@@ -217,7 +217,7 @@ class KYCInitialReviewViewController: UIViewController {
         tickImageView
             .toRightOf(issueDateField)
             .alignEdgeWithSuperview(.right, constant: 20)
-            .verticallyCenterWith(issueDateField)
+            .centerVerticallyWith(issueDateField)
             .width(constant: 32)
             .height(constant: 32)
 

@@ -31,23 +31,28 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
         root.navigationBar.isHidden = false
         root.pushViewController(loginViewController, animated: true)
 
-        viewModel.outputs.signUp.subscribe(onNext: { [unowned self] in
+        viewModel.outputs.signUp.withUnretained(self).subscribe(onNext: { `self`, _ in
             if self.root.viewControllers.count > 1,
                self.root.viewControllers[self.root.viewControllers.count - 2] is WelcomeViewController {
                 self.root.popViewController(animated: true)
                 self.root.navigationBar.isHidden = true
-                self.result.onNext(.cancel)
-                self.result.onCompleted()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.result.onNext(.cancel)
+                    self.result.onCompleted()
+                }
             }
         }).disposed(by: rx.disposeBag)
 
         let logInResult = viewModel.outputs.result.share()
 
-        logInResult.filter({ $0.isCancel }).subscribe(onNext: { [weak self] _ in
-            self?.root.popViewController(animated: true)
-            self?.result.onNext(.cancel)
-            self?.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        logInResult.filter({ $0.isCancel }).withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.popViewController(animated: true)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.result.onNext(.cancel)
+                    self.result.onCompleted()
+                }
+            }).disposed(by: rx.disposeBag)
 
         logInResult.filter({ $0.isSuccess != nil })
             .map({ $0.isSuccess })
@@ -61,9 +66,10 @@ class LoginCoordinatorPushable: Coordinator<LoginResult>, LoginCoordinatorType {
     }
 
     func navigateToPasscode(username: String, isUserBlocked: Bool) {
-        coordinate(to: container.makePasscodeCoordinator(root: root, isUserBlocked: isUserBlocked)).subscribe( onNext: { result in
-            self.result.onNext(.cancel)
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        coordinate(to: container.makePasscodeCoordinator(root: root, isUserBlocked: isUserBlocked))
+            .subscribe( onNext: { result in
+                self.result.onNext(.cancel)
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
     }
 }

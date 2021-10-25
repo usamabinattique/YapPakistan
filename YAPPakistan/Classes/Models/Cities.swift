@@ -7,28 +7,28 @@
 
 import Foundation
 
-public struct Cities : Codable {
-    let creationDate : String?
-    let createdBy : String?
-    let updatedDate : String?
-    let updatedBy : String?
-    let name : String?
-    let cityCode : String?
-    let active : Bool?
-    let iata3Code : String?
-    let updatedOn : String?
+public struct Cities: Codable {
+    let creationDate: String?
+    let createdBy: String?
+    let updatedDate: String?
+    let updatedBy: String?
+    let name: String?
+    let cityCode: String?
+    let active: Bool?
+    let iata3Code: String?
+    let updatedOn: String?
 
     enum CodingKeys: String, CodingKey {
 
-        case creationDate = "creationDate"
-        case createdBy = "createdBy"
-        case updatedDate = "updatedDate"
-        case updatedBy = "updatedBy"
-        case name = "name"
-        case cityCode = "cityCode"
-        case active = "active"
-        case iata3Code = "iata3Code"
-        case updatedOn = "updatedOn"
+        case creationDate
+        case createdBy
+        case updatedDate
+        case updatedBy
+        case name
+        case cityCode
+        case active
+        case iata3Code
+        case updatedOn
     }
 
     public init(from decoder: Decoder) throws {

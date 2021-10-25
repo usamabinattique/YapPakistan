@@ -241,6 +241,8 @@ public enum AccountStatus: String, Codable {
     case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
     case selfiePending = "SELFIE_PENDING"
     case secretQuestionPending = "SECRET_QUESTION_PENDING"
+    case cardNamePending = "CARD_NAME_PENDING"
+    case addressPending = "ADDRESS_PENDING"
 }
 
 public enum EmiratesIdStatus: String, Codable {

@@ -33,6 +33,10 @@ public final class YAPPakistanMainContainer {
         self.referralManager = AppReferralManager(environment: configuration.environment)
     }
 
+    public func makeNotificationManager() -> NotificationManager {
+        return NotificationManager()
+    }
+
     public func rootCoordinator(window: UIWindow) -> AppCoordinator {
         AppCoordinator(window: window, shortcutItem: nil, container: self)
     }

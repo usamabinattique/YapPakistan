@@ -13,8 +13,7 @@ class TakeSelfieViewController: UIViewController {
 
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
-    private let selfieContainer = UIFactory.makeCircularView()
-    private let selfieImage = UIFactory.makeImageView().shaddow(offset: CGSize(width: 5, height: 5))
+    private let selfieImage = UIFactory.makeImageView()
     private let tipsContainer = UIFactory.makeView() // .setBackgroundColor(.blue)
     private let tipsIconContainer = UIFactory.makeView(cornerRadious: 15)
     private let tipsIcon = UIFactory.makeImageView()
@@ -47,20 +46,18 @@ class TakeSelfieViewController: UIViewController {
         view
             .addSub(view: titleLabel)
             .addSub(view: subTitleLabel)
-            .addSub(view: selfieContainer)
+            .addSub(view: selfieImage)
             .addSub(view: tipsContainer)
             .addSub(view: takeSelfieButton)
             .addSub(view: spacers[0])
             .addSub(view: spacers[1])
             .addSub(view: spacers[2])
-        selfieContainer
-            .addSub(view: selfieImage)
         tipsContainer
             .addSub(view: tipsIconContainer)
             .addSub(view: tipsLabel)
         tipsIconContainer
             .addSub(view: tipsIcon)
-        backButton = addBackButton(of: .backCircled)
+        backButton = addBackButton(of: .backEmpty)
     }
 
     func setupTheme() {
@@ -70,14 +67,13 @@ class TakeSelfieViewController: UIViewController {
             .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
             .bind({ UIColor($0.greyDark) }, to: tipsLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: takeSelfieButton.rx.enabledBackgroundColor)
-            .bind({ UIColor($0.primaryExtraLight) }, to: selfieContainer.rx.backgroundColor)
             .bind({ UIColor($0.primaryExtraLight) }, to: tipsIconContainer.rx.backgroundColor)
-            .bind({ UIColor($0.primary) }, to: backButton.rx.backgroundColor)
+            .bind({ UIColor($0.primary) }, to: backButton.rx.tintColor)
             .disposed(by: rx.disposeBag)
     }
 
     func setupResources() {
-        selfieImage.image = UIImage(named: "selfie", in: .yapPakistan)
+        selfieImage.image = UIImage(named: "selfie_guide_image", in: .yapPakistan)
         tipsIcon.image = UIImage(named: "tips", in: .yapPakistan)
     }
 
@@ -99,7 +95,7 @@ class TakeSelfieViewController: UIViewController {
 
     func setupConstraints() {
         titleLabel
-            .alignEdgesWithSuperview([.left, .right, .safeAreaTop], constant: 25)
+            .alignEdgesWithSuperview([.left, .right, .safeAreaTop], constants: [25, 25, 10])
 
         subTitleLabel
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
@@ -109,18 +105,14 @@ class TakeSelfieViewController: UIViewController {
             .toBottomOf(subTitleLabel)
             .alignEdgesWithSuperview([.left, .right])
 
-        selfieContainer
+        selfieImage
             .toBottomOf(spacers[0])
             .widthEqualToSuperView(multiplier: 280 / 375)
             .aspectRatio(1)
             .centerHorizontallyInSuperview()
-        selfieImage
-            .centerHorizontallyInSuperview()
-            .centerVerticallyInSuperview(constant: -2.5)
-            .heightEqualToSuperView(multiplier: 194 / 291)
 
         spacers[1]
-            .toBottomOf(selfieContainer)
+            .toBottomOf(selfieImage)
             .alignEdgesWithSuperview([.left, .right])
 
         tipsContainer

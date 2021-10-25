@@ -19,12 +19,14 @@ struct VerifyPasscodeModuleBuilder {
         let username = container.credentialsStore.getUsername() ?? ""
         let loginRepository = container.makeLoginRepository()
         let sessionProvider = SessionProvider(xsrfToken: container.xsrfToken)
+        let notificationManager = container.makeNotificationManager()
 
         let viewModel = VerifyPasscodeViewModel(username:  username,
                                                 isUserBlocked: isUserBlocked,
                                                 repository: loginRepository,
                                                 biometricsManager: biometricsManager,
                                                 credentialsManager: credentialsStore,
+                                                notificationManager: notificationManager,
                                                 sessionCreator: sessionProvider,
                                                 onLogin: onLogin)
 

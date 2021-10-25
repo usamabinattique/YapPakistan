@@ -93,9 +93,10 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>>, Welco
     
     public func login() {
         coordinate(to: LoginCoordinatorPushable(root: self.root, container: self.container) )
-            .subscribe(onNext: { [weak self] _ in
-                self?.result.onNext(.success(()))
-                self?.result.onCompleted()
+            .subscribe(onNext: { _ in
+//                [weak self] _ in
+//                self?.result.onNext(.success(()))
+//                self?.result.onCompleted()
             })
             .disposed(by: rx.disposeBag)
     }

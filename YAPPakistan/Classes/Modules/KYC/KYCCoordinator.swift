@@ -65,6 +65,16 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { $0.0.selfiePending() })
             .disposed(by: rx.disposeBag)
 
+        homeViewController.viewModel.outputs.next.filter({ $0 == .cardNamePending })
+            .withUnretained(self)
+            .subscribe(onNext: { $0.0.cardName() })
+            .disposed(by: rx.disposeBag)
+
+        homeViewController.viewModel.outputs.next.filter({ $0 == .addressPending })
+            .withUnretained(self)
+            .subscribe(onNext: { $0.0.address() })
+            .disposed(by: rx.disposeBag)
+
         addChildVC(homeViewController)
     }
 
@@ -100,7 +110,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                 if let index = viewControllers.lastIndex(of: kycMainController) {
                     viewControllers.removeSubrange(index + 1 ..< viewControllers.count)
                 }
-
+                self.setProgressViewHidden(true)
                 self.root.setViewControllers(viewControllers, animated: true)
 
                 // FIXME: Initiate questions flow.
@@ -133,13 +143,14 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                                  subHeading: "screen_kyc_questions_reason".localized,
                                  next: "common_button_next".localized )
         let viewModel = CityOfBirthNamesViewModel(accountProvider: container.accountProvider,
-                                             kycRepository: container.makeKYCRepository(),
-                                             strings: strings)
+                                                  kycRepository: container.makeKYCRepository(),
+                                                  strings: strings)
         viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { [unowned self] _ in
+                self.setProgressViewHidden(true)
                 let viewControllers = self.kycProgressViewController.childNavigation.viewControllers
                 self.kycProgressViewController.childNavigation.setViewControllers([viewControllers.first!], animated: true)
-                self.selfiePending()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.selfiePending() }
             })
             .disposed(by: rx.disposeBag)
 
@@ -154,25 +165,147 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                                                       viewModel: TakeSelfieViewModel())
 
         viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.popViewController(animated: true)
+            })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.reviewSelfie() })
+            .subscribe(onNext: { `self`, _ in self.captureSelfie() })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(false, animated: true)
+    }
+
+    func captureSelfie() {
+        let viewController = CaptureViewController(themeService: container.themeService, viewModel: CaptureViewModel())
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.unwrap().withUnretained(self)
+            .subscribe(onNext: { `self`, image in self.reviewSelfie(image) })
             .disposed(by: rx.disposeBag)
 
         root.pushViewController(viewController, animated: true)
     }
 
-    func reviewSelfie() {
-        let viewController = ReviewSelfieViewController(themeService: container.themeService,
-                                                        viewModel: ReviewSelfieViewModel())
+    func reviewSelfie(_ image: UIImage) {
+
+        let viewModel = ReviewSelfieViewModel(image: image, kycRepository: container.makeKYCRepository(), accountProvider: container.accountProvider)
+        let viewController = ReviewSelfieViewController(themeService: container.themeService, viewModel: viewModel)
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                var vcs = self.root.viewControllers
+                vcs.removeLast()
+                vcs.removeLast()
+                vcs.removeLast()
+                self.setProgressViewHidden(true)
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.setViewControllers(vcs, animated: true)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.cardName() }
+            })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+    }
+
+    func cardName() {
+        let viewModel = CardNameViewModel(kycRepository: container.makeKYCRepository(),
+                                          accountProvider: container.accountProvider)
+        let viewController = CardNameViewController(themeService: container.themeService,
+                                                    viewModel: viewModel)
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                var vcs = self.root.viewControllers
+                vcs.removeLast()
+                self.setProgressViewHidden(true)
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.setViewControllers(vcs, animated: true)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.address() }
+            })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.edit.withUnretained(self)
+            .flatMap({ `self`, _ in self.editName() })
+            .bind(to: viewModel.inputs.nameObserver)
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(false, animated: true)
+    }
+
+    func editName() -> Observable<String> {
+        let viewController = EditNameViewController(themeService: container.themeService,
+                                                    viewModel: EditNameViewModel())
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
             .disposed(by: rx.disposeBag)
 
         root.pushViewController(viewController, animated: true)
+
+        let next = viewController.viewModel.outputs.next
+            .do(onNext: { [weak self] _ in self?.root.popViewController(animated: true) })
+
+        return next
     }
+
+    func address() {
+        let viewController = AddressViewController(themeService: container.themeService,
+                                                   viewModel: AddressViewModel())
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        let citySelected = viewController.viewModel.outputs.city.withUnretained(self)
+            .flatMap{ `self`, _ in self.selectCityName() }
+            .share()
+        citySelected.bind(to: viewController.viewModel.inputs.citySelectObserver)
+            .disposed(by: rx.disposeBag)
+        citySelected.subscribe(onNext: { [unowned self] _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(false, animated: true)
+    }
+
+    func selectCityName() -> Observable<String>  {
+
+        let viewModel = CountryViewModel(kycRepository: container.makeKYCRepository())
+        let viewController = CountrysViewController(themeService: container.themeService,
+                                                    viewModel: viewModel)
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(false, animated: true)
+
+        return viewController.viewModel.outputs.next
+    }
+
 }
 
 // MARK: Helpers
@@ -189,7 +322,7 @@ fileprivate extension KYCCoordinator {
         }
     }
 
-    private func setupPogressViewController() {
+    func setupPogressViewController() {
         self.root.pushViewController(self.kycProgressViewController, animated: true)
         kycProgressViewController.viewModel.outputs.backTap.withUnretained(self)
             .subscribe(onNext: {
@@ -201,6 +334,10 @@ fileprivate extension KYCCoordinator {
                 }
             })
             .disposed(by: rx.disposeBag)
+    }
+
+    func setProgressViewHidden(_ isHidden: Bool) {
+        self.kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(isHidden)
     }
 
     func makeKYCProgressViewController() -> KYCProgressViewController {

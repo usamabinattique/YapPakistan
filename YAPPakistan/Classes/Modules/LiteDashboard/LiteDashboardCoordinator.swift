@@ -105,7 +105,10 @@ extension LiteDashboardCoodinator {
         root = UINavigationController()
         root.interactivePopGestureRecognizer?.isEnabled = false
         root.navigationBar.isTranslucent = true
-        root.navigationBar.isHidden = true
+        root.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        root.navigationBar.shadowImage = UIImage()
+        // root.navigationBar.isHidden = true
+        root.setNavigationBarHidden(true, animated: true)
 
         window.rootViewController = root
         window.makeKeyAndVisible()
