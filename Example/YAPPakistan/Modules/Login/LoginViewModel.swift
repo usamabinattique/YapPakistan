@@ -1,8 +1,9 @@
 //
-// LoginViewModel.swift
-// App
+//  LoginViewModel.swift
+//  YAPPakistan_Example
 //
-// Created by Uzair on 18/06/2021.
+//  Created by Umer on 13/10/2021.
+//  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
 import Foundation
@@ -93,18 +94,21 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     private let isFirstResponderSubject: BehaviorSubject<Bool> = BehaviorSubject(value: false)
 
     // properties
-    private var countryList = [(name: String, code: String, callingCode: String, flag: String)]()
+    private var countryList = [Country]()
     private var currentItem = 0
 
     private let disposeBag: DisposeBag = DisposeBag()
     private let credentialsManager: CredentialsStoreType
-    private let repository: LoginRepositoryType
+    private let repositoryProvider: (_ countryCode: String) -> LoginRepositoryType
+    private var repository: LoginRepositoryType!
 
-    init( repository: LoginRepositoryType,
-          credentialsManager: CredentialsStoreType) {
+    init(repositoryProvider: @escaping (_ countryCode: String) -> LoginRepositoryType,
+         credentialsManager: CredentialsStoreType,
+         countryListProvider: CountryListProviderType) {
 
-        self.repository = repository
+        self.repositoryProvider = repositoryProvider
         self.credentialsManager = credentialsManager
+        self.countryList = countryListProvider.list()
 
         self.localizedTextSubject = BehaviorSubject(value: (
             heading: "screen_sign_in_display_text_heading_text".localized,
@@ -114,9 +118,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
             signUp: "screen_sign_in_button_sign_up".localized
         ))
 
-        countryList.append(("Pakistan", "PK", "+92 ", "PK"))
-
-        flagSubject.onNext(countryList.first?.flag ?? "")
+        flagSubject.onNext(countryList.first?.flagIconImageName ?? "")
         // mobileNumberSubject.onNext(countryList.first?.callingCode ?? "+92 ")
 
         let selectNumber = mobileNumberSubject
@@ -146,6 +148,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
                 self.shouldChangeSub = res1 && res2 && res3
             }).subscribe().disposed(by: disposeBag)
 
+        self.repository = repositoryProvider("PK")
         verifyUserRequest()
 
         // rememberUsername(credentialsManager)
@@ -157,7 +160,7 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
     }
 
     func isErrorUserBlocked(_ error: Error) -> Bool {
-        if case let NetworkErrors.internalServerError(internalError) = error {
+        if case let NetworkError.internalServerError(internalError) = error {
             return internalError?.errors.first?.code == "AD-10018"
         }
         return false
@@ -205,10 +208,6 @@ private extension LoginViewModel {
 
         apiError.filter { [unowned self] error in self.isErrorUserBlocked(error) }
             .withLatestFrom(mobileNumberSubject)
-            .do(onNext: { [unowned self] userName in
-                let user = userName?.toSimplePhoneNumber ?? ""
-                self.credentialsManager.secureCredentials(username: user, passcode: "")
-            })
             .map { ResultType.success(RequestResponse(userName: $0 ?? "", isBlocked: true)) }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)

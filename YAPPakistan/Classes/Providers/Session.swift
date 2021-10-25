@@ -9,22 +9,17 @@
 import Foundation
 import RxSwift
 
-public class Session {
-
+class Session {
     // MARK: Properties
 
-    private let guestToken: String
     private var sessionToken: String
 
     private let disposeBag = DisposeBag()
     private var tokenSubject: BehaviorSubject<String>
 
-    public var tokenObserver: AnyObserver<String> { tokenSubject.asObserver() }
-
     // MARK: Initializer
 
-    public init(guestToken xsrf: String, sessionToken jwt: String) {
-        self.guestToken = xsrf
+    public init(sessionToken jwt: String) {
         self.sessionToken = jwt
 
         tokenSubject = BehaviorSubject(value: jwt)
@@ -35,10 +30,10 @@ public class Session {
 }
 
 extension Session: ServiceAuthorizationProviderType {
-    public var authorizationHeaders: [String: String] {
+    var tokenObserver: AnyObserver<String> { tokenSubject.asObserver() }
+
+    var authorizationHeaders: [String: String] {
         var headers: [String: String] = [:]
-        headers["X-XSRF-TOKEN"] = guestToken
-        headers["Cookie"] = "XSRF-TOKEN=\(guestToken)"
         headers["Authorization"] = "Bearer \(sessionToken)"
 
         return headers

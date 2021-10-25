@@ -1,9 +1,9 @@
 //
-//  AccountSelectionViewModel.swift
-//  App
+//  WelcomeViewModel.swift
+//  YAPPakistan_Example
 //
-//  Created by Zain on 18/06/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Umer on 13/10/2021.
+//  Copyright © 2021 CocoaPods. All rights reserved.
 //
 
 import RxSwift
@@ -20,12 +20,12 @@ protocol WelcomeViewModelOutput {
     var signIn: Observable<Void> { get }
 }
 
-protocol AccountSelectionViewModelType {
+protocol WelcomeViewModelType {
     var inputs: WelcomeViewModelInput { get }
     var outputs: WelcomeViewModelOutput { get }
 }
 
-class WelcomeViewModel: WelcomeViewModelInput, WelcomeViewModelOutput, AccountSelectionViewModelType {
+class WelcomeViewModel: WelcomeViewModelInput, WelcomeViewModelOutput, WelcomeViewModelType {
 
     var inputs: WelcomeViewModelInput { return self }
     var outputs: WelcomeViewModelOutput { return self }
