@@ -11,9 +11,9 @@ import RxSwift
 import RxSwiftExt
 import YAPComponents
 
-public typealias OTPVerificationResultType = (token: String?, phoneNumber: String?, session: Session?)
+typealias OTPVerificationResultType = (token: String?, phoneNumber: String?, session: Session?)
 
-public enum OTPAction: String, Codable {
+enum OTPAction: String, Codable {
     case topupSubCard = "TOP_UP_SUPPLEMENTARY"
     case withdrawFromSubCard = "WITHDRAWAL_SUPPLEMENTARY"
     case forgotPassword = "FORGOT_PASSWORD"
@@ -36,7 +36,7 @@ public enum OTPAction: String, Codable {
 
 }
 
-public protocol VerifyMobileOTPViewModelInput {
+protocol VerifyMobileOTPViewModelInput {
     var backObserver: AnyObserver<Void> { get }
     var textObserver: AnyObserver<String?> { get }
     var viewAppearedObserver: AnyObserver<Bool> { get }
@@ -45,7 +45,7 @@ public protocol VerifyMobileOTPViewModelInput {
     var generateOTPObserver: AnyObserver<Void> { get }
 }
 
-public protocol VerifyMobileOTPViewModelOutput {
+protocol VerifyMobileOTPViewModelOutput {
     var back: Observable<Void> { get }
     var valid: Observable<Bool> { get }
     var heading: Observable<String?> { get }
@@ -68,7 +68,7 @@ public protocol VerifyMobileOTPViewModelOutput {
     var backImage: Observable<BackButtonType> { get }
 }
 
-public protocol VerifyMobileOTPViewModelType {
+protocol VerifyMobileOTPViewModelType {
     typealias OnLoginClosure = (Session,
                                 inout AccountProvider?,
                                 inout DemographicsRepositoryType?) -> Void
@@ -80,16 +80,24 @@ public protocol VerifyMobileOTPViewModelType {
 open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
                                      VerifyMobileOTPViewModelOutput,
                                      VerifyMobileOTPViewModelType {
-    public var inputs: VerifyMobileOTPViewModelInput { return self }
-    public var outputs: VerifyMobileOTPViewModelOutput { return self }
+    var inputs: VerifyMobileOTPViewModelInput { return self }
+    var outputs: VerifyMobileOTPViewModelOutput { return self }
 
+    let textSubject = BehaviorSubject<String?>(value: nil)
+    let viewAppearedSubject = PublishSubject<Bool>()
+    let loginResultSubject = PublishSubject<LoginOTPVerificationResult>()
+    let sendSubject = PublishSubject<Void>()
+    let generateOTPSubject = PublishSubject<Void>()
+    let otpActionSubject: BehaviorSubject<OTPAction?>
+    let generateOTPErrorSubject = PublishSubject<String>()
+    let errorSuject = PublishSubject<String>()
+    let editingSubject = PublishSubject<Bool>()
+    let OTPResultSubject = PublishSubject<String>()
+    let showAlertSubject = PublishSubject<String>()
+
+    private let resultSubject = PublishSubject<OTPVerificationResultType>()
     private let backSubject = PublishSubject<Void>()
-    public let textSubject = BehaviorSubject<String?>(value: nil)
-    public let viewAppearedSubject = PublishSubject<Bool>()
     private let validSubject = BehaviorSubject<Bool>(value: false)
-    public let resultSubject = PublishSubject<OTPVerificationResultType>()
-    public let loginResultSubject = PublishSubject<LoginOTPVerificationResult>()
-    public let sendSubject = PublishSubject<Void>()
     private let timerTextSubject = BehaviorSubject<String>(value: "00: 10")
     private let timerSubject: BehaviorSubject<TimeInterval>
     private let resendTimeSubject: BehaviorSubject<TimeInterval>
@@ -102,67 +110,57 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
     private let otpSubject: BehaviorSubject<String?>
     private let otpLengthSubject: BehaviorSubject<Int>
     private let resendOTPSubject = PublishSubject<Void>()
-    public let generateOTPSubject = PublishSubject<Void>()
-    public let otpActionSubject: BehaviorSubject<OTPAction?>
-    public let generateOTPErrorSubject = PublishSubject<String>()
-    public let errorSuject = PublishSubject<String>()
-    public let editingSubject = PublishSubject<Bool>()
     private let imageFlagSubject: BehaviorSubject<Bool>
-
-    let OTPResultSubject = PublishSubject<String>()
-
     private let mobileNoSubject = BehaviorSubject<String?>(value: nil)
-    public let showAlertSubject = PublishSubject<String>()
     private let backImageSubject = BehaviorSubject<BackButtonType>(value: .backEmpty)
 
     // inputs
-    public var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
-    public var textObserver: AnyObserver<String?> { return textSubject.asObserver() }
-    public var viewAppearedObserver: AnyObserver<Bool> { return viewAppearedSubject.asObserver() }
-    public var sendObserver: AnyObserver<Void> { return sendSubject.asObserver() }
-    public var resendOTPObserver: AnyObserver<Void> { return resendOTPSubject.asObserver() }
-    public var generateOTPObserver: AnyObserver<Void> { return generateOTPSubject.asObserver() }
+    var backObserver: AnyObserver<Void> { backSubject.asObserver() }
+    var textObserver: AnyObserver<String?> { textSubject.asObserver() }
+    var viewAppearedObserver: AnyObserver<Bool> { viewAppearedSubject.asObserver() }
+    var sendObserver: AnyObserver<Void> { sendSubject.asObserver() }
+    var resendOTPObserver: AnyObserver<Void> { resendOTPSubject.asObserver() }
+    var generateOTPObserver: AnyObserver<Void> { generateOTPSubject.asObserver() }
 
     // outputs
-    public var back: Observable<Void> { return backSubject.asObservable() }
-    public var valid: Observable<Bool> { return validSubject.asObservable() }
-    public var heading: Observable<String?> { return headingSubject.asObservable() }
-    public var subheading: Observable<String?> { return subheadingSubject.asObservable() }
-    public var badge: Observable<UIImage?> { return badgeSubject.asObservable() }
-    public var image: Observable<UIImage?> { return imageSubject.asObservable() }
-    public var generateOTP: Observable<Void> { return generateOTPSubject.asObservable() }
-    public var otp: Observable<String?> { return otpSubject.asObservable() }
-    public var result: Observable<OTPVerificationResultType> { return resultSubject.asObservable() }
-    public var loginResult: Observable<LoginOTPVerificationResult> { return loginResultSubject.asObservable() }
-    public var timerText: Observable<String> { return timerTextSubject.asObservable() }
-    public var resendActive: Observable<Bool> { return resendActiveSubject.asObservable() }
-    public var generateOTPError: Observable<String> { return generateOTPErrorSubject.asObservable() }
-    public var error: Observable<String> { return errorSuject.asObservable() }
-    public var editing: Observable<Bool> { return editingSubject.asObservable() }
-    public var imageFlag: Observable<Bool> { return imageFlagSubject.asObservable() }
-    public var OTPResult: Observable<String> { return OTPResultSubject.asObservable() }
-    public var mobileNo: Observable<String?> { return mobileNoSubject.asObservable() }
-    public var showAlert: Observable<String> { return showAlertSubject.asObservable() }
-    public var backImage: Observable<BackButtonType> { return backImageSubject.asObservable() }
+    var back: Observable<Void> { backSubject.asObservable() }
+    var valid: Observable<Bool> { validSubject.asObservable() }
+    var heading: Observable<String?> { headingSubject.asObservable() }
+    var subheading: Observable<String?> { subheadingSubject.asObservable() }
+    var badge: Observable<UIImage?> { badgeSubject.asObservable() }
+    var image: Observable<UIImage?> { imageSubject.asObservable() }
+    var generateOTP: Observable<Void> { generateOTPSubject.asObservable() }
+    var otp: Observable<String?> { otpSubject.asObservable() }
+    var result: Observable<OTPVerificationResultType> { resultSubject.asObservable() }
+    var loginResult: Observable<LoginOTPVerificationResult> { loginResultSubject.asObservable() }
+    var timerText: Observable<String> { timerTextSubject.asObservable() }
+    var resendActive: Observable<Bool> { resendActiveSubject.asObservable() }
+    var generateOTPError: Observable<String> { generateOTPErrorSubject.asObservable() }
+    var error: Observable<String> { errorSuject.asObservable() }
+    var editing: Observable<Bool> { editingSubject.asObservable() }
+    var imageFlag: Observable<Bool> { imageFlagSubject.asObservable() }
+    var OTPResult: Observable<String> { OTPResultSubject.asObservable() }
+    var mobileNo: Observable<String?> { mobileNoSubject.asObservable() }
+    var showAlert: Observable<String> { showAlertSubject.asObservable() }
+    var backImage: Observable<BackButtonType> { backImageSubject.asObservable() }
 
-    public let disposeBag = DisposeBag()
-    private var viewAvailable = false
-    public let repository: OTPRepositoryType
-    public let otpBlocked = BehaviorSubject<Bool>(value: false)
-    public var otpForRequest: String?
+    let disposeBag = DisposeBag()
+    let repository: OTPRepositoryType
+    let otpBlocked = BehaviorSubject<Bool>(value: false)
+    var otpForRequest: String?
 
-    public init(action: OTPAction,
-                heading: String? = nil,
-                subheading: String,
-                image: UIImage? = nil,
-                badge: UIImage? = nil,
-                otpTime: TimeInterval = 10,
-                otpLength: Int = 6,
-                resendTries: Int = 4,
-                repository: OTPRepositoryType,
-                mobileNo: String = "",
-                passcode: String,
-                backButtonImage: BackButtonType = .backEmpty) {
+    init(action: OTPAction,
+         heading: String? = nil,
+         subheading: String,
+         image: UIImage? = nil,
+         badge: UIImage? = nil,
+         otpTime: TimeInterval = 10,
+         otpLength: Int = 6,
+         resendTries: Int = 4,
+         repository: OTPRepositoryType,
+         mobileNo: String = "",
+         passcode: String,
+         backButtonImage: BackButtonType = .backEmpty) {
         self.headingSubject = BehaviorSubject(value: heading)
         self.subheadingSubject = BehaviorSubject(value: subheading)
         self.badgeSubject = BehaviorSubject(value: badge)
@@ -182,7 +180,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .disposed(by: disposeBag)
 
         generateOneTimePasscode(mobileNo: mobileNo)
-        verifyOneTimePasscode(mobileNo: mobileNo, passcode:passcode)
+        verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
 
         Observable.combineLatest(otpBlocked, timerSubject.map{ $0 <= 0 })
             .map{ !$0.0 && $0.1 }

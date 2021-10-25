@@ -11,16 +11,16 @@ import RxSwift
 import YAPCore
 
 public class DemoAppCoordinator: Coordinator<ResultType<Void>> {
-    
     private let window: UIWindow
     private var navigationController: UINavigationController?
     private var shortcutItem: UIApplicationShortcutItem?
     private let result = PublishSubject<ResultType<Void>>()
     private let container: DemoApplicationContainer = DemoApplicationContainer(store: CredentialsManager())
     
-    public init(window:UIWindow, shortcutItem:UIApplicationShortcutItem?) {
+    public init(window:UIWindow, shortcutItem: UIApplicationShortcutItem?) {
         self.window = window
         self.shortcutItem = shortcutItem
+        self.navigationController = UINavigationController()
         super.init()
     }
     
@@ -28,7 +28,6 @@ public class DemoAppCoordinator: Coordinator<ResultType<Void>> {
         self.splash(shortcutItem: nil)
         return result
     }
-    
 }
 
 extension DemoAppCoordinator {
@@ -45,24 +44,68 @@ extension DemoAppCoordinator {
         guard let result = result.isSuccess else { return }
         switch result {
             case .login:
-                startApplication()
+                login()
             case .passcode:
-                startApplication()
-            case .onboarding:
-                startApplication()
+                passcode(formattedPhoneNumber: container.store.getUsername())
+            case .welcome:
+                welcome()
         }
     }
     
-    private func startApplication() {
-        self.coordinate(to: container.makePKApplication(window: window)).subscribe(onNext: { result in
+    private func onboarding() {
+        self.coordinate(to: container.makeOnBoardingCoodinator(window: window))
+            .subscribe(onNext: { [unowned self] result in
             switch result {
             case .success:
-                self.result.onNext(.success(()))
-                self.result.onCompleted()
-            case .cancel:
                 ()
+            case .cancel:
+                welcome()
             }
         }).disposed(by: rx.disposeBag)
+    }
+
+    private func welcome() {
+        self.coordinate(to: container.makeWelcomeCoordinator(window: window))
+            .subscribe(onNext: { [unowned self] result in
+                switch result {
+                case .signin:
+                    login()
+                case .signup:
+                    onboarding()
+                }
+            })
+            .disposed(by: rx.disposeBag)
+    }
+
+    private func login() {
+        self.coordinate(to: container.makeLoginCoordinator(window: window))
+            .subscribe(onNext: { [unowned self] result in
+                switch result {
+                case .signup:
+                    welcome()
+                case .cancel:
+                    ()
+                case .passcode(let formattedPhoneNumber):
+                    passcode(formattedPhoneNumber: formattedPhoneNumber)
+                }
+            })
+            .disposed(by: rx.disposeBag)
+    }
+
+    private func passcode(formattedPhoneNumber: String?) {
+        self.coordinate(to: container.makePKAppCoordinator(window: window,
+                                                           navigationController: navigationController!,
+                                                           formattedPhoneNumber: formattedPhoneNumber,
+                                                           onboarding: false))
+            .subscribe(onNext: { [unowned self] result in
+                switch result {
+                case .cancel:
+                    login()
+                case .success:
+                    ()
+                }
+            })
+            .disposed(by: rx.disposeBag)
     }
     
 }

@@ -13,7 +13,7 @@ import YAPCore
 enum NavigationType {
     case login
     case passcode
-    case onboarding
+    case welcome
 }
 
 protocol SplashViewModelInput {
@@ -31,10 +31,6 @@ protocol SplashViewModelOutput {
 protocol SplashViewModelType {
     var inputs: SplashViewModelInput { get }
     var outputs: SplashViewModelOutput { get }
-}
-
-struct AppSettings {
-    static var isAppRunFirstTime = false
 }
 
 class SplashViewModel: SplashViewModelInput, SplashViewModelOutput, SplashViewModelType {
@@ -72,11 +68,18 @@ class SplashViewModel: SplashViewModelInput, SplashViewModelOutput, SplashViewMo
             self.showAnimationSubject.onNext(())
         }
         animationCompleteSubject.subscribe(onNext: { [weak self] in
-            self?.nextSubject.onNext(NavigationType.onboarding)
+             if AppSettings.isAppRunFirstTime {
+                self?.credentialsStore.setRemembersId(false)
+                self?.credentialsStore.clearUsername()
+                AppSettings.isAppRunFirstTime = false
+                self?.nextSubject.onNext(NavigationType.welcome)
+             } else if self?.credentialsStore.credentialsAvailable() ?? false {
+                self?.nextSubject.onNext(NavigationType.passcode)
+             } else {
+                self?.nextSubject.onNext(NavigationType.login)
+             }
             self?.nextSubject.onCompleted()
         }).disposed(by: disposeBag)
     }
-    
-    private var xsrf: String? { HTTPCookieStorage.shared.cookies?.filter { $0.name == "XSRF-TOKEN" }.first?.value   }
     
 }

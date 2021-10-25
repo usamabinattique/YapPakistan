@@ -24,6 +24,8 @@ class OnBoardingContainerViewController: KeyboardAvoidingViewController {
     private var childNavigation: UINavigationController?
     private var childView: UIView?
 
+    private let disposeBag = DisposeBag()
+
     init(themeService: ThemeService<AppTheme>, viewModel: OnBoardingContainerViewModelType, childNavigation: UINavigationController?) {
 
         super.init(nibName: nil, bundle: nil)
@@ -68,7 +70,7 @@ fileprivate extension OnBoardingContainerViewController {
             .bind({ UIColor($0.primary) }, to: [sendButton.rx.enabledBackgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [sendButton.rx.disabledBackgroundColor])
             .bind({ UIColor($0.primaryExtraLight) }, to: [sendButton.rx.titleColor(for: .normal)])
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
     }
 
     func setupCostraints() {
@@ -92,7 +94,7 @@ fileprivate extension OnBoardingContainerViewController {
         sendButton.rx.tap.withLatestFrom(viewModel.outputs.activeStage)
             .do(onNext: { value in
                 print(value)
-            }).bind(to: viewModel.inputs.sendObserver).disposed(by: rx.disposeBag)
-        viewModel.outputs.valid.bind(to: sendButton.rx.isEnabled).disposed(by: rx.disposeBag)
+            }).bind(to: viewModel.inputs.sendObserver).disposed(by: disposeBag)
+        viewModel.outputs.valid.bind(to: sendButton.rx.isEnabled).disposed(by: disposeBag)
     }
 }

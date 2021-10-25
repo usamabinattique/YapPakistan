@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct PhoneNumber {
+struct PhoneNumber {
     private(set) var number: String?
     private(set) var countryCode: String?
     private(set) var readableCountryCode: String?
@@ -30,5 +30,12 @@ public struct PhoneNumber {
 
     public init(formattedValue: String?) {
         self.formattedValue = formattedValue
+
+        var components = formattedValue?.components(separatedBy: " ")
+        readableCountryCode = components?.first
+        countryCode = components?.first?.replacingOccurrences(of: "+", with: "00")
+        components?.removeFirst()
+        number = components?.joined()
+        number = number?.replacingOccurrences(of: "-", with: "")
     }
 }

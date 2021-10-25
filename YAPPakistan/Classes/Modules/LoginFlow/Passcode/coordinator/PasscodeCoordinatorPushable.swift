@@ -11,26 +11,23 @@ import YAPCore
 import UIKit
 
 class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, PasscodeCoordinatorType {
-
-    var root: UINavigationController!
     var container: YAPPakistanMainContainer!
-    var result = PublishSubject<PasscodeVerificationResult>()
+    var root: UINavigationController!
     var isUserBlocked:Bool
+
+    var result = PublishSubject<PasscodeVerificationResult>()
 
     private var sessionContainer: UserSessionContainer!
 
-    init(root: UINavigationController,
-         xsrfToken: String,
-         container: YAPPakistanMainContainer,
-         isUserBlocked: Bool
-    ){
+    init(container: YAPPakistanMainContainer,
+         root: UINavigationController,
+         isUserBlocked: Bool) {
         self.root = root
         self.container = container
         self.isUserBlocked = isUserBlocked
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
-
         let viewController = container.makeVerifyPasscodeViewController(isUserBlocked: isUserBlocked) { session, accountProvider in
             self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
             accountProvider = self.sessionContainer.accountProvider

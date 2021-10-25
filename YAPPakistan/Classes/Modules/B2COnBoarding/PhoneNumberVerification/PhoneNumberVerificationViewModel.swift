@@ -38,7 +38,9 @@ protocol PhoneNumberVerificationViewModelType {
     var outputs: PhoneNumberVerificationViewModelOutput { get }
 }
 
-class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, PhoneNumberVerificationViewModelOutput, PhoneNumberVerificationViewModelType {
+final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput,
+                                              PhoneNumberVerificationViewModelOutput,
+                                              PhoneNumberVerificationViewModelType {
     var inputs: PhoneNumberVerificationViewModelInput { return self }
     var outputs: PhoneNumberVerificationViewModelOutput { return self }
 
@@ -90,7 +92,9 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
     private let repository: OnBoardingRepository
     private var otpForRequest: String?
 
-    init(onBoardingRepository: OnBoardingRepository, user: OnBoardingUser, otpTime: TimeInterval = 300) {
+    init(onBoardingRepository: OnBoardingRepository,
+         user: OnBoardingUser,
+         otpTime: TimeInterval = 300) {
         self.repository = onBoardingRepository
         self.user = user
         self.otpTime = otpTime
@@ -118,7 +122,9 @@ class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelInput, P
             self.endEdittingSubject.onNext(true)
             YAPProgressHud.showProgressHud()
         }).withLatestFrom(textSubject).unwrap().flatMap {[unowned self] text -> Observable<Event<OTPData>> in
-            guard let countryCode = user.mobileNo.countryCode, let number = user.mobileNo.number else { return .error(NetworkErrors.notFound) }
+            guard let countryCode = user.mobileNo.countryCode, let number = user.mobileNo.number else {
+                return .error(NetworkErrors.notFound)
+            }
             return self.repository.verifyOTP(countryCode: countryCode, mobileNo: number, otp: text)
         }.do(onNext: { _ in
             YAPProgressHud.hideProgressHud()

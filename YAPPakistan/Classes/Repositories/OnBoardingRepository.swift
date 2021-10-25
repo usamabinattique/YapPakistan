@@ -8,8 +8,10 @@
 import Foundation
 import RxSwift
 
-protocol OnBoardingRepositoryType {
+protocol SignupRespositoryType {
     func signUpOTP(countryCode: String, mobileNo: String, accountType: String) -> Observable<Event<String?>>
+}
+protocol OnBoardingRepositoryType : SignupRespositoryType {
     func resendOTP(countryCode: String, mobileNo: String, accountType: String) -> Observable<Event<String?>>
     func verifyOTP(countryCode: String, mobileNo: String, otp: String) -> Observable<Event<OTPData>>
     func signUpEmail(email: String, accountType: String, otpToken: String) -> Observable<Event<String?>>
@@ -27,11 +29,11 @@ protocol OnBoardingRepositoryType {
     func saveReferralInvitation(inviterCustomerId: String, referralDate: String) -> Observable<Event<String?>>
 }
 
-class OnBoardingRepository:OnBoardingRepositoryType {
-    private let customersService: CustomersService
-    private let messagesService: MessagesService
+public class OnBoardingRepository: OnBoardingRepositoryType {
+    public let customersService: CustomersService
+    public let messagesService: MessagesService
 
-    init(customersService: CustomersService, messagesService: MessagesService) {
+    public init(customersService: CustomersService, messagesService: MessagesService) {
         self.customersService = customersService
         self.messagesService = messagesService
     }

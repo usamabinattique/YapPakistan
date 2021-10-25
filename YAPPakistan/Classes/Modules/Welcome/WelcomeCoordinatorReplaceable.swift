@@ -6,6 +6,9 @@
 //  Copyright © 2019 YAP. All rights reserved.
 //
 
+#warning("FIXME: Moved at super app?")
+
+/*
 import UIKit
 import RxSwift
 import YAPCore
@@ -101,3 +104,4 @@ public class WelcomeCoordinatorReplaceable: Coordinator<ResultType<Void>>, Welco
             .disposed(by: rx.disposeBag)
     }
 }
+*/

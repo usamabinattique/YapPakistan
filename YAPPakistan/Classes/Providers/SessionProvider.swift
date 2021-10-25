@@ -8,18 +8,12 @@
 
 import Foundation
 
-public protocol SessionProviderType {
+protocol SessionProviderType {
     func makeUserSession(jwt: String) -> Session
 }
 
-public class SessionProvider: SessionProviderType {
-    private let xsrfToken: String
-
-    public init(xsrfToken: String) {
-        self.xsrfToken = xsrfToken
-    }
-
-    public func makeUserSession(jwt: String) -> Session {
-        return Session(guestToken: xsrfToken, sessionToken: jwt)
+class SessionProvider: SessionProviderType {
+    func makeUserSession(jwt: String) -> Session {
+        return Session(sessionToken: jwt)
     }
 }
