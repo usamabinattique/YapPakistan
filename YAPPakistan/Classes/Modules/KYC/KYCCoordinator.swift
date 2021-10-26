@@ -135,9 +135,10 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .do(onNext: { [unowned self] _ in
                 self.setProgressViewHidden(true)
                 let viewControllers = self.kycProgressViewController.childNavigation.viewControllers
-                self.kycProgressViewController.childNavigation.setViewControllers([viewControllers.first!], animated: true)
+                self.kycProgressViewController.childNavigation
+                    .setViewControllers([viewControllers.first!], animated: true)
             }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in self?.selfieGuideline() })
+            .subscribe(onNext: { `self`, _ in self.selfieGuideline() })
             .disposed(by: rx.disposeBag)
 
         addChildVC(viewController, progress: 0.75)
@@ -184,7 +185,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
+            .do(onNext: { `self`, _ in
                 var vcs = self.root.viewControllers
                 vcs.removeLast()
                 vcs.removeLast()
@@ -192,8 +193,8 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                 self.setProgressViewHidden(true)
                 self.root.setNavigationBarHidden(true, animated: true)
                 self.root.setViewControllers(vcs, animated: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.cardName() }
-            })
+            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { `self`, _ in self.cardName() })
             .disposed(by: rx.disposeBag)
 
         root.pushViewController(viewController, animated: true)
