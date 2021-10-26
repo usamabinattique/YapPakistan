@@ -148,6 +148,5 @@ class SelfieGuidelineViewController: UIViewController {
         spacers[0]
             .heightEqualTo(view: spacers[1])
             .heightEqualTo(view: spacers[2])
-            //.height(constant: 20)
     }
 }

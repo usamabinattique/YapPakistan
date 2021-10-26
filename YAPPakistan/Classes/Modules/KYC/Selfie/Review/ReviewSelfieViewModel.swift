@@ -72,11 +72,6 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
             .flatMapLatest { `self`, data in self.kycRepository.uploadSelfie(data) }
             .share()
 
-        // uploadResult.elements()
-        //   .map({ _ in () })
-        //   .bind(to: nextSuccessSubject )
-        //   .disposed(by: disposeBag)
-
         uploadResult.elements()
             .flatMap { [unowned self] _ in self.accountProvider.refreshAccount() }
             .do(onNext: { [weak self] _ in self?.loadingSubject.onNext(false) })
