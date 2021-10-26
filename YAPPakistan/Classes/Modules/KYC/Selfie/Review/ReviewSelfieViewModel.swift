@@ -104,7 +104,7 @@ fileprivate extension ReviewSelfieViewModel {
     }
 }
 
-//MARK: Helpers
+// MARK: Helpers
 fileprivate extension ReviewSelfieViewModel {
     func extracImageData(from image: UIImage) -> (data: Data, format: String)? {
         guard let imageData = image.jpegData(compressionQuality: 1.0) else { return nil }

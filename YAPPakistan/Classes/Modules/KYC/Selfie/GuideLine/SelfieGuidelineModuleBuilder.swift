@@ -11,7 +11,6 @@ struct SelfieGuidelineModuleBuilder {
 
     func viewController() -> SelfieGuidelineViewController {
         let viewModel = SelfieGuidelineViewModel()
-        return SelfieGuidelineViewController(themeService: container.themeService,
-                                                      viewModel: viewModel)
+        return SelfieGuidelineViewController(themeService: container.themeService, viewModel: viewModel)
     }
 }

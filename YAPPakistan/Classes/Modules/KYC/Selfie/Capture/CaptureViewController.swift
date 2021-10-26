@@ -19,7 +19,6 @@ class CaptureViewController: UIViewController {
     lazy var selfieView = CaptureSelfie.getScanner { image in
         self.caputredImage = image
         self.viewModel.inputs.nextObserver.onNext(image)
-        print(image?.size)
         return ()
     }
 
