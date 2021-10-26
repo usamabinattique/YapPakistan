@@ -10,30 +10,30 @@ import Foundation
 import RxSwift
 import YAPComponents
 
-protocol CountryViewModelInput {
+protocol CityListViewModelInput {
     var backObserver: AnyObserver<Void> { get }
     var searchObserver: AnyObserver<String?> { get }
     var selectedItemObserver: AnyObserver<LabelCellViewModel> { get }
 }
 
-protocol CountryViewModelOutput {
+protocol CityListViewModelOutput {
     var cellViewModels: Observable<[LabelCellViewModel]> { get }
     var showError: Observable<String> { get }
     var next: Observable<String> { get }
     var back: Observable<Void> { get }
     var loader: Observable<Bool> { get }
-    var strings: Observable<CountryViewModel.LanguageStrings> { get }
+    var strings: Observable<CityListViewModel.LanguageStrings> { get }
 }
 
-protocol CountryViewModelType {
-    var inputs: CountryViewModelInput { get }
-    var outputs: CountryViewModelOutput { get }
+protocol CityListViewModelType {
+    var inputs: CityListViewModelInput { get }
+    var outputs: CityListViewModelOutput { get }
 }
 
-class CountryViewModel: CountryViewModelInput, CountryViewModelOutput, CountryViewModelType {
+class CityListViewModel: CityListViewModelInput, CityListViewModelOutput, CityListViewModelType {
 
-    var inputs: CountryViewModelInput { return self }
-    var outputs: CountryViewModelOutput { return self }
+    var inputs: CityListViewModelInput { return self }
+    var outputs: CityListViewModelOutput { return self }
 
     // MARK: Inputs
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }

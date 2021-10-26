@@ -10,7 +10,7 @@ import RxSwift
 import YAPComponents
 import RxTheme
 
-class CountrysViewController: UIViewController {
+class CityListViewController: UIViewController {
 
     // MARK: Views
     private lazy var titleLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
@@ -26,11 +26,11 @@ class CountrysViewController: UIViewController {
     // MARK: Properties
 
     private let themeService: ThemeService<AppTheme>
-    let viewModel: CountryViewModelType
+    let viewModel: CityListViewModelType
 
     // MARK: Initialization
 
-    init(themeService: ThemeService<AppTheme>, viewModel: CountryViewModel) {
+    init(themeService: ThemeService<AppTheme>, viewModel: CityListViewModel) {
         self.themeService = themeService
         self.viewModel = viewModel
 

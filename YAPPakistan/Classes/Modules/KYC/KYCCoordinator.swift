@@ -251,8 +251,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func address() {
-        let viewController = AddressViewController(themeService: container.themeService,
-                                                   viewModel: AddressViewModel())
+        let viewController = container.makeAddressViewController()
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
@@ -274,10 +273,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func selectCityName() -> Observable<String>  {
-
-        let viewModel = CountryViewModel(kycRepository: container.makeKYCRepository())
-        let viewController = CountrysViewController(themeService: container.themeService,
-                                                    viewModel: viewModel)
+        let viewController = container.makeCityListViewController()
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
