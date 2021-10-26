@@ -58,4 +58,8 @@ Pod::Spec.new do |spec|
   #MARK: Utilities
   spec.dependency 'PhoneNumberKit', '~> 3.0'
   spec.dependency 'SwifterSwift', '~> 5.0'
+
+  #MARK: Google
+  spec.dependency 'GoogleMaps'
+  spec.dependency 'GooglePlaces'
 end

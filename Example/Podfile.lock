@@ -5,6 +5,12 @@ PODS:
   - Alamofire (5.4.3)
   - CardScanner (1.2.2)
   - Differentiator (5.0.0)
+  - GoogleMaps (5.1.0):
+    - GoogleMaps/Maps (= 5.1.0)
+  - GoogleMaps/Base (5.1.0)
+  - GoogleMaps/Maps (5.1.0):
+    - GoogleMaps/Base
+  - GooglePlaces (5.0.0)
   - HWPanModal (0.8.9)
   - PhoneNumberKit (3.3.3):
     - PhoneNumberKit/PhoneNumberKitCore (= 3.3.3)
@@ -75,6 +81,8 @@ PODS:
     - Adjust (~> 4.0)
     - Alamofire (~> 5.0)
     - CardScanner (~> 1.0)
+    - GoogleMaps
+    - GooglePlaces
     - HWPanModal (~> 0)
     - PhoneNumberKit (~> 3.0)
     - RxCocoa (~> 6.0)
@@ -106,6 +114,9 @@ DEPENDENCIES:
 SPEC REPOS:
   https://bitbucket.org/mb28/privatetrunk.git:
     - CardScanner
+  https://github.com/CocoaPods/Specs.git:
+    - GoogleMaps
+    - GooglePlaces
   trunk:
     - Adjust
     - Alamofire
@@ -137,6 +148,8 @@ SPEC CHECKSUMS:
   Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
   CardScanner: 7ca407023270f72788fe0e664de5d99b0bd7baf5
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
+  GoogleMaps: 086ae1dab659eaa7339bdb30fc88e2f44e7c597c
+  GooglePlaces: 5d87ca13ed98b7a937e0d8bc7026f718c7263271
   HWPanModal: 259f6916c706b3f63003a325ad1bdfbe913b0fdc
   PhoneNumberKit: 4ce83273551c4d2ae10b7361162f4283dd02835f
   RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
@@ -152,7 +165,7 @@ SPEC CHECKSUMS:
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   YAPComponents: 06fc14e894e5d686e147a822dec5b99a40baa58b
   YAPCore: 5a4338ac7ae434e7c5a2afb3655e414cd9cc7e8d
-  YAPPakistan: 11192d4dc392140ecadc92130480ed01719ed67e
+  YAPPakistan: 0ad6a9741604934a816a8dfabc44318aff8c5de7
 
 PODFILE CHECKSUM: 19473def4415e479e9d76c4cfbb566105bded114
 
