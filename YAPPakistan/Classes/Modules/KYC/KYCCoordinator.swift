@@ -108,7 +108,6 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                 self.setProgressViewHidden(true)
                 self.root.setViewControllers(viewControllers, animated: true)
 
-                // FIXME: Initiate questions flow.
                 self.motherNameQuestion()
 
             case .cancel: break
