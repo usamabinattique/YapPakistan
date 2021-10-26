@@ -119,7 +119,6 @@ class SelfieGuidelineViewController: UIViewController {
             .toBottomOf(spacers[1])
             .widthEqualToSuperView(multiplier: 280 / 375)
             .centerHorizontallyInSuperview()
-            //.alignEdgesWithSuperview([.right], constants: [25])
             .height(constant: 50)
 
         tipsIconContainer
@@ -148,6 +147,5 @@ class SelfieGuidelineViewController: UIViewController {
         spacers[0]
             .heightEqualTo(view: spacers[1])
             .heightEqualTo(view: spacers[2])
-            //.height(constant: 20)
     }
 }
