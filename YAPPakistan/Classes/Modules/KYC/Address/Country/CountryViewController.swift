@@ -64,7 +64,6 @@ class CityListViewController: UIViewController {
     }
 
     private func setupResources() {
-        // viewModel.outputs.strings.withUnretained(self)
         let image = UIImage(named: "icon_close", in: .yapPakistan)?.asTemplate
         searchTextField.setClearImage(image, for: .normal)
     }
