@@ -232,7 +232,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
     func editName() -> Observable<String> {
         let viewController = container.makeEditCardNameViewController()
-        
+
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
             .disposed(by: rx.disposeBag)
