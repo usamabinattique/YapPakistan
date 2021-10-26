@@ -62,7 +62,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
         homeViewController.viewModel.outputs.next.filter({ $0 == .selfiePending })
             .withUnretained(self)
-            .subscribe(onNext: { $0.0.selfiePending() })
+            .subscribe(onNext: { $0.0.selfieGuideline() })
             .disposed(by: rx.disposeBag)
 
         homeViewController.viewModel.outputs.next.filter({ $0 == .cardNamePending })
@@ -117,15 +117,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func motherNameQuestion() {
-        let strings = KYCStrings(title: "screen_kyc_questions_mothers_name".localized,
-                                 subHeading: "screen_kyc_questions_reason".localized,
-                                 next: "common_button_next".localized )
-        let viewModel = MotherMaidenNamesViewModel(accountProvider: container.accountProvider,
-                                                   kycRepository: container.makeKYCRepository(),
-                                                   strings: strings)
-        let viewController = KYCQuestionsViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewController = container.makeMotherQuestionViewController()
 
-        viewModel.outputs.next.withUnretained(self)
+        viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { $0.0.cityQuestion() })
             .disposed(by: rx.disposeBag)
 
@@ -134,30 +128,24 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func cityQuestion() {
-        let strings = KYCStrings(title: "screen_kyc_questions_city_of_birth".localized,
-                                 subHeading: "screen_kyc_questions_reason".localized,
-                                 next: "common_button_next".localized )
-        let viewModel = CityOfBirthNamesViewModel(accountProvider: container.accountProvider,
-                                                  kycRepository: container.makeKYCRepository(),
-                                                  strings: strings)
-        viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { [unowned self] _ in
+
+        let viewController = container.makeCityQuestionViewController()
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .do(onNext: { [unowned self] _ in
                 self.setProgressViewHidden(true)
                 let viewControllers = self.kycProgressViewController.childNavigation.viewControllers
                 self.kycProgressViewController.childNavigation.setViewControllers([viewControllers.first!], animated: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { self.selfiePending() }
-            })
+            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in self?.selfieGuideline() })
             .disposed(by: rx.disposeBag)
-
-        let viewController = KYCQuestionsViewController(themeService: container.themeService, viewModel: viewModel)
 
         addChildVC(viewController, progress: 0.75)
     }
 
     // MARK: Checkpoint Selfie Pending
-    func selfiePending() {
-        let viewController = TakeSelfieViewController(themeService: container.themeService,
-                                                      viewModel: TakeSelfieViewModel())
+    func selfieGuideline() {
+        let viewController = container.makeSelfieGuidelineViewController()
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
@@ -175,7 +163,8 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func captureSelfie() {
-        let viewController = CaptureViewController(themeService: container.themeService, viewModel: CaptureViewModel())
+        let viewController = container.makeCaptureViewController()
+
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
             .disposed(by: rx.disposeBag)
@@ -188,9 +177,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func reviewSelfie(_ image: UIImage) {
-
-        let viewModel = ReviewSelfieViewModel(image: image, kycRepository: container.makeKYCRepository(), accountProvider: container.accountProvider)
-        let viewController = ReviewSelfieViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewController = container.makeReviewSelfieViewController(image: image)
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
