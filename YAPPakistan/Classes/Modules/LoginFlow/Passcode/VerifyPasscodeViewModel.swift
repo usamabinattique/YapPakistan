@@ -104,7 +104,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
     fileprivate let biometricSubject = PublishSubject<Void>()
 
     // MARK: Internal Properties and ViewModels
-    private let repository: LoginRepository
+    private let repository: LoginRepositoryType
     private let pinRange: ClosedRange<Int>
     private let disposeBag = DisposeBag()
     private let credentialsManager: CredentialsStoreType!
@@ -116,16 +116,16 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
 
     private var session: Session!
     private var accountProvider: AccountProvider?
-    private var biometricsManager: BiometricsManager!
-    private var notificationManager: NotificationManager
+    private var biometricsManager: BiometricsManagerType!
+    private var notificationManager: NotificationManagerType
 
     // MARK: - Init
     init( username: String,
           isUserBlocked: Bool,
-          repository: LoginRepository,
-          biometricsManager:BiometricsManager,
+          repository: LoginRepositoryType,
+          biometricsManager: BiometricsManagerType,
           credentialsManager: CredentialsStoreType,
-          notificationManager: NotificationManager,
+          notificationManager: NotificationManagerType,
           sessionCreator: SessionProviderType,
           pinRange: ClosedRange<Int> = 4...6,
           onLogin: @escaping OnLoginClosure) {

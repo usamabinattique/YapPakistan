@@ -94,3 +94,33 @@ public final class KYCFeatureContainer {
         return viewController
     }
 }
+
+extension KYCFeatureContainer {
+    func makeMotherQuestionViewController() -> KYCQuestionsViewController {
+        return MotherQuestionModuleBuilder(container: self).viewController()
+    }
+
+    func makeCityQuestionViewController() -> KYCQuestionsViewController {
+        return CityQuestionModuleBuilder(container: self).viewController()
+    }
+
+    func makeSelfieGuidelineViewController() -> SelfieGuidelineViewController {
+        SelfieGuidelineModuleBuilder(container: self).viewController()
+    }
+
+    func makeCaptureViewController() -> CaptureViewController {
+        CaptureSelfieModuleBuilder(container: self).viewController()
+    }
+
+    func makeReviewSelfieViewController(image: UIImage) -> ReviewSelfieViewController {
+        ReviewSelfieModuleBuilder(container: self, image: image).viewController()
+    }
+
+    func makeCardNameViewController() -> CardNameViewController {
+        CardNameModuleBuilder(container: self).viewController()
+    }
+
+    func makeEditCardNameViewController() -> EditCardNameViewController {
+        EditCardNameModuleBuilder(container: self).viewController()
+    }
+}

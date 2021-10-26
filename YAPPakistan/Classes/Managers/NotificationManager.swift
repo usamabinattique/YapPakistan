@@ -8,7 +8,17 @@
 import Foundation
 import RxSwift
 
-public class NotificationManager {
+public protocol NotificationManagerType {
+    var isNotificationPermissionPrompt: Bool { get }
+    func setNotificationPermission(isPrompt: Bool)
+    func deleteNotificationPermission()
+    func turnNotificationsOn()
+    func isNotificationAuthorised() -> Bool
+    func turnNotificationsOff()
+    func observeChangeInSettings()
+}
+
+public class NotificationManager: NotificationManagerType {
 
     fileprivate var deviceTokenSubject = PublishSubject<String?>()
 

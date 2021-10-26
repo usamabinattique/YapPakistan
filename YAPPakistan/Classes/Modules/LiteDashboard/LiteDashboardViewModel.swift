@@ -84,14 +84,14 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
     // MARK: Init
 
     var accountProvider: AccountProvider!
-    var biometricsManager: BiometricsManager!
-    var notificationManager: NotificationManager!
+    var biometricsManager: BiometricsManagerType!
+    var notificationManager: NotificationManagerType!
     var credentialStore: CredentialsStoreType!
     var repository: LoginRepository!
 
     init(accountProvider: AccountProvider,
-         biometricsManager: BiometricsManager,
-         notificationManager: NotificationManager,
+         biometricsManager: BiometricsManagerType,
+         notificationManager: NotificationManagerType,
          credentialStore: CredentialsStoreType,
          repository: LoginRepository) {
 

@@ -1,5 +1,5 @@
 //
-//  TakeSelfieViewModel.swift
+//  SelfieGuidelineModel.swift
 //  YAPPakistan
 //
 //  Created by Sarmad on 13/10/2021.
@@ -8,23 +8,23 @@
 import Foundation
 import RxSwift
 
-protocol TakeSelfieViewModelInput {
+protocol SelfieGuidelineViewModelInput {
     var nextObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
 }
 
-protocol TakeSelfieViewModelOutput {
+protocol SelfieGuidelineViewModelOutput {
     var next: Observable<Void> { get }
     var back: Observable<Void> { get }
-    var languageStrings: Observable<TakeSelfieViewModel.LanguageStrings> { get }
+    var languageStrings: Observable<SelfieGuidelineViewModel.LanguageStrings> { get }
 }
 
-protocol TakeSelfieViewModelType {
-    var inputs: TakeSelfieViewModelInput { get }
-    var outputs: TakeSelfieViewModelOutput { get }
+protocol SelfieGuidelineViewModelType {
+    var inputs: SelfieGuidelineViewModelInput { get }
+    var outputs: SelfieGuidelineViewModelOutput { get }
 }
 
-class TakeSelfieViewModel: TakeSelfieViewModelType, TakeSelfieViewModelInput, TakeSelfieViewModelOutput {
+class SelfieGuidelineViewModel: SelfieGuidelineViewModelType, SelfieGuidelineViewModelInput, SelfieGuidelineViewModelOutput {
 
     // MARK: Inputs
     var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
@@ -40,8 +40,8 @@ class TakeSelfieViewModel: TakeSelfieViewModelType, TakeSelfieViewModelInput, Ta
     private var nextSubject = PublishSubject<Void>()
     private var backSubject = PublishSubject<Void>()
 
-    var inputs: TakeSelfieViewModelInput { return self }
-    var outputs: TakeSelfieViewModelOutput { return self }
+    var inputs: SelfieGuidelineViewModelInput { return self }
+    var outputs: SelfieGuidelineViewModelOutput { return self }
 
     init() {
         languageSetup()
@@ -55,7 +55,7 @@ class TakeSelfieViewModel: TakeSelfieViewModelType, TakeSelfieViewModelInput, Ta
     }
 }
 
-fileprivate extension TakeSelfieViewModel {
+fileprivate extension SelfieGuidelineViewModel {
     func languageSetup() {
         let strings = LanguageStrings(title: "screen_kyc_take_selfie_title".localized,
                                       subTitle: "screen_kyc_take_selfie_subtitle".localized,

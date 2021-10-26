@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 import YAPComponents
 
-class CityOfBirthNamesViewModel:KYCQuestionViewModel {
+class CityOfBirthNamesViewModel: KYCQuestionViewModel {
     private let kycRepository: KYCRepository!
 
     init(accountProvider: AccountProvider,

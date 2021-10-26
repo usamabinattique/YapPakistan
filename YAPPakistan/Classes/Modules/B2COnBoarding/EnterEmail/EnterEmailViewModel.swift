@@ -223,41 +223,6 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
 
-        /*
-        saveProfileRequest.elements()
-            .do(onNext: { token in
-                AuthenticationManager.shared.setJWT(token)
-                let refreshAccount = SessionManager.current.refreshAccount().share()
-                let refreshCards = SessionManager.current.refreshCards().share()
-
-                Observable.zip(refreshAccount, refreshCards)
-                    .subscribe {  _ in
-                        YAPProgressHud.hideProgressHud()
-                    }.disposed(by: self.disposeBag)
-
-                guard let passcode = self.user.passcode, let phoneNumber = self.user.mobileNo.serverFormattedValue else { return }
-                CredentialsManager().secureCredentials(username: phoneNumber, passcode: passcode)
-            })
-            .filter{ _ in AppReferralManager.isReferralInformationAvailable }
-            .flatMap { [unowned self] _ in
-                self.repository.saveReferralInformation(inviterId: AppReferralManager.inviterId ?? "", time: AppReferralManager.invitationTimeString ?? "") }
-            .elements()
-            .do(onNext: { _ in AppReferralManager.removeReferralInformation() })
-            .subscribe()
-            .disposed(by: disposeBag)
-
-        SessionManager.current.currentAccount
-            .unwrap()
-            .do(onNext: { [weak self] in
-                self?.user.iban = $0.iban
-                self?.user.isWaiting = $0.isWaiting
-            })
-            .map { [weak self] _ in self?.user }
-            .unwrap()
-            .bind(to: deviceRegistrationSubject)
-            .disposed(by: disposeBag)
-        */
-
         keyboardNextSubject.withLatestFrom(validSubject)
             .filter { $0 }
             .map { _ in OnboardingStage.email }
@@ -271,9 +236,6 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         })
 
         sharedDemographics.map { .emailVerify }.bind(to: stageSubject).disposed(by: disposeBag)
-        //sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? self.b2cCofirmationText : self.b2bConfirmationText }
-        //    .bind(to: verificationTextSubject) //FIXME remove text and things according to new updates
-        //    .disposed(by: disposeBag)
         sharedDemographics.map { _ in  "screen_email_verification_display_text_title".localized }
             .bind(to: headingSubject)
             .disposed(by: disposeBag)
