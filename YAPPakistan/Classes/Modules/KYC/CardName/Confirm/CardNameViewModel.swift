@@ -65,7 +65,7 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
     private let kycRepository: KYCRepositoryType
     private let accountProvider: AccountProvider
 
-    init( kycRepository: KYCRepositoryType, accountProvider: AccountProvider ) {
+    init(kycRepository: KYCRepositoryType, accountProvider: AccountProvider ) {
 
         self.kycRepository = kycRepository
         self.accountProvider = accountProvider

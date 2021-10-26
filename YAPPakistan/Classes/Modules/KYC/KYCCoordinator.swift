@@ -201,10 +201,8 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func cardName() {
-        let viewModel = CardNameViewModel(kycRepository: container.makeKYCRepository(),
-                                          accountProvider: container.accountProvider)
-        let viewController = CardNameViewController(themeService: container.themeService,
-                                                    viewModel: viewModel)
+        let viewController = container.makeCardNameViewController()
+
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 self.root.setNavigationBarHidden(true, animated: true)
@@ -213,19 +211,19 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
+            .do(onNext: { `self`, _ in
                 var vcs = self.root.viewControllers
                 vcs.removeLast()
                 self.setProgressViewHidden(true)
                 self.root.setNavigationBarHidden(true, animated: true)
                 self.root.setViewControllers(vcs, animated: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {  }
-            })
+            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { `self`, _ in })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.edit.withUnretained(self)
             .flatMap({ `self`, _ in self.editName() })
-            .bind(to: viewModel.inputs.nameObserver)
+            .bind(to: viewController.viewModel.inputs.nameObserver)
             .disposed(by: rx.disposeBag)
 
         root.pushViewController(viewController, animated: true)
@@ -233,8 +231,8 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func editName() -> Observable<String> {
-        let viewController = EditNameViewController(themeService: container.themeService,
-                                                    viewModel: EditNameViewModel())
+        let viewController = container.makeEditCardNameViewController()
+        
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
             .disposed(by: rx.disposeBag)

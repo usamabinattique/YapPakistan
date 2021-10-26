@@ -9,7 +9,7 @@ import YAPComponents
 import RxTheme
 import RxSwift
 
-class EditNameViewController: UIViewController {
+class EditCardNameViewController: UIViewController {
 
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)

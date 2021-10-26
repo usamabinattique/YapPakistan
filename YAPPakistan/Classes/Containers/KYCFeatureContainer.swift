@@ -115,4 +115,12 @@ extension KYCFeatureContainer {
     func makeReviewSelfieViewController(image: UIImage) -> ReviewSelfieViewController {
         ReviewSelfieModuleBuilder(container: self, image: image).viewController()
     }
+
+    func makeCardNameViewController() -> CardNameViewController {
+        CardNameModuleBuilder(container: self).viewController()
+    }
+
+    func makeEditCardNameViewController() -> EditCardNameViewController {
+        EditCardNameModuleBuilder(container: self).viewController()
+    }
 }
