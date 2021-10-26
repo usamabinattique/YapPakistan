@@ -151,8 +151,6 @@ class LoginViewModel: LoginViewModelType, LoginViewModelInputs, LoginViewModelOu
         self.repository = repositoryProvider("PK")
         verifyUserRequest()
 
-        // rememberUsername(credentialsManager)
-
         guard credentialsManager.isCredentialsAvailable else {
             _ = credentialsManager.clearUsername()
             return
@@ -212,12 +210,4 @@ private extension LoginViewModel {
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
     }
-
-//    func rememberUsername(_ credentialsManager: CredentialsStoreType) {
-//        rememberMeSubject.onNext(credentialsManager.remembersId ?? true)
-//        rememberMeSubject
-//            .do(onNext: { if !$0 { _ = credentialsManager.clearUsername() } })
-//            .subscribe(onNext: { credentialsManager.setRemembersId($0) })
-//            .disposed(by: disposeBag)
-//    }
 }

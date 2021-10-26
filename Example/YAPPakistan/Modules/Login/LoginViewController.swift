@@ -135,7 +135,6 @@ fileprivate extension LoginViewController {
         guard let viewModel = viewModel else { return }
 
         // MARK: Output Bindings
-        // viewModel.outputs.rememberMe.bind(to: rememberIDSwitch.rx.isOn).disposed(by: rx.disposeBag)
         viewModel.outputs.mobileNumber.bind(to: mobileNumber.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.isFirstResponder.bind(to: mobileNumber.rx.isFirstResponder).disposed(by: rx.disposeBag)
 

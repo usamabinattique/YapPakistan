@@ -1,5 +1,5 @@
 //
-//  TakeSelfieViewController.swift
+//  SelfieGuidelineViewController.swift
 //  YAPPakistan
 //
 //  Created by Sarmad on 13/10/2021.
@@ -9,7 +9,7 @@ import YAPComponents
 import RxTheme
 import RxSwift
 
-class TakeSelfieViewController: UIViewController {
+class SelfieGuidelineViewController: UIViewController {
 
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
@@ -23,9 +23,9 @@ class TakeSelfieViewController: UIViewController {
     private var backButton: UIButton!
 
     private var themeService: ThemeService<AppTheme>!
-    var viewModel: TakeSelfieViewModelType!
+    var viewModel: SelfieGuidelineViewModelType!
 
-    convenience init(themeService: ThemeService<AppTheme>, viewModel: TakeSelfieViewModelType) {
+    convenience init(themeService: ThemeService<AppTheme>, viewModel: SelfieGuidelineViewModelType) {
         self.init(nibName: nil, bundle: nil)
 
         self.themeService = themeService

@@ -14,6 +14,7 @@ public protocol LoginRepositoryType: AnyObject {
     func verifyPasscode(passcode: String) -> Observable<Event<String?>>
     func authenticate(username: String, password: String, deviceId: String) -> Observable<Event<[String: String?]?>>
     func generateLoginOTP(username: String, passcode: String, deviceId: String) -> Observable<Event<String?>>
+    func logout(deviceUUID: String) -> Observable<Event<[String: String]?>> 
 }
 
 public class LoginRepository: LoginRepositoryType {
