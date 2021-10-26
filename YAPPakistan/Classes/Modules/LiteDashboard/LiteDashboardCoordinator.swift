@@ -107,7 +107,6 @@ extension LiteDashboardCoodinator {
         root.navigationBar.isTranslucent = true
         root.navigationBar.setBackgroundImage(UIImage(), for: .default)
         root.navigationBar.shadowImage = UIImage()
-        // root.navigationBar.isHidden = true
         root.setNavigationBarHidden(true, animated: true)
 
         window.rootViewController = root

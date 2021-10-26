@@ -130,7 +130,6 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
                 self.credentialStore.setRemembersId(false)
                 self.credentialStore.clearUsername()
 
-                // FIXME: Reset all managers.
             })
             .map { _ in () }
             .bind(to: resultSubject)
