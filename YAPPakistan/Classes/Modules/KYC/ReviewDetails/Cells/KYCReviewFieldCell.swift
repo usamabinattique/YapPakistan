@@ -81,7 +81,7 @@ class KYCReviewFieldCell: UITableViewCell, ReusableView {
         tickImageView
             .toRightOf(valueLabel)
             .alignEdgeWithSuperview(.right, constant: 20)
-            .verticallyCenterWith(valueLabel)
+            .centerVerticallyWith(valueLabel)
             .width(constant: 32)
             .height(constant: 32)
     }

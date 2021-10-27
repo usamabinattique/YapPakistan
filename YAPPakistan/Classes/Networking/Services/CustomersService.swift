@@ -62,6 +62,8 @@ public protocol CustomerServiceType {
     func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
                                     progressObserver: AnyObserver<Progress>?) -> Observable<T>
     func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T>
+    func uploadSelfie<T: Codable>(_ selfie: (data: Data, format: String)) -> Observable<T>
+    func setCardName<T: Codable>(cardName: String) -> Observable<T>
 }
 
     
@@ -132,7 +134,7 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
 
     public func fetchRanking<T: Codable>() -> Observable<T> {
-        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/fetch-ranking", headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/portal/fetch-ranking", headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
@@ -293,6 +295,40 @@ public class CustomersService: BaseService, CustomerServiceType {
 
         return self.request(apiClient: self.apiClient, route: route)
     }
+
+    public func uploadSelfie<T: Codable>(_ selfie: (data: Data, format: String)) -> Observable<T> {
+        var docs: [DocumentUploadRequest] = []
+        let info = fileInfo(from: selfie.format)
+        docs.append(DocumentUploadRequest(data: selfie.data,
+                                          name: "selfie-picture",
+                                          fileName: info.1,
+                                          mimeType: info.2))
+
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/customers/selfie-picture",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient, documents: docs, route: route,
+                      progressObserver: nil, otherFormValues: [:])
+    }
+
+    public func setCardName<T: Codable>(cardName: String) -> Observable<T> {
+        let query = [
+            "cardName": cardName
+        ]
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/accounts/set-card-name",
+                                 query: query,
+                                 body: ([:] as [String: String]),
+                                 headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func getCities<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/cities", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
 }
 
 // MARK: Helpers
@@ -310,7 +346,10 @@ fileprivate extension CustomersService {
         case "application/pdf":
             return ("files", "file.pdf", format)
         default:
-            return ("", "", format)
+            let formatData = format.split(separator: "/").map({ String($0) })
+            let file = formatData.first ?? ""
+            let fileName = formatData.last == nil ? "": ("file." + (formatData.last ?? "") )
+            return (file, fileName, format)
         }
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CNICOCR: Codable {
+public struct CNICOCR: Codable {
     var cnicNumber: String
     var issueDate: String
 

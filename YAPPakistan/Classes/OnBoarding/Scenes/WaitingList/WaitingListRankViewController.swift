@@ -156,7 +156,7 @@ class WaitingListRankViewController: UIViewController {
             .alignEdgesWithSuperview([.top, .left, .right, .safeAreaBottom])
 
         videoPlayerView
-            .alignEdgeWithSuperview(.top, constant: 26)
+            .alignEdgeWithSuperview(.top, constant: 5)
             .centerHorizontallyInSuperview()
             .height(constant: 192)
             .width(constant: 192)

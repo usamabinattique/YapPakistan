@@ -62,7 +62,12 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
         homeViewController.viewModel.outputs.next.filter({ $0 == .selfiePending })
             .withUnretained(self)
-            .subscribe(onNext: { $0.0.selfiePending() })
+            .subscribe(onNext: { $0.0.selfieGuideline() })
+            .disposed(by: rx.disposeBag)
+
+        homeViewController.viewModel.outputs.next.filter({ $0 == .cardNamePending })
+            .withUnretained(self)
+            .subscribe(onNext: { $0.0.cardName() })
             .disposed(by: rx.disposeBag)
 
         addChildVC(homeViewController)
@@ -100,10 +105,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                 if let index = viewControllers.lastIndex(of: kycMainController) {
                     viewControllers.removeSubrange(index + 1 ..< viewControllers.count)
                 }
-
+                self.setProgressViewHidden(true)
                 self.root.setViewControllers(viewControllers, animated: true)
 
-                // FIXME: Initiate questions flow.
                 self.motherNameQuestion()
 
             case .cancel: break
@@ -112,15 +116,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func motherNameQuestion() {
-        let strings = KYCStrings(title: "screen_kyc_questions_mothers_name".localized,
-                                 subHeading: "screen_kyc_questions_reason".localized,
-                                 next: "common_button_next".localized )
-        let viewModel = MotherMaidenNamesViewModel(accountProvider: container.accountProvider,
-                                                   kycRepository: container.makeKYCRepository(),
-                                                   strings: strings)
-        let viewController = KYCQuestionsViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewController = container.makeMotherQuestionViewController()
 
-        viewModel.outputs.next.withUnretained(self)
+        viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { $0.0.cityQuestion() })
             .disposed(by: rx.disposeBag)
 
@@ -129,30 +127,82 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func cityQuestion() {
-        let strings = KYCStrings(title: "screen_kyc_questions_city_of_birth".localized,
-                                 subHeading: "screen_kyc_questions_reason".localized,
-                                 next: "common_button_next".localized )
-        let viewModel = CityOfBirthNamesViewModel(accountProvider: container.accountProvider,
-                                             kycRepository: container.makeKYCRepository(),
-                                             strings: strings)
-        viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { [unowned self] _ in
-                let viewControllers = self.kycProgressViewController.childNavigation.viewControllers
-                self.kycProgressViewController.childNavigation.setViewControllers([viewControllers.first!], animated: true)
-                self.selfiePending()
-            })
-            .disposed(by: rx.disposeBag)
 
-        let viewController = KYCQuestionsViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewController = container.makeCityQuestionViewController()
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .do(onNext: { [unowned self] _ in
+                self.setProgressViewHidden(true)
+                let viewControllers = self.kycProgressViewController.childNavigation.viewControllers
+                self.kycProgressViewController.childNavigation
+                    .setViewControllers([viewControllers.first!], animated: true)
+            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { `self`, _ in self.selfieGuideline() })
+            .disposed(by: rx.disposeBag)
 
         addChildVC(viewController, progress: 0.75)
     }
 
     // MARK: Checkpoint Selfie Pending
-    func selfiePending() {
-        let viewController = SelfieViewController()
-        addChildVC(viewController, progress: 0.86)
+    func selfieGuideline() {
+        let viewController = container.makeSelfieGuidelineViewController()
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.captureSelfie() })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(false, animated: true)
     }
+
+    func captureSelfie() {
+        let viewController = container.makeCaptureViewController()
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.unwrap().withUnretained(self)
+            .subscribe(onNext: { `self`, image in self.reviewSelfie(image) })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+    }
+
+    func reviewSelfie(_ image: UIImage) {
+        let viewController = container.makeReviewSelfieViewController(image: image)
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .do(onNext: { `self`, _ in
+                var vcs = self.root.viewControllers
+                vcs.removeLast()
+                vcs.removeLast()
+                vcs.removeLast()
+                self.setProgressViewHidden(true)
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.setViewControllers(vcs, animated: true)
+            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { `self`, _ in self.cardName() })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+    }
+
+    func cardName() {
+
+    }
+
 }
 
 // MARK: Helpers
@@ -169,7 +219,7 @@ fileprivate extension KYCCoordinator {
         }
     }
 
-    private func setupPogressViewController() {
+    func setupPogressViewController() {
         self.root.pushViewController(self.kycProgressViewController, animated: true)
         kycProgressViewController.viewModel.outputs.backTap.withUnretained(self)
             .subscribe(onNext: {
@@ -181,6 +231,10 @@ fileprivate extension KYCCoordinator {
                 }
             })
             .disposed(by: rx.disposeBag)
+    }
+
+    func setProgressViewHidden(_ isHidden: Bool) {
+        self.kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(isHidden)
     }
 
     func makeKYCProgressViewController() -> KYCProgressViewController {

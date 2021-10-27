@@ -27,7 +27,7 @@ extension BiometryType {
     }
 }
 
-public class BiometricsManager {
+public class BiometricsManager: BiometricsManagerType {
 
     private let context: LAContext = LAContext()
 

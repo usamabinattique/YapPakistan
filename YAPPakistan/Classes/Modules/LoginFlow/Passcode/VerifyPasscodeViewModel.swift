@@ -104,7 +104,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
     fileprivate let biometricSubject = PublishSubject<Void>()
 
     // MARK: Internal Properties and ViewModels
-    private let repository: LoginRepository
+    private let repository: LoginRepositoryType
     private let pinRange: ClosedRange<Int>
     private let disposeBag = DisposeBag()
     private let credentialsManager: CredentialsStoreType!
@@ -116,13 +116,16 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
 
     private var session: Session!
     private var accountProvider: AccountProvider?
+    private var biometricsManager: BiometricsManagerType!
+    private var notificationManager: NotificationManagerType
 
     // MARK: - Init
     init( username: String,
           isUserBlocked: Bool,
-          repository: LoginRepository,
-          biometricsManager:BiometricsManager,
+          repository: LoginRepositoryType,
+          biometricsManager: BiometricsManagerType,
           credentialsManager: CredentialsStoreType,
+          notificationManager: NotificationManagerType,
           sessionCreator: SessionProviderType,
           pinRange: ClosedRange<Int> = 4...6,
           onLogin: @escaping OnLoginClosure) {
@@ -135,6 +138,9 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
         self.sessionCreator = sessionCreator
         self.onLoginClosure = onLogin
 
+        self.biometricsManager = biometricsManager
+        self.notificationManager = notificationManager
+
         self.localizedTextSubject = BehaviorSubject(value: (
             "screen_enter_passcode_display_text_title".localized,
             "screen_create_passcode_button_signin".localized,
@@ -142,6 +148,10 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
         ))
 
         backSubject.do(onNext: { [weak self] in
+            let user = self?.credentialsManager.getUsername() ?? ""
+            self?.biometricsManager.deleteBiometryForUser(phone: user)
+            self?.notificationManager.deleteNotificationPermission()
+
             self?.credentialsManager.setRemembersId(false)
             self?.credentialsManager.clearUsername()
         }).flatMap({ [unowned self] _ in
@@ -175,7 +185,8 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
             errorSubject.onNext("screen_enter_passcode_display_text_user_blocked".localized)
         } }
 
-        let isBiometricAvailable = biometricsManager.isBiometryPermissionPrompt(for: username)
+        let isBiometricAvailable = credentialsManager.remembersId == true
+            && biometricsManager.isBiometryPermissionPrompt(for: username)
             && biometricsManager.isBiometrySupported
             && biometricsManager.isBiometryEnabled(for: username)
 

@@ -72,7 +72,7 @@ fileprivate extension VerifyPasscodeViewController {
         let bioMImg = UIImage(named: biomImgName, in: .yapPakistan)
         let backImg = UIImage(named: "icon_delete_purple", in: .yapPakistan)
 
-        pinKeyboard.biomatryButton.setImage(bioMImg, for: .normal)
+        pinKeyboard.biomatryButton.setImage(bioMImg?.asTemplate, for: .normal)
         pinKeyboard.backButton.setImage(backImg?.asTemplate, for: .normal)
     }
 

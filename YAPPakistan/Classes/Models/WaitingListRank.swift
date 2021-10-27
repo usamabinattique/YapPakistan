@@ -26,15 +26,15 @@ import Foundation
 }
 */
 struct WaitingListRank: Codable {
-    var jump: String?
-    var waitingNewRank: Int
-    var waitingBehind: Int
-    var completedKyc: Bool
-    var viewable: Bool
-    var gainPoints: String?
-    var inviteeDetails: [Invitee]?
-    var totalGainedPoints: Int?
-    var waiting: Bool?
+    var jump: String? = "0"
+    var waitingNewRank: Int = 0
+    var waitingBehind: Int = 0
+    var completedKyc: Bool = false
+    var viewable: Bool = true
+    var gainPoints: String? = "0"
+    var inviteeDetails: [Invitee]? = []
+    var totalGainedPoints: Int? = 0
+    var waiting: Bool? = false
 }
 
 struct Invitee: Codable {
