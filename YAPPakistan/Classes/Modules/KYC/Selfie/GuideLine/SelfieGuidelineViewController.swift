@@ -14,7 +14,7 @@ class SelfieGuidelineViewController: UIViewController {
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     private let selfieImage = UIFactory.makeImageView()
-    private let tipsContainer = UIFactory.makeView() // .setBackgroundColor(.blue)
+    private let tipsContainer = UIFactory.makeView() 
     private let tipsIconContainer = UIFactory.makeView(cornerRadious: 15)
     private let tipsIcon = UIFactory.makeImageView()
     private let tipsLabel = UIFactory.makeLabel(font: .regular, numberOfLines: 0)
