@@ -200,7 +200,48 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func cardName() {
+        let viewController = container.makeCardNameViewController()
 
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .do(onNext: { `self`, _ in
+                var vcs = self.root.viewControllers
+                vcs.removeLast()
+                self.setProgressViewHidden(true)
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.setViewControllers(vcs, animated: true)
+            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { `self`, _ in })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.edit.withUnretained(self)
+            .flatMap({ `self`, _ in self.editName() })
+            .bind(to: viewController.viewModel.inputs.nameObserver)
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(false, animated: true)
+    }
+
+    func editName() -> Observable<String> {
+        let viewController = container.makeEditCardNameViewController()
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+
+        let next = viewController.viewModel.outputs.next
+            .do(onNext: { [weak self] _ in self?.root.popViewController(animated: true) })
+
+        return next
     }
 
 }
