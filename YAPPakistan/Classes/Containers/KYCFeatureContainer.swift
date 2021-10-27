@@ -123,4 +123,12 @@ extension KYCFeatureContainer {
     func makeEditCardNameViewController() -> EditCardNameViewController {
         EditCardNameModuleBuilder(container: self).viewController()
     }
+
+    func makeAddressViewController() -> AddressViewController {
+        AddressModuleBuilder(container: self).viewController()
+    }
+
+    func makeCityListViewController() -> CityListViewController {
+        CityListModuleBuilder(container: self).viewController()
+    }
 }

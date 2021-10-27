@@ -70,6 +70,11 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { $0.0.cardName() })
             .disposed(by: rx.disposeBag)
 
+        homeViewController.viewModel.outputs.next.filter({ $0 == .addressPending })
+            .withUnretained(self)
+            .subscribe(onNext: { $0.0.address() })
+            .disposed(by: rx.disposeBag)
+
         addChildVC(homeViewController)
     }
 
@@ -217,7 +222,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                 self.root.setNavigationBarHidden(true, animated: true)
                 self.root.setViewControllers(vcs, animated: true)
             }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { `self`, _ in })
+            .subscribe(onNext: { `self`, _ in self.address() })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.edit.withUnretained(self)
@@ -242,6 +247,44 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .do(onNext: { [weak self] _ in self?.root.popViewController(animated: true) })
 
         return next
+    }
+
+    func address() {
+        let viewController = container.makeAddressViewController()
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        let citySelected = viewController.viewModel.outputs.city.withUnretained(self)
+            .flatMap{ `self`, _ in self.selectCityName() }
+            .share()
+        citySelected.bind(to: viewController.viewModel.inputs.citySelectObserver)
+            .disposed(by: rx.disposeBag)
+        citySelected.subscribe(onNext: { [unowned self] _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(false, animated: true)
+    }
+
+    func selectCityName() -> Observable<String>  {
+        let viewController = container.makeCityListViewController()
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(true, animated: true)
+                self.root.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(false, animated: true)
+
+        return viewController.viewModel.outputs.next
     }
 
 }
