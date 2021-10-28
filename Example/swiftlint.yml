@@ -65,6 +65,9 @@ function_body_length:
 deployment_target:
   iOS_deployment_target: 11.0
 
+large_tuple:
+  warning: 3
+
 custom_rules:
   # quickspec_class_name:
   #   name: "Invalid Test Class Name"
