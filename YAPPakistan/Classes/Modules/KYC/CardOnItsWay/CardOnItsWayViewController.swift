@@ -80,7 +80,7 @@ class CardOnItsWayViewController: UIViewController {
                 self.titleLabel.text = strings.title
                 self.subTitleLabel.text = strings.subTitle
                 self.cnicLabel.text = strings.cinc
-                self.dashboardButton.setTitle(strings.cinc, for: .normal)
+                self.dashboardButton.setTitle(strings.goToDashboard, for: .normal)
             })
             .disposed(by: rx.disposeBag)
     }
