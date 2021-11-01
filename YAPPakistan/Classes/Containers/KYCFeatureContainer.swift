@@ -131,4 +131,8 @@ extension KYCFeatureContainer {
     func makeCityListViewController() -> CityListViewController {
         CityListModuleBuilder(container: self).viewController()
     }
+
+    func makeCardOnItsWayViewController() -> CardOnItsWayViewController {
+        CardOnItsWayModuleBuilder(container: self).viewController()
+    }
 }

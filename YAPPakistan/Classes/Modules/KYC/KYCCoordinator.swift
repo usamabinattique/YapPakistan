@@ -259,6 +259,10 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.cardOnItsWay() })
+            .disposed(by: rx.disposeBag)
+
         let citySelected = viewController.viewModel.outputs.city.withUnretained(self)
             .flatMap{ `self`, _ in self.selectCityName() }
             .share()
@@ -285,6 +289,28 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         root.setNavigationBarHidden(false, animated: true)
 
         return viewController.viewModel.outputs.next
+    }
+
+    func cardOnItsWay() {
+        let viewController = container.makeCardOnItsWayViewController()
+
+        self.root.setNavigationBarHidden(true, animated: true)
+        let vcs = self.root.viewControllers
+        self.root.setViewControllers([vcs[0], vcs[1]], animated: true)
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.setProgressViewHidden(true)
+                self.kycProgressViewController.childNavigation.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        Observable.just(()).delay(.milliseconds(500), scheduler: MainScheduler.instance).withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.setProgressViewHidden(false)
+                self.addChildVC(viewController, progress: 1)
+            })
+            .disposed(by: rx.disposeBag)
     }
 
 }
