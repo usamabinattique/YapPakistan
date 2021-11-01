@@ -254,3 +254,7 @@
 "screen_kyc_address_address" = "Address";
 "screen_kyc_address_flatbuilding" = "Flat number/ Building name";
 "screen_kyc_address_city" = "City";
+
+// MARK: Manual Verification
+"screen_kyc_manualverification_title" = "Some information is still needed!";
+"screen_kyc_manualverification_subtitle" = "A member from our customer service team will reach out to you.";
