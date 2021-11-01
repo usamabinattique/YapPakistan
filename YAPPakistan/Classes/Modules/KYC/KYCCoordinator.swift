@@ -259,6 +259,10 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.manualVerification() })
+            .disposed(by: rx.disposeBag)
+
         let citySelected = viewController.viewModel.outputs.city.withUnretained(self)
             .flatMap{ `self`, _ in self.selectCityName() }
             .share()
@@ -285,6 +289,19 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         root.setNavigationBarHidden(false, animated: true)
 
         return viewController.viewModel.outputs.next
+    }
+
+    func manualVerification() {
+        let viewController = container.makeManualVerificationViewController()
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setViewControllers([self.root.viewControllers.first!], animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(true, animated: true)
     }
 
 }

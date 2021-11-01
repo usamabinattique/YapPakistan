@@ -57,7 +57,7 @@ final class GMSFactory {
         let marker = GMSMarker()
         marker.position = position
         marker.title = title
-        marker.icon = UIImage(named: icon)
+        // marker.icon = UIImage(named: icon)
         return marker
     }
 }

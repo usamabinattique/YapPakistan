@@ -12,7 +12,7 @@ import RxTheme
 class ManualVerificationViewController: UIViewController {
 
     private let infoImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
-    private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
+    private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     private let dashboardButton = UIFactory.makeAppRoundedButton(with: .regular)
 
@@ -81,10 +81,10 @@ class ManualVerificationViewController: UIViewController {
 
         titleLabel
             .toBottomOf(spacers[0])
-            .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
+            .alignEdgesWithSuperview([.left, .right], constants: [22, 22])
 
         spacers[1]
-            .toBottomOf(infoImage)
+            .toBottomOf(titleLabel)
             .alignEdgesWithSuperview([.left, .right])
 
         infoImage
@@ -99,14 +99,14 @@ class ManualVerificationViewController: UIViewController {
 
         subTitleLabel
             .toBottomOf(spacers[2])
-            .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
+            .alignEdgesWithSuperview([.left, .right], constants: [22, 22])
 
         spacers[3]
             .toBottomOf(subTitleLabel)
             .alignEdgesWithSuperview([.left, .right])
 
         dashboardButton
-            .toBottomOf(spacers[2])
+            .toBottomOf(spacers[3])
             .centerHorizontallyInSuperview()
             .alignEdgeWithSuperview(.safeAreaBottom, constant: 25)
             .width(constant: 250)
@@ -115,7 +115,6 @@ class ManualVerificationViewController: UIViewController {
         spacers[0]
             .heightEqualTo(view: spacers[1])
             .heightEqualTo(view: spacers[2])
-            .heightEqualTo(view: spacers[3], multiplier: 1 / 2)
+            .heightEqualTo(view: spacers[3], multiplier: 1 / 5)
     }
 }
-
