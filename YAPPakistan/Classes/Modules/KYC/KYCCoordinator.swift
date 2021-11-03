@@ -55,7 +55,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
-        homeViewController.viewModel.outputs.next.filter({ $0 == .secretQuestionPending })
+        homeViewController.viewModel.outputs.next.filter({ $0 == .addressCaptured }) // secretQuestionPending })
             .withUnretained(self)
             .subscribe(onNext: { $0.0.motherNameQuestion() })
             .disposed(by: rx.disposeBag)
@@ -259,12 +259,28 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
+        viewController.viewModel.outputs.search.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.searchController() })
+            .disposed(by: rx.disposeBag)
+
         let citySelected = viewController.viewModel.outputs.city.withUnretained(self)
             .flatMap{ `self`, _ in self.selectCityName() }
             .share()
         citySelected.bind(to: viewController.viewModel.inputs.citySelectObserver)
             .disposed(by: rx.disposeBag)
         citySelected.subscribe(onNext: { [unowned self] _ in self.root.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next
+            .withLatestFrom(container.accountProvider.currentAccount).unwrap()
+            .map({ !$0.isSecretQuestionVerified }).withUnretained(self)
+            .subscribe(onNext: { `self`, isVerified in
+                if isVerified {
+                    // Success card is on the way screen
+                } else {
+                    // Manual verification screen
+                }
+            })
             .disposed(by: rx.disposeBag)
 
         root.pushViewController(viewController, animated: true)
@@ -287,6 +303,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         return viewController.viewModel.outputs.next
     }
 
+    func searchController() {
+        
+    }
 }
 
 // MARK: Helpers

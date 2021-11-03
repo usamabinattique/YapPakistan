@@ -1,37 +1,67 @@
 //
 //  LocationModel.swift
-//  Carzly
+//  OARApp
 //
-//  Created by Zuhair Hussain on 24/06/2019.
-//  Copyright © 2019 Zuhair Hussain. All rights reserved.
+//  Created by Sarmad Abbas on 24/06/2020.
+//  Copyright © 2019 Sarmad Abbas. All rights reserved.
 //
 
 import Foundation
 import CoreLocation
 
-class LocationModel {
-    var formattAdaddress = ""
+struct LocationModel {
     var latitude: Double = 0
     var longitude: Double = 0
-    var distanceMeters: Double = 0
-    
-    var country = ""
-    var state = ""
-    var city = ""
-    
     var placeId = ""
-    
-    var coordinates:CLLocationCoordinate2D {
-        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    var country: String = ""
+    var state: String = ""
+    var city: String = ""
+    var formattAdaddress: String = ""
+
+    var distanceMeters: Double = 0 // From current location
+
+    var coordinates: CLLocationCoordinate2D {
+        set { (self.latitude, self.longitude) = (newValue.latitude, newValue.longitude) }
+        get { CLLocationCoordinate2D(latitude: latitude, longitude: longitude) }
     }
-    
-    init() {}
-    init(lat:Double, long:Double, address:String? = nil) {
-        self.latitude = lat
-        self.longitude = long
-        if let address = address { self.formattAdaddress = address }
+
+    init() { }
+
+    init(latitude: Double,
+         longitude: Double,
+         placeId: String? = nil,
+         country: String? = nil,
+         state: String? = nil,
+         city: String? = nil,
+         formattAdaddress: String? = nil) {
+
+        self.latitude = latitude
+        self.longitude = longitude
+
+        if let placeId = placeId { self.placeId = placeId }
+        if let country = country { self.country = country }
+        if let state = state { self.state = state }
+        if let city = city { self.city = city }
+        if let formattAdaddress = formattAdaddress { self.formattAdaddress = formattAdaddress }
     }
-    
+
+    init(coordinates: CLLocationCoordinate2D,
+         placeId: String? = nil,
+         country: String? = nil,
+         state: String? = nil,
+         city: String? = nil,
+         formattAdaddress: String? = nil) {
+
+        self.latitude = coordinates.latitude
+        self.longitude = coordinates.longitude
+
+        if let placeId = placeId { self.placeId = placeId }
+        if let country = country { self.country = country }
+        if let state = state { self.state = state }
+        if let city = city { self.city = city }
+        if let formattAdaddress = formattAdaddress { self.formattAdaddress = formattAdaddress }
+    }
+
     init(prediction: NSDictionary) {
         formattAdaddress = prediction["description"] as? String ?? ""
         country = (prediction["terms"] as? [NSDictionary])?.last?["value"] as? String ?? ""
@@ -41,45 +71,36 @@ class LocationModel {
         placeId = prediction["place_id"] as? String ?? ""
         distanceMeters = (prediction["distance_meters"] as? NSString)?.doubleValue ?? 0
     }
-    
-//    init(json:JSON) {
-//        country = json["name"].stringValue //"Thokar Niaz Bag",
-//        latitude = json["latitude"].doubleValue //"31.460768968415834",
-//        longitude = json["longitude"].doubleValue //"74.25315354019403",
-//        formattAdaddress = json["address"].stringValue //"3k Aitchison Society, Rasūlpur Aitchison Society, Lahore, Punjab, Pakistan"
+}
+
+// class CountryModel {
+//    var id = 0
+//    var name = ""
+//
+//    init() {}
+//
+//    init(data: NSDictionary) {
+//        self.id = (data["Id"] as? NSString)?.integerValue ?? 0
+//        self.name = (data["Name"] as? String) ?? ""
 //    }
-    
-}
-
-class CountryModel {
-    var id = 0
-    var name = ""
-    
-    init() {}
-    
-    init(data: NSDictionary) {
-        self.id = (data["Id"] as? NSString)?.integerValue ?? 0
-        self.name = (data["Name"] as? String) ?? ""
-    }
-    
-}
-
-
-class CityModel {
-    var id = 0
-    var name = ""
-    
-    init() {}
-    
-    init(data: NSDictionary) {
-        self.id = (data["Id"] as? NSString)?.integerValue ?? 0
-        self.name = (data["Name"] as? String) ?? ""
-    }
-}
-
+//
+// }
+//
+//
+// class CityModel {
+//    var id = 0
+//    var name = ""
+//
+//    init() {}
+//
+//    init(data: NSDictionary) {
+//        self.id = (data["Id"] as? NSString)?.integerValue ?? 0
+//        self.name = (data["Name"] as? String) ?? ""
+//    }
+// }
 
 // MARK: - Utility Methods
-//extension LocationModel {
+// extension LocationModel {
 //    func getDetail(completion: @escaping () -> Void) {
 //        LocationManager.shared.getPlaceDetail(placeId: placeId) { (location, status) in
 //            self.latitude = location.latitude
@@ -88,6 +109,4 @@ class CityModel {
 //            completion()
 //        }
 //    }
-//}
-
-
+// }

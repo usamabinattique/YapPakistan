@@ -30,7 +30,7 @@ class CityOfBirthNamesViewModel: KYCQuestionViewModel {
 
         let verifyResult = nextSubject
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-            .flatMap { self.kycRepository.verifySecretQuestions(motherMaidenName: "Rida", cityOfBirth: "Karachi") }
+            .flatMap { self.kycRepository.verifySecretQuestions(motherMaidenName: "Nasreen", cityOfBirth: "Karachi") }
             .share()
 
         let refreshAccountRequest = verifyResult.elements()

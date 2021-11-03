@@ -11,12 +11,17 @@ import RxSwift
 import UIKit
 import YAPCore
 import YAPPakistan
+import GoogleMaps
+import GooglePlaces
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var appCoordinator: DemoAppCoordinator!
+
+    let googleMapsAPIKey = "AIzaSyCy_1KJ3iHy2SSQDo3Q35YS96vNDx4xZuI"
+    // (Bundle.main.object(forInfoDictionaryKey: "GoogleMapsAPIKey") as? String) ?? ""
     
     fileprivate func appCoordinate(_ shortcutItem: UIApplicationShortcutItem? = nil) -> Observable<ResultType<Void>> {
         appCoordinator = DemoAppCoordinator(window: window!, shortcutItem: shortcutItem)
@@ -33,6 +38,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         appCoordinate(shortcutItem)
             .subscribe()
             .disposed(by: rx.disposeBag)
+
+        GMSServices.provideAPIKey(googleMapsAPIKey)
+        GMSPlacesClient.provideAPIKey(googleMapsAPIKey)
         
         return true
     }

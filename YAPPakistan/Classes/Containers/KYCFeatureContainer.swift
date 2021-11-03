@@ -37,10 +37,7 @@ public final class KYCFeatureContainer {
     // MARK: Repositories
 
     func makeKYCRepository() -> KYCRepository {
-        let customersService = parent.makeCustomersService()
-        let kycRepository = KYCRepository(customersService: customersService)
-
-        return kycRepository
+        return parent.makeKYCRepository()
     }
 
     // MARK: Coordinators

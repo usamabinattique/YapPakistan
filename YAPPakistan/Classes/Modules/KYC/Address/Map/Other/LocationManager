@@ -1,0 +1,150 @@
+//
+//  LocationManager.swift
+//  YAPPakistan
+//
+//  Created by Sarmad on 02/11/2021.
+//
+
+import Foundation
+import CoreLocation
+
+/*
+class LocationManager: NSObject {
+    static let shared = LocationManager()
+
+    private var keepUpdating = false
+    private var locationManager = CLLocationManager()
+    fileprivate var currentLocation: CLLocationCoordinate2D!
+
+    override init() {
+        super.init()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.delegate = self
+    }
+}
+
+
+extension LocationManager: CLLocationManagerDelegate {
+    func getCurrentLocation(keepUpdating:Bool = false, _ completion: @escaping (_ message: String, _ location: CLLocation?) -> Void) {
+
+        self.keepUpdating = keepUpdating
+
+        switch CLLocationManager.authorizationStatus() {
+        case .authorizedAlways, .authorizedWhenInUse:
+            locationManager.distanceFilter = CLLocationDistance(15)
+            //locationManager.allowsBackgroundLocationUpdates = true
+            locationManager.startUpdatingLocation()
+        case .notDetermined: locationManager.requestWhenInUseAuthorization()
+        case .denied, .restricted:
+            locationCallback?(APIResponseStatus.locationDeniedRestricted, nil)
+            locationCallback = nil
+        default: break
+        }
+    }
+
+    func stopLocationUpdate() {
+        self.locationCallback = nil
+        self.keepUpdating = false
+    }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch CLLocationManager.authorizationStatus() {
+        case .authorizedAlways, .authorizedWhenInUse: locationManager.startUpdatingLocation()
+        case .denied, .restricted:
+            locationCallback?(APIResponseStatus.locationDeniedRestricted, nil)
+            locationCallback = nil
+        default: break
+        }
+    }
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.first else { return }
+        if self.keepUpdating {
+            self.locationCallback?(APIResponseStatus.success, location)
+        } else {
+            self.locationCallback?(APIResponseStatus.success, location)
+            manager.stopUpdatingLocation()
+            self.locationCallback = nil
+            /*
+             self.currentLocation = location.coordinate
+             print("didUpdateLocations: \(String(describing: currentLocation))")
+             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+             if self.currentLocation.latitude == location.coordinate.latitude && self.currentLocation.longitude == location.coordinate.longitude {
+             self.locationCallback?(location)
+             manager.stopUpdatingLocation()
+             self.locationCallback = nil
+             }
+             } */
+        }
+    }
+}
+
+extension LocationManager {
+    func getCurrentLocationDecoded(_ completion: @escaping (_ status:APIResponseStatus, _ location: LocationModel?) -> Void) {
+        getCurrentLocation { (status, location)  in
+            if status.isSuccess, let location = location {
+                self.reverseGeocodeCoordinate(location.coordinate) { (locationDetail, string) in
+                    if let locationDetail = locationDetail {
+                        completion(APIResponseStatus.success, locationDetail)
+                    } else {
+                        completion(APIResponseStatus(isSuccess: false, code: -1, message: string), nil)
+                    }
+                }
+            } else {
+                completion(status, nil)
+            }
+        }
+    }
+
+    func isAppArea(target:BaseViewController, completion:@escaping (APIResponseStatus, _ country:Country?) -> Void) {
+        LocationManager.shared.getCurrentLocationDecoded { [weak target] (status, location) in
+            if status.isSuccess, let location = location {
+                let countries = Country.getCountries()
+                let ctryLoc = location.country.replacingOccurrences(of: " ", with: "").lowercased()
+                if let country = countries.first(where: { (ctry) -> Bool in
+                    let ctryName:String = ctry.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "null"
+                    return ctryName.contains(ctryLoc) || ctryLoc.contains(ctryName)
+                }) {
+                    User.locationCountry = country.id?.intValue ?? 0
+                    completion(APIResponseStatus.success, country)
+                } else {
+                    let endPoint = OarAPI.countries.endPoint
+                    target?.postRequestJSON(endPoint: endPoint, parms: nil, showProcessing:false) { (status, json) in
+                        if status.isSuccess, let json = json {
+                            let resultArray = json.arrayValue.map({Country(json: $0)})
+                            resultArray.forEach({_ = $0.writeUpdate()})
+                            if  let country = resultArray.first(where: { (ctry) -> Bool in
+                                let ctryName:String = ctry.name?.replacingOccurrences(of: " ", with: "").lowercased() ?? "null"
+                                return ctryName.contains(ctryLoc) || ctryLoc.contains(ctryName)
+                            }) {
+                                User.locationCountry = country.id?.intValue ?? 0
+                                completion(APIResponseStatus.success, country)
+                            } else {
+                                completion(APIResponseStatus.noserviceArea, nil)
+                            }
+                        } else {
+                            completion(status, nil)
+                        }
+                    }
+                }
+            } else {
+                completion(status, nil)
+            }
+        }
+    }
+
+    static func showLocationDeniedAlert(target:UIViewController) {
+        target.showAppAlert(title: TitleString.locationAccessDenied.localized, message: Strings.Error.locationDeniedRestricted.localized, icon: .lock_in_bag, titleB1: ButtonTitle.settings.localized, completion1: {
+            if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
+        }, titleB2: ButtonTitle.dismiss.localized)
+    }
+
+    static func showNoServiceAlert(target:UIViewController) {
+        let message = DetailString.oarIsCurrentlyNotServingInYourArea.localized
+        let str2:String = String(format: message)
+        print(message)
+        print(str2)
+        target.showAppAlert(title: TitleString.serviceNotAvaiable.localized, message: message, icon: .noService, titleB1: ButtonTitle.ok.localized, completion1: nil, titleB2: nil)
+    }
+}
+
+*/

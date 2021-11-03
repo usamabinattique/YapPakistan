@@ -78,7 +78,7 @@ class KYCQuestionViewModel: KYCQuestionViewModelInput, KYCQuestionViewModelOutpu
             .disposed(by: disposeBag)
 
         self.cellViewModel.subscribe(onNext: { vms in
-            let oss =  vms.map({ $0.outputs.selected })
+            let oss = vms.map({ $0.outputs.selected })
 
             oss.forEach { [unowned self] isSelected in
                 isSelected.filter({ $0 })

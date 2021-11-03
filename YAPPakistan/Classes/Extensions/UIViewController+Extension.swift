@@ -165,6 +165,24 @@ extension UIViewController {
         return button
     }
 
+    public func barButtonItem(image: UIImage?, insectBy insect: UIEdgeInsets) -> (button: UIButton?, barItem: UIBarButtonItem) {
+        let button = UIButton()
+        button.frame = CGRect(x: insect.left, y: 0, width: 35, height: 35)
+        button.setImage(image, for: .normal)
+        button.layer.cornerRadius = 0.5 * button.bounds.size.width
+
+        let view:UIView = {
+            let view = UIView(frame: CGRect(x: 0, y: 0, width: 35 + insect.right, height: 35))
+            view.backgroundColor = .clear
+            return view
+        }()
+        view.addSub(view: button)
+
+        let backButton = UIBarButtonItem()
+        backButton.customView = view
+        return (button, backButton)
+    }
+
     /*
     public func addBackButtonWithOutNavBar(_ type: BackButtonType = .backCircled) {
         

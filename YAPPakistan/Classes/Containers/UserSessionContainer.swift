@@ -37,6 +37,12 @@ public final class UserSessionContainer {
         return parent.makeCustomersService(authorizationProvider: session)
     }
 
+    func makeCardsService() -> CardsService {
+        return CardsService(apiConfig: parent.makeAPIConfiguration(),
+                            apiClient: parent.makeAPIClient(),
+                            authorizationProvider: session)
+    }
+
     // MARK: Repositories
 
     func makeAccountRepository() -> AccountRepository {
@@ -75,8 +81,10 @@ public final class UserSessionContainer {
 
     func makeKYCRepository() -> KYCRepository {
         let customersService = parent.makeCustomersService(authorizationProvider: session)
-        let kycRepository = KYCRepository(customersService: customersService)
+        let cardsService = makeCardsService()
 
+        let kycRepository = KYCRepository(customersService: customersService,
+                                          cardsService: cardsService)
         return kycRepository
     }
 
