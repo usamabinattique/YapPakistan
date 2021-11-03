@@ -244,6 +244,7 @@ class AddressViewController: UIViewController {
         editingDidBegin.bind(to: viewModel.inputs.cityObserver).disposed(by: rx.disposeBag)
         editingDidBegin.map({ _ in false }).bind(to: cityTextField.rx.isFirstResponder ).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        nextButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
 
         // searchButton.rx.tap.bind(to: viewModel.inputs.searchObserver).disposed(by: rx.disposeBag)
         searchButton.rx.tap.withUnretained(self)
