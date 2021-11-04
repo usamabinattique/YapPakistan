@@ -8,7 +8,7 @@
 import RxSwift
 import YAPCore
 
-public enum PasscodeVerificationResult {
+public enum PasscodeVerificationResult: Hashable {
     case waiting
     case allowed
     case onboarding
@@ -118,6 +118,10 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
     private var accountProvider: AccountProvider?
     private var biometricsManager: BiometricsManagerType!
     private var notificationManager: NotificationManagerType
+
+    deinit {
+        print(self)
+    }
 
     // MARK: - Init
     init( username: String,
@@ -301,9 +305,7 @@ fileprivate extension VerifyPasscodeViewModel {
             return assertionFailure()
         }
 
-        accountProvider.currentAccount
-            .unwrap()
-            .take(1)
+        accountProvider.currentAccount.unwrap()
             .subscribe(onNext: { account in
                 if account.isWaiting {
                     self.loginResultSubject.onNext(.waiting)

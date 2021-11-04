@@ -97,8 +97,8 @@ extension KYCFeatureContainer {
         return MotherQuestionModuleBuilder(container: self).viewController()
     }
 
-    func makeCityQuestionViewController() -> KYCQuestionsViewController {
-        return CityQuestionModuleBuilder(container: self).viewController()
+    func makeCityQuestionViewController(motherName: String) -> KYCQuestionsViewController {
+        return CityQuestionModuleBuilder(container: self, motherName: motherName).viewController()
     }
 
     func makeSelfieGuidelineViewController() -> SelfieGuidelineViewController {

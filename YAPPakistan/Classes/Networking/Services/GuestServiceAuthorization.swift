@@ -29,8 +29,8 @@ class GuestServiceAuthorization: ServiceAuthorizationProviderType {
         }
 
         var headers: [String: String] = [:]
-        headers["X-XSRF-TOKEN"] = xsrf
-        headers["Cookie"] = "XSRF-TOKEN=\(xsrf)"
+        //headers["X-XSRF-TOKEN"] = xsrf
+        //headers["Cookie"] = "XSRF-TOKEN=\(xsrf)"
 
         return headers
     }

@@ -120,7 +120,9 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
 
-        request.errors().map { $0.localizedDescription }
+        request.errors().map {
+            $0.localizedDescription
+        }
             .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
 
@@ -130,7 +132,9 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .disposed(by: disposeBag)
 
         request.elements()
-            .map { $0?.isExpired ?? true ? .notDetermined : .valid }
+            .map {
+                $0?.isExpired ?? true ? .notDetermined : .valid
+            }
             .bind(to: eidValidationSubject)
             .disposed(by: disposeBag)
 
@@ -162,7 +166,9 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .disposed(by: disposeBag)
 
         ocrRequest.errors()
-            .map { $0.localizedDescription }
+            .map {
+                $0.localizedDescription
+            }
             .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
     }

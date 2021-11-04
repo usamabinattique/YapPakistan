@@ -33,6 +33,8 @@ protocol AddressViewModelOutput {
     var back: Observable<Void> { get }
     var city: Observable<Void> { get }
     var citySelected: Observable<String> { get }
+    var loader: Observable<Bool> { get }
+    var error: Observable<String> { get }
     var languageStrings: Observable<AddressViewModel.LanguageStrings> { get }
 }
 
@@ -61,15 +63,18 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     var location: Observable<LocationModel> { currentLocationResultSubject.skip(1).asObservable() }
     var confirm: Observable<LocationModel> { confirmLocationResultSubject.asObservable() }
     var isMapMarker: Observable<Bool> { isMarkerSubject.asObservable() }
-    var next: Observable<Void> { nextSubject.asObservable() }
+    var next: Observable<Void> { nextResultSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
     var city: Observable<Void> { citySubject.asObservable() }
     var citySelected: Observable<String> { citySelectSubject.asObserver() }
+    var loader: Observable<Bool> { loaderSubject.asObserver() }
     var languageStrings: Observable<LanguageStrings> { languageStringsSubject.asObservable() }
+    var error: Observable<String> { errorSubject.asObservable() }
 
     // MARK: Subjects
     private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
     private var nextSubject = PublishSubject<Void>()
+    private var nextResultSubject = PublishSubject<Void>()
     private var backObserSubject = PublishSubject<Void>()
     private var backSubject = PublishSubject<Void>()
     private var citySubject = PublishSubject<Void>()
@@ -83,7 +88,9 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     private var currentLocationResultSubject = BehaviorSubject<LocationModel>(value: LocationModel())
     private var confirmLocationResultSubject = PublishSubject<LocationModel>()
     private var willMoveSubject = PublishSubject<Bool>()
+    private var loaderSubject = BehaviorSubject<Bool>.init(value: false)
     private var didIdleAtSubject = PublishSubject<GMSCameraPosition>()
+    private var errorSubject = PublishSubject<String>()
 
     var inputs: AddressViewModelInput { return self }
     var outputs: AddressViewModelOutput { return self }
@@ -91,11 +98,13 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     fileprivate var disposeBag = DisposeBag()
     private var locationService: LocationService!
     private var kycRepository: KYCRepository!
+    private var accountProvider: AccountProvider!
 
-    init(locationService: LocationService, kycRepository: KYCRepository) {
+    init(locationService: LocationService, kycRepository: KYCRepository, accountProvider: AccountProvider) {
 
         self.locationService = locationService
         self.kycRepository = kycRepository
+        self.accountProvider = accountProvider
 
         languageSetup()
 
@@ -135,27 +144,28 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
         locationDecoded.elements().bind(to: currentLocationResultSubject).disposed(by: disposeBag)
 
         let saveAddressRequest = nextSubject
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .withLatestFrom(currentLocationResultSubject)
             .withUnretained(self)
             .flatMapLatest { `self`, location in
                 self.kycRepository.saveUserAddress(address: location.formattAdaddress,
                                                    city: location.city,
                                                    country: location.country,
-                                                   postCode: "0",
+                                                   postCode: "05400",
                                                    latitude: "\(location.latitude)",
                                                    longitude: "\(location.longitude)" )
             }.share()
 
         saveAddressRequest.elements()
-            .subscribe(onNext: {
-                print($0 ?? "Success...")
-            })
+            .flatMap({ [unowned self] _ in self.accountProvider.refreshAccount() })
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+            .bind(to: nextResultSubject)
             .disposed(by: disposeBag)
 
         saveAddressRequest.errors()
-            .subscribe(onNext: {
-                print($0.localizedDescription)
-            })
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+            .map({ $0.localizedDescription })
+            .bind(to: errorSubject )
             .disposed(by: disposeBag)
     }
 

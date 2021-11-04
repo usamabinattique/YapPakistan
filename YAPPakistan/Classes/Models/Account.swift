@@ -66,7 +66,7 @@ public struct Account: Codable {
     private let _freezeInitiator: String?
     private let _partnerBankApprovalDate: String?
     public var _isWaiting: Bool?
-    public let isSecretQuestionVerified: Bool
+    public let isSecretQuestionVerified: Bool?
 
     public var freezeCode: AccountFreezeCode { AccountFreezeCode(rawValue: _freezeCode ?? "") ?? .none }
     public var freezeInitiator: AccountFreezeInitiator { AccountFreezeInitiator(rawValue: _freezeInitiator ?? "") ?? .none }

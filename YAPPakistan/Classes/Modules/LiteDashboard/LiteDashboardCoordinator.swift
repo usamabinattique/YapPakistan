@@ -33,7 +33,7 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
         presentDashBoardController()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) { self.bioMetricPermission() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { self.bioMetricPermission() }
 
         return result
     }
@@ -80,12 +80,17 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
             .disposed(by: disposeBag)
 
         viewController.viewModel.outputs.completeVerification
-            .subscribe(onNext: { [weak self] in self?.navigateToKYC() })
+            .subscribe(onNext: { [weak self] isTrue in
+                self?.navigateToKYC(isTrue)
+            })
             .disposed(by: disposeBag)
     }
 
-    private func navigateToKYC() {
+    #warning("FIXME")
+    private func navigateToKYC( _ isTrue: Bool) {
         let kycContainer = KYCFeatureContainer(parent: container)
+
+        if isTrue {
 
         coordinate(to: KYCCoordinator(container: kycContainer, root: self.root))
             .subscribe(onNext: { result in
@@ -96,6 +101,18 @@ class LiteDashboardCoodinator: Coordinator<ResultType<Void>> {
                     break
                 }
             }).disposed(by: self.disposeBag)
+        } else {
+            let viewController = kycContainer.makeManualVerificationViewController()
+
+            viewController.viewModel.outputs.back.withUnretained(self)
+                .subscribe(onNext: { `self`, _ in
+                    self.root.setViewControllers([self.root.viewControllers[0]], animated: true)
+                })
+                .disposed(by: rx.disposeBag)
+
+            root.pushViewController(viewController, animated: true)
+            root.setNavigationBarHidden(true, animated: true)
+        }
     }
 }
 
@@ -118,7 +135,8 @@ extension LiteDashboardCoodinator {
     }
 
     fileprivate func resultSuccess() {
-        self.result.onNext( ResultType.success(()) )
-        self.result.onCompleted()
+        NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        // self.result.onNext( ResultType.success(()) )
+        // self.result.onCompleted()
     }
 }

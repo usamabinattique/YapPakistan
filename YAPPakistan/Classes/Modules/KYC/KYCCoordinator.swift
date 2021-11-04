@@ -55,7 +55,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
-        homeViewController.viewModel.outputs.next.filter({ $0 == .addressCaptured }) // secretQuestionPending })
+        homeViewController.viewModel.outputs.next.filter({ $0 == .secretQuestionPending })
             .withUnretained(self)
             .subscribe(onNext: { $0.0.motherNameQuestion() })
             .disposed(by: rx.disposeBag)
@@ -124,16 +124,16 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let viewController = container.makeMotherQuestionViewController()
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { $0.0.cityQuestion() })
+            .subscribe(onNext: { $0.0.cityQuestion( motherName: $0.1) })
             .disposed(by: rx.disposeBag)
 
         addChildVC(viewController, progress: 0.5)
 
     }
 
-    func cityQuestion() {
+    func cityQuestion(motherName: String) {
 
-        let viewController = container.makeCityQuestionViewController()
+        let viewController = container.makeCityQuestionViewController(motherName: motherName)
 
         viewController.viewModel.outputs.next.withUnretained(self)
             .do(onNext: { [unowned self] _ in
@@ -268,13 +268,14 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next
+            .delay(.milliseconds(500), scheduler: MainScheduler.instance)
             .withLatestFrom(container.accountProvider.currentAccount).unwrap()
-            .map({ !$0.isSecretQuestionVerified }).withUnretained(self)
+            .map({ $0.isSecretQuestionVerified }).withUnretained(self)
             .subscribe(onNext: { `self`, isVerified in
-                if isVerified {
-                    // Success card is on the way screen
+                if isVerified == true {
+                    self.cardOnItsWay()
                 } else {
-                    // Manual verification screen
+                    self.manualVerification()
                 }
             })
             .disposed(by: rx.disposeBag)
@@ -309,7 +310,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 self.setProgressViewHidden(true)
-                self.kycProgressViewController.childNavigation.popViewController(animated: true)
+                self.root.setViewControllers([self.root.viewControllers[0]], animated: true)
             })
             .disposed(by: rx.disposeBag)
 
@@ -326,7 +327,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
-                self.root.setViewControllers([self.root.viewControllers.first!], animated: true)
+                self.root.setViewControllers([self.root.viewControllers[0]], animated: true)
             })
             .disposed(by: rx.disposeBag)
 

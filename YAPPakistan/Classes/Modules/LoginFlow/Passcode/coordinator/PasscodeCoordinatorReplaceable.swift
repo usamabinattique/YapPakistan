@@ -28,6 +28,10 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         self.isUserBlocked = isUserBlocked
     }
 
+    deinit {
+        print("PasscodeCoordinatorReplaceable")
+    }
+
     override func start(with option: DeepLinkOptionType?) -> Observable<PasscodeVerificationResult> {
         let viewController = container.makeVerifyPasscodeViewController(isUserBlocked: isUserBlocked) { session, accountProvider in
             self.sessionContainer = UserSessionContainer(parent: self.container, session: session)
@@ -54,7 +58,9 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.loginResult
-            .subscribe(onNext: { result in
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, result in
                 switch result {
                 case .waiting:
                     self.waitingList()

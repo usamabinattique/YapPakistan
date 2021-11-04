@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import YAPCore
+import YAPPakistan
 
 public class DemoAppCoordinator: Coordinator<ResultType<Void>> {
     private let window: UIWindow
@@ -22,6 +23,13 @@ public class DemoAppCoordinator: Coordinator<ResultType<Void>> {
         self.shortcutItem = shortcutItem
         self.navigationController = UINavigationController()
         super.init()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(logout), name: NSNotification.Name("LOGOUT"), object: nil)
+    }
+
+    @objc func logout() {
+        result.onNext(.success(()))
+        result.onCompleted()
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {

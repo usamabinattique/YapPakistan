@@ -14,7 +14,9 @@ struct AddressModuleBuilder {
         let themeService = container.themeService
         let locationService = LocationService()
         let kycRepository = container.makeKYCRepository()
-        let viewModel = AddressViewModel(locationService: locationService, kycRepository: kycRepository)
+        let viewModel = AddressViewModel(locationService: locationService,
+                                         kycRepository: kycRepository,
+                                         accountProvider: container.accountProvider )
         return AddressViewController(themeService: themeService, viewModel: viewModel)
     }
 }

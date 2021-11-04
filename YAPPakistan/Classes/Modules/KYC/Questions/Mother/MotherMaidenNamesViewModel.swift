@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 import YAPComponents
 
-class MotherMaidenNamesViewModel:KYCQuestionViewModel {
+class MotherMaidenNamesViewModel: KYCQuestionViewModel {
 
     private let kycRepository: KYCRepository!
 
@@ -29,7 +29,10 @@ class MotherMaidenNamesViewModel:KYCQuestionViewModel {
 
         super.init(accountProvider: accountProvider, cellViewModel: cellViewModel, strings: strings)
 
-        nextSubject.bind(to: successSubject).disposed(by: disposeBag)
+        nextSubject
+            .withLatestFrom(selectedItemSubject)
+            .flatMap({ $0.value })
+            .bind(to: successSubject).disposed(by: disposeBag)
         
     }
 }

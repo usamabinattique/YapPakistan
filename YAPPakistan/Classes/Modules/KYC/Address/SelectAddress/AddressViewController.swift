@@ -216,6 +216,14 @@ class AddressViewController: UIViewController {
             })
             .disposed(by: rx.disposeBag)
 
+        viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
+
+        viewModel.outputs.error.withUnretained(self)
+            .subscribe(onNext: { `self`, message in
+                self.showAlert(title: "", message: message,
+                                defaultButtonTitle: "common_button_ok".localized)
+            }).disposed(by: rx.disposeBag)
+
 //        mapView.rx.idleAt.withUnretained(self)
 //            .delay(.milliseconds(10), scheduler: MainScheduler.instance)
 //            .subscribe(onNext: { `self`, position in

@@ -122,6 +122,10 @@ class KYCQuestionsViewController: UIViewController {
             cell.configure(with: self.themeService, viewModel: viewModel)
         }.disposed(by: rx.disposeBag)
 
+        tableView.rx.modelSelected(KYCQuestionCellViewModel.self)
+            .bind(to: viewModel.inputs.selectedItemObserver)
+            .disposed(by: rx.disposeBag)
+
         viewModel.outputs.isNextEnable
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: rx.disposeBag)

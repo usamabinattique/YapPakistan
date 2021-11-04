@@ -10,7 +10,7 @@ import RxSwift
 import YAPCore
 import UIKit
 
-public enum LoginOTPVerificationResult {
+public enum LoginOTPVerificationResult: Hashable {
     case waiting
     case allowed
     case onboarding

@@ -31,7 +31,7 @@ protocol LiteDashboardViewModelOutputs {
     var headingText: Observable<String> { get }
     var logOutButtonTitle: Observable<String> { get }
     var completeVerificationHidden: Observable<Bool> { get }
-    var completeVerification: Observable<Void> { get }
+    var completeVerification: Observable<Bool> { get }
 }
 
 protocol LiteDashboardViewModelType {
@@ -53,6 +53,7 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
     private let showActivitySubject = BehaviorSubject<Bool>(value: false)
     private let completeVerificationHiddenSubject = BehaviorSubject<Bool>(value: true)
     private let completeVerificationSubject = PublishSubject<Void>()
+    private let completeVerificationResultSubject = PublishSubject<Bool>()
     private let viewAppearSubject = PublishSubject<Void>()
 
     var inputs: LiteDashboardViewModelInputs { return self }
@@ -79,7 +80,7 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
     var headingText: Observable<String> { Observable.of("screen_light_dashboard_display_text_heading_text".localized) }
     var logOutButtonTitle: Observable<String> { Observable.of("screen_light_dashboard_button_logout".localized) }
     var completeVerificationHidden: Observable<Bool> { completeVerificationHiddenSubject.asObservable() }
-    var completeVerification: Observable<Void> { completeVerificationSubject.asObserver() }
+    var completeVerification: Observable<Bool> { completeVerificationResultSubject.asObserver() }
 
     // MARK: Init
 
@@ -135,9 +136,14 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
 
-        accountProvider.currentAccount
-            .map{ _ in false /* $0?.accountStatus ?? .onboarded != .onboarded */ }
+        accountProvider.currentAccount.unwrap()
+            .map{ $0.accountStatus == .addressCaptured && $0.isSecretQuestionVerified == true }
             .bind(to: completeVerificationHiddenSubject)
+            .disposed(by: disposeBag)
+
+        completeVerificationSubject.withLatestFrom(accountProvider.currentAccount).unwrap()
+            .map({ $0.accountStatus != .addressCaptured })
+            .bind(to: completeVerificationResultSubject)
             .disposed(by: disposeBag)
 
         viewAppearSubject.subscribe(onNext: {
