@@ -126,9 +126,7 @@ class KYCHomeViewController: UIViewController {
 
     func setupConstraints() {
         titleLabel
-            .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
-            .alignEdgeWithSuperview(.top, .lessThanOrEqualTo, constant: 50)
-            .alignEdgeWithSuperview(.top, .greaterThanOrEqualTo, constant: 25)
+            .alignEdgesWithSuperview([.left, .right, .safeAreaTop], constants: [25, 25, 15])
 
         subHeadingLabel
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])

@@ -19,6 +19,7 @@ class CityOfBirthNamesViewModel: KYCQuestionViewModel {
          motherName: String) {
 
         self.kycRepository = kycRepository
+        self.motherName = motherName
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { YAPProgressHud.showProgressHud() }
         let requestCities = self.kycRepository.getCityOfBirthNames().share()
@@ -48,6 +49,11 @@ class CityOfBirthNamesViewModel: KYCQuestionViewModel {
             .withLatestFrom(selectedItemSubject)
             .flatMap({ $0.value })
             .bind(to: successSubject)
+            .disposed(by: disposeBag)
+
+        requestCities.errors().map({ $0.localizedDescription })
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
 
         verifyResult.errors()

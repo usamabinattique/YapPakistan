@@ -72,7 +72,7 @@ class KYCInitialReviewViewController: UIViewController {
 
     private lazy var tickImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "icon_check", in: .yapPakistan)
+        imageView.image = UIImage(named: "icon_check", in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
         imageView.contentMode = .center
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -185,6 +185,7 @@ class KYCInitialReviewViewController: UIViewController {
             .bind({ UIColor($0.primary) }, to: confirmButton.rx.enabledBackgroundColor)
             .bind({ UIColor($0.greyDark) }, to: confirmButton.rx.disabledBackgroundColor)
             .bind({ UIColor($0.primary) }, to: reScanButton.rx.titleColorForNormal)
+            .bind({ UIColor($0.primaryLight) }, to: tickImageView.rx.tintColor)
             .disposed(by: disposeBag)
     }
 

@@ -121,7 +121,7 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
     }
 }
 
-func randomString(length: Int = 13)->String{
+func randomString(length: Int = 13) -> String{
 
     enum Stringbase {
         static let ccc = Array("1234567890")

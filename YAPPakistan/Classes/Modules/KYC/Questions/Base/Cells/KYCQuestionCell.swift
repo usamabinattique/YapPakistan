@@ -75,7 +75,7 @@ class KYCQuestionCell: UITableViewCell, ReusableView {
 
     private func setupConstraints() {
         containerView
-            .alignEdgesWithSuperview([.right, .left, .top, .bottom], constants: [30, 30, 8, 8])
+            .alignEdgesWithSuperview([.right, .left, .top, .bottom], constants: [30, 30, 16, 0])
             .aspectRatio(70 / 313, .defaultHigh)
         valueLabel
             .centerHorizontallyInSuperview()
