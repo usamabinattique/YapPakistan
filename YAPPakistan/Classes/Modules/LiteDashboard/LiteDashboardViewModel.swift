@@ -137,7 +137,7 @@ class LiteDashboardViewModel: LiteDashboardViewModelType, LiteDashboardViewModel
             .disposed(by: disposeBag)
 
         accountProvider.currentAccount.unwrap()
-            .map{ $0.accountStatus == .addressCaptured && $0.isSecretQuestionVerified == true }
+            .map{ $0.accountStatus == .addressCaptured }
             .bind(to: completeVerificationHiddenSubject)
             .disposed(by: disposeBag)
 

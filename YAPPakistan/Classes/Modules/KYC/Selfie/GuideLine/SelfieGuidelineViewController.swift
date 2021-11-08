@@ -69,12 +69,13 @@ class SelfieGuidelineViewController: UIViewController {
             .bind({ UIColor($0.primary) }, to: takeSelfieButton.rx.enabledBackgroundColor)
             .bind({ UIColor($0.primaryExtraLight) }, to: tipsIconContainer.rx.backgroundColor)
             .bind({ UIColor($0.primary) }, to: backButton.rx.tintColor)
+            .bind({ UIColor($0.primary) }, to: tipsIcon.rx.tintColor)
             .disposed(by: rx.disposeBag)
     }
 
     func setupResources() {
         selfieImage.image = UIImage(named: "selfie_guide_image", in: .yapPakistan)
-        tipsIcon.image = UIImage(named: "tips", in: .yapPakistan)
+        tipsIcon.image = UIImage(named: "tips", in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
     }
 
     func setupLanguageStrings() {

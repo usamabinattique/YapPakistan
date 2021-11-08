@@ -88,7 +88,7 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
             })
             .disposed(by: disposeBag)
 
-        if let date = cnicOCR.parsedIssueDate {
+        if let date = cnicOCR.issueDate {
             issueDateSubject.onNext(date)
         }
 

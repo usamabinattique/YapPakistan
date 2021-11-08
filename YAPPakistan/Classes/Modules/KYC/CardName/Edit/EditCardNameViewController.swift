@@ -199,7 +199,7 @@ class EditCardNameViewController: UIViewController {
         spacers[0]
             .heightEqualTo(view: spacers[1])
             .heightEqualTo(view: spacers[2])
-            .heightEqualTo(view: spacers[3])
-            .heightEqualTo(view: spacers[4], multiplier: 1 / 4)
+            .heightEqualTo(view: spacers[3], multiplier: 1 / 4)
+            .heightEqualTo(view: spacers[4])
     }
 }

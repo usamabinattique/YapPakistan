@@ -13,7 +13,7 @@ class GuestServiceAuthorization: ServiceAuthorizationProviderType {
     private let tokenSubject = BehaviorSubject<String>(value: "")
     private let disposeBag = DisposeBag()
 
-    private var xsrf = "fa142ea6-1784-4c27-87a9-92b90df908f3"
+    private var xsrf = "" // "fa142ea6-1784-4c27-87a9-92b90df908f3"
 
     init() {
         tokenSubject.asObservable().subscribe(onNext: { [weak self] token in
@@ -29,8 +29,8 @@ class GuestServiceAuthorization: ServiceAuthorizationProviderType {
         }
 
         var headers: [String: String] = [:]
-        headers["X-XSRF-TOKEN"] = "fa142ea6-1784-4c27-87a9-92b90df908f3"
-        headers["Cookie"] = "XSRF-TOKEN=\("fa142ea6-1784-4c27-87a9-92b90df908f3")"
+        // headers["X-XSRF-TOKEN"] = "fa142ea6-1784-4c27-87a9-92b90df908f3"
+        // headers["Cookie"] = "XSRF-TOKEN=\("fa142ea6-1784-4c27-87a9-92b90df908f3")"
 
         return headers
     }

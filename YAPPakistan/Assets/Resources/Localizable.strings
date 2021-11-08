@@ -222,7 +222,7 @@
 // MARK: KYC Questions
 
 "screen_kyc_questions_mothers_name" = "Select your mother's maiden name";
-"screen_kyc_questions_city_of_birth" = "What is your city of birth?";
+"screen_kyc_questions_city_of_birth" = "What is your place of birth?";
 "screen_kyc_questions_reason" = "We ask this for security purpose";
 
 // MARK: KYC Selfie
