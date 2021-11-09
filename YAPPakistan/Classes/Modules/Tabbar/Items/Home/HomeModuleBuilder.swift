@@ -1,24 +1,24 @@
 //
-//  DashboardModuleBuilder.swift
+//  HomeModuleBuilder.swift
 //  YAPPakistan
 //
 //  Created by Sarmad on 26/10/2021.
 //
 
 import Foundation
-struct DashboardModuleBuilder {
+struct HomeModuleBuilder {
     let container: UserSessionContainer
 
-    func viewController() -> LiteDashboardViewController {
+    func viewController() -> HomeViewController {
 
         let notificationManager = container.parent.makeNotificationManager()
 
-        let viewModel = LiteDashboardViewModel(accountProvider: container.accountProvider,
+        let viewModel = HomeViewModel(accountProvider: container.accountProvider,
                                                biometricsManager: container.biometricsManager,
                                                notificationManager: notificationManager,
                                                credentialStore: container.parent.credentialsStore,
                                                repository: container.makeLoginRepository())
-        let viewController = LiteDashboardViewController(themeService: container.parent.themeService,
+        let viewController = HomeViewController(themeService: container.parent.themeService,
                                                          viewModel: viewModel)
 
         return viewController

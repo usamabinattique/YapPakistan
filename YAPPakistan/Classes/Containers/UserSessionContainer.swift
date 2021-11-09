@@ -106,7 +106,7 @@ public final class UserSessionContainer {
         return viewController
     }
 
-    func makeLiteDashboardViewController() -> LiteDashboardViewController {
-        return DashboardModuleBuilder(container: self).viewController()
+    func makeHomeViewController() -> HomeViewController {
+        return HomeModuleBuilder(container: self).viewController()
     }
 }

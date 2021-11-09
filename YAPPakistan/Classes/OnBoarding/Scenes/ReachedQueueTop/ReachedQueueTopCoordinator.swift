@@ -46,7 +46,7 @@ class ReachedQueueTopCoordinator: Coordinator<ResultType<Void>> {
 
     private func navigateToDashboard() {
         let window = root.view.window ?? UIWindow()
-        let coordinator = LiteDashboardCoodinator(container: container, window: window)
+        let coordinator = TabbarCoodinator(container: container, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
             self.resultSubject.onNext(ResultType.success(()))
