@@ -13,9 +13,19 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     private let root: UITabBarController
     private let result = PublishSubject<ResultType<Void>>()
     private var navigationRoot: UINavigationController!
+    private var container: UserSessionContainer!
 
-    public init(root: UITabBarController) {
+    public init(root: UITabBarController, container: UserSessionContainer) {
         self.root = root
+        self.container = container
+
+        super.init()
+
+        func testVC() {
+            let viewController = CardStatusViewController(themeService: self.container.themeService, viewModel: CardStatusViewModel())
+            self.navigationRoot.pushViewController(viewController)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: { testVC() })
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
