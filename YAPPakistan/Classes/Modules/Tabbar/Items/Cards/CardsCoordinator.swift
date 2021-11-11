@@ -29,8 +29,13 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             let viewController = SetpinIntroModuleBuilder(container: self.container).viewController()
             self.navigationRoot.pushViewController(viewController)
         }
+        func testSetpinSuccess() {
+            let viewController = SetPintSuccessModuleBuilder(container: self.container).viewController()
+            self.navigationRoot.pushViewController(viewController)
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: { testCardStatusVC() })
         DispatchQueue.main.asyncAfter(deadline: .now() + 4, execute: { testSetpinIntroVC() })
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6, execute: { testSetpinSuccess() })
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
