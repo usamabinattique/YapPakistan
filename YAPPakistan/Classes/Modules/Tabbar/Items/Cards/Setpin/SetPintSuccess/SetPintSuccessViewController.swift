@@ -11,13 +11,13 @@ import RxTheme
 
 class SetPintSuccessViewController: UIViewController {
 
-    private let backgroundImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private let successImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
-    private let createPinButton = UIFactory.makeAppRoundedButton(with: .regular)
+    private let topupButton = UIFactory.makeAppRoundedButton(with: .regular)
     private let doitLaterButton = UIFactory.makeButton(with: .regular)
 
-    let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
+    let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
 
     private var themeService: ThemeService<AppTheme>!
     var viewModel: SetPintSuccessViewModelType!
@@ -41,10 +41,10 @@ class SetPintSuccessViewController: UIViewController {
 
     func setupViews() {
         view
-            .addSub(view: backgroundImage)
+            .addSub(view: successImage)
             .addSub(view: titleLabel)
             .addSub(view: subTitleLabel)
-            .addSub(view: createPinButton)
+            .addSub(view: topupButton)
             .addSub(view: doitLaterButton)
             .addSub(views: spacers)
     }
@@ -54,13 +54,13 @@ class SetPintSuccessViewController: UIViewController {
             .bind({ UIColor($0.backgroundColor) }, to: [ view.rx.backgroundColor ])
             .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
             .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
-            .bind({ UIColor($0.primary) }, to: createPinButton.rx.backgroundColor)
+            .bind({ UIColor($0.primary) }, to: topupButton.rx.backgroundColor)
             .bind({ UIColor($0.primary) }, to: doitLaterButton.rx.titleColor(for: .normal))
             .disposed(by: rx.disposeBag)
     }
 
     func setupResources() {
-        backgroundImage.image = UIImage(named: "image_backgound", in: .yapPakistan)
+        successImage.image = UIImage(named: "image_backgound", in: .yapPakistan)
     }
 
     func setupLanguageStrings() {
@@ -68,7 +68,7 @@ class SetPintSuccessViewController: UIViewController {
             .subscribe(onNext: { `self`, strings in
                 self.titleLabel.text = strings.title
                 self.subTitleLabel.text = strings.subTitle
-                self.createPinButton.setTitle(strings.createPin, for: .normal)
+                self.topupButton.setTitle(strings.createPin, for: .normal)
                 self.doitLaterButton.setTitle(strings.doItLater, for: .normal)
             })
             .disposed(by: rx.disposeBag)
@@ -80,19 +80,19 @@ class SetPintSuccessViewController: UIViewController {
 
     func setupConstraints() {
 
-        backgroundImage
-            .alignEdgesWithSuperview([.top, .left, .right])
+        titleLabel
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right], constant: 25)
 
         spacers[0]
-            .toBottomOf(backgroundImage)
+            .toBottomOf(titleLabel)
             .alignEdgesWithSuperview([.left, .right])
 
-        titleLabel
+        successImage
             .toBottomOf(spacers[0])
-            .alignEdgesWithSuperview([.left, .right], constants: [22, 22])
+            .alignEdgesWithSuperview([.left, .right], constant: 25)
 
         spacers[1]
-            .toBottomOf(titleLabel)
+            .toBottomOf(successImage)
             .alignEdgesWithSuperview([.left, .right])
 
         subTitleLabel
@@ -103,20 +103,19 @@ class SetPintSuccessViewController: UIViewController {
             .toBottomOf(subTitleLabel)
             .alignEdgesWithSuperview([.left, .right])
 
-        createPinButton
+        topupButton
             .toBottomOf(spacers[2])
             .centerHorizontallyInSuperview()
             .width(constant: 250)
             .height(constant: 52)
 
         doitLaterButton
-            .toBottomOf(createPinButton, constant: 10)
+            .toBottomOf(topupButton, constant: 10)
             .centerHorizontallyInSuperview()
             .alignEdgeWithSuperview(.safeAreaBottom, constant: 10)
 
-        spacers[2]
-            .heightEqualTo(view: spacers[0], multiplier: 4)
-            .heightEqualTo(view: spacers[1], multiplier: 5)
+        spacers[0]
+            .heightEqualTo(view: spacers[1], multiplier: 1)
+            .heightEqualTo(view: spacers[2], multiplier: 1)
     }
 }
-

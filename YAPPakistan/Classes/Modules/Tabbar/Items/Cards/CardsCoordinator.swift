@@ -21,11 +21,16 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
 
         super.init()
 
-        func testVC() {
+        func testCardStatusVC() {
             let viewController = CardStatusViewController(themeService: self.container.themeService, viewModel: CardStatusViewModel())
             self.navigationRoot.pushViewController(viewController)
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: { testVC() })
+        func testSetpinIntroVC() {
+            let viewController = SetpinIntroModuleBuilder(container: self.container).viewController()
+            self.navigationRoot.pushViewController(viewController)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: { testCardStatusVC() })
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4, execute: { testSetpinIntroVC() })
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
