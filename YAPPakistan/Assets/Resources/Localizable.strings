@@ -270,3 +270,5 @@
 "screen_kyc_setpinintro_subtitle" = "Now create a unique 4-digit PIN code\nto be able to use your debit card for\npurchases and withdrawals";
 "screen_kyc_setpinintro_craete" = "Create PIN code";
 "screen_kyc_setpinintro_doitlater" = "Do it later";
+
+"screen_kyc_setpinintro_doitlater" = "Do it later";

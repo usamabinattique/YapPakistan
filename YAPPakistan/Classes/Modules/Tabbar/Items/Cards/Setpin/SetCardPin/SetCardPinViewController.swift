@@ -5,118 +5,270 @@
 //  Created by Sarmad on 11/11/2021.
 //
 
+import UIKit
 import YAPComponents
 import RxSwift
+import RxCocoa
 import RxTheme
 
 class SetCardPinViewController: UIViewController {
 
-    private let backgroundImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
-    private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
-    private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
-    private let createPinButton = UIFactory.makeAppRoundedButton(with: .regular)
-    private let doitLaterButton = UIFactory.makeButton(with: .regular)
+    // MARK: - Views
+    private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
+    private lazy var pincodeView = UIFactory.makePincodeView()
+    private lazy var pinKeyboard = UIFactory.makePasscodeKeyboard(font: .title2)
+    private lazy var termsAndCondtionsView = UIFactory.makeTermsAndCondtionsView()
+    private lazy var createPINButton = UIFactory.makeAppRoundedButton(with: .regular)
+    private var backButton: UIButton?
+    private lazy var spacers = [ UIFactory.makeView(),
+                                 UIFactory.makeView(),
+                                 UIFactory.makeView(),
+                                 UIFactory.makeView(),
+                                 UIFactory.makeView() ]
 
-    let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
-
-    private var themeService: ThemeService<AppTheme>!
+    // MARK: - Properties
+    var themeService: ThemeService<AppTheme>!
     var viewModel: SetCardPinViewModelType!
 
+    // MARK: - Init
     convenience init(themeService: ThemeService<AppTheme>, viewModel: SetCardPinViewModelType) {
         self.init(nibName: nil, bundle: nil)
-
         self.themeService = themeService
         self.viewModel = viewModel
     }
 
-    override func viewDidLoad() {
+    // MARK: - View Life Cycle
+    override public func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        setupTheme()
         setupResources()
-        setupLanguageStrings()
-        setupBindings()
+        bindTranslations()
+        setupTheme()
         setupConstraints()
+        setupBinding()
+    }
+
+}
+
+// MARK: - Setup
+fileprivate extension SetCardPinViewController {
+
+    func setupResources() {
+        let imagename = (BiometricsManager().deviceBiometryType == .faceID) ? "icon_face_id" : "icon_touch_id"
+        let bioImage = UIImage(named: imagename, in: .yapPakistan)
+        let backImage = UIImage(named: "icon_delete_purple", in: .yapPakistan)
+        pinKeyboard.biomatryButton.setImage(bioImage, for: .normal)
+        pinKeyboard.backButton.setImage(backImage, for: .normal)
+    }
+
+    func bindTranslations() {
+        viewModel.outputs.localizedText.withUnretained(self).subscribe(onNext: { `self`, string in
+            self.headingLabel.text = string.heading
+            self.termsAndCondtionsView.label.text = string.agrement
+            self.termsAndCondtionsView.button.setTitle(string.terms, for: .normal)
+            self.createPINButton.setTitle(string.action, for: .normal)
+        }).disposed(by: rx.disposeBag)
     }
 
     func setupViews() {
-        view
-            .addSub(view: backgroundImage)
-            .addSub(view: titleLabel)
-            .addSub(view: subTitleLabel)
-            .addSub(view: createPinButton)
-            .addSub(view: doitLaterButton)
-            .addSub(views: spacers)
+        view.addSub(views: spacers)
+        view.addSub(view: headingLabel)
+            .addSub(view: pincodeView)
+            .addSub(view: pinKeyboard)
+            .addSub(view: termsAndCondtionsView)
+            .addSub(view: createPINButton)
     }
 
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.backgroundColor) }, to: [ view.rx.backgroundColor ])
-            .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
-            .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
-            .bind({ UIColor($0.primary) }, to: createPinButton.rx.backgroundColor)
-            .bind({ UIColor($0.primary) }, to: doitLaterButton.rx.titleColor(for: .normal))
+            .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primary        ) }, to: [createPINButton.rx.enabledBackgroundColor])
+            .bind({ UIColor($0.greyDark       ) }, to: [createPINButton.rx.disabledBackgroundColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [headingLabel.rx.textColor])
+            .bind({ UIColor($0.error          ) }, to: [pincodeView.errorLabel.rx.textColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [pincodeView.codeLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark       ) }, to: [termsAndCondtionsView.label.rx.textColor])
+            .bind({ UIColor($0.primary        ) }, to: [termsAndCondtionsView.button.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primary        ) }, to: [pinKeyboard.rx.themeColor])
             .disposed(by: rx.disposeBag)
-    }
 
-    func setupResources() {
-        backgroundImage.image = UIImage(named: "image_backgound", in: .yapPakistan)
-    }
-
-    func setupLanguageStrings() {
-        viewModel.outputs.languageStrings.withUnretained(self)
-            .subscribe(onNext: { `self`, strings in
-                self.titleLabel.text = strings.title
-                self.subTitleLabel.text = strings.subTitle
-                self.createPinButton.setTitle(strings.createPin, for: .normal)
-                self.doitLaterButton.setTitle(strings.doItLater, for: .normal)
-            })
+        guard backButton != nil else { return }
+        themeService.rx
+            .bind({ UIColor($0.primary) }, to: [backButton!.rx.tintColor])
             .disposed(by: rx.disposeBag)
-    }
-
-    func setupBindings() {
-        // dashboardButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {
 
-        backgroundImage
-            .alignEdgesWithSuperview([.top, .left, .right])
-
         spacers[0]
-            .toBottomOf(backgroundImage)
-            .alignEdgesWithSuperview([.left, .right])
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
 
-        titleLabel
+        headingLabel
             .toBottomOf(spacers[0])
-            .alignEdgesWithSuperview([.left, .right], constants: [22, 22])
+            .alignEdgesWithSuperview([.left, .right], constant: 20)
 
         spacers[1]
-            .toBottomOf(titleLabel)
+            .toBottomOf(headingLabel)
             .alignEdgesWithSuperview([.left, .right])
 
-        subTitleLabel
+        pincodeView
             .toBottomOf(spacers[1])
-            .alignEdgesWithSuperview([.left, .right], constants: [22, 22])
+            .alignEdgesWithSuperview([.left, .right])
 
         spacers[2]
-            .toBottomOf(subTitleLabel)
+            .toBottomOf(pincodeView)
             .alignEdgesWithSuperview([.left, .right])
 
-        createPinButton
+        pinKeyboard
             .toBottomOf(spacers[2])
             .centerHorizontallyInSuperview()
-            .width(constant: 250)
-            .height(constant: 52)
+            .widthEqualToSuperView(multiplier: 251 / 375)
 
-        doitLaterButton
-            .toBottomOf(createPinButton, constant: 10)
+        spacers[3]
+            .toBottomOf(pinKeyboard)
+            .alignEdgesWithSuperview([.left, .right])
+
+        termsAndCondtionsView
+            .toBottomOf(spacers[3])
             .centerHorizontallyInSuperview()
-            .alignEdgeWithSuperview(.safeAreaBottom, constant: 10)
 
-        spacers[2]
-            .heightEqualTo(view: spacers[0], multiplier: 4)
-            .heightEqualTo(view: spacers[1], multiplier: 5)
+        spacers[4]
+            .toBottomOf(termsAndCondtionsView)
+            .alignEdgesWithSuperview([.left, .right])
+
+        spacers[0]
+            .heightEqualTo(view: spacers[1])
+            .heightEqualTo(view: spacers[2])
+            .heightEqualTo(view: spacers[3])
+            .heightEqualTo(view: spacers[4])
+
+        createPINButton
+            .toBottomOf(spacers[4])
+            .alignEdgeWithSuperviewSafeArea(.safeAreaBottom)
+            .centerHorizontallyInSuperview()
+            .height(constant: 52)
+            .width(constant: 240)
     }
 }
 
+// MARK: - Bind
+fileprivate extension SetCardPinViewController {
+    func setupBinding() {
+        viewModel.outputs.pinText.bind(to: pincodeView.codeLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.pinValid.bind(to: createPINButton.rx.isEnabled).disposed(by: rx.disposeBag)
+        viewModel.outputs.error.bind(to: pincodeView.errorLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
+        viewModel.outputs.shake
+            .subscribe(onNext: { [weak self] in
+                self?.pincodeView.codeLabel.animate([Animation.shake(duration: 0.5)])
+                UINotificationFeedbackGenerator().notificationOccurred(.error)
+            })
+            .disposed(by: rx.disposeBag)
+        createPINButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
+        pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
+        backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+    }
+}
+
+//MARK: UIfactory Extension
+
+class PincodeView: UIView {
+    lazy var codeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, charSpace: 10)
+    lazy var errorLabel: UILabel = UIFactory.makeLabel(font: .small, alignment: .center)
+
+    override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
+        makeUI()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        makeUI()
+    }
+
+    private func makeUI() {
+        initialSetup()
+        setupSubViews()
+        setupLayout()
+    }
+
+    private func initialSetup() {
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = .clear
+    }
+
+    private func setupSubViews() {
+        addSubview(codeLabel)
+        addSubview(errorLabel)
+    }
+
+    func setupLayout() {
+        codeLabel
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.top])
+            .height(constant: 20)
+
+        errorLabel
+            .toBottomOf(codeLabel, constant: 3)
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.bottom])
+            .height(constant: 20)
+    }
+}
+
+class TermsAndCondtionsView: UIView {
+    lazy var label = UIFactory.makeLabel(font: .micro,
+                                                 alignment: .center,
+                                                 numberOfLines: 0,
+                                                 lineBreakMode: .byWordWrapping)
+    lazy var button = UIFactory.makeButton(with: .micro)
+
+    override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
+        makeUI()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        makeUI()
+    }
+
+    private func makeUI() {
+        initialSetup()
+        setupSubViews()
+        setupLayout()
+    }
+
+    private func initialSetup() {
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = .clear
+    }
+
+    private func setupSubViews() {
+        addSubview(label)
+        addSubview(button)
+    }
+
+    func setupLayout() {
+        label
+            .alignEdgesWithSuperview([.top])
+            .centerHorizontallyInSuperview()
+
+        button
+            .toBottomOf(label)
+            .alignEdgesWithSuperview([.bottom])
+            .centerHorizontallyInSuperview()
+    }
+}
+
+private extension UIFactory {
+    static func makePincodeView() -> PincodeView {
+        let pinView = PincodeView()
+        pinView.translatesAutoresizingMaskIntoConstraints = false
+        return pinView
+    }
+
+    static func makeTermsAndCondtionsView() -> TermsAndCondtionsView {
+        return TermsAndCondtionsView()
+    }
+}

@@ -12,7 +12,12 @@ struct SetCardPinModuleBuilder {
 
     func viewController() -> SetCardPinViewController {
         let themeService = container.themeService
-        let viewModel = SetCardPinViewModel()
+        let pinRange = 4...4
+        let localizeables = SetCardPinViewStrings(heading: "".localized,
+                                                  agrement: "".localized,
+                                                  terms: "".localized,
+                                                  action: "".localized)
+        let viewModel = SetCardPinViewModel(pinRange: pinRange,  localizeableKeys: localizeables)
         return SetCardPinViewController(themeService: themeService, viewModel: viewModel)
     }
 }
