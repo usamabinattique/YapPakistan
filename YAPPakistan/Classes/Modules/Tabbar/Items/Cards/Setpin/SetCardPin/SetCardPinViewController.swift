@@ -154,16 +154,16 @@ fileprivate extension SetCardPinViewController {
 // MARK: - Bind
 fileprivate extension SetCardPinViewController {
     func setupBinding() {
-        viewModel.outputs.pinText.bind(to: pincodeView.codeLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.pinValid.bind(to: createPINButton.rx.isEnabled).disposed(by: rx.disposeBag)
+        viewModel.outputs.pinCode.bind(to: pincodeView.codeLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.isPinValid.bind(to: createPINButton.rx.isEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: pincodeView.errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
-        viewModel.outputs.shake
-            .subscribe(onNext: { [weak self] in
-                self?.pincodeView.codeLabel.animate([Animation.shake(duration: 0.5)])
-                UINotificationFeedbackGenerator().notificationOccurred(.error)
-            })
-            .disposed(by: rx.disposeBag)
+//        viewModel.outputs.shake
+//            .subscribe(onNext: { [weak self] in
+//                self?.pincodeView.codeLabel.animate([Animation.shake(duration: 0.5)])
+//                UINotificationFeedbackGenerator().notificationOccurred(.error)
+//            })
+//            .disposed(by: rx.disposeBag)
         createPINButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
         backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)

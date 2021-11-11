@@ -271,4 +271,8 @@
 "screen_kyc_setpinintro_craete" = "Create PIN code";
 "screen_kyc_setpinintro_doitlater" = "Do it later";
 
-"screen_kyc_setpinintro_doitlater" = "Do it later";
+"screen_setpincode_title" = "Set your PIN code";
+"screen_setpincode_title_confirm" = "Re-enter your PIN code to confirm";
+"screen_setpincode_craete" = "Create PIN code";
+"screen_setpincode_text_terms_and_conditions" = "By creating a passcode you agree to our";
+"screen_setpincode_button_terms_and_conditions" = "Terms & Conditions";

@@ -92,7 +92,7 @@ class SetCardPinViewModel: SetCardPinViewModelType, SetCardPinViewModelInputs, S
 struct SetCardPinViewStrings {
     var heading: String
     var agrement: String
-    var termsObserver: String
+    var terms: String
     var action:String
 }
 

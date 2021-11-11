@@ -25,7 +25,12 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             let viewController = CardStatusViewController(themeService: self.container.themeService, viewModel: CardStatusViewModel())
             self.navigationRoot.pushViewController(viewController)
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: { testVC() })
+        func test2VC() {
+            let viewController = SetCardPinModuleBuilder(container: self.container).viewController()
+            self.navigationRoot.pushViewController(viewController)
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: { testVC() })
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4, execute: { test2VC() })
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -45,4 +50,3 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         return result
     }
 }
-
