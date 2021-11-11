@@ -270,3 +270,8 @@
 "screen_kyc_setpinintro_subtitle" = "Now create a unique 4-digit PIN code\nto be able to use your debit card for\npurchases and withdrawals";
 "screen_kyc_setpinintro_craete" = "Create PIN code";
 "screen_kyc_setpinintro_doitlater" = "Do it later";
+
+"screen_kyc_setpintsuccess_title" = "You're all set!\nTime to top up";
+"screen_kyc_setpintsuccess_subtitle" = "Begin using your YAP card by topping up your card with PKR 100 or more";
+"screen_kyc_setpintsuccess_topupnow" = "Top up now";
+"screen_kyc_setpintsuccess_doitlater" = "Do it later";

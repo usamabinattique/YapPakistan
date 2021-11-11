@@ -45,17 +45,17 @@ class SetPintSuccessViewModel: SetPintSuccessViewModelType, SetPintSuccessViewMo
     struct LanguageStrings {
         let title: String
         let subTitle: String
-        let createPin: String
+        let topupNow: String
         let doItLater: String
     }
 }
 
 fileprivate extension SetPintSuccessViewModel {
     func languageSetup() {
-        let strings = LanguageStrings(title: "screen_kyc_SetPintSuccess_title".localized,
-                                      subTitle: "screen_kyc_SetPintSuccess_subtitle".localized,
-                                      createPin: "screen_kyc_SetPintSuccess_craete".localized,
-                                      doItLater: "screen_kyc_SetPintSuccess_doitlater".localized)
+        let strings = LanguageStrings(title: "screen_kyc_setpintsuccess_title".localized,
+                                      subTitle: "screen_kyc_setpintsuccess_subtitle".localized,
+                                      topupNow: "screen_kyc_setpintsuccess_topupnow".localized,
+                                      doItLater: "screen_kyc_setpintsuccess_doitlater".localized)
         languageStringsSubject = BehaviorSubject<LanguageStrings>(value: strings)
     }
 }

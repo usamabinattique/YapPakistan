@@ -60,7 +60,7 @@ class SetPintSuccessViewController: UIViewController {
     }
 
     func setupResources() {
-        successImage.image = UIImage(named: "image_backgound", in: .yapPakistan)
+        successImage.image = UIImage(named: "pinset_success", in: .yapPakistan)
     }
 
     func setupLanguageStrings() {
@@ -68,7 +68,7 @@ class SetPintSuccessViewController: UIViewController {
             .subscribe(onNext: { `self`, strings in
                 self.titleLabel.text = strings.title
                 self.subTitleLabel.text = strings.subTitle
-                self.topupButton.setTitle(strings.createPin, for: .normal)
+                self.topupButton.setTitle(strings.topupNow, for: .normal)
                 self.doitLaterButton.setTitle(strings.doItLater, for: .normal)
             })
             .disposed(by: rx.disposeBag)
@@ -80,8 +80,12 @@ class SetPintSuccessViewController: UIViewController {
 
     func setupConstraints() {
 
+        spacers[3]
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
+
         titleLabel
-            .alignEdgesWithSuperview([.safeAreaTop, .left, .right], constant: 25)
+            .toBottomOf(spacers[3])
+            .alignEdgesWithSuperview([.left, .right], constant: 25)
 
         spacers[0]
             .toBottomOf(titleLabel)
@@ -117,5 +121,6 @@ class SetPintSuccessViewController: UIViewController {
         spacers[0]
             .heightEqualTo(view: spacers[1], multiplier: 1)
             .heightEqualTo(view: spacers[2], multiplier: 1)
+            .heightEqualTo(view: spacers[3], multiplier: 1)
     }
 }
