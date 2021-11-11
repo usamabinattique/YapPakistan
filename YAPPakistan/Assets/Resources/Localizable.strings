@@ -263,3 +263,10 @@
 // MARK: Manual Verification
 "screen_kyc_manualverification_title" = "Some information is still needed!";
 "screen_kyc_manualverification_subtitle" = "A member from our customer service team will reach out to you.";
+
+// MARK: Set Pin
+
+"screen_kyc_setpinIntro_title" = "Great, looks like you just\nreceived your YAP card!";
+"screen_kyc_setpinintro_subtitle" = "Now create a unique 4-digit PIN code\nto be able to use your debit card for\npurchases and withdrawals";
+"screen_kyc_setpinintro_craete" = "Create PIN code";
+"screen_kyc_setpinintro_doitlater" = "Do it later";
