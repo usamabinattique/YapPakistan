@@ -20,7 +20,8 @@ class CardsViewController: UIViewController {
     private lazy var pageNumberLabel = UIFactory.makeLabel(font: .small, alignment: .center)
     private lazy var spacers = [ UIFactory.makeView(), UIFactory.makeView(),
                                  UIFactory.makeView(), UIFactory.makeView() ]
-    private lazy var addButton = barButtonItem(image: nil, insectBy: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 3))
+    private lazy var addButton = barButtonItem(image: nil, insectBy: .zero)
+    private lazy var sideMenuButton = barButtonItem(image: nil, insectBy: .zero)
 
     // MARK: - Properties
     fileprivate var themeService: ThemeService<AppTheme>!
@@ -55,14 +56,17 @@ fileprivate extension CardsViewController {
                              pageNumberLabel ])
         view.addSub(views: spacers)
         navigationItem.rightBarButtonItem = addButton.barItem
+        navigationItem.leftBarButtonItem = sideMenuButton.barItem
+        navigationItem.titleView = titleLabelVC
+
         addButton.button?.isUserInteractionEnabled = false
-        self.navigationItem.titleView = titleLabelVC
     }
 
     func setupResources() {
         cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
         detailsIcon.image = UIImage(named: "arrow_up_purple", in: .yapPakistan)
         addButton.button?.setImage(UIImage(named: "icon_plus", in: .yapPakistan), for: .normal)
+        sideMenuButton.button?.setImage(UIImage(named: "icon_menu", in: .yapPakistan), for: .normal)
 
         titleLabelVC.text = "Your cards"
         titleLabel.text = "Primary card"
