@@ -155,7 +155,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
 
     fileprivate func cards(root: UITabBarController) {
-        self.coordinate(to: CardsCoordinator(root: root))
+        self.coordinate(to: CardsCoordinator(root: root, container: self.container))
             .subscribe()
             .disposed(by: disposeBag)
     }
