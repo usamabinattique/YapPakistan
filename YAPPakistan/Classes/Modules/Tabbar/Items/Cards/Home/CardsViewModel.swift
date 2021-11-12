@@ -10,11 +10,11 @@ import YAPComponents
 import RxSwift
 
 protocol CardsViewModelInputs {
-
+    var detailsObservers: AnyObserver<Void> { get }
 }
 
 protocol CardsViewModelOutputs {
-
+    var details: Observable<Void> { get }
 }
 
 protocol CardsViewModelType {
@@ -24,8 +24,17 @@ protocol CardsViewModelType {
 
 class CardsViewModel: CardsViewModelType, CardsViewModelInputs, CardsViewModelOutputs {
 
-    var inputs: CardsViewModelInputs { return self }
-    var outputs: CardsViewModelOutputs { return self }
+    var inputs: CardsViewModelInputs { self }
+    var outputs: CardsViewModelOutputs { self }
+
+    // MARK: Inputs
+    var detailsObservers: AnyObserver<Void> { detailsSubject.asObserver() }
+
+    // MARK: Outputs
+    var details: Observable<Void> { detailsSubject.asObservable() }
+
+    // MARK: Subjects
+    var detailsSubject = PublishSubject<Void>()
 
     // MARK: - Properties
     let disposeBag = DisposeBag()
