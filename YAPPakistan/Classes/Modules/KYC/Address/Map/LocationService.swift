@@ -34,16 +34,33 @@ class LocationService {
                         return
                     }
 
-                    var address = (lines.first ?? "") + " \(lines.count > 1 ? ", \(lines[1])":"")"
-                    if let country = result.country?.trimmed, !address.lowercased().contains(country.lowercased()) {
-                        address += ", \(country)"
+                    var address: [String] = []
+                    if lines.count > 1 {
+                        address.append(lines.first ?? "")
+                        if lines.count > 1 { address.append(lines[1]) }
+                    } else {
+                        var addressSplitted = lines[0].split(separator: ",").map { String($0) }
+
+                        address.append(addressSplitted.first ?? "")
+                        addressSplitted.removeFirst()
+
+                        if address[0].count < 12, let apart2 = addressSplitted.first {
+                            address[0] += (", " + apart2.trimmed)
+                            addressSplitted.removeFirst()
+                        }
+
+                        address.append((addressSplitted.joined(separator: ", ")).trimmed)
+                    }
+
+                    if let country = result.country?.trimmed, !address.joined(separator: ",").lowercased().contains(country.lowercased()) {
+                        address[address.count - 1] += ", \(country)"
                     }
 
                     observable.onNext(LocationModel(coordinates: coordinates,
                                                     country: result.country,
                                                     state: result.administrativeArea,
                                                     city: result.locality,
-                                                    formattAdaddress: address))
+                                                    address: address))
                     observable.onCompleted()
                 }
             }

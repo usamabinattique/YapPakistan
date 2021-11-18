@@ -16,8 +16,8 @@ class SetpinIntroViewController: UIViewController {
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     private let createPinButton = UIFactory.makeAppRoundedButton(with: .regular)
     private let doitLaterButton = UIFactory.makeButton(with: .regular)
-
     let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
+    private var backButton: UIButton?
 
     private var themeService: ThemeService<AppTheme>!
     var viewModel: SetpinIntroViewModelType!
@@ -47,6 +47,7 @@ class SetpinIntroViewController: UIViewController {
             .addSub(view: createPinButton)
             .addSub(view: doitLaterButton)
             .addSub(views: spacers)
+        backButton = addBackButton(of: .backEmpty)
     }
 
     func setupTheme() {
@@ -56,6 +57,11 @@ class SetpinIntroViewController: UIViewController {
             .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: createPinButton.rx.backgroundColor)
             .bind({ UIColor($0.primary) }, to: doitLaterButton.rx.titleColor(for: .normal))
+            .disposed(by: rx.disposeBag)
+
+        guard let backButton = backButton else { return }
+        themeService.rx
+            .bind({ UIColor($0.primary) }, to: [ backButton.rx.tintColor ])
             .disposed(by: rx.disposeBag)
     }
 
@@ -75,11 +81,12 @@ class SetpinIntroViewController: UIViewController {
     }
 
     func setupBindings() {
-        // dashboardButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        createPinButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
+        doitLaterButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {
-
         backgroundImage
             .alignEdgesWithSuperview([.top, .left, .right])
 

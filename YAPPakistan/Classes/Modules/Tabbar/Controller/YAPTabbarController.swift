@@ -10,6 +10,7 @@ import UIKit
 import RxCocoa
 import RxSwift
 import YAPComponents
+import RxTheme
 
 //enum TabBarItem: Int {
 //    case home = 0
@@ -29,6 +30,7 @@ class YAPTabbarController: MenuViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        setupTheme()
         styleTabbar()
     }
     
@@ -48,17 +50,25 @@ class YAPTabbarController: MenuViewController {
     private func setupView() {
         button.setImage(UIImage(named: "icon_tabbar_yapit", in: .yapPakistan), for: .normal)
     }
+
+    private func setupTheme() {
+        ///tabBar.layer.shadowColor = UIColor.appColor(ofType: .grey).cgColor
+        ///tabBar.tintColor = .primary
+        ///tabBar.backgroundColor = .white
+        themeService.rx
+            .bind({ UIColor($0.greyDark).cgColor }, to: [ tabBar.layer.rx.shadowColor ])
+            .bind({ UIColor($0.backgroundColor) }, to: [ tabBar.rx.backgroundColor ])
+            .bind({ UIColor($0.primary) }, to: [ tabBar.rx.tintColor ])
+            .disposed(by: rx.disposeBag)
+    }
     
     fileprivate func styleTabbar() {
         tabBar.backgroundImage = UIImage(color: .clear)
-        tabBar.backgroundColor = .white
         tabBar.shadowImage = UIImage(color: .clear)
         tabBar.layer.shadowOffset = CGSize(width: 0, height: -1.0)
         tabBar.layer.shadowRadius = 2
-        ///tabBar.layer.shadowColor = UIColor.appColor(ofType: .grey).cgColor
         tabBar.layer.shadowOpacity = 0.3
         tabBar.clipsToBounds = false
-        ///tabBar.tintColor = .primary
     }
  
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
@@ -83,8 +93,10 @@ class YAPTabbarController: MenuViewController {
 //            break
 //        }
     }
-    
-    init() {
+    private var themeService: ThemeService<AppTheme>!
+
+    init(themeService: ThemeService<AppTheme>) {
+        self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
         object_setClass(self.tabBar, YAPTabBar.self)
     }

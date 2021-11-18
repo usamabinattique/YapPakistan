@@ -1,8 +1,8 @@
 //
-//  SetCardPinViewController.swift
+//  ConfirmCardPinViewController.swift
 //  YAPPakistan
 //
-//  Created by Sarmad on 11/11/2021.
+//  Created by Sarmad on 16/11/2021.
 //
 
 import UIKit
@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import RxTheme
 
-class SetCardPinViewController: UIViewController {
+class ConfirmCardPinViewController: UIViewController {
 
     // MARK: - Views
     private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0)
@@ -28,11 +28,10 @@ class SetCardPinViewController: UIViewController {
 
     // MARK: - Properties
     var themeService: ThemeService<AppTheme>!
-    var viewModel: SetCardPinViewModelType!
+    var viewModel: ConfirmCardPinViewModelType!
 
     // MARK: - Init
-    convenience init(themeService: ThemeService<AppTheme>,
-                     viewModel: SetCardPinViewModelType) {
+    convenience init(themeService: ThemeService<AppTheme>, viewModel: ConfirmCardPinViewModelType) {
         self.init(nibName: nil, bundle: nil)
         self.themeService = themeService
         self.viewModel = viewModel
@@ -52,7 +51,7 @@ class SetCardPinViewController: UIViewController {
 }
 
 // MARK: - Setup
-fileprivate extension SetCardPinViewController {
+fileprivate extension ConfirmCardPinViewController {
 
     func setupResources() {
         let imagename = (BiometricsManager().deviceBiometryType == .faceID) ? "icon_face_id" : "icon_touch_id"
@@ -154,22 +153,127 @@ fileprivate extension SetCardPinViewController {
 }
 
 // MARK: - Bind
-fileprivate extension SetCardPinViewController {
+fileprivate extension ConfirmCardPinViewController {
     func setupBinding() {
         viewModel.outputs.pinCode.bind(to: pincodeView.codeLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.isPinValid.bind(to: createPINButton.rx.isEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: pincodeView.errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
         viewModel.outputs.hideTermsView.bind(to: termsAndCondtionsView.rx.isHidden).disposed(by: rx.disposeBag)
-//        viewModel.outputs.shake
-//            .subscribe(onNext: { [weak self] in
-//                self?.pincodeView.codeLabel.animate([Animation.shake(duration: 0.5)])
-//                UINotificationFeedbackGenerator().notificationOccurred(.error)
-//            })
-//            .disposed(by: rx.disposeBag)
-        
+        //        viewModel.outputs.shake
+        //            .subscribe(onNext: { [weak self] in
+        //                self?.pincodeView.codeLabel.animate([Animation.shake(duration: 0.5)])
+        //                UINotificationFeedbackGenerator().notificationOccurred(.error)
+        //            })
+        //            .disposed(by: rx.disposeBag)
+
         createPINButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
         backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
     }
 }
+
+//MARK: UIfactory Extension
+
+class PincodeView: UIView {
+    lazy var codeLabel = UIFactory.makeLabel(font: .title2, alignment: .center, charSpace: 10)
+    lazy var errorLabel: UILabel = UIFactory.makeLabel(font: .small, alignment: .center)
+
+    override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
+        makeUI()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        makeUI()
+    }
+
+    private func makeUI() {
+        initialSetup()
+        setupSubViews()
+        setupLayout()
+    }
+
+    private func initialSetup() {
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = .clear
+    }
+
+    private func setupSubViews() {
+        addSubview(codeLabel)
+        addSubview(errorLabel)
+    }
+
+    func setupLayout() {
+        codeLabel
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.top])
+            .height(constant: 20)
+
+        errorLabel
+            .toBottomOf(codeLabel, constant: 3)
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.bottom])
+            .height(constant: 20)
+    }
+}
+
+class TermsAndCondtionsView: UIView {
+    lazy var label = UIFactory.makeLabel(font: .micro,
+                                         alignment: .center,
+                                         numberOfLines: 0,
+                                         lineBreakMode: .byWordWrapping)
+
+    lazy var button = UIFactory.makeButton(with: .micro)
+
+    override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
+        makeUI()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        makeUI()
+    }
+
+    private func makeUI() {
+        initialSetup()
+        setupSubViews()
+        setupLayout()
+    }
+
+    private func initialSetup() {
+        translatesAutoresizingMaskIntoConstraints = false
+        backgroundColor = .clear
+    }
+
+    private func setupSubViews() {
+        addSubview(label)
+        addSubview(button)
+    }
+
+    func setupLayout() {
+        label
+            .alignEdgesWithSuperview([.top])
+            .centerHorizontallyInSuperview()
+
+        button
+            .toBottomOf(label)
+            .alignEdgesWithSuperview([.bottom])
+            .centerHorizontallyInSuperview()
+    }
+}
+
+extension UIFactory {
+    static func makePincodeView() -> PincodeView {
+        let pinView = PincodeView()
+        pinView.translatesAutoresizingMaskIntoConstraints = false
+        return pinView
+    }
+
+    static func makeTermsAndCondtionsView() -> TermsAndCondtionsView {
+        return TermsAndCondtionsView()
+    }
+}
+

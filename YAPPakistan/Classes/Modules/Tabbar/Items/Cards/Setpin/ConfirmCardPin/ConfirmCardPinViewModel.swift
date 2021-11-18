@@ -1,22 +1,21 @@
 //
-//  SetCardPinViewModel.swift
+//  ConfirmCardPinViewModel.swift
 //  YAPPakistan
 //
-//  Created by Sarmad on 11/11/2021.
+//  Created by Sarmad on 16/11/2021.
 //
 
 import RxSwift
 
-protocol SetCardPinViewModelInputs {
+protocol ConfirmCardPinViewModelInputs {
     var keyPressObserver: AnyObserver<String> { get }
     var nextObserver: AnyObserver<Void> { get }
     var termsObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
 }
 
-protocol SetCardPinViewModelOutputs {
-    typealias SetPinResult = (pinCode: String, cardSerial:String)
-    var next: Observable<SetPinResult> { get }
+protocol ConfirmCardPinViewModelOutputs {
+    var next: Observable<String> { get }
     var back: Observable<Void> { get }
     var isPinValid: Observable<Bool> { get }
     var pinCode: Observable<String?> { get }
@@ -24,19 +23,19 @@ protocol SetCardPinViewModelOutputs {
     var terms: Observable<Void> { get }
     var loader: Observable<Bool> { get }
     var hideTermsView: Observable<Bool> { get }
-    var localizedText: Observable<SetCardPinViewStrings> { get }
+    var localizedText: Observable<ConfirmCardPinViewStrings> { get }
 }
 
-protocol SetCardPinViewModelType {
-    var inputs: SetCardPinViewModelInputs { get }
-    var outputs: SetCardPinViewModelOutputs { get }
+protocol ConfirmCardPinViewModelType {
+    var inputs: ConfirmCardPinViewModelInputs { get }
+    var outputs: ConfirmCardPinViewModelOutputs { get }
 }
 
-class SetCardPinViewModel: SetCardPinViewModelType, SetCardPinViewModelInputs, SetCardPinViewModelOutputs {
+class ConfirmCardPinViewModel: ConfirmCardPinViewModelType, ConfirmCardPinViewModelInputs, ConfirmCardPinViewModelOutputs {
 
     // MARK: - Properties
-    var inputs: SetCardPinViewModelInputs { self }
-    var outputs: SetCardPinViewModelOutputs { self }
+    var inputs: ConfirmCardPinViewModelInputs { self }
+    var outputs: ConfirmCardPinViewModelOutputs { self }
 
     // MARK: - Inputs - Implementation of "inputs" protocol
     var keyPressObserver: AnyObserver<String> { keyPressSubject.asObserver() }
@@ -50,14 +49,14 @@ class SetCardPinViewModel: SetCardPinViewModelType, SetCardPinViewModelInputs, S
     var error: Observable<String> { errorSubject.asObservable() }
     var terms: Observable<Void> { termsSubject.asObservable() }
     var loader: Observable<Bool> { loaderSubject.asObservable() }
-    var next: Observable<SetPinResult> { nextResultSubject.asObserver() }
+    var next: Observable<String> { nextResultSubject.asObserver() }
     var back: Observable<Void> { backSubject.asObservable() }
     var hideTermsView: Observable<Bool> { hideTermsViewSubject.asObservable() }
-    var localizedText: Observable<SetCardPinViewStrings> { localizedTextSubject.asObservable() }
+    var localizedText: Observable<ConfirmCardPinViewStrings> { localizedTextSubject.asObservable() }
 
     // MARK: - Subjects
     let nextSubject = PublishSubject<Void>()
-    let nextResultSubject = PublishSubject<SetPinResult>()
+    let nextResultSubject = PublishSubject<String>()
     let backSubject = PublishSubject<Void>()
     let isPinValidSubject = BehaviorSubject<Bool>(value: false)
     let termsSubject = PublishSubject<Void>()
@@ -66,22 +65,30 @@ class SetCardPinViewModel: SetCardPinViewModelType, SetCardPinViewModelInputs, S
     let shakeSubject = PublishSubject<Void>()
     let keyPressSubject = PublishSubject<String>()
     let loaderSubject = PublishSubject<Bool>()
-    let hideTermsViewSubject = BehaviorSubject(value: true)
-    let localizedTextSubject: BehaviorSubject<SetCardPinViewStrings>
+    let hideTermsViewSubject = BehaviorSubject(value: false)
+    let localizedTextSubject: BehaviorSubject<ConfirmCardPinViewStrings>
 
     // MARK: Internal Properties and ViewModels
-    let cardSerialNumber: String
+    private var cardsRepository: CardsRepositoryType
+    private var pinCodeWillConfirm: String
+    private var cardSerialNumber: String
+
     let disposeBag = DisposeBag()
     var pinRange = 4...4
 
     // MARK: - Init
 
-    public init(cardSerialNumber: String,
-                strings: SetCardPinViewStrings,
-                hideTermsView: Bool = true) {
+    public init(cardsRepository: CardsRepositoryType,
+                pinCodeWillConfirm: String,
+                cardSerialNumber: String,
+                strings: ConfirmCardPinViewStrings,
+                hideTermsView: Bool = false) {
 
+        self.cardsRepository = cardsRepository
+        self.pinCodeWillConfirm = pinCodeWillConfirm
         self.cardSerialNumber = cardSerialNumber
-        self.localizedTextSubject = BehaviorSubject<SetCardPinViewStrings>(value: strings)
+
+        self.localizedTextSubject = BehaviorSubject<ConfirmCardPinViewStrings>(value: strings)
         self.hideTermsViewSubject.onNext(hideTermsView)
 
         let keyPress = keyPressSubject.share()
@@ -96,21 +103,41 @@ class SetCardPinViewModel: SetCardPinViewModelType, SetCardPinViewModelInputs, S
             .bind(to: isPinValidSubject)
             .disposed(by: disposeBag)
 
-        nextSubject.withLatestFrom(pinCodeSubject).unwrap().withUnretained(self)
-            .map{ `self`, pin in (pin, self.cardSerialNumber) }
+        let setPinRequest = nextSubject.withLatestFrom(pinCodeSubject).unwrap().withUnretained(self)
+            .filter({ `self`, pin in
+                if pin == self.pinCodeWillConfirm {
+                    return true
+                } else {
+                    self.errorSubject.onNext("PIN does not match")
+                    return false
+                }
+            })
+            .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
+            .flatMap{ `self`, pin in
+                self.cardsRepository.setPin(cardSerialNumber: self.cardSerialNumber, pin: pin)
+            }
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+            .share()
+
+        setPinRequest.errors()
+            .map({ $0.localizedDescription })
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+
+        setPinRequest.elements().map({ $0 ?? ""})
             .bind(to: nextResultSubject)
             .disposed(by: disposeBag)
     }
 }
 
-struct SetCardPinViewStrings {
+struct ConfirmCardPinViewStrings {
     var heading: String
     var agrement: String
     var terms: String
     var next: String
 }
 
-fileprivate extension SetCardPinViewModel {
+fileprivate extension ConfirmCardPinViewModel {
     func mapKeyStroke(pin: String?, keyStroke: String, pinSize: Int) -> String {
         var pin = pin ?? ""
         if keyStroke == "\u{08}" { if !pin.isEmpty { pin.removeLast() } }
@@ -118,3 +145,4 @@ fileprivate extension SetCardPinViewModel {
         return pin
     }
 }
+

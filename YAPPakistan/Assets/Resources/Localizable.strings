@@ -281,3 +281,9 @@
 "screen_setpincode_craete" = "Create PIN code";
 "screen_setpincode_text_terms_and_conditions" = "By creating a passcode you agree to our";
 "screen_setpincode_button_terms_and_conditions" = "Terms & Conditions";
+
+// MARK: - YAP it Screen
+"screen_yap_it_button_send_money" = "Send money";
+"screen_yap_it_button_add_money" = "Add money";
+"screen_yap_it_button_pay_bills" = "Pay bills";
+"screen_yap_it_button_request_money" = "Request Money";

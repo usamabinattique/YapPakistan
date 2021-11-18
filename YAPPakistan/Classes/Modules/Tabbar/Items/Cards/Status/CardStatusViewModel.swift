@@ -8,10 +8,6 @@
 import Foundation
 import RxSwift
 
-enum CardStatus: Int {
-    case completeVerification, ordering, building, shipping
-}
-
 protocol CardStatusViewModelInputs {
     var backObserver: AnyObserver<Void> { get }
     var nextObserver: AnyObserver<Void> { get }
@@ -19,10 +15,10 @@ protocol CardStatusViewModelInputs {
 
 protocol CardStatusViewModelOutputs {
     var back: Observable<Void> { get }
-    var statusString: Observable<String> { get }
-    var actionString: Observable<String> { get }
-    var cardStatus: Observable<CardStatus> { get }
-    var languageStrings: Observable<CardStatusViewModel.LanguageStrings> { get }
+    var next: Observable<Int> { get }
+    var isEnabled: Observable<Bool> { get }
+    var completedSteps: Observable<Int> { get }
+    var localizedStrings: Observable<CardStatusViewModel.LocalizedStrings> { get }
 }
 
 protocol CardStatusViewModelType {
@@ -40,36 +36,55 @@ class CardStatusViewModel: CardStatusViewModelType, CardStatusViewModelInputs, C
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
 
     // MARK: Outputs
-    var statusString: Observable<String> { statusStringSubject.asObservable() }
-    var actionString: Observable<String> { actionStringSubject.asObservable() }
-    var cardStatus: Observable<CardStatus> { cardStatusSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
-    var languageStrings: Observable<LanguageStrings> { languageStringsSubject.asObservable() }
+    var next: Observable<Int> { nextResultSubject.asObservable() }
+    var isEnabled: Observable<Bool> { isEnabledSubject.asObservable() }
+    var completedSteps: Observable<Int> { completedStepsSubject.asObservable() }
+    var localizedStrings: Observable<LocalizedStrings> { localizedStringsSubject.asObservable() }
 
     // MARK: Subjects
-    private var nextSubject = PublishSubject<Void>()
-    private var statusStringSubject = PublishSubject<String>()
-    private var cardStatusSubject = PublishSubject<CardStatus>()
-    private var actionStringSubject = PublishSubject<String>()
-    private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
     private var backSubject = PublishSubject<Void>()
+    private var nextSubject = PublishSubject<Void>()
+    private var nextResultSubject = PublishSubject<Int>()
+    private var isEnabledSubject = BehaviorSubject<Bool>(value: false)
+    private var completedStepsSubject = BehaviorSubject<Int>(value: 0)
+    private var localizedStringsSubject = BehaviorSubject(value: LocalizedStrings())
 
-    init() {
-        languageSetup()
+    // MARK: Properties
+    let disposeBag = DisposeBag()
+
+    init(_ strings: LocalizedStrings, completedSteps: Int) {
+        localizedStringsSubject.onNext(strings)
+        isEnabledSubject.onNext(/* completedSteps == 0 ||*/ completedSteps == 3)
+        completedStepsSubject.onNext(completedSteps)
+        nextSubject.withLatestFrom(completedStepsSubject).bind(to: nextResultSubject).disposed(by: disposeBag)
     }
 
-    struct LanguageStrings {
+    struct LocalizedStrings {
         let title: String
         let subTitle: String
-        let goToDashboard: String
-    }
-}
+        let message: String
+        let status: (order: String, build: String, ship: String)
+        let action: String
 
-fileprivate extension CardStatusViewModel {
-    func languageSetup() {
-        let strings = LanguageStrings(title: "screen_kyc_cardStatus_title".localized,
-                                      subTitle: "screen_kyc_cardStatus_subtitle".localized,
-                                      goToDashboard: "common_button_go_to_dashbaord".localized)
-        languageStringsSubject = BehaviorSubject<LanguageStrings>(value: strings)
+        init() {
+            self.init(title: "",
+                      subTitle: "",
+                      message: "",
+                      status: ("", "", ""),
+                      action: "")
+        }
+
+        init(title: String,
+             subTitle: String,
+             message: String,
+             status: (order: String, build: String, ship: String),
+             action: String) {
+            self.title = title
+            self.subTitle = subTitle
+            self.message = message
+            self.status = status
+            self.action = action
+        }
     }
 }

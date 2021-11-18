@@ -37,7 +37,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     private var mainViewController: YAPTabbarController!
     private var rootNavigationController: UINavigationController!
     func makeTabbar() {
-        let viewController = YAPTabbarController()
+        let viewController = YAPTabbarController(themeService: container.themeService)
         mainViewController = viewController
 
         //        let menuViewModel = SideMenuViewModel()
@@ -48,12 +48,6 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         home(root: viewController)
         store(root: viewController)
         yapIt(root: viewController)
-
-        //let yapit = UIViewController()
-        //yapit.view.backgroundColor = .white
-        //yapit.tabBarItem = UITabBarItem(title: "YAP it", image: nil, selectedImage: nil)
-        //viewController.viewControllers?.append(yapit)
-
         cards(root: viewController)
         more(root: viewController)
 
@@ -63,7 +57,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         window.rootViewController = navController
         window.makeKeyAndVisible()
 
-        //viewController.button.rx.tap.subscribe(onNext: { [unowned self] in self.yapIt(root: viewController, height: viewController.tabBar.bounds.height)}).disposed(by: disposeBag)
+        viewController.button.rx.tap.subscribe(onNext: { [unowned self] in self.yapIt(root: viewController, height: viewController.tabBar.bounds.height)}).disposed(by: disposeBag)
 
         //        SessionManager.current.currentAccount.subscribe(onNext: { [weak self] in self?.partnerBankStatus = $0?.parnterBankStatus }).disposed(by: disposeBag)
 
@@ -149,9 +143,23 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
 
     fileprivate func yapIt(root: UITabBarController) {
-        coordinate(to: YAPItCoordinator(root: root))
-            .subscribe()
-            .disposed(by: disposeBag)
+        let yapit = UIViewController()
+        yapit.view.backgroundColor = .white
+        yapit.tabBarItem = UITabBarItem(title: "YAP it", image: nil, selectedImage: nil)
+        root.viewControllers?.append(yapit)
+    }
+    fileprivate func yapIt(root: UITabBarController, height: CGFloat) {
+        coordinate(to: YAPItCoordinator(root: root, container: container, tabBarHeight: height))
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, value in
+                if case let ResultType.success(result) = value {
+                    switch result {
+                    case .sendMoney: break  // self.sendMoney(root)
+                    case .addMoney: break   // self.topup(root)
+                    case .payBills: break   // self.y2y(root)
+                }
+            }
+        }).disposed(by: disposeBag)
     }
 
     fileprivate func cards(root: UITabBarController) {

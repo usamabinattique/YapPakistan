@@ -21,6 +21,7 @@ protocol AddressViewModelInput {
     var cityObserver: AnyObserver<Void> { get }
     var citySelectObserver: AnyObserver<String> { get }
     var backObserver: AnyObserver<Void> { get }
+    var addressObserver: AnyObserver<String> { get }
 }
 
 protocol AddressViewModelOutput {
@@ -56,6 +57,7 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     var backObserver: AnyObserver<Void> { backObserSubject.asObserver() }
     var cityObserver: AnyObserver<Void> { citySubject.asObserver() }
     var citySelectObserver: AnyObserver<String> { citySelectSubject.asObserver() }
+    var addressObserver: AnyObserver<String> { addressObserverSubject.asObserver() }
 
     // MARK: Outputs
     var openMap: Observable<Bool> { openMapResultSubject.asObservable() }
@@ -88,9 +90,10 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     private var currentLocationResultSubject = BehaviorSubject<LocationModel>(value: LocationModel())
     private var confirmLocationResultSubject = PublishSubject<LocationModel>()
     private var willMoveSubject = PublishSubject<Bool>()
-    private var loaderSubject = BehaviorSubject<Bool>.init(value: false)
+    private var loaderSubject = BehaviorSubject<Bool>(value: false)
     private var didIdleAtSubject = PublishSubject<GMSCameraPosition>()
     private var errorSubject = PublishSubject<String>()
+    private var addressObserverSubject = BehaviorSubject<String>(value: "")
 
     var inputs: AddressViewModelInput { return self }
     var outputs: AddressViewModelOutput { return self }
@@ -143,12 +146,21 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
 
         locationDecoded.elements().bind(to: currentLocationResultSubject).disposed(by: disposeBag)
 
-        let saveAddressRequest = nextSubject
+        let saveAddressRequest = Observable.combineLatest(currentLocationResultSubject,
+                                                          addressObserverSubject)
+            .sample(nextSubject)
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-            .withLatestFrom(currentLocationResultSubject)
+            .map({ (location, address) -> LocationModel in
+                var location = location
+                if address.count > 0 {
+                    location.address = []
+                    location.address.append(address)
+                }
+                return location
+            })
             .withUnretained(self)
             .flatMapLatest { `self`, location in
-                self.kycRepository.saveUserAddress(address: location.formattAdaddress,
+                return self.kycRepository.saveUserAddress(address: location.formattAdaddress,
                                                    city: location.city,
                                                    country: location.country,
                                                    postCode: "05400",

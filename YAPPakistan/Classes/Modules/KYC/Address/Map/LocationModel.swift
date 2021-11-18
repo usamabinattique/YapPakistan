@@ -16,7 +16,8 @@ struct LocationModel {
     var country: String = ""
     var state: String = ""
     var city: String = ""
-    var formattAdaddress: String = ""
+    var address: [String] = []
+    var formattAdaddress: String { return address.joined(separator: ", ") }
 
     var distanceMeters: Double = 0 // From current location
 
@@ -33,7 +34,7 @@ struct LocationModel {
          country: String? = nil,
          state: String? = nil,
          city: String? = nil,
-         formattAdaddress: String? = nil) {
+         address: [String] = []) {
 
         self.latitude = latitude
         self.longitude = longitude
@@ -42,7 +43,7 @@ struct LocationModel {
         if let country = country { self.country = country }
         if let state = state { self.state = state }
         if let city = city { self.city = city }
-        if let formattAdaddress = formattAdaddress { self.formattAdaddress = formattAdaddress }
+        self.address = address
     }
 
     init(coordinates: CLLocationCoordinate2D,
@@ -50,7 +51,7 @@ struct LocationModel {
          country: String? = nil,
          state: String? = nil,
          city: String? = nil,
-         formattAdaddress: String? = nil) {
+         address: [String] = []) {
 
         self.latitude = coordinates.latitude
         self.longitude = coordinates.longitude
@@ -59,11 +60,12 @@ struct LocationModel {
         if let country = country { self.country = country }
         if let state = state { self.state = state }
         if let city = city { self.city = city }
-        if let formattAdaddress = formattAdaddress { self.formattAdaddress = formattAdaddress }
+        self.address = address
     }
 
     init(prediction: NSDictionary) {
-        formattAdaddress = prediction["description"] as? String ?? ""
+        self.address = []
+        self.address.append(prediction["description"] as? String ?? "")
         country = (prediction["terms"] as? [NSDictionary])?.last?["value"] as? String ?? ""
         if country == "" {
             country = formattAdaddress.components(separatedBy: ",").last?.trimmed ?? ""

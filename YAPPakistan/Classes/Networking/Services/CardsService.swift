@@ -15,6 +15,8 @@ protocol CardsServiceType {
                                      postCode: String,
                                      latitude: String,
                                      longitude: String ) -> Observable<T>
+    func getCards<T: Codable>() -> Observable<T>
+    func setPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T>
 }
 
 public class CardsService: BaseService, CardsServiceType {
@@ -37,9 +39,25 @@ public class CardsService: BaseService, CardsServiceType {
         ]
 
         let route = APIEndpoint(.post,
-                                apiConfig.cardsURL, "/api/save-user-address",
+                                apiConfig.cardsURL, "/api/save-address-and-order-card",
                                 body: body,
                                 headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func getCards<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.cardsURL, "/api/cards", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func setPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T> {
+
+        let body = ["newPin": pin]
+        let pathVariables = [cardSerialNumber]
+
+        let route = APIEndpoint(.post, apiConfig.cardsURL, "/api/cards/create-pin", pathVariables: pathVariables, query: nil, body: body, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }

@@ -16,8 +16,8 @@ class SetPintSuccessViewController: UIViewController {
     private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     private let topupButton = UIFactory.makeAppRoundedButton(with: .regular)
     private let doitLaterButton = UIFactory.makeButton(with: .regular)
-
     let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
+    private var backButton: UIButton?
 
     private var themeService: ThemeService<AppTheme>!
     var viewModel: SetPintSuccessViewModelType!
@@ -47,6 +47,7 @@ class SetPintSuccessViewController: UIViewController {
             .addSub(view: topupButton)
             .addSub(view: doitLaterButton)
             .addSub(views: spacers)
+        backButton = addBackButton(of: .backEmpty)
     }
 
     func setupTheme() {
@@ -56,6 +57,11 @@ class SetPintSuccessViewController: UIViewController {
             .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: topupButton.rx.backgroundColor)
             .bind({ UIColor($0.primary) }, to: doitLaterButton.rx.titleColor(for: .normal))
+            .disposed(by: rx.disposeBag)
+
+        guard let backButton = backButton else { return }
+        themeService.rx
+            .bind({ UIColor($0.primary) }, to: [ backButton.rx.tintColor ])
             .disposed(by: rx.disposeBag)
     }
 
@@ -75,7 +81,8 @@ class SetPintSuccessViewController: UIViewController {
     }
 
     func setupBindings() {
-        // dashboardButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        doitLaterButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {

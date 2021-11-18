@@ -9,6 +9,134 @@ import YAPComponents
 import RxSwift
 import RxTheme
 
+class CardStatusViewController: UIViewController {
+
+    private let cardImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private let cardTypeLabel = UIFactory.makeLabel(font: .small, alignment: .center).setCornerRadius(15)
+    private let statusLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
+    private let statusView = UIFactory.makeCardStatusView()
+    private let actionButton = UIFactory.makeAppRoundedButton(with: .regular)
+    let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
+    private var backButton: UIButton!
+
+    private var themeService: ThemeService<AppTheme>!
+    var viewModel: CardStatusViewModelType!
+
+    convenience init(themeService: ThemeService<AppTheme>, viewModel: CardStatusViewModelType) {
+        self.init(nibName: nil, bundle: nil)
+        self.themeService = themeService
+        self.viewModel = viewModel
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupViews()
+        setupResources()
+        setupTheme()
+        setupLanguageStrings()
+        setupBindings()
+        setupConstraints()
+    }
+
+    func setupViews() {
+        view.addSubviews([cardImage, cardTypeLabel, statusLabel, statusView, actionButton])
+        view.addSubviews(spacers)
+        backButton = addBackButton(of: .backEmpty)
+    }
+
+    func setupResources() {
+        cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
+        let image = UIImage(named: "icon_check", in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
+        statusView.icons = [image, image?.copy() as? UIImage, image?.copy() as? UIImage]
+    }
+
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.backgroundColor) }, to: [ view.rx.backgroundColor ])
+            .bind({ UIColor($0.primaryExtraLight) }, to: [ cardTypeLabel.rx.backgroundColor ])
+            .bind({ UIColor($0.primary) }, to: [ cardTypeLabel.rx.textColor ])
+            .bind({ UIColor($0.primaryDark) }, to: [ statusLabel.rx.textColor ])
+            .bind({ (UIColor($0.primaryExtraLight), UIColor($0.primary)) }, to: [ statusView.rx.theme ])
+            .bind({ UIColor($0.primary) }, to: [ actionButton.rx.enabledBackgroundColor ])
+            .bind({ UIColor($0.greyDark) }, to: [ actionButton.rx.disabledBackgroundColor ])
+            .disposed(by: rx.disposeBag)
+        
+        guard let backButton = backButton else { return }
+        themeService.rx
+            .bind({ UIColor($0.primary) }, to: [ backButton.rx.tintColor ])
+            .disposed(by: rx.disposeBag)
+    }
+
+    func setupLanguageStrings() {
+        viewModel.outputs.localizedStrings.withUnretained(self)
+            .subscribe(onNext: { `self`, strings in
+                self.title = strings.title
+                self.cardTypeLabel.text = strings.subTitle
+                self.statusLabel.text = strings.message
+                self.statusView.strings = [strings.status.order, strings.status.build, strings.status.ship]
+                self.actionButton.setTitle(strings.action, for: .normal)
+            })
+            .disposed(by: rx.disposeBag)
+    }
+
+    func setupBindings() {
+        viewModel.outputs.completedSteps.bind(to: statusView.rx.progress).disposed(by: rx.disposeBag)
+        viewModel.outputs.isEnabled.bind(to: actionButton.rx.isEnabled).disposed(by: rx.disposeBag)
+
+        actionButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
+        backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+    }
+
+    func setupConstraints() {
+        spacers[0]
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
+
+        cardImage
+            .toBottomOf(spacers[0])
+            .widthEqualToSuperView(multiplier: 175 / 375)
+            .aspectRatio(242 / 152)
+            .centerHorizontallyInSuperview()
+
+        cardTypeLabel
+            .toBottomOf(cardImage, constant: 25)
+            .centerHorizontallyInSuperview()
+            .width(constant: 150)
+            .height(constant: 30)
+
+        spacers[1]
+            .toBottomOf(cardTypeLabel)
+            .alignEdgesWithSuperview([.left, .right])
+
+        statusLabel
+            .toBottomOf(spacers[1])
+            .alignEdgesWithSuperview([.left, .right], constant: 25)
+
+        spacers[2]
+            .toBottomOf(statusLabel)
+            .alignEdgesWithSuperview([.left, .right])
+
+        statusView
+            .toBottomOf(spacers[2])
+            .alignEdgesWithSuperview([.left, .right], constant: 25)
+
+        spacers[3]
+            .toBottomOf(statusView)
+            .alignEdgesWithSuperview([.left, .right])
+
+        actionButton
+            .toBottomOf(spacers[3])
+            .centerHorizontallyInSuperview()
+            .alignEdgeWithSuperview(.safeAreaBottom, constant: 25)
+            .height(constant: 52)
+            .width(constant: 152)
+
+        spacers[0]
+            .heightEqualTo(view: spacers[1], multiplier: 1)
+            .heightEqualTo(view: spacers[2], multiplier: 2)
+            .heightEqualTo(view: spacers[3], multiplier: 1)
+    }
+}
+
 class CardStatusView: UIView {
 
     // User Interface
@@ -35,8 +163,8 @@ class CardStatusView: UIView {
 
     // private properties
     private let iconViews = [UIFactory.makeImageView(contentMode: .scaleAspectFit),
-                              UIFactory.makeImageView(contentMode: .scaleAspectFit),
-                              UIFactory.makeImageView(contentMode: .scaleAspectFit)]
+                             UIFactory.makeImageView(contentMode: .scaleAspectFit),
+                             UIFactory.makeImageView(contentMode: .scaleAspectFit)]
     private let iconContainers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
     private let statusLines = [UIFactory.makeView().setCornerRadius(3),
                                UIFactory.makeView().setCornerRadius(3)]
@@ -153,120 +281,5 @@ extension UIFactory {
         let view = CardStatusView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
-    }
-}
-
-class CardStatusViewController: UIViewController {
-
-    private let cardImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
-    private let cardTypeLabel = UIFactory.makeLabel(font: .small, alignment: .center).setCornerRadius(15)
-    private let statusLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
-    private let statusView = UIFactory.makeCardStatusView()
-    private let actionButton = UIFactory.makeAppRoundedButton(with: .regular)
-    let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
-
-    private var themeService: ThemeService<AppTheme>!
-    var viewModel: CardStatusViewModelType!
-
-    convenience init(themeService: ThemeService<AppTheme>, viewModel: CardStatusViewModelType) {
-        self.init(nibName: nil, bundle: nil)
-        self.themeService = themeService
-        self.viewModel = viewModel
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupViews()
-        setupResources()
-        setupTheme()
-        setupLanguageStrings()
-        setupBindings()
-        setupConstraints()
-    }
-
-    func setupViews() {
-        view.addSubviews([cardImage, cardTypeLabel, statusLabel, statusView, actionButton])
-        view.addSubviews(spacers)
-    }
-
-    func setupResources() {
-        cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
-        statusLabel.text = "This is status label status"
-        let image = UIImage(named: "icon_check", in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
-        statusView.icons = [image, image?.copy() as? UIImage, image?.copy() as? UIImage]
-        statusView.strings = [ "Status 1", "Status 2", "Status 3"]
-        actionButton.setTitle("Next", for: .normal)
-        cardTypeLabel.text = "Debit card"
-        statusView.progress = 2
-    }
-
-    func setupTheme() {
-        themeService.rx
-            .bind({ UIColor($0.backgroundColor) }, to: [ view.rx.backgroundColor ])
-            .bind({ UIColor($0.primaryExtraLight) }, to: [ cardTypeLabel.rx.backgroundColor ])
-            .bind({ UIColor($0.primary) }, to: [ cardTypeLabel.rx.textColor ])
-            .bind({ UIColor($0.primaryDark) }, to: [ statusLabel.rx.textColor ])
-            .bind({ (UIColor($0.primaryExtraLight), UIColor($0.primary)) }, to: [ statusView.rx.theme ])
-            .bind({ UIColor($0.primary) }, to: [ actionButton.rx.enabledBackgroundColor ])
-            .disposed(by: rx.disposeBag)
-    }
-
-    func setupLanguageStrings() {
-        viewModel.outputs.languageStrings.withUnretained(self)
-            .subscribe(onNext: { `self`, strings in })
-            .disposed(by: rx.disposeBag)
-    }
-
-    func setupBindings() {
-
-    }
-
-    func setupConstraints() {
-        spacers[0]
-            .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
-
-        cardImage
-            .toBottomOf(spacers[0])
-            .widthEqualToSuperView(multiplier: 175 / 375)
-            .aspectRatio(242 / 152)
-            .centerHorizontallyInSuperview()
-
-        cardTypeLabel
-            .toBottomOf(cardImage, constant: 25)
-            .centerHorizontallyInSuperview()
-            .width(constant: 150)
-            .height(constant: 30)
-
-        spacers[1]
-            .toBottomOf(cardTypeLabel)
-            .alignEdgesWithSuperview([.left, .right])
-
-        statusLabel
-            .toBottomOf(spacers[1])
-            .alignEdgesWithSuperview([.left, .right], constant: 25)
-
-        spacers[2]
-            .toBottomOf(statusLabel)
-            .alignEdgesWithSuperview([.left, .right])
-
-        statusView
-            .toBottomOf(spacers[2])
-            .alignEdgesWithSuperview([.left, .right], constant: 25)
-
-        spacers[3]
-            .toBottomOf(statusView)
-            .alignEdgesWithSuperview([.left, .right])
-
-        actionButton
-            .toBottomOf(spacers[3])
-            .centerHorizontallyInSuperview()
-            .alignEdgeWithSuperview(.safeAreaBottom, constant: 25)
-            .height(constant: 52)
-            .width(constant: 152)
-
-        spacers[0]
-            .heightEqualTo(view: spacers[1], multiplier: 1)
-            .heightEqualTo(view: spacers[2], multiplier: 2)
-            .heightEqualTo(view: spacers[3], multiplier: 1)
     }
 }

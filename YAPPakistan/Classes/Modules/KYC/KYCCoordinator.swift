@@ -190,7 +190,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
-                self.root.setNavigationBarHidden(false, animated: true)
+                // self.root.setNavigationBarHidden(false, animated: true)
+                // self.root.popViewController(animated: true)
+                self.kycProgressViewController.viewModel.inputs.progressObserver.onNext(0)
                 self.root.popViewController(animated: true)
             })
             .disposed(by: rx.disposeBag)
@@ -366,6 +368,7 @@ fileprivate extension KYCCoordinator {
     }
 
     func setupPogressViewController() {
+        kycProgressViewController.hidesBottomBarWhenPushed = true
         self.root.pushViewController(self.kycProgressViewController, animated: true)
         kycProgressViewController.viewModel.outputs.backTap.withUnretained(self)
             .subscribe(onNext: {

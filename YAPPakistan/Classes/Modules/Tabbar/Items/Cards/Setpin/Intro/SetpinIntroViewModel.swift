@@ -9,10 +9,12 @@ import Foundation
 import RxSwift
 
 protocol SetpinIntroViewModelInputs {
+    var nextObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
 }
 
 protocol SetpinIntroViewModelOutputs {
+    var next: Observable<Void> { get }
     var back: Observable<Void> { get }
     var languageStrings: Observable<SetpinIntroViewModel.LanguageStrings> { get }
 }
@@ -28,15 +30,18 @@ class SetpinIntroViewModel: SetpinIntroViewModelType, SetpinIntroViewModelInputs
     var outputs: SetpinIntroViewModelOutputs { return self }
 
     // MARK: Inputs
+    var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
 
     // MARK: Outputs
-    var languageStrings: Observable<LanguageStrings> { languageStringsSubject.asObservable() }
+    var next: Observable<Void> { nextSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
+    var languageStrings: Observable<LanguageStrings> { languageStringsSubject.asObservable() }
 
     // MARK: Subjects
-    private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
+    private var nextSubject = PublishSubject<Void>()
     private var backSubject = PublishSubject<Void>()
+    private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
 
     init() {
         languageSetup()

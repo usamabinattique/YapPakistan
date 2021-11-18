@@ -8,17 +8,17 @@
 import Foundation
 
 struct SetCardPinModuleBuilder {
+    let cardSerialNumber: String
     let container: UserSessionContainer
 
     func viewController() -> SetCardPinViewController {
         let themeService = container.themeService
 
-        let localizeables = SetCardPinViewStrings(heading: "screen_setpincode_title_confirm".localized,
-                                                  agrement: "screen_setpincode_text_terms_and_conditions".localized,
-                                                  terms: "screen_setpincode_button_terms_and_conditions".localized,
-                                                  action: "screen_setpincode_craete".localized)
-        let viewModel = SetCardPinViewModel(localizeableKeys: localizeables)
+        let strings = SetCardPinViewStrings(heading: "screen_setpincode_title".localized,
+                                            agrement: "",
+                                            terms: "",
+                                            next: "common_button_next".localized)
+        let viewModel = SetCardPinViewModel(cardSerialNumber: cardSerialNumber, strings: strings, hideTermsView: true)
         return SetCardPinViewController(themeService: themeService, viewModel: viewModel)
     }
 }
-

@@ -31,8 +31,8 @@ class SetPintSuccessViewModel: SetPintSuccessViewModelType, SetPintSuccessViewMo
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
 
     // MARK: Outputs
-    var languageStrings: Observable<LanguageStrings> { languageStringsSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
+    var languageStrings: Observable<LanguageStrings> { languageStringsSubject.asObservable() }
 
     // MARK: Subjects
     private var languageStringsSubject: BehaviorSubject<LanguageStrings>!

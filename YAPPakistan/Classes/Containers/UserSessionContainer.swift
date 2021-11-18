@@ -88,6 +88,11 @@ public final class UserSessionContainer {
         return kycRepository
     }
 
+    func makeCardsRepository() -> CardsRepositoryType {
+        let cardsService = makeCardsService()
+        return CardsRepository(cardsService: cardsService)
+    }
+
     // MARK: Controllers
 
     func makeWaitingListController() -> WaitingListRankViewController {

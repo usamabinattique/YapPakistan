@@ -31,7 +31,7 @@ class AddressViewController: UIViewController {
     lazy var confirmContainer = UIFactory.makeView().setCornerRadius(10).shaddow()
     lazy var locationImage = UIFactory.makeImageView().setCornerRadius(4).shaddow()
     lazy var locationTitle = UIFactory.makeLabel(font: .small, numberOfLines: 2)
-    lazy var locationSubTitle = UIFactory.makeLabel(font: .micro, numberOfLines: 1)
+    lazy var locationSubTitle = UIFactory.makeLabel(font: .micro, numberOfLines: 2)
     lazy var confirmButton = UIFactory.makeAppRoundedButton(with: .small)
 
     // MARK: Bottom Container View
@@ -193,9 +193,9 @@ class AddressViewController: UIViewController {
         // viewModel.outputs.search
         let currentLocation = viewModel.outputs.location.withUnretained(self).share()
         currentLocation.subscribe(onNext: { `self`, location in
-                let subTitle = "\(location.city), \(location.state), \(location.country)"
-                self.locationTitle.text = location.formattAdaddress.replacingOccurrences(of: subTitle, with: "")
-                self.locationSubTitle.text = subTitle
+                //let subTitle = "\(location.city), \(location.state), \(location.country)"
+            self.locationTitle.text = location.address.first ?? "" // location.formattAdaddress.replacingOccurrences(of: subTitle, with: "")
+            self.locationSubTitle.text = location.address.last ?? "" // subTitle
                 self.mapView.animate(toLocation: location.coordinates)
             }).disposed(by: rx.disposeBag)
         currentLocation.element(at: 0).subscribe(onNext: { `self`, location in
@@ -211,7 +211,8 @@ class AddressViewController: UIViewController {
         viewModel.outputs.citySelected.bind(to: cityTextField.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.location.withUnretained(self)
             .subscribe(onNext: { `self`, location in
-                self.addressTextField.text = location.formattAdaddress
+                self.addressTextField.text = location.address.last ?? ""
+                self.flatTextField.text = location.address.first ?? ""
                 self.cityTextField.text = location.city
             })
             .disposed(by: rx.disposeBag)
@@ -259,7 +260,7 @@ class AddressViewController: UIViewController {
             .subscribe(onNext: { `self`, _ in self.autocompleteClicked() })
             .disposed(by: rx.disposeBag)
 
-        addressTextField.rx.controlEvent(.editingDidBegin).withUnretained(self)
+        flatTextField.rx.controlEvent(.editingDidBegin).withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 UIView.animate(withDuration: 0.3) {
                     self.nextButtonBottomAncher.constant = 90
@@ -267,18 +268,10 @@ class AddressViewController: UIViewController {
                 }
             }).disposed(by: rx.disposeBag)
 
-        flatTextField.rx.controlEvent(.editingDidBegin).withUnretained(self)
+        addressTextField.rx.controlEvent(.editingDidBegin).withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 UIView.animate(withDuration: 0.3) {
                     self.nextButtonBottomAncher.constant = 165
-                    self.view.layoutSubviews()
-                }
-            }).disposed(by: rx.disposeBag)
-
-        addressTextField.rx.controlEvent(.editingDidEnd)
-            .subscribe(onNext: { [weak self] _ in guard let self = self else { return }
-                UIView.animate(withDuration: 0.3) {
-                    self.nextButtonBottomAncher.constant = 25
                     self.view.layoutSubviews()
                 }
             }).disposed(by: rx.disposeBag)
@@ -291,11 +284,23 @@ class AddressViewController: UIViewController {
                 }
             }).disposed(by: rx.disposeBag)
 
+        addressTextField.rx.controlEvent(.editingDidEnd)
+            .subscribe(onNext: { [weak self] _ in guard let self = self else { return }
+                UIView.animate(withDuration: 0.3) {
+                    self.nextButtonBottomAncher.constant = 25
+                    self.view.layoutSubviews()
+                }
+            }).disposed(by: rx.disposeBag)
+
         nextButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
 
         view.rx.tapGesture().withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.view.endEditing(true) })
             .disposed(by: rx.disposeBag)
+
+        let flatNumber = flatTextField.rx.text.asObservable().unwrap()
+        let address = addressTextField.rx.text.asObservable().unwrap()
+        Observable.combineLatest(flatNumber, address).map{ $0 + $1 }.bind(to: viewModel.inputs.addressObserver)
     }
 
     func setupConstraints() {
@@ -361,17 +366,17 @@ class AddressViewController: UIViewController {
         bottomContainerView
             .alignEdgesWithSuperview([.left, .right, .bottom])
 
-        addressTextField
+        flatTextField
             .alignEdgesWithSuperview([.left, .right, .top], constants: [25, 25, 20])
             .height(constant: 55)
 
-        flatTextField
-            .toBottomOf(addressTextField, constant: 20)
+        addressTextField
+            .toBottomOf(flatTextField, constant: 20)
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
             .height(constant: 55)
 
         cityTextField
-            .toBottomOf(flatTextField, constant: 20)
+            .toBottomOf(addressTextField, constant: 20)
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
             .height(constant: 55)
 
