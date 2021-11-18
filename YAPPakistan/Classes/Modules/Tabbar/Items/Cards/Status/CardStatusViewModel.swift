@@ -55,7 +55,7 @@ class CardStatusViewModel: CardStatusViewModelType, CardStatusViewModelInputs, C
 
     init(_ strings: LocalizedStrings, completedSteps: Int) {
         localizedStringsSubject.onNext(strings)
-        isEnabledSubject.onNext(/* completedSteps == 0 ||*/ completedSteps == 3)
+        isEnabledSubject.onNext(/* completedSteps == 0 ||*/ completedSteps == 5)
         completedStepsSubject.onNext(completedSteps)
         nextSubject.withLatestFrom(completedStepsSubject).bind(to: nextResultSubject).disposed(by: disposeBag)
     }

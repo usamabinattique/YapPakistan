@@ -29,7 +29,8 @@ fileprivate extension DeliveryStatus {
         switch self {
         case .ordering: return ("Ordering", "Building", "Shipping")
         case .ordered: return ("Ordered", "Building", "Shipping")
-        case .shipping, .booked: return ("Ordered", "Built", "Shipping")
+        case .booked: return ("Ordered", "Building", "Shipping")
+        case .shipping: return ("Ordered", "Built", "Shipping")
         case .shipped: return ("Ordered", "Built", "Shipped")
         }
     }
@@ -38,8 +39,9 @@ fileprivate extension DeliveryStatus {
         switch self {
         case .ordering: return ("Set PIN", 0) // ("Complete verification", 0)
         case .ordered: return ("Set PIN", 1)
-        case .shipping, .booked: return ("Set PIN", 2)
-        case .shipped: return ("Set PIN", 3)
+        case .booked: return ("Set PIN", 3)
+        case .shipping: return ("Set PIN", 4)
+        case .shipped: return ("Set PIN", 5)
         }
     }
 }

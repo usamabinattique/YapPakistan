@@ -92,7 +92,7 @@ class CardsViewModel: CardsViewModelType,
 
     func isProfileCompleted() -> Observable<Bool> {
         return viewDidAppearSubject.withLatestFrom(accountProvider.currentAccount)
-            .map { $0?.accountStatus == .addressCaptured && $0?.isSecretQuestionVerified == true }
+            .map { ($0?.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue && $0?.isSecretQuestionVerified == true }
             .share()
     }
 

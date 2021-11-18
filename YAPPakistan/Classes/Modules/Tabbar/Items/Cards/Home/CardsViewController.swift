@@ -24,6 +24,9 @@ class CardsViewController: UIViewController {
     private lazy var addButton = barButtonItem(image: nil, insectBy: .zero)
     private lazy var sideMenuButton = barButtonItem(image: nil, insectBy: .zero)
 
+    private lazy var iconContainer = UIFactory.makeImageView().shaddow()  // FIXME
+    private lazy var clockEyeIcon = UIFactory.makeImageView()   // FIXME
+
     private lazy var letsDoItLabel = UIFactory.makeButton(with: .regular).setHidden(true)
 
     private var isPinSet = false { didSet {
@@ -33,13 +36,20 @@ class CardsViewController: UIViewController {
             letsDoItLabel.setTitleColor(UIColor(theme.primaryDark), for: .normal)
             letsDoItLabel.setTitle("PKR 0.0", for: .normal)
             subTitleLabel.text = "Card balance"
+            if #available(iOS 13.0, *) {
+                clockEyeIcon.image = UIImage(systemName: "eye")
+            }
+            clockEyeIcon.tintColor = UIColor(theme.primary)
         } else {
             letsDoItLabel.backgroundColor = UIColor(theme.primary)
             letsDoItLabel.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
             letsDoItLabel.setTitle("Let's do it", for: .normal)
+            if #available(iOS 13.0, *) {
+                clockEyeIcon.image = UIImage(systemName: "clock")
+            }
+            clockEyeIcon.tintColor = UIColor(theme.secondaryOrange)
         }
-        detailsButton.isHidden = isPinSet
-        detailsIcon.isHidden = isPinSet
+        iconContainer.backgroundColor = .white
     }}
 
     // MARK: - Properties
@@ -72,6 +82,7 @@ class CardsViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         letsDoItLabel.layer.cornerRadius = letsDoItLabel.frame.size.height / 2
+        iconContainer.layer.cornerRadius = iconContainer.frame.size.height / 2
     }
 }
 
@@ -84,7 +95,9 @@ fileprivate extension CardsViewController {
                              detailsIcon,
                              detailsButton,
                              pageNumberLabel,
-                             letsDoItLabel ])
+                             letsDoItLabel,
+                             iconContainer ])
+        iconContainer.addSub(view: clockEyeIcon)
         view.addSub(views: spacers)
         navigationItem.rightBarButtonItem = addButton.barItem
         navigationItem.leftBarButtonItem = sideMenuButton.barItem
@@ -159,7 +172,7 @@ fileprivate extension CardsViewController {
         detailsIcon
             .toBottomOf(spacers[2])
             .centerHorizontallyInSuperview()
-            .height(constant: 32)
+            .height(constant: 30)
             .aspectRatio()
         detailsButton
             .toBottomOf(detailsIcon)
@@ -182,6 +195,14 @@ fileprivate extension CardsViewController {
             .heightEqualTo(view: spacers[2], multiplier: 2)
             .heightEqualTo(view: spacers[3], multiplier: 1)
             .heightEqualTo(view: spacers[4], multiplier: 1)
+
+        clockEyeIcon
+            .alignEdgesWithSuperview([.top, .bottom, .left, .right], constant: 8)
+            .height(constant: 25)
+            .aspectRatio()
+
+        clockEyeIcon.centerXAnchor.constraint(equalTo: cardImage.rightAnchor, constant: 0).isActive = true
+        clockEyeIcon.centerYAnchor.constraint(equalTo: cardImage.topAnchor, constant: 0).isActive = true
     }
 
     func bindViewModel() {
@@ -198,6 +219,7 @@ fileprivate extension CardsViewController {
             .merge(with: letsDoItLabel.rx.tap.map{ _ in () })
             .merge(with: cardImage.rx.tapGesture().skip(1).map{ _ in () })
             .merge(with: detailsIcon.rx.tapGesture().skip(1).map{ _ in () })
+            .merge(with: view.rx.swipeGesture(.up).skip(1).map{ _ in () })
             .bind(to: viewModel.inputs.detailsObservers)
             .disposed(by: rx.disposeBag)
     }

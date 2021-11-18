@@ -256,21 +256,22 @@ class CardStatusView: UIView {
     }
 
     func updateProgress() {
-        guard progress <= 3 else { return }
+        guard progress <= 5 else { return }
 
         // Image
-        for index in 0..<progress {
-            iconViews[index].tintColor = .white
-            //iconViews[index].backgroundColor = self.theme.dark
-            iconContainers[index].backgroundColor = self.theme.dark
+        for index in 0...progress where index % 2 == 1  {
+            iconViews[index / 2].tintColor = .white
+            // iconViews[index].backgroundColor = self.theme.dark
+            iconContainers[index / 2].backgroundColor = self.theme.dark
         }
-        for index in progress..<iconViews.count {
+        for index in ((progress + 1) / 2)..<iconViews.count {
             iconViews[index].tintColor = self.theme.dark.withAlphaComponent(0.3)
-            //iconViews[index].backgroundColor = self.theme.light
+            // iconViews[index].backgroundColor = self.theme.light
             iconContainers[index].backgroundColor = self.theme.light
         }
         // Line
-        let progressLine = progress > 0 ? (progress - 1): 0
+        let pLine = (progress + 1) / 2
+        let progressLine = pLine <= statusLines.count ? pLine: statusLines.count
         for index in progressLine..<statusLines.count { statusLines[index].backgroundColor = self.theme.light }
         for index in 0..<progressLine { statusLines[index].backgroundColor = self.theme.dark }
     }

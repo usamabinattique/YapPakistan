@@ -137,12 +137,12 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .disposed(by: disposeBag)
 
         accountProvider.currentAccount.unwrap()
-            .map{ $0.accountStatus == .addressCaptured }
+            .map{ ($0.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue }
             .bind(to: completeVerificationHiddenSubject)
             .disposed(by: disposeBag)
 
         completeVerificationSubject.withLatestFrom(accountProvider.currentAccount).unwrap()
-            .map({ $0.accountStatus != .addressCaptured })
+            .map({ ($0.accountStatus?.stepValue ?? 100) < AccountStatus.addressCaptured.stepValue })
             .bind(to: completeVerificationResultSubject)
             .disposed(by: disposeBag)
 

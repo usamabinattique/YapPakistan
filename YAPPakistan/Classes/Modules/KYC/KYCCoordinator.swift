@@ -190,10 +190,10 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
-                // self.root.setNavigationBarHidden(false, animated: true)
-                // self.root.popViewController(animated: true)
-                self.kycProgressViewController.viewModel.inputs.progressObserver.onNext(0)
+                self.root.setNavigationBarHidden(false, animated: true)
                 self.root.popViewController(animated: true)
+                // self.kycProgressViewController.viewModel.inputs.progressObserver.onNext(0)
+                // self.root.popViewController(animated: true)
             })
             .disposed(by: rx.disposeBag)
 
@@ -210,8 +210,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { `self`, _ in self.cardName() })
             .disposed(by: rx.disposeBag)
 
-        let vcs = self.root.viewControllers
-        self.root.setViewControllers([vcs[0], vcs[1], viewController], animated: true)
+        // let vcs = self.root.viewControllers
+        // self.root.setViewControllers([vcs[0], vcs[1], viewController], animated: true)
+        self.root.pushViewController(viewController, animated: true)
         self.root.setNavigationBarHidden(true, animated: true)
     }
 
