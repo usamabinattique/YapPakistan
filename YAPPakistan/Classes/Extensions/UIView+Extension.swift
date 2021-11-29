@@ -5,7 +5,7 @@
 //  Created by Tayyab on 04/10/2021.
 //
 
-import Foundation
+import UIKit
 
 public protocol ReusableView: AnyObject { }
 

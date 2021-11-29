@@ -54,6 +54,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'HWPanModal', '~> 0'
   spec.dependency 'SDWebImage', '~> 5.0'
   spec.dependency 'SwiftyGif', '~> 5.0'
+  spec.dependency 'FSPagerView', '~> 0.8.3'
 
   #MARK: Utilities
   spec.dependency 'PhoneNumberKit', '~> 3.0'

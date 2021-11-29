@@ -210,10 +210,16 @@ fileprivate extension CardsViewController {
         viewModel.outputs.error.subscribe(onNext: { [weak self] error in
             self?.showAlert(title: "", message: error, defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: rx.disposeBag)
+
         viewModel.outputs.hideLetsDoIt
             .bind(to: letsDoItLabel.rx.isHidden).disposed(by: rx.disposeBag)
+
         viewModel.outputs.isPinSet.withUnretained(self)
             .subscribe(onNext: { `self`, value in self.isPinSet = value }).disposed(by: rx.disposeBag)
+
+        iconContainer.rx.tapGesture().skip(1).map({ _ in () })
+            .bind(to: viewModel.inputs.eyeInfoObserver)
+            .disposed(by: rx.disposeBag)
 
         detailsButton.rx.tap.map{ _ in () }
             .merge(with: letsDoItLabel.rx.tap.map{ _ in () })

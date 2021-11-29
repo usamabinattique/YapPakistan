@@ -24,12 +24,15 @@ extension PaymentCard.DeliveryStatus {
 
 protocol CardsViewModelInputs {
     var viewDidAppear: AnyObserver<Void> { get }
+    var eyeInfoObserver: AnyObserver<Void> { get }
     var detailsObservers: AnyObserver<Void> { get }
 }
 
 protocol CardsViewModelOutputs {
     typealias CardResult = (cardSerial: String?, deliveryStatus: DeliveryStatus)
+    var eyeInfo: Observable<Void> { get }
     var details: Observable<CardResult> { get }
+    var cardDetails: Observable<CardResult> { get }
     var loader: Observable<Bool> { get }
     var error: Observable<String> { get }
     var hideLetsDoIt: Observable<Bool> { get }
@@ -50,11 +53,14 @@ class CardsViewModel: CardsViewModelType,
     var outputs: CardsViewModelOutputs { self }
 
     // MARK: Inputs
+    var eyeInfoObserver: AnyObserver<Void> { eyeInfoSubject.asObserver() }
     var detailsObservers: AnyObserver<Void> { detailsSubject.asObserver() }
     var viewDidAppear: AnyObserver<Void> { viewDidAppearSubject.asObserver() }
 
     // MARK: Outputs
+    var eyeInfo: Observable<Void> { eyeInfoSubject.asObserver() }
     var details: Observable<CardResult> { detailsResultSubject.asObservable() }
+    var cardDetails: Observable<CardResult> { cardDetailsResultSubject.asObserver() }
     var loader: Observable<Bool> { loaderSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
     var hideLetsDoIt: Observable<Bool> { hideLetsDoItSubject.asObservable() }
@@ -62,9 +68,11 @@ class CardsViewModel: CardsViewModelType,
     var localizedStrings: Observable<LocalizedStrings> { localizedStringsSubject.asObservable() }
 
     // MARK: Subjects
+    var eyeInfoSubject = PublishSubject<Void>()
     var viewDidAppearSubject = PublishSubject<Void>()
     var detailsSubject = PublishSubject<Void>()
     var detailsResultSubject = PublishSubject<CardResult>()
+    var cardDetailsResultSubject = PublishSubject<CardResult>()
     var loaderSubject = BehaviorSubject(value: false)
     var errorSubject = PublishSubject<String>()
     var hideLetsDoItSubject = BehaviorSubject(value: true)
@@ -125,6 +133,10 @@ class CardsViewModel: CardsViewModelType,
         detailsSubject.withUnretained(self).filter({ !$0.0.isPinSetValue })
             .map{ `self`, _ in (self.cardSerial, self.deliveryStatus ?? .shipping) }
             .bind(to: detailsResultSubject).disposed(by: disposeBag)
+
+        detailsSubject.withUnretained(self).filter({ $0.0.isPinSetValue })
+            .map{ `self`, _ in (self.cardSerial, self.deliveryStatus ?? .shipping) }
+            .bind(to: cardDetailsResultSubject).disposed(by: disposeBag)
 
         cardElements.map { $0?.first?.deliveryStatus != .shipped }
             .bind(to: hideLetsDoItSubject).disposed(by: disposeBag)
