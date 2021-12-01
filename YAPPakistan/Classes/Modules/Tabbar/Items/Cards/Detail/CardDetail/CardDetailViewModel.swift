@@ -17,9 +17,10 @@ protocol CardDetailViewModelInputs {
 
 protocol CardDetailViewModelOutputs {
     var back: Observable<Void> { get }
-    var details: Observable<Void> { get }
-    var freez: Observable<Void> { get }
-    var limit: Observable<Void> { get }
+    var details: Observable<PaymentCard> { get }
+    var hidefreezCard: Observable<Bool> { get }
+    var limit: Observable<PaymentCard> { get }
+    var loader: Observable<Bool> { get }
 }
 
 protocol CardDetailViewModelType {
@@ -27,12 +28,14 @@ protocol CardDetailViewModelType {
     var outputs: CardDetailViewModelOutputs { get }
 }
 
-struct CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, CardDetailViewModelOutputs {
+class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, CardDetailViewModelOutputs {
 
     var backSubject = PublishSubject<Void>()
     var detailsSubject = PublishSubject<Void>()
     var freezSubject = PublishSubject<Void>()
     var limitSubject = PublishSubject<Void>()
+    var hidefreezCardSubject = BehaviorSubject<Bool>(value: true)
+    var loaderSubject = BehaviorSubject<Bool>(value: false)
 
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
     var detailsObserver: AnyObserver<Void> { detailsSubject.asObserver() }
@@ -40,11 +43,40 @@ struct CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, 
     var limitObserver: AnyObserver<Void> { limitSubject.asObserver() }
 
     var back: Observable<Void> { backSubject.asObservable() }
-    var details: Observable<Void> { detailsSubject.asObservable() }
-    var freez: Observable<Void> { freezSubject.asObservable() }
-    var limit: Observable<Void> { limitSubject.asObservable() }
+    var details: Observable<PaymentCard> { detailsSubject.map({ self.paymentCard }).unwrap().asObservable() }
+    // var freez: Observable<Void> { freezSubject.asObservable() }
+    var hidefreezCard: Observable<Bool> { hidefreezCardSubject.asObservable() }
+    var limit: Observable<PaymentCard> { limitSubject.map({ self.paymentCard }).unwrap().asObservable() }
+    var loader: Observable<Bool> { loaderSubject.asObservable() }
 
     var inputs: CardDetailViewModelInputs { self }
     var outputs: CardDetailViewModelOutputs { self }
 
+    var paymentCard: PaymentCard?
+    let repository: CardsRepositoryType
+    var disposeBag = DisposeBag()
+
+    init(paymentCard: PaymentCard?, repository: CardsRepositoryType) {
+        self.paymentCard = paymentCard
+        self.repository = repository
+        self.hidefreezCardSubject.onNext(paymentCard?.blocked == false)
+        let freez = self.freezSubject.withUnretained(self)
+            .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
+            .flatMap { `self`, _ in
+                self.repository.configFreezeUnfreezeCard(cardSerialNumber: paymentCard?.cardSerialNumber ?? "")
+            }
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+            .share()
+
+
+
+        freez.elements().withUnretained(self)
+            .do(onNext: { `self`, _ in
+                if let blocked = self.paymentCard?.blocked {
+                    self.paymentCard?.blocked = !blocked
+                }
+            }).map { _ in self.paymentCard?.blocked == false }
+            .bind(to: hidefreezCardSubject)
+            .disposed(by: disposeBag)
+    }
 }

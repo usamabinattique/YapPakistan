@@ -16,6 +16,7 @@ class CardDetailViewController: UIViewController {
     lazy var creditView = makeCreditView(themeService: themeService)
     lazy var buttonsContainer = makeButtonsContainer(themeService: themeService)
     lazy var titleLabel = UIFactory.makeLabel(font: .large)
+    lazy var freezUnfreezView = FreezUnfreezView(themeService: themeService).setHidden(true)
 
     private var backButton: UIButton!
     private var optionsButton: UIButton!
@@ -39,10 +40,16 @@ class CardDetailViewController: UIViewController {
         setupBindings()
 
         titleLabel.text = "Primary card"
+
+        // FixMe
+        let vmo = viewModel as? CardDetailViewModel
+        cardView.subTitle.text = vmo?.paymentCard?.maskedCardNo ?? "-"
+        creditView.balanceLabel.text = "PKR \(vmo?.paymentCard?.cardBalance ?? 0)"
+        // End Fixme
     }
 
     func setupViews() {
-        view.addSub(views: [ cardView, creditView, buttonsContainer ])
+        view.addSub(views: [ cardView, creditView, buttonsContainer, freezUnfreezView])
         navigationItem.titleView = titleLabel
         backButton = addBackButton(of: .backEmpty)
 
@@ -75,6 +82,9 @@ class CardDetailViewController: UIViewController {
         buttonsContainer
             .toBottomOf(creditView, constant: 25)
             .alignEdgesWithSuperview([.left, .right], constant: 25)
+
+        freezUnfreezView
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
     }
 
     func setupBindings() {
@@ -85,6 +95,7 @@ class CardDetailViewController: UIViewController {
 
         buttonsContainer.button1_1.rx.tap.asObservable()
             .merge(with: buttonsContainer.button1_0.rx.tap.asObservable())
+            .merge(with: freezUnfreezView.button.rx.tap.asObservable())
             .bind(to: viewModel.inputs.freezObserver).disposed(by: rx.disposeBag)
 
         buttonsContainer.button2_1.rx.tap.asObservable()
@@ -96,6 +107,15 @@ class CardDetailViewController: UIViewController {
                 self.makeOptionsView(themeService: self.themeService)
             })
             .disposed(by: rx.disposeBag)
+
+        viewModel.outputs.hidefreezCard.withUnretained(self)
+            .subscribe(onNext: { `self`, isHidden in
+                self.buttonsContainer.button1_1.setTitle(isHidden ? "Freez card": "Unfreez card", for: .normal)
+                self.freezUnfreezView.isHidden = isHidden
+            })
+            .disposed(by: rx.disposeBag)
+            //.bind(to: freezUnfreezView.rx.isHidden).disposed(by: rx.disposeBag)
+        viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
     }
 
 }
@@ -105,7 +125,7 @@ fileprivate extension UIViewController {
 
         let resources = CardViewModel.ResourcesType(
             title: "Primary Card",
-            subtitle: "02234234234***0010",
+            subtitle: "223344232****102",
             subsubTitle: "Secured by YAP",
             buttonTitle: "Card details",
             leftImageName: "payment_card",

@@ -53,8 +53,8 @@ class CardDetailBottomViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        UIView.animate(withDuration: 0.2) { [weak self] in
-            self?.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        UIView.animate(withDuration: 0.5) { [weak self] in
+            self?.view.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         }
     }
 
@@ -156,8 +156,11 @@ class CardDetailBottomViewController: UIViewController {
         view.rx.tapGesture().map({ _ in () })
             .bind(to: viewModel.inputs.closeObserver)
             .disposed(by: rx.disposeBag)
+
         contentContainr.rx.swipeGesture(.down).map({ _ in () })
             .bind(to: viewModel.inputs.closeObserver)
             .disposed(by: rx.disposeBag)
+
+        viewModel.outputs.loading.bind(to: rx.loader).disposed(by: rx.disposeBag)
     }
 }

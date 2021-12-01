@@ -26,18 +26,20 @@ protocol CardsViewModelInputs {
     var viewDidAppear: AnyObserver<Void> { get }
     var eyeInfoObserver: AnyObserver<Void> { get }
     var detailsObservers: AnyObserver<Void> { get }
+    var unfreezObserver: AnyObserver<Void> { get }
 }
 
 protocol CardsViewModelOutputs {
-    typealias CardResult = (cardSerial: String?, deliveryStatus: DeliveryStatus)
-    var eyeInfo: Observable<Void> { get }
-    var details: Observable<CardResult> { get }
-    var cardDetails: Observable<CardResult> { get }
+    // typealias CardResult = (cardSerial: String?, deliveryStatus: DeliveryStatus)
+    var eyeInfo: Observable<PaymentCard> { get }
+    // var deliveryDetails: Observable<PaymentCard?> { get }
+    var cardDetails: Observable<PaymentCard?> { get }
     var loader: Observable<Bool> { get }
     var error: Observable<String> { get }
     var hideLetsDoIt: Observable<Bool> { get }
-    var isPinSet: Observable<Bool> { get }
+    var isForSetPinFlow: Observable<Bool> { get }
     var localizedStrings: Observable<CardsViewModel.LocalizedStrings> { get }
+    var isUserBlocked: Observable<Bool> { get }
 }
 
 protocol CardsViewModelType {
@@ -53,38 +55,44 @@ class CardsViewModel: CardsViewModelType,
     var outputs: CardsViewModelOutputs { self }
 
     // MARK: Inputs
-    var eyeInfoObserver: AnyObserver<Void> { eyeInfoSubject.asObserver() }
-    var detailsObservers: AnyObserver<Void> { detailsSubject.asObserver() }
+    var eyeInfoObserver: AnyObserver<Void> { eyeInfoDidTapSubject.asObserver() }
+    var detailsObservers: AnyObserver<Void> { detailsDidTapSubject.asObserver() }
     var viewDidAppear: AnyObserver<Void> { viewDidAppearSubject.asObserver() }
+    var unfreezObserver: AnyObserver<Void> { unfreezSubject.asObserver() }
 
     // MARK: Outputs
-    var eyeInfo: Observable<Void> { eyeInfoSubject.asObserver() }
-    var details: Observable<CardResult> { detailsResultSubject.asObservable() }
-    var cardDetails: Observable<CardResult> { cardDetailsResultSubject.asObserver() }
+    var eyeInfo: Observable<PaymentCard> {
+        eyeInfoDidTapSubject.withLatestFrom(cardDetailsSubject).unwrap().asObservable()
+    }
+    var cardDetails: Observable<PaymentCard?> { detailsDidTapSubject.withLatestFrom(cardDetailsSubject).asObservable() }
     var loader: Observable<Bool> { loaderSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
     var hideLetsDoIt: Observable<Bool> { hideLetsDoItSubject.asObservable() }
-    var isPinSet: Observable<Bool> { isPinSetSubject.asObservable() }
     var localizedStrings: Observable<LocalizedStrings> { localizedStringsSubject.asObservable() }
+    var isForSetPinFlow: Observable<Bool> { setPinSubject.asObservable() }
+    var isUserBlocked: Observable<Bool> { isUserBlockedSubject.asObservable() }
 
     // MARK: Subjects
-    var eyeInfoSubject = PublishSubject<Void>()
+    var unfreezSubject = PublishSubject<Void>()
+    var eyeInfoDidTapSubject = PublishSubject<Void>()
+    var detailsDidTapSubject = PublishSubject<Void>()
     var viewDidAppearSubject = PublishSubject<Void>()
-    var detailsSubject = PublishSubject<Void>()
-    var detailsResultSubject = PublishSubject<CardResult>()
-    var cardDetailsResultSubject = PublishSubject<CardResult>()
+
+    var cardDetailsSubject = BehaviorSubject<PaymentCard?>(value: nil)
+
     var loaderSubject = BehaviorSubject(value: false)
     var errorSubject = PublishSubject<String>()
     var hideLetsDoItSubject = BehaviorSubject(value: true)
-    var isPinSetSubject = BehaviorSubject(value: false)
+    var setPinSubject = BehaviorSubject(value: false)
     var localizedStringsSubject = PublishSubject<LocalizedStrings>()
+    var isUserBlockedSubject = PublishSubject<Bool>()
 
     // MARK: - Properties
     private var accountProvider: AccountProvider!
     private var cardsRepository: CardsRepositoryType!
-    fileprivate var deliveryStatus: DeliveryStatus!
-    fileprivate var cardSerial: String!
-    fileprivate var isPinSetValue: Bool = false
+    // fileprivate var deliveryStatus: DeliveryStatus!
+    // fileprivate var cardSerial: String!
+    // fileprivate var isPinSetValue: Bool = false
 
     let disposeBag = DisposeBag()
 
@@ -96,6 +104,25 @@ class CardsViewModel: CardsViewModelType,
         let completionStatus = self.isProfileCompleted()
         self.resolveIfIncompleted(completionStatus)
         self.resolveIfCompleted(completionStatus)
+
+        let unfreez = unfreezSubject.withLatestFrom(cardDetailsSubject).withUnretained(self)
+            .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
+            .flatMap {`self`, card  in
+                self.cardsRepository.configFreezeUnfreezeCard(cardSerialNumber: card?.cardSerialNumber ?? "")
+            }
+            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+            .share()
+
+        unfreez.elements().withLatestFrom(cardDetailsSubject).map { card -> PaymentCard? in
+            var cardOut = card
+            if let blocked = card?.blocked {
+                cardOut?.blocked = !blocked
+            }
+            return cardOut
+        }.bind(to: cardDetailsSubject)
+        .disposed(by: disposeBag)
+
+        unfreez.errors().map({ $0.localizedDescription }).bind(to: errorSubject).disposed(by: disposeBag)
     }
 
     func isProfileCompleted() -> Observable<Bool> {
@@ -106,7 +133,7 @@ class CardsViewModel: CardsViewModelType,
 
     func resolveIfIncompleted(_ completionStatus: Observable<Bool>) {
         completionStatus.filter{ !$0 }.map{ _ in DeliveryStatus.ordering }.withUnretained(self)
-            .do(onNext: { $0.0.deliveryStatus = $0.1 })
+            // .do(onNext: { $0.0.deliveryStatus = $0.1 })
             .map { $0.0.makeLocalizableStrings($0.1) }
             .bind(to: localizedStringsSubject)
             .disposed(by: disposeBag)
@@ -119,41 +146,29 @@ class CardsViewModel: CardsViewModelType,
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
 
-        let cardElements = cardsFetched.elements().share()
-        cardElements.map({ $0?.first }).withUnretained(self)
-            .do(onNext: {
-                $0.0.deliveryStatus = $0.1?.deliveryStatus ?? .ordering
-                $0.0.cardSerial = $0.1?.cardSerialNumber
-            })
-            .map{ $0.1?.deliveryStatus ?? .ordered }.withUnretained(self)
+        let cardElements = cardsFetched.elements().map({ $0?.first }).share()
+        cardElements.bind(to: cardDetailsSubject).disposed(by: disposeBag)
+
+        cardDetailsSubject.map({ $0?.blocked }).unwrap()
+            .bind(to: isUserBlockedSubject).disposed(by: disposeBag)
+
+        cardDetailsSubject
+            .map { $0?.deliveryStatus ?? .ordering }.withUnretained(self)
             .map{ `self`, status in self.makeLocalizableStrings(status) }
             .bind(to: localizedStringsSubject)
             .disposed(by: disposeBag)
 
-        detailsSubject.withUnretained(self).filter({ !$0.0.isPinSetValue })
-            .map{ `self`, _ in (self.cardSerial, self.deliveryStatus ?? .shipping) }
-            .bind(to: detailsResultSubject).disposed(by: disposeBag)
-
-        detailsSubject.withUnretained(self).filter({ $0.0.isPinSetValue })
-            .map{ `self`, _ in (self.cardSerial, self.deliveryStatus ?? .shipping) }
-            .bind(to: cardDetailsResultSubject).disposed(by: disposeBag)
-
-        cardElements.map { $0?.first?.deliveryStatus != .shipped }
+        cardDetailsSubject
+            .map { $0?.deliveryStatus != .shipped }
             .bind(to: hideLetsDoItSubject).disposed(by: disposeBag)
 
-        cardElements.map { $0?.first?.pinCreated == true }
-            .do(onNext: {[weak self] value in self?.isPinSetValue = value })
-            .bind(to: isPinSetSubject).disposed(by: disposeBag)
+        cardDetailsSubject.map { $0?.pinCreated == true }
+            .bind(to: setPinSubject).disposed(by: disposeBag)
+//      detailsResultSubject.subscribe {
+//      print($0)
+//      }.disposed(by: disposeBag)
 
-        //detailsResultSubject.subscribe {
-        //    print($0)
-        //}.disposed(by: disposeBag)
-
-        cardsFetched.errors()
-            .subscribe(onNext: { error in
-                print(error)
-            })
-            .disposed(by: disposeBag)
+        cardsFetched.errors().map({ $0.localizedDescription }).bind(to: errorSubject).disposed(by: disposeBag)
     }
 }
 

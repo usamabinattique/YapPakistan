@@ -117,6 +117,21 @@ class LimitsViewController: UIViewController {
     // MARK: Binding
 
     func bindViewModel() {
+        viewModel.outputs.withdrawl.bind(to: atmSwitch.rx.value).disposed(by: rx.disposeBag)
+        viewModel.outputs.retail.bind(to: retailSwitch.rx.value).disposed(by: rx.disposeBag)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.atmSwitch.rx.value
+                .debounce(.milliseconds(200), scheduler: MainScheduler.instance)
+                .skip(1).debug()
+                .bind(to: self.viewModel.inputs.withdrawlObserver).disposed(by: self.rx.disposeBag)
+            self.retailSwitch.rx.value
+                .debounce(.milliseconds(200), scheduler: MainScheduler.instance)
+                .skip(1).debug()
+                .bind(to: self.viewModel.inputs.retailObserver).disposed(by: self.rx.disposeBag)
+        }
+
         viewModel.outputs.showError
             .subscribe(onNext: { [weak self] error in
                 self?.showAlert(title: "", message: error, defaultButtonTitle: "common_button_ok".localized)
@@ -139,6 +154,11 @@ class LimitsViewController: UIViewController {
 
         viewModel.outputs.loader.bind(to: rx.loader).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        viewModel.outputs.showError.withUnretained(self)
+            .subscribe(onNext: { `self`, error in
+                self.showAlert(message: error)
+            })
+            .disposed(by: rx.disposeBag)
     }
 
     required init?(coder aDecoder: NSCoder) { fatalError("Unsupported") }

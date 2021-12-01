@@ -40,23 +40,29 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             root.viewControllers?.append(navigationRoot)
         }
 
-        viewController.viewModel.outputs.details.withUnretained(self)
-            .subscribe(onNext: { $0.0.detailScreen(status: $0.1.deliveryStatus, cardSerial: $0.1.cardSerial ?? "") })
-            .disposed(by: rx.disposeBag)
+//        viewController.viewModel.outputs.deliveryDetails
+//            .subscribe(onNext: { [weak self] card in self?.deleveryStatusScreen(card) })
+//            .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.eyeInfo.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.cardDetailBottomVC() })
+            .subscribe(onNext: { `self`, card in self.cardDetailBottomVC(paymentCard: card) })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.cardDetails.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.cardDetailView() })
+            .subscribe(onNext: { `self`, card in
+                if card?.pinCreated == true {
+                    self.cardDetailView(card)
+                } else {
+                    self.deleveryStatusScreen(card)
+                }
+            })
             .disposed(by: rx.disposeBag)
 
         return result
     }
 
-    func cardDetailView() {
-        let viewModel = CardDetailViewModel()
+    func cardDetailView(_ paymentCard: PaymentCard?) {
+        let viewModel = CardDetailViewModel(paymentCard: paymentCard, repository: container.makeCardsRepository())
         let viewController = CardDetailViewController(viewModel: viewModel, themeService: container.themeService)
         viewController.hidesBottomBarWhenPushed = true
         navigationRoot.pushViewController(viewController, animated: true)
@@ -68,21 +74,21 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.details.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.detailPopUpVC() })
+            .subscribe(onNext: { `self`, card in self.detailPopUpVC(card) })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.limit.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.cardLimits() })
+            .subscribe(onNext: { `self`, card in self.cardLimits(card) })
             .disposed(by: rx.disposeBag)
     }
 
-    func cardLimits() {
+    func cardLimits(_ paymentCard: PaymentCard) {
         let strings = LimitsViewModel.ResourcesType(
             title: "Set limits",
             cellsData: [("ATM withdrawl", "Allow your card to withdraw from cash machines", isOn: true),
                         ("Retail payments", "Allow your card to be used at retail outlets", isOn: true)]
         )
-        let viewModel = LimitsViewModel(strings: strings)
+        let viewModel = LimitsViewModel(strings: strings, paymentCard: paymentCard, repository: container.makeCardsRepository())
         let viewController = LimitsViewController(themeService: container.themeService, viewModel: viewModel)
 
         let navigation = makeNavigationController(viewController)
@@ -98,23 +104,27 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
 
     }
 
-    func detailPopUpVC() {
+    func detailPopUpVC(_ paymentCard: PaymentCard) {
         let resources = CardDetailPopUpViewModel.ResourcesType(
             cardImage: "payment_card",
-            closeImage: "x",
+            closeImage: "icon_close",
             titleLabel: "Primary card",
             subTitleLabel: "Primary card",
             numberTitleLabel: "Card number",
-            numberLabel: "2233442323210102",
+            numberLabel: "-",
             dateTitleLabel: "Expire date",
-            dateLabel: "11/26",
+            dateLabel: "-",
             cvvTitleLabel: "CVV",
-            cvvLabel: "145",
+            cvvLabel: "-",
             copyButtonTitle: "copy")
-        let viewModel = CardDetailPopUpViewModel(resources: resources)
+        let viewModel = CardDetailPopUpViewModel(resources: resources,
+                                                 repository: container.makeCardsRepository(),
+                                                 paymentCard: paymentCard)
         let viewController = CardDetailPopUpViewController(viewModel: viewModel, themeService: container.themeService)
+        
         viewController.modalTransitionStyle = .crossDissolve
         viewController.modalPresentationStyle = .overCurrentContext
+        
         navigationRoot.present(viewController, animated: true, completion: nil)
 
         viewModel.close.withUnretained(self)
@@ -124,18 +134,20 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
     }
 
-    func cardDetailBottomVC() {
+    func cardDetailBottomVC(paymentCard: PaymentCard) {
         let resources = CardDetailBottomViewModel.ResourcesType(
             titleLabel: "Primary card details",
             numberTitleLabel: "Card number",
-            numberLabel: "2233000230033",
+            numberLabel: "-",
             dateTitleLabel: "Expiry date",
-            dateLabel: "11/26",
+            dateLabel: "-",
             cvvTitleLabel: "CVV",
-            cvvLabel: "143",
+            cvvLabel: "-",
             copyButtonTitle: "copy"
         )
-        let viewModel = CardDetailBottomViewModel(resources: resources)
+        let viewModel = CardDetailBottomViewModel(resources: resources,
+                                                  repository: container.makeCardsRepository(),
+                                                  paymentCard: paymentCard)
         let viewController = CardDetailBottomViewController(viewModel: viewModel, themeService: container.themeService)
         viewController.modalPresentationStyle = .overCurrentContext
         navigationRoot.present(viewController, animated: true, completion: nil)
@@ -147,7 +159,10 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
     }
 
-    func detailScreen(status: DeliveryStatus, cardSerial: String) {
+    func deleveryStatusScreen(_ card: PaymentCard?) {
+        let status = card?.deliveryStatus ?? .shipping
+        let cardSerial = card?.cardSerialNumber ?? ""
+
         let viewController = CardStatusModuleBuilder(container: self.container, status: status).viewController()
         viewController.hidesBottomBarWhenPushed = true
         self.navigationRoot.pushViewController(viewController)

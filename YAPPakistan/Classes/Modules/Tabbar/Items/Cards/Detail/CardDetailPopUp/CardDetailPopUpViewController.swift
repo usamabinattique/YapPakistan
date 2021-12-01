@@ -60,8 +60,7 @@ class CardDetailPopUpViewController: UIViewController {
     func setupResources() {
         viewModel.outputs.resources.withUnretained(self)
             .subscribe(onNext: { `self`, resources in
-                self.closeButton.setTitle(resources.closeImage, for: .normal)
-                //.setImage(UIImage(named: resources.closeImage), for: .normal)
+                self.closeButton.setImage(UIImage(named: resources.closeImage, in: .yapPakistan), for: .normal)
                 self.cardImage.image = UIImage(named: resources.cardImage, in: .yapPakistan)
                 self.titleLabel.text = resources.titleLabel
                 self.subTitleLabel.text = resources.subTitleLabel
@@ -78,7 +77,7 @@ class CardDetailPopUpViewController: UIViewController {
 
     func setupTheme() {
         themeService.rx
-            .bind({ _ in .black.withAlphaComponent(0.5) }, to: [view.rx.backgroundColor])
+            .bind({ _ in .black.withAlphaComponent(0.3) }, to: [view.rx.backgroundColor])
             .bind({ UIColor($0.backgroundColor) }, to: [contentContainr.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [titleLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [subTitleLabel.rx.textColor])
@@ -148,5 +147,7 @@ class CardDetailPopUpViewController: UIViewController {
             .bind(to: viewModel.inputs.closeObserver)
             .disposed(by: rx.disposeBag)
         closeButton.rx.tap.bind(to: viewModel.inputs.closeObserver).disposed(by: rx.disposeBag)
+
+        viewModel.outputs.loading.bind(to: rx.loader).disposed(by: rx.disposeBag)
     }
 }

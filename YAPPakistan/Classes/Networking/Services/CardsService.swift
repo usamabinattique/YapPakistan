@@ -16,7 +16,11 @@ protocol CardsServiceType {
                                      latitude: String,
                                      longitude: String ) -> Observable<T>
     func getCards<T: Codable>() -> Observable<T>
+    func getCardDetail<T: Codable>(cardSerialNumber: String) -> Observable<T>
     func setPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T>
+    func configFreezeUnfreezeCard<T: Codable>(cardSerialNumber: String) -> Observable<T>
+    func configAllowAtm<T: Codable>(cardSerialNumber: String) -> Observable<T>
+    func configRetailPayment<T: Codable>(cardSerialNumber: String) -> Observable<T>
 }
 
 public class CardsService: BaseService, CardsServiceType {
@@ -52,12 +56,46 @@ public class CardsService: BaseService, CardsServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
 
-    public func setPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T> {
+    public func getCardDetail<T: Codable>(cardSerialNumber: String) -> Observable<T> {
+        // let body: [String: String] = [:]
+        let query: [String: String] = ["cardSerialNumber": cardSerialNumber]
 
+//        let route = APIEndpoint<String>(.get, apiConfig.cardsURL, "/api/cards/details?cardSerialNumber=\(cardSerialNumber)", headers: authorizationProvider.authorizationHeaders)
+
+        let route = APIEndpoint<String>(.get, apiConfig.cardsURL, "/api/cards/details", query: query, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func setPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T> {
         let body = ["newPin": pin]
         let pathVariables = [cardSerialNumber]
 
         let route = APIEndpoint(.post, apiConfig.cardsURL, "/api/cards/create-pin", pathVariables: pathVariables, query: nil, body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func configFreezeUnfreezeCard<T: Codable>(cardSerialNumber: String) -> Observable<T> {
+        let body = ["cardSerialNumber": cardSerialNumber]
+
+        let route = APIEndpoint(.put, apiConfig.cardsURL, "/api/cards/block-unblock", pathVariables: nil, query: nil, body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func configAllowAtm<T>(cardSerialNumber: String) -> Observable<T> where T : Decodable, T : Encodable {
+        let body = ["cardSerialNumber": cardSerialNumber]
+
+        let route = APIEndpoint(.put, apiConfig.cardsURL, "/api/cards/atm-allow", pathVariables: nil, query: nil, body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func configRetailPayment<T>(cardSerialNumber: String) -> Observable<T> where T : Decodable, T : Encodable {
+        let body = ["cardSerialNumber": cardSerialNumber]
+
+        let route = APIEndpoint(.put, apiConfig.cardsURL, "/api/cards/retail-payment", pathVariables: nil, query: nil, body: body, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }

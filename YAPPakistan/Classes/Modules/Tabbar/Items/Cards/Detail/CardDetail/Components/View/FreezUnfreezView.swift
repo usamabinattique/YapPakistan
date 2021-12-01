@@ -36,17 +36,31 @@ class FreezUnfreezView: UIView {
     }
 
     private func setupLaoutContraints() {
-
+        icon
+            .alignEdgesWithSuperview([.top, .bottom, .left], constants: [6, 6, 16])
+            .width(constant: 21)
+            .height(constant: 21)
+        label
+            .toRightOf(icon, constant: 5)
+            .alignEdgesWithSuperview([.top, .bottom])
+        button
+            .toRightOf(label)
+            .alignEdgesWithSuperview([.top, .bottom, .right], constants: [0, 0, 16])
     }
 
     private func themeSetup() {
         themeService.rx
+            .bind({ UIColor($0.backgroundColor) }, to: [ icon.rx.tintColor ])
             .bind({ UIColor($0.backgroundColor) }, to: [ label.rx.textColor ])
             .bind({ UIColor($0.backgroundColor) }, to: [ button.rx.titleColor(for: .normal) ])
+            .bind({ UIColor($0.primary) }, to: [ rx.backgroundColor ])
             .disposed(by: rx.disposeBag)
     }
 
     private func setupResources() {
-        
+        icon.image = UIImage(named: "iconsLock", in: .yapPakistan)
+        label.text = "This card is frozen"
+        button.setTitle("Unfreez card", for: .normal)
+        button.underline()
     }
 }

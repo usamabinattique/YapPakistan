@@ -7,14 +7,33 @@
 
 import Foundation
 
-struct PaymentCard {
+struct CardDetails: Codable {
+    let cvv2: String?
+    let cardToken: String?
+    let expiry: String?
+    let responseCode: String?
+
+    enum CodingKeys: String, CodingKey {
+        case cvv2, cardToken, expiry, responseCode
+    }
+
+    init(from decoder: Decoder) throws {
+        let values = try? decoder.container(keyedBy: CodingKeys.self)
+        cvv2 = try? values?.decodeIfPresent(String.self, forKey: .cvv2)
+        cardToken = try? values?.decodeIfPresent(String.self, forKey: .cardToken)
+        expiry = try? values?.decodeIfPresent(String.self, forKey: .expiry)
+        responseCode = try? values?.decodeIfPresent(String.self, forKey: .responseCode)
+    }
+}
+
+class PaymentCard: Codable {
     let accountNumber: String?
     let accountType: String?
     let active: Bool?
-    let atmAllowed: Bool?
+    var atmAllowed: Bool?
     let availableBalance: Double?
-    let backImage: String?
-    let blocked: Bool?
+    var backImage: String?
+    var blocked: Bool?
     let cardBalance: Double?
     let cardName: String?
     let cardScheme: String?
@@ -35,14 +54,12 @@ struct PaymentCard {
     let pinCreated: Bool?
     let pinStatus: PinStatus?
     let productCode: String?
-    let retailPaymentAllowed: Bool?
+    var retailPaymentAllowed: Bool?
     let shipmentStatus: String?
     let status: Status?
     let uuid: String?
+    var cardDetails: CardDetails?
 
-}
-
-extension PaymentCard: Codable {
     enum CodingKeys: String, CodingKey {
         case accountNumber, accountType, active, atmAllowed, availableBalance, backImage, blocked, cardBalance,
              cardName, cardScheme, cardSerialNumber, cardType, currentBalance, customerId, delivered, deliveryStatus,
@@ -51,7 +68,7 @@ extension PaymentCard: Codable {
              shipmentStatus, status, uuid
     }
 
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let values = try? decoder.container(keyedBy: CodingKeys.self)
         accountNumber = try? values?.decodeIfPresent(String.self, forKey: .accountNumber)
         accountType = try? values?.decodeIfPresent(String.self, forKey: .accountType)
