@@ -156,19 +156,21 @@ fileprivate extension UIViewController {
     func makeOptionsView(themeService: ThemeService<AppTheme>) {
         let viewController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-        viewController.view.tintColor = UIColor(themeService.attrs.primaryDark)
+        // viewController.view.tintColor = UIColor(themeService.attrs.primaryDark)
 
         let action1 = UIAlertAction(title: "Canage card's name", style: .default, handler: { _ in })
-        let action2 = UIAlertAction(title: "Canage pin", style: .default, handler: { _ in })
-        let action3 = UIAlertAction(title: "View statement", style: .default, handler: { _ in })
-        let action4 = UIAlertAction(title: "Report lost or stolen", style: .default, handler: { _ in })
-        let action5 = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in })
+        let action2 = UIAlertAction(title: "Canage PIN", style: .default, handler: { _ in })
+        let action3 = UIAlertAction(title: "Forgot PIN", style: .default, handler: { _ in })
+        let action4 = UIAlertAction(title: "View statement", style: .default, handler: { _ in })
+        let action5 = UIAlertAction(title: "Report lost or stolen", style: .default, handler: { _ in })
+        let action6 = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in })
 
         viewController.addAction(action1)
         viewController.addAction(action2)
         viewController.addAction(action3)
         viewController.addAction(action4)
         viewController.addAction(action5)
+        viewController.addAction(action6)
 
         self.present(viewController, animated: true, completion: nil)
     }
