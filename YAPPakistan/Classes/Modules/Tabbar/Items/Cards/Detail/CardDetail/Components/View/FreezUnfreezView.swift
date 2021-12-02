@@ -60,7 +60,7 @@ class FreezUnfreezView: UIView {
     private func setupResources() {
         icon.image = UIImage(named: "iconsLock", in: .yapPakistan)
         label.text = "This card is frozen"
-        button.setTitle("Unfreez card", for: .normal)
+        button.setTitle("Unfreeze now", for: .normal)
         button.underline()
     }
 }

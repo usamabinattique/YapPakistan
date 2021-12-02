@@ -110,7 +110,7 @@ class CardDetailViewController: UIViewController {
 
         viewModel.outputs.hidefreezCard.withUnretained(self)
             .subscribe(onNext: { `self`, isHidden in
-                self.buttonsContainer.button1_1.setTitle(isHidden ? "Freez card": "Unfreez card", for: .normal)
+                self.buttonsContainer.button1_1.setTitle(isHidden ? "Freeze card": "Unfreeze card", for: .normal)
                 self.freezUnfreezView.isHidden = isHidden
             })
             .disposed(by: rx.disposeBag)
@@ -144,7 +144,7 @@ fileprivate extension UIViewController {
     func makeButtonsContainer(themeService: ThemeService<AppTheme>) -> ButtonsContainerView {
         let resources = ButtonsContainerViewModel.ResourcesType(
             button1_0Image: "freez_card",
-            button1_1Title: "Freez card",
+            button1_1Title: "Freeze card",
             button2_0Image: "limits_card",
             button2_1Title: "Set limit"
         )
@@ -158,8 +158,8 @@ fileprivate extension UIViewController {
 
         // viewController.view.tintColor = UIColor(themeService.attrs.primaryDark)
 
-        let action1 = UIAlertAction(title: "Canage card's name", style: .default, handler: { _ in })
-        let action2 = UIAlertAction(title: "Canage PIN", style: .default, handler: { _ in })
+        let action1 = UIAlertAction(title: "Change card's name", style: .default, handler: { _ in })
+        let action2 = UIAlertAction(title: "Change PIN", style: .default, handler: { _ in })
         let action3 = UIAlertAction(title: "Forgot PIN", style: .default, handler: { _ in })
         let action4 = UIAlertAction(title: "View statement", style: .default, handler: { _ in })
         let action5 = UIAlertAction(title: "Report lost or stolen", style: .default, handler: { _ in })

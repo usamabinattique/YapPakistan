@@ -35,7 +35,7 @@ class CardsViewController: UIViewController {
             if isUserBlocked {
                 letsDoItLabel.backgroundColor = UIColor(theme.primary)
                 letsDoItLabel.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
-                letsDoItLabel.setTitle("Unfreez card", for: .normal)
+                letsDoItLabel.setTitle("Unfreeze card", for: .normal)
                 subTitleLabel.text = "This card is frozen"
                 if #available(iOS 13.0, *) {
                     clockEyeIcon.image = UIImage(systemName: "eye")
@@ -176,7 +176,7 @@ fileprivate extension CardsViewController {
             .toBottomOf(spacers[1])
             .centerHorizontallyInSuperview()
             .height(constant: 32)
-            .width(constant: 120)
+            .width(constant: 125)
 
         spacers[2]
             .toBottomOf(letsDoItLabel)

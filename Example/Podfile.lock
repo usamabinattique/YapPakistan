@@ -82,7 +82,7 @@ PODS:
     - Adjust (~> 4.0)
     - Alamofire (~> 5.0)
     - CardScanner (~> 1.0)
-    - FSPagerView
+    - FSPagerView (~> 0.8.3)
     - GoogleMaps
     - GooglePlaces
     - HWPanModal (~> 0)
@@ -169,7 +169,7 @@ SPEC CHECKSUMS:
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   YAPComponents: 06fc14e894e5d686e147a822dec5b99a40baa58b
   YAPCore: 5a4338ac7ae434e7c5a2afb3655e414cd9cc7e8d
-  YAPPakistan: fbc61f8df3206f68495b76d0cf8bc6ee02a76124
+  YAPPakistan: 1708d63a4f713799667be3f7c80d3d39d67023b6
 
 PODFILE CHECKSUM: 19473def4415e479e9d76c4cfbb566105bded114
 
