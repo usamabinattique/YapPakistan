@@ -80,13 +80,31 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.limit.withUnretained(self)
             .subscribe(onNext: { `self`, card in self.cardLimits(card) })
             .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.options.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.cardOptions() })
+            .disposed(by: rx.disposeBag)
+    }
+
+    func cardOptions() {
+        let cardOptions = CardOptionsModuleBuilder().viewController()
+        cardOptions.viewModel.outputs.tapIndex.filter{ $0 == 1 }.withUnretained(self) // Change Pin flow
+            .subscribe(onNext: { `self`, _ in  })
+            .disposed(by: rx.disposeBag)
+        self.navigationRoot.present(cardOptions, animated: true, completion: nil)
+    }
+
+    func changePin() {
+
     }
 
     func cardLimits(_ paymentCard: PaymentCard) {
         let strings = LimitsViewModel.ResourcesType(
             title: "Set limits",
-            cellsData: [("ATM withdrawl", "Allow your card to withdraw from cash machines", isOn: true),
-                        ("Retail payments", "Allow your card to be used at retail outlets", isOn: true)]
+            cellsData: [
+                ("ATM withdrawl", "Allow your card to withdraw from cash machines", isOn: true),
+                ("Retail payments", "Allow your card to be used at retail outlets", isOn: true)
+            ]
         )
         let viewModel = LimitsViewModel(strings: strings, paymentCard: paymentCard, repository: container.makeCardsRepository())
         let viewController = LimitsViewController(themeService: container.themeService, viewModel: viewModel)

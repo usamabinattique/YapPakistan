@@ -102,11 +102,7 @@ class CardDetailViewController: UIViewController {
             .merge(with: buttonsContainer.button2_0.rx.tap.asObservable())
             .bind(to: viewModel.inputs.limitObserver).disposed(by: rx.disposeBag)
 
-        optionsButton.rx.tap.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
-                self.makeOptionsView(themeService: self.themeService)
-            })
-            .disposed(by: rx.disposeBag)
+        optionsButton.rx.tap.bind(to: viewModel.inputs.optionsObserver).disposed(by: rx.disposeBag)
 
         viewModel.outputs.hidefreezCard.withUnretained(self)
             .subscribe(onNext: { `self`, isHidden in
@@ -151,27 +147,5 @@ fileprivate extension UIViewController {
 
         let viewModel = ButtonsContainerViewModel(resources: resources)
         return ButtonsContainerView(viewModel: viewModel, themeService: themeService)
-    }
-
-    func makeOptionsView(themeService: ThemeService<AppTheme>) {
-        let viewController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-
-        // viewController.view.tintColor = UIColor(themeService.attrs.primaryDark)
-
-        let action1 = UIAlertAction(title: "Change card's name", style: .default, handler: { _ in })
-        let action2 = UIAlertAction(title: "Change PIN", style: .default, handler: { _ in })
-        let action3 = UIAlertAction(title: "Forgot PIN", style: .default, handler: { _ in })
-        let action4 = UIAlertAction(title: "View statement", style: .default, handler: { _ in })
-        let action5 = UIAlertAction(title: "Report lost or stolen", style: .default, handler: { _ in })
-        let action6 = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in })
-
-        viewController.addAction(action1)
-        viewController.addAction(action2)
-        viewController.addAction(action3)
-        viewController.addAction(action4)
-        viewController.addAction(action5)
-        viewController.addAction(action6)
-
-        self.present(viewController, animated: true, completion: nil)
     }
 }

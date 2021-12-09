@@ -13,6 +13,7 @@ protocol CardDetailViewModelInputs {
     var detailsObserver: AnyObserver<Void> { get }
     var freezObserver: AnyObserver<Void> { get }
     var limitObserver: AnyObserver<Void> { get }
+    var optionsObserver: AnyObserver<Void> { get }
 }
 
 protocol CardDetailViewModelOutputs {
@@ -21,6 +22,7 @@ protocol CardDetailViewModelOutputs {
     var hidefreezCard: Observable<Bool> { get }
     var limit: Observable<PaymentCard> { get }
     var loader: Observable<Bool> { get }
+    var options: Observable<Void> { get }
 }
 
 protocol CardDetailViewModelType {
@@ -36,17 +38,20 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
     var limitSubject = PublishSubject<Void>()
     var hidefreezCardSubject = BehaviorSubject<Bool>(value: true)
     var loaderSubject = BehaviorSubject<Bool>(value: false)
+    var optionsSubject = PublishSubject<Void>()
 
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
     var detailsObserver: AnyObserver<Void> { detailsSubject.asObserver() }
     var freezObserver: AnyObserver<Void> { freezSubject.asObserver() }
     var limitObserver: AnyObserver<Void> { limitSubject.asObserver() }
+    var optionsObserver: AnyObserver<Void> { optionsSubject.asObserver() }
 
     var back: Observable<Void> { backSubject.asObservable() }
     var details: Observable<PaymentCard> { detailsSubject.map({ self.paymentCard }).unwrap().asObservable() }
     // var freez: Observable<Void> { freezSubject.asObservable() }
     var hidefreezCard: Observable<Bool> { hidefreezCardSubject.asObservable() }
     var limit: Observable<PaymentCard> { limitSubject.map({ self.paymentCard }).unwrap().asObservable() }
+    var options: Observable<Void> { optionsSubject.asObservable() }
     var loader: Observable<Bool> { loaderSubject.asObservable() }
 
     var inputs: CardDetailViewModelInputs { self }
@@ -67,8 +72,6 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
             }
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
-
-
 
         freez.elements().withUnretained(self)
             .do(onNext: { `self`, _ in
