@@ -15,9 +15,19 @@ protocol CardsRepositoryType: AnyObject {
     func configFreezeUnfreezeCard(cardSerialNumber: String) -> Observable<Event<String?>>
     func configAllowAtm(cardSerialNumber: String) -> Observable<Event<String?>>
     func configRetailPayment(cardSerialNumber: String) -> Observable<Event<String?>>
+    func verifyCardPin(cardSerialNumber: String, pin: String) -> Observable<Event<String?>>
+    func changeCardPin(oldPin: String,
+                       newPin: String,
+                       confirmPin: String,
+                       cardSerialNumber: String) -> Observable<Event<String?>>
+    func setCardName(cardName: String, cardSerialNumber: String) -> Observable<Event<String?>>
+    func forgotCardPin(newPin: String,
+                       token: String,
+                       cardSerialNumber: String) -> Observable<Event<String?>>
 }
 
 class CardsRepository: CardsRepositoryType {
+
     private let cardsService: CardsServiceType
 
     init(cardsService: CardsServiceType) {
@@ -46,5 +56,27 @@ class CardsRepository: CardsRepositoryType {
 
     func configRetailPayment(cardSerialNumber: String) -> Observable<Event<String?>> {
         cardsService.configRetailPayment(cardSerialNumber: cardSerialNumber).materialize()
+    }
+
+    func verifyCardPin(cardSerialNumber: String, pin: String) -> Observable<Event<String?>> {
+        cardsService.verifyCardPin(cardSerialNumber: cardSerialNumber, pin: pin).materialize()
+    }
+
+    func changeCardPin(oldPin: String,
+                       newPin: String,
+                       confirmPin: String,
+                       cardSerialNumber: String) -> Observable<Event<String?>> {
+        cardsService.changeCardPin(oldPin: oldPin,
+                                   newPin: newPin,
+                                   confirmPin: confirmPin,
+                                   cardSerialNumber: cardSerialNumber).materialize()
+    }
+
+    func setCardName(cardName: String, cardSerialNumber: String) -> Observable<Event<String?>> {
+        cardsService.setCardName(cardName: cardName, cardSerialNumber: cardSerialNumber).materialize()
+    }
+
+    func forgotCardPin(newPin: String, token: String, cardSerialNumber: String) -> Observable<Event<String?>> {
+        cardsService.forgotCardPin(newPin: newPin, token: token, cardSerialNumber: cardSerialNumber).materialize()
     }
 }

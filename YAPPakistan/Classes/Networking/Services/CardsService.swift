@@ -21,6 +21,16 @@ protocol CardsServiceType {
     func configFreezeUnfreezeCard<T: Codable>(cardSerialNumber: String) -> Observable<T>
     func configAllowAtm<T: Codable>(cardSerialNumber: String) -> Observable<T>
     func configRetailPayment<T: Codable>(cardSerialNumber: String) -> Observable<T>
+    func verifyCardPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T>
+    func changeCardPin<T: Codable>(oldPin: String,
+                                   newPin: String,
+                                   confirmPin: String,
+                                   cardSerialNumber: String) -> Observable<T>
+    func setCardName<T: Codable>(cardName: String,
+                                 cardSerialNumber: String) -> Observable<T>
+    func forgotCardPin<T: Codable>(newPin: String,
+                                   token: String,
+                                   cardSerialNumber: String) -> Observable<T>
 }
 
 public class CardsService: BaseService, CardsServiceType {
@@ -96,6 +106,78 @@ public class CardsService: BaseService, CardsServiceType {
         let body = ["cardSerialNumber": cardSerialNumber]
 
         let route = APIEndpoint(.put, apiConfig.cardsURL, "/api/cards/retail-payment", pathVariables: nil, query: nil, body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func verifyCardPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T> {
+        let body = ["pin": pin]
+
+        let route = APIEndpoint(.post,
+                                apiConfig.cardsURL,
+                                "api/cards/verify-pin/\(cardSerialNumber)",
+                                pathVariables: nil,
+                                query: nil,
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func changeCardPin<T: Codable>(oldPin: String,
+                                          newPin: String,
+                                          confirmPin: String,
+                                          cardSerialNumber: String) -> Observable<T> {
+
+        let body = [
+            "oldPin": oldPin,
+            "newPin": newPin,
+            "confirmPin": confirmPin,
+            "cardSerialNumber": cardSerialNumber
+        ]
+
+        let route = APIEndpoint(.post,
+                                apiConfig.cardsURL,
+                                "/api/cards/change-pin",
+                                pathVariables: nil,
+                                query: nil,
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func setCardName<T: Codable>(cardName: String,
+                                        cardSerialNumber: String) -> Observable<T> {
+
+        let query: [String: String] = [
+            "cardSerialNumber": cardSerialNumber,
+            "cardName": cardName
+        ]
+
+        let route = APIEndpoint<String>(.put,
+                                        apiConfig.cardsURL,
+                                        "cards/api/cards/card-name",
+                                        query: query,
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func forgotCardPin<T: Codable>(newPin: String,
+                                          token: String,
+                                          cardSerialNumber: String) -> Observable<T> {
+        let body = [
+            "newPin": newPin,
+            "token": token
+        ]
+        let route = APIEndpoint(.post,
+                                apiConfig.cardsURL,
+                                "/cards/api/cards/forgot-pin/\(cardSerialNumber)",
+                                pathVariables: nil,
+                                query: nil,
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
