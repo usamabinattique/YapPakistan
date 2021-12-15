@@ -9,7 +9,7 @@ import Foundation
 struct CardOptionsModuleBuilder {
     func viewController() -> AlertController {
         let actions: [AlertViewModel.ActionViewModel] = [
-            .init(title: "Change card's name", style: .default),
+            .init(title: "Name your card", style: .default),
             .init(title: "Change PIN", style: .default),
             .init(title: "Forgot PIN", style: .default),
             .init(title: "View statement", style: .default),

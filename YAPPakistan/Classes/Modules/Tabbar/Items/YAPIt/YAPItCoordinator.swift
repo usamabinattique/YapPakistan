@@ -36,29 +36,33 @@ public class YAPItCoordinator: Coordinator<ResultType<YAPItAction>> {
         let nav = makeNavigationController(root: viewController)
         root.present(nav, animated: false, completion: nil)
 
-        viewModel.outputs.hide.subscribe(onNext: { [unowned self] in
-            nav.dismiss(animated: false, completion: nil)
-            self.result.onNext(ResultType.cancel)
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.hide.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                nav.dismiss(animated: false, completion: nil)
+                self.result.onNext(ResultType.cancel)
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.addMoney.subscribe(onNext: { [unowned self] in
-            nav.dismiss(animated: false, completion: nil)
-            self.result.onNext(ResultType.success(.addMoney))
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.addMoney.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                nav.dismiss(animated: false, completion: nil)
+                self.result.onNext(ResultType.success(.addMoney))
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.payBills.subscribe(onNext: { [unowned self] in
-            nav.dismiss(animated: false, completion: nil)
-            self.result.onNext(ResultType.success(.payBills))
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.payBills.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                nav.dismiss(animated: false, completion: nil)
+                self.result.onNext(ResultType.success(.payBills))
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.sendMoney.subscribe(onNext: { [unowned self] in
-            nav.dismiss(animated: false, completion: nil)
-            self.result.onNext(ResultType.success(.sendMoney))
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.sendMoney.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                nav.dismiss(animated: false, completion: nil)
+                self.result.onNext(ResultType.success(.sendMoney))
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
 
         return result
     }

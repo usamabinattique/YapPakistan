@@ -15,7 +15,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     private var navigationRoot: UINavigationController!
     private var container: UserSessionContainer!
 
-    var cardDetaildSerialNumber: String = ""; #warning("FIXME")
+    var cardDetaild: PaymentCard?; #warning("FIXME")
 
     public init(root: UITabBarController, container: UserSessionContainer) {
         self.root = root
@@ -64,7 +64,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func cardDetailView(_ paymentCard: PaymentCard?) {
-        cardDetaildSerialNumber = paymentCard?.cardSerialNumber ?? ""; #warning("FIXME")
+        cardDetaild = paymentCard; #warning("FIXME")
 
         let viewModel = CardDetailViewModel(paymentCard: paymentCard, repository: container.makeCardsRepository())
         let viewController = CardDetailViewController(viewModel: viewModel, themeService: container.themeService)
@@ -95,9 +95,9 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         cardOptions.viewModel.outputs.tapIndex.withUnretained(self) // Change Pin flow
             .subscribe(onNext: { `self`, index in
                 switch index {
-                case 0: break // self.changeCardName()
-                case 1: self.changePin(serialNumber: self.cardDetaildSerialNumber)
-                case 2: break // self.forgotPin(serialNumber: self.cardDetaildSerialNumber)
+                case 0: self.changeCardName(cardDetaild: self.cardDetaild)
+                case 1: self.changePin(cardDetaild: self.cardDetaild)
+                case 2: self.forgotPin(cardDetaild: self.cardDetaild)
                 default: break
                 }
             })
@@ -105,24 +105,46 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         self.navigationRoot.present(cardOptions, animated: true, completion: nil)
     }
 
-//    func changeCardName() {
-//        let viewController = ChangeCardNameModuleBuilder(container: container).viewController()
-//        self.navigationRoot.pushViewController(viewController)
-//
-//        viewController.viewModel.outputs.back.withUnretained(self)
-//            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
-//            .disposed(by: rx.disposeBag)
-//    }
+    func changeCardName(cardDetaild: PaymentCard?) {
+        let viewController = ChangeCardNameModuleBuilder(
+            container: container,
+            serialNumber: cardDetaild?.cardSerialNumber ?? "",
+            currentName: cardDetaild?.cardName ?? "",
+            repository: container.makeCardsRepository()).viewController()
+        self.navigationRoot.pushViewController(viewController)
 
-    func changePin(serialNumber: String) {
-        let coordinator = ChangePinCoordinator(root: self.navigationRoot, container: self.container, serialNumber: serialNumber)
-        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .do(onNext: { `self`, _ in self.navigationRoot.popViewController() })
+            .delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { `self`, newName in self.updateName(newName: newName) })
+            .disposed(by: rx.disposeBag)
     }
 
-//    func forgotPin(serialNumber: String) {
-//        let coordinator = ForgotPinCoordinator(root: self.navigationRoot, container: self.container, serialNumber: serialNumber)
-//        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
-//    }
+    func changePin(cardDetaild: PaymentCard?) {
+        let coordinator = ChangePinCoordinator(root: self.navigationRoot, container: self.container, serialNumber: cardDetaild?.cardSerialNumber ?? "")
+
+        let forgotResult = coordinate(to: coordinator)
+            .filter{ $0.isSuccess == .forgotPin }.share()
+        forgotResult.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.forgotPin(cardDetaild: cardDetaild) })
+            .disposed(by: rx.disposeBag)
+        forgotResult.withUnretained(self)
+            .delay(.milliseconds(400), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { `self`, _ in
+                let count = self.navigationRoot.viewControllers.count
+                self.navigationRoot.viewControllers.remove(at: count - 2)
+            })
+            .disposed(by: rx.disposeBag)
+    }
+
+    func forgotPin(cardDetaild: PaymentCard?) {
+        let coordinator = ForgotPinCoordinator(root: self.navigationRoot, container: self.container, serialNumber: cardDetaild?.cardSerialNumber ?? "")
+        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
+    }
 
     func cardLimits(_ paymentCard: PaymentCard) {
         let strings = LimitsViewModel.ResourcesType(
@@ -267,6 +289,16 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
                 self.navigationRoot.popToRootViewController(animated: true)
             })
             .disposed(by: rx.disposeBag)
+    }
+}
+
+// MARK: - Helpers
+extension CardsCoordinator {
+
+    func updateName(newName: String) { #warning("FIXME")
+        guard let viewController = self.navigationRoot.topViewController as? CardDetailViewController
+        else { return }
+        viewController.viewModel.inputs.newName.onNext(newName)
     }
 
     func makeNavigationController(_ root: UIViewController? = nil) -> UINavigationController {

@@ -37,13 +37,26 @@ public final class UserSessionContainer {
         return parent.makeCustomersService(authorizationProvider: session)
     }
 
+    // Session Based
     func makeCardsService() -> CardsService {
         return CardsService(apiConfig: parent.makeAPIConfiguration(),
                             apiClient: parent.makeAPIClient(),
                             authorizationProvider: session)
     }
 
+    func makeMessagesService() -> MessagesServiceType {
+        return MessagesService(apiConfig: parent.makeAPIConfiguration(),
+                               apiClient: parent.makeAPIClient(),
+                               authorizationProvider: session)
+    }
+
     // MARK: Repositories
+
+    func makeOTPRepository() -> OTPRepositoryType {
+        let messageService = makeMessagesService()
+        let customerService = makeCustomersService()
+        return OTPRepository(messageService: messageService, customerService: customerService)
+    }
 
     func makeAccountRepository() -> AccountRepository {
         let authService = parent.makeAuthenticationService(authorizationProvider: session)
@@ -90,7 +103,11 @@ public final class UserSessionContainer {
 
     func makeCardsRepository() -> CardsRepositoryType {
         let cardsService = makeCardsService()
-        return CardsRepository(cardsService: cardsService)
+        let customerService = makeCustomersService()
+        let messagesService = makeMessagesService()
+        return CardsRepository(cardsService: cardsService,
+                               customerService: customerService,
+                               messagesService: messagesService)
     }
 
     // MARK: Controllers

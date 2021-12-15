@@ -81,4 +81,3 @@ class PinChangeSuccessViewController: UIViewController {
             .width(constant: 160)
     }
 }
-

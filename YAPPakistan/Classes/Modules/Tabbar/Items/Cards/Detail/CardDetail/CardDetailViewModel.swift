@@ -13,6 +13,7 @@ protocol CardDetailViewModelInputs {
     var detailsObserver: AnyObserver<Void> { get }
     var freezObserver: AnyObserver<Void> { get }
     var limitObserver: AnyObserver<Void> { get }
+    var newName: AnyObserver<String> { get }
     var optionsObserver: AnyObserver<Void> { get }
 }
 
@@ -39,12 +40,14 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
     var hidefreezCardSubject = BehaviorSubject<Bool>(value: true)
     var loaderSubject = BehaviorSubject<Bool>(value: false)
     var optionsSubject = PublishSubject<Void>()
+    var newNameSubject = PublishSubject<String>()
 
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
     var detailsObserver: AnyObserver<Void> { detailsSubject.asObserver() }
     var freezObserver: AnyObserver<Void> { freezSubject.asObserver() }
     var limitObserver: AnyObserver<Void> { limitSubject.asObserver() }
     var optionsObserver: AnyObserver<Void> { optionsSubject.asObserver() }
+    var newName: AnyObserver<String> { newNameSubject.asObserver() }
 
     var back: Observable<Void> { backSubject.asObservable() }
     var details: Observable<PaymentCard> { detailsSubject.map({ self.paymentCard }).unwrap().asObservable() }
@@ -80,6 +83,12 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
                 }
             }).map { _ in self.paymentCard?.blocked == false }
             .bind(to: hidefreezCardSubject)
+            .disposed(by: disposeBag)
+
+        newNameSubject.withUnretained(self)
+            .subscribe(onNext: { `self`, name in
+                self.paymentCard?.cardName = name
+            })
             .disposed(by: disposeBag)
     }
 }

@@ -157,7 +157,7 @@ public class CardsService: BaseService, CardsServiceType {
 
         let route = APIEndpoint<String>(.put,
                                         apiConfig.cardsURL,
-                                        "cards/api/cards/card-name",
+                                        "/api/cards/card-name",
                                         query: query,
                                         headers: authorizationProvider.authorizationHeaders)
 
@@ -173,7 +173,7 @@ public class CardsService: BaseService, CardsServiceType {
         ]
         let route = APIEndpoint(.post,
                                 apiConfig.cardsURL,
-                                "/cards/api/cards/forgot-pin/\(cardSerialNumber)",
+                                "/api/cards/forgot-pin/\(cardSerialNumber)",
                                 pathVariables: nil,
                                 query: nil,
                                 body: body,

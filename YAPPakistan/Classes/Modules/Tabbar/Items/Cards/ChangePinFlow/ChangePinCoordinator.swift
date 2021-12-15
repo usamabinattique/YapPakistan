@@ -8,11 +8,16 @@
 import RxSwift
 import YAPCore
 
-public class ChangePinCoordinator: Coordinator<ResultType<Void>> {
+public enum ChangePinCoordinatorResult {
+    case forgotPin
+    case pinUpdated
+}
+
+public class ChangePinCoordinator: Coordinator<ResultType<ChangePinCoordinatorResult>> {
 
     private var container: UserSessionContainer!
     private let root: UINavigationController
-    private let result = PublishSubject<ResultType<Void>>()
+    private let result = PublishSubject<ResultType<ChangePinCoordinatorResult>>()
     private lazy var navigationRoot: UINavigationController = root // makeNavigationController()
     let serialNumber: String
     var oldPin: String = ""
@@ -23,7 +28,7 @@ public class ChangePinCoordinator: Coordinator<ResultType<Void>> {
         self.serialNumber = serialNumber
     }
 
-    public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
+    public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<ChangePinCoordinatorResult>> {
 
         verifyOldPin()
 
@@ -44,6 +49,14 @@ public class ChangePinCoordinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { `self`, oldPin in
                 self.newPin()
                 self.oldPin = oldPin
+            })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.forgot.share()
+            .withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.result.onNext(.success(.forgotPin))
+                self.result.onCompleted()
             })
             .disposed(by: rx.disposeBag)
     }

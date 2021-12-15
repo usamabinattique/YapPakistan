@@ -35,7 +35,7 @@ class PaymentCard: Codable {
     var backImage: String?
     var blocked: Bool?
     let cardBalance: Double?
-    let cardName: String?
+    var cardName: String?
     let cardScheme: String?
     let cardSerialNumber: String?
     let cardType: String?

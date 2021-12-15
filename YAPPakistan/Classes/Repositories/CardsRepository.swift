@@ -24,14 +24,23 @@ protocol CardsRepositoryType: AnyObject {
     func forgotCardPin(newPin: String,
                        token: String,
                        cardSerialNumber: String) -> Observable<Event<String?>>
+    func verifyPasscode(passcode: String) -> Observable<Event<String?>>
+    func generateOTP(action: OTPActions) -> Observable<Event<String?>>
+    // func verifyOTP(action: OTPActions, otp: String) -> Observable<Event<String?>>
 }
 
 class CardsRepository: CardsRepositoryType {
 
     private let cardsService: CardsServiceType
+    private let customerService: CustomerServiceType
+    private let messagesService: MessagesServiceType
 
-    init(cardsService: CardsServiceType) {
+    init(cardsService: CardsServiceType,
+         customerService: CustomerServiceType,
+         messagesService: MessagesServiceType) {
         self.cardsService = cardsService
+        self.customerService = customerService
+        self.messagesService = messagesService
     }
 
     public func getCards() -> Observable<Event<[PaymentCard]?>> {
@@ -79,4 +88,20 @@ class CardsRepository: CardsRepositoryType {
     func forgotCardPin(newPin: String, token: String, cardSerialNumber: String) -> Observable<Event<String?>> {
         cardsService.forgotCardPin(newPin: newPin, token: token, cardSerialNumber: cardSerialNumber).materialize()
     }
+
+    func verifyPasscode(passcode: String) -> Observable<Event<String?>> {
+        customerService.verifyPasscode(passcode: passcode).materialize()
+    }
+
+    //"action": "FORGOT_CARD_PIN"
+    func generateOTP(action: OTPActions) -> Observable<Event<String?>> {
+        messagesService.generateOTP(action: action.rawValue).materialize()
+    }
+//    func verifyOTP(action: OTPActions, otp: String) -> Observable<Event<String?>> {
+//        messagesService.verifyOTP(action: action.rawValue, otp: otp).materialize()
+//    }
+}
+
+enum OTPActions: String {
+    case forgotCardPin = "FORGOT_CARD_PIN"
 }
