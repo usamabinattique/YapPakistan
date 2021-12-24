@@ -158,6 +158,17 @@
 "screen_create_passcode_button_forgot_passcode" = "Forgot passcode?";
 
 
+//MARK: Filters
+"screen_transaction_filter_display_text_title" = "Filters";
+"screen_transaction_filter_display_text_balance" = "AED Balance";
+
+"screen_transaction_filter_display_text_retail_payments" = "Retail payments";
+"screen_transaction_filter_display_text_online_transactions" = "Online transactions";
+"screen_transaction_filter_display_text_atm_withdrawl" = "ATM withdrawl";
+
+"screen_transaction_filter_display_apply_button_title" = "Apply filters";
+"screen_transaction_filter_display_clear_button_title" = "Clear filters";
+
 //MARK: Generic OTP
 "screen_device_registration_otp_button_resend_otp" = "Resend code";
 "screen_device_registration_otp_button_send" = "Send";

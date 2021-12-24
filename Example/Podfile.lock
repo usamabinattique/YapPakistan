@@ -1,17 +1,17 @@
 PODS:
-  - Adjust (4.29.5):
-    - Adjust/Core (= 4.29.5)
-  - Adjust/Core (4.29.5)
-  - Alamofire (5.4.3)
-  - CardScanner (1.2.2)
+  - Adjust (4.29.6):
+    - Adjust/Core (= 4.29.6)
+  - Adjust/Core (4.29.6)
+  - Alamofire (5.4.4)
+  - CardScanner (1.2.11)
   - Differentiator (5.0.0)
   - FSPagerView (0.8.3)
-  - GoogleMaps (5.1.0):
-    - GoogleMaps/Maps (= 5.1.0)
-  - GoogleMaps/Base (5.1.0)
-  - GoogleMaps/Maps (5.1.0):
+  - GoogleMaps (5.2.0):
+    - GoogleMaps/Maps (= 5.2.0)
+  - GoogleMaps/Base (5.2.0)
+  - GoogleMaps/Maps (5.2.0):
     - GoogleMaps/Base
-  - GooglePlaces (5.0.0)
+  - GooglePlaces (5.1.0)
   - HWPanModal (0.8.9)
   - PhoneNumberKit (3.3.3):
     - PhoneNumberKit/PhoneNumberKitCore (= 3.3.3)
@@ -46,9 +46,9 @@ PODS:
   - RxTheme (5.0.4):
     - RxCocoa (~> 6.0)
     - RxSwift (~> 6.0)
-  - SDWebImage (5.11.1):
-    - SDWebImage/Core (= 5.11.1)
-  - SDWebImage/Core (5.11.1)
+  - SDWebImage (5.12.1):
+    - SDWebImage/Core (= 5.12.1)
+  - SDWebImage/Core (5.12.1)
   - SwifterSwift (5.2.0):
     - SwifterSwift/AppKit (= 5.2.0)
     - SwifterSwift/CoreAnimation (= 5.2.0)
@@ -117,13 +117,12 @@ SPEC REPOS:
   https://bitbucket.org/mb28/privatetrunk.git:
     - CardScanner
   https://github.com/CocoaPods/Specs.git:
-    - FSPagerView
-    - GoogleMaps
-    - GooglePlaces
-  trunk:
     - Adjust
     - Alamofire
     - Differentiator
+    - FSPagerView
+    - GoogleMaps
+    - GooglePlaces
     - HWPanModal
     - PhoneNumberKit
     - RxCocoa
@@ -147,13 +146,13 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Adjust: 5cab100ac05eebde8141b48a2acffd6b5ce0564b
-  Alamofire: e447a2774a40c996748296fa2c55112fdbbc42f9
-  CardScanner: 7ca407023270f72788fe0e664de5d99b0bd7baf5
+  Adjust: 94f1c99429fb2a7ebe530294fd66a88d63a54922
+  Alamofire: f3b09a368f1582ab751b3fff5460276e0d2cf5c9
+  CardScanner: 7b8cc4d5598152a87545850da188d0dfe62b99b0
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
   FSPagerView: 670405b2f18e2a87fa37f20b00de783e562c25a8
-  GoogleMaps: 086ae1dab659eaa7339bdb30fc88e2f44e7c597c
-  GooglePlaces: 5d87ca13ed98b7a937e0d8bc7026f718c7263271
+  GoogleMaps: 025272d5876d3b32604e5c080dc25eaf68764693
+  GooglePlaces: c57cd5aa7e91d10fa5106c792de74f3bd6436260
   HWPanModal: 259f6916c706b3f63003a325ad1bdfbe913b0fdc
   PhoneNumberKit: 4ce83273551c4d2ae10b7361162f4283dd02835f
   RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
@@ -164,7 +163,7 @@ SPEC CHECKSUMS:
   RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
   RxSwiftExt: d61c4b9b06e0a448041b1c659e0f1b5c5a035afc
   RxTheme: ff66d4e8f8947a5b0ffc776e04f0fef85526011b
-  SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  SDWebImage: 4dc3e42d9ec0c1028b960a33ac6b637bb432207b
   SwifterSwift: 334181863c416882d97b7a60c05054d9e4d799e2
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   YAPComponents: 06fc14e894e5d686e147a822dec5b99a40baa58b
@@ -173,4 +172,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 19473def4415e479e9d76c4cfbb566105bded114
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2
