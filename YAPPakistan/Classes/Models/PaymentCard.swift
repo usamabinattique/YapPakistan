@@ -32,13 +32,14 @@ class PaymentCard: Codable {
     let active: Bool?
     var atmAllowed: Bool?
     let availableBalance: Double?
+    let panNumber: String?
     var backImage: String?
     var blocked: Bool?
     let cardBalance: Double?
     var cardName: String?
     let cardScheme: String?
     let cardSerialNumber: String?
-    let cardType: String?
+    let cardType: PaymentCardType
     let currentBalance: Double?
     let customerId: String?
     let delivered: Bool?
@@ -50,7 +51,7 @@ class PaymentCard: Codable {
     let nameUpdated: Bool?
     let onlineBankingAllowed: Bool?
     let paymentAbroadAllowed: Bool?
-    let physical: Bool?
+    let physical: Bool
     let pinCreated: Bool?
     let pinStatus: PinStatus?
     let productCode: String?
@@ -61,7 +62,7 @@ class PaymentCard: Codable {
     var cardDetails: CardDetails?
 
     enum CodingKeys: String, CodingKey {
-        case accountNumber, accountType, active, atmAllowed, availableBalance, backImage, blocked, cardBalance,
+        case accountNumber, accountType, active, atmAllowed, panNumber, availableBalance, backImage, blocked, cardBalance,
              cardName, cardScheme, cardSerialNumber, cardType, currentBalance, customerId, delivered, deliveryStatus,
              expiryDate, frontImage, issuanceDate, maskedCardNo, nameUpdated, onlineBankingAllowed,
              paymentAbroadAllowed, physical, pinCreated, pinStatus, productCode, retailPaymentAllowed,
@@ -81,7 +82,7 @@ class PaymentCard: Codable {
         cardName = try? values?.decodeIfPresent(String.self, forKey: .cardName)
         cardScheme = try? values?.decodeIfPresent(String.self, forKey: .cardScheme)
         cardSerialNumber = try? values?.decodeIfPresent(String.self, forKey: .cardSerialNumber)
-        cardType = try? values?.decodeIfPresent(String.self, forKey: .cardType)
+        cardType = (try? values?.decodeIfPresent(PaymentCardType.self, forKey: .cardType)) ?? .debit
         currentBalance = try? values?.decodeIfPresent(Double.self, forKey: .currentBalance)
         customerId = try? values?.decodeIfPresent(String.self, forKey: .customerId)
         delivered = try? values?.decodeIfPresent(Bool.self, forKey: .delivered)
@@ -93,7 +94,7 @@ class PaymentCard: Codable {
         nameUpdated = try? values?.decodeIfPresent(Bool.self, forKey: .nameUpdated)
         onlineBankingAllowed = try? values?.decodeIfPresent(Bool.self, forKey: .onlineBankingAllowed)
         paymentAbroadAllowed = try? values?.decodeIfPresent(Bool.self, forKey: .paymentAbroadAllowed)
-        physical = try? values?.decodeIfPresent(Bool.self, forKey: .physical)
+        physical = ((try? values?.decodeIfPresent(Bool.self, forKey: .physical)) != nil)
         pinCreated = try? values?.decodeIfPresent(Bool.self, forKey: .pinCreated)
         pinStatus = try? values?.decodeIfPresent(PinStatus.self, forKey: .pinStatus)
         productCode = try? values?.decodeIfPresent(String.self, forKey: .productCode)
@@ -101,6 +102,7 @@ class PaymentCard: Codable {
         shipmentStatus = try? values?.decodeIfPresent(String.self, forKey: .shipmentStatus)
         status = try? values?.decodeIfPresent(Status.self, forKey: .status)
         uuid = try? values?.decodeIfPresent(String.self, forKey: .uuid)
+        panNumber = try? values?.decodeIfPresent(String.self, forKey: .panNumber)
     }
 }
 
@@ -125,5 +127,30 @@ extension PaymentCard {
         case inActive = "INACTIVE"
         case blocked = "BLOCKED"
         case active = "ACTIVE"
+    }
+}
+
+public enum PaymentCardBlockOption: String, Codable {
+    case damage = "4"
+    case lostOrStolen = "2"
+}
+
+public enum PaymentCardType: String, Codable {
+    case debit = "DEBIT"
+    case prepaid = "PREPAID"
+}
+
+extension PaymentCardType: Comparable {
+    public static func < (lhs: PaymentCardType, rhs: PaymentCardType) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+    
+    var localizedString: String {
+        switch self {
+        case .debit:
+            return "Debit"
+        case .prepaid:
+            return "Virtual"
+        }
     }
 }

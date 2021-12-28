@@ -32,6 +32,9 @@
 "common_display_text_currency" = "AED";
 "common_button_ok" = "OK";
 "common_button_Done" = "Done";
+"common_disply_text_card_name_primary_silver" = "Primary card";
+"common_display_text_virtual_card" = "Virtual card";
+"common_display_text_physical_card" = "Physical card";
 
 "" = "";
 
@@ -168,6 +171,18 @@
 
 "screen_transaction_filter_display_apply_button_title" = "Apply filters";
 "screen_transaction_filter_display_clear_button_title" = "Clear filters";
+
+//MARK: Report Cards
+"screen_report_card_display_text_title" = "Report lost or stolen card";
+"screen_report_card_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";
+"screen_report_card_display_text_block_note" = "Click 'block and report' to confirm that your card has been lost, damaged or stolen. We will immediately block your card and report it to our security team.";
+"screen_report_card_display_text_block_footnote" = "If you suspect any malicious activity or need to provide us with any other essential information regarding your card's disappearance, please give our customer care center a call at %@";
+"screen_report_card_button_block_report" = "Block and report";
+"screen_report_card_display_text_block_card_title" = "Tell us what happened to your card";
+"screen_report_card_button_damage_card" = "Damaged card";
+"screen_report_card_button_lost_stolen_card" = "Lost/Stolen card";
+"screen_report_card_display_text_block_alert_title" = "Block card permanently";
+"screen_report_card_display_text_block_alert_message" = "We will now block your card permanently, following which you will be able to order a new card. Please confirm if you want to move forward with this action.";
 
 //MARK: Generic OTP
 "screen_device_registration_otp_button_resend_otp" = "Resend code";

@@ -27,6 +27,8 @@ protocol CardsRepositoryType: AnyObject {
     func verifyPasscode(passcode: String) -> Observable<Event<String?>>
     func generateOTP(action: OTPActions) -> Observable<Event<String?>>
     // func verifyOTP(action: OTPActions, otp: String) -> Observable<Event<String?>>
+    func closeCard(cardSerialNumber: String, reason: String) -> Observable<Event<String?>>
+    func getHelpLineNumber() -> Observable<Event<String?>>
 }
 
 class CardsRepository: CardsRepositoryType {
@@ -100,6 +102,14 @@ class CardsRepository: CardsRepositoryType {
 //    func verifyOTP(action: OTPActions, otp: String) -> Observable<Event<String?>> {
 //        messagesService.verifyOTP(action: action.rawValue, otp: otp).materialize()
 //    }
+    
+    public func closeCard(cardSerialNumber: String, reason: String) -> Observable<Event<String?>> {
+        return self.cardsService.closeCard(cardSerialNumber, reason: reason).materialize()
+    }
+    
+    public func getHelpLineNumber() -> Observable<Event<String?>> {
+        return messagesService.getHelplineNumber().materialize()
+    }
 }
 
 enum OTPActions: String {

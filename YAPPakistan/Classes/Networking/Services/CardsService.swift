@@ -31,6 +31,7 @@ protocol CardsServiceType {
     func forgotCardPin<T: Codable>(newPin: String,
                                    token: String,
                                    cardSerialNumber: String) -> Observable<T>
+    func closeCard<T: Codable>(_ cardserialNumber: String, reason: String) -> Observable<T>
 }
 
 public class CardsService: BaseService, CardsServiceType {
@@ -181,4 +182,20 @@ public class CardsService: BaseService, CardsServiceType {
 
         return self.request(apiClient: self.apiClient, route: route)
     }
+    
+    public func closeCard<T: Codable>(_ cardserialNumber: String, reason: String) -> Observable<T> {
+        let body = ClosePaymentCardRequest(cardSerialNumber: cardserialNumber, hotListReason: reason)
+        let route = APIEndpoint(.post,
+                                apiConfig.cardsURL,
+                                "/cards/api/card-hot-list",
+                                pathVariables: nil,
+                                query: nil,
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
 }
+
+
+

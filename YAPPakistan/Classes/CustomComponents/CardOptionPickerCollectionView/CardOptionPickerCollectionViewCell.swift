@@ -1,0 +1,53 @@
+//
+//  CardOptionPickerCollectionViewCell.swift
+//  YAPPakistan
+//
+//  Created by Umair  on 26/12/2021.
+//
+
+import Foundation
+import YAPComponents
+import RxTheme
+
+class CardOptionPickerCollectionViewCell: RxUICollectionViewCell {
+    
+    //MARK: - Views
+    lazy var iconImageView = UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    lazy var titleLabel = UIFactory.makeLabel()
+    lazy var contentStackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fillProportionally, spacing: 15, arrangedSubviews: nil)
+    
+    //MARK: - Init
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        setupViews()
+    }
+    
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var isSelected: Bool {
+        didSet {
+        }
+    }
+    
+    func setupViews() {
+        contentStackView.addArrangedSubviews([iconImageView])
+        contentStackView.addArrangedSubviews([titleLabel])
+        
+        addSubview(contentStackView)
+        contentStackView.centerInSuperView()
+        layer.cornerRadius = 12.0
+        layer.borderColor = UIColor.gray.cgColor
+        layer.borderWidth = 1
+    }
+    
+    // MARK: - Configure
+    func configure(with optionPickerItem: OptionPickerItem<PaymentCardBlockOption>) {
+        iconImageView.image = optionPickerItem.icon
+        titleLabel.text = optionPickerItem.title
+//        iconImageView.tintColor =
+    }
+}
