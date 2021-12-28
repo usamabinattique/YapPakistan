@@ -116,7 +116,7 @@ fileprivate extension ReportCardViewController {
         .width(with: .width, ofView: view)
 
         blockReportButton.alignEdgesWithSuperview([.left, .right], constant: 50)
-            .height(constant: 150)
+            .height(constant: 50)
     }
     
     func setupBindings(){
@@ -169,7 +169,8 @@ fileprivate extension ReportCardViewController {
             .bind({ UIColor($0.secondaryMagenta) }, to: [footnoteLabel.rx.textColor])
 //            .bind({ UIColor($0.secondaryMagenta.alpha(0.12)) }, to: [footnoteLabel.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [paymentCardBlockOptionsLabel.rx.textColor])
-            .bind({ UIColor($0.primary) }, to: [blockReportButton.rx.backgroundColor])
+            .bind({ UIColor($0.greyLight) }, to: [blockReportButton.rx.disabledBackgroundColor])
+            .bind({ UIColor($0.primary) }, to: [blockReportButton.rx.enabledBackgroundColor])
             .bind({ UIColor($0.backgroundColor) }, to: [blockReportButton.rx.titleColor(for: .normal)])
             .disposed(by: rx.disposeBag)
     }
