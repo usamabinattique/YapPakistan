@@ -8,8 +8,9 @@
 import UIKit
 import YAPComponents
 import RxTheme
+import MXParallaxHeader
 
-class CardDetailViewController: UIViewController {
+class CardDetailViewController: UIViewController, MXParallaxHeaderDelegate, MXScrollViewDelegate {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     lazy var cardView = makeCardsView(themeService: themeService)
@@ -18,6 +19,26 @@ class CardDetailViewController: UIViewController {
     lazy var titleLabel = UIFactory.makeLabel(font: .large)
     lazy var freezUnfreezView = FreezUnfreezView(themeService: themeService).setHidden(true)
 
+    lazy var transactionContainer = UIFactory.makeView()
+    let transactionViewController: TransactionsViewController
+
+    lazy var headerView = UIFactory.makeView()
+
+    // MARK: - Views
+    private lazy var scrollView: MXScrollView = {
+        let scrollView = MXScrollView()
+        scrollView.parallaxHeader.view = headerView
+        scrollView.parallaxHeader.minimumHeight = 0
+        scrollView.parallaxHeader.delegate = self
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        scrollView.parallaxHeader.height = creditView.frame.size.height + buttonsContainer.frame.size.height + 20
+    }
+
     private var backButton: UIButton!
     private var optionsButton: UIButton!
 
@@ -25,9 +46,12 @@ class CardDetailViewController: UIViewController {
     var themeService: ThemeService<AppTheme>
     var viewModel: CardDetailViewModelType
 
-    init(viewModel: CardDetailViewModelType, themeService: ThemeService<AppTheme>) {
+    init(transactionViewController: TransactionsViewController,
+         viewModel: CardDetailViewModelType,
+         themeService: ThemeService<AppTheme>) {
         self.themeService = themeService
         self.viewModel = viewModel
+        self.transactionViewController = transactionViewController
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -49,13 +73,25 @@ class CardDetailViewController: UIViewController {
     }
 
     func setupViews() {
-        view.addSub(views: [ cardView, creditView, buttonsContainer, freezUnfreezView])
+        //scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: scrollView.bounds.height)
+
+        view.addSub(views: [ cardView, freezUnfreezView, scrollView])
+        headerView.addSub(views: [creditView, buttonsContainer])
+        scrollView.addSubview(transactionContainer)
+
         navigationItem.titleView = titleLabel
         backButton = addBackButton(of: .backEmpty)
 
         let barButton = barButtonItem(image: UIImage(named: "icons_more", in: .yapPakistan), insectBy: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 3))
         self.navigationItem.rightBarButtonItem = barButton.barItem
         optionsButton = barButton.button
+
+        addTransactionsViewController()
+        func addTransactionsViewController() {
+            self.addChild(self.transactionViewController)
+            self.transactionContainer.addSubview(self.transactionViewController.view)
+            self.transactionViewController.view.alignAllEdgesWithSuperview()
+        }
     }
 
     func setupResources() { }
@@ -75,16 +111,26 @@ class CardDetailViewController: UIViewController {
             .alignEdgesWithSuperview([.safeAreaTop, .left, .right ], constants: [25, 0, 0])
             .aspectRatio(134 / 375)
 
-        creditView
-            .toBottomOf(cardView, constant: 25)
-            .alignEdgesWithSuperview([.left, .right])
-
-        buttonsContainer
-            .toBottomOf(creditView, constant: 25)
-            .alignEdgesWithSuperview([.left, .right], constant: 25)
-
         freezUnfreezView
             .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
+
+        creditView
+            .alignEdgesWithSuperview([.left, .right, .top], constants: [0, 0, 3])
+
+        buttonsContainer
+            .toBottomOf(creditView, constant: 15)
+            .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
+
+        headerView
+            .width(with: .width, ofView: scrollView)
+        scrollView
+            .toBottomOf(cardView, constant: 15)
+            .alignEdgesWithSuperview([.left, .right, .bottom])
+        transactionContainer
+            .alignEdgesWithSuperview([.left, .top, .bottom])
+            .height(with: .height, ofView: scrollView, constant: -1 * scrollView.parallaxHeader.minimumHeight)
+            .width(with: .width, ofView: scrollView)
+
     }
 
     func setupBindings() {
@@ -142,7 +188,7 @@ fileprivate extension UIViewController {
             button1_0Image: "freez_card",
             button1_1Title: "Freeze card",
             button2_0Image: "limits_card",
-            button2_1Title: "Set limit"
+            button2_1Title: "Set limits"
         )
 
         let viewModel = ButtonsContainerViewModel(resources: resources)

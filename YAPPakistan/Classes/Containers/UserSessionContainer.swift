@@ -33,6 +33,12 @@ public final class UserSessionContainer {
 
     // MARK: Services
 
+    func makeTransactionsService() -> TransactionsService {
+        TransactionsService(apiConfig: parent.makeAPIConfiguration(),
+                            apiClient: parent.makeAPIClient(),
+                            authorizationProvider: session)
+    }
+
     func makeCustomersService() -> CustomersService {
         return parent.makeCustomersService(authorizationProvider: session)
     }
@@ -51,6 +57,11 @@ public final class UserSessionContainer {
     }
 
     // MARK: Repositories
+
+    func makeTransactionsRepository() -> TransactionsRepository {
+        let service = makeTransactionsService()
+        return TransactionsRepository(transactionService: service)
+    }
 
     func makeOTPRepository() -> OTPRepositoryType {
         let messageService = makeMessagesService()

@@ -20,6 +20,7 @@
 "common_display_text_gender_unspecified" = "Unspecified";
 "common_display_text_permission_denied" = "Permission denied!";
 "common_display_text_permission_camera" = "You have denied YAP access to camera. To allow YAP to use camera go to settings";
+"common_display_text_transactions" = "Transactions";
 "common_button_settings" = "Settings";
 "common_button_completed" = "Completed";
 "common_button_cancel" = "Cancel";
@@ -287,3 +288,46 @@
 "screen_yap_it_button_add_money" = "Add money";
 "screen_yap_it_button_pay_bills" = "Pay bills";
 "screen_yap_it_button_request_money" = "Request Money";
+
+// MARK: - Home Screen
+"screen_home_display_text_nothing_to_report" = "Start using your account to see all your transactions here";
+
+// MARK: Home Screen
+"screen_home_display_text_tag_line" = "The Personalized Banking App";
+"screen_home_display_text_account_selection" = "I want an account for";
+"screen_home_button_personal" = "Personal";
+"screen_home_button_business" = "Business";
+"screen_home_button_filter" = "Filter";
+"screen_home_display_text_sign_in" = "Already have an account? Sign in";
+
+// MARK: Transaction filter screen
+"screen_transaction_filter_display_text_title" = "Filters";
+"screen_transaction_filter_button_apply_filter" = "Apply filters";
+"screen_transaction_filter_button_clear_filter" = "Clear filters";
+"screen_transaction_filter_display_text_incoming_transactions" = "Incoming transactions";
+"screen_transaction_filter_display_text_outgoing_transactions" = "Outgoing transactions";
+"screen_transaction_filter_display_text_young_transactions" = "YAP Young transfers";
+"screen_transaction_filter_display_text_household_transactions" = "Household transfers";
+"screen_transaction_filter_display_text_pending_transactions" = "Pending transactions";
+"screen_transaction_filter_display_text_balance" = "AED Balance";
+
+// MARK: Transaction details screen
+"screen_transaction_details_display_text_spent" = "Spent";
+"screen_transaction_details_display_text_received" = "Received";
+"screen_transaction_details_display_text_fee" = "Fee";
+"screen_transaction_details_display_text_total_amount" = "Total amount";
+"screen_transaction_details_display_text_refrence_number" = "Reference number";
+"screen_transaction_details_display_text_note" = "Note";
+"screen_transaction_details_display_text_add_note" = "Add a note";
+"screen_transaction_details_display_text_edit_note" = "Note added ";
+"screen_transaction_details_display_text_add_receipt_description" = "Keep track of your spendings";
+"screen_transaction_details_display_text_add_receipt" = "Add a receipt";
+"screen_transaction_details_display_text_note_description" = "Stay organized by adding transaction notes";
+"screen_transaction_details_display_text_sendare_name" = "Sender";
+"screen_transaction_details_display_text_receiver_name" = "Receiver";
+"screen_transaction_details_display_text_vat" = "VAT";
+"screen_transaction_details_display_text_change_category" = "Tap to change category";
+"screen_transaction_details_display_text_wait_for_category_to_update" = "Check back later to see the category updated";
+"screen_transaction_details_display_text_improve_attribute" = "Improve logo or location?";
+"screen_transaction_details_display_text_category_declined" = "Declined";
+"screen_transaction_details_display_text_category_declined_name" = "ATM decline fee";

@@ -66,8 +66,16 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     func cardDetailView(_ paymentCard: PaymentCard?) {
         cardDetaild = paymentCard; #warning("FIXME")
 
+        let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository())
+        let tviewModel = TransactionsViewModel.init(transactionDataProvider: tProvider,
+                                               cardSerialNumber: paymentCard?.cardSerialNumber ?? "",
+                                               debitSearch: true)
+        // let tviewModel = TransactionsViewModel(cardSerialNumber: paymentCard?.cardSerialNumber)
+        let tviewController = TransactionsViewController(
+            viewModel: tviewModel, themeService: container.themeService)
+
         let viewModel = CardDetailViewModel(paymentCard: paymentCard, repository: container.makeCardsRepository())
-        let viewController = CardDetailViewController(viewModel: viewModel, themeService: container.themeService)
+        let viewController = CardDetailViewController(transactionViewController: tviewController, viewModel: viewModel, themeService: container.themeService)
         viewController.hidesBottomBarWhenPushed = true
         navigationRoot.pushViewController(viewController, animated: true)
 
@@ -98,6 +106,8 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
                 case 0: self.changeCardName(cardDetaild: self.cardDetaild)
                 case 1: self.changePin(cardDetaild: self.cardDetaild)
                 case 2: self.forgotPin(cardDetaild: self.cardDetaild)
+                case 3: break
+                case 4: self.reportLostStollen(cardDetaild: self.cardDetaild)
                 default: break
                 }
             })
@@ -143,6 +153,11 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
 
     func forgotPin(cardDetaild: PaymentCard?) {
         let coordinator = ForgotPinCoordinator(root: self.navigationRoot, container: self.container, serialNumber: cardDetaild?.cardSerialNumber ?? "")
+        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
+    }
+
+    func reportLostStollen(cardDetaild: PaymentCard?) {
+        let coordinator = ReorderCardCoordinator(root: self.navigationRoot, container: self.container)
         coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 

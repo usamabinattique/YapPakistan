@@ -13,6 +13,7 @@ PODS:
     - GoogleMaps/Base
   - GooglePlaces (5.0.0)
   - HWPanModal (0.8.9)
+  - MXParallaxHeader (1.1.0)
   - PhoneNumberKit (3.3.3):
     - PhoneNumberKit/PhoneNumberKitCore (= 3.3.3)
     - PhoneNumberKit/UIKit (= 3.3.3)
@@ -75,6 +76,7 @@ PODS:
   - SwifterSwift/SwiftStdlib (5.2.0)
   - SwifterSwift/UIKit (5.2.0)
   - SwiftyGif (5.4.0)
+  - SwipeCellKit (2.7.1)
   - YAPComponents (0.1.0)
   - YAPCore (0.1.0):
     - RxSwift (~> 6.0)
@@ -86,6 +88,7 @@ PODS:
     - GoogleMaps
     - GooglePlaces
     - HWPanModal (~> 0)
+    - MXParallaxHeader
     - PhoneNumberKit (~> 3.0)
     - RxCocoa (~> 6.0)
     - RxDataSources (~> 5.0)
@@ -97,6 +100,7 @@ PODS:
     - SDWebImage (~> 5.0)
     - SwifterSwift (~> 5.0)
     - SwiftyGif (~> 5.0)
+    - SwipeCellKit
     - YAPComponents (~> 0)
     - YAPCore (~> 0)
 
@@ -120,6 +124,8 @@ SPEC REPOS:
     - FSPagerView
     - GoogleMaps
     - GooglePlaces
+    - MXParallaxHeader
+    - SwipeCellKit
   trunk:
     - Adjust
     - Alamofire
@@ -155,6 +161,7 @@ SPEC CHECKSUMS:
   GoogleMaps: 086ae1dab659eaa7339bdb30fc88e2f44e7c597c
   GooglePlaces: 5d87ca13ed98b7a937e0d8bc7026f718c7263271
   HWPanModal: 259f6916c706b3f63003a325ad1bdfbe913b0fdc
+  MXParallaxHeader: de3c867e10ba46e8f6e20c8ee1f2a910372b3b94
   PhoneNumberKit: 4ce83273551c4d2ae10b7361162f4283dd02835f
   RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
   RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
@@ -167,9 +174,10 @@ SPEC CHECKSUMS:
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SwifterSwift: 334181863c416882d97b7a60c05054d9e4d799e2
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
+  SwipeCellKit: 3972254a826da74609926daf59b08d6c72e619ea
   YAPComponents: 06fc14e894e5d686e147a822dec5b99a40baa58b
   YAPCore: 5a4338ac7ae434e7c5a2afb3655e414cd9cc7e8d
-  YAPPakistan: 1708d63a4f713799667be3f7c80d3d39d67023b6
+  YAPPakistan: daf7063402452f8b7da92a770dcc8d30825abf4b
 
 PODFILE CHECKSUM: 19473def4415e479e9d76c4cfbb566105bded114
 
