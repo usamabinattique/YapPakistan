@@ -8,6 +8,7 @@
 import Foundation
 import YAPComponents
 import RxTheme
+import UIKit
 
 class CardOptionPickerCollectionViewCell: RxUICollectionViewCell {
     
@@ -45,15 +46,16 @@ class CardOptionPickerCollectionViewCell: RxUICollectionViewCell {
         
         addSubview(contentStackView)
         contentStackView.centerInSuperView()
-        layer.cornerRadius = 12.0
-        layer.borderColor = UIColor.gray.cgColor
-        layer.borderWidth = 1
     }
     
     func setupTheme() {
         themeService!.rx
             .bind({ UIColor($0.primaryDark) }, to: [titleLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
+        
+        layer.cornerRadius = 12.0
+        layer.borderColor = (UIColor(self.themeService!.attrs.greyLight)).cgColor
+        layer.borderWidth = 1
     }
     
     // MARK: - Configure

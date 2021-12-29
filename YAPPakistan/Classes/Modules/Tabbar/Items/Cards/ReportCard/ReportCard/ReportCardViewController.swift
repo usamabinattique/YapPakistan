@@ -85,7 +85,6 @@ fileprivate extension ReportCardViewController {
         view.backgroundColor = .white
         view.addSubview(scrollView)
         scrollView.addSubview(contentStackView)
-        footnoteLabel.backgroundColor = UIColor(themeService.attrs.secondaryMagenta).withAlphaComponent(0.12)
         footnoteLabel.clipsToBounds = true
         footnoteLabel.layer.cornerRadius = 12
         footnoteLabel.textInsets = UIEdgeInsets.init(inset: 20)
@@ -164,17 +163,17 @@ fileprivate extension ReportCardViewController {
     
     func setupTheme() {
         themeService.rx
-//            .bind({ UIColor($0.primary) }, to: [self.rx.titleColor])
             .bind({ UIColor($0.primaryDark  )}, to: [cardPlanLabel.rx.textColor])
             .bind({ UIColor($0.greyDark     )}, to: [panNumberLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [noteLabel.rx.textColor])
             .bind({ UIColor($0.secondaryMagenta) }, to: [footnoteLabel.rx.textColor])
-//            .bind({ UIColor($0.secondaryMagenta.withAlphaComponent(0.12)) }, to: [footnoteLabel.rx.backgroundColor])
+            .bind({ UIColor($0.secondaryMagenta).withAlphaComponent(0.12) }, to: [footnoteLabel.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [paymentCardBlockOptionsLabel.rx.textColor])
             .bind({ UIColor($0.greyLight) }, to: [blockReportButton.rx.disabledBackgroundColor])
             .bind({ UIColor($0.primary) }, to: [blockReportButton.rx.enabledBackgroundColor])
             .bind({ UIColor($0.backgroundColor) }, to: [blockReportButton.rx.titleColor(for: .normal)])
             .disposed(by: rx.disposeBag)
+        
     }
     
     func setupLocalizedStrings() {
