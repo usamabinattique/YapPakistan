@@ -63,6 +63,8 @@ class ReportCardViewController : UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        closeBarButtonItem.button?.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
+        
         setupSubViews()
         setupResources()
         setupTheme()
@@ -73,7 +75,7 @@ class ReportCardViewController : UIViewController {
     
     @objc internal override func onTapBackButton() {
         self.dismiss(animated: true, completion: nil)
-//        viewModel.inputs.closeObserver.onNext(())
+        viewModel.inputs.closeObserver.onNext(())
     }
 }
 

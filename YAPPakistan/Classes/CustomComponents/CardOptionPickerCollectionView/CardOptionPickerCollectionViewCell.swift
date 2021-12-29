@@ -30,8 +30,12 @@ class CardOptionPickerCollectionViewCell: RxUICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Selection
     override var isSelected: Bool {
         didSet {
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                self?.backgroundColor = self!.isSelected ? UIColor((self?.themeService!.attrs.greyLight)!) : UIColor.clear
+            }
         }
     }
     
