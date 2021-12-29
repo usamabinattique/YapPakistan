@@ -106,8 +106,8 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
                 case 0: self.changeCardName(cardDetaild: self.cardDetaild)
                 case 1: self.changePin(cardDetaild: self.cardDetaild)
                 case 2: self.forgotPin(cardDetaild: self.cardDetaild)
-                case 3: break
-                case 4: self.reportLostStollen(cardDetaild: self.cardDetaild)
+                case 3: break   //View statement pending
+                case 4: self.reportLostCard(cardDetaild: self.cardDetaild!)
                 default: break
                 }
             })
@@ -155,11 +155,16 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         let coordinator = ForgotPinCoordinator(root: self.navigationRoot, container: self.container, serialNumber: cardDetaild?.cardSerialNumber ?? "")
         coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
-
-    func reportLostStollen(cardDetaild: PaymentCard?) {
-        let coordinator = ReorderCardCoordinator(root: self.navigationRoot, container: self.container)
+    
+    func reportLostCard(cardDetaild: PaymentCard) {
+        let coordinator = ReportCardCoordinator(root: self.navigationRoot, container: self.container, cardDetail: cardDetaild)
         coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
+
+//    func reportLostStollen(cardDetaild: PaymentCard?) {
+//        let coordinator = ReorderCardCoordinator(root: self.navigationRoot, container: self.container)
+//        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
+//    }
 
     func cardLimits(_ paymentCard: PaymentCard) {
         let strings = LimitsViewModel.ResourcesType(

@@ -44,7 +44,7 @@ class BottomLoadingTableViewCell: RxUITableViewCell {
     
     // MARK: Configurations
     
-    override func configure(with viewModel: Any) {
+    /* override */ func configure(with viewModel: Any) {
         guard let viewModel = viewModel as? BottomLoadingTableViewCellViewModelType else { return }
         self.viewModel = viewModel
         bindViews()

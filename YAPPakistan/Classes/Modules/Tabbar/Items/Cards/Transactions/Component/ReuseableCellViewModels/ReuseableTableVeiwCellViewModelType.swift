@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol ReusableTableViewCellViewModelType {
-    var reusableIdentifier: String { get }
-}
+//protocol ReusableTableViewCellViewModelType {
+//    var reusableIdentifier: String { get }
+//}

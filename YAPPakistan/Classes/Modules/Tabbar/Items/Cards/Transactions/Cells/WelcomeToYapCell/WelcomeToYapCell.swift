@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 import YAPComponents
 import RxSwift
+import RxTheme
 
 class WelcomeToYapCell: RxUITableViewCell {
     
@@ -50,7 +51,7 @@ class WelcomeToYapCell: RxUITableViewCell {
     
     // MARK: Configurations
     
-    override func configure(with viewModel: Any) {
+    override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
         guard let `viewModel` = viewModel as? WelcomeToYapCellViewModelType else { return }
         
         self.viewModel = viewModel

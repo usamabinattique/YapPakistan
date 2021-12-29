@@ -34,7 +34,7 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
     var transactions: Observable<[TransactionResponse]> { return transactionsSubject }
         
     // MARK: - Init
-    init(transactionFilter: TransactionFilter? = nil, repository: TransactionsRepository, cardSerialNumber: String? = nil, debitSearch: Bool = false ) {
+    init(transactionFilter: TransactionFilter? = nil, repository: TransactionsRepository, cardSerialNumber: String? = "", debitSearch: Bool = false ) {
         self.debitSearch = debitSearch
         self.repository = repository
         self.transactionsSubject = BehaviorSubject(value: [])
@@ -50,8 +50,8 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
         
         isFetching = true
         
-        let request = cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer) : repository.fetchCardTransactions(pageNo: currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch).share()
-        
+        let request = /* cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer) : */ repository.fetchCardTransactions(pageNo: currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch).share()
+
         return request.do(onNext: { [unowned self] response in
             guard response.element != nil else { return }
 //            self.currentPage = !pagableResponse.isLast ? self.currentPage + 1 : 0

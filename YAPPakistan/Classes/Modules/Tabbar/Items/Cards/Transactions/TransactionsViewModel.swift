@@ -273,27 +273,27 @@ extension TransactionsViewModel {
         var query: String = ""
         var args: [Any] = []
 
-        if filter.debitSearch != filter.creditSearch {
-            query += "(type == %@)"
-            args.append(filter.creditSearch ? TransactionType.credit.rawValue : TransactionType.debit.rawValue)
-        }
-
-        if filter.pendingSearch {
-            if !query.isEmpty {
-                query += " && "
-            }
-            query += "(status == %@ || status == %@)"
-            args.append(TransactionStatus.pending.rawValue)
-            args.append(TransactionStatus.inProgress.rawValue)
-        }
-
-        if filter.categories.count > 0 {
-            if !query.isEmpty {
-                query += " && "
-            }
-            query += "(merchantCategory IN[c] %@)"
-            args.append(filter.categories.map{ $0.rawValue })
-        }
+//        if filter.debitSearch != filter.creditSearch {
+//            query += "(type == %@)"
+//            args.append(filter.creditSearch ? TransactionType.credit.rawValue : TransactionType.debit.rawValue)
+//        }
+//
+//        if filter.pendingSearch {
+//            if !query.isEmpty {
+//                query += " && "
+//            }
+//            query += "(status == %@ || status == %@)"
+//            args.append(TransactionStatus.pending.rawValue)
+//            args.append(TransactionStatus.inProgress.rawValue)
+//        }
+//
+//        if filter.categories.count > 0 {
+//            if !query.isEmpty {
+//                query += " && "
+//            }
+//            query += "(merchantCategory IN[c] %@)"
+//            args.append(filter.categories.map{ $0.rawValue })
+//        }
 
         if !query.isEmpty {
             query += " && "

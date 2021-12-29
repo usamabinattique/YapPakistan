@@ -11,6 +11,7 @@ import RxSwift
 import RxCocoa
 import SDWebImage
 import YAPComponents
+import RxTheme
 
 class TransactionsTableViewCell: RxUITableViewCell {
     
@@ -101,7 +102,7 @@ class TransactionsTableViewCell: RxUITableViewCell {
     }
     
     // MARK: Configuration
-    override func configure(with viewModel: Any) {
+    override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
         guard let viewModel = viewModel as? TransactionsTableViewCellViewModelType else { return }
         self.viewModel = viewModel
         bind()

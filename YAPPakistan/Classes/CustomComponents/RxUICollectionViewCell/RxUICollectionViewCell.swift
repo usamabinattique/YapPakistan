@@ -1,9 +1,8 @@
 //
 //  RxUICollectionViewCell.swift
-//  YAPKit
+//  YAPPakistan
 //
-//  Created by Wajahat Hassan on 26/08/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Umair  on 26/12/2021.
 //
 
 import UIKit
@@ -11,8 +10,8 @@ import RxSwift
 
 open class RxUICollectionViewCell: UICollectionViewCell, ReusableView {
     
-    private(set) var disposeBag = DisposeBag()
-    var indexPath: IndexPath!
+    private(set) public var disposeBag = DisposeBag()
+    public var indexPath: IndexPath!
     
     override open func prepareForReuse() {
         super.prepareForReuse()
@@ -22,4 +21,5 @@ open class RxUICollectionViewCell: UICollectionViewCell, ReusableView {
     open func configure(with viewModel: Any) {
         fatalError("Configure with viewModel must be implemented.")
     }
+    
 }

@@ -1,22 +1,21 @@
 //
 //  NumberFormatter+Extensions.swift
-//  YAPKit
+//  YAPPakistan
 //
-//  Created by Zain on 13/09/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Umair  on 23/12/2021.
 //
 
 import Foundation
 
-extension NumberFormatter {
-    static func formatter(forBalance balance: Balance) -> NumberFormatter {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currencyISOCode
-        formatter.maximumFractionDigits = Int(balance.currencyDecimals) ?? 2
-        formatter.minimumFractionDigits = Int(balance.currencyDecimals) ?? 2
-        formatter.currencyCode = balance.currencyCode
-        return formatter
-    }
+public extension NumberFormatter {
+//    static func formatter(forBalance balance: Balance) -> NumberFormatter {
+//        let formatter = NumberFormatter()
+//        formatter.numberStyle = .currencyISOCode
+//        formatter.maximumFractionDigits = Int(balance.currencyDecimals) ?? 2
+//        formatter.minimumFractionDigits = Int(balance.currencyDecimals) ?? 2
+//        formatter.currencyCode = balance.currencyCode
+//        return formatter
+//    }
     
     static func formateAmount(_ amount: Double, fractionDigits: Int = 2) -> String {
         let formatter = NumberFormatter()

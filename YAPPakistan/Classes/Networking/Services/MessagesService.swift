@@ -17,6 +17,7 @@ public protocol MessagesServiceType: AnyObject {
     func verifyForgotOTP<T: Codable>(username: String, otp: String) -> Observable<T>
     func generateOTP<T: Codable>(action: String) -> Observable<T>
     func verifyOTP<T: Codable>(action: String, otp: String) -> Observable<T>
+    func getHelplineNumber<T: Codable>() -> Observable<T>
 }
 
 public class MessagesService: BaseService, MessagesServiceType {
@@ -103,6 +104,15 @@ public class MessagesService: BaseService, MessagesServiceType {
                                 apiConfig.messagesURL,
                                 "/api/otp",
                                 body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getHelplineNumber<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get,
+                                apiConfig.messagesURL,
+                                "/api/help-desk",
                                 headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
