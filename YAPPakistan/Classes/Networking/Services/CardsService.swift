@@ -187,7 +187,7 @@ public class CardsService: BaseService, CardsServiceType {
         let body = ClosePaymentCardRequest(cardSerialNumber: cardserialNumber, hotListReason: reason)
         let route = APIEndpoint(.post,
                                 apiConfig.cardsURL,
-                                "/cards/api/card-hot-list",
+                                "/api/card-hot-list",
                                 pathVariables: nil,
                                 query: nil,
                                 body: body,
@@ -196,6 +196,3 @@ public class CardsService: BaseService, CardsServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
 }
-
-
-
