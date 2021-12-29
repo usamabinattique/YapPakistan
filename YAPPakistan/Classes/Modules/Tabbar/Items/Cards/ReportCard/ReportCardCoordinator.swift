@@ -7,6 +7,7 @@
 
 import RxSwift
 import YAPCore
+import YAPComponents
 
 public class ReportCardCoordinator: Coordinator<ResultType<Void>> {
 
@@ -31,6 +32,8 @@ public class ReportCardCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = ReportCardViewModel(paymentCard: self.cardDetail, cardsRepository: cardsRepository)
         let viewController = ReportCardViewController(themeService: container.themeService, viewModel: viewModel)
         
+//        self.navigationRoot = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+        
         self.navigationRoot.pushViewController(viewController, completion: nil)
         self.root.present(self.navigationRoot, animated: true, completion: nil)
         
@@ -48,11 +51,29 @@ extension ReportCardCoordinator {
         } else {
             navigation = UINavigationController()
         }
+        navigation.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.regular, NSAttributedString.Key.foregroundColor: UIColor(container.themeService.attrs.primary)]
+        navigation.modalPresentationStyle = .fullScreen
+        navigation.navigationBar.barTintColor = UIColor(container.themeService.attrs.primary)
         navigation.interactivePopGestureRecognizer?.isEnabled = false
-        navigation.navigationBar.isTranslucent = true
+        navigation.navigationBar.isTranslucent = false
+        navigation.navigationBar.isOpaque = true
         navigation.navigationBar.setBackgroundImage(UIImage(), for: .default)
         navigation.navigationBar.shadowImage = UIImage()
         navigation.setNavigationBarHidden(false, animated: true)
+        
+        if #available(iOS 15, *) {
+            let textAttributes = [NSAttributedString.Key.font: UIFont.regular, NSAttributedString.Key.foregroundColor: UIColor(container.themeService.attrs.primary)]
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.titleTextAttributes = textAttributes
+            appearance.backgroundColor = UIColor.white // UIColor(red: 0.0/255.0, green: 125/255.0, blue: 0.0/255.0, alpha: 1.0)
+            appearance.shadowColor = .clear  //removing navigationbar 1 px bottom border.
+            UINavigationBar.appearance().standardAppearance = appearance
+            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        } else {
+            
+        }
+        
 
         return navigation
     }

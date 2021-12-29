@@ -18,7 +18,7 @@ class ReportCardViewController : UIViewController {
     private lazy var closeBarButtonItem = barButtonItem(image: UIImage(named: "icon_close", in: .yapPakistan), insectBy:.zero)
     
     lazy var optionPickerCollectionView: CardOptionPickerCollectionView = {
-        let collectionView = CardOptionPickerCollectionView()
+        let collectionView = CardOptionPickerCollectionView(with: themeService)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
     }()
@@ -28,10 +28,10 @@ class ReportCardViewController : UIViewController {
     lazy var panNumberLabel = UIFactory.makeLabel(font: .micro)
     lazy var securedByYAPImageView = UIFactory.makeImageView()
     lazy var cardInfoStackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fill, spacing: 5)
-    lazy var noteLabel = UIFactory.makeLabel(font: .small)
-    lazy var footnoteLabel = UIFactory.makeLabel()
+    lazy var noteLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0)
+    lazy var footnoteLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
     lazy var blockReportButton = UIFactory.makeAppRoundedButton(with: .regular, title: "")
-    lazy var paymentCardBlockOptionsLabel = UIFactory.makeLabel()
+    lazy var paymentCardBlockOptionsLabel = UIFactory.makeLabel(font: .small)
     lazy var contentStackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fill, spacing: 30)
     lazy var bottomPaddingView = UIFactory.makeView()
     
@@ -83,10 +83,10 @@ fileprivate extension ReportCardViewController {
         view.backgroundColor = .white
         view.addSubview(scrollView)
         scrollView.addSubview(contentStackView)
-//        footnoteLabel.backgroundColor = UIColor.secondaryMagenta.withAlphaComponent(0.12)
+        footnoteLabel.backgroundColor = UIColor(themeService.attrs.secondaryMagenta).withAlphaComponent(0.12)
         footnoteLabel.clipsToBounds = true
         footnoteLabel.layer.cornerRadius = 12
-//        footnoteLabel.edgeInset = 20
+        footnoteLabel.textInsets = UIEdgeInsets.init(inset: 20)
         
         cardInfoStackView.addArrangedSubview(cardPlanLabel)
         cardInfoStackView.addArrangedSubview(panNumberLabel)
@@ -167,7 +167,7 @@ fileprivate extension ReportCardViewController {
             .bind({ UIColor($0.greyDark     )}, to: [panNumberLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [noteLabel.rx.textColor])
             .bind({ UIColor($0.secondaryMagenta) }, to: [footnoteLabel.rx.textColor])
-//            .bind({ UIColor($0.secondaryMagenta.alpha(0.12)) }, to: [footnoteLabel.rx.backgroundColor])
+//            .bind({ UIColor($0.secondaryMagenta.withAlphaComponent(0.12)) }, to: [footnoteLabel.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [paymentCardBlockOptionsLabel.rx.textColor])
             .bind({ UIColor($0.greyLight) }, to: [blockReportButton.rx.disabledBackgroundColor])
             .bind({ UIColor($0.primary) }, to: [blockReportButton.rx.enabledBackgroundColor])

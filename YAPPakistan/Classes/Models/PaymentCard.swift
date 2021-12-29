@@ -32,7 +32,6 @@ class PaymentCard: Codable {
     let active: Bool?
     var atmAllowed: Bool?
     let availableBalance: Double?
-    let panNumber: String?
     var backImage: String?
     var blocked: Bool?
     let cardBalance: Double?
@@ -62,7 +61,7 @@ class PaymentCard: Codable {
     var cardDetails: CardDetails?
 
     enum CodingKeys: String, CodingKey {
-        case accountNumber, accountType, active, atmAllowed, panNumber, availableBalance, backImage, blocked, cardBalance,
+        case accountNumber, accountType, active, atmAllowed, availableBalance, backImage, blocked, cardBalance,
              cardName, cardScheme, cardSerialNumber, cardType, currentBalance, customerId, delivered, deliveryStatus,
              expiryDate, frontImage, issuanceDate, maskedCardNo, nameUpdated, onlineBankingAllowed,
              paymentAbroadAllowed, physical, pinCreated, pinStatus, productCode, retailPaymentAllowed,
@@ -102,7 +101,6 @@ class PaymentCard: Codable {
         shipmentStatus = try? values?.decodeIfPresent(String.self, forKey: .shipmentStatus)
         status = try? values?.decodeIfPresent(Status.self, forKey: .status)
         uuid = try? values?.decodeIfPresent(String.self, forKey: .uuid)
-        panNumber = try? values?.decodeIfPresent(String.self, forKey: .panNumber)
     }
 }
 

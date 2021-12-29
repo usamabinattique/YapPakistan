@@ -13,8 +13,10 @@ class CardOptionPickerCollectionViewCell: RxUICollectionViewCell {
     
     //MARK: - Views
     lazy var iconImageView = UIFactory.makeImageView(contentMode: .scaleAspectFit)
-    lazy var titleLabel = UIFactory.makeLabel()
+    lazy var titleLabel = UIFactory.makeLabel(font: .micro)
     lazy var contentStackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fillProportionally, spacing: 15, arrangedSubviews: nil)
+    
+    var themeService: ThemeService<AppTheme>?
     
     //MARK: - Init
     override init(frame: CGRect) {
@@ -44,10 +46,18 @@ class CardOptionPickerCollectionViewCell: RxUICollectionViewCell {
         layer.borderWidth = 1
     }
     
+    func setupTheme() {
+        themeService!.rx
+            .bind({ UIColor($0.primaryDark) }, to: [titleLabel.rx.textColor])
+            .disposed(by: rx.disposeBag)
+    }
+    
     // MARK: - Configure
-    func configure(with optionPickerItem: OptionPickerItem<PaymentCardBlockOption>) {
+    func configure(with optionPickerItem: OptionPickerItem<PaymentCardBlockOption>, themeService: ThemeService<AppTheme>) {
+        self.themeService = themeService
         iconImageView.image = optionPickerItem.icon
         titleLabel.text = optionPickerItem.title
 //        iconImageView.tintColor =
+        setupTheme()
     }
 }

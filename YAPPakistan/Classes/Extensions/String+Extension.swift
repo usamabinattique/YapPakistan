@@ -10,7 +10,7 @@ import Foundation
 public extension String {
     var localized: String {
         #if DEBUG
-            return Bundle.yapPakistan.localizedString(forKey: self, value: "**\(self)**", table: nil)
+            return Bundle.yapPakistan.localizedString(forKey: self, value: "\(self)", table: nil)
         #else
             return Bundle.yapPakistan.localizedString(forKey: self, value: nil, table: nil)
         #endif

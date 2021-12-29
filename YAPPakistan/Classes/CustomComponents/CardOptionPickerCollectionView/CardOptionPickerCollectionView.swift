@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import UIKit
+import RxTheme
 
 public class CardOptionPickerCollectionView: UIView {
     
@@ -39,12 +40,16 @@ public class CardOptionPickerCollectionView: UIView {
         }
     }
     
+    var themeServices: ThemeService<AppTheme>!
+    
     //MARK: - Init
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
+    
+    init(with themeService: ThemeService<AppTheme>) {
+        themeServices = themeService
+        super.init(frame: CGRect.zero)
         commonInit()
     }
-    
+
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
@@ -80,10 +85,11 @@ public class CardOptionPickerCollectionView: UIView {
     }
     
     private func bind() {
-        dataSubject.bind(to: collectionView.rx.items) {
+        dataSubject.bind(to: collectionView.rx.items) { [weak self]
             (collectionView, item, optionPickerItem) in
+            guard let `self` = self else { return UICollectionViewCell() }
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CardOptionPickerCollectionViewCell.defaultIdentifier, for: IndexPath(item: item, section: 0)) as! CardOptionPickerCollectionViewCell
-            cell.configure(with: optionPickerItem)
+            cell.configure(with: optionPickerItem, themeService: self.themeServices)
             return cell
             }.disposed(by: disposeBag)
     }

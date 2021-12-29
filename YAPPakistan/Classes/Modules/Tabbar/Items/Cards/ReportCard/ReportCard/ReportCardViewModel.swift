@@ -72,7 +72,7 @@ class ReportCardViewModel : ReportCardViewModelInputs, ReportCardViewModelOutput
     // MARK: - Outputs
     var title: Observable<String> { return Observable.of( "screen_report_card_display_text_title".localized) }
     var cardPlan: Observable<String> { return paymentCardSubject.map { $0.cardType == .debit ? "common_disply_text_card_name_primary_silver".localized : $0.physical ? "common_display_text_physical_card".localized : "common_display_text_virtual_card".localized } }
-    var panNumber: Observable<String?> { return paymentCardSubject.map { $0.panNumber } }
+    var panNumber: Observable<String?> { return paymentCardSubject.map { $0.maskedCardNo } }
     var note: Observable<String> { return Observable.of( "screen_report_card_display_text_block_note".localized) }
     var footNote: Observable<String?> { return footNoteSubject.asObservable() }
     var cardBlockOptionsTitle: Observable<String> { return Observable.of( "screen_report_card_display_text_block_card_title".localized) }
