@@ -176,11 +176,6 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 
-//    func reportLostCard(cardDetaild: PaymentCard) {
-//        let coordinator = ReorderCardCoordinator(root: self.navigationRoot, container: self.container, cardDetaild: cardDetaild)
-//        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
-//    }
-
     func cardLimits(_ paymentCard: PaymentCard) {
         let strings = LimitsViewModel.ResourcesType(
             title: "Set limits",

@@ -171,7 +171,7 @@ private extension TransactionFilterViewController {
             guard let self = self else { return UITableViewCell() }
             
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
-            // cell.configure(with: self.themeService, viewModel: viewModel)
+            cell.configure(with: self.themeService, viewModel: viewModel)
             return cell
         })
         

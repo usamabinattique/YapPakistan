@@ -55,18 +55,36 @@ extension ReportCardCoordinator {
     
     func makeNavigationController(_ root: UIViewController? = nil) -> UINavigationController {
 
-        var navigation: UINavigationController!
-        if let root = root {
-            navigation = UINavigationController(rootViewController: root)
-        } else {
-            navigation = UINavigationController()
-        }
-        navigation.interactivePopGestureRecognizer?.isEnabled = false
-        navigation.navigationBar.isTranslucent = true
-        navigation.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigation.navigationBar.shadowImage = UIImage()
-        navigation.setNavigationBarHidden(false, animated: true)
+            var navigation: UINavigationController!
+            if let root = root {
+                navigation = UINavigationController(rootViewController: root)
+            } else {
+                navigation = UINavigationController()
+            }
+            navigation.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.regular, NSAttributedString.Key.foregroundColor: UIColor(container.themeService.attrs.primary)]
+            navigation.modalPresentationStyle = .fullScreen
+            navigation.navigationBar.barTintColor = UIColor(container.themeService.attrs.primary)
+            navigation.interactivePopGestureRecognizer?.isEnabled = false
+            navigation.navigationBar.isTranslucent = false
+            navigation.navigationBar.isOpaque = true
+            navigation.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            navigation.navigationBar.shadowImage = UIImage()
+            navigation.setNavigationBarHidden(false, animated: true)
+            
+            if #available(iOS 15, *) {
+                let textAttributes = [NSAttributedString.Key.font: UIFont.regular, NSAttributedString.Key.foregroundColor: UIColor(container.themeService.attrs.primary)]
+                let appearance = UINavigationBarAppearance()
+                appearance.configureWithOpaqueBackground()
+                appearance.titleTextAttributes = textAttributes
+                appearance.backgroundColor = UIColor.white // UIColor(red: 0.0/255.0, green: 125/255.0, blue: 0.0/255.0, alpha: 1.0)
+                appearance.shadowColor = .clear  //removing navigationbar 1 px bottom border.
+                UINavigationBar.appearance().standardAppearance = appearance
+                UINavigationBar.appearance().scrollEdgeAppearance = appearance
+            } else {
+                
+            }
+            
 
-        return navigation
-    }
+            return navigation
+        }
 }

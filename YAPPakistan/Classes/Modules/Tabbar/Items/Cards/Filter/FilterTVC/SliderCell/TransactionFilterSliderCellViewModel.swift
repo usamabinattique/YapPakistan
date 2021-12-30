@@ -25,10 +25,7 @@ protocol TransactionFilterSliderCellViewModelType {
     var outputs: TransactionFilterSliderCellViewModelOutput { get }
 }
 
-class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModelType,
-                                            TransactionFilterSliderCellViewModelInput,
-                                            TransactionFilterSliderCellViewModelOutput,
-                                            ReusableTableViewCellViewModelType {
+class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModelType, TransactionFilterSliderCellViewModelInput, TransactionFilterSliderCellViewModelOutput, ReusableTableViewCellViewModelType {
     
     // MARK: - Properties
     let disposeBag = DisposeBag()
@@ -65,13 +62,8 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
         
         progressSubject.onNext(CGFloat((selectedRange.upperBound - range.lowerBound)/(range.upperBound - range.lowerBound)))
         
-        selectedRangeSubject.map { String.init(
-            format: "%@ — %@",
-            NumberFormatter.formateAmount(range.lowerBound, fractionDigits: 0),
-            NumberFormatter.formateAmount($0.upperBound, fractionDigits: 0)
-        )}
-        .bind(to: rangeSubject).disposed(by: disposeBag)
-
+        selectedRangeSubject.map { String.init(format: "%@ — %@", NumberFormatter.formateAmount(range.lowerBound, fractionDigits: 0), NumberFormatter.formateAmount($0.upperBound, fractionDigits: 0)) }.bind(to: rangeSubject).disposed(by: disposeBag)
+        
         progressSubject.map { range.lowerBound...((Double($0)*(range.upperBound-range.lowerBound))+range.lowerBound) }.bind(to: selectedRangeSubject).disposed(by: disposeBag)
     }
 }

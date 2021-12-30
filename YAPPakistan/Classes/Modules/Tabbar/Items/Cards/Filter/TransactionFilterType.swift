@@ -8,10 +8,6 @@
 import Foundation
 
 public enum TransactionFilterType {
-//    case incoming( filter: TransactionFilter)
-//    case outgoing( filter: TransactionFilter)
-//    case pending( filter: TransactionFilter)
-
     case retailPayment ( filter: TransactionFilter)
     case onlineTransactions ( filter: TransactionFilter)
     case atmWithdrawl ( filter: TransactionFilter)
@@ -20,12 +16,6 @@ public enum TransactionFilterType {
 extension TransactionFilterType {
     var title: String? {
         switch self {
-//        case .incoming:
-//            return "screen_transaction_filter_display_text_incoming_transactions".localized
-//        case .outgoing:
-//            return "screen_transaction_filter_display_text_outgoing_transactions".localized
-//        case .pending:
-//            return "screen_transaction_filter_display_text_pending_transactions".localized
         case .retailPayment:
             return "screen_transaction_filter_display_text_retail_payments".localized
         case .onlineTransactions:
