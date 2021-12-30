@@ -24,7 +24,10 @@ protocol TransactionFilterCheckBoxCellViewModelType {
     var outputs: TransactionFilterCheckBoxCellViewModelOutput { get }
 }
 
-class TransactionFilterCheckBoxCellViewModel: TransactionFilterCheckBoxCellViewModelType, TransactionFilterCheckBoxCellViewModelInput, TransactionFilterCheckBoxCellViewModelOutput, ReusableTableViewCellViewModelType {
+class TransactionFilterCheckBoxCellViewModel: TransactionFilterCheckBoxCellViewModelType,
+                                              TransactionFilterCheckBoxCellViewModelInput,
+                                              TransactionFilterCheckBoxCellViewModelOutput,
+                                              ReusableTableViewCellViewModelType {
     
     // MARK: - Properties
     let disposeBag = DisposeBag()
