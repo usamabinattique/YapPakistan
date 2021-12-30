@@ -11,7 +11,26 @@ import Foundation
 // import Networking
 import RxSwift
 
-class TransactionsRepository {
+protocol TransactionsRepositoryType {
+    func fetchTransactions(
+        pageNumber: Int,
+        pageSize: Int,
+        minAmount: Double?,
+        maxAmount: Double?,
+        creditSearch: Bool?,
+        debitSearch: Bool?,
+        yapYoungTransfer: Bool?
+    ) -> Observable<Event<PagableResponse<TransactionResponse>>>
+
+    func fetchCardTransactions(
+        pageNo: Int,
+        pageSize: Int,
+        cardSerialNo: String,
+        debitSearch: Bool
+    ) -> Observable<Event<PagableResponse<TransactionResponse>>>
+}
+
+class TransactionsRepository: TransactionsRepositoryType {
 
     private let transactionService: TransactionsService
 
@@ -19,11 +38,32 @@ class TransactionsRepository {
         self.transactionService = transactionService
     }
 
-    func fetchTransactions(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<Event<PagableResponse<TransactionResponse>>> {
-        return transactionService.fetchTransactions(pageNumber: pageNumber, pageSize: pageSize, minAmount: minAmount, maxAmount: maxAmount, creditSearch: creditSearch, debitSearch: debitSearch, yapYoungTransfer: yapYoungTransfer).materialize()
+    func fetchTransactions(
+        pageNumber: Int,
+        pageSize: Int,
+        minAmount: Double?,
+        maxAmount: Double?,
+        creditSearch: Bool?,
+        debitSearch: Bool?,
+        yapYoungTransfer: Bool?
+    ) -> Observable<Event<PagableResponse<TransactionResponse>>> {
+        return transactionService.fetchTransactions(
+            pageNumber: pageNumber,
+            pageSize: pageSize,
+            minAmount: minAmount,
+            maxAmount: maxAmount,
+            creditSearch: creditSearch,
+            debitSearch: debitSearch,
+            yapYoungTransfer: yapYoungTransfer
+        ).materialize()
     }
 
-    func fetchCardTransactions(pageNo: Int, pageSize: Int, cardSerialNo: String, debitSearch: Bool = false) -> Observable<Event<PagableResponse<TransactionResponse>>> {
+    func fetchCardTransactions(
+        pageNo: Int,
+        pageSize: Int,
+        cardSerialNo: String,
+        debitSearch: Bool = false
+    ) -> Observable<Event<PagableResponse<TransactionResponse>>> {
         return transactionService.fetchCardTransactions(cardSerialNumber: cardSerialNo, pageNumber: pageNo, pageSize: pageSize, debitSearch: debitSearch).materialize()
     }
 }

@@ -96,6 +96,21 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.options.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.cardOptions() })
             .disposed(by: rx.disposeBag)
+
+        viewController.transactionViewController.viewModel.outputs
+            .openFilter.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.openFilter() })
+            .disposed(by: rx.disposeBag)
+    }
+
+    func openFilter() {
+        let viewModel = TransactionFilterViewModel()
+        let filterView = TransactionFilterViewController(viewModel: viewModel, themeService: container.themeService)
+        self.navigationRoot.pushViewController(filterView)
+
+        viewModel.outputs.close.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController() })
+            .disposed(by: rx.disposeBag)
     }
 
     func cardOptions() {
@@ -161,8 +176,8 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 
-//    func reportLostStollen(cardDetaild: PaymentCard?) {
-//        let coordinator = ReorderCardCoordinator(root: self.navigationRoot, container: self.container)
+//    func reportLostCard(cardDetaild: PaymentCard) {
+//        let coordinator = ReorderCardCoordinator(root: self.navigationRoot, container: self.container, cardDetaild: cardDetaild)
 //        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
 //    }
 

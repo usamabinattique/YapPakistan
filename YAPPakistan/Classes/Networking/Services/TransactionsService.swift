@@ -10,7 +10,16 @@
 import Foundation
 import RxSwift
 
-class TransactionsService: BaseService {
+protocol TransactionsServiceType {
+
+    func fetchTransactions<T>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<T> where T : Decodable, T : Encodable
+
+    func fetchCardTransactions<T>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool) -> Observable<T> where T : Decodable, T : Encodable
+
+    func fetchReorderFee<T>() -> Observable<T> where T : Decodable, T : Encodable
+}
+
+class TransactionsService: BaseService, TransactionsServiceType {
     func fetchTransactions<T: Codable>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<T> {
         var params = [String: String]()
 
@@ -51,6 +60,12 @@ class TransactionsService: BaseService {
                                         pathVariables: nil,
                                         query: query,
                                         headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: apiClient, route: route)
+    }
+
+    func fetchReorderFee<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/fees/reorder/debit-card/subscription/physical", pathVariables: nil, query: nil, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: apiClient, route: route)
     }

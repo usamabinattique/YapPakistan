@@ -35,8 +35,19 @@ public class ReportCardCoordinator: Coordinator<ResultType<Void>> {
         
         self.navigationRoot.pushViewController(viewController, completion: nil)
         self.root.present(self.navigationRoot, animated: true, completion: nil)
+
+        viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.reorderCard() })
+            .disposed(by: rx.disposeBag)
         
         return result
+    }
+
+    func reorderCard() {
+        let coordinator = ReorderCardCoordinator(root: root,
+                                                 container: self.container,
+                                                 cardDetaild: cardDetail)
+        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 }
 

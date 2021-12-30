@@ -142,6 +142,15 @@ class ReorderCardViewController: UIViewController {
             .subscribe(onNext: { `self`, message in self.showAlert(message: message) })
             .disposed(by: rx.disposeBag)
 
+        viewModel.outputs.cardFee.bind(to: feeLabel.rx.text)
+            .disposed(by: rx.disposeBag)
+        viewModel.outputs.balance.bind(to: balanceLabel.rx.text)
+            .disposed(by: rx.disposeBag)
+        viewModel.outputs.addressTitle.bind(to: locationTitleLabel.rx.text)
+            .disposed(by: rx.disposeBag)
+        viewModel.outputs.addressDetail.bind(to: locationSubTitleLabel.rx.text)
+            .disposed(by: rx.disposeBag)
+
         editButton.rx.tap.bind(to: viewModel.inputs.editAddressObserver).disposed(by: rx.disposeBag)
         nextButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
@@ -209,15 +218,17 @@ class ReorderCardViewController: UIViewController {
             .widthEqualToSuperView(multiplier: 0.5)
         
         locationSubContainer
-            .toRightOf(locationIconContainer, constant: 25)
+            .toRightOf(locationIconContainer, constant: 15)
             .alignEdgesWithSuperview([.top, .bottom], constant: 20)
         locationTitleLabel
             .alignEdgesWithSuperview([.top, .left, .right])
         locationSubTitleLabel
+            .toBottomOf(locationTitleLabel)
+            .heightEqualTo(view: locationTitleLabel)
             .alignEdgesWithSuperview([.left, .right, .bottom])
         
-        
         editButton
+            .toRightOf(locationSubContainer, constant: 15)
             .centerVerticallyInSuperview()
             .alignEdgesWithSuperview([.right], constant: 20)
         

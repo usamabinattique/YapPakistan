@@ -17,9 +17,12 @@ public class ReorderCardCoordinator: Coordinator<ResultType<Void>> {
 
     var cardDetaild: PaymentCard?; #warning("FIXME")
 
-    public init(root: UIViewController, container: UserSessionContainer) {
+    init(root: UIViewController,
+                container: UserSessionContainer,
+                cardDetaild: PaymentCard) {
         self.root = root
         self.container = container
+        self.cardDetaild = cardDetaild
 
         super.init()
 

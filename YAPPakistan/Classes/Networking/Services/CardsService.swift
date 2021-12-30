@@ -32,6 +32,14 @@ protocol CardsServiceType {
                                    token: String,
                                    cardSerialNumber: String) -> Observable<T>
     func closeCard<T: Codable>(_ cardserialNumber: String, reason: String) -> Observable<T>
+    func getPhysicalCardAddress<T: Codable>() -> Observable<T>
+    func reorderDebitCard<T: Codable>(cardSerialNumber: String,
+                                      address: String,
+                                      city: String,
+                                      country: String,
+                                      postCode: String,
+                                      latitude: String,
+                                      longitude: String) -> Observable<T>
 }
 
 public class CardsService: BaseService, CardsServiceType {
@@ -193,6 +201,42 @@ public class CardsService: BaseService, CardsServiceType {
                                 body: body,
                                 headers: authorizationProvider.authorizationHeaders)
 
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func getPhysicalCardAddress<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(
+            .get,
+            apiConfig.cardsURL,
+            "/api/user-address",
+            headers: authorizationProvider.authorizationHeaders
+        )
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func reorderDebitCard<T: Codable>(cardSerialNumber: String,
+                                             address: String,
+                                             city: String,
+                                             country: String,
+                                             postCode: String,
+                                             latitude: String,
+                                             longitude: String ) -> Observable<T> {
+        let body: [String: String] = [
+            "cardSerialNumber": cardSerialNumber,
+            "address1": address,
+            "address2": "0",
+            "city": city,
+            "country": country,
+            "postCode": postCode,
+            "latitude": latitude,
+            "longitude": longitude
+        ]
+        let route = APIEndpoint(
+            .post,
+            apiConfig.cardsURL, "/api/cards/debit/reorder",
+            body: body,
+            headers: authorizationProvider.authorizationHeaders
+        )
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

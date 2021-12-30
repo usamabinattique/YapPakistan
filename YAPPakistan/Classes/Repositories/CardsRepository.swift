@@ -29,6 +29,15 @@ protocol CardsRepositoryType: AnyObject {
     // func verifyOTP(action: OTPActions, otp: String) -> Observable<Event<String?>>
     func closeCard(cardSerialNumber: String, reason: String) -> Observable<Event<String?>>
     func getHelpLineNumber() -> Observable<Event<String?>>
+    func getPhysicalCardAddress() -> Observable<Event<Address?>>
+    func reorderDebitCard(cardSerialNumber: String,
+                          address: String,
+                          city: String,
+                          country: String,
+                          postCode: String,
+                          latitude: String,
+                          longitude: String) -> Observable<Event<String?>>
+    func fetchReorderFee() -> Observable<Event<CardReorderFee?>>
 }
 
 class CardsRepository: CardsRepositoryType {
@@ -36,13 +45,16 @@ class CardsRepository: CardsRepositoryType {
     private let cardsService: CardsServiceType
     private let customerService: CustomerServiceType
     private let messagesService: MessagesServiceType
+    private let transactionsService: TransactionsServiceType
 
     init(cardsService: CardsServiceType,
          customerService: CustomerServiceType,
-         messagesService: MessagesServiceType) {
+         messagesService: MessagesServiceType,
+         transactionsService: TransactionsServiceType) {
         self.cardsService = cardsService
         self.customerService = customerService
         self.messagesService = messagesService
+        self.transactionsService = transactionsService
     }
 
     public func getCards() -> Observable<Event<[PaymentCard]?>> {
@@ -109,6 +121,30 @@ class CardsRepository: CardsRepositoryType {
     
     public func getHelpLineNumber() -> Observable<Event<String?>> {
         return messagesService.getHelplineNumber().materialize()
+    }
+
+    func getPhysicalCardAddress() -> Observable<Event<Address?>> {
+        cardsService.getPhysicalCardAddress().materialize()
+    }
+
+    func reorderDebitCard(cardSerialNumber: String,
+                          address: String,
+                          city: String,
+                          country: String,
+                          postCode: String,
+                          latitude: String,
+                          longitude: String) -> Observable<Event<String?>> {
+        cardsService.reorderDebitCard(cardSerialNumber: cardSerialNumber,
+                                      address: address,
+                                      city: city,
+                                      country: country,
+                                      postCode: postCode,
+                                      latitude: latitude,
+                                      longitude: longitude).materialize()
+    }
+
+    func fetchReorderFee() -> Observable<Event<CardReorderFee?>> {
+        transactionsService.fetchReorderFee().materialize()
     }
 }
 

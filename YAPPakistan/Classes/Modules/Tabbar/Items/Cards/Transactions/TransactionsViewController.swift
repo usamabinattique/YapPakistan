@@ -213,10 +213,10 @@ fileprivate extension TransactionsViewController {
         viewModel.outputs.reloadData.subscribe(onNext: { [weak self] in self?.tableView.reloadData() }).disposed(by: disposeBag)
 //        viewModel.outputs.showsPlaceholder.map { !$0 }.bind(to: placeholderImageView.rx.isHidden).disposed(by: disposeBag)
         filterButton.rx.tap.bind(to: viewModel.inputs.openFilterObserver).disposed(by: disposeBag)
-        viewModel.outputs.filterEnabled.bind(to: filterButton.rx.isEnabled).disposed(by: disposeBag)
-        viewModel.outputs.filterEnabled.subscribe(onNext: { [weak self] in
-            self?.filterButton.tintColor = $0 ? .blue: .gray /*.primary : .greyDark */
-        }).disposed(by: disposeBag)
+        //viewModel.outputs.filterEnabled.bind(to: filterButton.rx.isEnabled).disposed(by: disposeBag)
+//        viewModel.outputs.filterEnabled.subscribe(onNext: { [weak self] in
+//            self?.filterButton.tintColor = $0 ? .blue: .gray /*.primary : .greyDark */
+//        }).disposed(by: disposeBag)
         viewModel.outputs.showsNothingLabel.subscribe(onNext: { [weak self] in
             self?.nothingLabel.isHidden = !$0
         }).disposed(by: disposeBag)

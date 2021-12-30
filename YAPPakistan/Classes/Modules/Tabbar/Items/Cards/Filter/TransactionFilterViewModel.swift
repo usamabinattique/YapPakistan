@@ -19,6 +19,8 @@ public protocol TransactionFilterViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var result: Observable<TransactionFilter?> { get }
     var error: Observable<String> { get }
+    var close: Observable<Void> { get }
+
 }
 
 public protocol TransactionFilterViewModelType {
@@ -53,6 +55,7 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
     public var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
     public var result: Observable<TransactionFilter?> { return resultSubject.asObservable() }
     public var error: Observable<String> { return errorSubject.asObservable() }
+    public var close: Observable<Void> { closeSubject.asObservable() }
     
     // MARK: - Init
     public init(_ filter: TransactionFilter? = nil) {

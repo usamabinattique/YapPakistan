@@ -116,9 +116,11 @@ public final class UserSessionContainer {
         let cardsService = makeCardsService()
         let customerService = makeCustomersService()
         let messagesService = makeMessagesService()
+        let transactionsService = makeTransactionsService()
         return CardsRepository(cardsService: cardsService,
                                customerService: customerService,
-                               messagesService: messagesService)
+                               messagesService: messagesService,
+                               transactionsService: transactionsService)
     }
 
     // MARK: Controllers
