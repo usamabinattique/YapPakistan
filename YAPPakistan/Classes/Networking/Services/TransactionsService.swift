@@ -17,6 +17,8 @@ protocol TransactionsServiceType {
     func fetchCardTransactions<T>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool) -> Observable<T> where T : Decodable, T : Encodable
 
     func fetchReorderFee<T>() -> Observable<T> where T : Decodable, T : Encodable
+    
+    func getTransactionFilters<T: Codable>() -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
@@ -66,6 +68,12 @@ class TransactionsService: BaseService, TransactionsServiceType {
 
     func fetchReorderFee<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/fees/reorder/debit-card/subscription/physical", pathVariables: nil, query: nil, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: apiClient, route: route)
+    }
+    
+    func getTransactionFilters<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transactions/search-filter/amount", pathVariables: nil, query: nil, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: apiClient, route: route)
     }

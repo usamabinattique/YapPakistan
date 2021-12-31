@@ -18,15 +18,10 @@ class TransactionFilterSliderCell: RxUITableViewCell {
     
     private lazy var title = UIFactory.makeLabel(font: .regular)
     
-    private lazy var range = UIFactory.makeLabel(font: .regular, alignment: .right) //UILabelFactory.createUILabel(with: .primary, textStyle: .regular, alignment: .right)
+    private lazy var range = UIFactory.makeLabel(font: .regular, alignment: .right)
     
-    private lazy var slider: UISlider = {
-        let slider = UISlider()
-        slider.tintColor = UIColor.blue
-        slider.setThumbImage(UIImage(named: "icon_map_pin_purple", in: .yapPakistan), for: .normal)
-        slider.translatesAutoresizingMaskIntoConstraints = false
-        return slider
-    }()
+    private lazy var sliderContainer = UIFactory.makeView()
+    private lazy var customSlider = YAPRangeSliderFactory()
     
     // MARK: Properties
     var themeService: ThemeService<AppTheme>!
@@ -69,9 +64,13 @@ private extension TransactionFilterSliderCell {
         contentView.addSubview(separator)
         contentView.addSubview(title)
         contentView.addSubview(range)
-        contentView.addSubview(slider)
+        //contentView.addSubview(slider)
+        sliderContainer.addSubview(customSlider)
+        contentView.addSubview(sliderContainer)
         
         range.adjustsFontSizeToFitWidth = true
+        sliderContainer.clipsToBounds = false
+//        customSlider.delegate = self
     }
     
     func setupConstraints() {
@@ -89,11 +88,15 @@ private extension TransactionFilterSliderCell {
             .alignEdge(.centerY, withView: title)
             .toRightOf(title, constant: 10)
         
-        slider
+        sliderContainer
             .alignEdgesWithSuperview([.left, .right], constant: 25)
             .toBottomOf(title, constant: 20)
             .height(constant: 30)
             .alignEdgeWithSuperview(.bottom)
+        customSlider
+            .alignEdgesWithSuperview([.left, .right])
+            .centerVerticallyInSuperview()
+            .height(constant: 30)
     }
     
     func setupTheme(){
@@ -101,8 +104,11 @@ private extension TransactionFilterSliderCell {
             .bind({ UIColor($0.greyDark) }, to: [title.rx.textColor])
         themeService.rx
             .bind({ UIColor($0.primary) }, to: [range.rx.textColor])
+            .bind({ UIColor($0.greyLight) }, to: [separator.rx.backgroundColor])
         
             .disposed(by: rx.disposeBag)
+        
+        customSlider.setupStyle(for: self.themeService)
     }
 }
 
@@ -111,12 +117,14 @@ private extension TransactionFilterSliderCell {
 private extension TransactionFilterSliderCell {
     func bindViews() {
         
-        viewModel.outputs.progress.map { Float($0) }.subscribe(onNext: { [weak self] in
-            self?.slider.setValue($0, animated: true)
-        }).disposed(by: disposeBag)
+//        viewModel.outputs.progress.map { Float($0) }.subscribe(onNext: { [weak self] in
+//            print($0)
+//            //self?.slider.setValue($0, animated: true)
+//        }).disposed(by: disposeBag)
         viewModel.outputs.title.bind(to: title.rx.text).disposed(by: disposeBag)
         viewModel.outputs.range.bind(to: range.rx.text).disposed(by: disposeBag)
         
-        slider.rx.value.map { CGFloat($0) }.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
+        customSlider.rx.didChange.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
+//        slider.rx.value.map { CGFloat($0) }.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
     }
 }
