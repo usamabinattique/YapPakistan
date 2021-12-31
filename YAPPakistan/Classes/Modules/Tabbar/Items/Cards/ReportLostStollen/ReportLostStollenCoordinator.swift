@@ -66,4 +66,3 @@ extension ReportLostStollenCoordinator {
         return navigation
     }
 }
-
