@@ -104,7 +104,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func openFilter() {
-        let viewModel = TransactionFilterViewModel()
+        let viewModel = TransactionFilterViewModel(repository: container.makeTransactionsRepository())
         let filterView = TransactionFilterViewController(viewModel: viewModel, themeService: container.themeService)
         self.navigationRoot.pushViewController(filterView)
 

@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import RxDataSources
+import YAPComponents
 
 public protocol TransactionFilterViewModelInput {
     var applyObserver: AnyObserver<Void> { get }
@@ -36,7 +37,7 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
     public var outputs: TransactionFilterViewModelOutput { return self }
     private var filter: TransactionFilter!
     private var viewModels = [ReusableTableViewCellViewModelType]()
-//    private let repository = TransactionsRepository()
+    let repository: TransactionsRepositoryType
     
     private let applySubject = PublishSubject<Void>()
     private let clearSubject = PublishSubject<Void>()
@@ -58,8 +59,9 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
     public var close: Observable<Void> { closeSubject.asObservable() }
     
     // MARK: - Init
-    public init(_ filter: TransactionFilter? = nil) {
+    init(_ filter: TransactionFilter? = nil, repository: TransactionsRepositoryType) {
         self.filter = filter ?? TransactionFilter()
+        self.repository = repository
         
         applySubject.map { [unowned self] in self.filter }
             .subscribe(onNext: { [unowned self] in
@@ -109,8 +111,7 @@ private extension TransactionFilterViewModel {
         }
         
         fetchLimit()
-
-        loadCells()
+        
     }
     
     func loadCells() {
@@ -118,20 +119,18 @@ private extension TransactionFilterViewModel {
     }
     
     func fetchLimit() {
-//        YAPProgressHud.showProgressHud()
-//
-//        let request = repository.getTransactionLimit().share().do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-//
-//        request.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
-//
-//        request.elements().subscribe(onNext: { [unowned self] in
-//            let range = $0.minAmount...$0.maxAmount
-//            self.filter.maxAllowedAmount = $0.maxAmount
-//            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...self.filter.maxAmount
-//            self.addSlider(range: range, selectedRange: selectedRange)
-//        }).disposed(by: disposeBag)
-        
-        self.addSlider(range: 0...1000, selectedRange: 0...100)
+        YAPProgressHud.showProgressHud()
+
+        let request = repository.getTransactionLimit().share().do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+
+        request.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
+
+        request.elements().subscribe(onNext: { [unowned self] in
+            let range = $0.minAmount...$0.maxAmount
+            self.filter.maxAllowedAmount = $0.maxAmount
+            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
+            self.addSlider(range: range, selectedRange: selectedRange)
+        }).disposed(by: disposeBag)
     }
     
     func addSlider(range: ClosedRange<Double>, selectedRange: ClosedRange<Double>) {
@@ -148,8 +147,8 @@ private extension TransactionFilterViewModel {
             
         }).disposed(by: self.disposeBag)
         
-        clearSubject.map{ _ in 1.0 }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
+//        clearSubject.map{ _ in 1.0 }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
         
-        //            self.loadCells()
+        self.loadCells()
     }
 }

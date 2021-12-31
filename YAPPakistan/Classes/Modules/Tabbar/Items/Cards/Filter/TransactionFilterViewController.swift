@@ -176,6 +176,7 @@ private extension TransactionFilterViewController {
         })
         
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
+        
         tableView.rx.modelSelected(ReusableTableViewCellViewModelType.self)
             .filter{ $0 is TransactionFilterCheckBoxCellViewModelType }
             .map{ $0 as? TransactionFilterCheckBoxCellViewModel }
