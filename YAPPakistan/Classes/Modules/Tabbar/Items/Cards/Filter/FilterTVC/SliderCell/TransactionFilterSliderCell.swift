@@ -125,6 +125,11 @@ private extension TransactionFilterSliderCell {
         viewModel.outputs.range.bind(to: range.rx.text).disposed(by: disposeBag)
         
         customSlider.rx.didChange.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
-//        slider.rx.value.map { CGFloat($0) }.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
+        viewModel.outputs.selectedRange
+            .map({ range in
+                print(range.lowerBound)
+                print(range.upperBound)
+            })
+        //        viewModel.outputs.selectedRange.bind(to: customSlider.rx.didChange).disposed(by: disposeBag)
     }
 }

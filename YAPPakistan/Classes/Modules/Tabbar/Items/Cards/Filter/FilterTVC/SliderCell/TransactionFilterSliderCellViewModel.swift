@@ -38,17 +38,21 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
     var reusableIdentifier: String { return TransactionFilterSliderCell.defaultIdentifier }
     
     private let progressSubject = BehaviorSubject<(minValue: CGFloat, maxValue: CGFloat)>(value: (0, 1))
-    private let rangeSubject = BehaviorSubject<String?>(value: nil)
+    //private let rangeSubject = BehaviorSubject<String?>(value: nil)
+    private let rangeSubject = BehaviorSubject<(minValue: CGFloat, maxValue: CGFloat)>(value: (0, 3500))
     private let titleSubject = BehaviorSubject<String?>(value: "screen_transaction_filter_display_text_balance".localized)
     private let selectedRangeSubject = BehaviorSubject<ClosedRange<Double>>(value: 0...0)
     
     // MARK: - Inputs
-    var progressObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { return progressSubject.asObserver() }
+    //var progressObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { return progressSubject.asObserver() }
+    var progressObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { return rangeSubject.asObserver() }
     
     // MARK: - Outputs
     var progress: Observable<(minValue: CGFloat, maxValue: CGFloat)> { return progressSubject.asObservable() }
     var title: Observable<String?> { return titleSubject.asObservable() }
-    var range: Observable<String?> { return rangeSubject.asObservable() }
+    var range: Observable<String?> { return rangeSubject.asObservable().map { (min,max) -> String? in
+        return String.init(format: "%@ — %@", NumberFormatter.formateAmount(min, fractionDigits: 0),NumberFormatter.formateAmount(max, fractionDigits: 0))
+    } }
     var selectedRange: Observable<ClosedRange<Double>> { return selectedRangeSubject.asObservable() }
     
     // MARK: - Init
@@ -67,8 +71,13 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
         //progressSubject.onNext(CGFloat((selectedRange.upperBound - range.lowerBound)/(range.upperBound - range.lowerBound)))
         
         progressSubject
-            .map { "\($0.0) - \($0.1)" }
-            .bind(to: rangeSubject).disposed(by: disposeBag)
+            .map { return ($0.minValue, $0.maxValue) }
+            .bind(to: rangeSubject)
+            .disposed(by: disposeBag)
+        
+//        progressSubject
+//            .map { "\($0.0) - \($0.1)" }
+//            .bind(to: rangeSubject).disposed(by: disposeBag)
         
 //        selectedRangeSubject
 //            .map { String.init(
