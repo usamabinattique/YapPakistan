@@ -54,8 +54,15 @@ Pod::Spec.new do |spec|
   spec.dependency 'HWPanModal', '~> 0'
   spec.dependency 'SDWebImage', '~> 5.0'
   spec.dependency 'SwiftyGif', '~> 5.0'
+  spec.dependency 'FSPagerView', '~> 0.8.3'
+  spec.dependency 'SwipeCellKit'
+  spec.dependency 'MXParallaxHeader'
 
   #MARK: Utilities
   spec.dependency 'PhoneNumberKit', '~> 3.0'
   spec.dependency 'SwifterSwift', '~> 5.0'
+
+  #MARK: Google
+  spec.dependency 'GoogleMaps'
+  spec.dependency 'GooglePlaces'
 end

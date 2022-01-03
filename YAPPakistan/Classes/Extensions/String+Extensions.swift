@@ -133,7 +133,7 @@ public extension String {
 
         let comps = components(separatedBy: .whitespaces).filter({ !$0.isEmpty })
         nameLabel.text = comps.count > 1 ? [comps.first?.first?.uppercased(), comps.last?.first?.uppercased()].compactMap({ $0 }).joined() : comps.first?.first?.uppercased()
-        // nameLabel.font = UIFont.appFont(ofSize: 32 * (size.height/100), weight: .semibold, theme: .main)
+        nameLabel.font = UIFont.systemFont(ofSize: 32 * (size.height/100), weight: .semibold) // theme: .main
         nameLabel.textAlignment = NSTextAlignment.center
         nameLabel.backgroundColor = backgroundColor
 

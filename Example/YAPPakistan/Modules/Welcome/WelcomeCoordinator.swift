@@ -42,15 +42,17 @@ class WelcomeCoordinator: Coordinator<WelcomeResult> {
 
         self.window.rootViewController = self.root
 
-        viewModel.outputs.personal.subscribe(onNext: {[unowned self] _ in
-            self.result.onNext(.signup)
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.personal.withUnretained(self)
+            .subscribe(onNext: {`self`, _ in
+                self.result.onNext(.signup)
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.signIn.subscribe(onNext: { [unowned self] _ in
-            self.result.onNext(.signin)
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.signIn.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.result.onNext(.signin)
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
 
         return result
     }

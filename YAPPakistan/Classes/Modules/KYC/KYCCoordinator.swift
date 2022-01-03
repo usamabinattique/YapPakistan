@@ -100,21 +100,16 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
                                                              identityDocument: identityDocument,
                                                              cnicOCR: cnicOCR)
 
-        coordinate(to: coordinator).subscribe(onNext: { [weak self] result in
-            guard let self = self else { return }
-
+        coordinate(to: coordinator).withUnretained(self).subscribe(onNext: { `self`, result in
             switch result {
             case .success:
                 var viewControllers = self.root.viewControllers
-
                 if let index = viewControllers.lastIndex(of: kycMainController) {
                     viewControllers.removeSubrange(index + 1 ..< viewControllers.count)
                 }
-                self.setProgressViewHidden(true)
-                self.root.setViewControllers(viewControllers, animated: true)
-
+                self.kycHomeViewModel.inputs.documentsUploadObserver.onNext(())
+                self.root.setViewControllers(viewControllers, animated: false)
                 self.motherNameQuestion()
-
             case .cancel: break
             }
         }).disposed(by: rx.disposeBag)
@@ -124,25 +119,30 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let viewController = container.makeMotherQuestionViewController()
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { $0.0.cityQuestion() })
+            .subscribe(onNext: { $0.0.cityQuestion( motherName: $0.1) })
             .disposed(by: rx.disposeBag)
 
-        addChildVC(viewController, progress: 0.5)
-
+        addAndRemovePreviousVC(viewController, progress: 0.5)
     }
 
-    func cityQuestion() {
+    func cityQuestion(motherName: String) {
 
-        let viewController = container.makeCityQuestionViewController()
+        let viewController = container.makeCityQuestionViewController(motherName: motherName)
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .do(onNext: { [unowned self] _ in
-                self.setProgressViewHidden(true)
-                let viewControllers = self.kycProgressViewController.childNavigation.viewControllers
-                self.kycProgressViewController.childNavigation
-                    .setViewControllers([viewControllers.first!], animated: true)
-            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { `self`, _ in self.selfieGuideline() })
+//            .do(onNext: { [unowned self] _ in
+//                self.setProgressViewHidden(true)
+//                let viewControllers = self.kycProgressViewController.childNavigation.viewControllers
+//                self.kycProgressViewController.childNavigation
+//                    .setViewControllers([viewControllers.first!], animated: true)
+//            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { `self`, _ in
+                self.selfieGuideline()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    let vcs = self.kycProgressViewController.childNavigation.viewControllers
+                    self.kycProgressViewController.childNavigation.setViewControllers([vcs[0]], animated: false)
+                }
+            })
             .disposed(by: rx.disposeBag)
 
         addChildVC(viewController, progress: 0.75)
@@ -154,6 +154,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
+                self.kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(true)
                 self.root.setNavigationBarHidden(true, animated: true)
                 self.root.popViewController(animated: true)
             })
@@ -171,7 +172,10 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let viewController = container.makeCaptureViewController()
 
         viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .subscribe(onNext: { `self`, _ in
+                self.kycProgressViewController.viewModel.inputs.progressObserver.onNext(0)
+                self.root.popViewController(animated: true)
+            })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.unwrap().withUnretained(self)
@@ -185,23 +189,31 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let viewController = container.makeReviewSelfieViewController(image: image)
 
         viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .subscribe(onNext: { `self`, _ in
+                self.root.setNavigationBarHidden(false, animated: true)
+                self.root.popViewController(animated: true)
+                // self.kycProgressViewController.viewModel.inputs.progressObserver.onNext(0)
+                // self.root.popViewController(animated: true)
+            })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .do(onNext: { `self`, _ in
-                var vcs = self.root.viewControllers
-                vcs.removeLast()
-                vcs.removeLast()
-                vcs.removeLast()
-                self.setProgressViewHidden(true)
-                self.root.setNavigationBarHidden(true, animated: true)
-                self.root.setViewControllers(vcs, animated: true)
-            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+//            .do(onNext: { `self`, _ in
+//                var vcs = self.root.viewControllers
+//                vcs.removeLast()
+//                vcs.removeLast()
+//                vcs.removeLast()
+//                self.setProgressViewHidden(true)
+//                self.root.setNavigationBarHidden(true, animated: true)
+//                self.root.setViewControllers(vcs, animated: true)
+//            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
             .subscribe(onNext: { `self`, _ in self.cardName() })
             .disposed(by: rx.disposeBag)
 
-        root.pushViewController(viewController, animated: true)
+        // let vcs = self.root.viewControllers
+        // self.root.setViewControllers([vcs[0], vcs[1], viewController], animated: true)
+        self.root.pushViewController(viewController, animated: true)
+        self.root.setNavigationBarHidden(true, animated: true)
     }
 
     func cardName() {
@@ -209,19 +221,20 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
+                self.kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(true)
                 self.root.setNavigationBarHidden(true, animated: true)
                 self.root.popViewController(animated: true)
             })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .do(onNext: { `self`, _ in
-                var vcs = self.root.viewControllers
-                vcs.removeLast()
-                self.setProgressViewHidden(true)
-                self.root.setNavigationBarHidden(true, animated: true)
-                self.root.setViewControllers(vcs, animated: true)
-            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
+//            .do(onNext: { `self`, _ in
+//                var vcs = self.root.viewControllers
+//                vcs.removeLast()
+//                self.setProgressViewHidden(true)
+//                self.root.setNavigationBarHidden(true, animated: true)
+//                self.root.setViewControllers(vcs, animated: true)
+//            }).delay(.milliseconds(500), scheduler: MainScheduler.instance)
             .subscribe(onNext: { `self`, _ in self.address() })
             .disposed(by: rx.disposeBag)
 
@@ -230,7 +243,8 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .bind(to: viewController.viewModel.inputs.nameObserver)
             .disposed(by: rx.disposeBag)
 
-        root.pushViewController(viewController, animated: true)
+        let vcs = self.root.viewControllers
+        self.root.setViewControllers([vcs[0], vcs[1], viewController], animated: true)
         root.setNavigationBarHidden(false, animated: true)
     }
 
@@ -254,6 +268,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
+                self.kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(true)
                 self.root.setNavigationBarHidden(true, animated: true)
                 self.root.popViewController(animated: true)
             })
@@ -267,7 +282,21 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         citySelected.subscribe(onNext: { [unowned self] _ in self.root.popViewController(animated: true) })
             .disposed(by: rx.disposeBag)
 
-        root.pushViewController(viewController, animated: true)
+        viewController.viewModel.outputs.next
+            .delay(.milliseconds(500), scheduler: MainScheduler.instance)
+            .withLatestFrom(container.accountProvider.currentAccount).unwrap()
+            .map({ $0.isSecretQuestionVerified }).withUnretained(self)
+            .subscribe(onNext: { `self`, isVerified in
+                if isVerified == true {
+                    self.cardOnItsWay()
+                } else {
+                    self.manualVerification()
+                }
+            })
+            .disposed(by: rx.disposeBag)
+
+        let vcs = self.root.viewControllers
+        self.root.setViewControllers([vcs[0], vcs[1], viewController], animated: true)
         root.setNavigationBarHidden(false, animated: true)
     }
 
@@ -287,11 +316,47 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         return viewController.viewModel.outputs.next
     }
 
+    func cardOnItsWay() {
+        let viewController = container.makeCardOnItsWayViewController()
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.setProgressViewHidden(true)
+                self.root.setViewControllers([self.root.viewControllers[0]], animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        self.root.setNavigationBarHidden(true, animated: true)
+        let vcs = self.root.viewControllers
+        self.root.setViewControllers([vcs[0], vcs[1]], animated: false)
+        self.addChildVC(viewController, progress: 1)
+    }
+
+    func manualVerification() {
+        let viewController = container.makeManualVerificationViewController()
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.setViewControllers([self.root.viewControllers[0]], animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+
+        root.pushViewController(viewController, animated: true)
+        root.setNavigationBarHidden(true, animated: true)
+    }
+
 }
 
 // MARK: Helpers
 
 fileprivate extension KYCCoordinator {
+    func addAndRemovePreviousVC(_ viewController: UIViewController, progress: Float ) {
+        let vcs = kycProgressViewController.childNavigation.viewControllers
+        kycProgressViewController.childNavigation.setViewControllers([vcs[0], viewController], animated: true)
+        kycProgressViewController.viewModel.inputs.hideProgressObserver.onNext(false)
+        kycProgressViewController.viewModel.inputs.progressObserver.onNext(progress)
+    }
+
     func addChildVC(_ viewController: UIViewController, progress: Float? = nil ) {
         if progress == nil {
             kycProgressViewController.childNavigation.pushViewController(viewController, animated: false)
@@ -304,6 +369,7 @@ fileprivate extension KYCCoordinator {
     }
 
     func setupPogressViewController() {
+        kycProgressViewController.hidesBottomBarWhenPushed = true
         self.root.pushViewController(self.kycProgressViewController, animated: true)
         kycProgressViewController.viewModel.outputs.backTap.withUnretained(self)
             .subscribe(onNext: {

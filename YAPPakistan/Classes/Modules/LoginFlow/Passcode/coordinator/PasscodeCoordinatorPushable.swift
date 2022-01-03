@@ -111,7 +111,7 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
 
     func dashboard() {
         let window = root.view.window ?? UIWindow()
-        let coordinator = LiteDashboardCoodinator(container: sessionContainer, window: window)
+        let coordinator = TabbarCoodinator(container: sessionContainer, window: window)
 
         coordinate(to: coordinator).subscribe(onNext: { result in
             self.result.onNext(.logout)

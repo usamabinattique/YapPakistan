@@ -22,7 +22,7 @@ class KYCReviewFieldCell: UITableViewCell, ReusableView {
 
     private lazy var tickImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "icon_check", in: .yapPakistan)
+        imageView.image = UIImage(named: "icon_check", in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
         imageView.contentMode = .center
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -92,6 +92,7 @@ class KYCReviewFieldCell: UITableViewCell, ReusableView {
         themeService.rx
             .bind({ UIColor($0.greyDark) }, to: headingLabel.rx.textColor)
             .bind({ UIColor($0.primaryDark) }, to: valueLabel.rx.textColor)
+            .bind({ UIColor($0.primaryLight) }, to: tickImageView.rx.tintColor)
             .disposed(by: disposeBag)
     }
 

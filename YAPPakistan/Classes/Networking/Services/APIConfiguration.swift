@@ -37,4 +37,12 @@ public struct APIConfiguration {
     public var customersURL: URL {
         return baseURL.appendingPathComponent("/customers")
     }
+
+    public var cardsURL: URL {
+        return baseURL.appendingPathComponent("/cards")
+    }
+
+    public var transactionsURL: URL {
+        return baseURL.appendingPathComponent("/transactions")
+    }
 }

@@ -12,7 +12,11 @@ struct AddressModuleBuilder {
 
     func viewController() -> AddressViewController {
         let themeService = container.themeService
-        let viewModel = AddressViewModel()
+        let locationService = LocationService()
+        let kycRepository = container.makeKYCRepository()
+        let viewModel = AddressViewModel(locationService: locationService,
+                                         kycRepository: kycRepository,
+                                         accountProvider: container.accountProvider )
         return AddressViewController(themeService: themeService, viewModel: viewModel)
     }
 }

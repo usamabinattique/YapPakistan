@@ -66,6 +66,7 @@ public struct Account: Codable {
     private let _freezeInitiator: String?
     private let _partnerBankApprovalDate: String?
     public var _isWaiting: Bool?
+    public let isSecretQuestionVerified: Bool?
 
     public var freezeCode: AccountFreezeCode { AccountFreezeCode(rawValue: _freezeCode ?? "") ?? .none }
     public var freezeInitiator: AccountFreezeInitiator { AccountFreezeInitiator(rawValue: _freezeInitiator ?? "") ?? .none }
@@ -91,7 +92,9 @@ public struct Account: Codable {
     public var creationDate: Date? { DateFormatter.transactionDateFormatter.date(from: createdDate) }
 
     private enum CodingKeys: String, CodingKey {
-        case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active, documentsVerified, companyType, soleProprietary, customer, bank, parentAccount, otpBlocked
+        case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active,
+             documentsVerified, companyType, soleProprietary, customer, bank, parentAccount,
+             otpBlocked, isSecretQuestionVerified
         case _accountStatus = "notificationStatuses"
         case accountNumber = "accountNo"
         case _parnterBankStatus = "partnerBankStatus"
@@ -138,6 +141,7 @@ public extension Account {
         self.qrCodeId = account.qrCodeId
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
+        self.isSecretQuestionVerified = account.isSecretQuestionVerified
     }
 
     init(account: Account, updatedEmail: String) {
@@ -167,6 +171,7 @@ public extension Account {
         self.qrCodeId = account.qrCodeId
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
+        self.isSecretQuestionVerified = account.isSecretQuestionVerified
     }
 
     init(account: Account, soleProprietary: Bool) {
@@ -196,6 +201,7 @@ public extension Account {
         self.qrCodeId = account.qrCodeId
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
+        self.isSecretQuestionVerified = account.isSecretQuestionVerified
     }
 
     init(account: Account, accountStatus: AccountStatus) {
@@ -225,6 +231,7 @@ public extension Account {
         self.qrCodeId = account.qrCodeId
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
+        self.isSecretQuestionVerified = account.isSecretQuestionVerified
     }
 }
 
@@ -235,14 +242,29 @@ extension Account: Equatable {
     }
 }
 
-public enum AccountStatus: String, Codable {
+public enum AccountStatus: String, Hashable, Codable {
     case onboarded = "ON_BOARDED"
-    case verificationSucceed = "MEETING_SUCCESS"    // FIXME is this in in use ?
-    case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
     case selfiePending = "SELFIE_PENDING"
     case secretQuestionPending = "SECRET_QUESTION_PENDING"
     case cardNamePending = "CARD_NAME_PENDING"
     case addressPending = "ADDRESS_PENDING"
+    case addressCaptured = "ADDRESS_CAPTURED"
+    case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
+    case verificationSucceed = "MEETING_SUCCESS"    // FIXME is this in in use ?
+
+    var stepValue: Int {
+        switch self {
+        case .onboarded: return 0
+        case .selfiePending: return 1
+        case .secretQuestionPending: return 2
+        case .cardNamePending: return 3
+        case .addressPending: return 4
+        case .addressCaptured: return 5
+        case .verificationSucceed: return 6
+        case .cardActivated: return 7
+        }
+    }
+
 }
 
 public enum EmiratesIdStatus: String, Codable {

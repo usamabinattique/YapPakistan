@@ -47,26 +47,28 @@ class LoginCoordinator: Coordinator<LoginResult> {
 
         self.window.rootViewController = self.root
 
-        viewModel.outputs.signUp.subscribe(onNext: { [unowned self] in
-            self.result.onNext(.signup)
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.signUp.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.result.onNext(.signup)
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
 
         let logInResult = viewModel.outputs.result.share()
 
-        logInResult.filter({ $0.isCancel }).subscribe(onNext: { [weak self] _ in
-            self?.root.popViewController(animated: true)
-            self?.result.onNext(.cancel)
-            self?.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+        logInResult.filter({ $0.isCancel }).withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.popViewController(animated: true)
+                self.result.onNext(.cancel)
+                self.result.onCompleted()
+            }).disposed(by: rx.disposeBag)
 
         logInResult
             .filter({ $0.isSuccess != nil })
             .map({ $0.isSuccess })
-            .unwrap()
-            .subscribe(onNext: { [weak self] result in
-                self?.result.onNext(LoginResult.passcode(formattedPhoneNumber: result.userName))
-                self?.result.onCompleted()
+            .unwrap().withUnretained(self)
+            .subscribe(onNext: { `self`, result in
+                self.result.onNext(LoginResult.passcode(formattedPhoneNumber: result.userName))
+                self.result.onCompleted()
             })
             .disposed(by: rx.disposeBag)
 

@@ -37,10 +37,7 @@ public final class KYCFeatureContainer {
     // MARK: Repositories
 
     func makeKYCRepository() -> KYCRepository {
-        let customersService = parent.makeCustomersService()
-        let kycRepository = KYCRepository(customersService: customersService)
-
-        return kycRepository
+        return parent.makeKYCRepository()
     }
 
     // MARK: Coordinators
@@ -100,8 +97,8 @@ extension KYCFeatureContainer {
         return MotherQuestionModuleBuilder(container: self).viewController()
     }
 
-    func makeCityQuestionViewController() -> KYCQuestionsViewController {
-        return CityQuestionModuleBuilder(container: self).viewController()
+    func makeCityQuestionViewController(motherName: String) -> KYCQuestionsViewController {
+        return CityQuestionModuleBuilder(container: self, motherName: motherName).viewController()
     }
 
     func makeSelfieGuidelineViewController() -> SelfieGuidelineViewController {
@@ -130,5 +127,14 @@ extension KYCFeatureContainer {
 
     func makeCityListViewController() -> CityListViewController {
         CityListModuleBuilder(container: self).viewController()
+    }
+
+
+    func makeCardOnItsWayViewController() -> CardOnItsWayViewController {
+        CardOnItsWayModuleBuilder(container: self).viewController()
+    }
+
+    func makeManualVerificationViewController() -> ManualVerificationViewController {
+        ManualVerificationModuleBuilder(container: self).viewController()
     }
 }

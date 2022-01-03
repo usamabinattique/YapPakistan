@@ -160,9 +160,14 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func verifyPasscode<T: Codable>(passcode: String) -> Observable<T> {
-        let query = ["passcode": passcode]
-        
-        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/user/verify-passcode", query: query, headers: authorizationProvider.authorizationHeaders)
+        let body = ["passcode": passcode]
+
+        let route = APIEndpoint(.post,
+                                apiConfig.customersURL,
+                                "/api/user/verify-passcode",
+                                query: nil,
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
         
         return self.request(apiClient: self.apiClient, route: route)
     }

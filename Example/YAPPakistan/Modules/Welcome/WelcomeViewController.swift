@@ -21,7 +21,7 @@ class WelcomeViewController: UIViewController {
     fileprivate lazy var signInButton = UIFactory.makeButton(with: .regular)
     fileprivate lazy var getStartedButton = UIFactory.makeButton(with: .regular).setHidden(true).setAlpha(0)
     fileprivate lazy var captionLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
-    fileprivate lazy var player = AVFactory.makePlayer(with: Resource(named: "get_started.mp4", in: .yapPakistan))
+    fileprivate lazy var player = AVFactory.makePlayer(with: Resource(named: "get_started.mp4", in: Bundle.init(for: Self.self)))
     fileprivate lazy var playerLayer = AVFactory.makeAVPlayerLayer(with: player)
 
     // MARK: Properties

@@ -28,13 +28,21 @@ protocol KYCRepositoryType {
     func uploadSelfie(_ selfie: (data: Data, format: String)) -> Observable<Event<[String: String?]>>
     func setCardName(cardName: String) -> Observable<Event<String?>>
     func getCities() -> Observable<Event<[Cities]>>
+    func saveUserAddress(address: String,
+                         city: String,
+                         country: String,
+                         postCode: String,
+                         latitude: String,
+                         longitude: String ) -> Observable<Event<String?>>
 }
 
 class KYCRepository: KYCRepositoryType {
     private let customersService: CustomersService
+    private let cardsService: CardsService
 
-    init(customersService: CustomersService) {
+    init(customersService: CustomersService, cardsService: CardsService) {
         self.customersService = customersService
+        self.cardsService = cardsService
     }
 
     func fetchDocument(byType documentType: String) -> Observable<Event<Document?>> {
@@ -89,5 +97,19 @@ class KYCRepository: KYCRepositoryType {
 
     func getCities() -> Observable<Event<[Cities]>> {
         return customersService.getCities().materialize()
+    }
+
+    func saveUserAddress(address: String,
+                         city: String,
+                         country: String,
+                         postCode: String,
+                         latitude: String,
+                         longitude: String ) -> Observable<Event<String?>> {
+        return cardsService.saveUserAddress(address: address,
+                                            city: city,
+                                            country: country,
+                                            postCode: postCode,
+                                            latitude: latitude,
+                                            longitude: longitude).materialize()
     }
 }

@@ -33,11 +33,41 @@ public final class UserSessionContainer {
 
     // MARK: Services
 
+    func makeTransactionsService() -> TransactionsService {
+        TransactionsService(apiConfig: parent.makeAPIConfiguration(),
+                            apiClient: parent.makeAPIClient(),
+                            authorizationProvider: session)
+    }
+
     func makeCustomersService() -> CustomersService {
         return parent.makeCustomersService(authorizationProvider: session)
     }
 
+    // Session Based
+    func makeCardsService() -> CardsService {
+        return CardsService(apiConfig: parent.makeAPIConfiguration(),
+                            apiClient: parent.makeAPIClient(),
+                            authorizationProvider: session)
+    }
+
+    func makeMessagesService() -> MessagesServiceType {
+        return MessagesService(apiConfig: parent.makeAPIConfiguration(),
+                               apiClient: parent.makeAPIClient(),
+                               authorizationProvider: session)
+    }
+
     // MARK: Repositories
+
+    func makeTransactionsRepository() -> TransactionsRepository {
+        let service = makeTransactionsService()
+        return TransactionsRepository(transactionService: service)
+    }
+
+    func makeOTPRepository() -> OTPRepositoryType {
+        let messageService = makeMessagesService()
+        let customerService = makeCustomersService()
+        return OTPRepository(messageService: messageService, customerService: customerService)
+    }
 
     func makeAccountRepository() -> AccountRepository {
         let authService = parent.makeAuthenticationService(authorizationProvider: session)
@@ -75,9 +105,22 @@ public final class UserSessionContainer {
 
     func makeKYCRepository() -> KYCRepository {
         let customersService = parent.makeCustomersService(authorizationProvider: session)
-        let kycRepository = KYCRepository(customersService: customersService)
+        let cardsService = makeCardsService()
 
+        let kycRepository = KYCRepository(customersService: customersService,
+                                          cardsService: cardsService)
         return kycRepository
+    }
+
+    func makeCardsRepository() -> CardsRepositoryType {
+        let cardsService = makeCardsService()
+        let customerService = makeCustomersService()
+        let messagesService = makeMessagesService()
+        let transactionsService = makeTransactionsService()
+        return CardsRepository(cardsService: cardsService,
+                               customerService: customerService,
+                               messagesService: messagesService,
+                               transactionsService: transactionsService)
     }
 
     // MARK: Controllers
@@ -98,7 +141,7 @@ public final class UserSessionContainer {
         return viewController
     }
 
-    func makeLiteDashboardViewController() -> LiteDashboardViewController {
-        return DashboardModuleBuilder(container: self).viewController()
+    func makeHomeViewController() -> HomeViewController {
+        return HomeModuleBuilder(container: self).viewController()
     }
 }

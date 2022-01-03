@@ -15,6 +15,9 @@ public protocol MessagesServiceType: AnyObject {
     func generateOTP<T>(action: String, mobileNumber: String?) -> RxSwift.Observable<T> where T : Decodable, T : Encodable
     func generateForgotOTP<T: Codable>(username: String) -> Observable<T>
     func verifyForgotOTP<T: Codable>(username: String, otp: String) -> Observable<T>
+    func generateOTP<T: Codable>(action: String) -> Observable<T>
+    func verifyOTP<T: Codable>(action: String, otp: String) -> Observable<T>
+    func getHelplineNumber<T: Codable>() -> Observable<T>
 }
 
 public class MessagesService: BaseService, MessagesServiceType {
@@ -71,6 +74,46 @@ public class MessagesService: BaseService, MessagesServiceType {
 
         let route = APIEndpoint(.put, apiConfig.messagesURL, "/api/otp/action/forgot-password",
                                 body: request, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func generateOTP<T: Codable>(action: String) -> Observable<T> {
+        //"action": "FORGOT_CARD_PIN"
+        let body = [
+            "action": action
+        ]
+
+        let route = APIEndpoint(.post,
+                                apiConfig.messagesURL,
+                                "/api/otp",
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+
+    public func verifyOTP<T: Codable>(action: String, otp: String) -> Observable<T> {
+        //"action": "FORGOT_CARD_PIN"
+        let body = [
+            "action": action,
+            "otp": otp
+        ]
+
+        let route = APIEndpoint(.put,
+                                apiConfig.messagesURL,
+                                "/api/otp",
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getHelplineNumber<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get,
+                                apiConfig.messagesURL,
+                                "/api/help-desk",
+                                headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }

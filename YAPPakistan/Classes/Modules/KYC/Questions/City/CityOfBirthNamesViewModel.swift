@@ -11,12 +11,15 @@ import YAPComponents
 
 class CityOfBirthNamesViewModel: KYCQuestionViewModel {
     private let kycRepository: KYCRepository!
+    var motherName: String = ""
 
     init(accountProvider: AccountProvider,
          kycRepository: KYCRepository,
-         strings: KYCStrings) {
+         strings: KYCStrings,
+         motherName: String) {
 
         self.kycRepository = kycRepository
+        self.motherName = motherName
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { YAPProgressHud.showProgressHud() }
         let requestCities = self.kycRepository.getCityOfBirthNames().share()
@@ -29,9 +32,13 @@ class CityOfBirthNamesViewModel: KYCQuestionViewModel {
         super.init(accountProvider: accountProvider, cellViewModel: cellViewModel, strings: strings)
 
         let verifyResult = nextSubject
-            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-            .flatMap { self.kycRepository.verifySecretQuestions(motherMaidenName: "Rida", cityOfBirth: "Karachi") }
-            .share()
+            .withLatestFrom(selectedItemSubject)
+            .flatMap({ $0.value })
+            .withUnretained(self)
+            .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
+            .flatMapLatest { `self`, city in
+                self.kycRepository.verifySecretQuestions(motherMaidenName: self.motherName, cityOfBirth: city)
+            }.share()
 
         let refreshAccountRequest = verifyResult.elements()
             .flatMap { [unowned self] _ in self.accountProvider.refreshAccount() }
@@ -39,7 +46,14 @@ class CityOfBirthNamesViewModel: KYCQuestionViewModel {
             .share()
 
         refreshAccountRequest
+            .withLatestFrom(selectedItemSubject)
+            .flatMap({ $0.value })
             .bind(to: successSubject)
+            .disposed(by: disposeBag)
+
+        requestCities.errors().map({ $0.localizedDescription })
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
 
         verifyResult.errors()

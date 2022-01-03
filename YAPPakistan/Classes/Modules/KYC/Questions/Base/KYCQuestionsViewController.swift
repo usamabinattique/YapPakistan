@@ -91,12 +91,12 @@ class KYCQuestionsViewController: UIViewController {
             .alignEdgesWithSuperview([.top, .left, .right], constants: [20, 20, 20])
 
         subHeadingLabel
-            .alignEdgesWithSuperview([.left, .right], constants: [20, 20])
             .toBottomOf(titleLabel, constant: 10)
+            .alignEdgesWithSuperview([.left, .right], constants: [20, 20])
 
         tableView
+            .toBottomOf(subHeadingLabel, constant: 8)
             .alignEdgesWithSuperview([.left, .right])
-            .toBottomOf(subHeadingLabel, constant: 10)
             //.toTopOf(nextButton, constant: 10)
 
         nextButton
@@ -111,8 +111,7 @@ class KYCQuestionsViewController: UIViewController {
 
     func bindViewModel() {
         viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
-            self?.showAlert(title: "", message: error,
-                            defaultButtonTitle: "common_button_ok".localized)
+            self?.showAlert(title: "", message: error, defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: rx.disposeBag)
 
         viewModel.outputs.optionViewModels
@@ -121,6 +120,10 @@ class KYCQuestionsViewController: UIViewController {
             guard let self = self else { return }
             cell.configure(with: self.themeService, viewModel: viewModel)
         }.disposed(by: rx.disposeBag)
+
+        tableView.rx.modelSelected(KYCQuestionCellViewModel.self)
+            .bind(to: viewModel.inputs.selectedItemObserver)
+            .disposed(by: rx.disposeBag)
 
         viewModel.outputs.isNextEnable
             .bind(to: nextButton.rx.isEnabled)
