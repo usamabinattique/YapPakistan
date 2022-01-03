@@ -30,7 +30,23 @@ class CardsViewController: UIViewController {
     private lazy var letsDoItLabel = UIFactory.makeButton(with: .regular).setHidden(true)
 
     fileprivate func updateButton() {
+        #warning("FIXME")
         let theme = themeService.attrs
+        iconContainer.backgroundColor = .white
+        if isCardBlocked {
+            letsDoItLabel.backgroundColor = UIColor(theme.primary)
+            letsDoItLabel.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
+            letsDoItLabel.setTitle("Order new card", for: .normal)
+            subTitleLabel.text = "This card is blocked"
+            if #available(iOS 13.0, *) {
+                clockEyeIcon.image = UIImage(systemName: "eye")
+            }
+            clockEyeIcon.tintColor = UIColor(theme.primary)
+            letsDoItLabel.isHidden = false
+            detailsIcon.isHidden = true
+            detailsButton.isHidden = true
+            return
+        }
         if isForSetPinFlow {
             if isUserBlocked {
                 letsDoItLabel.backgroundColor = UIColor(theme.primary)
@@ -60,10 +76,10 @@ class CardsViewController: UIViewController {
             }
             clockEyeIcon.tintColor = UIColor(theme.secondaryOrange)
         }
-        iconContainer.backgroundColor = .white
     }
     var isUserBlocked = false { didSet { updateButton() }}
     var isForSetPinFlow = false { didSet { updateButton() }}
+    var isCardBlocked = false { didSet { updateButton() }}
 
     // MARK: - Properties
     fileprivate var themeService: ThemeService<AppTheme>!
@@ -176,7 +192,7 @@ fileprivate extension CardsViewController {
             .toBottomOf(spacers[1])
             .centerHorizontallyInSuperview()
             .height(constant: 32)
-            .width(constant: 125)
+            .width(constant: 135)
 
         spacers[2]
             .toBottomOf(letsDoItLabel)
@@ -228,7 +244,14 @@ fileprivate extension CardsViewController {
             .bind(to: letsDoItLabel.rx.isHidden).disposed(by: rx.disposeBag)
 
         viewModel.outputs.isForSetPinFlow.withUnretained(self)
-            .subscribe(onNext: { `self`, value in self.isForSetPinFlow = value }).disposed(by: rx.disposeBag)
+            .subscribe(onNext: { `self`, value in self.isForSetPinFlow = value })
+            .disposed(by: rx.disposeBag)
+        viewModel.outputs.isCardBLocked.withUnretained(self)
+            .subscribe(onNext: { `self`, value in self.isCardBlocked = value })
+            .disposed(by: rx.disposeBag)
+        viewModel.outputs.isUserBlocked.withUnretained(self)
+            .subscribe(onNext: { `self`, value in self.isUserBlocked = value })
+            .disposed(by: rx.disposeBag)
 
         iconContainer.rx.tapGesture().skip(1).map({ _ in () })
             .bind(to: viewModel.inputs.eyeInfoObserver)
@@ -239,16 +262,16 @@ fileprivate extension CardsViewController {
             .merge(with: cardImage.rx.tapGesture().skip(1).map{ _ in () })
             .merge(with: detailsIcon.rx.tapGesture().skip(1).map{ _ in () })
             .merge(with: view.rx.swipeGesture(.up).skip(1).map{ _ in () })
+            .filter({ [weak self] in self?.isCardBlocked == false })
             .bind(to: viewModel.inputs.detailsObservers)
             .disposed(by: rx.disposeBag)
 
-        viewModel.outputs.isUserBlocked.withUnretained(self)
-            .subscribe(onNext: { `self`, value in
-                self.isUserBlocked = value
-            })
-            .disposed(by: rx.disposeBag)
-
-        letsDoItLabel.rx.tap.map{ _ in () }.filter({[unowned self] _ in self.isUserBlocked })
+        letsDoItLabel.rx.tap.map{ _ in () }
+            .filter({[unowned self] _ in self.isUserBlocked })
             .bind(to: viewModel.inputs.unfreezObserver).disposed(by: rx.disposeBag)
+
+        letsDoItLabel.rx.tap.map{ _ in () }
+            .filter({[unowned self] _ in self.isCardBlocked })
+            .bind(to: viewModel.inputs.orderNewObserver).disposed(by: rx.disposeBag)
     }
 }

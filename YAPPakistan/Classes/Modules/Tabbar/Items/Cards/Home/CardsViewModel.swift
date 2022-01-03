@@ -27,6 +27,7 @@ protocol CardsViewModelInputs {
     var eyeInfoObserver: AnyObserver<Void> { get }
     var detailsObservers: AnyObserver<Void> { get }
     var unfreezObserver: AnyObserver<Void> { get }
+    var orderNewObserver: AnyObserver<Void> { get }
 }
 
 protocol CardsViewModelOutputs {
@@ -40,6 +41,8 @@ protocol CardsViewModelOutputs {
     var isForSetPinFlow: Observable<Bool> { get }
     var localizedStrings: Observable<CardsViewModel.LocalizedStrings> { get }
     var isUserBlocked: Observable<Bool> { get }
+    var isCardBLocked: Observable<Bool> { get }
+    var orderNew: Observable<PaymentCard?> { get }
 }
 
 protocol CardsViewModelType {
@@ -59,6 +62,7 @@ class CardsViewModel: CardsViewModelType,
     var detailsObservers: AnyObserver<Void> { detailsDidTapSubject.asObserver() }
     var viewDidAppear: AnyObserver<Void> { viewDidAppearSubject.asObserver() }
     var unfreezObserver: AnyObserver<Void> { unfreezSubject.asObserver() }
+    var orderNewObserver: AnyObserver<Void> { orderNewSubject.asObserver() }
 
     // MARK: Outputs
     var eyeInfo: Observable<PaymentCard> {
@@ -71,6 +75,9 @@ class CardsViewModel: CardsViewModelType,
     var localizedStrings: Observable<LocalizedStrings> { localizedStringsSubject.asObservable() }
     var isForSetPinFlow: Observable<Bool> { setPinSubject.asObservable() }
     var isUserBlocked: Observable<Bool> { isUserBlockedSubject.asObservable() }
+
+    var orderNew: Observable<PaymentCard?> { orderNewSubject.withLatestFrom(cardDetailsSubject).asObservable() }
+    var isCardBLocked: Observable<Bool> { isCardBLockedSubject.asObservable() }
 
     // MARK: Subjects
     var unfreezSubject = PublishSubject<Void>()
@@ -86,6 +93,8 @@ class CardsViewModel: CardsViewModelType,
     var setPinSubject = BehaviorSubject(value: false)
     var localizedStringsSubject = PublishSubject<LocalizedStrings>()
     var isUserBlockedSubject = PublishSubject<Bool>()
+    var isCardBLockedSubject = BehaviorSubject<Bool>(value: false)
+    var orderNewSubject = PublishSubject<Void>()
 
     // MARK: - Properties
     private var accountProvider: AccountProvider!
@@ -159,8 +168,8 @@ class CardsViewModel: CardsViewModelType,
             .disposed(by: disposeBag)
 
         cardDetailsSubject
-            .map { $0?.deliveryStatus != .shipped }
-            .bind(to: hideLetsDoItSubject).disposed(by: disposeBag)
+            .map { $0?.status == .hotlisted || $0?.status == .expired }
+            .bind(to: isCardBLockedSubject).disposed(by: disposeBag)
 
         cardDetailsSubject.map { $0?.pinCreated == true }
             .bind(to: setPinSubject).disposed(by: disposeBag)

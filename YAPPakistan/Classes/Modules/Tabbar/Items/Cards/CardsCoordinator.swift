@@ -60,7 +60,18 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
+        viewController.viewModel.outputs.orderNew.unwrap().withUnretained(self)
+            .subscribe(onNext: { `self`, card in self.orderNew(cardDetaild: card) })
+            .disposed(by: rx.disposeBag)
+
         return result
+    }
+
+    func orderNew(cardDetaild: PaymentCard) {
+        let coordinator = ReorderCardCoordinator(root: navigationRoot,
+                                                 container: self.container,
+                                                 cardDetaild: cardDetaild)
+        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 
     func cardDetailView(_ paymentCard: PaymentCard?) {
