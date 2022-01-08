@@ -130,7 +130,7 @@ public final class UserSessionContainer {
 
     // MARK: Custom Views
     func makeRecentBeneficiaryView() -> RecentBeneficiaryView {
-        let recentBeneficiaryView = RecentBeneficiaryView()
+        let recentBeneficiaryView = RecentBeneficiaryView(with: themeService)
         recentBeneficiaryView.showsSaperator = false
         recentBeneficiaryView.translatesAutoresizingMaskIntoConstraints = false
         return recentBeneficiaryView
@@ -139,9 +139,8 @@ public final class UserSessionContainer {
     // MARK: Controllers
 
     func makeSendMoneyDashboardViewController() -> SendMoneyDashboardViewController {
-        
         let viewModel = SendMoneyDashboardViewModel(makeYapItRepository())
-        return SendMoneyDashboardViewController(themeService: themeService, viewModel: viewModel)
+        return SendMoneyDashboardViewController(themeService: themeService, viewModel: viewModel, recentBeneficiaryView:makeRecentBeneficiaryView())
     }
     
     func makeWaitingListController() -> WaitingListRankViewController {

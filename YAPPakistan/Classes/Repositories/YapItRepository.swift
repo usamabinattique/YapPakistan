@@ -29,10 +29,7 @@ class YapItRepository: YapItRepositoryType {
     }
     
     public func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>> {
-        Observable.create { observer in
-            observer.onNext([.mock])
-            return Disposables.create()
-        }.materialize()
+        return Observable.of([Y2YRecentBeneficiary.mock]).materialize()
         //return customersService.fetchRecentBeneficiaries().materialize()
     }
     

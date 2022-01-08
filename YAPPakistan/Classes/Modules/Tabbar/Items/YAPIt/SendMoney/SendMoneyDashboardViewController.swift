@@ -22,12 +22,12 @@ class SendMoneyDashboardViewController: UIViewController {
     
     private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center)
     
-    private lazy var recentBeneficiaryView: RecentBeneficiaryView = {
-        let view = RecentBeneficiaryView()
-        view.showsSaperator = false
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+//    private lazy var recentBeneficiaryView: RecentBeneficiaryView = {
+//        let view = RecentBeneficiaryView()
+//        view.showsSaperator = false
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        return view
+//    }()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -46,16 +46,16 @@ class SendMoneyDashboardViewController: UIViewController {
     //MARK: Properties
     
     private var themeService: ThemeService<AppTheme>
-//    private var recentBeneficiaryView: RecentBeneficiaryView!
+    private var recentBeneficiaryView: RecentBeneficiaryView!
     private var viewModel: SendMoneyDashboardViewModel!
     private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionModel<Int, ReusableCollectionViewCellViewModelType>>!
     
     //MARK: Initialization
     
-    init(themeService: ThemeService<AppTheme>, viewModel: SendMoneyDashboardViewModel) {
+    init(themeService: ThemeService<AppTheme>, viewModel: SendMoneyDashboardViewModel, recentBeneficiaryView: RecentBeneficiaryView) {
         self.viewModel = viewModel
         self.themeService = themeService
-//        self.recentBeneficiaryView = recentBeneficiaryView
+        self.recentBeneficiaryView = recentBeneficiaryView
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -78,6 +78,11 @@ class SendMoneyDashboardViewController: UIViewController {
         setupResources()
         setupTheme()
         setupLocalizedStrings()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel.inputs.refreshObserver.onNext(())
     }
     
     @objc internal override func onTapBackButton() {
@@ -122,7 +127,6 @@ fileprivate extension SendMoneyDashboardViewController {
         
         recentBeneficiaryView
             .alignEdgesWithSuperview([.left, .right])
-            .height(constant: 50)
         
         headingLabel.setContentHuggingPriority(.required, for: .vertical)
     }
@@ -152,7 +156,6 @@ fileprivate extension SendMoneyDashboardViewController {
         themeService.rx
             .bind({ UIColor($0.primaryDark)}, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark)}, to: [searchBarButtonItem.barItem.rx.tintColor])
-            .bind({ UIColor($0.error)}, to: [recentBeneficiaryView.rx.backgroundColor])
             .disposed(by: rx.disposeBag)
     }
     

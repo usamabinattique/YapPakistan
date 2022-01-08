@@ -19,11 +19,11 @@ public class RecentBeneficiaryView: UIView, ConfigurableView {
     
     // MARK: - Views
     
-    private lazy var leftLabel = UIFactory.makeLabel(font:.micro, alignment: .left) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .left)
+    private lazy var leftLabel = UIFactory.makeLabel(font:.micro, alignment: .left)
     
-    private lazy var showButton = UIFactory.makeButton(with: .micro, backgroundColor: .clear, title: "Show recent transfers") //UIButtonFactory.createButton(title: "Show recent transfers", backgroundColor: .clear, textColor: .primary)
+    private lazy var showButton = UIFactory.makeButton(with: .micro, backgroundColor: .clear, title: "Show recent transfers")
     
-    private lazy var hideButton =  UIFactory.makeButton(with: .micro, backgroundColor: .clear, title: "Hide") //UIButtonFactory.createButton(title: "Hide", backgroundColor: .clear, textColor: .primary)
+    private lazy var hideButton =  UIFactory.makeButton(with: .micro, backgroundColor: .clear, title: "Hide")
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -70,17 +70,16 @@ public class RecentBeneficiaryView: UIView, ConfigurableView {
     
     // MARK: - Initialization
     
-//    init(with theme: ThemeService<AppTheme>, viewModel: RecentBeneficiaryViewModelType){
-//        super.init(frame: CGRect.zero)
-//        self.viewModel = viewModel
-////        self.themeService = theme
-//        commonInit()
-//    }
-    
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(with theme: ThemeService<AppTheme>){
+        super.init(frame: CGRect.zero)
+        self.themeService = theme
         commonInit()
     }
+    
+//    public override init(frame: CGRect) {
+//        super.init(frame: frame)
+//        commonInit()
+//    }
     
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -159,8 +158,10 @@ private extension RecentBeneficiaryView {
         hideButton.titleLabel?.font = .micro
         
         backgroundColor = .clear
-        let theme = AppTheme.service(initial: .light)
-        saperator.backgroundColor = UIColor(theme.attrs.greyDark).withAlphaComponent(0.15)
+        saperator.backgroundColor = UIColor(themeService.attrs.greyDark).withAlphaComponent(0.15)
+        showButton.setTitleColor(UIColor(themeService.attrs.primary), for: .normal)
+        hideButton.setTitleColor(UIColor(themeService.attrs.primary), for: .normal)
+        leftLabel.textColor = UIColor(themeService.attrs.greyDark)
     }
 }
 

@@ -63,7 +63,7 @@ class SendMoneyDashboardViewModel: SendMoneyDashboardViewModelType, SendMoneyDas
 //    private let allCountriesSubject = BehaviorSubject<[SendMoneyBeneficiaryCountry]>(value: [])
 //    private let searchSubject = PublishSubject<Void>()
     private let viewDidObserverSubject = PublishSubject<Void>()
-//    private let sendMoneyBeneficiariesSubject = BehaviorSubject<[SendMoneyBeneficiary]>(value: [])
+    private let sendMoneyBeneficiariesSubject = BehaviorSubject<[SendMoneyBeneficiary]>(value: [])
     private let y2yRecentBeneficiariesSubject = BehaviorSubject<[Y2YRecentBeneficiary]>(value: [])
     private let y2yContactsSubject = BehaviorSubject<[YAPContact]>(value: [])
     private let recentBeneficiaries = BehaviorSubject<[RecentBeneficiaryType]>(value: [])
@@ -111,10 +111,23 @@ class SendMoneyDashboardViewModel: SendMoneyDashboardViewModelType, SendMoneyDas
 //            contactsManager.resetContactManager()
         }).disposed(by: disposeBag)
         
-        fetchRecentBeneficiaries(repository)
+        recentBeneficiaries.bind(to: recentBeneficiariesViewModel.inputs.recentBeneficiaryObserver).disposed(by: disposeBag)
         
+        fetchRecentBeneficiaries(repository)
+        makeRecentBeneficiaries()
     }
     
+}
+
+// MARK: - Beneficiary maneupulation
+
+private extension SendMoneyDashboardViewModel {
+    func makeRecentBeneficiaries() {
+        Observable.combineLatest(sendMoneyBeneficiariesSubject.map{ $0.filter{ $0.lastTranseferDate != nil } }.map{ $0 as [RecentBeneficiaryType] }, y2yRecentBeneficiariesSubject.map{ $0 as [RecentBeneficiaryType] })
+            .map{ Array(($0.0 + $0.1).sorted { $0.beneficiaryLasTransferDate > $1.beneficiaryLasTransferDate }.prefix(15)).indexed }
+            .bind(to: recentBeneficiaries)
+            .disposed(by: disposeBag)
+    }
 }
 
 // MARK: - Fetch data
@@ -149,6 +162,5 @@ private extension SendMoneyDashboardViewModel {
 //        sendMoneyBeneficiariesRequest.elements().bind(to: sendMoneyBeneficiariesSubject).disposed(by: disposeBag)
         y2yBeneficiariesRequest.elements().bind(to: y2yRecentBeneficiariesSubject).disposed(by: disposeBag)
 //        countriesRequest.elements().bind(to: allCountriesSubject).disposed(by: disposeBag)
-        
     }
 }
