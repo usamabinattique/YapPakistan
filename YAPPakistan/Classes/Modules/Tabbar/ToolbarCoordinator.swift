@@ -154,7 +154,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { `self`, value in
                 if case let ResultType.success(result) = value {
                     switch result {
-                    case .sendMoney: break  // self.sendMoney(root)
+                    case .sendMoney: self.sendMoney(root)
                     case .addMoney: break   // self.topup(root)
                     case .payBills: break   // self.y2y(root)
                 }
@@ -172,6 +172,15 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         self.coordinate(to: MoreCoordinator(root: root))
             .subscribe()
             .disposed(by: disposeBag)
+    }
+    
+    fileprivate func sendMoney(_ root: UIViewController) {
+        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container)).subscribe(onNext: { result in
+            if case ResultType.success = result {
+                root.dismiss(animated: true, completion: nil)
+                (root as? UITabBarController)?.selectedIndex = 0
+            }
+        }).disposed(by: disposeBag)
     }
 }
 

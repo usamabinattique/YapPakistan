@@ -122,11 +122,11 @@ public extension String {
         return phone
     }
 
-    func initialsImage(color: UIColor, font: UIFont, size: CGSize = CGSize(width: 200, height: 200)) -> UIImage {
+    func initialsImage(color: UIColor, font: UIFont? = nil, size: CGSize = CGSize(width: 200, height: 200)) -> UIImage {
         return initialsImage(backgroundColor: color.withAlphaComponent(0.15), font: font, textColor: color, size: size)
     }
 
-    func initialsImage(backgroundColor: UIColor, font: UIFont, textColor: UIColor, size: CGSize = CGSize(width: 200, height: 200)) -> UIImage {
+    func initialsImage(backgroundColor: UIColor, font: UIFont? = nil, textColor: UIColor, size: CGSize = CGSize(width: 200, height: 200)) -> UIImage {
         let nameLabel = UILabel()
         nameLabel.frame.size = size
         nameLabel.textColor = textColor

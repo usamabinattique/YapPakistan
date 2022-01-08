@@ -8,6 +8,12 @@
 import Foundation
 import RxSwift
 
+public enum RecentServicesType: String{
+    case Y2Y = "Y2Y"
+    case BankTransfer = "BANK_TRANSFER"
+    case None = ""
+}
+
 public protocol CustomerServiceType {
     func signUpEmail<T: Codable>( email: String,
                                   otpToken: String,
@@ -64,6 +70,9 @@ public protocol CustomerServiceType {
     func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T>
     func uploadSelfie<T: Codable>(_ selfie: (data: Data, format: String)) -> Observable<T>
     func setCardName<T: Codable>(cardName: String) -> Observable<T>
+    
+    func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T>
+    func fetchRecentBeneficiaries<T: Codable>(_ type:RecentServicesType) -> Observable<T>
 }
 
     
@@ -333,10 +342,24 @@ public class CustomersService: BaseService, CustomerServiceType {
 
         return self.request(apiClient: self.apiClient, route: route)
     }
+    
+    public func fetchRecentBeneficiaries<T: Codable>(_ type:RecentServicesType = .None) -> Observable<T> {
+        let params = ["type=": type.rawValue]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=", query: params, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=BANK_TRANSFER", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
 
 }
 
 // MARK: Helpers
+
 fileprivate extension CustomersService {
     func fileInfo(from format: String) -> (String, String, String) {
         switch format {
