@@ -33,7 +33,7 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = SendMoneyDashboardViewModel(container.makeYapItRepository())
         let viewController = container.makeSendMoneyDashboardViewController()
         
-        self.localRoot = UINavigationControllerFactory.createAppThemedNavigationController(viewController, UIColor(container.themeService.attrs.primary), UIFont.regular)
+        self.localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         
         self.root.present(self.localRoot, animated: true, completion: nil)
         
