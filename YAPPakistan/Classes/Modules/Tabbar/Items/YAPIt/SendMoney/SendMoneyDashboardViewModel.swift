@@ -111,9 +111,10 @@ class SendMoneyDashboardViewModel: SendMoneyDashboardViewModelType, SendMoneyDas
 //            contactsManager.resetContactManager()
         }).disposed(by: disposeBag)
         
+        fetchRecentBeneficiaries(repository)
+        
         recentBeneficiaries.bind(to: recentBeneficiariesViewModel.inputs.recentBeneficiaryObserver).disposed(by: disposeBag)
         
-        fetchRecentBeneficiaries(repository)
         makeRecentBeneficiaries()
     }
     
@@ -151,7 +152,6 @@ private extension SendMoneyDashboardViewModel {
         y2yBeneficiariesRequest.map{ _ in }
             .subscribe(onNext: { respons in
                 YAPProgressHud.hideProgressHud()
-                print(respons)
             })
             .disposed(by: disposeBag)
         

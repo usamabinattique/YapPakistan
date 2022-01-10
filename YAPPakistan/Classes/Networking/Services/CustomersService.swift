@@ -71,8 +71,9 @@ public protocol CustomerServiceType {
     func uploadSelfie<T: Codable>(_ selfie: (data: Data, format: String)) -> Observable<T>
     func setCardName<T: Codable>(cardName: String) -> Observable<T>
     
-    func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T>
     func fetchRecentBeneficiaries<T: Codable>(_ type:RecentServicesType) -> Observable<T>
+    func fetchRecentY2YBeneficiaries<T: Codable>(_ type:RecentServicesType) -> Observable<T>
+    func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T>
 }
 
     
@@ -344,8 +345,14 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func fetchRecentBeneficiaries<T: Codable>(_ type:RecentServicesType = .None) -> Observable<T> {
-        let params = ["type=": type.rawValue]
-        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=", query: params, headers: authorizationProvider.authorizationHeaders)
+        let params = ["type": type.rawValue]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent", query: params, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchRecentY2YBeneficiaries<T: Codable>(_ type:RecentServicesType) -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=Y2Y", headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
