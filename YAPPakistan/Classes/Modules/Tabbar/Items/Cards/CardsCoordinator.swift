@@ -235,7 +235,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         navigationRoot.present(viewController, animated: true, completion: nil)
 
         viewModel.close.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
+            .subscribe(onNext: { `self`,_ in
                 self.navigationRoot.dismiss(animated: true, completion: nil)
             })
             .disposed(by: rx.disposeBag)

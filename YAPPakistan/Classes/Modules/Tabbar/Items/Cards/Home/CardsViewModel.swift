@@ -151,7 +151,7 @@ class CardsViewModel: CardsViewModelType,
     func resolveIfCompleted(_ completionStatus: Observable<Bool>) {
         let cardsFetched = completionStatus.filter{ $0 }.withUnretained(self)
             .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
-            .flatMap { $0.0.cardsRepository.getCards() }
+                .flatMap { $0.0.cardsRepository.getCards() }
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
 
