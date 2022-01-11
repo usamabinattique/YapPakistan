@@ -257,11 +257,14 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
                                                   paymentCard: paymentCard)
         let viewController = CardDetailBottomViewController(viewModel: viewModel, themeService: container.themeService)
         viewController.modalPresentationStyle = .overCurrentContext
+        navigationRoot.tabBarController?.tabBar.isHidden = true
         navigationRoot.present(viewController, animated: true, completion: nil)
 
         viewModel.outputs.close.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
-                self.navigationRoot.dismiss(animated: true, completion: nil)
+                self.navigationRoot.dismiss(animated: true) {
+                    self.navigationRoot.tabBarController?.tabBar.isHidden = false
+                }
             })
             .disposed(by: rx.disposeBag)
     }
