@@ -11,7 +11,7 @@
 import Foundation
 
 
-enum TransactionProductCode: String, Codable {
+public enum TransactionProductCode: String, Codable {
     case y2yTransfer = "P003"
     case removeFundsSuplementaryCard = "P004"
     case debitCardReorder = "P005"
@@ -53,7 +53,7 @@ enum TransactionProductCode: String, Codable {
     case unknown
 }
 
-extension TransactionProductCode {
+public extension TransactionProductCode {
     var isCash: Bool {
         [.cashPayout, .atmWithdrawl, .atmDeposit, .masterCardATMWithdrawl, .cashAdvance, .fundWithdrawl, .fundsWithdrawlByCheque].contains(self)
     }
@@ -104,13 +104,13 @@ extension TransactionProductCode {
     
 }
 
-extension TransactionProductCode {
+public extension TransactionProductCode {
     init(from decoder: Decoder) throws {
         self = try TransactionProductCode(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
 }
 
-extension TransactionProductCode {
+public extension TransactionProductCode {
     var localized: String {
         switch self {
         case .y2yTransfer:
@@ -228,7 +228,7 @@ extension TransactionProductCode {
     }
 }
 
-enum TransactionStatus: String {
+public enum TransactionStatus: String {
     case pending = "PENDING"
     case inProgress = "IN_PROGRESS"
     case completed = "COMPLETED"
@@ -237,7 +237,7 @@ enum TransactionStatus: String {
     case none = "NONE"
 }
 
-enum DashboardResult {
+public enum DashboardResult {
     case logout
     case switchAccount
     case none

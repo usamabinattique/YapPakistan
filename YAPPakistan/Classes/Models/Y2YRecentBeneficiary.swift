@@ -51,7 +51,7 @@ extension Y2YRecentBeneficiary: Codable {
 
 extension Y2YRecentBeneficiary {
     static var mock: Y2YRecentBeneficiary {
-        return Y2YRecentBeneficiary(name: "Zain Ul Abe Din", phoneNumber: "", photoUrl: nil, uuid: "", accountType: .b2cAccount, index: 0, lastTranseferDate: nil, countryCode: "")
+        return Y2YRecentBeneficiary(name: "Muhammad Umair", phoneNumber: "", photoUrl: nil, uuid: "", accountType: .b2cAccount, index: 0, lastTranseferDate: nil, countryCode: "")
     }
 
     static func moked(withName name: String) -> Y2YRecentBeneficiary {

@@ -11,13 +11,13 @@
 
 import Foundation
 
-enum TransactionType: String, Codable {
+public enum TransactionType: String, Codable {
     case debit = "DEBIT"
     case credit = "CREDIT"
     case unknown = "NA"
 }
 
-enum TransactionState: String, Codable {
+public enum TransactionState: String, Codable {
     case fssStart = "FSS_START"
     case fssNotificationPending = "FSS_NOTIFICATION_PENDING"
     case rakCutOffTimeHold = "RAK_CUT_OFF_TIME_HOLD"
@@ -30,7 +30,7 @@ enum TransactionState: String, Codable {
     }
 }
 
-extension TransactionType {
+public extension TransactionType {
     var icon: UIImage? {
         switch self {
         case .credit:

@@ -32,6 +32,8 @@ public struct YAPContact: Equatable {
             let rhsUUID = rhs.yapAccountDetails?.first?.uuid else { return false }
         return lhsUUID.lowercased() == rhsUUID.lowercased()
     }
+    
+    public static var mock: YAPContact = YAPContact(name: "Test", phoneNumber: "+923001231235", countryCode: "0092", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil)
 }
 
 extension YAPContact: Codable {

@@ -15,6 +15,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     private let window: UIWindow
     private let result = PublishSubject<ResultType<Void>>()
     private var root: UINavigationController!
+    private var contactsManager: ContactsManager!
 
     private let disposeBag = DisposeBag()
 
@@ -27,6 +28,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         self.window = window
         super.init()
         self.initializeRoot()
+        self.contactsManager = ContactsManager(repository: container.makeY2YRepository())
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -175,13 +177,13 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
     
     fileprivate func sendMoney(_ root: UIViewController) {
-        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container)).subscribe(onNext: { result in
+        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager)).subscribe(onNext: { result in
             if case ResultType.success = result {
                 root.dismiss(animated: true, completion: nil)
                 (root as? UITabBarController)?.selectedIndex = 0
             }
         }).disposed(by: disposeBag)
-    }
+                   }
 }
 
 // MARK: Helpers

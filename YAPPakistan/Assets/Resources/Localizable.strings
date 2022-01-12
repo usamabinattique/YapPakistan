@@ -173,6 +173,21 @@
 "screen_transaction_filter_display_apply_button_title" = "Apply filters";
 "screen_transaction_filter_display_clear_button_title" = "Clear filters";
 
+// MARK: - Y2Y Screen
+"screen_y2y_display_text_screen_title" = "Send to a YAP contact";
+"screen_y2y_display_text_prompt" = "Who do you want to send money to?";
+"screen_y2y_display_text_recent_transfers" = "Recent transfers";
+"screen_y2y_display_text_search" = "Search";
+"screen_y2y_display_button_yap_contacts" = "YAP contacts";
+"screen_y2y_display_button_all_contacts" = "All contacts";
+"screen_y2y_display_text_no_yap_contacts" = "​​Looks like none of your friends use YAP yet. Invite them now to make sending money easier than ever";
+"screen_y2y_display_button_invite_now" = "Invite now";
+"screen_y2y_display_button_invite" = "Invite";
+"screen_y2y_display_text_yap_contacts" = "%d YAP contacts";
+"screen_y2y_display_text_yap_contact" = "%d YAP contact";
+"screen_y2y_display_text_invite_phone_contacts" = "Invite contacts from your address book";
+"screen_y2y_display_text_invite_no_phone_contacts" = "Tell your friends about YAP so you can send and receive money instantly!";
+
 //MARK: Report Cards
 "screen_report_card_display_text_title" = "Report lost or stolen card";
 "screen_report_card_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";

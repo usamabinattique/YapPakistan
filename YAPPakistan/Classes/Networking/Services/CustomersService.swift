@@ -72,8 +72,10 @@ public protocol CustomerServiceType {
     func setCardName<T: Codable>(cardName: String) -> Observable<T>
     
     func fetchRecentBeneficiaries<T: Codable>(_ type:RecentServicesType) -> Observable<T>
-    func fetchRecentY2YBeneficiaries<T: Codable>(_ type:RecentServicesType) -> Observable<T>
+    func fetchRecentY2YBeneficiaries<T: Codable>() -> Observable<T>
     func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T>
+    
+    func classifyContacts<T: Codable>(contacts: [(name: String, phoneNumber: String, email: String?, photoUrl: String?, countryCode: String)]) -> Observable<T>
 }
 
     
@@ -351,14 +353,27 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func fetchRecentY2YBeneficiaries<T: Codable>(_ type:RecentServicesType) -> Observable<T> {
-        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=Y2Y", headers: authorizationProvider.authorizationHeaders)
+    public func fetchRecentY2YBeneficiaries<T: Codable>() -> Observable<T> {
+        let params = ["type": "Y2Y"]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent", query: params, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=BANK_TRANSFER", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func classifyContacts<T: Codable>(contacts: [(name: String, phoneNumber: String, email: String?, photoUrl: String?, countryCode: String)]) -> Observable<T> {
+        var allContacts = [Contact]()
+        for contact in contacts {
+
+            allContacts.append(Contact(name: contact.name, phoneNumber: contact.phoneNumber, countryCode: contact.countryCode, email: contact.email, photoUrl: contact.photoUrl))
+        }
+
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/y2y-beneficiaries", body: allContacts, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
