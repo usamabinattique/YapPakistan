@@ -47,6 +47,7 @@ public class BaseService: Service {
 
                 errorObservable.map { error -> Void in
                     if case NetworkErrors.authError = error {
+                        print("authentication error found in base services )")
                         let notification = Notification(name: Notification.Name(rawValue: "authentication_required"))
                         NotificationCenter.default.post(notification)
                     }
