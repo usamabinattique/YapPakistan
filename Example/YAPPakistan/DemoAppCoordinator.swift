@@ -24,10 +24,12 @@ public class DemoAppCoordinator: Coordinator<ResultType<Void>> {
         self.navigationController = UINavigationController()
         super.init()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(logout), name: NSNotification.Name("LOGOUT"), object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(logout), name: NSNotification.Name("LOGOUT"), object: nil)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(logout), name: NSNotification.Name.init(.logout), object: nil)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(logout), name: NSNotification.Name("authentication_required"), object: nil)
+     //   NotificationCenter.default.addObserver(self, selector: #selector(logout), name: NSNotification.Name("authentication_required"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(logout), name: NSNotification.Name.init(.authenticationRequired), object: nil)
     }
 
     @objc func logout() {
