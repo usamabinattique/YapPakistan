@@ -31,8 +31,7 @@ public class Y2YRepository: Y2YRepositoryType {
     }
     
     public func classifyContacts(_ contacts: [Contact])-> Observable<Event<[YAPContact]>> {
-        return Observable.of([YAPContact.mock]).materialize()
-        //return customersService.classifyContacts(contacts: contacts.map { (name: $0.name, phoneNumber: $0.phoneNumber, email: $0.email, photoUrl: $0.photoUrl, countryCode: $0.countryCode )}).materialize()
+        return customersService.classifyContacts(contacts: contacts.map { (name: $0.name, phoneNumber: $0.mobileNo, email: $0.email, photoUrl: $0.photoUrl, countryCode: $0.countryCode )}).materialize()
     }
     
     public func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>> {
@@ -69,28 +68,29 @@ public class Y2YRepository: Y2YRepositoryType {
 //    }
 }
 
-//public class MockY2YRepository: Y2YRepositoryType {
+public class MockY2YRepository: Y2YRepositoryType {
 //    public func coolingPeriodTransactionReminder(for beneficiaryId: String, beneficiaryCreationDate: String?, beneficiaryName: String, amount: String) -> Observable<Event<String?>> {
 //        Observable.create { observer in
 //            observer.onNext(nil)
 //            return Disposables.create()
 //        }.materialize()
 //    }
-//
-//    public func classifyContacts(_ contacts: [Contact]) -> Observable<Event<[YAPContact]>> {
+
+    public func classifyContacts(_ contacts: [Contact]) -> Observable<Event<[YAPContact]>> {
+        return Observable.of(YAPContact.mock).materialize()
 //        Observable.create { observer in
 //            observer.onNext([YAPContact.init(name: "John Doe", phoneNumber: "+15417543010", countryCode: "+1", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil)])
 //            return Disposables.create()
 //        }.materialize()
-//    }
-//
-//    public func fetchRecentBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>> {
-//        Observable.create { observer in
-//            observer.onNext([.mock])
-//            return Disposables.create()
-//        }.materialize()
-//    }
-//
+    }
+
+    public func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>> {
+        Observable.create { observer in
+            observer.onNext([.mock])
+            return Disposables.create()
+        }.materialize()
+    }
+
 //    public func tranferFunds(uuid: String, name: String, amount: String, note: String?) -> Observable<Event<Y2YTransactionResponse>> {
 //        Observable.create { observer in
 //            observer.onNext(Y2YTransactionResponse.init(transactionId: "", balance: "2252", currency: "AED"))
@@ -125,4 +125,4 @@ public class Y2YRepository: Y2YRepositoryType {
 //            return Disposables.create()
 //        }.materialize()
 //    }
-//}
+}

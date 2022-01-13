@@ -253,14 +253,14 @@ extension ContactsManager {
 
 public struct Contact: Codable {
     public let name: String
-    public let phoneNumber: String
+    public let mobileNo: String
     public let countryCode: String
     public let email: String?
     public let photoUrl: String?
     
     init(name: String, phoneNumber: String, countryCode: String, email: String?, photoUrl: String?) {
         self.name = name
-        self.phoneNumber = phoneNumber
+        self.mobileNo = phoneNumber
         self.countryCode = countryCode
         self.email = email
         self.photoUrl = photoUrl
@@ -279,11 +279,11 @@ public struct Contact: Codable {
 extension Contact: Hashable {
     
     public static func == (lhs: Contact, rhs: Contact) -> Bool {
-        return lhs.phoneNumber == rhs.phoneNumber
+        return lhs.mobileNo == rhs.mobileNo
     }
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(phoneNumber)
+        hasher.combine(mobileNo)
         
     }
 }
