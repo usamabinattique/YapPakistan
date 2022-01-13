@@ -221,34 +221,6 @@ extension String {
     }
 }
 
-// Database setup
-extension ContactsManager {
-    
-//    func setupFRC() {
-//        entityHandler.delegate = self
-//        try? entityHandler.fetchRequest()
-//    }
-    
-//    func createYapContacts(from dbContacts: [CDContact]) {
-//
-//        let yapContacts = dbContacts.reduce(into: [YAPContact](), { (array, contact) in
-//            var yapContact = YAPContact(with: contact)
-//            yapContact.setThumbnailData(self.thumbnails[yapContact.countryCode + yapContact.phoneNumber ])
-//            array.append(yapContact)
-//        })
-//
-//        let dict = yapContacts.reduce(into: [:]) { counts, letter in
-//            counts[letter.phoneNumber] = letter
-//        }
-//
-//        let uniqueAaray = dict.keys.compactMap { Key in
-//            return dict[Key]
-//        }
-//
-//        self.resultSubject.onNext(uniqueAaray.sorted(by: { $0.name < $1.name }))
-//    }
-}
-
 // MARK: Contact
 
 public struct Contact: Codable {
@@ -285,40 +257,5 @@ extension Contact: Hashable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(mobileNo)
         
-    }
-}
-
-extension ContactsManager {
-    
-    public func syncContactsInBackground() {
-//        let cdContacts = entityHandler.fetchContacts() ?? []
-//        let contacts = self.convertCDContacts(cdContacts: cdContacts)
-//        let contactsSyncingRequest = self.sendRequest(forContacts: contacts)
-        
-//        contactsSyncingRequest.elements().subscribe(onNext: { [weak self] response in
-//            self?.updateSyncedContacts(contacts: response)
-//        }).disposed(by: disposeBag)
-    }
-    
-//    private func convertCDContacts(cdContacts: [CDContact]) -> [Contact] {
-//        var contacts: [Contact] = []
-//        for cdContact in cdContacts {
-//            if let contact = Contact(cdContact: cdContact) {
-//                contacts.append(contact)
-//            }
-//        }
-//        return contacts
-//    }
-    
-    private func updateSyncedContacts(contacts: [YAPContact]) {
-//        guard let cdContacts = entityHandler.fetchContacts() else { return }
-//        for contact in contacts {
-//            if let cdContact = cdContacts.filter({ $0.phoneNumber == contact.phoneNumber && $0.name == contact.name && $0.countryCode == contact.countryCode }).first {
-//                if cdContact.isYapUser != contact.isYapUser {
-//                    cdContact.isYapUser = contact.isYapUser
-//                }
-//            }
-//        }
-//        entityHandler.update()
     }
 }

@@ -35,9 +35,9 @@ public struct YAPContact: Equatable {
     
     public static var mock: [YAPContact] = [YAPContact(name: "Test1", phoneNumber: "+923001231231", countryCode: "0092", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil),
                                             YAPContact(name: "Test2", phoneNumber: "+923001231232", countryCode: "0092", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil),
-                                            YAPContact(name: "Test3", phoneNumber: "+923001231233", countryCode: "0092", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil),
+                                            YAPContact(name: "Test3", phoneNumber: "+923001231233", countryCode: "0092", email: nil, isYapUser: false, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil),
                                             YAPContact(name: "Test4", phoneNumber: "+923001231234", countryCode: "0092", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil),
-                                            YAPContact(name: "Test5", phoneNumber: "+923001231235", countryCode: "0092", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil),
+                                            YAPContact(name: "Test5", phoneNumber: "+923001231235", countryCode: "0092", email: nil, isYapUser: false, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil),
                                             YAPContact(name: "Test6", phoneNumber: "+923001231236", countryCode: "0092", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil),
                                             YAPContact(name: "Test7", phoneNumber: "+923001231237", countryCode: "0092", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: nil)]
 }

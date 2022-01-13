@@ -22,26 +22,22 @@ class Y2YContactCell: RxUITableViewCell {
         return imageView
     }()
     
-    private lazy var name = UIFactory.makeLabel(font: .small)// .primaryDark
+    private lazy var name = UIFactory.makeLabel(font: .small)
     
-    private lazy var phoneNumber = UIFactory.makeLabel(font: .micro) // .grey
+    private lazy var phoneNumber = UIFactory.makeLabel(font: .micro)
     
     private lazy var nameStack = UIFactory.makeStackView(axis: .vertical, alignment: .leading, distribution: .fill, spacing: 4, arrangedSubviews: [name, phoneNumber])
     
     private lazy var badgeStack = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 0, arrangedSubviews: [primaryBadge, goldBadge, blackBadge])
     
-    private lazy var primaryBadge = UIFactory.makeImageView(contentMode: .center)
-    //UIImageViewFactory.createImageView(mode: .center, image: UIImage.sharedImage(named: "icon_primary_badge"))
-    private lazy var goldBadge = UIFactory.makeImageView(contentMode: .center)
-    //UIImageViewFactory.createImageView(mode: .center, image: UIImage.sharedImage(named: "icon_gold_badge"))
-    private lazy var blackBadge = UIFactory.makeImageView(contentMode: .center)
-    //UIImageViewFactory.createImageView(mode: .center, image: UIImage.sharedImage(named: "icon_black_badge"))
+    private lazy var primaryBadge = UIFactory.makeImageView(contentMode: .scaleAspectFill)
+    private lazy var goldBadge = UIFactory.makeImageView(contentMode: .scaleAspectFill)
+    private lazy var blackBadge = UIFactory.makeImageView(contentMode: .scaleAspectFill)
     
     private lazy var inviteButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
         button.setTitle("screen_y2y_display_button_invite".localized, for: .normal)
-        button.setTitleColor(.blue, for: .normal)
         button.titleLabel?.font = .small
         button.contentHorizontalAlignment = .left
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -88,6 +84,7 @@ class Y2YContactCell: RxUITableViewCell {
         self.themeService = themeService
         bindViews()
         setupTheme()
+        setupResources()
     }
     
 }
@@ -118,7 +115,7 @@ private extension Y2YContactCell {
         
         primaryBadge
             .height(constant: 24)
-            .width(constant: 17)
+            .width(constant: 24)
         
         goldBadge
             .height(with: .height, ofView: primaryBadge)
@@ -143,7 +140,14 @@ private extension Y2YContactCell {
         themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: [name.rx.textColor])
             .bind({ UIColor($0.grey) }, to: [phoneNumber.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [inviteButton.rx.titleColor(for: .normal)])
             .disposed(by: rx.disposeBag)
+    }
+    
+    func setupResources() {
+        primaryBadge.image = UIImage(named: "icon_primary_badge", in: .yapPakistan)
+        goldBadge.image = UIImage(named: "icon_gold_badge", in: .yapPakistan)
+        blackBadge.image = UIImage(named: "icon_black_badge", in: .yapPakistan)
     }
 }
 

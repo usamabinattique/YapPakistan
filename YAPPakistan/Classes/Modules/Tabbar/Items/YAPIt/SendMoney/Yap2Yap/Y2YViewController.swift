@@ -245,6 +245,8 @@ fileprivate extension Y2YViewController {
             .bind({ UIColor($0.backgroundColor)}, to: [noYapContactView.rx.backgroundColor])
             .bind({ UIColor($0.greyDark)}, to: [noYapContactTitle.rx.textColor])
             .bind({ UIColor($0.primaryDark)}, to: [backButton.rx.tintColor])
+            .bind({ UIColor($0.backgroundColor)}, to: [inviteButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primary)}, to: [inviteButton.rx.backgroundColor])
             .disposed(by: rx.disposeBag)
         
         view.backgroundColor = .white
