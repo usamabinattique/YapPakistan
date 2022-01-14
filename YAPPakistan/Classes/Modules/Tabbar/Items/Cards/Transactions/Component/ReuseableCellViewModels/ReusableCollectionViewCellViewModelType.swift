@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol ReusableCollectionViewCellViewModelType {
+public protocol ReusableCollectionViewCellViewModelType {
     var reusableIdentifier: String { get }
 }

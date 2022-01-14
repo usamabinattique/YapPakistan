@@ -33,3 +33,12 @@ extension Reactive where Base: UIView {
         }
     }
 }
+
+extension Reactive where Base: UIView {
+    /// Bindable sink for `isShimmerOn` property.
+    public var isShimmerOn: Binder<Bool> {
+        return Binder(self.base) { view, shimmering in
+            view.isShimmerOn = shimmering
+        }
+    }
+}

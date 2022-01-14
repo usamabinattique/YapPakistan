@@ -10,6 +10,7 @@ import Foundation
 import RxSwift
 import RxSwiftExt
 import Alamofire
+import YAPCore
 
 public class BaseService: Service {
     // MARK: PROPERTIES
@@ -47,8 +48,13 @@ public class BaseService: Service {
 
                 errorObservable.map { error -> Void in
                     if case NetworkErrors.authError = error {
-                        let notification = Notification(name: Notification.Name(rawValue: "authentication_required"))
-                        NotificationCenter.default.post(notification)
+                        print("authentication error found in base services )")
+//                        let notification = Notification(name: Notification.Name(rawValue: "authentication_required"))
+//                        NotificationCenter.default.post(notification)
+//                        let name = Notification.Name.init(.au)
+//                        NotificationCenter.default.post(name: name, object: unreadMessagesCount)
+                        let name = Notification.Name.init(.authenticationRequired)
+                        NotificationCenter.default.post(name: name,object: nil)
                     }
                     throw error
                 }
@@ -79,7 +85,8 @@ public class BaseService: Service {
                 if case NetworkErrors.authError = error { return true }
                 throw error
             }.flatMap { _ in
-                Observable.of(Notification(name: Notification.Name(rawValue: "authentication_required"))).do(onNext: { notification in NotificationCenter.default.post(notification) }).map { _ in }
+                Observable.of(Notification.Name.init(.authenticationRequired)).do(onNext: { notification in
+                    NotificationCenter.default.post(name: notification,object: nil) }).map { _ in }
             }
         }
         .map { apiResponse -> T in

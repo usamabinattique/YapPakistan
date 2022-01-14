@@ -88,7 +88,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.result
             .withUnretained(self)
-            .subscribe(onNext: { $0.0.resultSuccess() })
+           .subscribe(onNext: {  $0.0.resultSuccess() })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.completeVerification
@@ -104,7 +104,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 
         if isTrue {
 
+// <<<<<<< Updated upstream:YAPPakistan/Classes/Modules/Tabbar/Items/Home/HomeCoordinator.swift
         coordinate(to: KYCCoordinator(container: kycContainer, root: self.navigationRoot))
+// =======
+//        coordinate(to: KYCCoordinator(container: kycContainer, root: self.root))
+// >>>>>>> Stashed changes:YAPPakistan/Classes/Modules/LiteDashboard/LiteDashboardCoordinator.swift
             .subscribe(onNext: { result in
                 switch result {
                 case .success:
@@ -118,12 +122,21 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 
             viewController.viewModel.outputs.back.withUnretained(self)
                 .subscribe(onNext: { `self`, _ in
+// <<<<<<< Updated upstream:YAPPakistan/Classes/Modules/Tabbar/Items/Home/HomeCoordinator.swift
                     self.root.setViewControllers([self.navigationRoot.viewControllers[0]], animated: true)
                 })
                 .disposed(by: rx.disposeBag)
 
             self.navigationRoot.pushViewController(viewController, animated: true)
             self.navigationRoot.setNavigationBarHidden(true, animated: true)
+//=======
+//                    self.root.setViewControllers([self.root.viewControllers[0]], animated: true)
+//                })
+//                .disposed(by: rx.disposeBag)
+//
+//            root.pushViewController(viewController, animated: true)
+//            root.setNavigationBarHidden(true, animated: true)
+//>>>>>>> Stashed changes:YAPPakistan/Classes/Modules/LiteDashboard/LiteDashboardCoordinator.swift
         }
     }
 }
@@ -144,8 +157,8 @@ extension HomeCoodinator {
     }
 
     fileprivate func resultSuccess() {
-        NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
-        // self.result.onNext( ResultType.success(()) )
-        // self.result.onCompleted()
+       // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        let name = Notification.Name.init(.logout)
+        NotificationCenter.default.post(name: name,object: nil)
     }
 }

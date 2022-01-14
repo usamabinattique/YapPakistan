@@ -205,7 +205,3 @@ private extension TransactionFilterViewController {
         }).disposed(by: rx.disposeBag)
     }
 }
-
-public protocol ReusableTableViewCellViewModelType {
-    var reusableIdentifier: String { get }
-}

@@ -12,8 +12,6 @@ import RxSwift
 import YAPComponents
 /// import AppDatabase
 
-typealias ImageWithURL = (String?, UIImage?)
-
 protocol TransactionsTableViewCellViewModelInputs {
     
 }

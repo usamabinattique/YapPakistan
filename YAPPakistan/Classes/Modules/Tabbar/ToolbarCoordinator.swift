@@ -15,6 +15,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     private let window: UIWindow
     private let result = PublishSubject<ResultType<Void>>()
     private var root: UINavigationController!
+    private var contactsManager: ContactsManager!
 
     private let disposeBag = DisposeBag()
 
@@ -27,6 +28,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         self.window = window
         super.init()
         self.initializeRoot()
+        self.contactsManager = ContactsManager(repository: container.makeY2YRepository())
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -154,7 +156,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { `self`, value in
                 if case let ResultType.success(result) = value {
                     switch result {
-                    case .sendMoney: break  // self.sendMoney(root)
+                    case .sendMoney: self.sendMoney(root)
                     case .addMoney: break   // self.topup(root)
                     case .payBills: break   // self.y2y(root)
                 }
@@ -173,6 +175,15 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
             .subscribe()
             .disposed(by: disposeBag)
     }
+    
+    fileprivate func sendMoney(_ root: UIViewController) {
+        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager)).subscribe(onNext: { result in
+            if case ResultType.success = result {
+                root.dismiss(animated: true, completion: nil)
+                (root as? UITabBarController)?.selectedIndex = 0
+            }
+        }).disposed(by: disposeBag)
+                   }
 }
 
 // MARK: Helpers
@@ -194,7 +205,9 @@ extension TabbarCoodinator {
     }
 
     fileprivate func resultSuccess() {
-        NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+      //  NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        let name = Notification.Name.init(.logout)
+        NotificationCenter.default.post(name: name,object: nil)
         // self.result.onNext( ResultType.success(()) )
         // self.result.onCompleted()
     }

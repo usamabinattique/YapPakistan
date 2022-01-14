@@ -7,6 +7,7 @@
 
 import UIKit
 import RxSwift
+import RxTheme
 
 open class RxUICollectionViewCell: UICollectionViewCell, ReusableView {
     
@@ -18,7 +19,7 @@ open class RxUICollectionViewCell: UICollectionViewCell, ReusableView {
         disposeBag = DisposeBag()
     }
     
-    open func configure(with viewModel: Any) {
+    open func configure(with viewModel: Any, theme : ThemeService<AppTheme>) {
         fatalError("Configure with viewModel must be implemented.")
     }
     

@@ -58,6 +58,19 @@ public final class UserSessionContainer {
 
     // MARK: Repositories
 
+    func makeYapItRepository() -> YapItRepository {
+        let service = makeCustomersService()
+        return YapItRepository(customersService: service)
+    }
+    
+    func makeY2YRepository() -> Y2YRepository {
+        return Y2YRepository(customersService: makeCustomersService(), transactionService: makeTransactionsService())
+    }
+    
+    func makeYapInviteFriendRepository() -> YAPInviteFriendRepository {
+        return YAPInviteFriendRepository(customersService: makeCustomersService(), accountProvider: makeAccountProvider())
+    }
+    
     func makeTransactionsRepository() -> TransactionsRepository {
         let service = makeTransactionsService()
         return TransactionsRepository(transactionService: service)
@@ -122,9 +135,23 @@ public final class UserSessionContainer {
                                messagesService: messagesService,
                                transactionsService: transactionsService)
     }
+    
+    // MARK: Account Provider
+    
+    func makeAccountProvider() -> AccountProvider {
+        return AccountProvider(repository: makeAccountRepository())
+    }
 
+    // MARK: Custom Views
+    func makeRecentBeneficiaryView() -> RecentBeneficiaryView {
+        let recentBeneficiaryView = RecentBeneficiaryView(with: themeService)
+        recentBeneficiaryView.showsSaperator = false
+        recentBeneficiaryView.translatesAutoresizingMaskIntoConstraints = false
+        return recentBeneficiaryView
+    }
+    
     // MARK: Controllers
-
+    
     func makeWaitingListController() -> WaitingListRankViewController {
         let onBoardingRepository = makeOnBoardingRepository()
         let viewModel = WaitingListRankViewModel(accountProvider: accountProvider, referralManager: parent.referralManager, onBoardingRepository: onBoardingRepository)

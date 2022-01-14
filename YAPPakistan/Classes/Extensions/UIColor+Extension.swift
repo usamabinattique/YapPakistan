@@ -27,3 +27,20 @@ extension UIColor {
         self.init(red: CGFloat(r) / 255, green: CGFloat(g) / 255, blue: CGFloat(b) / 255, alpha: CGFloat(a) / 255)
     }
 }
+
+public extension UIColor {
+    static func colorFor(listItemIndex: Int) -> UIColor {
+        switch listItemIndex % 6 {
+        case 0: return .green//.primarySoft
+        case 1: return .green//.secondaryOrange
+        case 2: return .green//.secondaryMagenta
+        case 3: return .green//.secondaryBlue
+        case 4: return .green//.secondaryGreen
+        default: return .green//.primary
+        }
+    }
+    
+    static func randomColor()-> UIColor {
+        colorFor(listItemIndex: Int.random(in: 0...5))
+    }
+}

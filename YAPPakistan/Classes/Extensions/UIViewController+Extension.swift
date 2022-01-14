@@ -144,6 +144,27 @@ extension UIViewController {
         navigationItem.leftBarButtonItem = backButton
         navigationController?.interactivePopGestureRecognizer?.delegate = nil
     }
+    
+    public func makeAndAddBackButton(of type: BackButtonType = .backCircled) -> UIButton? {
+        let button = UIButton()
+        button.frame = CGRect(x:2, y: 0, width: 35, height: 35)
+        button.setImage(UIImage(named: type == .backCircled || type == .backEmpty ? "icon_back" : "icon_close", in: .yapPakistan, compatibleWith: nil)?.asTemplate, for: .normal)
+        button.layer.cornerRadius = 0.5 * button.bounds.size.width
+        button.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
+        
+        let view:UIView = {
+            let view = UIView(frame: CGRect(x: 0, y: 0, width: 37, height: 35))
+            view.backgroundColor = .clear
+            return view
+        }()
+        view.addSub(view: button)
+        
+        let backButton = UIBarButtonItem()
+        backButton.customView = view
+        navigationItem.leftBarButtonItem  = backButton
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
+        return button
+    }
 
     public func addBackButton(of type: BackButtonType = .backCircled) -> UIButton? {
         let button = UIButton()

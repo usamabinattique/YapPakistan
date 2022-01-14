@@ -19,7 +19,7 @@ class VerifyPinChangeViewModel: VerifyMobileOTPViewModel {
          subheading: String,
          image: UIImage? = nil,
          badge: UIImage? = nil,
-         otpTime: TimeInterval = 10,
+         otpTime: TimeInterval = 60,
          otpLength: Int = 6,
          resendTries: Int = 4,
          repository: OTPRepositoryType,
