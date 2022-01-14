@@ -88,7 +88,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.result
             .withUnretained(self)
-            .subscribe(onNext: { $0.0.resultSuccess() })
+           .subscribe(onNext: {  $0.0.resultSuccess() })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.completeVerification
@@ -144,8 +144,8 @@ extension HomeCoodinator {
     }
 
     fileprivate func resultSuccess() {
-        NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
-        // self.result.onNext( ResultType.success(()) )
-        // self.result.onCompleted()
+       // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        let name = Notification.Name.init(.logout)
+        NotificationCenter.default.post(name: name,object: nil)
     }
 }
