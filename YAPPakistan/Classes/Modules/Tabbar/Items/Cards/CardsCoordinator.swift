@@ -267,7 +267,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func deleveryStatusScreen(_ card: PaymentCard?) {
-        let status = card?.deliveryStatus ?? .shipping
+        let status = card?.deliveryStatus ?? .ordering
         let cardSerial = card?.cardSerialNumber ?? ""
 
         let viewController = CardStatusModuleBuilder(container: self.container, status: status).viewController()

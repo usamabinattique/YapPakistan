@@ -16,8 +16,12 @@ struct LocationModel {
     var country: String = ""
     var state: String = ""
     var city: String = ""
+// <<<<<<< Updated upstream
     var address: [String] = []
     var formattAdaddress: String { return address.joined(separator: ", ") }
+// =======
+//   var formattAdaddress: String = ""
+// >>>>>>> Stashed changes
 
     var distanceMeters: Double = 0 // From current location
 
@@ -34,7 +38,11 @@ struct LocationModel {
          country: String? = nil,
          state: String? = nil,
          city: String? = nil,
+//<<<<<<< Updated upstream
          address: [String] = []) {
+// =======
+//         formattAdaddress: String? = nil) {
+// >>>>>>> Stashed changes
 
         self.latitude = latitude
         self.longitude = longitude
@@ -43,7 +51,11 @@ struct LocationModel {
         if let country = country { self.country = country }
         if let state = state { self.state = state }
         if let city = city { self.city = city }
+// <<<<<<< Updated upstream
         self.address = address
+// =======
+//        if let formattAdaddress = formattAdaddress { self.formattAdaddress = formattAdaddress }
+// >>>>>>> Stashed changes
     }
 
     init(coordinates: CLLocationCoordinate2D,
@@ -51,7 +63,11 @@ struct LocationModel {
          country: String? = nil,
          state: String? = nil,
          city: String? = nil,
+// <<<<<<< Updated upstream
          address: [String] = []) {
+// =======
+//        formattAdaddress: String? = nil) {
+// >>>>>>> Stashed changes
 
         self.latitude = coordinates.latitude
         self.longitude = coordinates.longitude
@@ -60,12 +76,20 @@ struct LocationModel {
         if let country = country { self.country = country }
         if let state = state { self.state = state }
         if let city = city { self.city = city }
+// <<<<<<< Updated upstream
         self.address = address
     }
 
     init(prediction: NSDictionary) {
         self.address = []
         self.address.append(prediction["description"] as? String ?? "")
+// =======
+//        if let formattAdaddress = formattAdaddress { self.formattAdaddress = formattAdaddress }
+//    }
+//
+//    init(prediction: NSDictionary) {
+//        formattAdaddress = prediction["description"] as? String ?? ""
+// >>>>>>> Stashed changes
         country = (prediction["terms"] as? [NSDictionary])?.last?["value"] as? String ?? ""
         if country == "" {
             country = formattAdaddress.components(separatedBy: ",").last?.trimmed ?? ""

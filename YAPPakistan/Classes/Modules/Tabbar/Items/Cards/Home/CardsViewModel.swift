@@ -17,7 +17,7 @@ extension PaymentCard.DeliveryStatus {
         case .ordering: return "Complete verification to get your card"
         case .ordered: return "This card is on the way"
         case .shipping, .booked: return "Your primary card is on its way"
-        case .shipped: return "Your primary card is shipped"
+        case .shipped: return "Create a PIN to start using your card"
         }
     }
 }
@@ -136,7 +136,8 @@ class CardsViewModel: CardsViewModelType,
 
     func isProfileCompleted() -> Observable<Bool> {
         return viewDidAppearSubject.withLatestFrom(accountProvider.currentAccount)
-            .map { ($0?.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue && $0?.isSecretQuestionVerified == true }
+            .map {
+                ($0?.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue && $0?.isSecretQuestionVerified == true }
             .share()
     }
 

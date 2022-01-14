@@ -239,9 +239,9 @@ class WaitingListRankViewController: UIViewController {
             .bind(to: placeLabel.rx.text)
             .disposed(by: disposeBag)
 
-        viewModel.outputs.rank.subscribe(onNext: { [weak self] in
-            self?.rankView.animate(rank: $0 ?? "0")
-        }).disposed(by: disposeBag)
+        viewModel.outputs.rank.skip(1).distinctUntilChanged()
+            .subscribe(onNext: { [weak self] in self?.rankView.animate(rank: $0 ?? "0") })
+            .disposed(by: disposeBag)
 
         viewModel.outputs.behindNumber
             .bind(to: behindNumberLabel.rx.text)

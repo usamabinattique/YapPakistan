@@ -34,6 +34,7 @@ class LocationService {
                         return
                     }
 
+// <<<<<<< Updated upstream
                     var address: [String] = []
                     if lines.count > 1 {
                         address.append(lines.first ?? "")
@@ -54,13 +55,22 @@ class LocationService {
 
                     if let country = result.country?.trimmed, !address.joined(separator: ",").lowercased().contains(country.lowercased()) {
                         address[address.count - 1] += ", \(country)"
+// =======
+//                    var address = (lines.first ?? "") + " \(lines.count > 1 ? ", \(lines[1])":"")"
+//                    if let country = result.country?.trimmed, !address.lowercased().contains(country.lowercased()) {
+//                        address += ", \(country)"
+// >>>>>>> Stashed changes
                     }
 
                     observable.onNext(LocationModel(coordinates: coordinates,
                                                     country: result.country,
                                                     state: result.administrativeArea,
                                                     city: result.locality,
+// <<<<<<< Updated upstream
                                                     address: address))
+// =======
+//                                                    formattAdaddress: address))
+// >>>>>>> Stashed changes
                     observable.onCompleted()
                 }
             }

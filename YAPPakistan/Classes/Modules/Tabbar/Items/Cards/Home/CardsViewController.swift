@@ -201,7 +201,7 @@ fileprivate extension CardsViewController {
         detailsIcon
             .toBottomOf(spacers[2])
             .centerHorizontallyInSuperview()
-            .height(constant: 25)
+            .height(constant: 22)
             .aspectRatio()
         detailsButton
             .toBottomOf(detailsIcon)

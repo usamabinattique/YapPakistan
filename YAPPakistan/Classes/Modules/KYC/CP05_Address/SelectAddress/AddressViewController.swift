@@ -193,9 +193,15 @@ class AddressViewController: UIViewController {
         // viewModel.outputs.search
         let currentLocation = viewModel.outputs.location.withUnretained(self).share()
         currentLocation.subscribe(onNext: { `self`, location in
+ // <<<<<<< Updated upstream
                 //let subTitle = "\(location.city), \(location.state), \(location.country)"
             self.locationTitle.text = location.address.first ?? "" // location.formattAdaddress.replacingOccurrences(of: subTitle, with: "")
             self.locationSubTitle.text = location.address.last ?? "" // subTitle
+// =======
+//                let subTitle = "\(location.city), \(location.state), \(location.country)"
+//                self.locationTitle.text = location.formattAdaddress.replacingOccurrences(of: subTitle, with: "")
+//                self.locationSubTitle.text = subTitle
+//// >>>>>>> Stashed changes
                 self.mapView.animate(toLocation: location.coordinates)
             }).disposed(by: rx.disposeBag)
         currentLocation.element(at: 0).subscribe(onNext: { `self`, location in
@@ -211,8 +217,12 @@ class AddressViewController: UIViewController {
         viewModel.outputs.citySelected.bind(to: cityTextField.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.location.withUnretained(self)
             .subscribe(onNext: { `self`, location in
+// <<<<<<< Updated upstream
                 self.addressTextField.text = location.address.last ?? ""
                 self.flatTextField.text = location.address.first ?? ""
+// =======
+//                self.addressTextField.text = location.formattAdaddress
+// >>>>>>> Stashed changes
                 self.cityTextField.text = location.city
             })
             .disposed(by: rx.disposeBag)
@@ -254,6 +264,14 @@ class AddressViewController: UIViewController {
         editingDidBegin.map({ _ in false }).bind(to: cityTextField.rx.isFirstResponder ).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
         nextButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
+//<<<<<<< Updated upstream
+//=======
+//
+//        // searchButton.rx.tap.bind(to: viewModel.inputs.searchObserver).disposed(by: rx.disposeBag)
+//        searchButton.rx.tap.withUnretained(self)
+//            .subscribe(onNext: { `self`, _ in self.autocompleteClicked() })
+//            .disposed(by: rx.disposeBag)
+//>>>>>>> Stashed changes
 
         // searchButton.rx.tap.bind(to: viewModel.inputs.searchObserver).disposed(by: rx.disposeBag)
         searchButton.rx.tap.withUnretained(self)
@@ -263,7 +281,7 @@ class AddressViewController: UIViewController {
         flatTextField.rx.controlEvent(.editingDidBegin).withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 UIView.animate(withDuration: 0.3) {
-                    self.nextButtonBottomAncher.constant = 90
+                    self.nextButtonBottomAncher.constant = 165
                     self.view.layoutSubviews()
                 }
             }).disposed(by: rx.disposeBag)
@@ -271,7 +289,7 @@ class AddressViewController: UIViewController {
         addressTextField.rx.controlEvent(.editingDidBegin).withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 UIView.animate(withDuration: 0.3) {
-                    self.nextButtonBottomAncher.constant = 165
+                    self.nextButtonBottomAncher.constant = 90
                     self.view.layoutSubviews()
                 }
             }).disposed(by: rx.disposeBag)
@@ -366,17 +384,22 @@ class AddressViewController: UIViewController {
         bottomContainerView
             .alignEdgesWithSuperview([.left, .right, .bottom])
 
-        flatTextField
+// <<<<<<< Updated upstream
+//        flatTextField
+//=======
+//        addressTextField
+//>>>>>>> Stashed changes
+        addressTextField
             .alignEdgesWithSuperview([.left, .right, .top], constants: [25, 25, 20])
             .height(constant: 55)
 
-        addressTextField
-            .toBottomOf(flatTextField, constant: 20)
+        flatTextField
+            .toBottomOf(addressTextField, constant: 20)
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
             .height(constant: 55)
 
         cityTextField
-            .toBottomOf(addressTextField, constant: 20)
+            .toBottomOf(flatTextField, constant: 20)
             .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
             .height(constant: 55)
 

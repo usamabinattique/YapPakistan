@@ -50,9 +50,11 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
     // MARK: - Outputs
     var progress: Observable<(minValue: CGFloat, maxValue: CGFloat)> { return progressSubject.asObservable() }
     var title: Observable<String?> { return titleSubject.asObservable() }
-    var range: Observable<String?> { return rangeSubject.asObservable().map { (min,max) -> String? in
-        return String.init(format: "%@ — %@", NumberFormatter.formateAmount(min, fractionDigits: 0),NumberFormatter.formateAmount(max, fractionDigits: 0))
-    } }
+    var range: Observable<String?> { return rangeSubject.asObservable().map {
+        return String(format: "%@ — %@",
+                      NumberFormatter.formateAmount(Double($0), fractionDigits: 0),
+                      NumberFormatter.formateAmount(Double($1), fractionDigits: 0))
+    }}
     var selectedRange: Observable<ClosedRange<Double>> { return selectedRangeSubject.asObservable() }
     
     // MARK: - Init

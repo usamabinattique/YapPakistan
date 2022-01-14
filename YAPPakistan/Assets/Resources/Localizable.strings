@@ -47,6 +47,7 @@
 "screeen_name_display_text_title" = "What's your name?";
 "screen_name_display_text_first_name" = "First name";
 "screen_name_display_text_last_name" = "Last name";
+"screen_name_special_character_error" = "Please enter alphabets only";
 
 // MARK: Enter Email Screen
 "screen_enter_email_b2b_display_text_sub_heading" = "What's your preferred email address?";
@@ -127,7 +128,7 @@
 "screen_waiting_list_rank_invitees_list_title_text" = "You referred %d friends! %@";
 "screen_waiting_list_rank_invitees_list_subtitle_zero_invitees_text" = "Once your referred friends sign up, you will see their names listed below and your place in the queue bumped up by %@ spots for each friend!";
 "screen_waiting_list_rank_invitees_list_subtitle_text" = "You have been bumped up by %d spots.";
-"screen_waiting_list_rank_invitees_list_button_title_text" = "Signed up friends: %d";
+"screen_waiting_list_rank_invitees_list_button_title_text" = "Signed up friend(s): %d";
 
 "screen_waiting_list_caption_backyourway" = "Bank your way";
 "screen_waiting_list_caption_getanaccount" = "Get an account in seconds";
@@ -278,8 +279,8 @@
 "screen_kyc_address_title" = "Your card is ready to be delivered!";
 "screen_kyc_address_subtitle" = "Confirm this is your address, you can change it anytime";
 "screen_kyc_address_taplocation" = "Tap map to confirm location";
-"screen_kyc_address_address" = "Address";
-"screen_kyc_address_flatbuilding" = "Flat number/ Building name";
+"screen_kyc_address_address" = "Company address";
+"screen_kyc_address_flatbuilding" = "Flat number/ Building/ Landmark";
 "screen_kyc_address_city" = "City";
 
 // MARK: KYC CARD ON WAY

@@ -270,7 +270,7 @@ class CardStatusView: UIView {
             iconContainers[index].backgroundColor = self.theme.light
         }
         // Line
-        let pLine = (progress + 1) / 2
+        let pLine = (progress) / 2
         let progressLine = pLine <= statusLines.count ? pLine: statusLines.count
         for index in progressLine..<statusLines.count { statusLines[index].backgroundColor = self.theme.light }
         for index in 0..<progressLine { statusLines[index].backgroundColor = self.theme.dark }

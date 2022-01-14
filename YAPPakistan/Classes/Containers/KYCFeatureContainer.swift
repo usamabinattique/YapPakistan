@@ -49,15 +49,43 @@ public final class KYCFeatureContainer {
                                     identityDocument: identityDocument, cnicOCR: cnicOCR)
     }
 
+    func makeKYCQuestionsCoordinator(root: UINavigationController) -> KYCQuestionsCoordinator {
+        KYCQuestionsCoordinator(root: root, container: self)
+    }
+
+    func makeSelfieCoordinator(root: UINavigationController) -> SelfieCoordinator {
+        SelfieCoordinator(root: root, container: self)
+    }
+
+    func makeCardNameCoordinator(root: UINavigationController) -> CardNameCoordinator {
+        CardNameCoordinator(root: root, container: self)
+    }
+
+    func makeAddressCoordinator(root: UINavigationController) -> AddressCoordinator {
+        AddressCoordinator(root: root, container: self)
+    }
+
     // MARK: Controllers
+
+    func makeNavigationController(root: UIViewController? = nil) -> UINavigationController {
+        return parent.parent.makeNavigationController(root: root)
+    }
+
+    func makeNavigationContainerViewController() -> NavigationContainerViewController {
+        return parent.parent.makeNavigationContainerController()
+    }
 
     func makeKYCProgressViewController(navigationController: UINavigationController) -> KYCProgressViewController {
         let viewModel = KYCProgressViewModel()
         let viewController = KYCProgressViewController(themeService: themeService,
                                                        viewModel: viewModel,
                                                        withChildNavigation: navigationController)
-
         return viewController
+    }
+    func makeKYCProgressViewController() -> KYCProgressViewController {
+        let childNav: UINavigationController = makeNavigationController()
+        childNav.setNavigationBarHidden(true, animated: false)
+        return makeKYCProgressViewController(navigationController: childNav)
     }
 
     func makeKYCHomeViewController() -> KYCHomeViewController {
