@@ -215,5 +215,8 @@ fileprivate extension PasscodeViewController {
         createPINButton.rx.tap.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
         backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        termsAndCondtionsButton.rx.tap
+            .subscribe(onNext: { UIApplication.shared.open(URL(string: "https://www.yap.com/terms")!) })
+            .disposed(by: rx.disposeBag)
     }
 }

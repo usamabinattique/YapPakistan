@@ -18,6 +18,7 @@ import YAPComponents
 
 protocol KYCHomeViewModelInput {
     var nextObserver: AnyObserver<Void> { get }
+    var reloadAndNextObserver: AnyObserver<Void> { get }
     var skipObserver: AnyObserver<Void> { get }
     var cardObserver: AnyObserver<Void> { get }
     var documentsUploadObserver: AnyObserver<Void> { get }
@@ -55,6 +56,7 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     var outputs: KYCHomeViewModelOutput { return self }
 
     private var nextSubject = PublishSubject<Void>()
+    private var reloadAndNextSubject = PublishSubject<Void>()
     private var nextCheckPointSubject = BehaviorSubject<AccountStatus?>(value: nil)
     private var skipSubject = PublishSubject<Void>()
     private var cardSubject = PublishSubject<Void>()
@@ -73,6 +75,7 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     // MARK: Inputs
 
     var nextObserver: AnyObserver<Void> { return nextSubject.asObserver() }
+    var reloadAndNextObserver: AnyObserver<Void> { reloadAndNextSubject.asObserver() }
     var skipObserver: AnyObserver<Void> { return skipSubject.asObserver() }
     var cardObserver: AnyObserver<Void> { return cardObserverSubject.asObserver() }
     var documentsUploadObserver: AnyObserver<Void> { return documentsUploadSubject.asObserver() }
@@ -96,6 +99,14 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
     init(accountProvider: AccountProvider, kycRepository: KYCRepository) {
 
         self.accountProvider = accountProvider
+
+        reloadAndNextSubject.withUnretained(self)
+            .flatMap { `self`, _ in self.accountProvider.refreshAccount() }
+            .withLatestFrom(self.accountProvider.currentAccount)
+            .map({ $0?.accountStatus })
+            .bind(to: nextCheckPointSubject)
+            .disposed(by: disposeBag)
+
         let account = self.accountProvider.currentAccount.unwrap()
 
         account.map { String(format: "screen_kyc_home_display_text_sub_heading".localized, $0.customer.firstName) }

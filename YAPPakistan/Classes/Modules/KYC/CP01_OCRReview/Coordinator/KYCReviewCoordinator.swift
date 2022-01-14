@@ -35,8 +35,6 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
 
         reviewViewModel.outputs.rescan
             .subscribe(onNext: { [weak self] in
-                self?.root.popViewController(animated: true)
-
                 self?.resultSubject.onNext(.cancel)
                 self?.resultSubject.onCompleted()
             })
@@ -60,8 +58,6 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
 
         progressViewModel.outputs.backTap
             .subscribe(onNext: { [weak self] in
-                self?.root.popViewController(animated: true)
-
                 self?.resultSubject.onNext(.cancel)
                 self?.resultSubject.onCompleted()
             })

@@ -135,14 +135,14 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
 
         let request = sendSubject
             .filter { [weak self] in
-                if let self = self, self.isEmailSend == true {
-                    self.resultSubject.onNext((self.user, self.session))
-                    self.resultSubject.onCompleted()
-                    return false
-                } else {
-                    if case OnboardingStage.email = $0 { return true }
-                    return false
-                }
+//                if let self = self, self.isEmailSend == true {
+//                    self.resultSubject.onNext((self.user, self.session))
+//                    self.resultSubject.onCompleted()
+//                    return false
+//                } else {
+                if case OnboardingStage.email = $0 { return true }
+                return false
+//                }
             }
             .do(onNext: {[unowned self] _ in
                 self.endEdittingSubject.onNext(true)
@@ -180,17 +180,21 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         let b2cUser = user.filter { $0.accountType == .b2cAccount }
         b2cUser.map { _ in }.bind(to: demographicsSuccessSubject).disposed(by: disposeBag)
 
-        let saveProfileRequest = b2cUser.flatMap { [unowned self] user -> Observable<Event<String>> in
-            self.repository.saveProfile(countryCode: user.mobileNo.countryCode ?? "",
-                                        mobileNo: user.mobileNo.number ?? "",
-                                        passcode: user.passcode ?? "",
-                                        firstName: user.firstName ?? "",
-                                        lastName: user.lastName ?? "",
-                                        email: user.email ?? "",
-                                        token: user.otpVerificationToken ?? "",
-                                        whiteListed: false,
-                                        accountType: user.accountType.rawValue)
-        }.share()
+        let saveProfileRequest = b2cUser
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .flatMap { [unowned self] user -> Observable<Event<String>> in
+                self.repository.saveProfile(countryCode: user.mobileNo.countryCode ?? "",
+                                            mobileNo: user.mobileNo.number ?? "",
+                                            passcode: user.passcode ?? "",
+                                            firstName: user.firstName ?? "",
+                                            lastName: user.lastName ?? "",
+                                            email: user.email ?? "",
+                                            token: user.otpVerificationToken ?? "",
+                                            whiteListed: false,
+                                            accountType: user.accountType.rawValue)
+            }
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .share()
 
         saveProfileRequest.elements()
             .do(onNext: { [weak self] jwt in
@@ -215,6 +219,14 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .elements()
             .do(onNext: { _ in referralManager.removeReferralInformation() })
             .subscribe()
+            .disposed(by: disposeBag)
+
+        saveProfileRequest
+            .elements()
+            .withUnretained(self)
+            // .delay(.milliseconds(10), scheduler: MainScheduler.instance)
+            .map{ `self`, _ in (self.user, self.session) }
+            .bind(to: self.resultSubject)
             .disposed(by: disposeBag)
 
         saveProfileRequest.errors()

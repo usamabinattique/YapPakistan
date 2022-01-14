@@ -51,7 +51,7 @@ public struct Account: Codable {
     public var companyType: String?
     public var soleProprietary: Bool
     public var accountStatus: AccountStatus? { AccountStatus(rawValue: _accountStatus ?? "") }
-    private let _accountStatus: String?
+    private var _accountStatus: String?
     public let customer: Customer
     public let bank: Bank
     public var parnterBankStatus: PartnerBankStatus? { PartnerBankStatus(rawValue: _parnterBankStatus ?? "") }

@@ -155,7 +155,7 @@ private extension EnterNameViewController {
 extension EnterNameViewController: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if (textField.text?.count ?? 0) + string.count > 40 && string.count != 0 { return false }
+        if (textField.text?.count ?? 0) + string.count > 25 && string.count != 0 { return false }
         textField == firstName ? viewModel.inputs.firstNameInputObserver.onNext(string) : viewModel.inputs.lastNameInputObserver.onNext(string)
         return textField == firstName ? shouldChangeFirstNameText : shouldChangeLastNameText
     }

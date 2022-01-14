@@ -4,6 +4,7 @@
 //
 //  Created by Umair  on 31/12/2021.
 //
+// swiftlint:disable line_length
 
 import Foundation
 import RxCocoa

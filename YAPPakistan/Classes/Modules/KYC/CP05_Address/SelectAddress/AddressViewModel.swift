@@ -90,10 +90,16 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     private var currentLocationResultSubject = BehaviorSubject<LocationModel>(value: LocationModel())
     private var confirmLocationResultSubject = PublishSubject<LocationModel>()
     private var willMoveSubject = PublishSubject<Bool>()
+    // <<<<<<< Updated upstream
     private var loaderSubject = BehaviorSubject<Bool>(value: false)
     private var didIdleAtSubject = PublishSubject<GMSCameraPosition>()
     private var errorSubject = PublishSubject<String>()
     private var addressObserverSubject = BehaviorSubject<String>(value: "")
+    // =======
+    //    private var loaderSubject = BehaviorSubject<Bool>.init(value: false)
+    //    private var didIdleAtSubject = PublishSubject<GMSCameraPosition>()
+    //    private var errorSubject = PublishSubject<String>()
+    // >>>>>>> Stashed changes
 
     var inputs: AddressViewModelInput { return self }
     var outputs: AddressViewModelOutput { return self }
@@ -140,15 +146,18 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
             .flatMapLatest { $0.0.locationService.reverseGeocodeCoordinate($0.1) }
             .materialize().share()
 
-//         confirmLocationSubject.withLatestFrom(currentLocationResultSubject)
-//            .bind(to: confirmLocationResultSubject)
-//            .disposed(by: disposeBag)
+        confirmLocationSubject
+            .withLatestFrom(currentLocationResultSubject).withUnretained(self)
+            .subscribe(onNext: {`self`, loc in
+                DispatchQueue.main.async { self.currentLocationResultSubject.onNext(loc) }
+            })
+            .disposed(by: disposeBag)
 
         locationDecoded.elements().bind(to: currentLocationResultSubject).disposed(by: disposeBag)
 
-        let saveAddressRequest = Observable.combineLatest(currentLocationResultSubject,
-                                                          addressObserverSubject)
-            .sample(nextSubject)
+        // <<<<<<< Updated upstream
+        let saveAddressRequest = nextSubject
+            .withLatestFrom(Observable.combineLatest(currentLocationResultSubject,addressObserverSubject))
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .map({ (location, address) -> LocationModel in
                 var location = location
@@ -161,11 +170,19 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
             .withUnretained(self)
             .flatMapLatest { `self`, location in
                 return self.kycRepository.saveUserAddress(address: location.formattAdaddress,
-                                                   city: location.city,
-                                                   country: location.country,
-                                                   postCode: "05400",
-                                                   latitude: "\(location.latitude)",
-                                                   longitude: "\(location.longitude)" )
+                                                          // =======
+                                                          //        let saveAddressRequest = nextSubject
+                                                          //            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
+                                                          //            .withLatestFrom(currentLocationResultSubject)
+                                                          //            .withUnretained(self)
+                                                          //            .flatMapLatest { `self`, location in
+                                                          //                self.kycRepository.saveUserAddress(address: location.formattAdaddress,
+                                                          // >>>>>>> Stashed changes
+                                                          city: location.city,
+                                                          country: location.country,
+                                                          postCode: "05400",
+                                                          latitude: "\(location.latitude)",
+                                                          longitude: "\(location.longitude)" )
             }.share()
 
         saveAddressRequest.elements()

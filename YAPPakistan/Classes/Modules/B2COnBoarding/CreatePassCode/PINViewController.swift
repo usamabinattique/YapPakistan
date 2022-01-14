@@ -69,6 +69,7 @@ public class PINViewController: UIViewController {
 
     @objc func termsAndCondtionsTapped() {
         viewModel.inputs.termsAndConditionsActionObserver.onNext(())
+        UIApplication.shared.open(URL(string: "https://www.yap.com/terms")!)
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -229,6 +230,10 @@ fileprivate extension PINViewController {
         viewModel.outputs.hideNavigationBar.subscribe(onNext: {[weak self] in
             self?.hideNavigationBar = $0
         }).disposed(by: disposeBag)
+
+        termsAndCondtionsButton.rx.tap
+            .subscribe(onNext: { UIApplication.shared.open(URL(string: "https://www.yap.com/terms")!) })
+            .disposed(by: rx.disposeBag)
     }
 
     func bindTranslations() {

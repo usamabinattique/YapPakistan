@@ -76,6 +76,14 @@ class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            
+            print(self)
+        }
+    }
+
     // MARK: View Setup
 
     private func setupViews() {

@@ -170,6 +170,10 @@ fileprivate extension ConfirmCardPinViewController {
         createPINButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         pinKeyboard.rx.keyTapped.bind(to: viewModel.inputs.keyPressObserver).disposed(by: rx.disposeBag)
         backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+
+        termsAndCondtionsView.button.rx.tap.subscribe(onNext: {
+            UIApplication.shared.open(URL(string: "https://www.yap.com/terms")!)
+        }).disposed(by: rx.disposeBag)
     }
 }
 

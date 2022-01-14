@@ -94,7 +94,7 @@ final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelIn
 
     init(onBoardingRepository: OnBoardingRepository,
          user: OnBoardingUser,
-         otpTime: TimeInterval = 300) {
+         otpTime: TimeInterval = 60) {
         self.repository = onBoardingRepository
         self.user = user
         self.otpTime = otpTime

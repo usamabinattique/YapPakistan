@@ -187,3 +187,29 @@ extension YAPPakistanMainContainer {
         return BiometricPermissionModuleBuilder(container: self).viewController()
     }
 }
+
+extension YAPPakistanMainContainer {
+    func makeNavigationContainerController(
+        navigation: UINavigationController = NavigationControllerBuilder().viewController()
+    ) -> NavigationContainerViewController {
+        NavigationContainerBuilder(navigation: navigation, container: self).viewController()
+    }
+
+    func makeNavigationController(
+        root: UIViewController? = nil,
+        isInteractivePopGesture: Bool = false,
+        barBackgroundImage: UIImage = UIImage(),
+        barShadowImage: UIImage = UIImage(),
+        isBarTranslucent: Bool = true,
+        modalPresentationStyle: UIModalPresentationStyle = .fullScreen
+    ) -> UINavigationController {
+        NavigationControllerBuilder(root: root,
+                                    isInteractivePopGesture: isInteractivePopGesture,
+                                    barBackgroundImage: barBackgroundImage,
+                                    barShadowImage: barShadowImage,
+                                    isBarTranslucent: isBarTranslucent,
+                                    modalPresentationStyle: modalPresentationStyle).viewController()
+
+    }
+}
+
