@@ -160,7 +160,12 @@ class CardDetailBottomViewController: UIViewController {
         contentContainr.rx.swipeGesture(.down).map({ _ in () })
             .bind(to: viewModel.inputs.closeObserver)
             .disposed(by: rx.disposeBag)
-
+        
+//        copyButton.rx.tap.bind(to: viewModel.inputs.copyObserver).disposed(by: rx.disposeBag)
+        copyButton.rx.tap.withLatestFrom(viewModel.outputs.resources).map { res in
+            res.numberLabel
+        }.bind(to: UIPasteboard.general.rx.string).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.loading.bind(to: rx.loader).disposed(by: rx.disposeBag)
     }
 }

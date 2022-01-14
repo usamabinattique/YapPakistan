@@ -205,7 +205,9 @@ extension TabbarCoodinator {
     }
 
     fileprivate func resultSuccess() {
-        NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+      //  NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        let name = Notification.Name.init(.logout)
+        NotificationCenter.default.post(name: name,object: nil)
         // self.result.onNext( ResultType.success(()) )
         // self.result.onCompleted()
     }
