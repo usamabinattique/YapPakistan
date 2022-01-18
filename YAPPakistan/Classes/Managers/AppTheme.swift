@@ -32,9 +32,11 @@ public protocol Theme {
     var icon: Color               { get }
     var iconHolder: Color         { get }
     var backgroundColor: Color    { get }
+    var clear: UIColor            { get }
 }
 
 struct LightTheme: Theme {
+    
     var primary: Color              { Color(hex: "#5E35B1") }
     var primaryLight: Color         { Color(hex: "#7C4DFF") }
     var primaryExtraLight: Color    { Color(hex: "#F0EDFF") }
@@ -57,6 +59,7 @@ struct LightTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var clear: UIColor                { UIColor.clear }
 
 }
 
@@ -84,6 +87,7 @@ struct DarkTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var clear: UIColor              { UIColor.clear }
 }
 
 public enum AppTheme: ThemeProvider {

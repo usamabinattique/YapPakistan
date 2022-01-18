@@ -212,3 +212,11 @@ public extension String {
 public extension String {
     static var empty: Self { return "" }
 }
+
+extension String {
+    func replacePrefix(_ prefix: String,with ext: String) -> String {
+        guard self.hasPrefix(prefix) else { return self }
+        let refinedString = String(self.dropFirst(prefix.count))
+        return ext+refinedString
+    }
+}
