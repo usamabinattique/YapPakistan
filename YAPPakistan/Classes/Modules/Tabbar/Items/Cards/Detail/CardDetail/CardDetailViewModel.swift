@@ -15,6 +15,7 @@ protocol CardDetailViewModelInputs {
     var limitObserver: AnyObserver<Void> { get }
     var newName: AnyObserver<String> { get }
     var optionsObserver: AnyObserver<Void> { get }
+//    var filter: AnyObserver<TransactionFilter?> {get}
 }
 
 protocol CardDetailViewModelOutputs {
@@ -24,6 +25,7 @@ protocol CardDetailViewModelOutputs {
     var limit: Observable<PaymentCard> { get }
     var loader: Observable<Bool> { get }
     var options: Observable<Void> { get }
+    var filter: Observable<TransactionFilter?> {get}
 }
 
 protocol CardDetailViewModelType {
@@ -41,6 +43,7 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
     var loaderSubject = BehaviorSubject<Bool>(value: false)
     var optionsSubject = PublishSubject<Void>()
     var newNameSubject = PublishSubject<String>()
+    private let filterSubject = BehaviorSubject<TransactionFilter?>(value: nil)
 
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
     var detailsObserver: AnyObserver<Void> { detailsSubject.asObserver() }
@@ -48,6 +51,7 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
     var limitObserver: AnyObserver<Void> { limitSubject.asObserver() }
     var optionsObserver: AnyObserver<Void> { optionsSubject.asObserver() }
     var newName: AnyObserver<String> { newNameSubject.asObserver() }
+    var filterObserver: AnyObserver<TransactionFilter?> { filterSubject.asObserver() }
 
     var back: Observable<Void> { backSubject.asObservable() }
     var details: Observable<PaymentCard> { detailsSubject.map({ self.paymentCard }).unwrap().asObservable() }
@@ -55,6 +59,7 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
     var hidefreezCard: Observable<Bool> { hidefreezCardSubject.asObservable() }
     var limit: Observable<PaymentCard> { limitSubject.map({ self.paymentCard }).unwrap().asObservable() }
     var options: Observable<Void> { optionsSubject.asObservable() }
+    var filter: Observable<TransactionFilter?> {filterSubject.asObservable()}
     var loader: Observable<Bool> { loaderSubject.asObservable() }
 
     var inputs: CardDetailViewModelInputs { self }

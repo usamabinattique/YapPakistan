@@ -34,6 +34,8 @@ public class TransactionFilterViewController: UIViewController {
     private lazy var applyButton = UIFactory.makeAppRoundedButton(with: .regular, title: "screen_transaction_filter_display_apply_button_title".localized)
     private lazy var clearButton = UIFactory.makeAppRoundedButton(with: .regular, title: "screen_transaction_filter_display_clear_button_title".localized)
     
+    private var leftBarBtnItem = UIBarButtonItem()
+    
     // MARK: Properties
     let themeService: ThemeService<AppTheme>
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
@@ -65,17 +67,9 @@ public class TransactionFilterViewController: UIViewController {
         setupConstraints()
     }
     
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: false)
-        
-        navigationItem.title = "screen_transaction_filter_display_text_title".localized
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon_close",in: .yapPakistan), style: .plain, target: self, action: #selector(onTapBackButton))
-    }
-    
     override public func onTapBackButton() {
-        navigationController?.dismiss(animated: true, completion: nil)
-        viewModel.inputs.closeObserver.onNext(())
+      //  viewModel.inputs.closeObserver.onNext(())
+        self.navigationController?.dismiss(animated: true, completion: nil)
     }
 }
 
@@ -105,9 +99,15 @@ private extension TransactionFilterViewController {
         //
         //        pinKeyboard.biomatryButton.setImage(bioMImg?.asTemplate, for: .normal)
         //        pinKeyboard.backButton.setImage(backImg?.asTemplate, for: .normal)
+        
+        navigationItem.title = "screen_transaction_filter_display_text_title".localized
+        leftBarBtnItem = UIBarButtonItem(image: UIImage(named: "icon_close",in: .yapPakistan)?.asTemplate, style: .plain, target: self, action: #selector(onTapBackButton))
+        
+        navigationItem.leftBarButtonItem = leftBarBtnItem
     }
     
     func setupTheme() {
+       
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
         
@@ -118,6 +118,7 @@ private extension TransactionFilterViewController {
             .bind({ UIColor($0.greyLight) }, to: [separator.rx.backgroundColor])
         
             .bind({ UIColor($0.greyLight) }, to: [topSeparator.rx.backgroundColor])
+            .bind({ UIColor($0.primary) }, to: [leftBarBtnItem.rx.tintColor])
         
             .disposed(by: rx.disposeBag)
     }
@@ -186,15 +187,20 @@ private extension TransactionFilterViewController {
     }
     
     func setupBindings() {
-        
-        applyButton.rx.tap.subscribe(onNext: {[weak self] _ in
-//            if CheckInternetConnectivity.isConnectedToInternet {
-                self?.viewModel.inputs.applyObserver.onNext(())
-                self?.navigationController?.dismiss(animated: true, completion: nil)
-//            }else{
-//                self?.alert.show(inView: self!.view, type: .error, text:  "common_display_text_error_no_internet".localized, autoHides: true)
-//            }
+        applyButton.rx.tap.withUnretained(self).subscribe(onNext: { (self, _) in
+            self.viewModel.inputs.applyObserver.onNext(())
+            self.navigationController?.dismiss(animated: true, completion: nil)
         }).disposed(by: rx.disposeBag)
+
+      /*  applyButton.rx.tap.subscribe(onNext: {[weak self] _ in
+            //            if CheckInternetConnectivity.isConnectedToInternet {
+            
+            
+//            self?.viewModel.inputs.applyObserver.onNext(())
+            //            }else{
+            //                self?.alert.show(inView: self!.view, type: .error, text:  "common_display_text_error_no_internet".localized, autoHides: true)
+            //            }
+        }).disposed(by: rx.disposeBag) */
 
         clearButton.rx.tap.subscribe(onNext: {[weak self] _ in
 //            if CheckInternetConnectivity.isConnectedToInternet {

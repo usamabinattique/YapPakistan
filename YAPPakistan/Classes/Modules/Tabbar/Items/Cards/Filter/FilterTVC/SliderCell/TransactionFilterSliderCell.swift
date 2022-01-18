@@ -70,6 +70,8 @@ private extension TransactionFilterSliderCell {
         
         range.adjustsFontSizeToFitWidth = true
         sliderContainer.clipsToBounds = false
+        customSlider.maxValue = 1000
+        customSlider.minValue = 0
 //        customSlider.delegate = self
     }
     
@@ -125,11 +127,29 @@ private extension TransactionFilterSliderCell {
         viewModel.outputs.range.bind(to: range.rx.text).disposed(by: disposeBag)
         
         customSlider.rx.didChange.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
-        viewModel.outputs.selectedRange
-            .map({ range in
-                print(range.lowerBound)
-                print(range.upperBound)
-            })
-        //        viewModel.outputs.selectedRange.bind(to: customSlider.rx.didChange).disposed(by: disposeBag)
+       
+//        viewModel.outputs.selectedRange
+//            .map({ range in
+//                print("lower rang is \(range.lowerBound)")
+//                print("upper rang is \(range.upperBound)")
+//            })
+        
+        viewModel.outputs.selectedRange.subscribe(onNext: { [unowned self] range in
+            self.customSlider.selectedMinValue = range.lowerBound
+            self.customSlider.selectedMaxValue = range.upperBound
+           
+        }).disposed(by: rx.disposeBag) 
+
+//        viewModel.outputs.selectedRange.bind(to: customSlider.rx.did)
+//                viewModel.outputs.selectedRange.bind(to: customSlider.rx.didChange).disposed(by: disposeBag)
+        
+        
+        
+//        viewModel.outputs.progress.map { Float($0) }.subscribe(onNext: { [weak self] in
+//          //  self?.slider.setValue($0, animated: true)
+//        }).disposed(by: disposeBag)
+        
+      //  slider.rx.value.map { CGFloat($0) }.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
+        
     }
 }

@@ -85,6 +85,13 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
             })
             .disposed(by: disposeBag)
         
+        
+//        clearSubject.map { _ in }
+//            .subscribe(onNext: { [unowned self] in
+//                self.resultSubject.onNext(nil)
+//            })
+//            .disposed(by: disposeBag)
+        
         closeSubject
             .filter{ [unowned self] in self.filter.getFiltersCount() > 0 }
             .subscribe(onNext: { [weak self] _ in self?.resultSubject.onCompleted() }).disposed(by: disposeBag)
@@ -106,8 +113,17 @@ private extension TransactionFilterViewModel {
             let transactions = TransactionFilterCheckBoxCellViewModel(transectionType)
                    transactions.outputs.check.subscribe(onNext: { [unowned self] in self.filter.assignValueAcordingToFilterType(type: transectionType, value: $0)  }).disposed(by: disposeBag)
                    viewModels.append(transactions)
+            
+            let shareClear = clearSubject.share()
+            shareClear.map{ _ in false }.bind(to: transactions.inputs.checkObserver).disposed(by: disposeBag)
+            
+            shareClear.subscribe(onNext: { [unowned self] in
+                guard self.filter != nil else { return }
+                self.filter.minAmount = 0
+                self.filter.maxAmount = 100
+                self.filter.maxAllowedAmount = 100
+            }).disposed(by: disposeBag)
 
-            clearSubject.map{ _ in false }.bind(to: transactions.inputs.checkObserver).disposed(by: disposeBag)
         }
         
         fetchLimit()
@@ -119,6 +135,8 @@ private extension TransactionFilterViewModel {
     }
     
     func fetchLimit() {
+        
+        //TODO: uncomment following
         YAPProgressHud.showProgressHud()
 
         let request = repository.getTransactionLimit().share().do(onNext: { _ in YAPProgressHud.hideProgressHud() })
@@ -127,10 +145,26 @@ private extension TransactionFilterViewModel {
 
         request.elements().subscribe(onNext: { [unowned self] in
             let range = $0.minAmount...$0.maxAmount
-            self.filter.maxAllowedAmount = $0.maxAmount
+         //   self.filter.maxAllowedAmount = $0.maxAmount
             let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
             self.addSlider(range: range, selectedRange: selectedRange)
         }).disposed(by: disposeBag)
+        
+        //TODO: remove following lines
+     /*   if self.filter != nil {
+            let range = filter.minAmount...(filter.maxAmount <= 0 ? 100 : filter.maxAmount)
+          //  self.filter.maxAllowedAmount = filter.maxAmount
+            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
+            self.addSlider(range: range, selectedRange: selectedRange)
+        } else {
+            let range = 0...80.0000
+
+            self.filter.maxAllowedAmount = 80.0000
+            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount > 0 ? (self.filter.maxAmount - 1.0) : 0.0)
+            self.addSlider(range: range, selectedRange: selectedRange)
+        } */
+        
+       
     }
     
     func addSlider(range: ClosedRange<Double>, selectedRange: ClosedRange<Double>) {
@@ -147,8 +181,9 @@ private extension TransactionFilterViewModel {
             
         }).disposed(by: self.disposeBag)
         
-//        clearSubject.map{ _ in 1.0 }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
+       // clearSubject.map{ _ in 1.0 }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
         
+
         self.loadCells()
     }
 }

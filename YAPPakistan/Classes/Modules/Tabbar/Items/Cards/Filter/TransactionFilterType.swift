@@ -26,17 +26,15 @@ extension TransactionFilterType {
     }
     
     var isChecked: Bool {
-//        switch self {
-//        case .retailPayment(let filter):
-//            return filter.creditSearch
-//        case .onlineTransactions(let filter):
-//            return filter.debitSearch
-//        case .atmWithdrawl(let filter):
-//        return filter.pendingSearch
-//        default:
-//            return false
-//        }
-        return false
+        switch self {
+        case .retailPayment(let filter):
+            return filter.retail
+        case .onlineTransactions(let filter):
+            return filter.online
+        case .atmWithdrawl(let filter):
+        return filter.atmWidrawl
+        }
+       // return false
     }
     
     static func allCases(filter:TransactionFilter)-> [Self] {
