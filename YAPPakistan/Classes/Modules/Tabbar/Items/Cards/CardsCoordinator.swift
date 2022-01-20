@@ -86,7 +86,8 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     func cardDetailView(_ paymentCard: PaymentCard?) {
         cardDetaild = paymentCard; #warning("FIXME")
 
-        let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository())
+        let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository(),cardSerialNumber: paymentCard?.cardSerialNumber)
+    
         let tviewModel = TransactionsViewModel.init(transactionDataProvider: tProvider,
                                                cardSerialNumber: paymentCard?.cardSerialNumber ?? "",
                                                debitSearch: true)
@@ -94,7 +95,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         let tviewController = TransactionsViewController(
             viewModel: tviewModel, themeService: container.themeService)
 
-        let viewModel = CardDetailViewModel(paymentCard: paymentCard, repository: container.makeCardsRepository())
+        let viewModel = CardDetailViewModel(paymentCard: paymentCard, repository: container.makeCardsRepository(),transactionDataProvider: tProvider)
         let viewController = CardDetailViewController(transactionViewController: tviewController, viewModel: viewModel, themeService: container.themeService)
         viewController.hidesBottomBarWhenPushed = true
         navigationRoot.pushViewController(viewController, animated: true)
@@ -121,14 +122,14 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             .openFilter.withLatestFrom(viewModel.outputs.filter).withUnretained(self)
             .subscribe(onNext: {
                 `self`, filter in
-                
-                self.openFilter(filter: filter,detailViewModel: viewModel)
+                tProvider.filter = filter
+                self.openFilter(filter: filter,detailViewModel: viewModel, paymentCard: paymentCard,provider: tProvider)
                 
             })
             .disposed(by: rx.disposeBag)
     }
 
-    func openFilter(filter: TransactionFilter? = nil, detailViewModel: CardDetailViewModel) {
+    func openFilter(filter: TransactionFilter? = nil, detailViewModel: CardDetailViewModel,paymentCard: PaymentCard?, provider:DebitCardTransactionsProvider) {
         let viewModel = TransactionFilterViewModel(filter,repository: container.makeTransactionsRepository())
         let filterView = TransactionFilterViewController(viewModel: viewModel, themeService: container.themeService)
  /*       navigationRoot.setNavigationBarHidden(false, animated: false)
@@ -147,7 +148,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.result.withUnretained(self).subscribe(onNext: { (`self`, filter) in
             if  let cardDetail = self.navigationRoot.viewControllers.last as? CardDetailViewController {
                 if let vm = cardDetail.transactionViewController.viewModel as? TransactionsViewModel {
-                    vm.filterSelected.onNext(filter)
+                  //  vm.filterSelected.onNext(filter)
                 }
             }
             detailViewModel.filterObserver.onNext(filter)

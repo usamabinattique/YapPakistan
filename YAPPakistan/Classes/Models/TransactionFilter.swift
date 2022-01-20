@@ -28,8 +28,8 @@ public struct TransactionFilter {
         switch type {
         case .retailPayment:
             retail = value
-        case .onlineTransactions:
-            online = value
+//        case .onlineTransactions:
+//            online = value
         case .atmWithdrawl:
             atmWidrawl = value
         }

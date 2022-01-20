@@ -68,10 +68,12 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
     var paymentCard: PaymentCard?
     let repository: CardsRepositoryType
     var disposeBag = DisposeBag()
+    var transactionDataProvider:PaymentCardTransactionProvider
 
-    init(paymentCard: PaymentCard?, repository: CardsRepositoryType) {
+    init(paymentCard: PaymentCard?, repository: CardsRepositoryType, transactionDataProvider: PaymentCardTransactionProvider) {
         self.paymentCard = paymentCard
         self.repository = repository
+        self.transactionDataProvider = transactionDataProvider
         self.hidefreezCardSubject.onNext(paymentCard?.blocked == false)
         let freez = self.freezSubject.withUnretained(self)
             .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
@@ -95,5 +97,31 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
                 self.paymentCard?.cardName = name
             })
             .disposed(by: disposeBag)
+        
+        filterSubject.subscribe(onNext: { [unowned self] filter in
+            self.applyFiltersApiOnCards(filter: filter ?? TransactionFilter())
+        }).disposed(by: disposeBag)
+
+    }
+    
+    func applyFiltersApiOnCards(filter: TransactionFilter) {
+        if filter.atmWidrawl == false && filter.retail == false && (filter.minAmount == 0.0 && filter.maxAmount == 20000.0 || filter.maxAmount == -1) {
+            
+            return
+        } else {
+           
+          let req =   transactionDataProvider.fetchTransactions()
+            loaderSubject.onNext(true)
+            req.elements().subscribe(onNext: { [unowned self] response in
+                print("filter applied successfully \(response)")
+                self.loaderSubject.onNext(false)
+            }).disposed(by: disposeBag)
+
+            req.errors().subscribe(onNext: { [unowned self] error in
+                print("got an error \(error.localizedDescription)")
+                self.loaderSubject.onNext(false)
+            }).disposed(by: disposeBag)
+
+        }
     }
 }

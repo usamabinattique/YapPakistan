@@ -209,5 +209,17 @@ private extension TransactionFilterViewController {
 //                self?.alert.show(inView: self!.view, type: .error, text:  "common_display_text_error_no_internet".localized, autoHides: true)
 //            }
         }).disposed(by: rx.disposeBag)
+        
+      /*  viewModel.outputs.error.subscribe(onNext: { [unowned self] error in
+            self.showAlert(title: "Alert", message: error) { [weak self] _ in
+                self?.navigationController?.dismiss(animated: true, completion: nil)
+            }
+        }).disposed(by: rx.disposeBag) */
+        
+        
+//        viewModel.outputs.close.subscribe(onNext: { [unowned self] _ in
+//            self.navigationController?.dismiss(animated: true, completion: nil)
+//        }).disposed(by: rx.disposeBag)
+
     }
 }

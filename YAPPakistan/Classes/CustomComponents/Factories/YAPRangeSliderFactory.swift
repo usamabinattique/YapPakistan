@@ -18,10 +18,10 @@ public class YAPRangeSliderFactory: RangeSeekSlider {
         
         handleImage = UIImage(named: "icon_map_pin_purple", in: .yapPakistan)
         minValue = 0.0
-        maxValue = 1001
-        selectedMinValue = 15.0
-        selectedMaxValue = 1000
-        minDistance = 1.0
+        maxValue = 20000.00001
+        selectedMinValue = 0.0
+        selectedMaxValue = 20000.0000
+        minDistance = 5000
         colorBetweenHandles = UIColor(theme.attrs.primary)
         tintColor = UIColor(theme.attrs.primary).withAlphaComponent(0.16)
         hideLabels = true
