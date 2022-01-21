@@ -131,5 +131,6 @@ extension Y2YCoordinator: MFMessageComposeViewControllerDelegate {
 extension Y2YCoordinator: MFMailComposeViewControllerDelegate {
     public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         controller.dismiss(animated: true, completion: nil)
+        
     }
 }
