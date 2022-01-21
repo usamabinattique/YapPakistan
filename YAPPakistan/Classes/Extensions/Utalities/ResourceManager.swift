@@ -32,7 +32,8 @@ var ibanValidationRegexes: [String: String] {
 }
 
 public func appShareMessageForY2Y(welcomeMessage message: String, appShareUrl: String) -> String {
-    return String(format: "common_display_text_y2y_share".localized, message, appShareUrl)
+//    return String(format: "common_display_text_y2y_share".localized, message, appShareUrl)
+    return String(format: message.localized, message, appShareUrl)
 }
 
 public func appShareMessageForMore( _ downloadURL: String) -> String {

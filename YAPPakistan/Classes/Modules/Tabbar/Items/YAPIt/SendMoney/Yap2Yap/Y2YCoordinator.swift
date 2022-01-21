@@ -41,10 +41,10 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
         self.presentable = presentable
         self.container = container
         self.contactsManager = contactsManager
+        
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        
         let viewModel = Y2YViewModel(repository: repository, contacts: contacts, recentBeneficiaries: recentBeneficiaries, presented: presentable, contactsManager: contactsManager, currentAccount: container.accountProvider.currentAccount)
         let viewController = Y2YViewController(themeService: container.themeService, viewModel: viewModel, recentBeneficiaryView: container.makeRecentBeneficiaryView())
 
@@ -67,13 +67,19 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
         
-//        self.container.accountProvider.currentAccount.unwrap().map { $0.customer.customerId }.unwrap().subscribe(onNext: { [weak self] customerId in
-//            self?.inviteFriendRepository.
-//        }).disposed(by: rx.disposeBag)
-        
         viewModel.outputs.search.unwrap().subscribe(onNext: { [weak self] in
             self?.searchContacts($0)
         }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.invteFriend.subscribe(onNext: { [weak self] in
+            self?.inviteFriend($0.0, self?.name ?? "", appShareUrl: $0.1)
+        }).disposed(by: rx.disposeBag)
+        
+//        viewModel.outputs.invite.subscribe(onNext: { [weak self] in
+//            AppAnalytics.shared.logEvent(Y2YEvent.inviteTapped())
+//            self?.inviteFriends( self?.name ?? "", appShareUrl: $0)
+//        }).disposed(by: rx.disposeBag)
+        
         return result
     }
     
@@ -93,5 +99,37 @@ private extension Y2YCoordinator {
 //        viewModel.outputs.contactSelected.subscribe(onNext: { [weak self] in
 //            self?.sendMoney($0)
 //        }).disposed(by: rx.disposeBag)
+    }
+}
+
+// MARK: Invite friend
+
+private extension Y2YCoordinator {
+    func inviteFriends( _ name: String, appShareUrl: String) {
+        let account = container.accountProvider.currentAccountValue.value
+        inviteFriendRepository.saveReferralInvite(customerId: account?.customer.customerId ?? "").asSingle().subscribe().disposed(by: rx.disposeBag)
+        let activityViewController = UIActivityViewController(activityItems: [appShareMessageForY2Y(welcomeMessage: "\n\n\(account?.customer.firstName ?? "")", appShareUrl: appShareUrl)], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = root.view
+        root.present(activityViewController, animated: true, completion: nil)
+    }
+
+    func inviteFriend(_ contact: YAPContact, _ name: String, appShareUrl: String) {
+        let account = container.accountProvider.currentAccountValue.value
+        inviteFriendRepository.saveReferralInvite(customerId: account?.customer.customerId ?? "").asSingle().subscribe().disposed(by: rx.disposeBag)
+        let activityViewController = UIActivityViewController(activityItems: [appShareMessageForY2Y(welcomeMessage: "\n\n\(account?.customer.firstName ?? "")", appShareUrl: appShareUrl)], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = root.view
+        root.present(activityViewController, animated: true, completion: nil)
+    }
+}
+
+extension Y2YCoordinator: MFMessageComposeViewControllerDelegate {
+    public func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+}
+
+extension Y2YCoordinator: MFMailComposeViewControllerDelegate {
+    public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
+        controller.dismiss(animated: true, completion: nil)
     }
 }

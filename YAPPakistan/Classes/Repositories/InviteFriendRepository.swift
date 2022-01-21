@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 
 public protocol InviteFriendRepositoryType {
-//    func saveReferralInvite() -> Observable<Event<String?>>
+    func saveReferralInvite(customerId: String?) -> Observable<Event<String?>>
 }
 
 public class YAPInviteFriendRepository: InviteFriendRepositoryType {

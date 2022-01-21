@@ -17,7 +17,7 @@ public final class UserSessionContainer {
     init(parent: YAPPakistanMainContainer, session: Session) {
         self.parent = parent
         self.session = session
-
+        
         let authService = parent.makeAuthenticationService(authorizationProvider: session)
         let customersService = parent.makeCustomersService(authorizationProvider: session)
         let repository = AccountRepository(authenticationService: authService, customerService: customersService)
