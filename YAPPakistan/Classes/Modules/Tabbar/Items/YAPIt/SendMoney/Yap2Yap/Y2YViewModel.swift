@@ -13,6 +13,7 @@ import RxDataSources
 import Contacts
 import PhoneNumberKit
 
+
 protocol Y2YViewModelInput {
     var searchObserver: AnyObserver<Void> { get }
     var yapContactObserver: AnyObserver<Void> { get }
@@ -113,7 +114,7 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
     }
     
     // MARK: - Outputs
-//    var invite: Observable<String> { return inviteSubject.withLatestFrom(SessionManager.current.currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager.getReferralUrl(for: $0) ?? "" }).asObservable() }
+    var invite: Observable<String> { return inviteSubject.withLatestFrom(currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}).asObservable() }
     var search: Observable<[YAPContact]?> { return searchSubject.withLatestFrom(contactResults) }
     var recentContactsAvailable: Observable<Bool> { return recentBeneficiariesSubject.map{ $0.count > 0 }.asObservable() }
     var allContactsAvailable: Observable<Bool> { return allContactsAvailableSubject.asObservable() }
@@ -184,7 +185,12 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
                 if value {
                     let allViewModels = filteredContacts.map { [unowned self] contact -> Y2YContactCellViewModel in
                         let viewModel = Y2YContactCellViewModel(contact)
-//                        viewModel.outputs.invite.bind(to: self.inviteFriendSubject).disposed(by: self.disposeBag)
+                       // viewModel.outputs.invite.bind(to: self.inviteFriendSubject).disposed(by: self.disposeBag)
+                      
+                        let a = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}
+                        let obs = Observable.just(contact)
+                        let comb = Observable.combineLatest(obs,a)
+                        viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteFriendSubject).disposed(by: disposeBag)
                         return viewModel }
                     self.allContactModels = allViewModels
                     self.yapContactModels = allViewModels.filter { $0.contact.isYapUser }
@@ -205,6 +211,13 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
                 let allViewModels = filteredContacts.map { [unowned self] contact -> Y2YContactCellViewModel in
                     let viewModel = Y2YContactCellViewModel(contact)
 //                    viewModel.outputs.invite.bind(to: self.inviteFriendSubject).disposed(by: self.disposeBag)
+                    
+
+                    let a = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}
+                    let obs = Observable.just(contact)
+                    let comb = Observable.combineLatest(obs,a)
+                    viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteFriendSubject).disposed(by: disposeBag)
+                    
                     return viewModel }
                 self.allContactModels = allViewModels
                 self.yapContactModels = allViewModels.filter { $0.contact.isYapUser }

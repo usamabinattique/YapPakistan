@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 
 public class AccountProvider {
     private let repository: AccountRepositoryType
@@ -21,9 +22,12 @@ public class AccountProvider {
     private var currentAccountInput: AnyObserver<Account?> { accountSubject.asObserver() }
 
     public var currentAccount: Observable<Account?> { accountSubject.asObservable() }
+    
+    public let currentAccountValue: BehaviorRelay<Account?> = BehaviorRelay(value: nil)
 
     public init(repository: AccountRepositoryType) {
         self.repository = repository
+        accountSubject.bind(to: currentAccountValue).disposed(by: disposeBag)
         refreshAccount()
     }
 

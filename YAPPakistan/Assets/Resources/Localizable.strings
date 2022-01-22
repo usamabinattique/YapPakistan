@@ -7,6 +7,7 @@
 */
 
 // MARK: Common
+"common_display_text_y2y_share" = "Hi %@ would like to send you some money via YAP. Download the app now and join YAP’s fast growing community!\n\nDownload YAP here:\n\n%@";
 "common_button_next" = "Next";
 "common_button_add" = "Add";
 "common_button_confirm" = "Confirm";

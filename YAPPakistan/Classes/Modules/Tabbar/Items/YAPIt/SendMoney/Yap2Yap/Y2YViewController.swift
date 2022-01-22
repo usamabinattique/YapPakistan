@@ -268,7 +268,14 @@ extension Y2YViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Y2YContactCell.defaultIdentifier) as! Y2YContactCell
         cell.indexPath = indexPath
-        cell.configure(with: self.themeService, viewModel: viewModel.outputs.model(forIndex: indexPath))
+        let viewModel = viewModel.outputs.model(forIndex: indexPath)
+        cell.configure(with: self.themeService, viewModel: viewModel)
+       /* if let vm = viewModel as? Y2YContactCellViewModel {
+            vm.outputs.invite.subscribe(onNext: { [unowned self] _ in
+                print("invite tapped")
+            }).disposed(by: rx.disposeBag)
+
+        } */
         return cell
     }
 }
