@@ -18,7 +18,7 @@ class Y2YSearchViewController: UIViewController {
     private lazy var searchBar: AppSearchBar = {
         let searchBar = AppSearchBar()
         searchBar.autoHidesCancelButton = false
-        //      searchBar.delegate = self
+        searchBar.delegate = self
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         return searchBar
     }()
@@ -35,8 +35,6 @@ class Y2YSearchViewController: UIViewController {
         let tableView = UITableView()
         tableView.separatorStyle = .none
         tableView.backgroundColor = .white
-        tableView.dataSource = self
-        tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
@@ -181,8 +179,25 @@ extension Y2YSearchViewController: ViewDesignable {
         viewModel.outputs.contactText.bind(to: yapContactLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.contactText.map { $0 == nil }.bind(to: yapContactLabel.rx.isHidden).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.refreshData.subscribe(onNext: { [weak self] in self?.tableView.reloadData() }).disposed(by: rx.disposeBag)
         viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
+        
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, indexPath, model) in
+            let cell = tableView.dequeueReusableCell(withIdentifier: model.reusableIdentifier) as! ConfigurableTableViewCell
+            cell.setIndexPath(indexPath)
+            cell.configure(with: self.themeService, viewModel: model)
+            return cell as! UITableViewCell
+        })
+        
+        viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
+        
+        tableView.rx.modelSelected(Y2YContactCellViewModel.self)
+            .do(onNext: { [weak self] _ in
+                self?.searchBar.resignFirstResponder()
+                self?.dismissKeyboard()
+            })
+            .map({ $0.contact })
+            .bind(to: viewModel.inputs.contactObserver)
+            .disposed(by: rx.disposeBag)
     }
     
     func setupTheme() {
@@ -195,35 +210,12 @@ extension Y2YSearchViewController: ViewDesignable {
             .disposed(by: rx.disposeBag)
     }
     
+    
 }
 
 // MARK: Search Bar delegate
 
 extension Y2YSearchViewController: AppSearchBarDelegate { }
-
-// MARK: Tableveiw data source
-
-extension Y2YSearchViewController: UITableViewDataSource {
-   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-      return viewModel.outputs.numberOfCells
-   }
-   
-   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-      let cellViewMdodel = viewModel.outputs.model(forIndex: indexPath)
-      let cell = tableView.dequeueReusableCell(withIdentifier: cellViewMdodel.reusableIdentifier) as! ConfigurableTableViewCell
-      cell.setIndexPath(indexPath)
-       cell.configure(with: self.themeService, viewModel: viewModel.outputs.model(forIndex: indexPath))
-      return cell as! UITableViewCell
-   }
-}
-
-// MARK: Table view delegate
-
-extension Y2YSearchViewController: UITableViewDelegate {
-   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-      viewModel.inputs.cellSelected(at: indexPath)
-   }
-}
 
 // MARK: Keyboard handling
 
