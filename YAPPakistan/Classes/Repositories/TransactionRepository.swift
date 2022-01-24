@@ -26,7 +26,7 @@ protocol TransactionsRepositoryType {
         pageNo: Int,
         pageSize: Int,
         cardSerialNo: String,
-        debitSearch: Bool
+        debitSearch: Bool, filter: TransactionFilter?
     ) -> Observable<Event<PagableResponse<TransactionResponse>>>
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>>
@@ -64,9 +64,9 @@ class TransactionsRepository: TransactionsRepositoryType {
         pageNo: Int,
         pageSize: Int,
         cardSerialNo: String,
-        debitSearch: Bool = false
+        debitSearch: Bool = false, filter: TransactionFilter? = nil
     ) -> Observable<Event<PagableResponse<TransactionResponse>>> {
-        return transactionService.fetchCardTransactions(cardSerialNumber: cardSerialNo, pageNumber: pageNo, pageSize: pageSize, debitSearch: debitSearch).materialize()
+        return transactionService.fetchCardTransactions(cardSerialNumber: cardSerialNo, pageNumber: pageNo, pageSize: pageSize, debitSearch: debitSearch, filter: filter).materialize()
     }
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>> {

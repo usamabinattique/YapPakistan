@@ -14,7 +14,7 @@ protocol TransactionsServiceType {
 
     func fetchTransactions<T>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<T> where T : Decodable, T : Encodable
 
-    func fetchCardTransactions<T>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool) -> Observable<T> where T : Decodable, T : Encodable
+    func fetchCardTransactions<T>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool, filter: TransactionFilter?) -> Observable<T> where T : Decodable, T : Encodable
 
     func fetchReorderFee<T>() -> Observable<T> where T : Decodable, T : Encodable
     
@@ -22,6 +22,7 @@ protocol TransactionsServiceType {
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
+   
     func fetchTransactions<T: Codable>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<T> {
         var params = [String: String]()
 
@@ -53,12 +54,21 @@ class TransactionsService: BaseService, TransactionsServiceType {
         return self.request(apiClient: apiClient, route: route)
     }
 
-    func fetchCardTransactions<T: Codable>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool) -> Observable<T> {
-        let query = ["cardSerialNumber": cardSerialNumber, "cardDetailsRequired" : String(true), "debitSearch" : String(debitSearch)]
-
+    func fetchCardTransactions<T: Codable>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool, filter: TransactionFilter?) -> Observable<T> {
+        
+        var query: [String: String] = [:]
+        
+        if let filter = filter {
+            query = ["cardSerialNumber": cardSerialNumber, "cardDetailsRequired" : String(true), "debitSearch" : String(debitSearch), "amountStartRange": String(filter.minAmount), "amountEndRange" : String(filter.maxAmount), "ATM_WITHDRAW": String(filter.atmWidrawl), "POS" : String(filter.retail)]
+        } else {
+             query = ["cardSerialNumber": cardSerialNumber, "cardDetailsRequired" : String(true), "debitSearch" : String(debitSearch)]
+        }
+        
+        
+        
         let route = APIEndpoint<String>(.get,
                                         apiConfig.transactionsURL,
-                                        "/api/cards-transactions",
+                                        "/api/cards-transactions/\(pageNumber)/\(pageSize)",
                                         pathVariables: nil,
                                         query: query,
                                         headers: authorizationProvider.authorizationHeaders)

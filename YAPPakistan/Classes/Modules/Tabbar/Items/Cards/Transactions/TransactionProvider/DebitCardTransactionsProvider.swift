@@ -50,7 +50,7 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
         
         isFetching = true
         
-        let request = /* cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer) : */ repository.fetchCardTransactions(pageNo: currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch).share()
+        let request = /* cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer) : */ repository.fetchCardTransactions(pageNo: currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch,filter: filter).share()
 
         return request.do(onNext: { [unowned self] response in
             guard response.element != nil else { return }
