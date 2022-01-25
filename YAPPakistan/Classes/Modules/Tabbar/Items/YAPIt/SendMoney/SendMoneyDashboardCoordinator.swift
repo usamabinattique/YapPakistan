@@ -58,7 +58,7 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.action
             .withLatestFrom(Observable.combineLatest(viewModel.outputs.action, viewModel.outputs.y2yRecentBeneficiaries, viewModel.outputs.y2yContacts))
             .subscribe(onNext: { [weak self] in
-                guard let localRoot = self?.localRoot else { return }
+                guard case YapItTileAction.yapContact = $0.0, let localRoot = self?.localRoot else { return }
                 self?.y2y(localRoot: localRoot, refreshObserver: viewModel.inputs.refreshObserver, recentBeneficiaries: $0.1)
             }).disposed(by: rx.disposeBag)
         

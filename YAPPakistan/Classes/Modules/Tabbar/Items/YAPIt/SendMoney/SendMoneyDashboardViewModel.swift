@@ -166,11 +166,11 @@ private extension SendMoneyDashboardViewModel {
             })
             .disposed(by: disposeBag)
         
-//        Observable.merge(contactsManager.error, Observable.merge(y2yBeneficiariesRequest.errors(), sendMoneyBeneficiariesRequest.errors(), countriesRequest.errors()).map{ $0.localizedDescription })
-//            .bind(to: errorSubject)
-//            .disposed(by: disposeBag)
+        Observable.merge(contactsManager.error, Observable.merge(y2yBeneficiariesRequest.errors(), sendMoneyBeneficiariesRequest.errors()).map{ $0.localizedDescription })
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
         
-//        sendMoneyBeneficiariesRequest.elements().bind(to: sendMoneyBeneficiariesSubject).disposed(by: disposeBag)
+        sendMoneyBeneficiariesRequest.elements().bind(to: sendMoneyBeneficiariesSubject).disposed(by: disposeBag)
         y2yBeneficiariesRequest.elements().bind(to: y2yRecentBeneficiariesSubject).disposed(by: disposeBag)
 //        countriesRequest.elements().bind(to: allCountriesSubject).disposed(by: disposeBag)
         
