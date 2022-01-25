@@ -31,13 +31,13 @@ public class Y2YRepository: Y2YRepositoryType {
     }
     
     public func classifyContacts(_ contacts: [Contact])-> Observable<Event<[YAPContact]>> {
-        return Observable.of(YAPContact.mock).materialize()
-//        return customersService.classifyContacts(contacts: contacts.map { (name: $0.name, phoneNumber: $0.phoneNumber, email: $0.email, photoUrl: $0.photoUrl, countryCode: $0.countryCode )}).materialize()
+//        return Observable.of(YAPContact.mock).materialize()
+        return customersService.classifyContacts(contacts: contacts.map { (name: $0.name, phoneNumber: $0.phoneNumber, email: $0.email, photoUrl: $0.photoUrl, countryCode: $0.countryCode )}).materialize()
     }
     
     public func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>> {
-        return Observable.of([Y2YRecentBeneficiary.mock]).materialize()
-//        return customersService.fetchRecentY2YBeneficiaries().materialize()
+//        return Observable.of([Y2YRecentBeneficiary.mock]).materialize()
+        return customersService.fetchRecentY2YBeneficiaries().materialize()
     }
 //
 //    public func fetchRecentBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>> {

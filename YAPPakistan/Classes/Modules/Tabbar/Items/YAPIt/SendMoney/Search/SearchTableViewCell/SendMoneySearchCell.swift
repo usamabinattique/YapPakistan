@@ -50,6 +50,7 @@ class SendMoneySearchCell: RxUITableViewCell {
     override func layoutIfNeeded() {
         super.layoutIfNeeded()
         
+        userImage.roundView()
     }
     
     // MARK: Configurations
@@ -72,8 +73,6 @@ extension SendMoneySearchCell: ViewDesignable {
         contentView.addSubview(nameStack)
         contentView.addSubview(typeImage)
         contentView.addSubview(flag)
-        
-        userImage.roundView()
     }
     
     func setupBindings() {

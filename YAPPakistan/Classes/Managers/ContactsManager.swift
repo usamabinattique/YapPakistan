@@ -82,6 +82,7 @@ public class ContactsManager: NSObject {
     public func syncPhoneBookContacts() {
         self.results = []
         self.resultSubject.onNext([])
+        self.allContacts = []
         self.makeContacts()
     }
     

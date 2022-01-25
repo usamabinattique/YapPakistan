@@ -62,7 +62,8 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
                 self?.y2y(localRoot: localRoot, refreshObserver: viewModel.inputs.refreshObserver, recentBeneficiaries: $0.1)
             }).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.search.subscribe(onNext: { [weak self] in
+        viewModel.outputs.search
+            .subscribe(onNext: { [weak self] in
             guard let `self` = self else { return }
             self.search(self.localRoot, beneficairies: $0)
         }).disposed(by: rx.disposeBag)
