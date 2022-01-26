@@ -93,7 +93,9 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
     private let recentBeneficiariesSubject: BehaviorSubject<[RecentBeneficiaryType]>
     private let enableSearchSubject = BehaviorSubject<Bool>(value: false)
     
-    var numberOfCells: Int { return currentContactModels.count }
+    var numberOfCells: Int {
+        return currentContactModels.count
+    }
     private let isPresentedSubject: Bool
     
     private var currentAccount: Observable<Account?>!
@@ -148,6 +150,7 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
         self.isPresentedSubject = presented
         self.contactResults.onNext(contacts)
         self.currentAccount = currentAccount
+        self.contactsManager.syncPhoneBookContacts()
         
         showLoadingEffects()
         self.refreshDataSubject.onNext(())
@@ -232,9 +235,6 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
                 }
             }).disposed(by: disposeBag)
         
-        DispatchQueue.main.async {
-            contactsManager.syncPhoneBookContacts()
-        }
         contactsManager.isSyncing.bind(to: showActivitySubject).disposed(by: disposeBag)
         contactsManager.isSyncing.map { !$0 }.bind(to: enableSearchSubject).disposed(by: disposeBag)
         

@@ -109,10 +109,6 @@ class SendMoneyDashboardViewModel: SendMoneyDashboardViewModelType, SendMoneyDas
         let res = items.map { YapItTileCellViewModel($0) }
         cellViewModelsSubject.onNext([SectionModel(model: 0, items: res)])
         
-        viewDidObserverSubject.subscribe(onNext: { _ in
-//            contactsManager.resetContactManager()
-        }).disposed(by: disposeBag)
-        
         fetchRecentBeneficiaries(repository)
         
         recentBeneficiaries.bind(to: recentBeneficiariesViewModel.inputs.recentBeneficiaryObserver).disposed(by: disposeBag)
@@ -149,22 +145,26 @@ private extension SendMoneyDashboardViewModel {
         
         contactsManager.syncPhoneBookContacts()
         
-        let y2yBeneficiariesRequest = refreshSubject.startWith(())
+        let y2yBeneficiariesRequest = refreshSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
             .flatMap{ repository.fetchRecentY2YBeneficiaries() }
             .share()
         
-        let sendMoneyBeneficiariesRequest = refreshSubject.startWith(())
+        let sendMoneyBeneficiariesRequest = refreshSubject
             .flatMap{ repository.fetchRecentSendMoneyBeneficiaries() }
             .share()
         
 //        let countriesRequest = repository.fetchBeneficiaryCountries().share()
         
-        y2yBeneficiariesRequest.map{ _ in }
-            .subscribe(onNext: { respons in
-                YAPProgressHud.hideProgressHud()
-            })
-            .disposed(by: disposeBag)
+//        y2yBeneficiariesRequest.map{ _ in }
+//            .subscribe(onNext: { respons in
+//
+//            })
+//            .disposed(by: disposeBag)
+        
+        Observable.zip(y2yBeneficiariesRequest, sendMoneyBeneficiariesRequest).subscribe(onNext: { _ in
+            YAPProgressHud.hideProgressHud()
+        }).disposed(by: disposeBag)
         
         Observable.merge(contactsManager.error, Observable.merge(y2yBeneficiariesRequest.errors(), sendMoneyBeneficiariesRequest.errors()).map{ $0.localizedDescription })
             .bind(to: errorSubject)

@@ -80,6 +80,7 @@ public class ContactsManager: NSObject {
     }
     
     public func syncPhoneBookContacts() {
+        self.progress = 0
         self.results = []
         self.resultSubject.onNext([])
         self.allContacts = []

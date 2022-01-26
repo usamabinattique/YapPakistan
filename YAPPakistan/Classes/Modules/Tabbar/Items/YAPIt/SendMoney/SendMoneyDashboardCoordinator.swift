@@ -80,7 +80,7 @@ private extension SendMoneyDashboardCoordinator {
                 self?.result.onNext(.success(result))
                 self?.result.onCompleted()
             } else {
-                refreshObserver.onNext(())
+                //refreshObserver.onNext(())
             }
         }).disposed(by: rx.disposeBag)
     }

@@ -180,6 +180,7 @@
 "screen_y2y_display_text_prompt" = "Who do you want to send money to?";
 "screen_y2y_display_text_recent_transfers" = "Recent transfers";
 "screen_y2y_display_text_search" = "Search";
+"screen_y2y_display_text_search_placeholder" = "Search beneficiaries";
 "screen_y2y_display_button_yap_contacts" = "YAP contacts";
 "screen_y2y_display_button_all_contacts" = "All contacts";
 "screen_y2y_display_text_no_yap_contacts" = "​​None of your friends have YAP yet. Invite them now and earn PKR XX for every friend that starts using YAP!";

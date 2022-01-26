@@ -18,6 +18,7 @@ class Y2YSearchViewController: UIViewController {
     private lazy var searchBar: AppSearchBar = {
         let searchBar = AppSearchBar()
         searchBar.autoHidesCancelButton = false
+        searchBar.textField.placeholder = "screen_y2y_display_text_search_placeholder".localized
         searchBar.delegate = self
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         return searchBar
