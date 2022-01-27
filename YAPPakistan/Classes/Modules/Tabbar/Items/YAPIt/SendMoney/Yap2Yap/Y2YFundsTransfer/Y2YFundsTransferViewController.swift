@@ -283,7 +283,13 @@ private extension Y2YFundsTransferViewController {
         viewModel.outputs.userName.bind(to: userName.rx.text).disposed(by: disposeBag)
         viewModel.outputs.balance.bind(to: balance.rx.attributedText).disposed(by: disposeBag)
         viewModel.outputs.confirmEnabled.bind(to: confirmButton.rx.isEnabled).disposed(by: disposeBag)
-    //    viewModel.outputs.showError.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
+        
+        viewModel.outputs.confirmEnabled.subscribe(onNext: { isEnabled in
+            print("isConfirmEnabled \(isEnabled)")
+        }).disposed(by: disposeBag)
+
+        
+       // viewModel.outputs.showError.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
         viewModel.outputs.currency.bind(to: currency.rx.text).disposed(by: disposeBag)
         viewModel.outputs.flag.bind(to: flagImage.rx.image).disposed(by: disposeBag)
         viewModel.outputs.isInputValid.subscribe(onNext: { [weak self] in
@@ -291,12 +297,6 @@ private extension Y2YFundsTransferViewController {
             self?.amountView.amountTextField.layer.borderColor = ($0 ? UIColor.clear : UIColor.red).cgColor
         }).disposed(by: disposeBag)
         viewModel.outputs.fee.bind(to: feeLabel.rx.attributedText).disposed(by: disposeBag)
-//        viewModel.outputs.fee.compactMap({ fee -> NSAttributedString in
-//            let attributed = NSMutableAttributedString(string: fee ?? "")
-//            attributed.addAttributes([.foregroundColor : UIColor.darkText], range: NSRange(location: (fee as NSString).range(of: amount).location, length: amount.count))
-//            return attributed as NSAttributedString
-//
-//        }).bind(to: feeLabel.rx.attributedText).disposed(by: disposeBag)
 
         viewModel.outputs.amountError
             .subscribe(onNext: { [weak self] in
@@ -309,17 +309,17 @@ private extension Y2YFundsTransferViewController {
         noteTextField.rx.text.bind(to: viewModel.inputs.noteObserver).disposed(by: disposeBag)
 
 
-//        let done = confirmButton.rx.tap
-//            .do(onNext: { [weak self] _ in self?.view.endEditing(true) })
-//            .withLatestFrom(SessionManager.current.currentAccount.map{ $0?.restrictions.contains(.otpBlocked) ?? false })
+        let done = confirmButton.rx.tap
+            .do(onNext: { [weak self] _ in self?.view.endEditing(true) })
+                .withLatestFrom( Observable.just(false) /*SessionManager.current.currentAccount.map{ $0?.restrictions.contains(.otpBlocked) ?? false } */)
 //
-//        done.filter{ $0 }.subscribe(onNext: { _ in
-//            UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
-//        }).disposed(by: disposeBag)
+        done.filter{ $0 }.subscribe(onNext: { _ in
+         //   UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
+        }).disposed(by: disposeBag)
 
-//        done.filter{ !$0 }.map{ _ in }
-//            .do(onNext: { [weak self] in self?.view.endEditing(true) })
-//            .bind(to: viewModel.inputs.confirmObserver).disposed(by: disposeBag)
+        done.filter{ !$0 }.map{ _ in }
+            .do(onNext: { [weak self] in self?.view.endEditing(true) })
+            .bind(to: viewModel.inputs.confirmObserver).disposed(by: disposeBag)
         
         viewModel.outputs.allowedDecimalPlaces.subscribe(onNext: { [weak self] in
             self?.decimalPlaces = $0

@@ -16,6 +16,7 @@ var localeNumberFormatter: NumberFormatter = {
 
 enum CurrencyType: String {
     case aed = "AED"
+    case pkr = "PKR"
 }
 
 class CurrencyFormatter {
@@ -37,7 +38,7 @@ class CurrencyFormatter {
     }
     
     static func formatAmountInLocalCurrency(_ amount: Double) -> String {
-        format(amount: amount, in: .aed)
+        format(amount: amount, in: .pkr)
     }
     
     static var defaultFormattedFee: String {
