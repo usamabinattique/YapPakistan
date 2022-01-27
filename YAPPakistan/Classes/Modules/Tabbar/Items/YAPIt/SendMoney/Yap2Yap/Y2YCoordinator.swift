@@ -80,6 +80,10 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
 //            self?.inviteFriends( self?.name ?? "", appShareUrl: $0)
 //        }).disposed(by: rx.disposeBag)
         
+        viewModel.outputs.contactSelected.subscribe(onNext: { [unowned self] in
+            self.sendMoney($0)
+        }).disposed(by: rx.disposeBag)
+        
         return result
     }
     
@@ -99,6 +103,16 @@ private extension Y2YCoordinator {
 //        viewModel.outputs.contactSelected.subscribe(onNext: { [weak self] in
 //            self?.sendMoney($0)
 //        }).disposed(by: rx.disposeBag)
+    }
+    
+    func sendMoney(_ contact: YAPContact) {
+
+        coordinate(to: Y2YFundsTransferCoordinator(root: root, container: container, contact: contact, repository: repository)).subscribe(onNext: { [weak self] in
+            if case let ResultType.success(result) = $0 {
+                self?.result.onNext(.success(result))
+                self?.result.onCompleted()
+            }
+        }).disposed(by: rx.disposeBag)
     }
 }
 

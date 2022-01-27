@@ -20,7 +20,7 @@ class TransactionFilterCheckBoxCell: RxUITableViewCell {
     private lazy var checkBox: YAPCheckBox = {
         let checkBox = YAPCheckBox()
         checkBox.translatesAutoresizingMaskIntoConstraints = false
-        checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
+       // checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
 //        checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)
         return checkBox
     }()
@@ -100,7 +100,7 @@ private extension TransactionFilterCheckBoxCell {
     }
     
     func setupResources() {
-       // checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
+        //checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
     }
 }
 

@@ -190,6 +190,18 @@
 "screen_y2y_display_text_invite_phone_contacts" = "Invite contacts from your address book";
 "screen_y2y_display_text_invite_no_phone_contacts" = "Tell your friends about YAP so you can send and receive money instantly!";
 
+// MARK: - Y2Y Funds transfer screen
+"screen_y2y_funds_transfer_display_text_title_yap_contact" = "Send to a YAP contact";
+"screen_y2y_funds_transfer_display_text_title_qr_contact" = "Enter amount to send";
+"screen_y2y_funds_transfer_display_text_note_placeholder" = "Leave a message (optional)";
+"screen_y2y_funds_transfer_display_text_fee" = "Fee: %@";
+"screen_y2y_funds_transfer_display_text_balance" = "Your available balance is %@";
+"common_display_text_transaction_limit_error" = "Your entered amount should be between %@ and %@";
+"common_display_text_daily_limit_error_limit_reached" = "Sorry, you've reached your daily limit. Let's try again tomorrow.";
+"common_display_text_available_balance_error" = "Uh oh! You’ll need to have a minimum balance of %@ plus the fee stated to proceed with this payment.";
+"common_display_text_daily_limit_error_single_transaction" = "This amount exceeds your daily transaction limit";
+"common_display_text_daily_limit_error_multiple_transactions" = "You have exceeded your daily transaction limit";
+
 //MARK: Report Cards
 "screen_report_card_display_text_title" = "Report lost or stolen card";
 "screen_report_card_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";

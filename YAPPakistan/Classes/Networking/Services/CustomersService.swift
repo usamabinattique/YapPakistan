@@ -76,6 +76,7 @@ public protocol CustomerServiceType {
     func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T>
     
     func classifyContacts<T: Codable>(contacts: [(name: String, phoneNumber: String, email: String?, photoUrl: String?, countryCode: String)]) -> Observable<T>
+    func fetchCustomerAccountBalance<T: Codable>() -> Observable<T>
 }
 
     
@@ -377,7 +378,12 @@ public class CustomersService: BaseService, CustomerServiceType {
 
         return self.request(apiClient: self.apiClient, route: route)
     }
+    
+    public func fetchCustomerAccountBalance<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/account/balance", headers: authorizationProvider.authorizationHeaders)
 
+        return self.request(apiClient: self.apiClient, route: route)
+    }
 }
 
 // MARK: Helpers
