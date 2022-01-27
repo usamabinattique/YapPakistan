@@ -21,7 +21,7 @@ public protocol Y2YRepositoryType: ContactsRepositoryType {
 //    func coolingPeriodTransactionReminder(for beneficiaryId: String, beneficiaryCreationDate: String?, beneficiaryName: String, amount: String ) -> Observable<Event<String?>>
     func getFee(productCode: String) -> Observable<Event<TransactionProductCodeFeeResponse>>
     func getTransactionProductLimit(transactionProductCode: String) -> Observable<Event<TransactionLimit>>
-    func getThresholdLimits() -> Observable<Event<TransactionThresholdResponse>>
+    func getThresholdLimits() -> Observable<Event<TransactionThreshold>>
     func Y2YTransfer(receiverUUID: String, amount: String, beneficiaryName: String, note: String?, otpVerificationStatus: Bool) -> Observable<Event<Y2YFundsTransferResponse>>
 }
 
@@ -85,7 +85,7 @@ public class Y2YRepository: Y2YRepositoryType {
         transactionService.getTransactionProductLimit(transactionProductCode: transactionProductCode).materialize()
     }
     
-    public func getThresholdLimits() -> Observable<Event<TransactionThresholdResponse>> {
+    public func getThresholdLimits() -> Observable<Event<TransactionThreshold>> {
         return transactionService.getThresholdLimits().materialize()
     }
     
@@ -109,7 +109,7 @@ public class MockY2YRepository: Y2YRepositoryType {
         }.materialize()
     }
     
-    public func getThresholdLimits() -> Observable<Event<TransactionThresholdResponse>> {
+    public func getThresholdLimits() -> Observable<Event<TransactionThreshold>> {
         Observable.create { observer in
             observer.onNext(.mock)
             return Disposables.create()

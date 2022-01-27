@@ -31,7 +31,7 @@
 "common_button_edit" = "Edit";
 "common_display_text_account" = "Account";
 "common_display_text_copy" = "Copy";
-"common_display_text_currency" = "AED";
+"common_display_text_currency" = "PKR";
 "common_button_ok" = "OK";
 "common_button_Done" = "Done";
 "common_disply_text_card_name_primary_silver" = "Primary card";
@@ -166,7 +166,7 @@
 
 //MARK: Filters
 "screen_transaction_filter_display_text_title" = "Filters";
-"screen_transaction_filter_display_text_balance" = "AED Balance";
+"screen_transaction_filter_display_text_balance" = "PKR Balance";
 
 "screen_transaction_filter_display_text_retail_payments" = "Retail payments";
 "screen_transaction_filter_display_text_online_transactions" = "Online transactions";
@@ -364,7 +364,7 @@
 "screen_transaction_filter_display_text_young_transactions" = "YAP Young transfers";
 "screen_transaction_filter_display_text_household_transactions" = "Household transfers";
 "screen_transaction_filter_display_text_pending_transactions" = "Pending transactions";
-"screen_transaction_filter_display_text_balance" = "AED Balance";
+"screen_transaction_filter_display_text_balance" = "PKR Balance";
 
 // MARK: Transaction details screen
 "screen_transaction_details_display_text_spent" = "Spent";

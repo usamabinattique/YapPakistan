@@ -70,8 +70,8 @@ extension TransferFee: Codable {
         self.feeType = (try? container.decode(TransferFeeType?.self, forKey: .feeType)) ?? .flat
         self.tiers = (try? container.decode([TransferFeeTier]?.self, forKey: .tiers)) ?? []
         self.fixedAmount = (try? container.decode(Double?.self, forKey: .fixedAmount)) ?? 0
-        self.slabCurrency = (try? container.decode(String?.self, forKey: .slabCurrency)) ?? "AED"
-        self.feeCurrency = (try? container.decode(String?.self, forKey: .feeCurrency)) ?? "AED"
+        self.slabCurrency = (try? container.decode(String?.self, forKey: .slabCurrency)) ?? "PKR"
+        self.feeCurrency = (try? container.decode(String?.self, forKey: .feeCurrency)) ?? "PKR"
     }
 }
 
