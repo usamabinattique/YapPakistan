@@ -58,11 +58,12 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.action
             .withLatestFrom(Observable.combineLatest(viewModel.outputs.action, viewModel.outputs.y2yRecentBeneficiaries, viewModel.outputs.y2yContacts))
             .subscribe(onNext: { [weak self] in
-                guard let localRoot = self?.localRoot else { return }
+                guard case YapItTileAction.yapContact = $0.0, let localRoot = self?.localRoot else { return }
                 self?.y2y(localRoot: localRoot, refreshObserver: viewModel.inputs.refreshObserver, recentBeneficiaries: $0.1)
             }).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.search.subscribe(onNext: { [weak self] in
+        viewModel.outputs.search
+            .subscribe(onNext: { [weak self] in
             guard let `self` = self else { return }
             self.search(self.localRoot, beneficairies: $0)
         }).disposed(by: rx.disposeBag)
@@ -79,7 +80,7 @@ private extension SendMoneyDashboardCoordinator {
                 self?.result.onNext(.success(result))
                 self?.result.onCompleted()
             } else {
-                refreshObserver.onNext(())
+                //refreshObserver.onNext(())
             }
         }).disposed(by: rx.disposeBag)
     }
