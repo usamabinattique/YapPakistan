@@ -203,6 +203,11 @@
 "common_display_text_daily_limit_error_multiple_transactions" = "You have exceeded your daily transaction limit";
 "custom_view_display_text_amount_view_initial_value" = "00";
 
+// MARK: - Y2Y transfer success
+"screen_y2y_funds_transfer_success_display_text_title" = "Transfer successful";
+"screen_y2y_funds_transfer_success_display_text_transfer" = "You have sent";
+"screen_y2y_funds_transfer_success_button_back" = "Go to dashboard";
+
 //MARK: Report Cards
 "screen_report_card_display_text_title" = "Report lost or stolen card";
 "screen_report_card_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";

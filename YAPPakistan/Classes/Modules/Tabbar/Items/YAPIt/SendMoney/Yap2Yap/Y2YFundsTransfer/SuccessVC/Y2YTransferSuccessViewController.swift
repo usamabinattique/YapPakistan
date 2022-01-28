@@ -8,18 +8,19 @@
 import UIKit
 import YAPComponents
 import RxSwift
+import RxTheme
 
 class Y2YTransferSuccessViewController: UIViewController {
     
     // MARK: Views
     
-    private lazy var userImage = UIFactory.makeImageView(contentMode: .scaleAspectFit) //UIImageViewFactory.createBackgroundImageView(mode: .scaleAspectFit)
+    private lazy var userImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     
-    private lazy var userName = UIFactory.makeLabel(font: .large, alignment: .center) //.primaryDark
+    private lazy var userName = UIFactory.makeLabel(font: .large, alignment: .center)
     
-    private lazy var transferLabel = UIFactory.makeLabel(font: .micro, alignment: .center) //.greyDark : "screen_y2y_funds_transfer_success_display_text_transfer".localized)
+    private lazy var transferLabel = UIFactory.makeLabel(font: .micro, alignment: .center)
     
-    private lazy var amountLabel = UIFactory.makeLabel(font: .title2, alignment: .center) // .primaryDark
+    private lazy var amountLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
     
     private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_y2y_funds_transfer_success_button_back".localized)
     
@@ -29,18 +30,20 @@ class Y2YTransferSuccessViewController: UIViewController {
         return view
     }()
     
-    private lazy var checkImage = UIFactory.makeImageView(contentMode: .center)  //UIImageViewFactory.createImageView(mode: .center, image: UIImage.sharedImage(named: "icon_completion"))
+    private lazy var checkImage = UIFactory.makeImageView(contentMode: .center)
 
     // MARK: Properties
     
     private var viewModel: Y2YTransferSuccessViewModelType!
+    private var themeService : ThemeService<AppTheme>!
     private let disposeBag = DisposeBag()
     
     // MARK: Initialization
     
-    init(viewModel: Y2YTransferSuccessViewModelType) {
+    init(theme: ThemeService<AppTheme>, viewModel: Y2YTransferSuccessViewModelType) {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
+        self.themeService = theme
     }
     
     required init?(coder: NSCoder) {
@@ -125,9 +128,15 @@ extension Y2YTransferSuccessViewController: ViewDesignable {
     }
     
     public func setupTheme() {
-        
+        self.themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [transferLabel.rx.textColor])
+            .bind({ UIColor($0.primaryDark) }, to: [userName.rx.textColor])
+            .bind({ UIColor($0.primaryDark) }, to: [amountLabel.rx.textColor])
+            .disposed(by: rx.disposeBag)
     }
     
-    
+    public func setupResources() {
+        self.checkImage.image = UIImage(named: "icon_completion", in: .yapPakistan)
+    }
     
 }
