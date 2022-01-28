@@ -140,7 +140,7 @@ class Y2YFundsTransferViewController: UIViewController {
           paragraphStyle0.alignment = .center
 
           let attributes0: [NSAttributedString.Key : Any] = [
-            .foregroundColor: UIColor.darkText,//UIColor.primaryDark,
+            .foregroundColor: UIColor(Color(hex: "#272262")),//UIColor.primaryDark,
               .font: UIFont.title3,
               .paragraphStyle: paragraphStyle0
           ]
@@ -150,7 +150,7 @@ class Y2YFundsTransferViewController: UIViewController {
           paragraphStyle2.alignment = .center
 
           let attributes2: [NSAttributedString.Key : Any] = [
-            .foregroundColor: UIColor.gray,//UIColor.greyDark,
+            .foregroundColor: UIColor(Color(hex: "#9391B1")),//UIColor.greyDark,
               .font: UIFont.small,
               .paragraphStyle: paragraphStyle2
           ]
@@ -173,7 +173,7 @@ class Y2YFundsTransferViewController: UIViewController {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
           // .bind({ UIColor( $0.greyLightSecondary ).withAlphaComponent(0.36)}, to: [amountView.rx.backgroundColor])
-            .bind({ UIColor($0.greyDark) }, to: [feeLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark) }, to: [feeLabel.rx.textColor,phoneNumber.rx.textColor])
             .bind({ UIColor($0.primaryExtraLight) }, to: [balance.rx.textColor])
             .bind({ UIColor($0.primaryDark)}, to: [backButton.rx.tintColor])
             .bind({ UIColor($0.primary)}, to: [confirmButton.rx.backgroundColor])

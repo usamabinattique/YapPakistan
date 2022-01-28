@@ -20,6 +20,9 @@ protocol Y2YTransferSuccessViewModelOutput {
     var userImage: Observable<(String?, UIImage?)> { get }
     var userName: Observable<String?> { get }
     var amount: Observable<String?> { get }
+    var phone: Observable<String> { get }
+    var reference: Observable<String> { get }
+    var date: Observable<String> { get }
 }
 
 protocol Y2YTransferSuccessViewModelType {
@@ -40,6 +43,10 @@ class Y2YTransferSuccessViewModel: Y2YTransferSuccessViewModelType, Y2YTransferS
     private let userNameSubject = BehaviorSubject<String?>(value: nil)
     private let amountSubject = BehaviorSubject<String?>(value: nil)
     
+    private let phoneSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let refernceSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let dateSubject = ReplaySubject<String>.create(bufferSize: 1)
+    
     // MARK: - Inputs
     var confirmObsever: AnyObserver<Void> { return confirmSubject.asObserver() }
     
@@ -48,6 +55,9 @@ class Y2YTransferSuccessViewModel: Y2YTransferSuccessViewModelType, Y2YTransferS
     var userImage: Observable<(String?, UIImage?)> { return userImageSubject.asObservable() }
     var userName: Observable<String?> { return userNameSubject.asObservable() }
     var amount: Observable<String?> { return amountSubject.asObservable() }
+    var phone: Observable<String> { return phoneSubject.asObservable() }
+    var reference: Observable<String> { return refernceSubject.asObservable() }
+    var date: Observable<String> { return dateSubject.asObservable() }
     
     // MARK: - Init
     init(_ contact: YAPContact, _ amount: Double) {
@@ -56,5 +66,11 @@ class Y2YTransferSuccessViewModel: Y2YTransferSuccessViewModelType, Y2YTransferS
         userImageSubject.onNext((contact.photoUrl, contact.thumbnailImage ?? contact.name.initialsImage(color: UIColor.green.withAlphaComponent(0.5))))
         userNameSubject.onNext(contact.name)
         amountSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(amount))
+        
+        phoneSubject.onNext("Mobile number: \(contact.phoneNumber)")
+       
+        //TODO: add refence number and date
+        refernceSubject.onNext("Refernce number: ")
+        dateSubject.onNext("Jan 29, 2021・10:35 AM")
     }
 }

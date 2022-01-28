@@ -49,11 +49,11 @@ public class Y2YFundsTransferCoordinator: Coordinator<ResultType<Void>> {
         root.pushViewController(viewController, animated: true)
         }
         
-      /*  viewModel.outputs.result.subscribe(onNext: { [weak self] in
+        viewModel.outputs.result.subscribe(onNext: { [weak self] in
             self?.tranferSuccess($0.0, $0.1)
         }).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.otpRequired.subscribe(onNext: { [weak self] in
+     /*   viewModel.outputs.otpRequired.subscribe(onNext: { [weak self] in
             self?.otp($0.0, $0.1, result: viewModel.inputs.otpVerfified)
         }).disposed(by: rx.disposeBag) */
         
@@ -97,11 +97,11 @@ private extension Y2YFundsTransferCoordinator {
         root.present(nav, animated: true, completion: nil)
         
         viewModel.outputs.completed.subscribe(onNext: { result.onNext(()) }).disposed(by: disposeBag)
-    }
+    } */
     
     func tranferSuccess(_ contact: YAPContact, _ amount: Double) {
         let viewModel = Y2YTransferSuccessViewModel(contact, amount)
-        let viewController = Y2YTransferSuccessViewController(viewModel: viewModel)
+        let viewController = Y2YTransferSuccessViewController(theme: container.themeService, viewModel: viewModel)
         if self.shouldPresent {
             self.localNavigationController.pushViewController(viewController, animated: true)
         }
@@ -112,7 +112,7 @@ private extension Y2YFundsTransferCoordinator {
         viewModel.outputs.confirm.subscribe(onNext: { [weak self] in
             self?.result.onNext(ResultType.success(()))
             self?.result.onCompleted()
-        }).disposed(by: disposeBag)
-    } */
+        }).disposed(by: rx.disposeBag)
+    }
 }
 

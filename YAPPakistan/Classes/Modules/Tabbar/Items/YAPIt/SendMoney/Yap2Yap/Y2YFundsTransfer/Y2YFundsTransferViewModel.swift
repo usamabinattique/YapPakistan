@@ -172,7 +172,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
            
             print("balance is \(balance)")
             let attributed = NSMutableAttributedString(string: text)
-            attributed.addAttributes([.foregroundColor: UIColor.darkText], range: NSRange(location: text.count - balance.count, length: balance.count))
+            attributed.addAttributes([.foregroundColor: UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
             return attributed as NSAttributedString }
         .bind(to: balanceSubject).disposed(by: disposeBag)
         
@@ -218,7 +218,7 @@ private extension Y2YFundsTransferViewModel {
         let coolingPeriodOver = confirmSubject.withLatestFrom(amountSubject).map{ Double($0 ?? "") ?? 0.0 }.map{ [unowned self] in self.coolingPeriod.isCoolingPeriodOver || $0 <= self.coolingPeriod.remainingLimit }
         
         coolingPeriodOver.filter{ !$0 }.withLatestFrom(amountSubject).unwrap().subscribe(onNext: {[weak self] enteredAmount in
-            self?.coolingPeriodTransactionReminder(amount: enteredAmount)
+          //  self?.coolingPeriodTransactionReminder(amount: enteredAmount)
         }).disposed(by: disposeBag)
         
         
@@ -247,8 +247,10 @@ private extension Y2YFundsTransferViewModel {
             .share()
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
         
-        fundsTransferRequest.errors().subscribe(onNext: { [weak self] in self?.amountErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
-//
+//        fundsTransferRequest.errors().subscribe(onNext: { [weak self] in self?.amountErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
+
+//                fundsTransferRequest.errors().subscribe(onNext: { [unowned self] _ in self.resultSubject.onNext((self.contact, 1.0)) }).disposed(by: disposeBag)
+                
         Observable.combineLatest(fundsTransferRequest.elements().map { [unowned self] _ in self.contact }, amountSubject.map { Double($0 ?? "") ?? 0 })
             .map { ($0.0, $0.1) }
             .do(onNext: { _ in
@@ -302,58 +304,8 @@ private extension Y2YFundsTransferViewModel {
 //                let attributed = NSMutableAttributedString(string: text)
 //                attributed.addAttributes([.foregroundColor : UIColor.primaryDark], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
             let attributed = NSMutableAttributedString(string: text)
-            attributed.addAttributes([.foregroundColor : UIColor.darkText], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
+            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
             return attributed as NSAttributedString }.bind(to: feeSubject).disposed(by: disposeBag)
-        
-      
-        
-//        let dailyLimitRequest = repository.transactionThresholds().share()
-        
-//        dailyLimitRequest.elements().subscribe(onNext: { [unowned self] in self.transactionThreshold = $0 }).disposed(by: disposeBag)
-        
-//        Observable.merge(request.errors(), dailyLimitRequest.errors())
-//            .subscribe(onNext: { [weak self] in self?.showErrorSubject.onNext($0.localizedDescription) })
-//            .disposed(by: disposeBag)
-        
-//        let transactionLimitRequest = self.repository.fetchTransactionLimits(productCode: TransactionProductCode.y2yTransfer, accountUuid: SessionManager.current.currentProfile?.uuid ?? "").share()
-//
-//        transactionLimitRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
-//        transactionLimitRequest.elements().subscribe(onNext: { [unowned self] in
-//            let min = Double($0.min) ?? 0
-//            let max = Double($0.max) ?? 0
-//            self.transactionRange = min...max
-//        }).disposed(by: disposeBag)
-//
-//        let coolingPeriodRequest = repository.getCoolingPeriod(accoundUUID: contact.yapAccountDetails?.first?.uuid ?? "").share()
-        
-//        coolingPeriodRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
-//
-//        coolingPeriodRequest.elements().subscribe(onNext: { [unowned self] in self.coolingPeriod = $0 }).disposed(by: disposeBag)
-//
-//        Observable.zip(request.map{ _ in }, dailyLimitRequest.map{ _ in }, transactionLimitRequest.map{ _ in }).subscribe(onNext: { _ in YAPProgressHud.hideProgressHud() }).disposed(by: disposeBag)
-    }
-    
-    func coolingPeriodTransactionReminder(amount: String) {
-        
-        let message = String(format: "You can only send up to %@ at this time. To transfer bigger amounts, please wait for %d hours from the time you \nadded %@.\n\n", CurrencyFormatter.formatAmountInLocalCurrency(self.coolingPeriod.remainingLimit), Int(self.coolingPeriod.coolingPeriodDuration), contact.name)
-        
-      //  YAPProgressHud.showProgressHud()
-//        let coolingTransactionReminderRequest = repository.coolingPeriodTransactionReminder(for: String(contact.yapAccountDetails?.first?.uuid ?? ""), beneficiaryCreationDate: "", beneficiaryName: contact.name, amount: amount).share()
-        
-        
-//        coolingTransactionReminderRequest
-//            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-//            .elements()
-//            .map{_ in message }
-//            .bind(to: coolingTransactionReminderAlertSubject)
-//            .disposed(by: disposeBag)
-//
-//        coolingTransactionReminderRequest
-//            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-//            .errors()
-//            .map{ $0.localizedDescription }
-//            .bind(to: showErrorSubject)
-//            .disposed(by: disposeBag)
     }
 }
 
