@@ -343,7 +343,7 @@ private extension Y2YFundsTransferViewController {
             self?.currencyStack.isHidden = !$0
             self?.paddedView.isHidden = !$0
             self?.amountView.isCurrencyHidden = $0
-            self?.phoneNumber.isHidden = $0
+            self?.phoneNumber.isHidden = false //$0
         }).disposed(by: disposeBag)
         
         viewModel.outputs.phoneNumber.bind(to: phoneNumber.rx.text).disposed(by: disposeBag)

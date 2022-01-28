@@ -149,7 +149,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
         self.isPresentedSubject = presented
         
         showsFlagSubject = BehaviorSubject(value: transferType == .yapContact)
-        phoneNumberSubject = BehaviorSubject(value: contact.formattedPhoneNumber)
+        phoneNumberSubject = BehaviorSubject(value: contact.phoneNumber)//contact.formattedPhoneNumber)
         allowedDecimalSucject = BehaviorSubject(value: CurrencyFormatter.decimalPlaces(for: "PKR"))
         titleSubject = BehaviorSubject(value: transferType.title)
 

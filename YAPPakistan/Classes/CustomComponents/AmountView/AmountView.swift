@@ -50,7 +50,7 @@ open class AmountView: UIView {
     private var viewModel: AmountViewModelType?
     public var allowedDecimal: Int = 2 {
         didSet {
-            amountTextField.placeholder = CurrencyFormatter.defaultFormattedFee.split(separator: " ").last.map { String($0) }
+            amountTextField.placeholder = "custom_view_display_text_amount_view_initial_value".localized//CurrencyFormatter.defaultFormattedFee.split(separator: " ").last.map { String($0) }
         }
     }
     
