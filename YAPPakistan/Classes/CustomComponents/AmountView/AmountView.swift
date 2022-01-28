@@ -184,7 +184,7 @@ extension AmountView: UITextFieldDelegate {
             numberOfDecimalDigits = 0
         }
         
-        return isNumeric && numberOfDots <= 1 && numberOfDecimalDigits <= allowedDecimal
+        return isNumeric && numberOfDots <= 0 && numberOfDecimalDigits <= allowedDecimal
     }
 }
 

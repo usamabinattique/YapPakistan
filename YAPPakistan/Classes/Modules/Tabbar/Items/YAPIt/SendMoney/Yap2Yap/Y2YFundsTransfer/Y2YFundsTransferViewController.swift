@@ -49,7 +49,7 @@ class Y2YFundsTransferViewController: UIViewController {
         return view
     }()
 
-    private lazy var toolBar = AppDatePickerView()// getToolBar(target: self, done: #selector(editingDoneAction), cancel: #selector(endEditingAction))
+    private lazy var toolBar =  UIToolbar.getToolBar(target: self, done: #selector(editingDoneAction), cancel: #selector(endEditingAction))
 
     private lazy var feeLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
@@ -172,12 +172,15 @@ class Y2YFundsTransferViewController: UIViewController {
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
-        //    .bind({ UIColor($0.primary) }, to: [amountView..rx.backgroundColor])
+          // .bind({ UIColor( $0.greyLightSecondary ).withAlphaComponent(0.36)}, to: [amountView.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [feeLabel.rx.textColor])
             .bind({ UIColor($0.primaryExtraLight) }, to: [balance.rx.textColor])
             .bind({ UIColor($0.primaryDark)}, to: [backButton.rx.tintColor])
             .bind({ UIColor($0.primary)}, to: [confirmButton.rx.backgroundColor])
             .disposed(by: rx.disposeBag)
+
+
+
     }
     
     override func onTapBackButton() {
@@ -282,14 +285,16 @@ private extension Y2YFundsTransferViewController {
         viewModel.outputs.userImage.bind(to: userImage.rx.loadImage()).disposed(by: disposeBag)
         viewModel.outputs.userName.bind(to: userName.rx.text).disposed(by: disposeBag)
         viewModel.outputs.balance.bind(to: balance.rx.attributedText).disposed(by: disposeBag)
-        viewModel.outputs.confirmEnabled.bind(to: confirmButton.rx.isEnabled).disposed(by: disposeBag)
+       // viewModel.outputs.confirmEnabled.bind(to: confirmButton.rx.isEnabled).disposed(by: disposeBag)
         
-        viewModel.outputs.confirmEnabled.subscribe(onNext: { isEnabled in
+        viewModel.outputs.confirmEnabled.subscribe(onNext: { [weak self] isEnabled in
             print("isConfirmEnabled \(isEnabled)")
+            self?.confirmButton.isEnabled = isEnabled
+            self?.confirmButton.backgroundColor = isEnabled ? UIColor(Color(hex: "#5E35B1")) : UIColor(Color(hex: "#5E35B1")).withAlphaComponent(0.50)
         }).disposed(by: disposeBag)
 
         
-       // viewModel.outputs.showError.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
+//        viewModel.outputs.showError.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
         viewModel.outputs.currency.bind(to: currency.rx.text).disposed(by: disposeBag)
         viewModel.outputs.flag.bind(to: flagImage.rx.image).disposed(by: disposeBag)
         viewModel.outputs.isInputValid.subscribe(onNext: { [weak self] in
@@ -304,7 +309,7 @@ private extension Y2YFundsTransferViewController {
                 $0 == nil ? self.amountAlert.hide() :
                     self.amountAlert.show(inView: self.view, type: .error, text: $0!, autoHides: false) })
             .disposed(by: disposeBag)
-        amountView.amountTextField.text = "0.0"
+        
         amountView.amountTextField.rx.text.map{ $0?.removingGroupingSeparator() }.bind(to: viewModel.inputs.amountObserver).disposed(by: disposeBag)
         noteTextField.rx.text.bind(to: viewModel.inputs.noteObserver).disposed(by: disposeBag)
 
@@ -354,7 +359,7 @@ extension Y2YFundsTransferViewController: UITextFieldDelegate {
         return true
     }
 
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let newString = (textField.text as NSString?)?.replacingCharacters(in: range, with: string)
         return ValidationService.shared.validateTransactionRemarks(newString) || string.count == 0
     }

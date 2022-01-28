@@ -130,6 +130,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
     var close: Observable<Void> { return closeSubject.asObservable() }
     
     private var transferFee = TransferFee.mock
+    private var transactionFee = TransactionProductCodeFeeResponse.mock
     private var transactionRange = 0.1...100.0
     private var coolingPeriod = BeneficiaryCoolingPeriod.mock
     private let transferType: TransferType
@@ -161,7 +162,9 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
                 attributed.addAttributes([.foregroundColor: UIColor.primaryDark], range: NSRange(location: text.count - balance.count, length: balance.count))
                 return attributed as NSAttributedString }
             .bind(to: balanceSubject).disposed(by: disposeBag) */
-        
+//        Observable.combineLatest(feeRes,customerBalanceRes).map { (fee, balance) in
+//            fee.
+//        }
         customerBalanceRes.map { balance -> NSAttributedString in
             let blnceFormatted = String(format: "%.2f", balance.currentBalance)
             let balance = "PKR \(blnceFormatted)"
@@ -203,7 +206,7 @@ private extension Y2YFundsTransferViewModel {
             .map{ $0.0 > 0.0 && $0.1 == nil && $0.2 }
             .bind(to: confirmEnabledSubject)
             .disposed(by: disposeBag)
-        
+    
         validNote
             .map{ $0 ? nil : "Please remove special characters to continue" }
             .bind(to: noteErrorSubject)
@@ -278,7 +281,7 @@ private extension Y2YFundsTransferViewModel {
                         self.customerBalanceRes.onNext(blnce)
                         self.limitRes.onNext(limit)
                         self.feeRes.onNext(fee)
-                        
+                        self.transactionFee = fee
                         let min =  Double(limit.min) ?? 0
                         let max = Double(limit.max) ?? 0
                         self.transactionRange = min...max
@@ -365,7 +368,7 @@ private extension Y2YFundsTransferViewModel {
     }
     
     func getError(forAmount amount: Double, availableBalance balance: Double) -> String? {
-        let fee = transferFee.getTaxedFee(for: amount)
+        let fee =  transactionFee.fixedAmount //transferFee.getTaxedFee(for: amount)
         
         guard amount + fee <= balance else {
             return String.init(format: "common_display_text_available_balance_error".localized, CurrencyFormatter.formatAmountInLocalCurrency(amount))
@@ -374,14 +377,6 @@ private extension Y2YFundsTransferViewModel {
         guard amount <= transactionThreshold.dailyRemainingLimit else {
             return transactionThreshold.dailyRemainingLimit <= 0 ? "common_display_text_daily_limit_error_limit_reached".localized : amount > self.transactionThreshold.dailyLimit ? "common_display_text_daily_limit_error_single_transaction".localized : "common_display_text_daily_limit_error_multiple_transactions".localized
         }
-        
-       
-        
-        //        guard coolingPeriod.isCoolingPeriodOver || amount <= coolingPeriod.remainingLimit else {
-        //            return coolingPeriod.remainingLimit <= 0 ?
-        //                String.init(format: "common_display_text_cooling_period_limit_consumed_error".localized, String.init(format: "%0.0f", coolingPeriod.coolingPeriodDuration), contact.name) :
-        //                String.init(format: "common_display_text_cooling_period_limit_error".localized, CurrencyFormatter.formatAmountInLocalCurrency(coolingPeriod.remainingLimit), String.init(format: "%0.0f", coolingPeriod.coolingPeriodDuration), contact.name)
-        //        }
         
         guard amount <= transactionRange.upperBound else {
             return String.init(format: "common_display_text_transaction_limit_error".localized, "PKR \(transactionRange.lowerBound.formattedAmount)", "PKR \(transactionRange.upperBound.formattedAmount)")

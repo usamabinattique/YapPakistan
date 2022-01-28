@@ -201,6 +201,7 @@
 "common_display_text_available_balance_error" = "Uh oh! You’ll need to have a minimum balance of %@ plus the fee stated to proceed with this payment.";
 "common_display_text_daily_limit_error_single_transaction" = "This amount exceeds your daily transaction limit";
 "common_display_text_daily_limit_error_multiple_transactions" = "You have exceeded your daily transaction limit";
+"custom_view_display_text_amount_view_initial_value" = "00";
 
 //MARK: Report Cards
 "screen_report_card_display_text_title" = "Report lost or stolen card";
