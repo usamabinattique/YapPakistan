@@ -30,7 +30,7 @@ class Y2YTransferSuccessViewController: UIViewController {
         return view
     }()
     
-    private lazy var checkImage = UIFactory.makeImageView(contentMode: .center)  //UIImageViewFactory.createImageView(mode: .center, image: UIImage.sharedImage(named: "icon_completion"))
+    private lazy var checkImage = UIFactory.makeImageView(contentMode: .center)
 
     // MARK: Properties
     
@@ -135,6 +135,8 @@ extension Y2YTransferSuccessViewController: ViewDesignable {
             .disposed(by: rx.disposeBag)
     }
     
-    
+    public func setupResources() {
+        self.checkImage.image = UIImage(named: "icon_completion", in: .yapPakistan)
+    }
     
 }

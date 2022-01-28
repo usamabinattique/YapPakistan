@@ -52,10 +52,7 @@ class Y2YTransferSuccessViewModel: Y2YTransferSuccessViewModelType, Y2YTransferS
     // MARK: - Init
     init(_ contact: YAPContact, _ amount: Double) {
         
-//        userImageSubject.onNext((contact.photoUrl, contact.thumbnailImage ?? contact.name.initialsImage(color: .secondaryGreen)))
-//        userNameSubject.onNext(contact.name)
-//        amountSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(amount))
-        
+        //TODO: {YASIR} utilize this contact.name.initialsImage color in your VC
         userImageSubject.onNext((contact.photoUrl, contact.thumbnailImage ?? contact.name.initialsImage(color: UIColor.green.withAlphaComponent(0.5))))
         userNameSubject.onNext(contact.name)
         amountSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(amount))
