@@ -10,6 +10,7 @@ import Foundation
 import RxSwift
 import YAPComponents
 import RxTheme
+import UIKit
 
 open class NoSearchResultCell: RxUITableViewCell {
     // MARK: Views
@@ -35,8 +36,6 @@ open class NoSearchResultCell: RxUITableViewCell {
     
     private func commonInit() {
         selectionStyle = .none
-        
-        setupViews()
         setupConstraints()
     }
     
@@ -46,27 +45,33 @@ open class NoSearchResultCell: RxUITableViewCell {
         guard let viewModel = viewModel as? NoSearchResultCellViewModelType else { return }
         self.viewModel = viewModel
         self.themeService = themeService
-        bindView(with: viewModel)
+        self.setupTheme()
+        self.setupSubViews()
+        self.setupBindings()
+        self.setupConstraints()
     }
 }
 
 // MARK: View setup
 
-private extension NoSearchResultCell {
-    func setupViews() {
+extension NoSearchResultCell: ViewDesignable {
+    
+    public func setupBindings() {
+        viewModel.outputs.title.bind(to: title.rx.text).disposed(by: disposeBag)
+    }
+    
+    public func setupTheme() {
+        self.themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [title.rx.textColor])
+    }
+    
+    public func setupSubViews() {
         contentView.addSubview(title)
     }
     
-    func setupConstraints() {
+    public func setupConstraints() {
         title
             .alignEdgesWithSuperview([.left, .top, .right, .bottom], constants: [25, 65, 25, 15])
     }
-}
-
-// MARK: - Binding
-
-private extension NoSearchResultCell {
-    func bindView(with viewModel: NoSearchResultCellViewModelType) {
-        viewModel.outputs.title.bind(to: title.rx.text).disposed(by: disposeBag)
-    }
+    
 }

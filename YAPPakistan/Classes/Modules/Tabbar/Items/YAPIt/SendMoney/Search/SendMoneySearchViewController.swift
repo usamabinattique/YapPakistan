@@ -17,35 +17,12 @@ class SendMoneySearchViewController: KeyboardAvoidingViewController {
     
     private lazy var searchBar: AppSearchBar = {
         let searchBar = AppSearchBar()
+        searchBar.textField.placeholder = "screen_y2y_display_text_search_placeholder".localized
         searchBar.autoHidesCancelButton = false
 //        searchBar.delegate = self
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         return searchBar
     }()
-//    : AppSearchTextField = {
-//        let textField = AppSearchTextField()
-//        textField.placeholder = "Search"
-//        textField.returnKeyType = .search
-//        textField.borderStyle = .none
-//        textField.backgroundColor = UIColor.greyLight.withAlphaComponent(0.35)
-//        textField.font = .small
-//        textField.layer.cornerRadius = 17.5
-//        textField.clipsToBounds = false
-//        textField.translatesAutoresizingMaskIntoConstraints = false
-//        return textField
-//    }()
-    
-//    private lazy var cancelButton: UIButton = {
-//        let button = UIButton()
-//        button.backgroundColor = .clear
-//        button.setTitle("Cancel", for: .normal)
-//        button.setTitleColor(.primary, for: .normal)
-//        button.titleLabel?.font = .small
-//        button.translatesAutoresizingMaskIntoConstraints = false
-//        return button
-//    }()
-    
-//    private lazy var searchStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 10, arrangedSubviews: [searchBar, cancelButton])
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
