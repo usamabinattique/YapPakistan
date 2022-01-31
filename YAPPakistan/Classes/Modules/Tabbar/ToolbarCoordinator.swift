@@ -177,7 +177,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
     
     fileprivate func sendMoney(_ root: UIViewController) {
-        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager)).subscribe(onNext: { result in
+        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
             if case ResultType.success = result {
                 root.dismiss(animated: true, completion: nil)
                 (root as? UITabBarController)?.selectedIndex = 0

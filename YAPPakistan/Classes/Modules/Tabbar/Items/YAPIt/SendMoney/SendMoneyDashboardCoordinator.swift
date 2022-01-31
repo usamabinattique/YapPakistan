@@ -19,12 +19,14 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private var container: UserSessionContainer!
     let contactsManager: ContactsManager
+    private let repository: Y2YRepositoryType
     
-    init(root: UIViewController, container: UserSessionContainer, successButtonTitle: String? = nil, contactsManager: ContactsManager) {
+    init(root: UIViewController, container: UserSessionContainer, successButtonTitle: String? = nil, contactsManager: ContactsManager, repository: Y2YRepositoryType) {
         self.root = root
         self.successButtonTitle = successButtonTitle
         self.container = container
         self.contactsManager = contactsManager
+        self.repository = repository
     }
     
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -36,6 +38,17 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
         self.localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         
         self.root.present(self.localRoot, animated: true, completion: nil)
+        
+        viewModel.outputs.sendMoneyFundsTransfer.subscribe(onNext: { [weak self] in
+            guard let `self` = self else { return }
+            print("send money \($0)")
+         //   self.sendMoneyFundsTransfer($0, localRoot: self.localRoot)
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.y2yFundsTransfer.subscribe(onNext: { [weak self] in
+            guard let `self` = self else { return }
+            self.y2yFundsTransfer($0, localRoot: self.localRoot)
+        }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.action
             .subscribe(onNext: { [weak self] in
@@ -95,16 +108,36 @@ private extension SendMoneyDashboardCoordinator {
             self?.localRoot.popViewController(animated: true)
         }).disposed(by: rx.disposeBag)
         
-//        viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
-//            if $0 is SendMoneyBeneficiary {
-//                self?.sendMoneyFundsTransfer($0 as! SendMoneyBeneficiary, localRoot: localRoot)
-//            }
-//            if $0 is Y2YRecentBeneficiary {
-//                self?.y2yFundsTransfer(YAPContact.contact(fromRecentBeneficiary: $0 as! Y2YRecentBeneficiary), localRoot: localRoot)
-//            }
-//            if $0 is YAPContact {
-//                self?.y2yFundsTransfer($0 as! YAPContact, localRoot: localRoot)
-//            }
-//        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
+            if $0 is SendMoneyBeneficiary {
+              //  self?.sendMoneyFundsTransfer($0 as! SendMoneyBeneficiary, localRoot: localRoot)
+            }
+            if $0 is Y2YRecentBeneficiary {
+                self?.y2yFundsTransfer(YAPContact.contact(fromRecentBeneficiary: $0 as! Y2YRecentBeneficiary), localRoot: localRoot)
+            }
+            if $0 is YAPContact {
+                self?.y2yFundsTransfer($0 as! YAPContact, localRoot: localRoot)
+            }
+        }).disposed(by: rx.disposeBag)
+    }
+    
+  /*  func sendMoneyFundsTransfer(_ beneficiary: SendMoneyBeneficiary, localRoot: UINavigationController) {
+        Y2YFundsTransferCoordinator(root: localRoot, container: container, contact: <#T##YAPContact#>, repository: <#T##Y2YRepositoryType#>)
+        coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, beneficiary: beneficiary)).subscribe(onNext: { [weak self] in
+            if case let ResultType.success(result) = $0 {
+                self?.result.onNext(.success(result))
+                self?.result.onCompleted()
+            }
+        }).disposed(by: rx.disposeBag)
+    } */
+    
+    func y2yFundsTransfer(_ contact: YAPContact, localRoot: UINavigationController) {
+        
+        coordinate(to: Y2YFundsTransferCoordinator(root: localRoot, container: container, contact: contact, repository: repository)).subscribe(onNext: { [weak self] in
+            if case let ResultType.success(result) = $0 {
+                self?.result.onNext(.success(result))
+                self?.result.onCompleted()
+            }
+        }).disposed(by: rx.disposeBag)
     }
 }

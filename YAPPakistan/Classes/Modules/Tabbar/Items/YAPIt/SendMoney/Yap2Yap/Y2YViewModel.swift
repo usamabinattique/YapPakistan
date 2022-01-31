@@ -26,7 +26,7 @@ protocol Y2YViewModelInput {
 }
 
 protocol Y2YViewModelOutput {
-//    var invite: Observable<String> { get }
+    var invite: Observable<String> { get }
     var search: Observable<[YAPContact]?> { get }
     
     var recentContactsAvailable: Observable<Bool> { get }
