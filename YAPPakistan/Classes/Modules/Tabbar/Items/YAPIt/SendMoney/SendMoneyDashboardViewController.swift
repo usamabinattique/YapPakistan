@@ -148,10 +148,13 @@ fileprivate extension SendMoneyDashboardViewController {
             })
             .disposed(by: rx.disposeBag)
         
+        
+        
         viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.showsRecentBeneficiary.map{ !$0 }.bind(to: recentBeneficiaryView.rx.isHidden).disposed(by: rx.disposeBag)
         recentBeneficiaryView.configure(with: self.themeService, viewModel: viewModel.outputs.recentBeneficiaryViewModel)
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
+        
     }
     
     func setupResources() {
