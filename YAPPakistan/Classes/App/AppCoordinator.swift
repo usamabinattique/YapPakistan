@@ -45,6 +45,7 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
             user.mobileNo = PhoneNumber(formattedValue: formattedPhoneNumber)
             onboarding(user: user)
         case .passcode(let formattedPhoneNumber):
+           // _ = container.credentialsStore.secure(username: formattedPhoneNumber)
             verifyPasscode()
         }
         return result

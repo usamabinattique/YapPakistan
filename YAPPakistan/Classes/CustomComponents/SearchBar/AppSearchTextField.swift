@@ -6,12 +6,10 @@
 //  Copyright © 2019 YAP. All rights reserved.
 //
 
-// swiftlint:disable line_length
-
 import Foundation
 
 public class AppSearchTextField: UITextField {
-
+    
     public lazy var searchIconView: UIImageView = {
         let image = UIImageView()
         image.image = UIImage.init(named: "icon_search", in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
@@ -19,7 +17,7 @@ public class AppSearchTextField: UITextField {
         // image.tintColor = .greyDark
         return image
     }()
-
+    
     // MARK: Initialization
     
     override init(frame: CGRect) {
@@ -33,8 +31,13 @@ public class AppSearchTextField: UITextField {
     }
     
     private func commonInit() {
-        leftView = searchIconView
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "icon_search", in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = UIColor(red: 0.576, green: 0.569, blue: 0.694, alpha: 1.0)//.greyDark
+        imageView.contentMode = .center
+        leftView = imageView
         leftViewMode = .always
+        
     }
 }
 
@@ -42,7 +45,7 @@ public class AppSearchTextField: UITextField {
 
 extension AppSearchTextField {
     public override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
-        return isFirstResponder ? rect(forBounds: bounds) : CGRect(x: bounds.size.width / 2 - (((placeholder as NSString?)?.size(withAttributes: [.font: font ?? .small]).width ?? 0)/2), y: 0, width: bounds.width, height: bounds.height)
+        return isFirstResponder ? rect(forBounds: bounds) : CGRect(x: bounds.size.width/2 - (((placeholder as NSString?)?.size(withAttributes: [.font: font ?? .small]).width ?? 0)/2), y: 0, width: bounds.width, height: bounds.height)
     }
     
     public override func editingRect(forBounds bounds: CGRect) -> CGRect {

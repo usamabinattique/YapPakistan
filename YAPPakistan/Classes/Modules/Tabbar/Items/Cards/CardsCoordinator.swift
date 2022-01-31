@@ -7,6 +7,7 @@
 
 import RxSwift
 import YAPCore
+import YAPComponents
 
 public class CardsCoordinator: Coordinator<ResultType<Void>> {
 
@@ -24,13 +25,21 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         super.init()
 
         self.navigationRoot = makeNavigationController()
+//        self.navigationRoot =  UINavigationControllerFactory.createAppThemedNavigationController(root: self.root, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         let accountProvider = container.accountProvider
         let cardsRepository = container.makeCardsRepository()
         let viewController = CardsViewController(themeService: container.themeService, viewModel: CardsViewModel(accountProvider: accountProvider, cardsRepository: cardsRepository))
-
+      //  self.navigationRoot =  UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+        
+//      /  navigationRoot.tabBarItem = UITabBarItem(title: "Cards",
+//                                                 image: UIImage(named: "icon_tabbar_cards", in: .yapPakistan),
+//                                                 selectedImage: nil)
+//
+//        self.root.present(self.navigationRoot, animated: true, completion: nil)
+        
         navigationRoot.pushViewController(viewController, animated: false)
         navigationRoot.tabBarItem = UITabBarItem(title: "Cards",
                                                  image: UIImage(named: "icon_tabbar_cards", in: .yapPakistan),
@@ -77,7 +86,8 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     func cardDetailView(_ paymentCard: PaymentCard?) {
         cardDetaild = paymentCard; #warning("FIXME")
 
-        let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository())
+        let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository(),cardSerialNumber: paymentCard?.cardSerialNumber)
+    
         let tviewModel = TransactionsViewModel.init(transactionDataProvider: tProvider,
                                                cardSerialNumber: paymentCard?.cardSerialNumber ?? "",
                                                debitSearch: true)
@@ -85,7 +95,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         let tviewController = TransactionsViewController(
             viewModel: tviewModel, themeService: container.themeService)
 
-        let viewModel = CardDetailViewModel(paymentCard: paymentCard, repository: container.makeCardsRepository())
+        let viewModel = CardDetailViewModel(paymentCard: paymentCard, repository: container.makeCardsRepository(),transactionDataProvider: tProvider)
         let viewController = CardDetailViewController(transactionViewController: tviewController, viewModel: viewModel, themeService: container.themeService)
         viewController.hidesBottomBarWhenPushed = true
         navigationRoot.pushViewController(viewController, animated: true)
@@ -109,19 +119,41 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         viewController.transactionViewController.viewModel.outputs
-            .openFilter.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.openFilter() })
+            .openFilter.withLatestFrom(viewModel.outputs.filter).withUnretained(self)
+            .subscribe(onNext: {
+                `self`, filter in
+                tProvider.filter = filter
+                self.openFilter(filter: filter,detailViewModel: viewModel, paymentCard: paymentCard,provider: tProvider)
+                
+            })
             .disposed(by: rx.disposeBag)
     }
 
-    func openFilter() {
-        let viewModel = TransactionFilterViewModel(repository: container.makeTransactionsRepository())
+    func openFilter(filter: TransactionFilter? = nil, detailViewModel: CardDetailViewModel,paymentCard: PaymentCard?, provider:DebitCardTransactionsProvider) {
+        let viewModel = TransactionFilterViewModel(filter,repository: container.makeTransactionsRepository())
         let filterView = TransactionFilterViewController(viewModel: viewModel, themeService: container.themeService)
-        self.navigationRoot.pushViewController(filterView)
+ /*       navigationRoot.setNavigationBarHidden(false, animated: false)
+        filterView.modalPresentationStyle = .fullScreen */
+//        navigationRoot.setNavigationBarHidden(false, animated: true)
+//        self.navigationRoot.pushViewController(filterView)
+     /*   self.navigationRoot.present(filterView, animated: true, completion: nil) */
+        
+        
+        let nav =  UINavigationControllerFactory.createAppThemedNavigationController(root: filterView, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+//
+        
+       
+        self.navigationRoot.present(nav, animated: true, completion: nil)
+        
+        viewModel.outputs.result.withUnretained(self).subscribe(onNext: { (`self`, filter) in
+            if  let cardDetail = self.navigationRoot.viewControllers.last as? CardDetailViewController {
+                if let vm = cardDetail.transactionViewController.viewModel as? TransactionsViewModel {
+                  //  vm.filterSelected.onNext(filter)
+                }
+            }
+            detailViewModel.filterObserver.onNext(filter)
+        }).disposed(by: rx.disposeBag)
 
-        viewModel.outputs.close.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController() })
-            .disposed(by: rx.disposeBag)
     }
 
     func cardOptions() {

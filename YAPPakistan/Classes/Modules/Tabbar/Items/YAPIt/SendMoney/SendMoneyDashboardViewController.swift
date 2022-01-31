@@ -91,7 +91,7 @@ class SendMoneyDashboardViewController: UIViewController {
     }
     
     @objc private func search(_ sender: Any) {
-        //viewModel.inputs.searchObserver.onNext(())
+        viewModel.inputs.searchObserver.onNext(())
     }
     
 }

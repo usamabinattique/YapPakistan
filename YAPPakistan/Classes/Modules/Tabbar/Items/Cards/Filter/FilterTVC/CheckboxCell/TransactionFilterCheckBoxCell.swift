@@ -8,6 +8,8 @@
 import Foundation
 import YAPComponents
 import RxTheme
+import UIKit
+//import YAP_PK_Dev
 
 class TransactionFilterCheckBoxCell: RxUITableViewCell {
     
@@ -18,6 +20,8 @@ class TransactionFilterCheckBoxCell: RxUITableViewCell {
     private lazy var checkBox: YAPCheckBox = {
         let checkBox = YAPCheckBox()
         checkBox.translatesAutoresizingMaskIntoConstraints = false
+       // checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
+//        checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)
         return checkBox
     }()
     
@@ -59,6 +63,7 @@ class TransactionFilterCheckBoxCell: RxUITableViewCell {
         self.viewModel = viewModel
         bindViews()
         setupTheme()
+        setupResources()
     }
 }
 
@@ -88,8 +93,14 @@ private extension TransactionFilterCheckBoxCell {
     func setupTheme(){
         themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: [title.rx.textColor])
+            .bind({ UIColor($0.backgroundColor) }, to: [checkBox.rx.tintColor])
+            .bind({ UIColor($0.primary) }, to: [checkBox.rx.fillColor])
         
             .disposed(by: rx.disposeBag)
+    }
+    
+    func setupResources() {
+        //checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
     }
 }
 
@@ -97,7 +108,15 @@ private extension TransactionFilterCheckBoxCell {
 
 private extension TransactionFilterCheckBoxCell {
     func bindViews() {
-        viewModel.outputs.check.bind(to: checkBox.rx.checked).disposed(by: disposeBag)
+      //  viewModel.outputs.check.bind(to: checkBox.rx.checked).disposed(by: disposeBag)
+        let checkShare = viewModel.outputs.check.share()
+        checkShare.bind(to: checkBox.rx.checked).disposed(by: disposeBag)
+        
+        checkShare.subscribe(onNext: { [unowned self] isChecked in
+            self.checkBox.backgroundColor =  isChecked ? UIColor(Color(hex: "#5E35B1")) : .clear
+        }).disposed(by: disposeBag)
+
+        
         viewModel.outputs.title.bind(to: title.rx.text).disposed(by: disposeBag)
         checkBox.rx.checked.bind(to: viewModel.inputs.checkObserver).disposed(by: disposeBag)
     }

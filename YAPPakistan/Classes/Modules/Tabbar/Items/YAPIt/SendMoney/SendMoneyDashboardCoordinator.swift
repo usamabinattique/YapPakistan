@@ -29,7 +29,7 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
     
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = SendMoneyDashboardViewModel(container.makeYapItRepository())
+        let viewModel = SendMoneyDashboardViewModel(container.makeYapItRepository(), contactsManager: self.contactsManager, accountProvider: container.accountProvider)
         
         let viewController = SendMoneyDashboardViewController(themeService: container.themeService, viewModel: viewModel, recentBeneficiaryView:container.makeRecentBeneficiaryView())
         
@@ -58,9 +58,15 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.action
             .withLatestFrom(Observable.combineLatest(viewModel.outputs.action, viewModel.outputs.y2yRecentBeneficiaries, viewModel.outputs.y2yContacts))
             .subscribe(onNext: { [weak self] in
-                guard let localRoot = self?.localRoot else { return }
+                guard case YapItTileAction.yapContact = $0.0, let localRoot = self?.localRoot else { return }
                 self?.y2y(localRoot: localRoot, refreshObserver: viewModel.inputs.refreshObserver, recentBeneficiaries: $0.1)
             }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.search
+            .subscribe(onNext: { [weak self] in
+            guard let `self` = self else { return }
+            self.search(self.localRoot, beneficairies: $0)
+        }).disposed(by: rx.disposeBag)
         
         return result
     }
@@ -74,8 +80,31 @@ private extension SendMoneyDashboardCoordinator {
                 self?.result.onNext(.success(result))
                 self?.result.onCompleted()
             } else {
-                refreshObserver.onNext(())
+                //refreshObserver.onNext(())
             }
         }).disposed(by: rx.disposeBag)
+    }
+    
+    func search(_ localRoot: UINavigationController, beneficairies: [SearchableBeneficiaryType]) {
+        let viewModel = SendMoneySearchViewModel(beneficairies)
+        let viewController = SendMoneySearchViewController(self.container.themeService, viewModel: viewModel)
+        
+        localRoot.pushViewController(viewController, animated: true)
+        
+        viewModel.outputs.cancel.subscribe(onNext: { [weak self] in
+            self?.localRoot.popViewController(animated: true)
+        }).disposed(by: rx.disposeBag)
+        
+//        viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
+//            if $0 is SendMoneyBeneficiary {
+//                self?.sendMoneyFundsTransfer($0 as! SendMoneyBeneficiary, localRoot: localRoot)
+//            }
+//            if $0 is Y2YRecentBeneficiary {
+//                self?.y2yFundsTransfer(YAPContact.contact(fromRecentBeneficiary: $0 as! Y2YRecentBeneficiary), localRoot: localRoot)
+//            }
+//            if $0 is YAPContact {
+//                self?.y2yFundsTransfer($0 as! YAPContact, localRoot: localRoot)
+//            }
+//        }).disposed(by: rx.disposeBag)
     }
 }

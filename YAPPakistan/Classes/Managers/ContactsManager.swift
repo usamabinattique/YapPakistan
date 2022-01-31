@@ -80,8 +80,10 @@ public class ContactsManager: NSObject {
     }
     
     public func syncPhoneBookContacts() {
+        self.progress = 0
         self.results = []
         self.resultSubject.onNext([])
+        self.allContacts = []
         self.makeContacts()
     }
     
@@ -137,7 +139,28 @@ public class ContactsManager: NSObject {
                 }
             }
             
-            let result = phoneNumberKit.parse(phoneNumbersArray, ignoreType: true, shouldReturnFailedEmptyNumbers: true)
+            var result = phoneNumberKit.parse(phoneNumbersArray, shouldReturnFailedEmptyNumbers: true)
+            
+            var emptyIndexes: [Int] = []
+            var emptyNumbers: [String] = []
+            for (index, number) in result.enumerated() {
+                if number.numberString.isEmpty {
+                    emptyIndexes.append(index)
+                }
+            }
+            for index in emptyIndexes {
+                var number = phoneNumbersArray[index]
+                if number.first != "+" {
+                    number = "+" + number
+                }
+                emptyNumbers.append(number)
+            }
+            
+            let subResult = phoneNumberKit.parse(emptyNumbers, shouldReturnFailedEmptyNumbers: true)
+            
+            for (index, number) in subResult.enumerated() {
+                result[emptyIndexes[index]] = number
+            }
             
             for (index, number) in result.enumerated() {
                 let cnContact = contactsArray[index]
@@ -145,19 +168,31 @@ public class ContactsManager: NSObject {
                 if !number.numberString.isEmpty {
                     formatted = phoneNumberKit.format(number, toType: .international)
                 }
+                
                 var components = formatted.components(separatedBy: " ")
-                guard let countryCode = components.first?.replacingOccurrences(of: "+", with: "00") else { continue }
-                components.removeFirst()
+                var pNumber = ""
+                var countryCode = ""
+                if components.count > 1 {
+                    guard let cc = components.first?.replacingOccurrences(of: "+", with: "00") else { continue }
+                    components.removeFirst()
+                    pNumber = components.joined()
+                    countryCode = cc
+                }
+                else {
+                    pNumber = components.first ?? ""
+                }
                 
                 if let data = cnContact.thumbnailImageData {
                     self.thumbnails[countryCode + components.joined()] = data
                 }
                 
                 let name = CNContactFormatter.string(from: cnContact, style: .fullName) ?? (cnContact.givenName.isEmpty ? (countryCode + " " + components.joined()) : cnContact.givenName)
-                let pNumbber = components.joined()
+                
                 let email = cnContact.emailAddresses.first?.value as String?
                 
-                processedContacs.append(Contact(name: name, phoneNumber: pNumbber, countryCode: countryCode, email: email, photoUrl: nil))
+                processedContacs.append(Contact(name: name, phoneNumber: pNumber, countryCode: countryCode, email: email, photoUrl: nil))
+                
+//                print("Syncing..", name, pNumbber)
             }
             
             self.allContacts.append(contentsOf: processedContacs)
@@ -192,7 +227,8 @@ extension ContactsManager {
         
         classifictionRequests.map { _ in false }.bind(to: isSyncingSubject).disposed(by: disposeBag)
 
-//        Observable.merge(classifictionRequests.map { $0.errors() }).map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
+        classifictionRequests.errors()
+            .map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
 
         classifictionRequests.elements().subscribe(onNext: { [weak self] in
             guard let self = self else { return }

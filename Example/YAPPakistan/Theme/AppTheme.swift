@@ -26,6 +26,7 @@ public protocol Theme {
     var grey: Color               { get }
     var greyDark: Color           { get }
     var greyLight: Color          { get }
+    var greyLightSecondary: Color { get }
     var greyExtraLight: Color     { get }
     var success: Color            { get }
     var warning: Color            { get }
@@ -51,6 +52,7 @@ struct LightTheme: Theme {
     var grey: Color                 { Color(hex: "#C9C8D8") }
     var greyDark: Color             { Color(hex: "#9391B1") }
     var greyLight: Color            { Color(hex: "#DAE0F0") }
+    var greyLightSecondary: Color   { Color(hex: "#F2F4FA") }
     var greyExtraLight: Color       { Color(hex: "#EDF0F8") }
     var success: Color              { Color(hex: "#44D389") }
     var warning: Color              { Color(hex: "#FFC430") }
@@ -78,6 +80,7 @@ struct DarkTheme: Theme {
     var grey: Color                 { Color(hex: "#C9C8D8") }
     var greyDark: Color             { Color(hex: "#9391B1") }
     var greyLight: Color            { Color(hex: "#DAE0F0") }
+    var greyLightSecondary: Color   { Color(hex: "#F2F4FA") }
     var greyExtraLight: Color       { Color(hex: "#EDF0F8") }
     var success: Color              { Color(hex: "#44D389") }
     var warning: Color              { Color(hex: "#FFC430") }

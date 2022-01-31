@@ -9,7 +9,7 @@
 import Foundation
 import YAPCore
 
-extension AppEnvironment {
+public extension AppEnvironment {
     static var current: Self {
         return .qa
     }

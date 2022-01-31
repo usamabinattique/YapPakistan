@@ -68,7 +68,7 @@ extension YAPContact: Codable {
 
 public extension YAPContact {
     var formattedPhoneNumber: String {
-        return countryCode.replacingOccurrences(of: "00", with: "+") + " " + phoneNumber
+        return countryCode.replacePrefix("00", with: "+") + " " + phoneNumber
     }
 
     var fullPhoneNumber: String {

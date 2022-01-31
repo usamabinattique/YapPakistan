@@ -22,6 +22,7 @@ protocol Y2YContactCellViewModelOutput {
 //    var invite: Observable<(YAPContact, String)> { get }
     func thumbnail(forIndexPath indexPath: IndexPath) -> (String?, UIImage?)
     var shimmering: Observable<Bool> { get }
+    var invite: Observable<(Void)> { get }
 }
 
 protocol Y2YContactCellViewModelType {
@@ -57,6 +58,7 @@ class Y2YContactCellViewModel: Y2YContactCellViewModelType, Y2YContactCellViewMo
     var isYapUser: Observable<Bool> { return isYapUserSubject.asObservable() }
 //    var invite: Observable<(YAPContact, String)> { inviteSubject.withLatestFrom(SessionManager.current.currentAccount.map{ $0?.customer.customerId }.unwrap()).map{ AppReferralManager.getReferralUrl(for: $0) ?? "" }.map{ [unowned self] in (self.contact, $0) }.asObservable() }
     var shimmering: Observable<Bool> { shimmeringSubject.asObservable() }
+    var invite: Observable<(Void)> { inviteSubject.asObservable() }
     
     func thumbnail(forIndexPath indexPath: IndexPath) -> (String?, UIImage?) {
         (contact.photoUrl, contact.thumbnail(forIndex: indexPath.row))

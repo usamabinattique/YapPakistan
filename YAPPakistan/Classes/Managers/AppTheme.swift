@@ -19,6 +19,7 @@ public protocol Theme {
     var grey: Color               { get }
     var greyDark: Color           { get }
     var greyLight: Color          { get }
+    var greyLightSecondary: Color { get }
     var greyExtraLight: Color     { get }
     var success: Color            { get }
     var warning: Color            { get }
@@ -32,9 +33,11 @@ public protocol Theme {
     var icon: Color               { get }
     var iconHolder: Color         { get }
     var backgroundColor: Color    { get }
+    var clear: UIColor            { get }
 }
 
 struct LightTheme: Theme {
+    
     var primary: Color              { Color(hex: "#5E35B1") }
     var primaryLight: Color         { Color(hex: "#7C4DFF") }
     var primaryExtraLight: Color    { Color(hex: "#F0EDFF") }
@@ -44,6 +47,7 @@ struct LightTheme: Theme {
     var grey: Color                 { Color(hex: "#C9C8D8") }
     var greyDark: Color             { Color(hex: "#9391B1") }
     var greyLight: Color            { Color(hex: "#DAE0F0") }
+    var greyLightSecondary: Color   { Color(hex: "#DAE0F05C")}
     var greyExtraLight: Color       { Color(hex: "#EDF0F8") }
     var success: Color              { Color(hex: "#44D389") }
     var warning: Color              { Color(hex: "#FFC430") }
@@ -57,6 +61,7 @@ struct LightTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var clear: UIColor                { UIColor.clear }
 
 }
 
@@ -71,6 +76,7 @@ struct DarkTheme: Theme {
     var grey: Color                 { Color(hex: "#C9C8D8") }
     var greyDark: Color             { Color(hex: "#9391B1") }
     var greyLight: Color            { Color(hex: "#DAE0F0") }
+    var greyLightSecondary: Color   { Color(hex: "#DAE0F05C")}
     var greyExtraLight: Color       { Color(hex: "#EDF0F8") }
     var success: Color              { Color(hex: "#44D389") }
     var warning: Color              { Color(hex: "#FFC430") }
@@ -84,6 +90,7 @@ struct DarkTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var clear: UIColor              { UIColor.clear }
 }
 
 public enum AppTheme: ThemeProvider {

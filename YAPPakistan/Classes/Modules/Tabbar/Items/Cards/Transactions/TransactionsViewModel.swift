@@ -178,7 +178,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
 //
 //        let viewAppeared = viewAppearedSubject.do(onNext: { SessionManager.current.refreshBalance() })
 
-        let request =  Observable.merge(fetchTransactions, viewAppearedSubject)
+        let request =  Observable.merge(fetchTransactions, viewAppearedSubject.take(1))
             .do(onNext: { [weak self] _ in self?.loadingSubject.onNext(false)})
             .flatMap { _ in transactionDataProvider.fetchTransactions() }
             .share()

@@ -9,19 +9,24 @@
 
 import Foundation
 import RxSwift
+import UIKit
 
 protocol TransactionsServiceType {
 
     func fetchTransactions<T>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<T> where T : Decodable, T : Encodable
 
-    func fetchCardTransactions<T>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool) -> Observable<T> where T : Decodable, T : Encodable
+    func fetchCardTransactions<T>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool, filter: TransactionFilter?) -> Observable<T> where T : Decodable, T : Encodable
 
     func fetchReorderFee<T>() -> Observable<T> where T : Decodable, T : Encodable
     
     func getTransactionFilters<T: Codable>() -> Observable<T>
+    func getFee<T: Codable>(productCode: String) -> Observable<T>
+    func getTransactionProductLimit<T: Codable>(transactionProductCode: String) -> Observable<T>
+    func getThresholdLimits<T: Codable>() -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
+   
     func fetchTransactions<T: Codable>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<T> {
         var params = [String: String]()
 
@@ -53,12 +58,21 @@ class TransactionsService: BaseService, TransactionsServiceType {
         return self.request(apiClient: apiClient, route: route)
     }
 
-    func fetchCardTransactions<T: Codable>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool) -> Observable<T> {
-        let query = ["cardSerialNumber": cardSerialNumber, "cardDetailsRequired" : String(true), "debitSearch" : String(debitSearch)]
-
+    func fetchCardTransactions<T: Codable>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool, filter: TransactionFilter?) -> Observable<T> {
+        
+        var query: [String: String] = [:]
+        
+        if let filter = filter {
+            query = ["cardSerialNumber": cardSerialNumber, "cardDetailsRequired" : String(true), "debitSearch" : String(debitSearch), "amountStartRange": String(filter.minAmount), "amountEndRange" : String(filter.maxAmount), "ATM_WITHDRAW": String(filter.atmWidrawl), "POS" : String(filter.retail)]
+        } else {
+             query = ["cardSerialNumber": cardSerialNumber, "cardDetailsRequired" : String(true), "debitSearch" : String(debitSearch)]
+        }
+        
+        
+        
         let route = APIEndpoint<String>(.get,
                                         apiConfig.transactionsURL,
-                                        "/api/cards-transactions",
+                                        "/api/cards-transactions/\(pageNumber)/\(pageSize)",
                                         pathVariables: nil,
                                         query: query,
                                         headers: authorizationProvider.authorizationHeaders)
@@ -77,6 +91,39 @@ class TransactionsService: BaseService, TransactionsServiceType {
 
         return self.request(apiClient: apiClient, route: route)
     }
+    
+    func Y2YTransfer<T: Codable>(receiverUUID: String, amount: String, beneficiaryName: String, note: String?, otpVerificationStatus: Bool) -> Observable<T> {
+        
+     //   let request = Y2YTransferRequest(receiverUUID: receiverUUID, amount: amount, remarks: note?.isEmpty ?? true ? nil : note, beneficiaryName: beneficiaryName, otpVerificationReq: otpVerificationStatus, deviceId: UIDevice.deviceID)
+//        let input: RouterInput = (body: request, query: nil, pathVariables: nil)
+//        let route = TransactionsRouter.Y2YTransfer(input)
+        
+        let params : [String:String] = ["amount": amount, "receiverUUID": receiverUUID, "beneficiaryName": beneficiaryName, "deviceId": UIDevice.deviceID, "otpVerificationReq": String(otpVerificationStatus)] //, "isInternalUser":"true"]
+        
+        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/y2y", body: params, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: apiClient, route: route)
+        
+    }
+    
+    func getFee<T: Codable>(productCode: String) -> Observable<T> {
+        let path = ["\(productCode)", "fees"]
+//        let input: RouterInput<Int> = RouterInput(body: nil, query: nil, pathVariables: path)
+//        let route = TransactionsRouter.getFee(input)
+        let route = APIEndpoint<String>(.post, apiConfig.transactionsURL, "/api/product-codes/", pathVariables: path,body: nil ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    func getTransactionProductLimit<T: Codable>(transactionProductCode: String) -> Observable<T> {
+        let pathVariables = [transactionProductCode, "limits"]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/product/", pathVariables: pathVariables,body: nil ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    func getThresholdLimits<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction-thresholds", pathVariables: nil,body: nil ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
 }
 
 
