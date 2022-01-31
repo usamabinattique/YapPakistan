@@ -28,7 +28,7 @@ protocol SendMoneyDashboardViewModelOutput {
     var showsRecentBeneficiary: Observable<Bool> { get }
     var error: Observable<String> { get }
     var y2yFundsTransfer: Observable<YAPContact> { get }
-//    var sendMoneyFundsTransfer: Observable<SendMoneyBeneficiary> { get }
+    var sendMoneyFundsTransfer: Observable<SendMoneyBeneficiary> { get }
 //    var allCountries: Observable<[SendMoneyBeneficiaryCountry]> { get }
     var search: Observable<[SearchableBeneficiaryType]> { get }
     var y2yContacts: Observable<[YAPContact]> { get }
@@ -60,7 +60,7 @@ class SendMoneyDashboardViewModel: SendMoneyDashboardViewModelType, SendMoneyDas
     private let refreshSubject = PublishSubject<Void>()
     private let errorSubject = PublishSubject<String>()
     private let y2yFundsTransferSubject = PublishSubject<YAPContact>()
-//    private let sendMoneyFundsTransferSubject = PublishSubject<SendMoneyBeneficiary>()
+    private let sendMoneyFundsTransferSubject = PublishSubject<SendMoneyBeneficiary>()
 //    private let allCountriesSubject = BehaviorSubject<[SendMoneyBeneficiaryCountry]>(value: [])
     private let searchSubject = PublishSubject<Void>()
     private let viewDidObserverSubject = PublishSubject<Void>()
@@ -89,7 +89,7 @@ class SendMoneyDashboardViewModel: SendMoneyDashboardViewModelType, SendMoneyDas
     var recentBeneficiaryViewModel: RecentBeneficiaryViewModelType { recentBeneficiariesViewModel }
     var error: Observable<String> { errorSubject.asObservable() }
     var y2yFundsTransfer: Observable<YAPContact> { y2yFundsTransferSubject.asObservable() }
-//    var sendMoneyFundsTransfer: Observable<SendMoneyBeneficiary> { sendMoneyFundsTransferSubject.asObservable() }
+    var sendMoneyFundsTransfer: Observable<SendMoneyBeneficiary> { sendMoneyFundsTransferSubject.asObservable() }
 //    var allCountries: Observable<[SendMoneyBeneficiaryCountry]> { allCountriesSubject.asObservable() }
     var search: Observable<[SearchableBeneficiaryType]> { searchSubject.withLatestFrom(searchableBeneficiaries).asObservable() }
     var y2yContacts: Observable<[YAPContact]> { y2yContactsSubject.asObservable() }
@@ -112,7 +112,7 @@ class SendMoneyDashboardViewModel: SendMoneyDashboardViewModelType, SendMoneyDas
         fetchRecentBeneficiaries(repository)
         
         recentBeneficiaries.bind(to: recentBeneficiariesViewModel.inputs.recentBeneficiaryObserver).disposed(by: disposeBag)
-        
+        recentBeneficiariesTransfers()
         makeRecentBeneficiaries()
         makeSearchableBeneficiaries()
     }
@@ -124,17 +124,46 @@ class SendMoneyDashboardViewModel: SendMoneyDashboardViewModelType, SendMoneyDas
 private extension SendMoneyDashboardViewModel {
     
     func makeRecentBeneficiaries() {
-        Observable.combineLatest(sendMoneyBeneficiariesSubject.map{ $0.filter{ $0.lastTranseferDate != nil } }.map{ $0 as [RecentBeneficiaryType] }, y2yRecentBeneficiariesSubject.map{ $0 as [RecentBeneficiaryType] })
+       /* Observable.combineLatest(sendMoneyBeneficiariesSubject.map{ $0.filter{ $0.lastTranseferDate != nil } }.map{ $0 as [RecentBeneficiaryType] }, y2yRecentBeneficiariesSubject.map{ $0 as [RecentBeneficiaryType] })
             .map{ Array(($0.0 + $0.1).sorted { $0.beneficiaryLasTransferDate > $1.beneficiaryLasTransferDate }.prefix(15)).indexed }
             .bind(to: recentBeneficiaries)
-            .disposed(by: disposeBag)
+            .disposed(by: disposeBag) */
+        
+
+        y2yRecentBeneficiariesSubject.map{ $0 as [RecentBeneficiaryType] }
+        .bind(to: recentBeneficiaries)
+        .disposed(by: disposeBag)
+        
     }
     
     func makeSearchableBeneficiaries() {
-        Observable.combineLatest(sendMoneyBeneficiariesSubject.map{ $0 as [SearchableBeneficiaryType] }, y2yContactsSubject.map{ $0.filter{ $0.isYapUser } as [SearchableBeneficiaryType] })
+     /*   Observable.combineLatest(sendMoneyBeneficiariesSubject.map{ $0 as [SearchableBeneficiaryType] }, y2yContactsSubject.map{ $0.filter{ $0.isYapUser } as [SearchableBeneficiaryType] })
             .map{ ($0.0 + $0.1).sorted{ ($0.searchableTitle ?? "") < ($1.searchableTitle ?? "") }.indexed }
             .bind(to: searchableBeneficiaries)
+            .disposed(by: disposeBag) */
+        
+        y2yContactsSubject.map{ $0.filter{ $0.isYapUser } as [SearchableBeneficiaryType] }.bind(to: searchableBeneficiaries).disposed(by: disposeBag)
+    }
+}
+
+// MARK: - Recent beneficiaries funds transfer
+
+private extension SendMoneyDashboardViewModel {
+    func recentBeneficiariesTransfers() {
+        let recentBeneficiary =  recentBeneficiariesViewModel.outputs.itemSelected
+            .withLatestFrom(Observable.combineLatest(recentBeneficiariesViewModel.outputs.itemSelected, recentBeneficiaries))
+            .map{ $0.1[$0.0] }
+            .share(replay: 1, scope: .whileConnected)
+        
+        recentBeneficiary.map{ $0 as? Y2YRecentBeneficiary }.unwrap()
+            .map{ YAPContact.contact(fromRecentBeneficiary: $0) }
+            .bind(to: y2yFundsTransferSubject)
             .disposed(by: disposeBag)
+        
+        recentBeneficiary.map{ $0 as? SendMoneyBeneficiary }.unwrap()
+            .bind(to: sendMoneyFundsTransferSubject)
+            .disposed(by: disposeBag)
+
     }
 }
 
@@ -150,9 +179,9 @@ private extension SendMoneyDashboardViewModel {
             .flatMap{ repository.fetchRecentY2YBeneficiaries() }
             .share()
         
-        let sendMoneyBeneficiariesRequest = refreshSubject
-            .flatMap{ repository.fetchRecentSendMoneyBeneficiaries() }
-            .share()
+//        let sendMoneyBeneficiariesRequest = refreshSubject
+//            .flatMap{ repository.fetchRecentSendMoneyBeneficiaries() }
+//            .share()
         
 //        let countriesRequest = repository.fetchBeneficiaryCountries().share()
         
@@ -161,18 +190,36 @@ private extension SendMoneyDashboardViewModel {
 //
 //            })
 //            .disposed(by: disposeBag)
-        
-        Observable.zip(y2yBeneficiariesRequest, sendMoneyBeneficiariesRequest).subscribe(onNext: { _ in
+       
+        /* Observable.zip(y2yBeneficiariesRequest, sendMoneyBeneficiariesRequest).subscribe(onNext: { _ in
             YAPProgressHud.hideProgressHud()
+        }).disposed(by: disposeBag) */
+        y2yBeneficiariesRequest.subscribe(onNext: { _ in
+            YAPProgressHud.hideProgressHud()
+
         }).disposed(by: disposeBag)
         
-        Observable.merge(contactsManager.error, Observable.merge(y2yBeneficiariesRequest.errors(), sendMoneyBeneficiariesRequest.errors()).map{ $0.localizedDescription })
-            .bind(to: errorSubject)
-            .disposed(by: disposeBag)
+//        sendMoneyBeneficiariesRequest.elements().subscribe(onNext: { benefiearies in
+//
+//                print("SendMoneyBen are \(benefiearies)")
+//
+//        }).disposed(by: disposeBag)
+//
+//        sendMoneyBeneficiariesRequest.errors().subscribe(onNext: { error in
+//            print("error found \(error)")
+//        }).disposed(by: disposeBag)
+
+
         
-        sendMoneyBeneficiariesRequest.elements().bind(to: sendMoneyBeneficiariesSubject).disposed(by: disposeBag)
+//        Observable.merge(contactsManager.error, Observable.merge(y2yBeneficiariesRequest.errors(), sendMoneyBeneficiariesRequest.errors()).map{ $0.localizedDescription })
+//            .bind(to: errorSubject)
+//            .disposed(by: disposeBag)
+        
+     //   sendMoneyBeneficiariesRequest.elements().bind(to: sendMoneyBeneficiariesSubject).disposed(by: disposeBag)
         y2yBeneficiariesRequest.elements().bind(to: y2yRecentBeneficiariesSubject).disposed(by: disposeBag)
 //        countriesRequest.elements().bind(to: allCountriesSubject).disposed(by: disposeBag)
+        
+        
         
         Observable.combineLatest(y2yBeneficiariesRequest.elements(),
                                  contactsManager.result,

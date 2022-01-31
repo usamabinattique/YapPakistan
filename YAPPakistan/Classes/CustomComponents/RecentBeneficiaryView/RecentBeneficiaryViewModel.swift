@@ -75,6 +75,11 @@ public class RecentBeneficiaryViewModel: RecentBeneficiaryViewModelInput, Recent
         hideButtonTitleSubject = BehaviorSubject(value: "Hide")
         recentBeneficiarySubject = BehaviorSubject(value: (beneficiaries ?? []))
         
+        itemSelectedSubject.subscribe(onNext: { index in
+            print("recent beneficary selected: \(index)")
+        }).disposed(by: disposeBag)
+
+        
         loadData()
         showHide()
     }

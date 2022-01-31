@@ -75,10 +75,10 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
             self?.inviteFriend($0.0, self?.name ?? "", appShareUrl: $0.1)
         }).disposed(by: rx.disposeBag)
         
-//        viewModel.outputs.invite.subscribe(onNext: { [weak self] in
-//            AppAnalytics.shared.logEvent(Y2YEvent.inviteTapped())
-//            self?.inviteFriends( self?.name ?? "", appShareUrl: $0)
-//        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.invite.subscribe(onNext: { [weak self] in
+           // AppAnalytics.shared.logEvent(Y2YEvent.inviteTapped())
+            self?.inviteFriends( self?.name ?? "", appShareUrl: $0)
+        }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.contactSelected.subscribe(onNext: { [unowned self] in
             self.sendMoney($0)
@@ -100,9 +100,9 @@ private extension Y2YCoordinator {
 //            self?.inviteFriend($0.0, self?.name ?? "", appShareUrl: $0.1)
 //        }).disposed(by: rx.disposeBag)
 //
-//        viewModel.outputs.contactSelected.subscribe(onNext: { [weak self] in
-//            self?.sendMoney($0)
-//        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.contactSelected.subscribe(onNext: { [weak self] in
+            self?.sendMoney($0)
+        }).disposed(by: rx.disposeBag)
     }
     
     func sendMoney(_ contact: YAPContact) {

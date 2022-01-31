@@ -25,7 +25,7 @@ class YapItRepository: YapItRepositoryType {
     }
     
     public func fetchRecentSendMoneyBeneficiaries() -> Observable<Event<[SendMoneyBeneficiary]>> {
-        return customersService.fetchRecentBeneficiaries().materialize()
+        return customersService.fetchRecentSendMoneyBeneficiaries().materialize()
     }
     
     public func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>> {
