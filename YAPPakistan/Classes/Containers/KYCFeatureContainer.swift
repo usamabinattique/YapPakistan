@@ -165,4 +165,8 @@ extension KYCFeatureContainer {
     func makeManualVerificationViewController() -> ManualVerificationViewController {
         ManualVerificationModuleBuilder(container: self).viewController()
     }
+    
+    func makeCardSchemeViewController() -> CardSchemeViewController {
+        return CardSchemeViewController()
+    }
 }
