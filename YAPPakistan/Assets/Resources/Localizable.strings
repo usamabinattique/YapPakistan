@@ -157,6 +157,9 @@
 "screen_email_verification_b2b_display_text_email_sent" = "you should now receive an email on";
 "screen_email_verification_b2b_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
 
+//MARK: Preferred Email screen
+"screen_email_description_display_text_title" = "Please validate your email address after signing up and we promise not to spam you.";
+
 //MARK: Enter passcode screen
 "screen_enter_passcode_display_text_title" = "Enter your passcode to access your account​";
 "screen_enter_passcode_display_text_user_blocked" = "Sorry, that's too many incorrect attempts. Click on Forgot passcode to set a new one.​";
