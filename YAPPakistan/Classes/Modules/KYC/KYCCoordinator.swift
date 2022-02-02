@@ -42,22 +42,25 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let cp3 = viewController.viewModel.outputs.next
             .filter({ $0 == .selfiePending }).withUnretained(self)
             .flatMap({ `self`, _ in self.selfiePending().materialize() })
-        // CP04 Card name
+        // CP04 Card scheme
         let cp4 = viewController.viewModel.outputs.next
+            .filter({ $0 == .cardOrderScheme }).withUnretained(self)
+            .flatMap({ `self`, _ in self.cardOrderSchemePending().materialize() })
+        // CP05 Card name
+        let cp5 = viewController.viewModel.outputs.next
             .filter({ $0 == .cardNamePending }).withUnretained(self)
             .flatMap({ `self`, _ in self.cardNamePending().materialize() })
-        // CP05 address
-        let cp5 = viewController.viewModel.outputs.next
+        // CP06 address
+        let cp6 = viewController.viewModel.outputs.next
             .filter({ $0 == .addressPending }).withUnretained(self)
             .flatMap({ `self`, _ in self.addressPending().materialize() })
-        // CP06 address
         viewController.viewModel.outputs.next
             .filter({ $0.stepValue > AccountStatus.addressPending.stepValue }).withUnretained(self)
             .flatMap({ `self`, _ in self.kycResult().materialize() }).withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.goToHome() })
             .disposed(by: rx.disposeBag)
-
-        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp4, cp5).elements().share()
+        
+        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp4, cp5, cp6).elements().share()
 
         sharedCPs.filter({ $0.isCancel }).withUnretained(self) // moved back with completing
             .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
@@ -130,6 +133,10 @@ extension KYCCoordinator {
 
     func selfiePending() -> Observable<ResultType<Void>>  {
         return coordinate(to: container.makeSelfieCoordinator(root: root))
+    }
+    
+    func cardOrderSchemePending() -> Observable<ResultType<Void>>  {
+        return coordinate(to: container.makeCardSchemeCoordinator(root: root))
     }
 
     func cardNamePending() -> Observable<ResultType<Void>> {

@@ -50,7 +50,7 @@ public struct Account: Codable {
     public let documentsVerified: Bool
     public var companyType: String?
     public var soleProprietary: Bool
-    public var accountStatus: AccountStatus? = AccountStatus.addressPending //{ AccountStatus(rawValue: _accountStatus ?? "") }
+    public var accountStatus: AccountStatus? = AccountStatus.cardOrderScheme //{ AccountStatus(rawValue: _accountStatus ?? "") }
     private var _accountStatus: String?
     public let customer: Customer
     public let bank: Bank
@@ -247,6 +247,7 @@ public enum AccountStatus: String, Hashable, Codable {
     case selfiePending = "SELFIE_PENDING"
     case secretQuestionPending = "SECRET_QUESTION_PENDING"
     case cardNamePending = "CARD_NAME_PENDING"
+    case cardOrderScheme = "CARD_ORDER_SCHEME"
     case addressPending = "ADDRESS_PENDING"
     case addressCaptured = "ADDRESS_CAPTURED"
     case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
@@ -257,11 +258,12 @@ public enum AccountStatus: String, Hashable, Codable {
         case .onboarded: return 0
         case .selfiePending: return 1
         case .secretQuestionPending: return 2
-        case .cardNamePending: return 3
-        case .addressPending: return 4
-        case .addressCaptured: return 5
-        case .verificationSucceed: return 6
-        case .cardActivated: return 7
+        case .cardOrderScheme: return 3
+        case .cardNamePending: return 4
+        case .addressPending: return 5
+        case .addressCaptured: return 6
+        case .verificationSucceed: return 7
+        case .cardActivated: return 8
         }
     }
 

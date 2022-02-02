@@ -56,6 +56,10 @@ public final class KYCFeatureContainer {
     func makeSelfieCoordinator(root: UINavigationController) -> SelfieCoordinator {
         SelfieCoordinator(root: root, container: self)
     }
+    
+    func makeCardSchemeCoordinator(root: UINavigationController) -> CardSchemeCoordinator {
+        CardSchemeCoordinator(root: root, container: self)
+    }
 
     func makeCardNameCoordinator(root: UINavigationController) -> CardNameCoordinator {
         CardNameCoordinator(root: root, container: self)
@@ -167,6 +171,7 @@ extension KYCFeatureContainer {
     }
     
     func makeCardSchemeViewController() -> CardSchemeViewController {
-        return CardSchemeViewController()
+        let viewModel = CardSchemeViewModel()
+        return CardSchemeViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }
