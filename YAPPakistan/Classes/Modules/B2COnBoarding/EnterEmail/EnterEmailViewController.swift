@@ -157,7 +157,7 @@ private extension EnterEmailViewController {
         emailDescription
             .alignEdgesWithSuperview([.left, .right], constant: 25)
             .centerHorizontallyInSuperview()
-            .alignEdgeWithSuperviewSafeArea(.bottom,constant: 10)
+            .alignEdgeWithSuperviewSafeArea(.bottom,constant: 25)
     }
 }
 

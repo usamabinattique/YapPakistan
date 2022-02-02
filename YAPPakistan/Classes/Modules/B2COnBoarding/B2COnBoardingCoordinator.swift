@@ -225,6 +225,11 @@ private extension B2COnBoardingCoordinator {
         congratulationViewModel.outputs.progress.subscribe(onNext: { [weak self] progress in
             self?.viewModel.inputs.progressObserver.onNext(progress)
         }).disposed(by: disposeBag)
+        
+        self.viewModel.outputs.animationCompleted.subscribe(onNext: {  _ in
+            print("animation completed call in B@COn")
+            congratulationViewController.resumeAnimation?()
+        }).disposed(by: disposeBag)
 
         
         containerNavigation.pushViewController(congratulationViewController, animated: true)
