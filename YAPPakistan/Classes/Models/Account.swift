@@ -50,11 +50,11 @@ public struct Account: Codable {
     public let documentsVerified: Bool
     public var companyType: String?
     public var soleProprietary: Bool
-    public var accountStatus: AccountStatus? = AccountStatus.addressPending //{ AccountStatus(rawValue: _accountStatus ?? "") }
+    public var accountStatus: AccountStatus? { AccountStatus(rawValue: _accountStatus ?? "") }
     private var _accountStatus: String?
     public let customer: Customer
     public let bank: Bank
-    public var parnterBankStatus: PartnerBankStatus? = PartnerBankStatus.signUpPending //{ PartnerBankStatus(rawValue: _parnterBankStatus ?? "") }
+    public var parnterBankStatus: PartnerBankStatus? { PartnerBankStatus(rawValue: _parnterBankStatus ?? "") }
     private let _parnterBankStatus: String?
     public let createdDate: String
     public let parentAccount: ParentAccount?
