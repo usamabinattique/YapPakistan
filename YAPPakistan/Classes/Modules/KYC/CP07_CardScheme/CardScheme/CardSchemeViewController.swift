@@ -9,6 +9,7 @@ import Foundation
 import RxTheme
 import RxSwift
 import YAPComponents
+import UIKit
 
 class CardSchemeViewController: UIViewController {
     
@@ -46,20 +47,44 @@ class CardSchemeViewController: UIViewController {
 
 extension CardSchemeViewController: ViewDesignable {
     func setupSubViews() {
+        view.addSubview(titleLabel)
+        view.addSubview(tableView)
         
+        tableView.register(CardSchemeCell.self, forCellReuseIdentifier: CardSchemeCell.defaultIdentifier)
     }
     
     func setupConstraints() {
+        titleLabel
+            .alignEdgesWithSuperview([.top, .left, .right], constants: [20, 20, 20])
+            .height(constant: 32)
         
+        tableView
+            .toBottomOf(titleLabel, constant: 8)
+            .alignEdgesWithSuperview([.left, .right, .bottom])
     }
     
     func setupBindings() {
         
+        self.titleLabel.text = "Select a card"
+        
+        viewModel.outputs.optionsViewModel
+            .bind(to: tableView.rx.items(cellIdentifier: CardSchemeCell.defaultIdentifier, cellType: CardSchemeCell.self)){ [weak self] (index,data,cell) in
+                
+                guard let self = self else { return }
+                cell.configure(with: self.themeService, viewModel: data)
+                
+            }.disposed(by: rx.disposeBag)
+        
+        //        tableView.rx.modelSelected(CardSchemeCellViewModel.self)
+//            .bind(to: viewModel.inputs.selectedItemObserver)
+//            .disposed(by: rx.disposeBag)
     }
     
     func setupTheme() {
-        
+        themeService.rx
+            .bind({ UIColor($0.backgroundColor) }, to: view.rx.backgroundColor)
+            .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
+            .disposed(by: rx.disposeBag)
     }
-    
     
 }

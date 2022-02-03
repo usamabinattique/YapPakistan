@@ -8,6 +8,8 @@
 import CardScanner
 import Foundation
 import RxTheme
+import RxSwift
+import RxCocoa
 
 public final class KYCFeatureContainer {
     let parent: UserSessionContainer
@@ -171,7 +173,7 @@ extension KYCFeatureContainer {
     }
     
     func makeCardSchemeViewController() -> CardSchemeViewController {
-        let viewModel = CardSchemeViewModel()
+        let viewModel = CardSchemeViewModel(accountProvider: self.accountProvider, cellViewModel: Observable.just([]))
         return CardSchemeViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }
