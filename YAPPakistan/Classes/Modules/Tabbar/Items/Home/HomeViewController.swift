@@ -40,7 +40,9 @@ class HomeViewController: UIViewController {
     }()
     
     private lazy var completeVerificationButton = UIFactory.makeAppRoundedButton(with: .large, title: "Complete verification")
-
+    private lazy var signupFailureButton = UIFactory.makeAppRoundedButton(with: .large, title: "Signup Failure")
+    private lazy var signupFailureButtonSecondary = UIFactory.makeAppRoundedButton(with: .large, title: "Signup Failure 2")
+    
     // MARK: Properties
 
     private var themeService: ThemeService<AppTheme>!
@@ -93,6 +95,8 @@ class HomeViewController: UIViewController {
         view.addSubview(logoutButton)
         view.addSubview(biometryStackView)
         view.addSubview(completeVerificationButton)
+        view.addSubview(signupFailureButton)
+        view.addSubview(signupFailureButtonSecondary)
     }
 
     private func setupTheme() {
@@ -101,7 +105,7 @@ class HomeViewController: UIViewController {
             .bind({ UIColor($0.greyDark) }, to: headingLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: logoutButton.rx.backgroundColor)
             .bind({ UIColor($0.greyDark) }, to: biometryLabel.rx.textColor)
-            .bind({ UIColor($0.primary) }, to: completeVerificationButton.rx.backgroundColor)
+            .bind({ UIColor($0.primary) }, to: [completeVerificationButton.rx.backgroundColor,signupFailureButton.rx.backgroundColor, signupFailureButtonSecondary.rx.backgroundColor])
             .disposed(by: disposeBag)
     }
 
@@ -128,6 +132,18 @@ class HomeViewController: UIViewController {
 
         completeVerificationButton
             .alignEdgeWithSuperviewSafeArea(.bottom, constant: 20)
+            .centerHorizontallyInSuperview()
+            .height(constant: 52)
+            .width(constant: 250)
+        
+        signupFailureButton
+            .toTopOf(completeVerificationButton, constant: 20)
+            .centerHorizontallyInSuperview()
+            .height(constant: 52)
+            .width(constant: 250)
+        
+        signupFailureButtonSecondary
+            .toTopOf(signupFailureButton, constant: 20)
             .centerHorizontallyInSuperview()
             .height(constant: 52)
             .width(constant: 250)
@@ -181,5 +197,15 @@ class HomeViewController: UIViewController {
         viewModel.outputs.error
             .bind(to: rx.showErrorMessage)
             .disposed(by: disposeBag)
+        //TODO: remove following navigations
+        signupFailureButton.rx.tap.subscribe(onNext: { [unowned self] _ in
+            let vc = SignupFailureViewController(themeService: self.themeService, viewModel: SignupFailureViewModel(isLogutHidden: true))
+            self.navigationController?.pushViewController(vc, completion: nil)
+        }).disposed(by: disposeBag)
+        
+        signupFailureButtonSecondary.rx.tap.subscribe(onNext: { [unowned self] _ in
+            let vc = SignupFailureViewController(themeService: self.themeService, viewModel: SignupFailureViewModel(isLogutHidden: false))
+            self.navigationController?.pushViewController(vc, completion: nil)
+        }).disposed(by: disposeBag)
     }
 }

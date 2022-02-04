@@ -163,6 +163,22 @@
 "screen_create_passcode_button_signin" = "Sign in";
 "screen_create_passcode_button_forgot_passcode" = "Forgot passcode?";
 
+//MARK: Signup Failures screen
+"screen_signup_failure_display_text_screen_title_non_valid_cnic" = "We’re sorry :(";
+"screen_signup_failure_display_text_screen_title_expired_cnic" = "Looks like your CNIC is expired!";
+"screen_signup_failure_display_text_screen_title_cnic_doesn_not_exist" = "Oops, looks like that CNIC doesn’t exist!";
+"screen_signup_failure_display_text_screen_title_under_18" = "Looks like you’re under 18!";
+"screen_signup_failure_display_text_screen_title_cnic_linked_to_another_account" = "Oops! You’re CNIC is linked to another account!";
+
+"screen_signup_failure_display_text_screen_description_non_valid_cnic" = "Unfortunately, we’re unable to proceed with creating your account at this time. However, we do appreciate your interest in getting a YAP account.";
+"screen_signup_failure_display_text_screen_description_expired_cnic" = "To complete your YAP account. please re-scan with a valid CNIC and try again.";
+"screen_signup_failure_display_text_screen_description_cnic_doesn_not_exist" = "To complete your YAP account. please re-scan with a valid CNIC and try again.";
+"screen_signup_failure_display_text_screen_description_under_18" = "Unfortunately, YAP is only available to users over the age of 18. But don’t worry! We’re working on bringing something special to our younger audiences soon 😉";
+"screen_signup_failure_display_text_screen_description_cnic_linked_to_another_account" = "Your CNIC is already linked to another account! Please log out and try logging into that account. If you forgot your details, please reach out to our customer service team for help.";
+"screen_signup_failure_display_text_screen_description_blacklist" = "Unfortunately, we’re unable to proceed with creating your account at this time. However, we do appreciate your interest in getting a YAP account.";
+
+
+
 
 //MARK: Filters
 "screen_transaction_filter_display_text_title" = "Filters";
