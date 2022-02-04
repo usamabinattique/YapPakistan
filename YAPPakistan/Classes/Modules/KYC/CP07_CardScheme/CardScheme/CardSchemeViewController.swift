@@ -83,6 +83,8 @@ extension CardSchemeViewController: ViewDesignable {
         //        tableView.rx.modelSelected(CardSchemeCellViewModel.self)
 //            .bind(to: viewModel.inputs.selectedItemObserver)
 //            .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }
     
     func setupTheme() {

@@ -346,6 +346,7 @@
 "screen_setpincode_button_terms_and_conditions" = "Terms & Conditions";
 
 // MARK: KYC Card Scheme
+"screen_kyc_card_scheme_screen_title" = "Select a card";
 "screen_kyc_card_scheme_title_mastercard" = "Mastercard";
 "screen_kyc_card_scheme_title_paypak" = "PayPak";
 "screen_kyc_card_scheme_button_buy_now" = "Buy now";

@@ -21,6 +21,7 @@ protocol CardSchemeViewModelOutput {
     var heading: Observable<String?> { get }
     var next: Observable<Void> { get }
     var back: Observable<Void> { get }
+    var error: Observable<String> { get }
 }
 
 protocol CardSchemeViewModelType {
@@ -35,6 +36,7 @@ class CardSchemeViewModel: CardSchemeViewModelType, CardSchemeViewModelInput, Ca
     private var nextSubject = PublishSubject<Void>()
     private var backSubject = PublishSubject<Void>()
     private var fetchCardSubject = PublishSubject<Void>()
+    private var errorSubject = PublishSubject<String>()
     
     // MARK: Inputs
     var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
@@ -43,9 +45,10 @@ class CardSchemeViewModel: CardSchemeViewModelType, CardSchemeViewModelInput, Ca
     
     // MARK: Outputs
     var optionsViewModel: Observable<[CardSchemeCellViewModel]> { optionViewModelsSubject.asObservable() }
-    var heading: Observable<String?> { Observable.just("Select a card".localized) }
+    var heading: Observable<String?> { Observable.just("screen_kyc_card_scheme_screen_title".localized) }
     var next: Observable<Void> { nextSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
+    var error: Observable<String> { errorSubject.asObservable() }
     
     var inputs: CardSchemeViewModelInput { return self }
     var outputs: CardSchemeViewModelOutput { return self }
@@ -76,12 +79,10 @@ extension CardSchemeViewModel {
         cardsRequest.elements()
             .map { $0.map { CardSchemeCellViewModel($0) } }.bind(to: optionViewModelsSubject).disposed(by: disposeBag)
         
-        cardsRequest.errors().subscribe(onNext: {
-            print($0)
-        }).disposed(by: disposeBag)
-        
-//        cardsRequest.errors().map{ $0.localizedDescription }
-//        .bind(to: error)
+        cardsRequest.errors()
+            .map{ $0.localizedDescription }
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
     }
     
 }
