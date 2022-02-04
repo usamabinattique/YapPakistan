@@ -21,6 +21,7 @@ protocol EditNameViewModelOutput {
     var next: Observable<String> { get }
     var back: Observable<Void> { get }
     var languageStrings: Observable<EditNameViewModel.LanguageStrings> { get }
+    var cellViewModels: Observable<[NameLettersSequenceSelectionCellViewModel]> { get }
 }
 
 protocol EditNameViewModelType {
@@ -45,6 +46,7 @@ class EditNameViewModel: EditNameViewModelType, EditNameViewModelInput, EditName
     var next: Observable<String> { nextSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
     var languageStrings: Observable<LanguageStrings> { languageStringsSubject.asObservable() }
+    var cellViewModels: Observable<[NameLettersSequenceSelectionCellViewModel]> { cellViewModelsSubject.asObservable() }
 
     // MARK: Subjects
     private var nameInputSubject = PublishSubject<String>()
@@ -55,6 +57,7 @@ class EditNameViewModel: EditNameViewModelType, EditNameViewModelInput, EditName
     private var nextSubject = PublishSubject<String>()
     private var backSubject = PublishSubject<Void>()
     private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
+    private let cellViewModelsSubject = ReplaySubject<[NameLettersSequenceSelectionCellViewModel]>.create(bufferSize: 1)
 
     // MARK: Properties
     let disposeBag = DisposeBag()
@@ -80,6 +83,13 @@ class EditNameViewModel: EditNameViewModelType, EditNameViewModelInput, EditName
             .withLatestFrom(nameInputSubject)
             .bind(to: nextSubject)
             .disposed(by: disposeBag)
+        
+        let name = "Sayyid Muhamad Alawi AlMa"
+        let nameSequenceTypes = [NameSequence(name: name),NameSequence(name: name.firstAndLastLetters),NameSequence(name: name.firstCharacterAndLastLetter)]
+        let cellVMs = nameSequenceTypes.map { type  in
+            return NameLettersSequenceSelectionCellViewModel(type:type)
+        }
+        cellViewModelsSubject.onNext(cellVMs)
     }
 
     struct LanguageStrings {
@@ -93,7 +103,7 @@ class EditNameViewModel: EditNameViewModelType, EditNameViewModelInput, EditName
 
 fileprivate extension EditNameViewModel {
     func languageSetup() {
-        let strings = LanguageStrings(title: "screen_kyc_card_title".localized,
+        let strings = LanguageStrings(title: "screen_kyc_card_edit_title".localized,
                                       subTitle: "screen_kyc_card_subtitle".localized,
                                       typeYourName: "screen_kyc_card_typeyourname".localized,
                                       tips: "screen_kyc_card_tip".localized,

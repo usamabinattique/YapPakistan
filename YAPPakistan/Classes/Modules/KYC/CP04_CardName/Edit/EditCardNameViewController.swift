@@ -12,16 +12,25 @@ import RxSwift
 class EditCardNameViewController: UIViewController {
 
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
-    private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
-    private let tipsLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
+//    private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
+//    private let tipsLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     private let nextButton = UIFactory.makeAppRoundedButton(with: .regular)
-    private let textField = UIFactory.makeFloatingTextField(font: .regular,
-                                                            fontPlaceholder: .small,
-                                                            returnKeyType: .done,
-                                                            capitalization: .words)
+//    private let textField = UIFactory.makeFloatingTextField(font: .regular,
+//                                                            fontPlaceholder: .small,
+//                                                            returnKeyType: .done,
+//                                                            capitalization: .words)
     private let cardImageView = UIFactory.makeImageView()
     private let nameLabel = UIFactory.makeLabel(font: .small)
     private let latterCountLabel = UIFactory.makeLabel(font: .micro, alignment: .right)
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
+        tableView.allowsSelection = false
+       // tableView.backgroundColor = .yellow
+        tableView.rowHeight = UITableView.automaticDimension
+        return tableView
+    }()
 
     let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(),
                    UIFactory.makeView()]
@@ -52,37 +61,44 @@ class EditCardNameViewController: UIViewController {
     func setupViews() {
         view
             .addSub(view: titleLabel)
-            .addSub(view: subTitleLabel)
+//            .addSub(view: subTitleLabel)
             .addSub(view: cardImageView)
-            .addSub(view: textField)
-            .addSub(view: tipsLabel)
+            .addSub(view: tableView)
+//            .addSub(view: textField)
+//            .addSub(view: tipsLabel)
             .addSub(view: nextButton)
-            .addSub(view: spacers[0])
-            .addSub(view: spacers[1])
-            .addSub(view: spacers[2])
-            .addSub(view: spacers[3])
-            .addSub(view: spacers[4])
+//            .addSub(view: spacers[0])
+//            .addSub(view: spacers[1])
+//            .addSub(view: spacers[2])
+//            .addSub(view: spacers[3])
+//            .addSub(view: spacers[4])
 
         cardImageView
             .addSub(view: nameLabel)
             .addSub(view: latterCountLabel)
 
         backButton = addBackButton(of: .backEmpty)
-
+        
+        tableView.register(NameLettersSequenceSelectionCell.self, forCellReuseIdentifier: NameLettersSequenceSelectionCell.defaultIdentifier)
+        tableView.rx.setDelegate(self).disposed(by: rx.disposeBag)
+        
+        //TODO: remove subtitle if it's not required
+//        subTitleLabel.isHidden = true
+        nameLabel.text = "Sayyid AlMaliki"
     }
 
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [ view.rx.backgroundColor ])
             .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
-            .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
+//            .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
             .bind({ UIColor($0.primaryDark) }, to: nameLabel.rx.textColor)
             .bind({ UIColor($0.greyDark) }, to: latterCountLabel.rx.textColor)
-            .bind({ UIColor($0.primaryDark) }, to: textField.placeholderLabel.rx.textColor)
-            .bind({ UIColor($0.primaryDark) }, to: textField.rx.textColor)
-            .bind({ UIColor($0.greyLight) }, to: textField.rx.bottomLineColorNormal)
-            .bind({ UIColor($0.primary) }, to: textField.rx.bottomLineColorWhileEditing)
-            .bind({ UIColor($0.greyDark) }, to: tipsLabel.rx.textColor)
+//            .bind({ UIColor($0.primaryDark) }, to: textField.placeholderLabel.rx.textColor)
+//            .bind({ UIColor($0.primaryDark) }, to: textField.rx.textColor)
+//            .bind({ UIColor($0.greyLight) }, to: textField.rx.bottomLineColorNormal)
+//            .bind({ UIColor($0.primary) }, to: textField.rx.bottomLineColorWhileEditing)
+//            .bind({ UIColor($0.greyDark) }, to: tipsLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: nextButton.rx.enabledBackgroundColor)
             .bind({ UIColor($0.greyDark) }, to: nextButton.rx.disabledBackgroundColor)
             .disposed(by: rx.disposeBag)
@@ -101,9 +117,9 @@ class EditCardNameViewController: UIViewController {
         viewModel.outputs.languageStrings.withUnretained(self)
             .subscribe(onNext: { `self`, strings in
                 self.titleLabel.text = strings.title
-                self.subTitleLabel.text = strings.subTitle
-                self.textField.placeholder = strings.typeYourName
-                self.tipsLabel.text = strings.tips
+//                self.subTitleLabel.text = strings.subTitle
+//                self.textField.placeholder = strings.typeYourName
+//                self.tipsLabel.text = strings.tips
                 self.nextButton.setTitle(strings.next, for: .normal)
             })
             .disposed(by: rx.disposeBag)
@@ -111,20 +127,33 @@ class EditCardNameViewController: UIViewController {
 
     func setupBindings() {
         let sharedName = viewModel.outputs.name
-        sharedName.bind(to: textField.rx.text).disposed(by: rx.disposeBag)
+//        sharedName.bind(to: textField.rx.text).disposed(by: rx.disposeBag)
         sharedName.map({ $0.count > 0 }).bind(to: nextButton.rx.isEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.cardName.bind(to: nameLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.charCount.bind(to: latterCountLabel.rx.text).disposed(by: rx.disposeBag)
 
         nextButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
-        textField.rx.text.unwrap().bind(to: viewModel.inputs.nameObserver).disposed(by: rx.disposeBag)
+//        textField.rx.text.unwrap().bind(to: viewModel.inputs.nameObserver).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
 
         view.rx.tapGesture().withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.view.endEditing(true) })
             .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.cellViewModels.bind(to: tableView.rx.items(cellIdentifier: NameLettersSequenceSelectionCell.defaultIdentifier, cellType: NameLettersSequenceSelectionCell.self)){  [weak self] (index,data,cell) in
+            
+            guard let self = self else { return }
+            cell.configure(with: self.themeService, viewModel: data)
+            
+        }.disposed(by: rx.disposeBag)
+        
+        tableView.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            guard let `self` = self else { return }
+           // self.tableView.deselectRow(at: indexPath, animated: true)
+           // self.viewModel.input.didTapCell.onNext(indexPath)
+        }).disposed(by: rx.disposeBag)
 
-        textField.rx.controlEvent(.editingDidBegin).withUnretained(self)
+      /*  textField.rx.controlEvent(.editingDidBegin).withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 UIView.animate(withDuration: 0.3) {
                     self.nextButtonBottomAncher.constant = 160
@@ -138,26 +167,26 @@ class EditCardNameViewController: UIViewController {
                     self.nextButtonBottomAncher.constant = 25
                     self.view.layoutSubviews()
                 }
-            }).disposed(by: rx.disposeBag)
+            }).disposed(by: rx.disposeBag) */
     }
 
     func setupConstraints() {
         titleLabel
             .alignEdgesWithSuperview([.left, .right, .safeAreaTop], constant: 25)
 
-        spacers[0]
+       /* spacers[0]
             .toBottomOf(titleLabel)
-            .alignEdgesWithSuperview([.left, .right])
+            .alignEdgesWithSuperview([.left, .right])  */
 
-        subTitleLabel
-            .toBottomOf(spacers[0])
-            .alignEdgesWithSuperview([.left, .right], constant: 25)
+//        subTitleLabel
+//            .toBottomOf(spacers[0])
+//            .alignEdgesWithSuperview([.left, .right], constant: 25)
 
-        spacers[1]
-            .toBottomOf(subTitleLabel)
-            .alignEdgesWithSuperview([.left, .right])
+//        spacers[1]
+//            .toBottomOf(subTitleLabel)
+//            .alignEdgesWithSuperview([.left, .right])
 
-        cardImageView
+      /*  cardImageView
             .toBottomOf(spacers[1])
             .alignEdgesWithSuperview([.left, .right], constant: 26)
         nameLabel
@@ -170,36 +199,63 @@ class EditCardNameViewController: UIViewController {
 
         spacers[2]
             .toBottomOf(cardImageView)
-            .alignEdgesWithSuperview([.left, .right])
-
-        textField
-            .toBottomOf(spacers[2])
+            .alignEdgesWithSuperview([.left, .right]) */
+        
+        cardImageView
+            .toBottomOf(titleLabel, constant: 44)
             .alignEdgesWithSuperview([.left, .right], constant: 26)
-            .height(constant: 50)
+        nameLabel
+            .alignEdgesWithSuperview([.bottom, .left], constants: [22, 13])
+            .width(constant: 200)
+        latterCountLabel
+            .alignEdgesWithSuperview([.right], constants: [22])
+            .centerVerticallyWith(nameLabel)
+            .width(constant: 50)
+        
+        tableView
+            .toBottomOf(cardImageView, constant: 36)
+            .alignEdgesWithSuperview([.left, .right], constant: 26)
+            .toTopOf(nextButton, .lessThanOrEqualTo ,constant: 100)
+        
+//        spacers[1]
+//            .toBottomOf(cardImageView)
+//            .alignEdgesWithSuperview([.left, .right])
 
-        spacers[3]
-            .toBottomOf(textField)
-            .alignEdgesWithSuperview([.left, .right])
+//        textField
+//            .toBottomOf(spacers[2])
+//            .alignEdgesWithSuperview([.left, .right], constant: 26)
+//            .height(constant: 50)
 
-        tipsLabel
-            .toBottomOf(spacers[3])
-            .alignEdgesWithSuperview([.right, .left], constant: 25)
+//        spacers[3]
+//            .toBottomOf(textField)
+//            .alignEdgesWithSuperview([.left, .right])
 
-        spacers[4]
-            .toBottomOf(tipsLabel)
-            .alignEdgesWithSuperview([.left, .right])
+//        tipsLabel
+//            .toBottomOf(spacers[3])
+//            .alignEdgesWithSuperview([.right, .left], constant: 25)
+
+//        spacers[4]
+//            .toBottomOf(tipsLabel)
+//            .alignEdgesWithSuperview([.left, .right])
 
         nextButton
-            .toBottomOf(spacers[4])
+           // .toBottomOf(spacers[4])
             .alignEdgeWithSuperview(.safeAreaBottom, constant: 25, assignTo: &nextButtonBottomAncher)
             .centerHorizontallyInSuperview()
             .width(constant: 294)
             .height(constant: 52)
-
-        spacers[0]
-            .heightEqualTo(view: spacers[1])
-            .heightEqualTo(view: spacers[2])
-            .heightEqualTo(view: spacers[3], multiplier: 1 / 4)
-            .heightEqualTo(view: spacers[4])
+//
+//        spacers[0]
+//            .heightEqualTo(view: spacers[1])
+        
+        
+//            .heightEqualTo(view: spacers[2])
+//            .heightEqualTo(view: spacers[3], multiplier: 1 / 4)
+//            .heightEqualTo(view: spacers[4])
     }
+}
+
+//MARK: UITableViewDelegate
+extension EditCardNameViewController: UITableViewDelegate {
+    
 }

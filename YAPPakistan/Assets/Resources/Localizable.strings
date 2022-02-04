@@ -302,6 +302,7 @@
 // MARK: KYC CARD NAME
 
 "screen_kyc_card_title" = "What name would you like on your card?";
+"screen_kyc_card_edit_title" = "What name would you like printed on your card?";
 "screen_kyc_card_subtitle" = "Please keep this as close to your real name.";
 "screen_kyc_card_is_it" = "Is it?";
 "screen_kyc_card_tip" = "We can only print 26 characters on the card, so if you have a long name, we suggest you use initials where possible.";
