@@ -34,6 +34,8 @@ protocol KYCRepositoryType {
                          postCode: String,
                          latitude: String,
                          longitude: String ) -> Observable<Event<String?>>
+    
+    func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>>
 }
 
 class KYCRepository: KYCRepositoryType {
@@ -111,5 +113,9 @@ class KYCRepository: KYCRepositoryType {
                                             postCode: postCode,
                                             latitude: latitude,
                                             longitude: longitude).materialize()
+    }
+    
+    func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>> {
+        return cardsService.getCardsScheme().materialize()
     }
 }

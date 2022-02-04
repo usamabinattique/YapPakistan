@@ -42,7 +42,11 @@ class CardSchemeViewController: UIViewController {
         setupTheme()
         setupBindings()
         setupConstraints()
+        
+        //Fetch cards
+        viewModel.inputs.fetchCardsObserver.onNext(())
     }
+    
 }
 
 extension CardSchemeViewController: ViewDesignable {
@@ -65,7 +69,8 @@ extension CardSchemeViewController: ViewDesignable {
     
     func setupBindings() {
         
-        self.titleLabel.text = "Select a card"
+        viewModel.outputs.heading.bind(to: self.titleLabel.rx.text)
+            .disposed(by: rx.disposeBag)
         
         viewModel.outputs.optionsViewModel
             .bind(to: tableView.rx.items(cellIdentifier: CardSchemeCell.defaultIdentifier, cellType: CardSchemeCell.self)){ [weak self] (index,data,cell) in

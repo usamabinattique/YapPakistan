@@ -40,6 +40,7 @@ protocol CardsServiceType {
                                       postCode: String,
                                       latitude: String,
                                       longitude: String) -> Observable<T>
+    func getCardsScheme<T: Codable>() -> Observable<T>
 }
 
 public class CardsService: BaseService, CardsServiceType {
@@ -237,6 +238,12 @@ public class CardsService: BaseService, CardsServiceType {
             body: body,
             headers: authorizationProvider.authorizationHeaders
         )
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getCardsScheme<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.cardsURL, "/api/schemes/active", headers: authorizationProvider.authorizationHeaders)
+
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

@@ -173,7 +173,7 @@ extension KYCFeatureContainer {
     }
     
     func makeCardSchemeViewController() -> CardSchemeViewController {
-        let viewModel = CardSchemeViewModel(accountProvider: self.accountProvider, cellViewModel: Observable.just([]))
+        let viewModel = CardSchemeViewModel(self.parent.makeKYCRepository(), accountProvider: self.accountProvider)
         return CardSchemeViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }

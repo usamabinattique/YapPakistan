@@ -98,10 +98,14 @@ extension CardSchemeCell: ViewDesignable {
     }
     
     func setupBindings() {
-        self.cardTitle.text = "Matercard"
-        self.cardDescription.text = "Get YAP free card and enjoy mastercard benefits"
-        self.cardButton.setTitle("Get it for free", for: .normal)
-        self.cardImage.image = UIImage(named: "yap-master-card", in: .yapPakistan)
+        
+        self.viewModel.outputs.title.bind(to: self.cardTitle.rx.text).disposed(by: disposeBag)
+        self.viewModel.outputs.description.bind(to: self.cardDescription.rx.text).disposed(by: disposeBag)
+        self.viewModel.outputs.buttonTitle.bind(to: self.cardButton.rx.title(for: .normal)).disposed(by: disposeBag)
+        self.viewModel.outputs.cardImage.subscribe(onNext: { [weak self] imageName in
+            guard let `self` = self else { return }
+            self.cardImage.image = UIImage(named: imageName, in: .yapPakistan)
+        }).disposed(by: disposeBag)
     }
     
     func setupTheme() {
