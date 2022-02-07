@@ -151,8 +151,8 @@ extension KYCFeatureContainer {
         CardNameModuleBuilder(container: self).viewController()
     }
 
-    func makeEditCardNameViewController() -> EditCardNameViewController {
-        EditCardNameModuleBuilder(container: self).viewController()
+    func makeEditCardNameViewController(name: String) -> EditCardNameViewController {
+        EditCardNameModuleBuilder(container: self).viewController(name: name)
     }
 
     func makeAddressViewController() -> AddressViewController {

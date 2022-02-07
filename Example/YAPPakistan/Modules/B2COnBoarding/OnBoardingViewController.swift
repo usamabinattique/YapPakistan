@@ -23,6 +23,7 @@ class OnBoardingViewController: UIViewController {
     private var childNavigation: UINavigationController?
     private var viewModel: OnBoardingViewModelType!
     private var themeService: ThemeService<AppTheme>!
+    
 
     init(themeService: ThemeService<AppTheme>, viewModel: OnBoardingViewModelType, withChildNavigation childNav: UINavigationController) {
         super.init(nibName: nil, bundle: nil)

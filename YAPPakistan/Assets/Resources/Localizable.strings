@@ -101,7 +101,7 @@
 "screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
 
 //MARK: Create passcode screen
-"screen_create_passcode_display_text_title" = "Create a 4-6 digit passcode to access your account​";
+"screen_create_passcode_display_text_title" = "Create a 4 digit passcode to access your account​";
 "screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our";
 "screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
 "screen_create_passcode_button_create_passcode" = "Create passcode";
@@ -157,11 +157,30 @@
 "screen_email_verification_b2b_display_text_email_sent" = "you should now receive an email on";
 "screen_email_verification_b2b_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
 
+//MARK: Preferred Email screen
+"screen_email_description_display_text_title" = "Please validate your email address after signing up and we promise not to spam you.";
+
 //MARK: Enter passcode screen
 "screen_enter_passcode_display_text_title" = "Enter your passcode to access your account​";
 "screen_enter_passcode_display_text_user_blocked" = "Sorry, that's too many incorrect attempts. Click on Forgot passcode to set a new one.​";
 "screen_create_passcode_button_signin" = "Sign in";
 "screen_create_passcode_button_forgot_passcode" = "Forgot passcode?";
+
+//MARK: Signup Failures screen
+"screen_signup_failure_display_text_screen_title_non_valid_cnic" = "We’re sorry :(";
+"screen_signup_failure_display_text_screen_title_expired_cnic" = "Looks like your CNIC is expired!";
+"screen_signup_failure_display_text_screen_title_cnic_doesn_not_exist" = "Oops, looks like that CNIC doesn’t exist!";
+"screen_signup_failure_display_text_screen_title_under_18" = "Looks like you’re under 18!";
+"screen_signup_failure_display_text_screen_title_cnic_linked_to_another_account" = "Oops! You’re CNIC is linked to another account!";
+
+"screen_signup_failure_display_text_screen_description_non_valid_cnic" = "Unfortunately, we’re unable to proceed with creating your account at this time. However, we do appreciate your interest in getting a YAP account.";
+"screen_signup_failure_display_text_screen_description_expired_cnic" = "To complete your YAP account. please re-scan with a valid CNIC and try again.";
+"screen_signup_failure_display_text_screen_description_cnic_doesn_not_exist" = "To complete your YAP account. please re-scan with a valid CNIC and try again.";
+"screen_signup_failure_display_text_screen_description_under_18" = "Unfortunately, YAP is only available to users over the age of 18. But don’t worry! We’re working on bringing something special to our younger audiences soon 😉";
+"screen_signup_failure_display_text_screen_description_cnic_linked_to_another_account" = "Your CNIC is already linked to another account! Please log out and try logging into that account. If you forgot your details, please reach out to our customer service team for help.";
+"screen_signup_failure_display_text_screen_description_blacklist" = "Unfortunately, we’re unable to proceed with creating your account at this time. However, we do appreciate your interest in getting a YAP account.";
+
+
 
 
 //MARK: Filters
@@ -302,6 +321,7 @@
 // MARK: KYC CARD NAME
 
 "screen_kyc_card_title" = "What name would you like on your card?";
+"screen_kyc_card_edit_title" = "What name would you like printed on your card?";
 "screen_kyc_card_subtitle" = "Please keep this as close to your real name.";
 "screen_kyc_card_is_it" = "Is it?";
 "screen_kyc_card_tip" = "We can only print 26 characters on the card, so if you have a long name, we suggest you use initials where possible.";

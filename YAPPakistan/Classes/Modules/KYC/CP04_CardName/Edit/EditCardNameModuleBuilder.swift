@@ -11,9 +11,9 @@ struct EditCardNameModuleBuilder {
 
     let container: KYCFeatureContainer
 
-    func viewController() -> EditCardNameViewController {
+    func viewController(name: String) -> EditCardNameViewController {
         let themeService = container.themeService
-        let viewModel = EditNameViewModel()
+        let viewModel = EditNameViewModel(name: name)
 
         return EditCardNameViewController(themeService: themeService, viewModel: viewModel)
     }

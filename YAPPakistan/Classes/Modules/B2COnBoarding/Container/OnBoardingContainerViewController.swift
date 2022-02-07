@@ -18,7 +18,9 @@ class OnBoardingContainerViewController: KeyboardAvoidingViewController {
         with: .large,
         title: "common_button_next".localized
     )
-
+    
+    
+    
     private var themeService: ThemeService<AppTheme>!
     private var viewModel: OnBoardingContainerViewModelType!
     private var childNavigation: UINavigationController?
@@ -29,7 +31,7 @@ class OnBoardingContainerViewController: KeyboardAvoidingViewController {
     init(themeService: ThemeService<AppTheme>, viewModel: OnBoardingContainerViewModelType, childNavigation: UINavigationController?) {
 
         super.init(nibName: nil, bundle: nil)
-
+        print("OnBoardingContainerViewControllerdevelopment pods")
         self.viewModel = viewModel
         self.themeService = themeService
         self.childNavigation = childNavigation
@@ -55,6 +57,7 @@ class OnBoardingContainerViewController: KeyboardAvoidingViewController {
 fileprivate extension OnBoardingContainerViewController {
     func setupViews() {
         view.addSubview(sendButton)
+       
 
         childView?.translatesAutoresizingMaskIntoConstraints = false
         if childView != nil, childNavigation != nil {
@@ -62,6 +65,8 @@ fileprivate extension OnBoardingContainerViewController {
             view.addSubview(childView!)
         }
         childNavigation?.didMove(toParent: self)
+        
+       // emailDescription.textColor = UIColor(Color(hex: "9391B1"))
     }
 
     func setupTheme() {
@@ -74,7 +79,9 @@ fileprivate extension OnBoardingContainerViewController {
     }
 
     func setupCostraints() {
-
+       
+        
+        
         sendButton
             .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 25)
             .centerHorizontallyInSuperview()
@@ -96,5 +103,6 @@ fileprivate extension OnBoardingContainerViewController {
                 print(value)
             }).bind(to: viewModel.inputs.sendObserver).disposed(by: disposeBag)
         viewModel.outputs.valid.bind(to: sendButton.rx.isEnabled).disposed(by: disposeBag)
+              
     }
 }

@@ -1,34 +1,35 @@
 //
-//  TransactionFilterCheckBoxCell.swift
+//  NameLettersSequenceSelectionCell.swift
 //  YAPPakistan
 //
-//  Created by Umair  on 22/12/2021.
+//  Created by Yasir on 04/02/2022.
 //
 
-import Foundation
+import UIKit
 import YAPComponents
 import RxTheme
-import UIKit
-//import YAP_PK_Dev
 
-class TransactionFilterCheckBoxCell: RxUITableViewCell {
+class NameLettersSequenceSelectionCell: RxUITableViewCell {
     
     // MARK: Views
     
     private lazy var title = UIFactory.makeLabel(font: .regular)
     
     private lazy var checkBox: YAPCheckBox = {
-        let checkBox = YAPCheckBox()
+        let checkBox = YAPCheckBox(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
+        checkBox.checkedWithAnimation = false
         checkBox.translatesAutoresizingMaskIntoConstraints = false
-       // checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
-//        checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)
+        checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
+        checkBox.imageView.tintColor = .white
+        checkBox.layer.cornerRadius = checkBox.frame.size.height / 2
         return checkBox
     }()
     
     // MARK: Properties
     
     var themeService: ThemeService<AppTheme>!
-    var viewModel: TransactionFilterCheckBoxCellViewModelType!
+    var viewModel: NameLettersSequenceSelectionCellViewModelType!
+    var isChecked: ((Bool) -> Void)?
     
     // MARK: Initialization
     
@@ -47,11 +48,6 @@ class TransactionFilterCheckBoxCell: RxUITableViewCell {
         
         setupViews()
         setupConstraints()
-        
-        //setupResources()
-        //setupLocalizedStrings()
-        //setupBindings()
-//        setupConstraints()
     }
     
     // MARK: Configurations
@@ -59,7 +55,7 @@ class TransactionFilterCheckBoxCell: RxUITableViewCell {
     override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
         self.themeService = themeService
         
-        guard let viewModel = viewModel as? TransactionFilterCheckBoxCellViewModelType else { return }
+        guard let viewModel = viewModel as? NameLettersSequenceSelectionCellViewModelType else { return }
         self.viewModel = viewModel
         bindViews()
         setupTheme()
@@ -69,55 +65,55 @@ class TransactionFilterCheckBoxCell: RxUITableViewCell {
 
 // MARK: View setup
 
-private extension TransactionFilterCheckBoxCell {
+private extension NameLettersSequenceSelectionCell {
     func setupViews() {
         contentView.addSubview(title)
         contentView.addSubview(checkBox)
     }
     
     func setupConstraints() {
-        title
-            .alignEdgeWithSuperview(.left, constant: 25)
-            .centerVerticallyInSuperview()
-        
         checkBox
-            .alignEdgeWithSuperview(.right, constant: 25)
-            .toRightOf(title, constant: 10)
-            .centerVerticallyInSuperview()
-            .alignEdgesWithSuperview([.top, .bottom], constant: 7)
-            .width(constant: 28)
-            .height(constant: 28)
+            .alignEdgeWithSuperview(.left, constant: 6)
+            .alignEdgesWithSuperview([.top, .bottom], constant: 16)
+            .width(constant: 24)
+            .height(constant: 24)
         
+        title
+            .alignEdgeWithSuperview(.right, constant: 6)
+            .centerVerticallyWith(checkBox)
+            .toRightOf(checkBox,constant: 28)
     }
     
     func setupTheme(){
         themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: [title.rx.textColor])
-            .bind({ UIColor($0.backgroundColor) }, to: [checkBox.rx.tintColor])
             .bind({ UIColor($0.primary) }, to: [checkBox.rx.fillColor])
         
             .disposed(by: rx.disposeBag)
     }
     
     func setupResources() {
-        //checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
     }
 }
 
 // MARK: Binding
 
-private extension TransactionFilterCheckBoxCell {
+private extension NameLettersSequenceSelectionCell {
     func bindViews() {
-      //  viewModel.outputs.check.bind(to: checkBox.rx.checked).disposed(by: disposeBag)
         let checkShare = viewModel.outputs.check.share()
         checkShare.bind(to: checkBox.rx.checked).disposed(by: disposeBag)
         
         checkShare.subscribe(onNext: { [unowned self] isChecked in
             self.checkBox.backgroundColor =  isChecked ? UIColor(Color(hex: "#5E35B1")) : .clear
         }).disposed(by: disposeBag)
-
         
         viewModel.outputs.title.bind(to: title.rx.text).disposed(by: disposeBag)
-        checkBox.rx.checked.bind(to: viewModel.inputs.checkObserver).disposed(by: disposeBag)
+//        checkBox.rx.checked.bind(to: viewModel.inputs.checkObserver).disposed(by: disposeBag)
+        
+        checkBox.rx.checked.skip(1).subscribe(onNext: { [unowned self] isCheckedBox in
+            print("isCheckBox \(isCheckedBox)")
+            self.isChecked?(isCheckedBox)
+        }).disposed(by: disposeBag)
+
     }
 }

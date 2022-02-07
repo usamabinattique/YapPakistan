@@ -408,7 +408,9 @@ extension OnboardingCongratulationViewController {
                 self.completeVerificationButtonTopConstraint.constant = self.rowHeight * 3.8
                 self.view.layoutIfNeeded()
         }) { _ in
+          //  self.viewModel.inputs.progressObserver.onNext(1)
         }
+
     }
 
     fileprivate func style() {

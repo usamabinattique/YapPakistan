@@ -51,6 +51,7 @@ class EnterEmailViewController: OnBoardinContainerChildViewController {
                                                                  lineBreakMode: .byWordWrapping,
                                                                  alpha: 0,
                                                                  adjustFontSize: true)
+    fileprivate lazy var emailDescription =  UIFactory.makeLabel(font: .micro,alignment: .center ,numberOfLines: 0 )
 
     override var firstReponder: UITextField? { email }
     
@@ -117,6 +118,9 @@ private extension EnterEmailViewController {
         stackView.addArrangedSubview(subHeadingLabel)
         view.addSubview(email)
         view.addSubview(verificationLabel)
+        view.addSubview(emailDescription)
+        
+        emailDescription.text = "screen_email_description_display_text_title".localized
     }
 
     func setupTheme() {
@@ -124,7 +128,7 @@ private extension EnterEmailViewController {
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
             .bind({ UIColor($0.primaryDark    ) }, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.greyDark       ) }, to: [subHeadingLabel.rx.textColor])
-            .bind({ UIColor($0.greyDark       ) }, to: [verificationLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark       ) }, to: [verificationLabel.rx.textColor,emailDescription.rx.textColor])
             .bind({ UIColor($0.primary        ) }, to: [email.rx.primaryColor])
             .bind({ UIColor($0.primaryDark    ) }, to: [email.rx.secondaryColor])
             .bind({ UIColor($0.greyLight      ) }, to: [email.rx.bgColor])
@@ -149,6 +153,11 @@ private extension EnterEmailViewController {
         verificationLabel
             .alignEdgesWithSuperview([.left, .right], constant: 25)
             .toBottomOf(email, constant: 40)
+        
+        emailDescription
+            .alignEdgesWithSuperview([.left, .right], constant: 25)
+            .centerHorizontallyInSuperview()
+            .alignEdgeWithSuperviewSafeArea(.bottom,constant: 25)
     }
 }
 
@@ -159,7 +168,6 @@ private extension EnterEmailViewController {
 
         email.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.endEditting.bind(to: view.rx.endEditting).disposed(by: rx.disposeBag)
-        viewModel.outputs.emailValidation.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.emailValidation.bind(to: email.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: email.errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.showError.bind(to: email.errorLabel.rx.text).disposed(by: rx.disposeBag)

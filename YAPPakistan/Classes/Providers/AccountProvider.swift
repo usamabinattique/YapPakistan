@@ -39,7 +39,7 @@ public class AccountProvider {
         request.elements().subscribe(onNext: { [unowned self] userAccounts in
             self.accountsSubject.onNext(userAccounts)
 
-            if var currentAccount = userAccounts.first {
+            if let currentAccount = userAccounts.first {
                 // po currentAccount._accountStatus = "ADDRESS_PENDING"
                 self.accountSubject.onNext(currentAccount)
             }

@@ -131,7 +131,7 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
           credentialsManager: CredentialsStoreType,
           notificationManager: NotificationManagerType,
           sessionCreator: SessionProviderType,
-          pinRange: ClosedRange<Int> = 4...6,
+          pinRange: ClosedRange<Int> = 4...4,
           onLogin: @escaping OnLoginClosure) {
 
         self.username = username

@@ -10,7 +10,7 @@ import Foundation
 
 public class CreatePasscodeViewModel: PINViewModel {
 
-    public override init(pinRange: ClosedRange<Int> = 4...6) {
+    public override init(pinRange: ClosedRange<Int> = 4...4) {//6) {
         super.init(pinRange: pinRange)
         let locString = "screen_create_passcode_display_text_title".localized
         headingTextSubject.onNext(locString)
