@@ -118,4 +118,8 @@ class KYCRepository: KYCRepositoryType {
     func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>> {
         return cardsService.getCardsScheme().materialize()
     }
+    
+    func fetchCardBenefits(cardType type: SchemeType) -> Observable<Event<[KYCCardBenefitsM]>> {
+        return cardsService.getCardBenefits(scheme: type).materialize()
+    }
 }

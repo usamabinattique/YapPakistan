@@ -26,22 +26,50 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         let progressRoot = container.makeKYCProgressViewController()
         root.pushViewController(progressRoot)
 
-        Observable<Void>.just(()).withUnretained(self)
-            .flatMap{ `self`, _ in self.cardScheme() }.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.moveNext() })
+        cardScheme()
+            .subscribe(onNext:{ [weak self] cardSchemeObj in
+                guard let `self` = self else { return }
+                switch cardSchemeObj.scheme{
+                case .Mastercard:
+                    self.masterCardBenefits(cardSchemeObj)
+                    
+                case .PayPak:
+                    print("PayPak -> navigation flow")
+                case .none:
+                    print("N/A")
+                }
+            })
             .disposed(by: rx.disposeBag)
 
         progressRoot.viewModel.outputs.backTap.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.popViewController(progress: 0.25) })
             .disposed(by: rx.disposeBag)
-
+        
         return result
     }
 
-    func cardScheme() -> Observable<Void>{
+    func cardScheme() -> Observable<KYCCardsSchemeM> {
         let viewController = container.makeCardSchemeViewController()
         push(viewController: viewController, progress: 0.25)
         return viewController.viewModel.outputs.next
+    }
+    
+    func masterCardBenefits(_ schemeObj: KYCCardsSchemeM) -> Observable<CardBenefitsViewController> {
+        let viewController = container.makeMasterCardBenefitsViewController()
+        viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
+        self.root.pushViewController(viewController, animated: true)
+        
+//        vc.viewModel.outputs.next.withUnretained(self)
+//            .subscribe(onNext: {
+//                self.cardNamePending().materialize()
+//            })
+//            .disposed(by: rx.disposeBag)
+        
+        return Observable.just(viewController)
+    }
+    
+    func cardNamePending() -> Observable<ResultType<Void>> {
+        return coordinate(to: container.makeCardNameCoordinator(root: root))
     }
 }
 

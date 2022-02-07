@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CoreMedia
 
 public enum SchemeType: String, Hashable, Codable {
     case Mastercard = "Mastercard"
@@ -27,6 +26,8 @@ public struct KYCCardsSchemeM: Codable {
     public var cardImage: String?
     public var cardBackgroundColor: String?
     
+    public var benefits: [KYCCardBenefitsM]?
+    
     enum CodingKeys: String, CodingKey {
         case schemeName
         case schemeCode
@@ -41,7 +42,6 @@ public struct KYCCardsSchemeM: Codable {
         self.schemeCode = (try? data.decode(String?.self, forKey: .schemeCode)) ?? ""
         self.isActive = (try? data.decode(Bool?.self, forKey: .isActive)) ?? false
         self.fee = (try? data.decode(Double?.self, forKey: .fee)) ?? 0
-//        self.scheme = (try? data.decodeIfPresent(SchemeType.self, forKey: .scheme))
         
         setupCustomProperties()
     }

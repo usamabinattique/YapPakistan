@@ -79,11 +79,7 @@ extension CardSchemeViewController: ViewDesignable {
                 cell.configure(with: self.themeService, viewModel: data)
                 
             }.disposed(by: rx.disposeBag)
-        
-        //        tableView.rx.modelSelected(CardSchemeCellViewModel.self)
-//            .bind(to: viewModel.inputs.selectedItemObserver)
-//            .disposed(by: rx.disposeBag)
-        
+            
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }
     

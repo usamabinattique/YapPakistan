@@ -5,8 +5,6 @@
 //  Created by Umair  on 02/02/2022.
 //
 
-// 25 25, 325 214
-
 import RxSwift
 import RxTheme
 import UIKit
@@ -106,12 +104,33 @@ extension CardSchemeCell: ViewDesignable {
             guard let `self` = self else { return }
             self.cardImage.image = UIImage(named: imageName, in: .yapPakistan)
         }).disposed(by: disposeBag)
+        
+        self.viewModel.outputs.cardScheme
+            .subscribe(onNext: { [weak self] cardScheme in
+                guard let `self` = self else { return }
+                switch cardScheme.scheme{
+                case .Mastercard:
+                    self.cardTitle.textColor = UIColor(self.themeService.attrs.primaryDark)
+                    self.schemeView.backgroundColor = UIColor(self.themeService.attrs.secondaryPurple)
+                case .PayPak:
+                    self.cardTitle.textColor = UIColor(self.themeService.attrs.backgroundColor)
+                    self.schemeView.backgroundColor = UIColor(self.themeService.attrs.primaryDark)
+                case .none:
+                    //nothing found
+                    print("nothing found")
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        self.cardButton.rx.tap
+            .withLatestFrom(viewModel.outputs.cardScheme)
+            .map { $0 }
+            .bind(to: viewModel.inputs.buttonTapObserver)
+            .disposed(by: disposeBag)
     }
     
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.secondaryPurple) }, to: [schemeView.rx.backgroundColor])
-            .bind({ UIColor($0.primaryDark) }, to: [cardTitle.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [cardDescription.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [cardButton.rx.enabledBackgroundColor])
             .bind({ UIColor($0.backgroundColor) }, to: [cardButton.rx.titleColor(for: .normal)])

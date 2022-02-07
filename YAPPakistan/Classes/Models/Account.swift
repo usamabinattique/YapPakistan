@@ -50,7 +50,7 @@ public struct Account: Codable {
     public let documentsVerified: Bool
     public var companyType: String?
     public var soleProprietary: Bool
-    public var accountStatus: AccountStatus? = AccountStatus.cardNamePending //{ AccountStatus(rawValue: _accountStatus ?? "") }
+    public var accountStatus: AccountStatus? = AccountStatus.cardOrderScheme //{ AccountStatus(rawValue: _accountStatus ?? "") }
     private var _accountStatus: String?
     public let customer: Customer
     public let bank: Bank
