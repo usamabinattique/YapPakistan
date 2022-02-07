@@ -72,7 +72,7 @@ class FPPassCodeViewModel: FPPassCodeViewModelType,
     // MARK: Internal Properties and ViewModels
     let repository: CardsRepositoryType
     let disposeBag = DisposeBag()
-    var pinRange = 4...4
+    private var pinRange = 4...4
 
     // MARK: - Init
 

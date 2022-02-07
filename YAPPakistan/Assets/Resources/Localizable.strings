@@ -101,7 +101,7 @@
 "screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
 
 //MARK: Create passcode screen
-"screen_create_passcode_display_text_title" = "Create a 4-6 digit passcode to access your account​";
+"screen_create_passcode_display_text_title" = "Create a 4 digit passcode to access your account​";
 "screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our";
 "screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
 "screen_create_passcode_button_create_passcode" = "Create passcode";
