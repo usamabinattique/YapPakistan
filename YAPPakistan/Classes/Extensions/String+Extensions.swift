@@ -236,7 +236,16 @@ public extension String {
         return "\(firstCharacter) \(lastLetter)"
     }
     
+    // number of spaces
+    var splits: Int {
+        return self.components(separatedBy: " ").count - 1
+    }
+    
     var length: Int {
         return self.count
+    }
+    
+    var allLettersSepartedBySpaces: [String] {
+        return self.components(separatedBy: " ")
     }
 }

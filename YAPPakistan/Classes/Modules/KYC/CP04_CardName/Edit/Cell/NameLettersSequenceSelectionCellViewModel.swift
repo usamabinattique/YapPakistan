@@ -33,7 +33,7 @@ class NameLettersSequenceSelectionCellViewModel: NameLettersSequenceSelectionCel
     let disposeBag = DisposeBag()
     var inputs: NameLettersSequenceSelectionCellViewModelInput { return self }
     var outputs: NameLettersSequenceSelectionCellViewModelOutput { return self }
-    var reusableIdentifier: String { return TransactionFilterCheckBoxCell.defaultIdentifier }
+    var reusableIdentifier: String { return NameLettersSequenceSelectionCell.defaultIdentifier }
     
     private let checkSubject = BehaviorSubject<Bool>(value: false)
     private let titleSubject = BehaviorSubject<String?>(value: nil)
@@ -48,7 +48,7 @@ class NameLettersSequenceSelectionCellViewModel: NameLettersSequenceSelectionCel
     var title: Observable<String?> { return titleSubject.asObservable() }
     
     // MARK: - Init
-    init(type: NameSequence) {
+    init(_ type: NameSequence) {
         selectedSubject.withLatestFrom(checkSubject).map{ !$0 }.bind(to: checkSubject).disposed(by: disposeBag)
         checkSubject.onNext(type.isChecked)
         titleSubject.onNext(type.nameFormatted)

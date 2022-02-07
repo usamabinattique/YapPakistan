@@ -5,9 +5,13 @@
 //  Created by Sarmad on 18/10/2021.
 //
 
+import Foundation
 import YAPComponents
-import RxTheme
+import YAPCore
+import RxCocoa
 import RxSwift
+import RxDataSources
+import RxTheme
 
 class EditCardNameViewController: UIViewController {
 
@@ -27,8 +31,9 @@ class EditCardNameViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
-       // tableView.backgroundColor = .yellow
+        tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.isUserInteractionEnabled = true
         return tableView
     }()
 
@@ -40,6 +45,7 @@ class EditCardNameViewController: UIViewController {
 
     private var themeService: ThemeService<AppTheme>!
     var viewModel: EditNameViewModelType!
+    private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
 
     convenience init(themeService: ThemeService<AppTheme>, viewModel: EditNameViewModelType) {
         self.init(nibName: nil, bundle: nil)
@@ -80,11 +86,11 @@ class EditCardNameViewController: UIViewController {
         backButton = addBackButton(of: .backEmpty)
         
         tableView.register(NameLettersSequenceSelectionCell.self, forCellReuseIdentifier: NameLettersSequenceSelectionCell.defaultIdentifier)
-        tableView.rx.setDelegate(self).disposed(by: rx.disposeBag)
         
+       // tableView.rx.setDelegate(self).disposed(by: rx.disposeBag)
         //TODO: remove subtitle if it's not required
 //        subTitleLabel.isHidden = true
-        nameLabel.text = "Sayyid AlMaliki"
+        
     }
 
     func setupTheme() {
@@ -126,6 +132,7 @@ class EditCardNameViewController: UIViewController {
     }
 
     func setupBindings() {
+        bindTableView()
         let sharedName = viewModel.outputs.name
 //        sharedName.bind(to: textField.rx.text).disposed(by: rx.disposeBag)
         sharedName.map({ $0.count > 0 }).bind(to: nextButton.rx.isEnabled).disposed(by: rx.disposeBag)
@@ -136,23 +143,10 @@ class EditCardNameViewController: UIViewController {
 //        textField.rx.text.unwrap().bind(to: viewModel.inputs.nameObserver).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
 
-        view.rx.tapGesture().withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.view.endEditing(true) })
-            .disposed(by: rx.disposeBag)
+//        view.rx.tapGesture().withUnretained(self)
+//            .subscribe(onNext: { `self`, _ in self.view.endEditing(true) })
+//            .disposed(by: rx.disposeBag)
         
-        viewModel.outputs.cellViewModels.bind(to: tableView.rx.items(cellIdentifier: NameLettersSequenceSelectionCell.defaultIdentifier, cellType: NameLettersSequenceSelectionCell.self)){  [weak self] (index,data,cell) in
-            
-            guard let self = self else { return }
-            cell.configure(with: self.themeService, viewModel: data)
-            
-        }.disposed(by: rx.disposeBag)
-        
-        tableView.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
-            guard let `self` = self else { return }
-           // self.tableView.deselectRow(at: indexPath, animated: true)
-           // self.viewModel.input.didTapCell.onNext(indexPath)
-        }).disposed(by: rx.disposeBag)
-
       /*  textField.rx.controlEvent(.editingDidBegin).withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 UIView.animate(withDuration: 0.3) {
@@ -205,17 +199,20 @@ class EditCardNameViewController: UIViewController {
             .toBottomOf(titleLabel, constant: 44)
             .alignEdgesWithSuperview([.left, .right], constant: 26)
         nameLabel
-            .alignEdgesWithSuperview([.bottom, .left], constants: [22, 13])
+           // .alignEdgesWithSuperview([.bottom, .left], constants: [22, 13])
+            .alignEdgesWithSuperview([.bottom], constants: [24])
+            .alignEdges([.left], withView: cardImageView, constants: [16])
             .width(constant: 200)
         latterCountLabel
-            .alignEdgesWithSuperview([.right], constants: [22])
+           // .alignEdgesWithSuperview([.right], constants: [22])
+            .alignEdges([.right], withView: cardImageView, constants: [32])
             .centerVerticallyWith(nameLabel)
             .width(constant: 50)
         
         tableView
             .toBottomOf(cardImageView, constant: 36)
             .alignEdgesWithSuperview([.left, .right], constant: 26)
-            .toTopOf(nextButton, .lessThanOrEqualTo ,constant: 100)
+            .toTopOf(nextButton, .lessThanOrEqualTo ,constant: 50)
         
 //        spacers[1]
 //            .toBottomOf(cardImageView)
@@ -253,9 +250,71 @@ class EditCardNameViewController: UIViewController {
 //            .heightEqualTo(view: spacers[3], multiplier: 1 / 4)
 //            .heightEqualTo(view: spacers[4])
     }
+    
+    func bindTableView() {
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { [weak self] (data, tableView, index, viewModel) in
+            
+            guard let self = self else { return UITableViewCell() }
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
+            cell.configure(with: self.themeService, viewModel: viewModel)
+            if let cell  = cell as? NameLettersSequenceSelectionCell,let vm = viewModel as? NameLettersSequenceSelectionCellViewModel {
+                print("yeah")
+                cell.isChecked = { [weak self] isCheckedBox in
+                    self?.viewModel.inputs.selectedNameSequence.onNext(index.row)
+                }
+            }
+            return cell
+        })
+        
+        viewModel.outputs.cellViewModels.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
+        
+       /* tableView.rx.modelSelected(ReusableTableViewCellViewModelType.self)
+            .filter{ $0 is TransactionFilterCheckBoxCellViewModelType }
+            .map{ $0 as? TransactionFilterCheckBoxCellViewModel }
+            .subscribe(onNext: {
+                $0?.inputs.selectedObserver.onNext(())
+            }).disposed(by: rx.disposeBag)
+        
+        tableView.rx.modelSelected(NameLettersSequenceSelectionCellViewModel.self)
+            .subscribe(onNext: { [weak self] model in
+               // self.viewModel.inputs.actionObserver.onNext(model.action)
+            })
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.cellViewModels.bind(to: tableView.rx.items(cellIdentifier: NameLettersSequenceSelectionCell.defaultIdentifier, cellType: NameLettersSequenceSelectionCell.self)){  [weak self] (index,data,cell) in
+            
+            guard let self = self else { return }
+            cell.configure(with: self.themeService, viewModel: data)
+            
+        }.disposed(by: rx.disposeBag)
+        
+        tableView.rx.itemSelected.subscribe(onNext: { [weak self] (indexPath) in
+            guard let `self` = self else { return }
+           // self.tableView.deselectRow(at: indexPath, animated: true)
+           // self.viewModel.input.didTapCell.onNext(indexPath)
+        }).disposed(by: rx.disposeBag) */
+        
+        /*tableView.rx.modelSelected(ReusableTableViewCellViewModelType.self)
+            .filter{ $0 is NameLettersSequenceSelectionCellViewModelType }
+            .map{ $0 as? NameLettersSequenceSelectionCellViewModel }
+            .subscribe(onNext: {
+               // $0?.inputs.selectedObserver.onNext(())
+            }).disposed(by: rx.disposeBag) */
+        
+        tableView.rx.modelSelected(NameLettersSequenceSelectionCellViewModel.self)
+            .subscribe(onNext: { [weak self] model in
+                print("model is \(model)")
+               // self.viewModel.inputs.actionObserver.onNext(model.action)
+            })
+            .disposed(by: rx.disposeBag)
+
+    }
 }
 
 //MARK: UITableViewDelegate
 extension EditCardNameViewController: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        print("index \(indexPath)")
+    }
 }

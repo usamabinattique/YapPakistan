@@ -17,6 +17,7 @@ class NameLettersSequenceSelectionCell: RxUITableViewCell {
     
     private lazy var checkBox: YAPCheckBox = {
         let checkBox = YAPCheckBox(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
+        checkBox.checkedWithAnimation = false
         checkBox.translatesAutoresizingMaskIntoConstraints = false
         checkBox.imageView.image = UIImage.init(named: "icon_check", in: .yapPakistan)?.asTemplate
         checkBox.imageView.tintColor = .white
@@ -28,6 +29,7 @@ class NameLettersSequenceSelectionCell: RxUITableViewCell {
     
     var themeService: ThemeService<AppTheme>!
     var viewModel: NameLettersSequenceSelectionCellViewModelType!
+    var isChecked: ((Bool) -> Void)?
     
     // MARK: Initialization
     
@@ -45,7 +47,6 @@ class NameLettersSequenceSelectionCell: RxUITableViewCell {
         selectionStyle = .none
         
         setupViews()
-        setupConstraints()
         setupConstraints()
     }
     
@@ -73,22 +74,19 @@ private extension NameLettersSequenceSelectionCell {
     func setupConstraints() {
         checkBox
             .alignEdgeWithSuperview(.left, constant: 6)
-            .centerVerticallyInSuperview()
-            .alignEdgesWithSuperview([.top, .bottom], constant: 7)
+            .alignEdgesWithSuperview([.top, .bottom], constant: 16)
             .width(constant: 24)
             .height(constant: 24)
         
         title
             .alignEdgeWithSuperview(.right, constant: 6)
-            .centerVerticallyInSuperview()
+            .centerVerticallyWith(checkBox)
             .toRightOf(checkBox,constant: 28)
-        
     }
     
     func setupTheme(){
         themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: [title.rx.textColor])
-           // .bind({ UIColor($0.backgroundColor) }, to: [checkBox.rx.tintColor])
             .bind({ UIColor($0.primary) }, to: [checkBox.rx.fillColor])
         
             .disposed(by: rx.disposeBag)
@@ -110,6 +108,12 @@ private extension NameLettersSequenceSelectionCell {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.title.bind(to: title.rx.text).disposed(by: disposeBag)
-        checkBox.rx.checked.bind(to: viewModel.inputs.checkObserver).disposed(by: disposeBag)
+//        checkBox.rx.checked.bind(to: viewModel.inputs.checkObserver).disposed(by: disposeBag)
+        
+        checkBox.rx.checked.skip(1).subscribe(onNext: { [unowned self] isCheckedBox in
+            print("isCheckBox \(isCheckedBox)")
+            self.isChecked?(isCheckedBox)
+        }).disposed(by: disposeBag)
+
     }
 }

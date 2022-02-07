@@ -41,14 +41,14 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { `self`, _ in self.moveNext() })
             .disposed(by: rx.disposeBag)
 
-        viewController.viewModel.outputs.edit.withUnretained(self)
-            .flatMap({ `self`, _ in self.editName() })
+        viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.name).withUnretained(self)
+            .flatMap({ `self`, name in self.editName(name: name) })
             .bind(to: viewController.viewModel.inputs.nameObserver)
             .disposed(by: rx.disposeBag)
     }
 
-    func editName() -> Observable<String> {
-        let viewController = container.makeEditCardNameViewController()
+    func editName(name: String) -> Observable<String> {
+        let viewController = container.makeEditCardNameViewController(name: name)
         navigation.childNavigation.pushViewController(viewController, animated: true)
 
         viewController.viewModel.outputs.back.withUnretained(self)
