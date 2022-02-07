@@ -14,6 +14,7 @@ protocol OnBoardingViewModelInput {
     var backTapObserver: AnyObserver<Void> { get }
     var progressObserver: AnyObserver<Float> { get }
     var startTimeObserver: AnyObserver<Void> { get }
+    var animationCompletedObserver: AnyObserver<Void> { get }
 }
 
 protocol OnBoardingViewModelOutput {
@@ -21,6 +22,7 @@ protocol OnBoardingViewModelOutput {
     var progressCompletion: Observable<Bool> { get }
     var backTap: Observable<Void> { get }
     var time: TimeInterval { get }
+    var animationCompleted: Observable<Void> { get }
 }
 
 protocol OnBoardingViewModelType {
@@ -36,17 +38,20 @@ class OnBoardingViewModel: OnBoardingViewModelInput, OnBoardingViewModelOutput, 
     private let progressCompletionSubject = PublishSubject<Bool>()
     private let backTapSubject = PublishSubject<Void>()
     private let startTimeSubject = PublishSubject<Void>()
+    private let animationCompletedSubject = PublishSubject<Void>()
 
     // inputs
     var backTapObserver: AnyObserver<Void> { return backTapSubject.asObserver() }
     var progressObserver: AnyObserver<Float> { return progressSubject.asObserver() }
     var startTimeObserver: AnyObserver<Void> { return startTimeSubject.asObserver() }
-
+    var animationCompletedObserver: AnyObserver<Void> { return animationCompletedSubject.asObserver() }
+    
     // outputs
     var progressCompletion: Observable<Bool> { return progressCompletionSubject.asObservable() }
     var progress: Observable<Float> { return progressSubject.asObservable() }
     var backTap: Observable<Void> { return backTapSubject.asObservable() }
     var time: TimeInterval { return Date().timeIntervalSince1970 - self.startTime }
+    var animationCompleted: Observable<Void> { return animationCompletedSubject.asObservable() }
 
     private let disposeBag = DisposeBag()
     private var timeElappsed: TimeInterval = 0
