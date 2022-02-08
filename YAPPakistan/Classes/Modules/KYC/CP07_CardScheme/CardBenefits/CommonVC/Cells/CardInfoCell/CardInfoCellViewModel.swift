@@ -9,6 +9,7 @@ import RxSwift
 import RxTheme
 import UIKit
 import YAPComponents
+import RxDataSources
 
 protocol CardInfoCellViewModelInput {
     var selectButtonObserver: AnyObserver<Bool> { get }
@@ -24,13 +25,15 @@ protocol CardInfoCellViewModelType {
     var outputs: CardInfoCellViewModelOutput { get }
 }
 
-class CardInfoCellViewModel: CardInfoCellViewModelType, CardInfoCellViewModelInput, CardInfoCellViewModelOutput {
+class CardInfoCellViewModel: CardInfoCellViewModelType, CardInfoCellViewModelInput, CardInfoCellViewModelOutput, ReusableTableViewCellViewModelType {
+    
     
     
     //MARK: Properties
     private var selectedSubject = PublishSubject<Bool>()
     private var selectButtonSubject = PublishSubject<String>()
     private var benefitTitleSubject = BehaviorSubject<String>(value: "")
+    var reusableIdentifier: String { return CardInfoCell.defaultIdentifier }
     
     var inputs: CardInfoCellViewModelInput { self }
     var outputs: CardInfoCellViewModelOutput { self }

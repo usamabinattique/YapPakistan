@@ -39,10 +39,6 @@ class CardInfoCell: RxUITableViewCell {
         setupConstraints()
     }
     
-    override func prepareForReuse() {
-        super.prepareForReuse()
-    }
-    
     override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
         guard let vm = viewModel as? CardInfoCellViewModel else { return }
         self.themeService = themeService

@@ -72,6 +72,8 @@ extension CardBenefitsViewController: ViewDesignable {
         view.addSubview(nextButton)
         
         tableView.register(CardBenefitsCell.self, forCellReuseIdentifier: CardBenefitsCell.defaultIdentifier)
+        tableView.register(CardInfoCell.self, forCellReuseIdentifier: CardInfoCell.defaultIdentifier)
+        
     }
     
     func setupConstraints() {
@@ -104,10 +106,20 @@ extension CardBenefitsViewController: ViewDesignable {
     
     func setupBindings() {
         
-        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
+     /*   dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! ConfigurableTableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
             return cell as! UITableViewCell
+        })
+        
+        viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag) */
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { [weak self] (_, tableView, _, viewModel) in
+            
+            guard let self = self else { return UITableViewCell() }
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
+            cell.configure(with: self.themeService, viewModel: viewModel)
+            return cell
         })
         
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)

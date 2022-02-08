@@ -41,6 +41,7 @@ class MasterCardBenefitsViewModel: MasterCardBenefitsViewModelType, MasterCardBe
     private var fetchBenefitsSubject = PublishSubject<Void>()
     private var errorSubject = PublishSubject<String>()
     private var cardSchemeSubject = PublishSubject<KYCCardsSchemeM>()
+    private var viewModels = [ReusableTableViewCellViewModelType]()
     
     var inputs: MasterCardBenefitsViewModelInput { self }
     var outputs: MasterCardBenefitsViewModelOutput { self }
@@ -87,14 +88,21 @@ extension MasterCardBenefitsViewModel {
             YAPProgressHud.hideProgressHud()
         }).disposed(by: disposeBag)
         
-        let cardObjSuccess = cardsRequest.elements().share()
+//        let cardObjSuccess = cardsRequest.elements()
         
-        cardObjSuccess
-            .subscribe { benefits in
-                print(benefits)
+        cardsRequest.elements().withUnretained(self)
+            .subscribe {  benefits in
+                let infoCellVMs = [CardInfoCellViewModel(cardObj)]
+                if let allBenefits = benefits.element {
+                    let benefitsCellVMs = allBenefits.1.map { CardBenefitsCellViewModel($0) }
+                    self.viewModels.append(contentsOf: infoCellVMs)
+                    self.viewModels.append(contentsOf: benefitsCellVMs)
+                    self.dataSourceSubject.onNext([SectionModel(model: 0, items: self.viewModels)])
+                }
             }
             .disposed(by: disposeBag)
-
+        
+        
         
 //        dataSourceSubject.onNext([SectionModel(model: 0, items: cardObjSuccess.map { CardBenefitsCellViewModel($0) })])
 //
