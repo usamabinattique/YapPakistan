@@ -14,7 +14,7 @@ class CardBenefitsCell: RxUITableViewCell {
     
     //MARK: Views
     lazy var tickImageView = UIFactory.makeImageView()
-    lazy var benefitTitle = UIFactory.makeLabel(font: .regular, alignment: .left, numberOfLines: 0)
+    lazy var benefitTitle = UIFactory.makeLabel(font: .large, alignment: .left, numberOfLines: 0)
     
     
     //MARK: Properties
@@ -75,7 +75,7 @@ extension CardBenefitsCell: ViewDesignable {
     
     func setupTheme() {
         themeService.rx
-//            .bind({ UIColor($0.secondaryPurple) }, to: [schemeView.rx.backgroundColor])
+            .bind({ UIColor($0.primary) }, to: [benefitTitle.rx.textColor])
             .disposed(by: disposeBag)
     }
     func setupResources() {

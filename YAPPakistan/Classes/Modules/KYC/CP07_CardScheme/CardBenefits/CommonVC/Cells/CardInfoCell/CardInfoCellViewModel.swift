@@ -17,7 +17,9 @@ protocol CardInfoCellViewModelInput {
 
 protocol CardInfoCellViewModelOutput {
     var selectButton: Observable<String> { get }
-    var benefitTitle: Observable<String> { get }
+    var cardTitle: Observable<String> { get }
+    var cardDescription: Observable<String> { get }
+    var cardImageIcon: Observable<String> { get }
 }
 
 protocol CardInfoCellViewModelType {
@@ -32,7 +34,9 @@ class CardInfoCellViewModel: CardInfoCellViewModelType, CardInfoCellViewModelInp
     //MARK: Properties
     private var selectedSubject = PublishSubject<Bool>()
     private var selectButtonSubject = PublishSubject<String>()
-    private var benefitTitleSubject = BehaviorSubject<String>(value: "")
+    private var cardTitleSubject = BehaviorSubject<String>(value: "")
+    private var cardDescriptionSubject = BehaviorSubject<String>(value: "")
+    private var cardImageIconSubject = BehaviorSubject<String>(value: "")
     var reusableIdentifier: String { return CardInfoCell.defaultIdentifier }
     
     var inputs: CardInfoCellViewModelInput { self }
@@ -45,13 +49,17 @@ class CardInfoCellViewModel: CardInfoCellViewModelType, CardInfoCellViewModelInp
     
     //MARK: Outputs
     var selectButton: Observable<String> { selectButtonSubject.asObservable() }
-    var benefitTitle: Observable<String> { benefitTitleSubject.asObservable() }
+    var cardTitle: Observable<String> { cardTitleSubject.asObservable() }
+    var cardDescription: Observable<String> { cardDescriptionSubject.asObservable() }
+    var cardImageIcon: Observable<String> { cardImageIconSubject.asObservable() }
     
     //MARK: Initializer
     init(_ schemeModel: KYCCardsSchemeM) {
         self.schemeModel = schemeModel
         
-        benefitTitleSubject.onNext(schemeModel.cardTitle ?? "")
+        cardTitleSubject.onNext(schemeModel.cardTitle ?? "")
+        cardDescriptionSubject.onNext(schemeModel.cardDescription ?? "")
+        cardImageIconSubject.onNext(schemeModel.scheme == .Mastercard ? "mastercard-icon" : schemeModel.scheme == .PayPak ? "paypak-icon" : "")
     }
     
 }

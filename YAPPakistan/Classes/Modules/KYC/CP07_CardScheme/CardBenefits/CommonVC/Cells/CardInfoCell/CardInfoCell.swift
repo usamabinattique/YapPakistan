@@ -13,9 +13,11 @@ import YAPComponents
 class CardInfoCell: RxUITableViewCell {
     
     //MARK: Views
+    lazy var containerView = UIFactory.makeView()
     lazy var cardIcon = UIFactory.makeImageView()
-    lazy var cardTitle = UIFactory.makeLabel(font: .regular, alignment: .left, numberOfLines: 0)
-    lazy var cardDescription = UIFactory.makeLabel(font: .regular, alignment: .left, numberOfLines: 0)
+    lazy var cardTitle = UIFactory.makeLabel(font: .large, alignment: .left, numberOfLines: 0)
+    lazy var cardDescription = UIFactory.makeLabel(font: .small, alignment: .left, numberOfLines: 0)
+    lazy var labelsStack = UIFactory.makeStackView(axis: .vertical, alignment: .top, distribution: .fillProportionally, spacing: 0, arrangedSubviews: [cardTitle, cardDescription])
     
     
     //MARK: Properties
@@ -52,41 +54,43 @@ class CardInfoCell: RxUITableViewCell {
 
 extension CardInfoCell: ViewDesignable {
     func setupSubViews() {
-        contentView.addSubview(cardIcon)
-        contentView.addSubview(cardTitle)
-        contentView.addSubview(cardDescription)
+        containerView.addSubview(cardIcon)
+        containerView.addSubview(labelsStack)
+        contentView.addSubview(containerView)
         
         selectionStyle = .none
     }
     
     func setupConstraints() {
+        
+        containerView
+            .alignEdgesWithSuperview([.left, .top, .right, .bottom], constants: [0, 32, 0, 32])
+        
         cardIcon
-            .alignEdgesWithSuperview([.left, .top, .bottom], constants:[26, 33, 34])
+            .alignEdgesWithSuperview([.left, .top, .bottom], constants:[26, 5, 5])
             .height(constant: 66)
             .width(constant: 66)
         
-        cardTitle
+        labelsStack
             .toRightOf(cardIcon, constant: 20)
-            .alignEdgesWithSuperview([.right], constants: [25])
-            .centerVerticallyInSuperview()
-        
-        cardTitle
-            .toRightOf(cardIcon, constant: 20)
-            .alignEdgesWithSuperview([.right], constants: [25])
-            .centerVerticallyInSuperview()
+            .alignEdgesWithSuperview([.top, .right, .bottom], constants: [0, 25, 0])
     }
     
     func setupBindings() {
-        self.viewModel.outputs.benefitTitle.bind(to: cardTitle.rx.text).disposed(by: disposeBag)
+        self.viewModel.outputs.cardTitle.bind(to: cardTitle.rx.text).disposed(by: disposeBag)
+        self.viewModel.outputs.cardDescription.bind(to: cardDescription.rx.text).disposed(by: disposeBag)
+        self.viewModel.outputs.cardImageIcon
+            .subscribe(onNext:{ [weak self] in
+                self?.cardIcon.image = UIImage(named: $0, in: .yapPakistan)
+            })
+            .disposed(by: disposeBag)
     }
     
     func setupTheme() {
         themeService.rx
-//            .bind({ UIColor($0.secondaryPurple) }, to: [schemeView.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark) }, to: [cardTitle.rx.textColor])
+            .bind({ UIColor($0.greyDark) }, to: [cardDescription.rx.textColor])
             .disposed(by: disposeBag)
-    }
-    func setupResources() {
-        cardIcon.image = UIImage(named: "benefits_check", in: .yapPakistan)
     }
     
     

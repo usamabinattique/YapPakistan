@@ -19,7 +19,16 @@ class CardBenefitsViewController: UIViewController {
     private lazy var crossImage = UIFactory.makeImageView()
     private lazy var crossButton = UIFactory.makeButton(with: .regular)
     private lazy var coverImage = UIFactory.makeImageView(contentMode: .scaleAspectFill)
-    private lazy var tableView = UIFactory.makeTableView(allowsSelection: true)
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
+        tableView.allowsSelection = false
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.isUserInteractionEnabled = true
+        return tableView
+    }()
     private lazy var nextButton = UIFactory.makeAppRoundedButton(with: .large, title: "screen_kyc_card_benefits_screen_next_button_title".localized)
     
     //MARK: Properties
@@ -93,7 +102,7 @@ extension CardBenefitsViewController: ViewDesignable {
             .heightEqualToSuperView(multiplier: 0.49, constant: 0, priority: .defaultHigh)
         
         tableView
-            .toBottomOf(coverImage)
+            .toBottomOf(coverImage, constant: 0)
             .alignEdgesWithSuperview([.left, .right])
         
         let bottomSafeArea: CGFloat = (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) == 0 ? 33 : 0
@@ -107,13 +116,6 @@ extension CardBenefitsViewController: ViewDesignable {
     
     func setupBindings() {
         
-     /*   dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
-            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! ConfigurableTableViewCell
-            cell.configure(with: self.themeService, viewModel: viewModel)
-            return cell as! UITableViewCell
-        })
-        
-        viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag) */
         dataSource = RxTableViewSectionedReloadDataSource(configureCell: { [weak self] (_, tableView, _, viewModel) in
             
             guard let self = self else { return UITableViewCell() }
