@@ -57,8 +57,10 @@ class CardBenefitsViewController: UIViewController {
     }
     
     @objc internal override func onTapBackButton() {
-        self.navigationController?.popViewController()
-        //viewModel.inputs.closeObserver.onNext(())
+      //  self.navigationController?.popViewController()
+        navigationController?.dismiss(animated: true, completion: {
+            self.viewModel.inputs.backObserver.onNext(())
+        })
     }
     
 }

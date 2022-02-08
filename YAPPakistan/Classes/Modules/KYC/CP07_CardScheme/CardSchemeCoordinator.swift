@@ -19,6 +19,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
          container: KYCFeatureContainer) {
         self.container = container
         self.root = root
+//        self.root.modalPresentationStyle = .fullScreen
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -57,13 +58,31 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     func masterCardBenefits(_ schemeObj: KYCCardsSchemeM) -> Observable<CardBenefitsViewController> {
         let viewController = container.makeMasterCardBenefitsViewController()
         viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
-        self.root.pushViewController(viewController, animated: true)
+       // self.root.pushViewController(viewController, animated: true)
+        self.root.present(viewController, animated: true, completion: nil)
         
 //        vc.viewModel.outputs.next.withUnretained(self)
 //            .subscribe(onNext: {
 //                self.cardNamePending().materialize()
 //            })
 //            .disposed(by: rx.disposeBag)
+       
+        
+
+        viewController.viewModel.outputs.next.withUnretained(self).subscribe(onNext: {  _ in
+            self.cardNamePending().subscribe(onNext: { result in
+                print("next button tap in CardScheme \(result)")
+            }).disposed(by: self.rx.disposeBag)
+
+
+        }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
+            print("back button tapp masterCard")
+
+
+        }).disposed(by: rx.disposeBag)
+
         
         return Observable.just(viewController)
     }

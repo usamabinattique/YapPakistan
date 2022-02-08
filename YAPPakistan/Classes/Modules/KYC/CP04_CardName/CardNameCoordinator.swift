@@ -34,7 +34,10 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
         self.navigation.childNavigation.pushViewController(viewController, animated: false)
 
         viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.goBack() })
+            .subscribe(onNext: { `self`, _ in
+                print("go back done in CardNameCo")
+                self.goBack()
+            })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
