@@ -10,6 +10,7 @@ import RxTheme
 import RxSwift
 import YAPComponents
 import UIKit
+import RxDataSources
 
 class CardBenefitsViewController: UIViewController {
     
@@ -24,6 +25,7 @@ class CardBenefitsViewController: UIViewController {
     //MARK: Properties
     private let themeService: ThemeService<AppTheme>
     let viewModel: MasterCardBenefitsViewModelType
+    private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
 
     // MARK: Initialization
 
@@ -102,19 +104,13 @@ extension CardBenefitsViewController: ViewDesignable {
     
     func setupBindings() {
         
-        viewModel.outputs.optionsViewModel
-            .bind(to: tableView.rx.items(cellIdentifier: CardBenefitsCell.defaultIdentifier, cellType: CardBenefitsCell.self)){ [weak self] (index,data,cell) in
-
-                guard let self = self else { return }
-                cell.configure(with: self.themeService, viewModel: data)
-
-            }.disposed(by: rx.disposeBag)
-
-//                tableView.rx.modelSelected(CardSchemeCellViewModel.self)
-//            .bind(to: viewModel.inputs.selectedItemObserver)
-//            .disposed(by: rx.disposeBag)
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
+            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! ConfigurableTableViewCell
+            cell.configure(with: self.themeService, viewModel: viewModel)
+            return cell as! UITableViewCell
+        })
         
-        
+        viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
         
         nextButton.rx.tap
             .map { $0 }

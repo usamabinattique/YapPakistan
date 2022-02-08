@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import YAPComponents
+import RxDataSources
 
 protocol MasterCardBenefitsViewModelInput {
     var backObserver: AnyObserver<Void> { get }
@@ -18,7 +19,7 @@ protocol MasterCardBenefitsViewModelInput {
 }
 
 protocol MasterCardBenefitsViewModelOutput {
-    var optionsViewModel: Observable<[CardBenefitsCellViewModel]> { get }
+    var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var heading: Observable<String?> { get }
     var next: Observable<Void> { get }
     var back: Observable<Void> { get }
@@ -34,7 +35,7 @@ protocol MasterCardBenefitsViewModelType{
 class MasterCardBenefitsViewModel: MasterCardBenefitsViewModelType, MasterCardBenefitsViewModelInput, MasterCardBenefitsViewModelOutput{
     
     // MARK: Subjects
-    var optionViewModelsSubject = BehaviorSubject<[CardBenefitsCellViewModel]>(value: [])
+    private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private var nextSubject = PublishSubject<Void>()
     private var backSubject = PublishSubject<Void>()
     private var fetchBenefitsSubject = PublishSubject<Void>()
@@ -51,7 +52,7 @@ class MasterCardBenefitsViewModel: MasterCardBenefitsViewModelType, MasterCardBe
     var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
     
     // MARK: Outputs
-    var optionsViewModel: Observable<[CardBenefitsCellViewModel]> { optionViewModelsSubject.asObservable() }
+    var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
     var heading: Observable<String?> { Observable.just("screen_kyc_card_scheme_screen_title".localized) }
     var next: Observable<Void> { nextSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
@@ -86,10 +87,26 @@ extension MasterCardBenefitsViewModel {
             YAPProgressHud.hideProgressHud()
         }).disposed(by: disposeBag)
         
-        cardsRequest.elements()
-            .map { $0.map { CardBenefitsCellViewModel($0) } }
-            .bind(to: optionViewModelsSubject)
+        let cardObjSuccess = cardsRequest.elements().share()
+        
+        cardObjSuccess
+            .subscribe { benefits in
+                print(benefits)
+            }
             .disposed(by: disposeBag)
+
+        
+//        dataSourceSubject.onNext([SectionModel(model: 0, items: cardObjSuccess.map { CardBenefitsCellViewModel($0) })])
+//
+//        cardObjSuccess
+//            .map { $0.map { CardBenefitsCellViewModel($0) } }
+//            .bind(to: optionViewModelsSubject)
+//            .disposed(by: disposeBag)
+//
+//        cardObjSuccess
+//            .map { $0.map { CardBenefitsCellViewModel($0) } }
+//            .bind(to: optionViewModelsSubject)
+//            .disposed(by: disposeBag)
         
         cardsRequest.errors()
             .map{ $0.localizedDescription }
