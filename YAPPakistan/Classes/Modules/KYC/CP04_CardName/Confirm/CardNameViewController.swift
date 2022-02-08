@@ -111,15 +111,15 @@ class CardNameViewController: UIViewController {
 
         thisIsFineButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         editNameButton.rx.tap.bind(to: viewModel.inputs.editObserver).disposed(by: rx.disposeBag)
-       // backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
-        backButton.rx.tap.subscribe(onNext: { [weak self] _ in
-            self?.navigationController?.popViewController()
-            self?.viewModel.inputs.backObserver.onNext(())
-//            self?.navigationController?.dismiss(animated: true
-//                                                , completion: {
-//                self?.viewModel.inputs.backObserver.onNext(())
-//            })
-        }).disposed(by: rx.disposeBag)
+        backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+//        backButton.rx.tap.subscribe(onNext: { [weak self] _ in
+//            self?.navigationController?.popViewController()
+//            self?.viewModel.inputs.backObserver.onNext(())
+////            self?.navigationController?.dismiss(animated: true
+////                                                , completion: {
+////                self?.viewModel.inputs.backObserver.onNext(())
+////            })
+//        }).disposed(by: rx.disposeBag)
 
     }
 

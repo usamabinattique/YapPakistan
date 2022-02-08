@@ -57,8 +57,7 @@ class CardBenefitsViewController: UIViewController {
     }
     
     @objc internal override func onTapBackButton() {
-      //  self.navigationController?.popViewController()
-        navigationController?.dismiss(animated: true, completion: {
+        self.dismiss(animated: true, completion: {
             self.viewModel.inputs.backObserver.onNext(())
         })
     }
@@ -126,10 +125,19 @@ extension CardBenefitsViewController: ViewDesignable {
         
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
         
-        nextButton.rx.tap
-            .map { $0 }
-            .bind(to: viewModel.inputs.nextObserver)
-            .disposed(by: rx.disposeBag)
+//        nextButton.rx.tap
+//            .map { $0 }
+//            .bind(to: viewModel.inputs.nextObserver)
+//            .disposed(by: rx.disposeBag)
+        
+        nextButton.rx.tap.debug("Next button tap in benefits").subscribe(onNext: { [weak self] _ in
+//            self?.navigationController?.popViewController()
+//            self?.viewModel.inputs.nextObserver.onNext(())
+            self?.dismiss(animated: true
+                                                , completion: {
+                self?.viewModel.inputs.nextObserver.onNext(())
+            })
+        }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }

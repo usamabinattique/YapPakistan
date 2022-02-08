@@ -12,14 +12,19 @@ import YAPCore
 class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
     private let result = PublishSubject<ResultType<Void>>()
-    private let root: UINavigationController!
+    private let root: UINavigationController
+    private var navigationRoot: UINavigationController!
     private let container: KYCFeatureContainer
 
     init(root: UINavigationController,
          container: KYCFeatureContainer) {
         self.container = container
         self.root = root
-//        self.root.modalPresentationStyle = .fullScreen
+        
+        super.init()
+        
+        self.navigationRoot = makeNavigationController()
+        self.navigationRoot.modalPresentationStyle = .fullScreen
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -58,29 +63,17 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     func masterCardBenefits(_ schemeObj: KYCCardsSchemeM) -> Observable<CardBenefitsViewController> {
         let viewController = container.makeMasterCardBenefitsViewController()
         viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
-       // self.root.pushViewController(viewController, animated: true)
-        self.root.present(viewController, animated: true, completion: nil)
         
-//        vc.viewModel.outputs.next.withUnretained(self)
-//            .subscribe(onNext: {
-//                self.cardNamePending().materialize()
-//            })
-//            .disposed(by: rx.disposeBag)
-       
-        
+        self.navigationRoot.pushViewController(viewController, completion: nil)
+        self.navigationRoot.navigationBar.isHidden = true
+        self.root.present(self.navigationRoot, animated: true, completion: nil)
 
         viewController.viewModel.outputs.next.withUnretained(self).subscribe(onNext: {  _ in
-            self.cardNamePending().subscribe(onNext: { result in
-                print("next button tap in CardScheme \(result)")
-            }).disposed(by: self.rx.disposeBag)
-
-
+            self.cardNamePending()
         }).disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
-            print("back button tapp masterCard")
-
-
+            print("back button tap masterCard Benefits")
         }).disposed(by: rx.disposeBag)
 
         
@@ -118,4 +111,42 @@ fileprivate extension CardSchemeCoordinator {
         self.result.onNext(.cancel)
         self.result.onCompleted()
     }
+}
+
+extension CardSchemeCoordinator {
+    
+    func makeNavigationController(_ root: UIViewController? = nil) -> UINavigationController {
+
+            var navigation: UINavigationController!
+            if let root = root {
+                navigation = UINavigationController(rootViewController: root)
+            } else {
+                navigation = UINavigationController()
+            }
+            navigation.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.regular, NSAttributedString.Key.foregroundColor: UIColor(container.themeService.attrs.primary)]
+            navigation.modalPresentationStyle = .fullScreen
+            navigation.navigationBar.barTintColor = UIColor(container.themeService.attrs.primary)
+            navigation.interactivePopGestureRecognizer?.isEnabled = false
+            navigation.navigationBar.isTranslucent = false
+            navigation.navigationBar.isOpaque = true
+            navigation.navigationBar.setBackgroundImage(UIImage(), for: .default)
+            navigation.navigationBar.shadowImage = UIImage()
+            navigation.setNavigationBarHidden(false, animated: true)
+            
+            if #available(iOS 15, *) {
+                let textAttributes = [NSAttributedString.Key.font: UIFont.regular, NSAttributedString.Key.foregroundColor: UIColor(container.themeService.attrs.primary)]
+                let appearance = UINavigationBarAppearance()
+                appearance.configureWithOpaqueBackground()
+                appearance.titleTextAttributes = textAttributes
+                appearance.backgroundColor = UIColor.white // UIColor(red: 0.0/255.0, green: 125/255.0, blue: 0.0/255.0, alpha: 1.0)
+                appearance.shadowColor = .clear  //removing navigationbar 1 px bottom border.
+                UINavigationBar.appearance().standardAppearance = appearance
+                UINavigationBar.appearance().scrollEdgeAppearance = appearance
+            } else {
+                
+            }
+            
+
+            return navigation
+        }
 }
