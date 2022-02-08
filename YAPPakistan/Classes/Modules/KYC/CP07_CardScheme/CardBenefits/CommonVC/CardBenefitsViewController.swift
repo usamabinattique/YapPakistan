@@ -113,7 +113,9 @@ extension CardBenefitsViewController: ViewDesignable {
 //                tableView.rx.modelSelected(CardSchemeCellViewModel.self)
 //            .bind(to: viewModel.inputs.selectedItemObserver)
 //            .disposed(by: rx.disposeBag)
-
+        
+        
+        
         nextButton.rx.tap
             .map { $0 }
             .bind(to: viewModel.inputs.nextObserver)

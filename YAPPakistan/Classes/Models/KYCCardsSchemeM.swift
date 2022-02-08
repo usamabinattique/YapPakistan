@@ -26,8 +26,6 @@ public struct KYCCardsSchemeM: Codable {
     public var cardImage: String?
     public var cardBackgroundColor: String?
     
-    public var benefits: [KYCCardBenefitsM]?
-    
     enum CodingKeys: String, CodingKey {
         case schemeName
         case schemeCode
