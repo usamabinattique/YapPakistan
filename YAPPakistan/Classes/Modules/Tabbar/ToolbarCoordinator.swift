@@ -157,7 +157,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                 if case let ResultType.success(result) = value {
                     switch result {
                     case .sendMoney: self.sendMoney(root)
-                    case .addMoney: break   // self.topup(root)
+                    case .addMoney:  self.topup(root)
                     case .payBills: break   // self.y2y(root)
                 }
             }
@@ -183,7 +183,16 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                 (root as? UITabBarController)?.selectedIndex = 0
             }
         }).disposed(by: disposeBag)
-                   }
+    }
+    
+    private func topup(_ root: UIViewController, returnsToDashboard: Bool = true, successButtonTitle: String? = nil) {
+        let rootNav = returnsToDashboard ? root : root.lastPresentedViewController ?? root
+        coordinate(to: AddMoneyCoordinator(root: rootNav, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+            if case ResultType.success = result, returnsToDashboard {
+                (root as? UITabBarController)?.selectedIndex = 0
+            }
+        }).disposed(by: disposeBag)
+    }
 }
 
 // MARK: Helpers
