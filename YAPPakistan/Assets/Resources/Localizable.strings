@@ -150,6 +150,10 @@
 "screen_onboarding_congratulations_button_complete_verification" = "Complete verification";
 "screen_onboarding_congratulations_waiting_user_button_complete_verification" = "Queue up!";
 
+// MARK: - Onboarding Missing screen
+"screen_onboarding_missing_information_display_text_title" = "Some information is still needed! ";
+"screen_onboarding_missing_information_display_text_sub_title" = "A member from our customer service team will reach out to you.";
+
 //MARK: Email verification screen
 "screen_email_verification_display_text_title" = "Great!";
 "screen_email_verification_b2c_display_text_email_sent" = "you should now receive an email on";
