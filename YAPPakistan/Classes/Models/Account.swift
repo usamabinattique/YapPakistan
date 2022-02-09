@@ -247,7 +247,8 @@ public enum AccountStatus: String, Hashable, Codable {
     case selfiePending = "SELFIE_PENDING"
     case secretQuestionPending = "SECRET_QUESTION_PENDING"
     case cardNamePending = "CARD_NAME_PENDING"
-    case cardOrderScheme = "CARD_ORDER_SCHEME"
+    case cardSchemePending = "CARD_SCHEME_PENDING"
+    case cardSchemeExternalCardPending = "CARD_SCHEME_WITH_EXTERNAL_CARD_PENDING"
     case addressPending = "ADDRESS_PENDING"
     case addressCaptured = "ADDRESS_CAPTURED"
     case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
@@ -258,12 +259,13 @@ public enum AccountStatus: String, Hashable, Codable {
         case .onboarded: return 0
         case .selfiePending: return 1
         case .secretQuestionPending: return 2
-        case .cardOrderScheme: return 3
-        case .cardNamePending: return 4
-        case .addressPending: return 5
-        case .addressCaptured: return 6
-        case .verificationSucceed: return 7
-        case .cardActivated: return 8
+        case .cardNamePending: return 3
+        case .cardSchemePending: return 4
+        case .cardSchemeExternalCardPending: return 5
+        case .addressPending: return 6
+        case .addressCaptured: return 7
+        case .verificationSucceed: return 8
+        case .cardActivated: return 9
         }
     }
 

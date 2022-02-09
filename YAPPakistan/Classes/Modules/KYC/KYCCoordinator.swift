@@ -45,13 +45,17 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         // CP04 Card scheme
         let cp4 = viewController.viewModel.outputs.next
             .filter({ $0 == .cardNamePending }).withUnretained(self)
+            .flatMap({ `self`, _ in self.cardNamePending().materialize() })
+        // CP05 Card Scheme
+        let cp5 = viewController.viewModel.outputs.next
+            .filter({ $0 == .cardSchemePending }).withUnretained(self)
             .flatMap({ `self`, _ in self.cardOrderSchemePending().materialize() })
-        // CP05 Card name
-//        let cp5 = viewController.viewModel.outputs.next
-//            .filter({ $0 == .cardNamePending }).withUnretained(self)
-//            .flatMap({ `self`, _ in self.cardNamePending().materialize() })
-        // CP06 address
+        // CP06 Card Scheme External Card
         let cp6 = viewController.viewModel.outputs.next
+            .filter({ $0 == .cardSchemeExternalCardPending }).withUnretained(self)
+            .flatMap({ `self`, _ in self.cardOrderSchemePending().materialize() })
+        // CP07 address
+        let cp7 = viewController.viewModel.outputs.next
             .filter({ $0 == .addressPending }).withUnretained(self)
             .flatMap({ `self`, _ in self.addressPending().materialize() })
         viewController.viewModel.outputs.next
@@ -60,7 +64,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { `self`, _ in self.goToHome() })
             .disposed(by: rx.disposeBag)
         
-        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp4, cp6).elements().share()
+        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp4, cp5, cp6, cp7).elements().share()
 
         sharedCPs.filter({ $0.isCancel }).withUnretained(self) // moved back with completing
             .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
