@@ -351,6 +351,10 @@
 "screen_kyc_manualverification_title" = "Some information is still needed!";
 "screen_kyc_manualverification_subtitle" = "A member from our customer service team will reach out to you.";
 
+// MARK: Topup Card
+"screen_topup_secure_title" = "Secured by YAP";
+"screen_topup_card_selection_display_text_title" = "Top up using card";
+
 // MARK: Set Pin
 
 "screen_kyc_setpinIntro_title" = "Great, looks like you just\nreceived your YAP card!";
