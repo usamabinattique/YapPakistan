@@ -73,13 +73,14 @@ enum YapItTileAction {
     case localTransfer(_ country: String)
     case internationalTransfer
     case homeCountry(_ country: String)
+    case requestMoeny
 }
 
 fileprivate extension YapItTileAction {
     var iconName: String {
         switch self {
         case .topupViaCard:
-            return "icon_add_mpney_top_up_card"
+            return "icon_add_money_debit_credit_card"
         case .bankTransfer, .localTransfer, .internationalTransfer:
             return "icon_add_money_bank_transfer"
         case .cashOrCheque:
@@ -90,13 +91,15 @@ fileprivate extension YapItTileAction {
             return "icon_add_money_yap_contact"
         case .homeCountry:
             return "icon_add_money_home"
+        case .requestMoeny:
+            return "icon_add_money_request_money"
         }
     }
     
     var title: String {
         switch self {
         case .topupViaCard:
-            return "Top up via debit/credit card"
+            return "Debit/Credit Card"
         case .bankTransfer:
             return "Bank transfer"
         case .cashOrCheque:
@@ -111,6 +114,8 @@ fileprivate extension YapItTileAction {
             return "Local bank"
         case .homeCountry:
             return "Home country"
+        case .requestMoeny:
+            return "Request money"
         }
     }
 }
