@@ -37,6 +37,7 @@ class TopupPCCVCell: RxUICollectionViewCell {
     private lazy var shadowView = UIView()
     
     private lazy var expiryImage: UIImageView = UIFactory.makeImageView() //UIImageViewFactory.createImageView(mode: .center, image: UIImage.sharedImage(named: "icon_invalid")?.asTemplate, tintColor: .error)
+    private lazy var cardTypeImage: UIImageView = UIFactory.makeImageView()
     
     // MARK: Properties
     private var viewModel: TopupPCCVCellViewModelType!
@@ -68,11 +69,6 @@ class TopupPCCVCell: RxUICollectionViewCell {
         bindViews()
        // setupTheme()
     }
-//    override func configure(with viewModel: Any) {
-//        guard let viewModel = viewModel as? TopupPCCVCellViewModelType else { return }
-//        self.viewModel = viewModel
-//        bindViews()
-//    }
     
     // MARK: View cycle
     
@@ -80,13 +76,13 @@ class TopupPCCVCell: RxUICollectionViewCell {
         super.layoutIfNeeded()
         render()
         
-        let shadowPath = UIBezierPath(roundedRect: shadowView.bounds, cornerRadius: 15)
-        shadowView.layer.masksToBounds = false
-        shadowView.layer.shadowColor = UIColor.black.cgColor
-        shadowView.layer.shadowOffset = CGSize(width: 0, height: 0)
-        shadowView.layer.shadowOpacity = 0.2
-        shadowView.layer.shadowRadius = 10
-        shadowView.layer.shadowPath = shadowPath.cgPath
+//        let shadowPath = UIBezierPath(roundedRect: shadowView.bounds, cornerRadius: 15)
+//        shadowView.layer.masksToBounds = false
+//        shadowView.layer.shadowColor = UIColor.black.cgColor
+//        shadowView.layer.shadowOffset = CGSize(width: 0, height: 0)
+//        shadowView.layer.shadowOpacity = 0.2
+//        shadowView.layer.shadowRadius = 10
+//        shadowView.layer.shadowPath = shadowPath.cgPath
     }
     
     override func layoutIfNeeded() {
@@ -99,12 +95,13 @@ class TopupPCCVCell: RxUICollectionViewCell {
 // MARK: View setup
 private extension TopupPCCVCell {
     func setupViews() {
-        shadowView.translatesAutoresizingMaskIntoConstraints = false
+//        shadowView.translatesAutoresizingMaskIntoConstraints = false
         cardImageView.contentMode = .scaleAspectFit
-        contentView.addSubview(shadowView)
+//        contentView.addSubview(shadowView)
         contentView.addSubview(cardImageView)
         contentView.addSubview(infoButton)
         contentView.addSubview(expiryView)
+        contentView.addSubview(cardTypeImage)
     }
     
     func setupConstraints() {
@@ -113,11 +110,11 @@ private extension TopupPCCVCell {
             .alignEdgesWithSuperview([.top, .bottom], constant: 5)
             .alignEdgesWithSuperview([.left, .right], constant: 6)
         
-        shadowView
-            .alignEdge(.left, withView: cardImageView, constant: -2)
-            .alignEdge(.top, withView: cardImageView, constant: -1)
-            .alignEdge(.right, withView: cardImageView, constant: -2)
-            .alignEdge(.bottom, withView: cardImageView, constant: -2)
+//        shadowView
+//            .alignEdge(.left, withView: cardImageView, constant: -2)
+//            .alignEdge(.top, withView: cardImageView, constant: -1)
+//            .alignEdge(.right, withView: cardImageView, constant: -2)
+//            .alignEdge(.bottom, withView: cardImageView, constant: -2)
         
         infoButton
             .alignEdgeWithSuperview(.right, constant: 14)
@@ -131,22 +128,31 @@ private extension TopupPCCVCell {
             .width(constant: 30)
         
         expiryImage.alignAllEdgesWithSuperview()
+        
+        cardTypeImage
+            .alignEdgesWithSuperview([.left], constant: 12)
+            .centerVerticallyWith(expiryView)
+            .height(constant: 12)
+            .width(constant: 36)
     }
     
     func render() {
-        expiryView.layer.cornerRadius = 30/2
-        expiryView.clipsToBounds = true
+//        expiryView.layer.cornerRadius = 30/2
+//        expiryView.clipsToBounds = true
     }
 }
 
 // MARK: Binding
 private extension TopupPCCVCell {
     func bindViews() {
-        
+        //TODO: remove following line
+        expiryView.isHidden = true
         viewModel.outputs.cardImage.bind(to: cardImageView.rx.image).disposed(by: disposeBag)
         viewModel.outputs.expired.bind(to: infoButton.rx.isHidden).disposed(by: disposeBag)
-        viewModel.outputs.expired.map { !$0 }.bind(to: expiryView.rx.isHidden).disposed(by: disposeBag)
+//        viewModel.outputs.expired.map { !$0 }.bind(to: expiryView.rx.isHidden).disposed(by: disposeBag)
+//        viewModel.outputs.logoImage.bind(to: cardTypeImage.rx.image).disposed(by: disposeBag)
         
         infoButton.rx.tap.bind(to: viewModel.inputs.infoObserver).disposed(by: disposeBag)
+        
     }
 }

@@ -8,13 +8,15 @@
 import UIKit
 import YAPCore
 import YAPComponents
+import RxTheme
 
 public class SecureByYAPView: UIView {
     
     private lazy var imageView: UIImageView = UIFactory.makeImageView( contentMode: .scaleAspectFit)
-    private lazy var textLable: UILabel = UIFactory.makeLabel(font: .micro) 
+    lazy var textLable: UILabel = UIFactory.makeLabel(font: .micro) 
     
     private lazy var stackView: UIStackView = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 9, arrangedSubviews: [imageView, textLable])
+    
     
     // MARK: - Init
     override public init(frame: CGRect) {

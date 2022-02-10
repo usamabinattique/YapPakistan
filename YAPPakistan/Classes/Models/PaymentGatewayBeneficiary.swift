@@ -74,6 +74,14 @@ public struct ExternalPaymentCard: Codable {
     }
 }
 
+public extension ExternalPaymentCard {
+    
+    static var mock: ExternalPaymentCard {
+        ExternalPaymentCard(id: 0, name: "Visa", expiry: "Sep 20, 2019", last4Digits: "1234", nickName: "HY", color: "UIColor(Color(hex: '#5E35B1'))")
+    }
+}
+
+
 extension ExternalPaymentCard {
     private enum CodingKeys: String, CodingKey {
         case id, expiry, color

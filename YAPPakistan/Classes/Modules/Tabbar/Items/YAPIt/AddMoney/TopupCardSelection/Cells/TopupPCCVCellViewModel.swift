@@ -52,7 +52,7 @@ class TopupPCCVCellViewModel: TopupPCCVCellViewModelType, TopupPCCVCellViewModel
     let paymentBeneficiary: ExternalPaymentCard
     
     // MARK: - Init
-    init(paymentGatewayBeneficiary: ExternalPaymentCard) {
+    init(_ paymentGatewayBeneficiary: ExternalPaymentCard) {
         self.paymentBeneficiary = paymentGatewayBeneficiary
         self.beneficiary = paymentGatewayBeneficiary
         self.cardImageSubject = BehaviorSubject(value: paymentGatewayBeneficiary.cardImage())

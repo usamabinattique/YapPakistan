@@ -41,7 +41,7 @@ class TopupCardSelectionViewController: UIViewController {
     private lazy var cardBankNameLabel: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .micro, alignment: .center)
     private lazy var secureByYAPView: SecureByYAPView = SecureByYAPView(frame: CGRect.zero)
     
-    private lazy var selectButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_select".localized)
+    private lazy var selectButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_kyc_card_benefits_screen_next_button_title".localized)
     
     private lazy var securedByYapStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 8, arrangedSubviews: [cardBankNameLabel, secureByYAPView])
     
@@ -70,9 +70,11 @@ class TopupCardSelectionViewController: UIViewController {
         super.viewDidLoad()
         
         navigationItem.title = "screen_topup_card_selection_display_text_title".localized
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.sharedImage(named: "icon_back"), style: .plain, target: self, action: #selector(closeAction))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.sharedImage(named: "icon_add_card"), style: .plain, target: self, action: #selector(addCardAction))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_back", in: .yapPakistan), style: .plain, target: self, action: #selector(closeAction))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_add_card", in: .yapPakistan), style: .plain, target: self, action: #selector(addCardAction))
         
+//        headingLabel.text = "You have 2 cards"
+//        subheadingLabel.text = "Choose which card you want to top up with"
         setup()
         bind(viewModel: viewModel)
     }
@@ -100,6 +102,7 @@ fileprivate extension TopupCardSelectionViewController {
     func setup() {
         
         setupViews()
+        setupTheme()
         setupConstraints()
         
         view.clipsToBounds = true
@@ -107,9 +110,9 @@ fileprivate extension TopupCardSelectionViewController {
     
     func setupViews() {
         view.backgroundColor = .white
-//        cardsCollectionView.register(TopupPCCVCell.self, forCellWithReuseIdentifier: TopupPCCVCell.reuseIdentifier)
-//        cardsCollectionView.register(AddTopupPCCVCell.self, forCellWithReuseIdentifier: AddTopupPCCVCell.reuseIdentifier)
-//
+        cardsCollectionView.register(TopupPCCVCell.self, forCellWithReuseIdentifier: TopupPCCVCell.defaultIdentifier)
+        cardsCollectionView.register(AddTopupPCCVCell.self, forCellWithReuseIdentifier: AddTopupPCCVCell.defaultIdentifier)
+
         view.addSubview(headingLabel)
         view.addSubview(subheadingLabel)
         view.addSubview(cardsCollectionView)
@@ -117,6 +120,25 @@ fileprivate extension TopupCardSelectionViewController {
         view.addSubview(selectButton)
         cardBankNameLabel.isHidden = true
     }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.backgroundColor) }, to:  view.rx.backgroundColor )
+            .bind({ UIColor($0.greyDark) }, to: secureByYAPView.textLable.rx.textColor)
+            .bind({ UIColor($0.primaryDark) }, to: headingLabel.rx.textColor)
+            .bind({ UIColor($0.greyDark) }, to: subheadingLabel.rx.textColor)
+            .bind({ UIColor($0.primaryDark) }, to: navigationItem.leftBarButtonItem!.rx.tintColor)
+            .bind({ UIColor($0.primary) }, to: navigationItem.rightBarButtonItem!.rx.tintColor)
+            .bind({ UIColor($0.primaryDark) }, to:  cardBankNameLabel.rx.textColor)
+//            .bind({ UIColor($0.greyLight) }, to: textField.rx.bottomLineColorNormal)
+//            .bind({ UIColor($0.primary) }, to: textField.rx.bottomLineColorWhileEditing)
+//            .bind({ UIColor($0.greyDark) }, to: tipsLabel.rx.textColor)
+//            .bind({ UIColor($0.primary) }, to: selectButton.rx.backgroundColor)
+            .bind({ UIColor($0.primary) }, to: selectButton.rx.enabledBackgroundColor)
+            .bind({ UIColor($0.greyDark) }, to: selectButton.rx.disabledBackgroundColor)
+            .disposed(by: rx.disposeBag)
+    }
+
     
     func setupConstraints() {
         
@@ -151,28 +173,40 @@ fileprivate extension TopupCardSelectionViewController {
 // MARK: - Bind
 fileprivate extension TopupCardSelectionViewController {
     func bind(viewModel: TopupCardSelectionViewModelType) {
-        viewModel.outputs.topupPaymentCardCellViewModels.bind(to: cardsCollectionView.rx.items) { [unowned self] collectionView, item, viewModel in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: IndexPath(item: item, section: 0)) as! RxUICollectionViewCell
+//        viewModel.outputs.topupPaymentCardCellViewModels.bind(to: cardsCollectionView.rx.items) { [unowned self] collectionView, item, viewModel in
+//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: IndexPath(item: item, section: 0)) as! RxUICollectionViewCell
+//            cell.configure(with: viewModel, theme: self.themeService)
+//            return cell
+//        }.disposed(by: rx.disposeBag)
+        
+        dataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { [weak self] (data, tableView, index, viewModel) in
+            
+            guard let self = self else { return UICollectionViewCell() }
+            
+            let cell = tableView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: index) as! RxUICollectionViewCell
             cell.configure(with: viewModel, theme: self.themeService)
             return cell
-        }.disposed(by: rx.disposeBag)
+        })
+        
+        viewModel.outputs.cellViewModels.bind(to: cardsCollectionView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
         
         viewModel.outputs.cardCount.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.subHeading.bind(to: subheadingLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.cardNickName.map { $0 == nil }.bind(to: cardBankNameLabel.rx.isHidden).disposed(by: rx.disposeBag)
         viewModel.outputs.cardNickName.map { $0 == nil }.bind(to: selectButton.rx.animateIsHidden).disposed(by: rx.disposeBag)
         viewModel.outputs.cardNickName.bind(to: cardBankNameLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.addCardEnabled.subscribe(onNext: { [weak self] in
-            guard let `self` = self else { return }
-            self.navigationItem.rightBarButtonItem = $0 ? UIBarButtonItem(image: UIImage.sharedImage(named: "icon_add"), style: .plain, target: self, action: #selector(self.addCardAction)) : nil
-        }).disposed(by: rx.disposeBag)
+        //TODO: handle following scenario in vm and uncomment it.
+//        viewModel.outputs.addCardEnabled.subscribe(onNext: { [weak self] in
+//            guard let `self` = self else { return }
+//            self.navigationItem.rightBarButtonItem = $0 ? UIBarButtonItem(image: UIImage.init(named: "icon_add_card", in: .yapPakistan), style: .plain, target: self, action: #selector(self.addCardAction)) : nil
+//        }).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
         
         cardsCollectionView.rx.itemSelected.subscribe(onNext:{[weak self] in
             self?.viewModel.inputs.itemSelectedObserver.onNext($0)
         }).disposed(by: rx.disposeBag)
         
-//        cardsCollectionView.rx.currentPage.bind(to: viewModel.inputs.currentIndexObserver).disposed(by: disposeBag)
+        cardsCollectionView.rx.currentPage.bind(to: viewModel.inputs.currentIndexObserver).disposed(by: rx.disposeBag)
         
         selectButton.rx.tap.subscribe(onNext: {[unowned self] _ in
             self.onTapSelectButton()
