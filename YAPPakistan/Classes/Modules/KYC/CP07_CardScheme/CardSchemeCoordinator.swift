@@ -80,6 +80,26 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         return Observable.just(viewController)
     }
     
+    func PayPakCardBenefits(_ schemeObj: KYCCardsSchemeM) -> Observable<CardBenefitsViewController> {
+        let viewController = container.makeMasterCardBenefitsViewController()
+        viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
+        
+        self.navigationRoot.pushViewController(viewController, completion: nil)
+        self.navigationRoot.navigationBar.isHidden = true
+        self.root.present(self.navigationRoot, animated: true, completion: nil)
+
+        viewController.viewModel.outputs.next.withUnretained(self).subscribe(onNext: {  _ in
+            self.cardNamePending()
+        }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
+            print("back button tap masterCard Benefits")
+        }).disposed(by: rx.disposeBag)
+
+        
+        return Observable.just(viewController)
+    }
+    
     func cardNamePending() -> Observable<ResultType<Void>> {
         return coordinate(to: container.makeCardNameCoordinator(root: root))
     }

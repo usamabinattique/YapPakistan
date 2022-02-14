@@ -89,8 +89,6 @@ extension CardSchemeViewModel {
             .map { $0.map { CardSchemeCellViewModel($0) } }
             .bind(to: optionViewModelsSubject)
             .disposed(by: disposeBag)
-
-            //repository.fetchCardBenefits(cardType: scheme)
         
         cardsRequest.errors()
             .map{ $0.localizedDescription }
