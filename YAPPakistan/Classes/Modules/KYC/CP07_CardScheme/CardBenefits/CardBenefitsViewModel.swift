@@ -1,5 +1,5 @@
 //
-//  MasterCardBenefitsViewModel.swift
+//  CardBenefitsViewModel.swift
 //  YAPPakistan
 //
 //  Created by Umair  on 04/02/2022.
@@ -11,28 +11,29 @@ import RxCocoa
 import YAPComponents
 import RxDataSources
 
-protocol MasterCardBenefitsViewModelInput {
+protocol CardBenefitsViewModelInput {
     var backObserver: AnyObserver<Void> { get }
     var nextObserver: AnyObserver<Void> { get }
     var cardSchemeMObserver: AnyObserver<KYCCardsSchemeM> { get }
     var fetchBenefitsObserver: AnyObserver<Void> { get }
 }
 
-protocol MasterCardBenefitsViewModelOutput {
+protocol CardBenefitsViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var heading: Observable<String?> { get }
+    var coverImage: Observable<String?> { get }
     var next: Observable<Void> { get }
     var back: Observable<Void> { get }
     var error: Observable<String> { get }
 }
 
-protocol MasterCardBenefitsViewModelType{
-    var inputs: MasterCardBenefitsViewModelInput { get }
-    var outputs: MasterCardBenefitsViewModelOutput { get }
+protocol CardBenefitsViewModelType{
+    var inputs: CardBenefitsViewModelInput { get }
+    var outputs: CardBenefitsViewModelOutput { get }
 }
 
 
-class MasterCardBenefitsViewModel: MasterCardBenefitsViewModelType, MasterCardBenefitsViewModelInput, MasterCardBenefitsViewModelOutput{
+class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInput, CardBenefitsViewModelOutput{
     
     // MARK: Subjects
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
@@ -41,10 +42,11 @@ class MasterCardBenefitsViewModel: MasterCardBenefitsViewModelType, MasterCardBe
     private var fetchBenefitsSubject = PublishSubject<Void>()
     private var errorSubject = PublishSubject<String>()
     private var cardSchemeSubject = PublishSubject<KYCCardsSchemeM>()
+    private var coverImageSubject = BehaviorSubject<String?>(value: "")
     private var viewModels = [ReusableTableViewCellViewModelType]()
     
-    var inputs: MasterCardBenefitsViewModelInput { self }
-    var outputs: MasterCardBenefitsViewModelOutput { self }
+    var inputs: CardBenefitsViewModelInput { self }
+    var outputs: CardBenefitsViewModelOutput { self }
     
     // MARK: Inputs
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
@@ -58,12 +60,19 @@ class MasterCardBenefitsViewModel: MasterCardBenefitsViewModelType, MasterCardBe
     var next: Observable<Void> { nextSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
+    var coverImage: Observable<String?> { coverImageSubject.asObservable() }
     
     let disposeBag = DisposeBag()
     
     init(_ repository: KYCRepository) {
+        
         cardSchemeSubject
             .subscribe(onNext:{ [weak self] obj in
+                if obj.scheme == .Mastercard {
+                    self?.coverImageSubject.onNext("benefits_mastercard_cover_image")
+                } else if obj.scheme == .PayPak {
+                    self?.coverImageSubject.onNext("benefits_paypak_cover_image")
+                }
                 self?.fetchCardsBenefits(repository, cardObj: obj)
             })
             .disposed(by: disposeBag)
@@ -71,7 +80,7 @@ class MasterCardBenefitsViewModel: MasterCardBenefitsViewModelType, MasterCardBe
     
 }
 
-extension MasterCardBenefitsViewModel {
+extension CardBenefitsViewModel {
     
     func fetchCardsBenefits(_ repository: KYCRepository, cardObj: KYCCardsSchemeM) {
         

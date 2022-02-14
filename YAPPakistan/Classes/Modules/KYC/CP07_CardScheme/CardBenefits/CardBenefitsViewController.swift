@@ -33,12 +33,12 @@ class CardBenefitsViewController: UIViewController {
     
     //MARK: Properties
     private let themeService: ThemeService<AppTheme>
-    let viewModel: MasterCardBenefitsViewModelType
+    let viewModel: CardBenefitsViewModelType
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
 
     // MARK: Initialization
 
-    init(themeService: ThemeService<AppTheme>, viewModel: MasterCardBenefitsViewModelType) {
+    init(themeService: ThemeService<AppTheme>, viewModel: CardBenefitsViewModelType) {
         self.themeService = themeService
         self.viewModel = viewModel
 
@@ -56,13 +56,17 @@ class CardBenefitsViewController: UIViewController {
         
         setupSubViews()
         setupTheme()
-        setupBindings()
         setupConstraints()
         setupResources()
         
         crossButton.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
         //Fetch cards
         viewModel.inputs.fetchBenefitsObserver.onNext(())
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        setupBindings()
     }
     
     @objc internal override func onTapBackButton() {
@@ -134,6 +138,10 @@ extension CardBenefitsViewController: ViewDesignable {
             })
         }).disposed(by: rx.disposeBag)
         
+        viewModel.outputs.coverImage.subscribe(onNext:{ [weak self] imageName in
+            self?.coverImage.image = UIImage(named: imageName ?? "", in: .yapPakistan)
+        }).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }
     
@@ -145,7 +153,6 @@ extension CardBenefitsViewController: ViewDesignable {
     }
     
     func setupResources() {
-        coverImage.image = UIImage(named: "benefits_mastercard_cover_image", in: .yapPakistan)
         crossImage.image = UIImage(named: "Close", in: .yapPakistan)
     }
     

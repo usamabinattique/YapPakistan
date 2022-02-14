@@ -177,13 +177,8 @@ extension KYCFeatureContainer {
         return CardSchemeViewController(themeService: self.themeService, viewModel: viewModel)
     }
     
-    func makeMasterCardBenefitsViewController() -> CardBenefitsViewController {
-        let viewModel = MasterCardBenefitsViewModel(self.parent.makeKYCRepository())
+    func makeCardBenefitsViewController() -> CardBenefitsViewController {
+        let viewModel = CardBenefitsViewModel(self.parent.makeKYCRepository())
         return CardBenefitsViewController(themeService: self.themeService, viewModel: viewModel)
     }
-    
-//    func makePayPakCardBenefitsViewController() -> CardBenefitsViewController {
-//        let viewModel = PayPakBenefitsViewModel(self.parent.makeKYCRepository())
-//        return CardBenefitsViewController(themeService: self.themeService, viewModel: viewModel)
-//    }
 }

@@ -37,10 +37,9 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
                 guard let `self` = self else { return }
                 switch cardSchemeObj.scheme{
                 case .Mastercard:
-                    self.masterCardBenefits(cardSchemeObj)
-                    
+                    self.cardBenefits(cardSchemeObj)
                 case .PayPak:
-                    print("PayPak -> navigation flow")
+                    self.cardBenefits(cardSchemeObj)
                 case .none:
                     print("N/A")
                 }
@@ -60,28 +59,8 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         return viewController.viewModel.outputs.next
     }
     
-    func masterCardBenefits(_ schemeObj: KYCCardsSchemeM) -> Observable<CardBenefitsViewController> {
-        let viewController = container.makeMasterCardBenefitsViewController()
-        viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
-        
-        self.navigationRoot.pushViewController(viewController, completion: nil)
-        self.navigationRoot.navigationBar.isHidden = true
-        self.root.present(self.navigationRoot, animated: true, completion: nil)
-
-        viewController.viewModel.outputs.next.withUnretained(self).subscribe(onNext: {  _ in
-            self.cardNamePending()
-        }).disposed(by: rx.disposeBag)
-        
-        viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
-            print("back button tap masterCard Benefits")
-        }).disposed(by: rx.disposeBag)
-
-        
-        return Observable.just(viewController)
-    }
-    
-    func PayPakCardBenefits(_ schemeObj: KYCCardsSchemeM) -> Observable<CardBenefitsViewController> {
-        let viewController = container.makeMasterCardBenefitsViewController()
+    func cardBenefits(_ schemeObj: KYCCardsSchemeM) -> Observable<CardBenefitsViewController> {
+        let viewController = container.makeCardBenefitsViewController()
         viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
         
         self.navigationRoot.pushViewController(viewController, completion: nil)
