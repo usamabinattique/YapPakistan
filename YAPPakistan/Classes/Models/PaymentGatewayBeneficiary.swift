@@ -82,12 +82,22 @@ public extension ExternalPaymentCard {
 }
 
 
-extension ExternalPaymentCard {
+public extension ExternalPaymentCard {
     private enum CodingKeys: String, CodingKey {
         case id, expiry, color
         case name = "logo"
         case last4Digits = "number"
         case nickName = "alias"
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ExternalPaymentCard.CodingKeys.self)
+        self.id = ((try? container.decodeIfPresent(Int.self, forKey: .id))) ?? 0
+        self.expiry = ((try? container.decodeIfPresent(String.self, forKey: .expiry)) ) ?? ""
+        self.color = (try? container.decodeIfPresent(String.self, forKey: .color)) ?? ""
+        self.name = ((try? container.decodeIfPresent(String.self, forKey: .name)) ?? "")
+        self.last4Digits = (try? container.decodeIfPresent(String.self, forKey: .last4Digits)) ?? ""
+        self.nickName = (try? container.decodeIfPresent(String.self, forKey: .nickName)) ?? ""
     }
 }
 

@@ -87,7 +87,7 @@ private extension AddMoneyCoordinator {
 //    }
     
     func navigateToCardTransfer() {
-        let viewModel = TopupCardSelectionViewModel()
+        let viewModel = TopupCardSelectionViewModel(repository: self.repository)
         let viewController = TopupCardSelectionViewController(themeService: container.themeService, viewModel: viewModel)
         
         viewModel.outputs.addNewCard

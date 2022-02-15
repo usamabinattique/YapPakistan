@@ -49,6 +49,7 @@ public class SecureByYAPView: UIView {
         imageView
             .width(with: .height, ofView: imageView)
             .height(constant: 16)
+//            .width(constant: 20)
     }
     
 }
