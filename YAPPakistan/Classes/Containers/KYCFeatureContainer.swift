@@ -181,4 +181,9 @@ extension KYCFeatureContainer {
         let viewModel = CardBenefitsViewModel(self.parent.makeKYCRepository())
         return CardBenefitsViewController(themeService: self.themeService, viewModel: viewModel)
     }
+    
+    func makeCommonWebViewController() -> CommonWebViewController {
+        let viewModel = CommonWebViewModel()
+        return CommonWebViewController(themeService: self.themeService, viewModel: viewModel)
+    }
 }

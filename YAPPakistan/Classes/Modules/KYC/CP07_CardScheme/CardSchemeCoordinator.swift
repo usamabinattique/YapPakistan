@@ -67,8 +67,8 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         self.navigationRoot.navigationBar.isHidden = true
         self.root.present(self.navigationRoot, animated: true, completion: nil)
 
-        viewController.viewModel.outputs.next.withUnretained(self).subscribe(onNext: {  _ in
-            self.cardNamePending()
+        viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] isPaid in
+            self?.cardNamePending(schemeObj: schemeObj)
         }).disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
@@ -79,8 +79,43 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         return Observable.just(viewController)
     }
     
-    func cardNamePending() -> Observable<ResultType<Void>> {
-        return coordinate(to: container.makeCardNameCoordinator(root: root))
+    func cardNamePending(schemeObj: KYCCardsSchemeM) {
+        coordinate(to: container.makeCardNameCoordinator(root: root))
+            .subscribe(onNext: { [weak self] result in
+                switch result {
+                case .success:
+                    if schemeObj.isPaidScheme {
+                        self?.cardDetailWebView()
+                    } else {
+                        self?.addressPending()
+                    }
+                case .cancel:
+                    //self?.navigationRoot.popToRootViewController(animated: true)
+                    break
+                }
+            }).disposed(by: rx.disposeBag)
+    }
+    
+    func addressPending() {
+        coordinate(to: container.makeAddressCoordinator(root: root))
+            .subscribe(onNext: { [weak self] result in
+                switch result {
+                case .success:
+                    print("go next from address")
+                case .cancel:
+                    self?.navigationRoot.popToRootViewController(animated: true)
+                    print("go back from address")
+                    break
+                }
+            }).disposed(by: rx.disposeBag)
+        
+    }
+    
+    func cardDetailWebView() {
+        let viewController = container.makeCommonWebViewController()
+        self.navigationRoot.pushViewController(viewController, completion: nil)
+        self.navigationRoot.navigationBar.isHidden = true
+        self.root.present(self.navigationRoot, animated: true, completion: nil)
     }
 }
 

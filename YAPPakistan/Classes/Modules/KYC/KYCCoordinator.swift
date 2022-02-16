@@ -57,7 +57,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         // CP07 address
         let cp7 = viewController.viewModel.outputs.next
             .filter({ $0 == .addressPending }).withUnretained(self)
-            .flatMap({ `self`, _ in self.addressPending().materialize() })
+            .flatMap({
+                `self`, _ in self.addressPending().materialize()
+            })
         viewController.viewModel.outputs.next
             .filter({ $0.stepValue > AccountStatus.addressPending.stepValue }).withUnretained(self)
             .flatMap({ `self`, _ in self.kycResult().materialize() }).withUnretained(self)
