@@ -113,15 +113,15 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .bind(to: subHeadingSubject).disposed(by: disposeBag)
 
         skipTextSubject.onNext("screen_kyc_home_button_skip_no_dashboard".localized)
-        nextButtonEnabledSubject.onNext(true)
+        nextButtonEnabledSubject.onNext(false)
 
         cardObserverSubject.subscribe(onNext: { [weak self] in
             self?.getCameraPermissions()
         }).disposed(by: disposeBag)
 
-//        eidValidationSubject.map {
-//            $0 == .valid
-//        }.bind(to: nextButtonEnabledSubject).disposed(by: disposeBag)
+        eidValidationSubject.map {
+            $0 == .valid
+        }.bind(to: nextButtonEnabledSubject).disposed(by: disposeBag)
 
         let request = documentsUploadSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
@@ -144,7 +144,11 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
 
         request.elements()
             .map {
-                $0?.isExpired ?? true ? .notDetermined : .valid
+                if $0 != nil {
+                    return .valid
+                } else {
+                    return .notDetermined
+                }
             }
             .bind(to: eidValidationSubject)
             .disposed(by: disposeBag)
