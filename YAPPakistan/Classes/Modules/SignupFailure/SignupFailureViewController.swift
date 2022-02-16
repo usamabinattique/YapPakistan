@@ -98,23 +98,25 @@ private extension SignupFailureViewController {
         scrollView.addSubview(labelDescription)
         scrollView.addSubview(cnicAndSkipStack)
         scrollView.addSubview(logoutButton)
-        
-//        reScanCNICButton.width = 230
-//        reScanCNICButton.height = 52
-        //skipButton.width = reScanCNICButton.width
-        
     }
 
     func setupConstraints() {
         
-        scrollView
+       /* scrollView
             .alignEdgesWithSuperview([.left,.safeAreaTop,.safeAreaBottom,.right])
         contentView
             .alignEdgesWithSuperview([.left,.safeAreaTop,.safeAreaBottom,.right])
         contentView
             .widthEqualTo(view: scrollView)
-            .heightEqualTo(view: scrollView,   priority: UILayoutPriority(250))
-        
+            .heightEqualTo(view: scrollView,   priority: UILayoutPriority(250)) */
+        scrollView
+            .alignEdgesWithSuperview([.top,.bottom])
+            .centerHorizontallyInSuperview()
+            .widthEqualTo(view: view)
+        contentView
+            .alignEdgesWithSuperview([.top,.bottom])
+            .centerHorizontallyInSuperview()
+            .widthEqualTo(view: scrollView)
         
         labelTitle
             .alignEdgeWithSuperview(.top,constant: 94)
@@ -153,8 +155,7 @@ private extension SignupFailureViewController {
             .height(constant: 52)
             .toBottomOf(labelDescription, .lessThanOrEqualTo ,constant: 140)
             .alignEdgeWithSuperview(.bottom,constant: 32)
-        
-     
+
     }
 
     func render() {

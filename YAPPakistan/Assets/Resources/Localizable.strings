@@ -362,6 +362,13 @@
 "screen_topup_card_selection_display_text_add_card" = "Add card";
 "screen_topup_card_selection_display_text_heading_no_cards" = "Start by adding a card";
 
+// MARK: Confirm Payment
+"screen_yap_confirm_payment_display_text_toolbar_title" = "Confirm payment";
+"screen_yap_confirm_payment_display_text_toolbar_subtitle" = "PayPak Card";
+"screen_yap_confirm_payment_display_text_Card_fee" = "Card fees";
+"screen_yap_confirm_payment_display_text_pay_with" = "Pay with";
+
+
 // MARK: Set Pin
 
 "screen_kyc_setpinIntro_title" = "Great, looks like you just\nreceived your YAP card!";
