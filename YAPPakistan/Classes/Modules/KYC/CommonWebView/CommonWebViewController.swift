@@ -25,6 +25,7 @@ class CommonWebViewController: UIViewController {
         webView.navigationDelegate = self
         return webView
     }()
+    private var backButton: UIButton!
     
     // MARK: - Properties
     private let viewModel: CommonWebViewModel
@@ -46,16 +47,19 @@ class CommonWebViewController: UIViewController {
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        backButton = makeAndAddBackButton(of:.closeEmpty)
+        title = "screen_kyc_card_details_screen_title".localized
         self.webView.load(URLRequest(url: URL(string: "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html")!))
         
         setupViews()
         setupConstraints()
+        setupTheme()
     }
     
     override public func onTapBackButton() {
-        navigationController?.popViewController(animated: true)
-//        viewModel.inputs.backObserver.onNext(())
+       // self.dismiss(animated: true, completion: nil)
+        //navigationController?.popViewController(animated: true)
+        viewModel.inputs.closeObserver.onNext(())
     }
 }
 
@@ -69,7 +73,19 @@ fileprivate extension CommonWebViewController {
     
     func setupConstraints() {
         webView
+//            .alignEdgeWithSuperviewSafeArea(.top)
+//            .alignEdgeWithSuperviewSafeArea(.bottom)
+//            .alignEdgeWithSuperviewSafeArea(.left)
+//            .alignEdgeWithSuperviewSafeArea(.right)
+            
             .alignAllEdgesWithSuperview()
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark)}, to: [backButton.rx.tintColor])
+            .disposed(by: rx.disposeBag)
     }
 }
 
@@ -83,33 +99,9 @@ extension CommonWebViewController: WKURLSchemeHandler, WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        
-        if let host = navigationAction.request.url?.host {
-            if let model: CommonWebViewM = getParams(url: navigationAction.request.url!) {
-                print(model.nickName!)
-                print(model.dictionary)
-            }
-            print(host)
-            if host.contains("yap.co") {
-//                viewModel.inputs.completeObserver.onNext(())
-//                viewModel.inputs.completeObserver.onCompleted()
-            }
-        }
+        viewModel.inputs.navigationActionObserver.onNext(navigationAction)
         decisionHandler(.allow)
     }
     
 }
 
-// MARK: -
-fileprivate extension CommonWebViewController {
-    func getParams(url: URL) -> CommonWebViewM? {
-        do {
-            if let componenets = url.toQueryItems()?.toDictionary() {
-                return try CommonWebViewM(from: componenets)
-            }
-        } catch {
-            print(error.localizedDescription)
-        }
-        return nil
-    }
-}

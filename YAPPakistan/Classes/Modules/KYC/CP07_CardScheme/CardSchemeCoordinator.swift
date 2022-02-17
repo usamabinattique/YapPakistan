@@ -80,15 +80,16 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func cardNamePending(schemeObj: KYCCardsSchemeM) {
-        coordinate(to: container.makeCardNameCoordinator(root: root))
+        coordinate(to: container.makeCardNameCoordinator(root: root, schemeObj: schemeObj))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:
-                    if schemeObj.isPaidScheme {
-                        self?.cardDetailWebView()
-                    } else {
-                        self?.addressPending()
-                    }
+                    break
+//                    if schemeObj.isPaidScheme {
+//                        self?.cardDetailWebView()
+//                    } else {
+//                        self?.addressPending()
+//                    }
                 case .cancel:
                     //self?.navigationRoot.popToRootViewController(animated: true)
                     break
@@ -112,9 +113,17 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func cardDetailWebView() {
-        let viewController = container.makeCommonWebViewController()
+        let viewModel = CommonWebViewModel()
+        let viewController = container.makeCommonWebViewController(viewModel: viewModel)
+        
+        viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
+            print("close in coord")
+            viewController.dismiss(animated: true, completion: nil)
+        }).disposed(by: rx.disposeBag)
+
+        
+        self.navigationRoot.navigationBar.isHidden = false
         self.navigationRoot.pushViewController(viewController, completion: nil)
-        self.navigationRoot.navigationBar.isHidden = true
         self.root.present(self.navigationRoot, animated: true, completion: nil)
     }
 }

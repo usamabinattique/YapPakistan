@@ -380,6 +380,7 @@
 
 // MARK: KYC Card Benefits
 "screen_kyc_card_benefits_screen_next_button_title" = "Select";
+"screen_kyc_card_details_screen_title" = "Enter your card details";
 
 // MARK: - YAP it Screen
 "screen_yap_it_button_send_money" = "Send money";

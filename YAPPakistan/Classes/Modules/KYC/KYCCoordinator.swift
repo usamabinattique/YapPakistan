@@ -43,9 +43,9 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .filter({ $0 == .selfiePending }).withUnretained(self)
             .flatMap({ `self`, _ in self.selfiePending().materialize() })
         // CP04 Card scheme
-        let cp4 = viewController.viewModel.outputs.next
-            .filter({ $0 == .cardNamePending }).withUnretained(self)
-            .flatMap({ `self`, _ in self.cardNamePending().materialize() })
+//        let cp4 = viewController.viewModel.outputs.next
+//            .filter({ $0 == .cardNamePending }).withUnretained(self)
+//            .flatMap({ `self`, _ in self.cardNamePending().materialize() })
         // CP05 Card Scheme
         let cp5 = viewController.viewModel.outputs.next
             .filter({ $0 == .cardSchemePending }).withUnretained(self)
@@ -66,7 +66,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { `self`, _ in self.goToHome() })
             .disposed(by: rx.disposeBag)
         
-        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp4, cp5, cp6, cp7).elements().share()
+        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp5, cp6, cp7).elements().share()
 
         sharedCPs.filter({ $0.isCancel }).withUnretained(self) // moved back with completing
             .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
@@ -145,9 +145,9 @@ extension KYCCoordinator {
         return coordinate(to: container.makeCardSchemeCoordinator(root: root))
     }
 
-    func cardNamePending() -> Observable<ResultType<Void>> {
-        return coordinate(to: container.makeCardNameCoordinator(root: root))
-    }
+//    func cardNamePending() -> Observable<ResultType<Void>> {
+//        return coordinate(to: container.makeCardNameCoordinator(root: root))
+//    }
 
     func addressPending() -> Observable<ResultType<Void>> {
         return coordinate(to: container.makeAddressCoordinator(root: root))

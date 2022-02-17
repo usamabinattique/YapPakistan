@@ -63,8 +63,8 @@ public final class KYCFeatureContainer {
         CardSchemeCoordinator(root: root, container: self)
     }
 
-    func makeCardNameCoordinator(root: UINavigationController) -> CardNameCoordinator {
-        CardNameCoordinator(root: root, container: self)
+    func makeCardNameCoordinator(root: UINavigationController, schemeObj: KYCCardsSchemeM) -> CardNameCoordinator {
+        CardNameCoordinator(root: root, container: self, schemeObj: schemeObj)
     }
 
     func makeAddressCoordinator(root: UINavigationController) -> AddressCoordinator {
@@ -182,8 +182,7 @@ extension KYCFeatureContainer {
         return CardBenefitsViewController(themeService: self.themeService, viewModel: viewModel)
     }
     
-    func makeCommonWebViewController() -> CommonWebViewController {
-        let viewModel = CommonWebViewModel()
+    func makeCommonWebViewController(viewModel: CommonWebViewModel) -> CommonWebViewController {
         return CommonWebViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }
