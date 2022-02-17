@@ -48,8 +48,16 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
 //            .subscribe(onNext: { [unowned self] _ in self.moveNext() })
 //            .disposed(by: rx.disposeBag)
         
+        //TODO: [YASIR]  umair add scheme check here
+        /// for mastercard flow
+//        viewController.viewModel.outputs.next.withUnretained(self)
+//            .flatMap({ `self`, _ in self.kycResult().materialize() }).withUnretained(self)
+//            .subscribe(onNext: { `self`, _ in self.goToHome() })
+//            .disposed(by: rx.disposeBag)
+        
+        /// for paypak flow
         viewController.viewModel.outputs.next.withUnretained(self)
-            .flatMap({ `self`, _ in self.kycResult().materialize() }).withUnretained(self)
+            .flatMap({ `self`, _ in self.confirmPayment().materialize() }).withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.goToHome() })
             .disposed(by: rx.disposeBag)
 //
@@ -85,6 +93,10 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     
     func kycResult() -> Observable<ResultType<Void>> {
         return coordinate(to: KYCResultCoordinator(root: root, container: container))
+    }
+    
+    func confirmPayment() -> Observable<ResultType<Void>> {
+        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true))
     }
     
     func goToHome() {

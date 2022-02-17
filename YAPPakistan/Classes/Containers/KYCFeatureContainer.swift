@@ -41,6 +41,10 @@ public final class KYCFeatureContainer {
     func makeKYCRepository() -> KYCRepository {
         return parent.makeKYCRepository()
     }
+    
+    func makeY2YRepository() -> Y2YRepository {
+        return parent.makeY2YRepository()
+    }
 
     // MARK: Coordinators
 
