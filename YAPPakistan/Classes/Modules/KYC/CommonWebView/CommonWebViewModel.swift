@@ -50,8 +50,8 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     var inputs: CommonWebViewModelInput { return self }
     var outputs: CommonWebViewModelOutput { return self }
     
-    init() {
-        
+    init(container: KYCFeatureContainer) {
+        let token = container.session.authorizationHeaders["Authorization"]
         navigationActionSubject.subscribe(onNext: { [weak self] navigationAction in
             guard let `self` = self else { return }
             if let host = navigationAction.request.url?.host {
