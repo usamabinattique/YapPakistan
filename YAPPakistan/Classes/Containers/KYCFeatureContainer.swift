@@ -63,8 +63,8 @@ public final class KYCFeatureContainer {
         CardSchemeCoordinator(root: root, container: self)
     }
 
-    func makeCardNameCoordinator(root: UINavigationController, schemeObj: KYCCardsSchemeM) -> CardNameCoordinator {
-        CardNameCoordinator(root: root, container: self, schemeObj: schemeObj)
+    func makeCardNameCoordinator(root: UINavigationController,  schemeObj: KYCCardsSchemeM) -> CardNameCoordinator {
+        CardNameCoordinator(root: root, container: self ,schemeObj: schemeObj)
     }
 
     func makeAddressCoordinator(root: UINavigationController) -> AddressCoordinator {

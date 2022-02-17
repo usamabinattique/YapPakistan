@@ -46,54 +46,58 @@ class AddMoneyCoordinator: Coordinator<ResultType<Void>> {
         root.present(localRoot, animated: true, completion: nil)
         
         
-      /*  viewModel.outputs.close.subscribe(onNext: { [weak self] in
-            self?.localRoot.dismiss(animated: true, completion: nil)
-            self?.result.onNext(.cancel)
-            self?.result.onCompleted()
-        }).disposed(by: rx.disposeBag)
+//        viewModel.outputs.close.subscribe(onNext: { [weak self] in
+//            self?.localRoot.dismiss(animated: true, completion: nil)
+//            self?.result.onNext(.cancel)
+//            self?.result.onCompleted()
+//        }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.action.subscribe(onNext: { [weak self] in
             switch $0 {
             case .bankTransfer:
-                AppAnalytics.shared.logEvent(TopUpEvent.topUpBankTapped())
-                self?.navigateToBankDetails()
+                break
+//                AppAnalytics.shared.logEvent(TopUpEvent.topUpBankTapped())
+//                self?.navigateToBankDetails()
             case .topupViaCard:
-                AppAnalytics.shared.logEvent(TopUpEvent.topUpCardTapped())
+//                AppAnalytics.shared.logEvent(TopUpEvent.topUpCardTapped())
                 self?.navigateToCardTransfer()
             case .cashOrCheque:
-                self?.navigateToLocateATM()
+                break
+//                self?.navigateToLocateATM()
             case .qrCode:
-                AppAnalytics.shared.logEvent(TopUpEvent.topUpQrCode())
-                self?.navigateToAddMoneyQRCode()
-            case .localTransfer, .internationalTransfer, .homeCountry, .yapContact:
+                break
+//                AppAnalytics.shared.logEvent(TopUpEvent.topUpQrCode())
+//                self?.navigateToAddMoneyQRCode()
+            case .localTransfer, .internationalTransfer, .homeCountry, .yapContact, .requestMoeny:
                 break
             }
-        }).disposed(by: rx.disposeBag) */
+        }).disposed(by: rx.disposeBag)
         
         
         return result.asObservable()
     }
 }
-/*
+
 private extension AddMoneyCoordinator {
     
-    func navigateToBankDetails() {
-        let viewModel = TopUpAccountDetailsViewModel()
-        let viewController = TopUpAccountDetailsViewController(with: viewModel)
-        localRoot.pushViewController(viewController, animated: true)
-    }
+//    func navigateToBankDetails() {
+//        let viewModel = TopUpAccountDetailsViewModel()
+//        let viewController = TopUpAccountDetailsViewController(with: viewModel)
+//        localRoot.pushViewController(viewController, animated: true)
+//    }
     
     func navigateToCardTransfer() {
-        let viewModel = TopupCardSelectionViewModel()
-        let viewController = TopupCardSelectionViewController(viewModel: viewModel)
+        let viewModel = TopupCardSelectionViewModel(repository: self.repository)
+        let viewController = TopupCardSelectionViewController(themeService: container.themeService, viewModel: viewModel)
         
         viewModel.outputs.addNewCard
             .subscribe(onNext: { [weak self] _ in
                 guard let `self` = self else { return }
-                self.navigateToAddNewCard(navigationController: self.localRoot, resultOberver: viewModel.inputs.refreshCardsObserver)
-            }).disposed(by: disposeBag)
+//                self.navigateToAddNewCard(navigationController: self.localRoot, resultOberver: viewModel.inputs.refreshCardsObserver)
+            }).disposed(by: rx.disposeBag)
+        localRoot.pushViewController(viewController, animated: true)
         
-        viewModel.outputs.beneficiarySelected
+      /*  viewModel.outputs.beneficiarySelected
             .subscribe(onNext: { [weak self] in
                 guard let `self` = self else { return }
                 let date = Date()
@@ -102,18 +106,18 @@ private extension AddMoneyCoordinator {
                 } else {
                     self.openCardDetails($0, navigationController: self.localRoot, refreshCards: viewModel.inputs.refreshCardsObserver)
                 }
-            }).disposed(by: disposeBag)
+            }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.openCardDetails
             .subscribe(onNext: { [weak self] in
                 guard let `self` = self else { return }
-                self.openCardDetails($0, navigationController: self.localRoot, refreshCards: viewModel.inputs.refreshCardsObserver)
-            }).disposed(by: disposeBag)
+//                self.openCardDetails($0, navigationController: self.localRoot, refreshCards: viewModel.inputs.refreshCardsObserver)
+            }).disposed(by: rx.disposeBag)
         
-        localRoot.pushViewController(viewController, animated: true)
+        localRoot.pushViewController(viewController, animated: true) */
     }
     
-    func navigateToAddNewCard(navigationController: UINavigationController, resultOberver: AnyObserver<Void>) {
+  /*  func navigateToAddNewCard(navigationController: UINavigationController, resultOberver: AnyObserver<Void>) {
         let viewModel: AddTopupPaymentCardViewModelType = AddTopupPaymentCardViewModel()
         let viewController = AddTopupPaymentCardViewController(viewModel: viewModel)
         let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
@@ -167,7 +171,7 @@ private extension AddMoneyCoordinator {
     
     func navigateToAddMoneyQRCode() {
         coordinate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: false)).subscribe().disposed(by: disposeBag)
-    }
+    } */
 }
 
-*/
+

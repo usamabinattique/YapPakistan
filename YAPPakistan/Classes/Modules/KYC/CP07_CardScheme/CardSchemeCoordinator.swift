@@ -77,7 +77,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func cardNamePending(schemeObj: KYCCardsSchemeM) {
-        coordinate(to: container.makeCardNameCoordinator(root: root, schemeObj: schemeObj))
+        coordinate(to: container.makeCardNameCoordinator(root: root ,schemeObj: schemeObj))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:

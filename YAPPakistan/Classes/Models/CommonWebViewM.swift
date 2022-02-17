@@ -15,6 +15,10 @@ class CommonWebViewM: Codable {
     let color: String?
     let saveCardDetails: Bool?
     
+    var session: SessionCardInput? {
+        return SessionCardInput(id: sessionID,number: cardNumber)
+    }
+    
     enum CodingKeys: String, CodingKey {
         case nickName = "alias"
         case cardNumber = "number"
@@ -39,5 +43,15 @@ class CommonWebViewM: Codable {
         self.sessionID = sessionID
         self.color = color
         self.saveCardDetails = saveCardDetails
+    }
+    
+     class SessionCardInput: Codable {
+        var id: String?
+        var number: String?
+        
+        init(id: String?, number: String?) {
+            self.id = id
+            self.number = number
+        }
     }
 }
