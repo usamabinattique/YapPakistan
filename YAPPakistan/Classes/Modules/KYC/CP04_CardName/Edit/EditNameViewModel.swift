@@ -99,7 +99,7 @@ class EditNameViewModel: EditNameViewModelType, EditNameViewModelInput, EditName
 //            .bind(to: cardNameSubject).disposed(by: disposeBag)
 
         nextWillSubject
-            .withLatestFrom(nameInputSubject)
+            .withLatestFrom(cardNameSubject)
             .bind(to: nextSubject)
             .disposed(by: disposeBag)
         

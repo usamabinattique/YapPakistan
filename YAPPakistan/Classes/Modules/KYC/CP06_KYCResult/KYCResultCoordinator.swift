@@ -28,11 +28,11 @@ class KYCResultCoordinator: Coordinator<ResultType<Void>> {
             .withLatestFrom(container.accountProvider.currentAccount).unwrap()
             .map({ $0.isSecretQuestionVerified }).withUnretained(self)
             .subscribe(onNext: { `self`, isVerified in
-                if isVerified == true {
+                  if isVerified == true {
                     self.cardOnItsWay()
                 } else {
                     self.manualVerification()
-                }
+                } 
             })
             .disposed(by: rx.disposeBag)
 

@@ -44,8 +44,13 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
             .bind(to: viewController.viewModel.inputs.citySelectObserver)
             .disposed(by: rx.disposeBag)
 
+//        viewController.viewModel.outputs.next.withUnretained(self)
+//            .subscribe(onNext: { [unowned self] _ in self.moveNext() })
+//            .disposed(by: rx.disposeBag)
+        
         viewController.viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { [unowned self] _ in self.moveNext() })
+            .flatMap({ `self`, _ in self.kycResult().materialize() }).withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.goToHome() })
             .disposed(by: rx.disposeBag)
 //
 //

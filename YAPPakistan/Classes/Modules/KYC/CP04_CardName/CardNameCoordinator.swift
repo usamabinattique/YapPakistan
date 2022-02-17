@@ -48,10 +48,12 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
-        viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.name).withUnretained(self)
+        viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.editNameForEditNameScreen).withUnretained(self)
             .flatMap({ `self`, name in self.editName(name: name) })
             .bind(to: viewController.viewModel.inputs.nameObserver)
             .disposed(by: rx.disposeBag)
+        
+        
     }
 
     func editName(name: String) -> Observable<String> {
@@ -64,7 +66,6 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
 
         let next = viewController.viewModel.outputs.next
             .do(onNext: { [weak self] _ in self?.navigation.childNavigation.popViewController(animated: true) })
-
         return next
     }
     
