@@ -123,8 +123,6 @@ private extension AddTopupPCCVCell {
     func bindViews() {
         viewModel.outputs.addCardButtonTitle.unwrap().subscribe(onNext: { [weak self] title in
             self?.addButton.title = "+ " + title
-//            self?.addButton.titleLable.text =
-            print("title is \(title)")
         }).disposed(by: disposeBag)
     }
 }
