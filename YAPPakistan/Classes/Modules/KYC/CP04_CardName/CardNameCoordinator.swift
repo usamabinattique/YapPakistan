@@ -43,7 +43,9 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.schemeObj.isPaidScheme ? self.cardDetailWebView() : self.addressPending() /*self.moveNext() */ })
+            .subscribe(onNext: { `self`, _ in
+                self.schemeObj.isPaidScheme ? self.cardDetailWebView() : self.addressPending()
+            })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.name).withUnretained(self)
@@ -71,7 +73,6 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
         let viewController = container.makeCommonWebViewController(viewModel: viewModel)
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
-            print("close in coord")
             viewController.dismiss(animated: true, completion: nil)
         }).disposed(by: rx.disposeBag)
 

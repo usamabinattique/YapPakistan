@@ -111,7 +111,6 @@ private extension NameLettersSequenceSelectionCell {
 //        checkBox.rx.checked.bind(to: viewModel.inputs.checkObserver).disposed(by: disposeBag)
         
         checkBox.rx.checked.skip(1).subscribe(onNext: { [unowned self] isCheckedBox in
-            print("isCheckBox \(isCheckedBox)")
             self.isChecked?(isCheckedBox)
         }).disposed(by: disposeBag)
 

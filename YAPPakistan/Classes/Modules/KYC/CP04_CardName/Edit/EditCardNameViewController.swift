@@ -16,13 +16,9 @@ import RxTheme
 class EditCardNameViewController: UIViewController {
 
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
-//    private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
-//    private let tipsLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
+    
     private let nextButton = UIFactory.makeAppRoundedButton(with: .regular)
-//    private let textField = UIFactory.makeFloatingTextField(font: .regular,
-//                                                            fontPlaceholder: .small,
-//                                                            returnKeyType: .done,
-//                                                            capitalization: .words)
+    
     private let cardImageView = UIFactory.makeImageView()
     private let nameLabel = UIFactory.makeLabel(font: .small)
     private let latterCountLabel = UIFactory.makeLabel(font: .micro, alignment: .right)
@@ -259,7 +255,6 @@ class EditCardNameViewController: UIViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
             if let cell  = cell as? NameLettersSequenceSelectionCell,let vm = viewModel as? NameLettersSequenceSelectionCellViewModel {
-                print("yeah")
                 cell.isChecked = { [weak self] isCheckedBox in
                     self?.viewModel.inputs.selectedNameSequence.onNext(index.row)
                 }
