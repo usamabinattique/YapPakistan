@@ -110,7 +110,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func cardDetailWebView() {
-        let viewModel = CommonWebViewModel()
+        let viewModel = CommonWebViewModel(container: container)
         let viewController = container.makeCommonWebViewController(viewModel: viewModel)
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
