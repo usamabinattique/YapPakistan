@@ -31,7 +31,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
         let progressRoot = container.makeKYCProgressViewController()
         root.pushViewController(progressRoot)
-
+        
         cardScheme()
             .subscribe(onNext:{ [weak self] cardSchemeObj in
                 guard let `self` = self else { return }
@@ -47,7 +47,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         progressRoot.viewModel.outputs.backTap.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.popViewController(progress: 0.25) })
+            .subscribe(onNext: { `self`, _ in self.popViewController(progress: 0.60) })
             .disposed(by: rx.disposeBag)
         
         return result
@@ -55,11 +55,11 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
     func cardScheme() -> Observable<KYCCardsSchemeM> {
         let viewController = container.makeCardSchemeViewController()
-        push(viewController: viewController, progress: 0.25)
+        push(viewController: viewController, progress: 0.75)
         return viewController.viewModel.outputs.next
     }
     
-    func cardBenefits(_ schemeObj: KYCCardsSchemeM) -> Observable<CardBenefitsViewController> {
+    func cardBenefits(_ schemeObj: KYCCardsSchemeM) {
         let viewController = container.makeCardBenefitsViewController()
         viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
         
@@ -74,9 +74,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
             print("back button tap masterCard Benefits")
         }).disposed(by: rx.disposeBag)
-
-        
-        return Observable.just(viewController)
     }
     
     func cardNamePending(schemeObj: KYCCardsSchemeM) {
@@ -92,6 +89,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 //                    }
                 case .cancel:
                     //self?.navigationRoot.popToRootViewController(animated: true)
+                    print("go back from Name")
                     break
                 }
             }).disposed(by: rx.disposeBag)
@@ -104,7 +102,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
                 case .success:
                     print("go next from address")
                 case .cancel:
-                    self?.navigationRoot.popToRootViewController(animated: true)
                     print("go back from address")
                     break
                 }

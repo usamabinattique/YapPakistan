@@ -19,28 +19,25 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
          container: KYCFeatureContainer) {
         self.container = container
         self.root = root
+        
+        super.init()
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-//        let progressView = container.makeKYCProgressViewController()
-//
-//        addAddressWith(progressView)
-//
-//        progressView.viewModel.inputs.progressObserver.onNext(0.75)
-//        progressView.viewModel.outputs.backTap.withUnretained(self)
-//            .subscribe(onNext: { `self`, _ in self.goBack() })
-//            .disposed(by: rx.disposeBag)
-//        progressView.hidesBottomBarWhenPushed = true
-
-        let navigationContainer = container.makeNavigationContainerViewController()
-        root.pushViewController(navigationContainer, animated: true)
+        
+        let progressRoot = container.makeKYCProgressViewController()
+        root.pushViewController(progressRoot)
+        
+        progressRoot.viewModel.outputs.backTap.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.goBack()
+                self.root.popViewController()
+            })
+            .disposed(by: rx.disposeBag)
+        progressRoot.hidesBottomBarWhenPushed = true
 
         let viewController = container.makeAddressViewController()
-        navigationContainer.childNavigation.pushViewController(viewController, animated: false)
-
-        viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.goBack() })
-            .disposed(by: rx.disposeBag)
+        push(viewController: viewController, progress: 0.90)
 
         viewController.viewModel.outputs.city.withUnretained(self)
             .flatMap{ `self`, _ in self.selectCityName() }
@@ -70,6 +67,21 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
 
 // MARK: Helpers
 fileprivate extension AddressCoordinator {
+    var progressRoot: KYCProgressViewController! { root.topViewController as? KYCProgressViewController }
+
+    func push(viewController: UIViewController, progress: Float ) {
+        self.progressRoot.viewModel.inputs.progressObserver.onNext(progress)
+        self.progressRoot.childNavigation.pushViewController(viewController, animated: true)
+    }
+
+    func popViewController(progress: Float) {
+//        guard self.progressRoot.childNavigation.viewControllers.count > 1 else {
+//            return goBack()
+//        }
+        self.progressRoot.viewModel.inputs.progressObserver.onNext(progress)
+        self.progressRoot.childNavigation.popViewController(animated: true)
+    }
+    
     func moveNext() {
         self.result.onNext(.success(()))
         self.result.onCompleted()
