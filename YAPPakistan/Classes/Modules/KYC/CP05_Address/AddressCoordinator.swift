@@ -47,7 +47,21 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { [unowned self] _ in self.moveNext() })
             .disposed(by: rx.disposeBag)
-
+//
+//
+//        viewController.viewModel.outputs.next.withUnretained(self)
+//                .flatMap({ `self`, _ in self.kycResult().materialize() }).withUnretained(self)
+//                .subscribe(onNext: { `self`, _ in self.goToHome() })
+//                .disposed(by: rx.disposeBag)
+//
+//        Observable.combineLatest(viewController.viewModel.inputs.reloadAndNextObserver, viewController.viewModel.outputs.next)
+//            .delay(.milliseconds(500), scheduler: MainScheduler.instance).withUnretained(self)
+//            .subscribe(onNext: { _ in
+//                let vcs = self.root.viewControllers
+//                self.root.viewControllers.removeSubrange(2..<(vcs.count - 1))
+//            })
+//            .disposed(by: rx.disposeBag)
+        
         return result
     }
 
@@ -62,6 +76,16 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
 
         return viewController.viewModel.outputs.next
             .do(onNext: { [weak self] _ in self?.root.dismiss(animated: true) })
+    }
+    
+    func kycResult() -> Observable<ResultType<Void>> {
+        return coordinate(to: KYCResultCoordinator(root: root, container: container))
+    }
+    
+    func goToHome() {
+        self.root.popToRootViewController(animated: true)
+        self.result.onNext(.success(()))
+        self.result.onCompleted()
     }
 }
 

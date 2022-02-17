@@ -169,7 +169,7 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
             })
             .withUnretained(self)
             .flatMapLatest { `self`, location in
-                return self.kycRepository.saveUserAddress(address: location.formattAdaddress,
+                return self.kycRepository.saveUserAddress(address: String(location.formattAdaddress.prefix(50)),
                                                           // =======
                                                           //        let saveAddressRequest = nextSubject
                                                           //            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
