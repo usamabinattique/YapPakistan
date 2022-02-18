@@ -101,6 +101,8 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
                     self?.errorSubject.onNext(error.localizedDescription)
                 })
                 .disposed(by: disposeBag)
+        } else {
+            self.confirmSubject.onNext(())
         }
     }
     
