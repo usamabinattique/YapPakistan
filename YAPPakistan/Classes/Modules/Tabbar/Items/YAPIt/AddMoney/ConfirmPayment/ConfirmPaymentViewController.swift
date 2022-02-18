@@ -40,7 +40,7 @@ class ConfirmPaymentViewController: UIViewController {
     private lazy var addressTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
     private lazy var addressDescLabel = UIFactory.makeLabel(font: .micro, alignment: .center)
     private lazy var addressStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .leading, distribution: .fill, spacing: 2, arrangedSubviews: [addressTitleLabel,addressDescLabel])
-    private lazy var editButton = UIFactory.makeButton(with: .small, backgroundColor: .clear, title: "Edit")
+    private lazy var editButton = UIFactory.makeButton(with: .small, backgroundColor: .clear, title: "common_button_edit".localized)
     
     private lazy var addressContainerStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fillProportionally, spacing: 20, arrangedSubviews: [addressImage,addressStack,editButton])
     
