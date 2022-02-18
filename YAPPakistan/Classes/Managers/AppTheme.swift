@@ -34,6 +34,7 @@ public protocol Theme {
     var icon: Color               { get }
     var iconHolder: Color         { get }
     var backgroundColor: Color    { get }
+    var separatorColor: Color     { get }
     var clear: UIColor            { get }
 }
 
@@ -63,6 +64,7 @@ struct LightTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var separatorColor: Color       { Color(hex: "#979797") }
     var clear: UIColor                { UIColor.clear }
 
 }
@@ -93,6 +95,7 @@ struct DarkTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var separatorColor: Color       { Color(hex: "#979797") }
     var clear: UIColor              { UIColor.clear }
 }
 

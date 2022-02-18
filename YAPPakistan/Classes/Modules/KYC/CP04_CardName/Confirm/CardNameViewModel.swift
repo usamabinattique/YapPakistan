@@ -23,6 +23,7 @@ protocol CardNameViewModelOutput {
     var loading: Observable<Bool> { get }
     var showError: Observable<String> { get }
     var languageStrings: Observable<CardNameViewModel.LanguageStrings> { get }
+    var editNameForEditNameScreen: Observable<String> { get }
 }
 
 protocol CardNameViewModelType {
@@ -49,6 +50,7 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
     var edit: Observable<Void> { editSubject.asObservable() }
     var showError: Observable<String> { showErrorSubject.asObservable() }
     var loading: Observable<Bool> { loadingSubject.asObservable() }
+    var editNameForEditNameScreen: Observable<String> { editNameForEditNameScreenSubject.asObservable() }
 
     // MARK: Subjects
     var languageStringsSubject: BehaviorSubject<LanguageStrings>!
@@ -59,7 +61,8 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
     private var editSubject = PublishSubject<Void>()
     var showErrorSubject = PublishSubject<String>()
     private var loadingSubject = BehaviorSubject<Bool>(value: false)
-
+    private let editNameForEditNameScreenSubject = ReplaySubject<String>.create(bufferSize: 1)
+    
     // MARK: Properties
     private let disposeBag = DisposeBag()
     private let kycRepository: KYCRepositoryType
@@ -75,6 +78,11 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
         self.accountProvider.currentAccount.unwrap()
             .map({ $0.customer.firstName + " " + $0.customer.lastName })
             .bind(to: nameSubject)
+            .disposed(by: disposeBag)
+        
+        self.accountProvider.currentAccount.unwrap()
+            .map({ $0.customer.firstName + " " + $0.customer.lastName })
+            .bind(to: editNameForEditNameScreenSubject)
             .disposed(by: disposeBag)
 
         let setResult = self.nextSubject.withLatestFrom(nameSubject).withUnretained(self)

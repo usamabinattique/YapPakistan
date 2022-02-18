@@ -86,6 +86,22 @@ private extension AddMoneyCoordinator {
 //        localRoot.pushViewController(viewController, animated: true)
 //    }
     
+    func navigateToConfirmPayment() {
+        let viewModel = ConfirmPaymentViewModel(ConfirmPaymentViewModel.LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000"))
+        let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
+        
+    }
+    
+    func confirmPayment() {
+        
+        coordinate(to: ConfirmPaymentCoordinator(root: localRoot, container: container, repository: repository, shouldPresent: true)).subscribe(onNext: { [weak self] in
+            if case let ResultType.success(result) = $0 {
+                self?.result.onNext(.success(result))
+                self?.result.onCompleted()
+            }
+        }).disposed(by: rx.disposeBag)
+    }
+    
     func navigateToCardTransfer() {
         let viewModel = TopupCardSelectionViewModel(repository: self.repository)
         let viewController = TopupCardSelectionViewController(themeService: container.themeService, viewModel: viewModel)
@@ -94,6 +110,9 @@ private extension AddMoneyCoordinator {
             .subscribe(onNext: { [weak self] _ in
                 guard let `self` = self else { return }
 //                self.navigateToAddNewCard(navigationController: self.localRoot, resultOberver: viewModel.inputs.refreshCardsObserver)
+                print("confirm payment")
+                //TODO: remove following line from here and implemented it to corresponding screen
+                self.confirmPayment()
             }).disposed(by: rx.disposeBag)
         localRoot.pushViewController(viewController, animated: true)
         

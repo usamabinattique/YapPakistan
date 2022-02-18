@@ -65,7 +65,7 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     var location: Observable<LocationModel> { currentLocationResultSubject.skip(1).asObservable() }
     var confirm: Observable<LocationModel> { confirmLocationResultSubject.asObservable() }
     var isMapMarker: Observable<Bool> { isMarkerSubject.asObservable() }
-    var next: Observable<Void> { nextResultSubject.asObservable() }
+    var next: Observable<Void> { nextResultSubject.take(1).asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
     var city: Observable<Void> { citySubject.asObservable() }
     var citySelected: Observable<String> { citySelectSubject.asObserver() }
@@ -184,6 +184,10 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
                                                           latitude: "\(location.latitude)",
                                                           longitude: "\(location.longitude)" )
             }.share()
+        
+        saveAddressRequest.elements().subscribe(onNext: { value in
+            print("save addres request \(value)")
+        }).disposed(by: disposeBag)
 
         saveAddressRequest.elements()
             .flatMap({ [unowned self] _ in self.accountProvider.refreshAccount() })
