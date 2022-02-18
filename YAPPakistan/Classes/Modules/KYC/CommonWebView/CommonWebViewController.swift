@@ -100,6 +100,7 @@ extension CommonWebViewController: WKURLSchemeHandler, WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         viewModel.inputs.navigationActionObserver.onNext(navigationAction)
+        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
         decisionHandler(.allow)
     }
     

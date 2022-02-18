@@ -69,11 +69,17 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func cardDetailWebView() {
-        let viewModel = CommonWebViewModel(container: container)
+        let viewModel = CommonWebViewModel(container: container, repository: container.parent.makeCardsRepository())
         let viewController = container.makeCommonWebViewController(viewModel: viewModel)
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
             viewController.dismiss(animated: true, completion: nil)
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.confirm.subscribe(onNext: { [weak self] _ in
+            viewController.dismiss(animated: true, completion: {
+                self?.addressPending()
+            })
         }).disposed(by: rx.disposeBag)
 
         let navigationRoot = makeNavigationController()

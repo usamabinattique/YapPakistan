@@ -38,6 +38,7 @@ protocol CardsRepositoryType: AnyObject {
                           latitude: String,
                           longitude: String) -> Observable<Event<String?>>
     func fetchReorderFee() -> Observable<Event<CardReorderFee?>>
+    func externalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
 }
 
 class CardsRepository: CardsRepositoryType {
@@ -105,6 +106,11 @@ class CardsRepository: CardsRepositoryType {
 
     func verifyPasscode(passcode: String) -> Observable<Event<String?>> {
         customerService.verifyPasscode(passcode: passcode).materialize()
+    }
+    
+    //External card beneficiary for topup
+    func externalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>> {
+        customerService.fetchExternalCardBeneficiaries(alias: alias, color: color, sessionId: sessionId, cardNumber: cardNumber).materialize()
     }
 
     //"action": "FORGOT_CARD_PIN"

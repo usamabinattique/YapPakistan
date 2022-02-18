@@ -14,6 +14,7 @@ class CommonWebViewM: Codable {
     let sessionID: String?
     let color: String?
     let saveCardDetails: Bool?
+    let errors: String?
     
     var session: SessionCardInput? {
         return SessionCardInput(id: sessionID,number: cardNumber)
@@ -25,6 +26,7 @@ class CommonWebViewM: Codable {
         case sessionID
         case color
         case saveCardDetails
+        case errors
     }
     
     public required init(from decoder: Decoder) throws {
@@ -35,14 +37,16 @@ class CommonWebViewM: Codable {
         self.sessionID = (try? data.decode(String?.self, forKey: .sessionID)) ?? ""
         self.color = (try? data.decode(String?.self, forKey: .color)) ?? ""
         self.saveCardDetails = (try? data.decode(Bool?.self, forKey: .saveCardDetails)) ?? false
+        self.errors = (try? data.decode(String?.self, forKey: .errors)) ?? ""
     }
     
-    init(nickName: String? = "", cardNumber: String? = "", sessionID: String? = "", color: String? = "", saveCardDetails: Bool? = false){
+    init(nickName: String? = "", cardNumber: String? = "", sessionID: String? = "", color: String? = "", saveCardDetails: Bool? = false, errors: String? = ""){
         self.nickName = nickName
         self.cardNumber = cardNumber
         self.sessionID = sessionID
         self.color = color
         self.saveCardDetails = saveCardDetails
+        self.errors = errors
     }
     
      class SessionCardInput: Codable {
