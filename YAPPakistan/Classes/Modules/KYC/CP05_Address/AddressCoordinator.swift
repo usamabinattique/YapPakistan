@@ -43,19 +43,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
             .flatMap{ `self`, _ in self.selectCityName() }
             .bind(to: viewController.viewModel.inputs.citySelectObserver)
             .disposed(by: rx.disposeBag)
-
-//        viewController.viewModel.outputs.next.withUnretained(self)
-//            .subscribe(onNext: { [unowned self] _ in self.moveNext() })
-//            .disposed(by: rx.disposeBag)
         
-        //TODO: [YASIR]  umair add scheme check here
-        /// for mastercard flow
-//        viewController.viewModel.outputs.next.withUnretained(self)
-//            .flatMap({ `self`, _ in self.kycResult().materialize() }).withUnretained(self)
-//            .subscribe(onNext: { `self`, _ in self.goToHome() })
-//            .disposed(by: rx.disposeBag)
-        
-        /// for paypak flow
         viewController.viewModel.outputs.next.withUnretained(self)
             .flatMap({ `self`, _ in self.confirmPayment().materialize() }).withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.goToHome() })
