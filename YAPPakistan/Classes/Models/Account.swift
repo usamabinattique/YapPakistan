@@ -55,6 +55,7 @@ public struct Account: Codable {
     public let customer: Customer
     public let bank: Bank
     public var parnterBankStatus: PartnerBankStatus? { PartnerBankStatus(rawValue: _parnterBankStatus ?? "") }
+    public let isFirstCredit: Bool
     private let _parnterBankStatus: String?
     public let createdDate: String
     public let parentAccount: ParentAccount?
@@ -94,7 +95,7 @@ public struct Account: Codable {
     private enum CodingKeys: String, CodingKey {
         case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active,
              documentsVerified, companyType, soleProprietary, customer, bank, parentAccount,
-             otpBlocked, isSecretQuestionVerified
+             otpBlocked, isSecretQuestionVerified, isFirstCredit
         case _accountStatus = "notificationStatuses"
         case accountNumber = "accountNo"
         case _parnterBankStatus = "partnerBankStatus"
@@ -132,6 +133,7 @@ public extension Account {
         self.customer = Customer(customer: account.customer, updatedMobileNumber: updatedMobileNumber)
         self._parnterBankStatus = account._parnterBankStatus
         self.createdDate = account.createdDate
+        self.isFirstCredit = account.isFirstCredit
         self.parentAccount = account.parentAccount
         self.otpBlocked = account.otpBlocked
         self._eidExpiryStatus = account._eidExpiryStatus
@@ -161,6 +163,7 @@ public extension Account {
         self.bank = account.bank
         self.customer = Customer(customer: account.customer, updatedEmail: updatedEmail)
         self._parnterBankStatus = account._parnterBankStatus
+        self.isFirstCredit = account.isFirstCredit
         self.createdDate = account.createdDate
         self.parentAccount = account.parentAccount
         self.otpBlocked = account.otpBlocked
@@ -191,6 +194,7 @@ public extension Account {
         self.bank = account.bank
         self.customer = account.customer
         self._parnterBankStatus = account._parnterBankStatus
+        self.isFirstCredit = account.isFirstCredit
         self.createdDate = account.createdDate
         self.parentAccount = account.parentAccount
         self.otpBlocked = account.otpBlocked
@@ -221,6 +225,7 @@ public extension Account {
         self.bank = account.bank
         self.customer = account.customer
         self._parnterBankStatus = account._parnterBankStatus
+        self.isFirstCredit = account.isFirstCredit
         self.createdDate = account.createdDate
         self.parentAccount = account.parentAccount
         self.otpBlocked = account.otpBlocked

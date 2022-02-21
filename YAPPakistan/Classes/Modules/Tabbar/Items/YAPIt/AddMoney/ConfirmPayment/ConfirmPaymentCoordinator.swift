@@ -35,7 +35,7 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel = ConfirmPaymentViewModel(paymentGateawayObj: self.paymentGateawayM)
+        let viewModel = ConfirmPaymentViewModel(kycRepository: container.makeKYCRepository(), transactionRepository: container.makeTransactionsRepository(), paymentGatewayObj: self.paymentGatewayM)
         let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
         if self.shouldPresent {
             self.presentConfirmPaymentController(present:viewController)

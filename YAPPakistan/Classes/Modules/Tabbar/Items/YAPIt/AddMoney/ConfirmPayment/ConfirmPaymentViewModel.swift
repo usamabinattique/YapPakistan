@@ -78,12 +78,19 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     // MARK: Properties
     private let disposeBag = DisposeBag()
     private let paymentGatewayM: PaymentGatewayLocalModel!
+    private let kycRepository: KYCRepository
+    private let transactionRepository: TransactionsRepository
 
-    init(paymentGateawayObj: PaymentGateawayLocalModel? = nil){
-        self.paymentGateawayM = paymentGateawayObj
+    init(kycRepository: KYCRepository, transactionRepository: TransactionsRepository, paymentGatewayObj: PaymentGatewayLocalModel? = nil){
+        
+        self.paymentGatewayM = paymentGatewayObj
+        
+        self.kycRepository = kycRepository
+        self.transactionRepository = transactionRepository
+        
         var theStrings = LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000")
     //    localizedStringsSubject.onNext(strings)
-        if let payment = paymentGateawayM {
+        if let payment = paymentGatewayM {
             let cardImageName = payment.cardSchemeObject?.scheme == .Mastercard ? "payment_card" : "image_payment_card_white_paypak"
             cardImageSubject.onNext(UIImage(named: cardImageName, in: .yapPakistan))
             theStrings.subTitle = payment.cardSchemeObject?.scheme == .Mastercard ? "screen_kyc_card_scheme_title_mastercard".localized : "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized
@@ -102,7 +109,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
             //let attributed = NSMutableAttributedString(string: text)
 //            attributed.addAttributes([.foregroundColor: UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
         }
-        if let cardDetail =  paymentGateawayM.cardDetailObject {
+        if let cardDetail =  paymentGatewayM.cardDetailObject {
             cardNumberSubject.onNext(cardDetail.cardNumber ?? "")
         }
        // let formatted = String(format: "Angle: %.2f", angle)
@@ -113,6 +120,24 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     }
     
     private func fetchApis() {
+        
+        guard let locationObj = self.paymentGatewayM.locationData else { return }
+        
+        let saveAddressRequest = kycRepository.saveUserAddress(address: locationObj.formattAdaddress, city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude)).share()//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
+        
+        
+        // first call this api
+        saveAddressRequest.elements().withUnretained(self).subscribe(onNext: { `self`, result in
+            
+        }).disposed(by: disposeBag)
+        
+        saveAddressRequest.errors().withUnretained(self).subscribe(onNext: { `self`, error in
+            
+        }).disposed(by: disposeBag)
+        guard let cardObject = paymentGatewayM.cardDetailObject else { return }
+        // second checkoutSession api
+        transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
+        
         
     }
     
