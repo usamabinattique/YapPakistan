@@ -62,7 +62,10 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     init(_ strings: LocalizedStrings ){
         localizedStringsSubject.onNext(strings)
         
+        //TODO: implemented api
         
+        //TODO: remove following line and implement it properly
+        nextSubject.map{ 1 }.bind(to: nextResultSubject).disposed(by: disposeBag)
     }
 
     struct LocalizedStrings {
