@@ -23,8 +23,8 @@ protocol TransactionsServiceType {
     func getFee<T: Codable>(productCode: String) -> Observable<T>
     func getTransactionProductLimit<T: Codable>(transactionProductCode: String) -> Observable<T>
     func getThresholdLimits<T: Codable>() -> Observable<T>
-    func createCheckoutSession<T: Codable>(amount: String, currency: String, sessionId: String) -> Observable<T>
-    func check3DSEnrollment<T: Codable>(beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T>
+    func createCheckoutSession<T: Codable>(orderId: String, amount: String, currency: String, sessionId: String) -> Observable<T>
+    func check3DSEnrollment<T: Codable>(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T>
     func retrieveACSResults<T: Codable>(threeDSecureID: String) -> Observable<T>
     func paymentGatewayTopup<T: Codable>(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<T>
     
@@ -130,14 +130,14 @@ class TransactionsService: BaseService, TransactionsServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func createCheckoutSession<T: Codable>(amount: String, currency: String, sessionId: String) -> Observable<T> {
-        let body = PaymentGatewayRequest(order: PaymentGatewayAmountRequest(amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: "SESSION0002255503807J8363138J24"))
+    public func createCheckoutSession<T: Codable>(orderId: String, amount: String, currency: String, sessionId: String) -> Observable<T> {
+        let body = PaymentGatewayRequest(order: PaymentGatewayAmountRequest(id: orderId, amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: "SESSION0002255503807J8363138J24"))
         let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/mastercard/create-checkout-session", body: body ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func check3DSEnrollment<T: Codable>(beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T> {
-        let body = PaymentGateway3DSEnrollmentRequest(beneficiaryID: beneficiaryID, order: PaymentGatewayAmountRequest(amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: sessionID))
+    public func check3DSEnrollment<T: Codable>(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T> {
+        let body = PaymentGateway3DSEnrollmentRequest(beneficiaryID: beneficiaryID, order: PaymentGatewayAmountRequest(id: orderId, amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: sessionID))
         let route = APIEndpoint(.put, apiConfig.transactionsURL, "/api/mastercard/check-3ds-enrollment", body: body ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
@@ -150,7 +150,7 @@ class TransactionsService: BaseService, TransactionsServiceType {
     
     public func paymentGatewayTopup<T: Codable>(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<T> {
         let pathVariables = [orderID]
-        let body = PaymentCardTopupRequest(beneficiaryID: beneficiaryID, order: PaymentGatewayAmountRequest(amount: amount, currency: currency), securityCode: securityCode, threeDSecureId: threeDSecureID)
+        let body = PaymentCardTopupRequest(beneficiaryID: beneficiaryID, order: PaymentGatewayAmountRequest(id: orderID, amount: amount, currency: currency), securityCode: securityCode, threeDSecureId: threeDSecureID)
         let route = APIEndpoint(.get, apiConfig.cardsURL, "/api/order-physical-card-of-cardholder", pathVariables: pathVariables, body: body ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }

@@ -63,16 +63,16 @@ public final class KYCFeatureContainer {
         SelfieCoordinator(root: root, container: self)
     }
     
-    func makeCardSchemeCoordinator(root: UINavigationController, paymentGateawayM: PaymentGateawayLocalModel) -> CardSchemeCoordinator {
-        CardSchemeCoordinator(root: root, container: self, paymentGateawayM: paymentGateawayM)
+    func makeCardSchemeCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> CardSchemeCoordinator {
+        CardSchemeCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM)
     }
 
-    func makeCardNameCoordinator(root: UINavigationController,  schemeObj: KYCCardsSchemeM, paymentGateawayM: PaymentGateawayLocalModel) -> CardNameCoordinator {
-        CardNameCoordinator(root: root, container: self ,schemeObj: schemeObj, paymentGateawayM: paymentGateawayM)
+    func makeCardNameCoordinator(root: UINavigationController,  schemeObj: KYCCardsSchemeM, paymentGatewayM: PaymentGatewayLocalModel) -> CardNameCoordinator {
+        CardNameCoordinator(root: root, container: self ,schemeObj: schemeObj, paymentGatewayM: paymentGatewayM)
     }
 
-    func makeAddressCoordinator(root: UINavigationController, paymentGateawayM: PaymentGateawayLocalModel) -> AddressCoordinator {
-        AddressCoordinator(root: root, container: self, paymentGateawayM: paymentGateawayM)
+    func makeAddressCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> AddressCoordinator {
+        AddressCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM)
     }
 
     // MARK: Controllers

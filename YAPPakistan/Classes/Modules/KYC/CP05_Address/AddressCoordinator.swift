@@ -14,13 +14,13 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
-    private var paymentGateawayM: PaymentGateawayLocalModel!
+    private var paymentGatewayM: PaymentGatewayLocalModel!
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer, paymentGateawayM: PaymentGateawayLocalModel) {
+         container: KYCFeatureContainer, paymentGatewayM: PaymentGatewayLocalModel) {
         self.container = container
         self.root = root
-        self.paymentGateawayM = paymentGateawayM
+        self.paymentGatewayM = paymentGatewayM
         
         super.init()
     }
@@ -63,7 +63,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
         /// for paypak flow
         viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] location in
             guard let `self` = self else { return }
-            self.paymentGateawayM.locationData = location
+            self.paymentGatewayM.locationData = location
             print("next called in address")
             self.confirmPayment().subscribe(onNext: { [weak self] value in
                 guard let `self` = self else { return }
@@ -100,7 +100,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func confirmPayment() -> Observable<ResultType<Void>> {
-        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true,paymentGateawayM: paymentGateawayM))
+        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM))
     }
     
     func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String) {

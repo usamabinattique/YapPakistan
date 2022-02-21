@@ -30,6 +30,8 @@ protocol TransactionsRepositoryType {
     ) -> Observable<Event<PagableResponse<TransactionResponse>>>
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>>
+    func fetchCheckoutSession(orderId: String, amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>>
+    func paymentGatewayTopup(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<Event<Int?>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType {
@@ -71,6 +73,22 @@ class TransactionsRepository: TransactionsRepositoryType {
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>> {
         return transactionService.getTransactionFilters().materialize()
+    }
+    
+    func fetchCheckoutSession(orderId: String, amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>> {
+        return transactionService.createCheckoutSession(orderId: orderId, amount: amount, currency: currency, sessionId: sessionId).materialize()
+    }
+    
+    func fetch3DSEnrollment(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<Event<PaymentGateway3DSEnrollmentResult>> {
+        return transactionService.check3DSEnrollment(orderId: orderId, beneficiaryID: beneficiaryID, amount: amount, currency: currency, sessionID: sessionID).materialize()
+    }
+    
+    func retrieveACSResults(threeDSecureID: String) -> Observable<Event<String?>> {
+        return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
+    }
+    
+    public func paymentGatewayTopup(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<Event<Int?>> {
+        return transactionService.paymentGatewayTopup(orderID: orderID, beneficiaryID: beneficiaryID, amount: amount, currency: currency, securityCode: securityCode, threeDSecureID: threeDSecureID).materialize()
     }
 }
 
