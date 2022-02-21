@@ -30,7 +30,7 @@ protocol TransactionsRepositoryType {
     ) -> Observable<Event<PagableResponse<TransactionResponse>>>
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>>
-    func fetchCheckoutSession(orderId: String, amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>>
+    func fetchCheckoutSession(orderId: String, amount: String, currency: String, sessionId: String) ->  Observable<Event<PaymentGatewayCheckoutSession>>
     func paymentGatewayTopup(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<Event<Int?>>
 }
 

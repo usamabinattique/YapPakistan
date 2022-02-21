@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import UIKit
+import YAPComponents
 
 protocol ConfirmPaymentViewModelInputs {
     var closeObserver: AnyObserver<Void> { get }
@@ -112,7 +113,6 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         if let cardDetail =  paymentGatewayM.cardDetailObject {
             cardNumberSubject.onNext(cardDetail.cardNumber ?? "")
         }
-       // let formatted = String(format: "Angle: %.2f", angle)
         localizedStringsSubject.onNext(theStrings)
         
         
@@ -123,8 +123,11 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         
         guard let locationObj = self.paymentGatewayM.locationData else { return }
         
-        let saveAddressRequest = kycRepository.saveUserAddress(address: locationObj.formattAdaddress, city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude)).share()//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-        
+        let saveAddressRequest = kycRepository.saveUserAddress(address: locationObj.formattAdaddress, city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+            })
+       
         
         // first call this api
         saveAddressRequest.elements().withUnretained(self).subscribe(onNext: { `self`, result in
@@ -135,10 +138,27 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
             
         }).disposed(by: disposeBag)
         guard let cardObject = paymentGatewayM.cardDetailObject else { return }
+        
         // second checkoutSession api
-        transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
+        let fetchCheckoutSessionRequest = transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
         
-        
+        saveAddressRequest.withUnretained(self).flatMap { `self` , eventAccount -> Observable<PaymentGateway3DSEnrollmentResult> in
+            return fetchCheckoutSessionRequest.withUnretained(self).flatMapLatest { `self`,  event ->
+                Observable<PaymentGateway3DSEnrollmentResult> in
+                //guard let `self` else = self else { return }
+                if let paymentGatewayCheckoutSession = event.element {
+                    let fetch3DSEnrollmentRequest = self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
+                    return fetch3DSEnrollmentRequest.elements()
+                } else {
+                    return Observable.just(PaymentGateway3DSEnrollmentResult(html: "", formattedHTML: "", threeDSecureId: ""))
+                }
+        }
+        }.withUnretained(self).subscribe(onNext: { `self`, paymentGateway3DSEnrollmentResult in
+            guard paymentGateway3DSEnrollmentResult.threeDSecureId != "" else { return }
+            
+            
+            
+        }).disposed(by: disposeBag)
     }
     
     
