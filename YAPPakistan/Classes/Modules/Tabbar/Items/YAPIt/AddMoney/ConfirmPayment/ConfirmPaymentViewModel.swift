@@ -223,6 +223,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
                 return Observable.just(nil)
             }
         }.withUnretained(self).subscribe(onNext: { `self`, topupResponse in
+            YAPProgressHud.hideProgressHud()
             //TODO: add next step here
             print("topup response")
         }).disposed(by: disposeBag)
