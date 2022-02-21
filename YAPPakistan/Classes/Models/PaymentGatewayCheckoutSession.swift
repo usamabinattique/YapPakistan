@@ -28,6 +28,17 @@ struct PaymentGatewayCheckoutSession: Codable {
         case order
         case session
     }
+    
+    public init(beneficiaryId: String,apiOperation: String, interaction: String, error: String, securityCode: String,threeDSecureId: String  ) {
+        self.beneficiaryId = beneficiaryId
+        self.apiOperation = apiOperation
+        self.interaction = interaction
+        self.error = error
+        self.securityCode =  securityCode
+        self.threeDSecureId = threeDSecureId
+        self.order = nil
+        self.session = nil
+    }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: PaymentGatewayCheckoutSession.CodingKeys.self)
