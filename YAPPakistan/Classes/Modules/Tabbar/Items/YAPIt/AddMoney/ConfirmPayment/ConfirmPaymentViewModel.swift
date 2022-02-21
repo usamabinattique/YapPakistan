@@ -125,18 +125,18 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         
         let saveAddressRequest = kycRepository.saveUserAddress(address: locationObj.formattAdaddress, city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .do(onNext: { _ in
-                YAPProgressHud.hideProgressHud()
+                YAPProgressHud.showProgressHud()
             })
        
         
-        // first call this api
-        saveAddressRequest.elements().withUnretained(self).subscribe(onNext: { `self`, result in
-            
-        }).disposed(by: disposeBag)
-        
-        saveAddressRequest.errors().withUnretained(self).subscribe(onNext: { `self`, error in
-            
-        }).disposed(by: disposeBag)
+//        // first call this api
+//        saveAddressRequest.elements().withUnretained(self).subscribe(onNext: { `self`, result in
+//
+//        }).disposed(by: disposeBag)
+//
+//        saveAddressRequest.errors().withUnretained(self).subscribe(onNext: { `self`, error in
+//
+//        }).disposed(by: disposeBag)
         guard let cardObject = paymentGatewayM.cardDetailObject else { return }
         
         // second checkoutSession api
@@ -155,7 +155,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         }
         }.withUnretained(self).subscribe(onNext: { `self`, paymentGateway3DSEnrollmentResult in
             guard paymentGateway3DSEnrollmentResult.threeDSecureId != "" else { return }
-            
+            YAPProgressHud.hideProgressHud()
             
             
         }).disposed(by: disposeBag)
