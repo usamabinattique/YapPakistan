@@ -157,7 +157,7 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
 
         let saveAddressRequest = nextSubject
             .withLatestFrom(Observable.combineLatest(currentLocationResultSubject,addressObserverSubject))
-            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
+          //  .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .map({ (location, address) -> LocationModel in
                 var location = location
                 if address.count > 0 {

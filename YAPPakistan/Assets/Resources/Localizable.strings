@@ -367,6 +367,7 @@
 "screen_yap_confirm_payment_display_text_toolbar_subtitle" = "PayPak Card";
 "screen_yap_confirm_payment_display_text_Card_fee" = "Card fees";
 "screen_yap_confirm_payment_display_text_pay_with" = "Pay with";
+"screen_yap_confirm_payment_display_text_place_order_for" = "Place order for %@";
 
 // MARK: Screend topup card cvv
 "screen_topup_card_cvv_display_text_title" = "Top up confirmation";

@@ -8,13 +8,13 @@
 import YAPComponents
 import RxSwift
 import RxTheme
+import UIKit
 
 class ConfirmPaymentViewController: UIViewController {
 
     private lazy var cardImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var cardTypeLabel = UIFactory.makeLabel(font: .small, alignment: .center).setCornerRadius(15)
     
-    private lazy var statusLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
     private lazy var cardFeeLabel = UIFactory.makeLabel(font: .micro, alignment: .center)
     private lazy var cardFeeValueLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
     private lazy var cardFeeStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 2, arrangedSubviews: [cardFeeLabel,cardFeeValueLabel])
@@ -22,7 +22,6 @@ class ConfirmPaymentViewController: UIViewController {
     private lazy var spacer : UIView = {
         let view = UIView()
         view.layer.borderWidth = 1
-        view.layer.borderColor = UIColor(Color(hex: "#979797")).cgColor
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -43,6 +42,11 @@ class ConfirmPaymentViewController: UIViewController {
     private lazy var editButton = UIFactory.makeButton(with: .small, backgroundColor: .clear, title: "common_button_edit".localized)
     
     private lazy var addressContainerStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fillProportionally, spacing: 20, arrangedSubviews: [addressImage,addressStack,editButton])
+    private  lazy var addressContainerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     
     private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "Place order for PKR 1,000")
@@ -90,20 +94,20 @@ class ConfirmPaymentViewController: UIViewController {
         contentView.addSubviews([cardImage, cardTypeLabel, cardFeeStack, spacer, payWithContainerStack, addressContainerStack, actionButton])
         backButton = addBackButton(of: .closeCircled)
         editButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
-        cardFeeLabel.text = "Card fee"
-        cardFeeValueLabel.text = "PKR 1,000.00"
-        payWithLabel.text = "Pay with"
-        cardMasksLabel.text = "**** **** **** 1234"
-        addressTitleLabel.text = "12 Street Road 10"
-        addressDescLabel.text = "Suite 102. lahore"
+        cardFeeLabel.text = "screen_yap_confirm_payment_display_text_Card_fee".localized
+      //  cardFeeValueLabel.text = "PKR 1,000.00"
+        payWithLabel.text = "screen_yap_confirm_payment_display_text_pay_with".localized
+       // cardMasksLabel.text = "**** **** **** 1234"
+//        addressTitleLabel.text = "12 Street Road 10"
+//        addressDescLabel.text = "Suite 102. lahore"
        
         addressContainerStack.layer.borderWidth = 1
         addressContainerStack.layer.cornerRadius = 10
-        actionButton.setTitle("Place order for PKR 1,000", for: .normal)
+       // actionButton.setTitle("Place order for PKR 1,000", for: .normal)
     }
 
     func setupResources() {
-        cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
+       // cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
         cardTypeImage.image = UIImage(named: "logo_visa_secondary", in: .yapPakistan)
         addressImage.image = UIImage(named: "location_icon_with_bg", in: .yapPakistan)
     }
@@ -145,6 +149,30 @@ class ConfirmPaymentViewController: UIViewController {
         actionButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         editButton.rx.tap.bind(to: viewModel.inputs.editObserver).disposed(by: rx.disposeBag)
         backButton?.rx.tap.bind(to: viewModel.inputs.closeObserver).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.cardImage.bind(to: cardImage.rx.image).disposed(by: rx.disposeBag)
+        /*viewModel.outputs.isPaid.withUnretained(self)
+            .subscribe(onNext: { `self`, isPaid in
+                self.cardFeeStack.isHidden = isPaid
+                self.payWithContainerStack.isHidden = isPaid
+                
+            })
+            .disposed(by: rx.disposeBag) */
+        viewModel.outputs.isPaid.bind(to: cardFeeStack.rx.isHidden,payWithContainerStack.rx.isHidden).disposed(by: rx.disposeBag)
+        viewModel.outputs.cardFee.bind(to: cardFeeValueLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.cardNumber.bind(to: cardMasksLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.address.withUnretained(self)
+            .subscribe(onNext: { `self`, address in
+                let title = address.address.first ?? ""
+                self.addressTitleLabel.text = title.count > 20 ? "\(String(title.prefix(20)))..." : title
+                if address.address.count > 1 {
+                    let suiet = address.address[1]
+                    //self.addressDescLabel.text = address.address[1]
+                    self.addressDescLabel.text = suiet.count > 20 ? "\(String(suiet.prefix(20)))..." : suiet
+                }
+            })
+            .disposed(by: rx.disposeBag)
+        viewModel.outputs.buttonTitle.bind(to: actionButton.rx.title(for: .normal)).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {

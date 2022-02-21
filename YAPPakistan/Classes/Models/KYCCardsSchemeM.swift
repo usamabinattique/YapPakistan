@@ -29,6 +29,14 @@ public struct KYCCardsSchemeM: Codable {
     public var cardImage: String?
     public var cardBackgroundColor: String?
     
+    public var feeValue: String {
+        return String(format: "PKR %.2f", fee)
+    }
+    
+    public var orderValue: String {
+        return "Place order for PKR \(fee)"
+    }
+    
     enum CodingKeys: String, CodingKey {
         case schemeName
         case schemeCode

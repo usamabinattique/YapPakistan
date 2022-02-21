@@ -35,7 +35,7 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel = ConfirmPaymentViewModel(ConfirmPaymentViewModel.LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000"), paymentGateawayObj: self.paymentGateawayM)
+        let viewModel = ConfirmPaymentViewModel(paymentGateawayObj: self.paymentGateawayM)
         let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
         if self.shouldPresent {
             self.presentConfirmPaymentController(present:viewController)

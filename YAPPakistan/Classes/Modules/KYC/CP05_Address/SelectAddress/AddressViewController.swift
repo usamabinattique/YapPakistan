@@ -318,7 +318,7 @@ class AddressViewController: UIViewController {
 
         let flatNumber = flatTextField.rx.text.asObservable().unwrap()
         let address = addressTextField.rx.text.asObservable().unwrap()
-        Observable.combineLatest(flatNumber, address).map{ $0 + $1 }.bind(to: viewModel.inputs.addressObserver)
+        Observable.combineLatest(flatNumber, address).map{ $0 + $1 }.bind(to: viewModel.inputs.addressObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {
