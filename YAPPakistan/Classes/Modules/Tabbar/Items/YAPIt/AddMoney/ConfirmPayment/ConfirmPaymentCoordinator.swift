@@ -44,28 +44,6 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
         root.pushViewController(viewController, animated: true)
         }
         
-//        viewModel.outputs.result.subscribe(onNext: { [weak self] in
-//          //  self?.tranferSuccess($0.0, $0.1)
-//        }).disposed(by: rx.disposeBag)
-        
-        
-      /*  viewModel.outputs.close.subscribe(onNext: { [weak self] in
-            if self?.shouldPresent ?? false {
-                self?.root.dismiss(animated: true, completion: nil)
-            } else {
-                self?.root.popViewController(animated: true)
-            }
-            self?.result.onNext(ResultType.cancel)
-            self?.result.onCompleted()
-        }).disposed(by: rx.disposeBag) */
-        
-     /*   viewModel.outputs.back.subscribe(onNext: { [weak self] in
-            guard let self = self else { return }
-            if self.shouldPresent { self.localNavigationController.dismiss(animated: true, completion: nil) } else {
-                (self.root.popViewController(animated: true)) }
-            self.result.onNext(.cancel)
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag) */
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
             guard let self = self else { return }

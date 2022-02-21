@@ -12,10 +12,12 @@ public class PaymentGateawayLocalModel: NSObject {
     var beneficiaryId: String?
     var cardDetailObject: CommonWebViewM?
     var cardSchemeObject: KYCCardsSchemeM?
+    var locationData: LocationModel?
     
-    init(beneficiaryId: String? = nil, cardDetailObject: CommonWebViewM? = nil, cardSchemeObject: KYCCardsSchemeM? = nil) {
+    init(beneficiaryId: String? = nil, cardDetailObject: CommonWebViewM? = nil, cardSchemeObject: KYCCardsSchemeM? = nil, locationData: LocationModel? = nil ) {
         self.beneficiaryId = beneficiaryId
         self.cardDetailObject = cardDetailObject
         self.cardSchemeObject = cardSchemeObject
+        self.locationData = locationData
     }
 }

@@ -9,7 +9,7 @@
 import Foundation
 import CoreLocation
 
-struct LocationModel {
+public struct LocationModel {
     var latitude: Double = 0
     var longitude: Double = 0
     var placeId = ""
