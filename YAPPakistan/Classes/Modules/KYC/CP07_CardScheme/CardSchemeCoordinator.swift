@@ -15,11 +15,13 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     private let root: UINavigationController
     private var navigationRoot: UINavigationController!
     private let container: KYCFeatureContainer
+    private var paymentGateawayM: PaymentGateawayLocalModel!
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer) {
+         container: KYCFeatureContainer, paymentGateawayM: PaymentGateawayLocalModel) {
         self.container = container
         self.root = root
+        self.paymentGateawayM = paymentGateawayM
         
         super.init()
         
@@ -35,6 +37,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         cardScheme()
             .subscribe(onNext:{ [weak self] cardSchemeObj in
                 guard let `self` = self else { return }
+                self.paymentGateawayM.cardSchemeObject = cardSchemeObj
                 switch cardSchemeObj.scheme{
                 case .Mastercard:
                     self.cardBenefits(cardSchemeObj)
@@ -77,7 +80,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func cardNamePending(schemeObj: KYCCardsSchemeM) {
-        coordinate(to: container.makeCardNameCoordinator(root: root ,schemeObj: schemeObj))
+        coordinate(to: container.makeCardNameCoordinator(root: root ,schemeObj: schemeObj, paymentGateawayM: self.paymentGateawayM))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:
@@ -96,7 +99,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func addressPending() {
-        coordinate(to: container.makeAddressCoordinator(root: root))
+        coordinate(to: container.makeAddressCoordinator(root: root, paymentGateawayM: self.paymentGateawayM))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:

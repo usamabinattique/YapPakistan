@@ -14,11 +14,13 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
+    private var paymentGateawayM: PaymentGateawayLocalModel!
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer) {
+         container: KYCFeatureContainer, paymentGateawayM: PaymentGateawayLocalModel) {
         self.container = container
         self.root = root
+        self.paymentGateawayM = paymentGateawayM
         
         super.init()
     }
@@ -61,8 +63,9 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
         /// for paypak flow
         viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] location in
             guard let `self` = self else { return }
+            self.paymentGateawayM.locationData = location
             print("next called in address")
-            self.confirmPayment(location: location).subscribe(onNext: { [weak self] value in
+            self.confirmPayment().subscribe(onNext: { [weak self] value in
                 guard let `self` = self else { return }
                 print("confrim called in address")
                 switch value {
@@ -96,8 +99,8 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
         return coordinate(to: KYCResultCoordinator(root: root, container: container))
     }
     
-    func confirmPayment(location: LocationModel) -> Observable<ResultType<Void>> {
-        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true, locationData: location))
+    func confirmPayment() -> Observable<ResultType<Void>> {
+        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true,paymentGateawayM: paymentGateawayM))
     }
     
     func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String) {

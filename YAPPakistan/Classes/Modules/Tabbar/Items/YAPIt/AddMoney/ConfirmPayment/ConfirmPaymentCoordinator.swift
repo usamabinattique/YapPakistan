@@ -19,23 +19,23 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     let repository: Y2YRepositoryType!
     var localNavigationController: UINavigationController!
     private var container: UserSessionContainer!
+    private var paymentGateawayM: PaymentGateawayLocalModel!
     
     private var shouldPresent: Bool = false
     
-    private var locationData: LocationModel?
-    
 //    public override var feature: CoordinatorFeature { .y2yTransfer }
     
-    public init(root: UINavigationController, container: UserSessionContainer,  repository: Y2YRepositoryType, shouldPresent: Bool? = false, locationData: LocationModel?) {
+    public init(root: UINavigationController, container: UserSessionContainer,  repository: Y2YRepositoryType, shouldPresent: Bool? = false, paymentGateawayM: PaymentGateawayLocalModel? = nil) {
         self.root = root
         self.repository = repository
         self.shouldPresent = shouldPresent ?? false
         self.container = container
-        self.locationData = locationData
+        self.paymentGateawayM = paymentGateawayM
+        
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel = ConfirmPaymentViewModel(ConfirmPaymentViewModel.LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000"), location: locationData)
+        let viewModel = ConfirmPaymentViewModel(ConfirmPaymentViewModel.LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000"), paymentGateawayObj: self.paymentGateawayM)
         let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
         if self.shouldPresent {
             self.presentConfirmPaymentController(present:viewController)

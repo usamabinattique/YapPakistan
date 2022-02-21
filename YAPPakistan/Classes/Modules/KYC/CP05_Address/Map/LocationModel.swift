@@ -16,12 +16,8 @@ public struct LocationModel {
     var country: String = ""
     var state: String = ""
     var city: String = ""
-// <<<<<<< Updated upstream
     var address: [String] = []
     var formattAdaddress: String { return address.joined(separator: ", ") }
-// =======
-//   var formattAdaddress: String = ""
-// >>>>>>> Stashed changes
 
     var distanceMeters: Double = 0 // From current location
 
@@ -38,11 +34,7 @@ public struct LocationModel {
          country: String? = nil,
          state: String? = nil,
          city: String? = nil,
-//<<<<<<< Updated upstream
          address: [String] = []) {
-// =======
-//         formattAdaddress: String? = nil) {
-// >>>>>>> Stashed changes
 
         self.latitude = latitude
         self.longitude = longitude

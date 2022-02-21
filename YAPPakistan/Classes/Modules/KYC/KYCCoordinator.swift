@@ -15,10 +15,12 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
+    private var paymentGateawayM: PaymentGateawayLocalModel!
 
     init(container: KYCFeatureContainer, root: UINavigationController) {
         self.container = container
         self.root = root
+        self.paymentGateawayM = PaymentGateawayLocalModel()
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -142,15 +144,11 @@ extension KYCCoordinator {
     }
     
     func cardOrderSchemePending() -> Observable<ResultType<Void>>  {
-        return coordinate(to: container.makeCardSchemeCoordinator(root: root))
+        return coordinate(to: container.makeCardSchemeCoordinator(root: root, paymentGateawayM: self.paymentGateawayM))
     }
 
-//    func cardNamePending() -> Observable<ResultType<Void>> {
-//        return coordinate(to: container.makeCardNameCoordinator(root: root))
-//    }
-
     func addressPending() -> Observable<ResultType<Void>> {
-        return coordinate(to: container.makeAddressCoordinator(root: root))
+        return coordinate(to: container.makeAddressCoordinator(root: root, paymentGateawayM: self.paymentGateawayM))
     }
 
     func kycResult() -> Observable<ResultType<Void>> {

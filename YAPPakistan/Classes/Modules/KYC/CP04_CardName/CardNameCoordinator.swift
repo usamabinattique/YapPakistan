@@ -15,14 +15,14 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
     private let navigation: NavigationContainerViewController
-    private let schemeObj: KYCCardsSchemeM
+    private var paymentGateawayM: PaymentGateawayLocalModel!
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer, schemeObj: KYCCardsSchemeM) {
+         container: KYCFeatureContainer, schemeObj: KYCCardsSchemeM, paymentGateawayM: PaymentGateawayLocalModel) {
         self.container = container
         self.root = root
         self.navigation = container.makeNavigationContainerViewController()
-        self.schemeObj = schemeObj
+        self.paymentGateawayM = paymentGateawayM
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -44,7 +44,8 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
-                self.schemeObj.isPaidScheme ? self.cardDetailWebView() : self.addressPending()
+                guard let cardScheme = self.paymentGateawayM.cardSchemeObject else { return }
+                cardScheme.isPaidScheme ? self.cardDetailWebView() : self.addressPending()
             })
             .disposed(by: rx.disposeBag)
 
@@ -77,7 +78,8 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
             viewController.dismiss(animated: true, completion: nil)
         }).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.confirm.subscribe(onNext: { [weak self] _ in
+        viewModel.outputs.confirm.subscribe(onNext: { [weak self] model in
+            self?.paymentGateawayM.cardDetailObject = model
             viewController.dismiss(animated: true, completion: {
                 self?.addressPending()
             })
@@ -90,7 +92,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func addressPending() {
-        coordinate(to: container.makeAddressCoordinator(root: root))
+        coordinate(to: container.makeAddressCoordinator(root: root, paymentGateawayM: self.paymentGateawayM))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:

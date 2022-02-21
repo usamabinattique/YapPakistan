@@ -112,12 +112,12 @@ class KYCRepository: KYCRepositoryType {
         return Observable.just("Card is saved").materialize()
        
         //TODO: ucomment following line
-       /* return cardsService.saveUserAddress(address: address,
-                                            city: city,
-                                            country: country,
-                                            postCode: postCode,
-                                            latitude: latitude,
-                                            longitude: longitude).materialize() */
+//       return cardsService.saveUserAddress(address: address,
+//                                            city: city,
+//                                            country: country,
+//                                            postCode: postCode,
+//                                            latitude: latitude,
+//                                            longitude: longitude).materialize()
     }
     
     func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>> {

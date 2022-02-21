@@ -154,8 +154,8 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
             .disposed(by: disposeBag)
 
         locationDecoded.elements().bind(to: currentLocationResultSubject).disposed(by: disposeBag)
-       
-        nextSubject
+
+        let saveAddressRequest = nextSubject
             .withLatestFrom(Observable.combineLatest(currentLocationResultSubject,addressObserverSubject))
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .map({ (location, address) -> LocationModel in
