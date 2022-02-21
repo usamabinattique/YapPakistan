@@ -58,13 +58,23 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
 
     // MARK: Properties
     private let disposeBag = DisposeBag()
+    private let paymentGateawayM: PaymentGateawayLocalModel!
 
-    init(_ strings: LocalizedStrings ){
+    init(_ strings: LocalizedStrings, paymentGateawayObj: PaymentGateawayLocalModel? = nil){
+        self.paymentGateawayM = paymentGateawayObj
         localizedStringsSubject.onNext(strings)
         
+        fetchApis()
+    }
+    
+    private func fetchApis() {
         
     }
+    
+    
+}
 
+extension ConfirmPaymentViewModel {
     struct LocalizedStrings {
         let title: String
         let subTitle: String

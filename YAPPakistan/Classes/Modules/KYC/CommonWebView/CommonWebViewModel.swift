@@ -12,14 +12,14 @@ import YAPCore
 import RxSwift
 
 protocol CommonWebViewModelInput {
-    var confirmObserver: AnyObserver<Void> { get }
+    var confirmObserver: AnyObserver<CommonWebViewM> { get }
     var closeObserver: AnyObserver<Void> { get }
     var navigationActionObserver: AnyObserver<WKNavigationAction>{ get }
 }
 
 protocol CommonWebViewModelOutput {
     var close: Observable<Void> { get }
-    var confirm: Observable<Void> { get }
+    var confirm: Observable<CommonWebViewM> { get }
     var error: Observable<String> { get }
     var navigationAction: Observable<WKNavigationAction> { get }
 }
@@ -31,7 +31,7 @@ protocol CommonWebViewModelType {
 
 class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, CommonWebViewModelType {
     
-    private let confirmSubject = PublishSubject<Void>()
+    private let confirmSubject = PublishSubject<CommonWebViewM>()
     private let closeSubject = PublishSubject<Void>()
     private let navigationActionSubject = ReplaySubject<WKNavigationAction>.create(bufferSize: 1)
     private let fetchExternalBeneficiarySubject = PublishSubject<Void>()
@@ -42,13 +42,13 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     private let repository: CardsRepositoryType!
     
     //MARK: Inputs
-    var confirmObserver: AnyObserver<Void> { confirmSubject.asObserver() }
+    var confirmObserver: AnyObserver<CommonWebViewM> { confirmSubject.asObserver() }
     var closeObserver: AnyObserver<Void> { closeSubject.asObserver() }
     var navigationActionObserver: AnyObserver<WKNavigationAction>{ navigationActionSubject.asObserver() }
     
     //MARK: Outputs
     var close: Observable<Void> { closeSubject.asObservable() }
-    var confirm: Observable<Void> { confirmSubject.asObservable() }
+    var confirm: Observable<CommonWebViewM> { confirmSubject.asObservable() }
     var navigationAction: Observable<WKNavigationAction> { navigationActionSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
     
@@ -92,7 +92,7 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
             
             cardsRequest.elements()
                 .subscribe(onNext:{ [weak self] paymentCardObj in
-                    self?.confirmSubject.onNext(())
+                    self?.confirmSubject.onNext(model)
                 })
                 .disposed(by: disposeBag)
             
@@ -102,7 +102,7 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
                 })
                 .disposed(by: disposeBag)
         } else {
-            self.confirmSubject.onNext(())
+            self.confirmSubject.onNext(model)
         }
     }
     

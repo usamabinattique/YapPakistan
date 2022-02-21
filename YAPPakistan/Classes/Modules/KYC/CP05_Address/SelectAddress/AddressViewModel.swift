@@ -155,7 +155,6 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
 
         locationDecoded.elements().bind(to: currentLocationResultSubject).disposed(by: disposeBag)
 
-        // <<<<<<< Updated upstream
         let saveAddressRequest = nextSubject
             .withLatestFrom(Observable.combineLatest(currentLocationResultSubject,addressObserverSubject))
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
@@ -170,24 +169,12 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
             .withUnretained(self)
             .flatMapLatest { `self`, location in
                 return self.kycRepository.saveUserAddress(address: String(location.formattAdaddress.prefix(50)),
-                                                          // =======
-                                                          //        let saveAddressRequest = nextSubject
-                                                          //            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-                                                          //            .withLatestFrom(currentLocationResultSubject)
-                                                          //            .withUnretained(self)
-                                                          //            .flatMapLatest { `self`, location in
-                                                          //                self.kycRepository.saveUserAddress(address: location.formattAdaddress,
-                                                          // >>>>>>> Stashed changes
                                                           city: location.city,
                                                           country: location.country,
                                                           postCode: "05400",
                                                           latitude: "\(location.latitude)",
                                                           longitude: "\(location.longitude)" )
             }.share()
-        
-        saveAddressRequest.elements().subscribe(onNext: { value in
-            print("save addres request \(value)")
-        }).disposed(by: disposeBag)
 
         saveAddressRequest.elements()
             .flatMap({ [unowned self] _ in self.accountProvider.refreshAccount() })

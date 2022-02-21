@@ -14,11 +14,13 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
+    private var paymentGateawayM: PaymentGateawayLocalModel!
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer) {
+         container: KYCFeatureContainer, paymentGateawayM: PaymentGateawayLocalModel) {
         self.container = container
         self.root = root
+        self.paymentGateawayM = paymentGateawayM
         
         super.init()
     }
@@ -84,7 +86,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func confirmPayment() -> Observable<ResultType<Void>> {
-        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true))
+        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true, paymentGateawayM: self.paymentGateawayM))
     }
     
     func goToHome() {
