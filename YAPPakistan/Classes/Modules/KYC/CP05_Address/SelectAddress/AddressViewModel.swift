@@ -30,7 +30,7 @@ protocol AddressViewModelOutput {
     var location: Observable<LocationModel> { get }
     var confirm: Observable<LocationModel> { get }
     var isMapMarker: Observable<Bool> { get }
-    var next: Observable<Void> { get }
+    var next: Observable<LocationModel> { get }
     var back: Observable<Void> { get }
     var city: Observable<Void> { get }
     var citySelected: Observable<String> { get }
@@ -65,7 +65,7 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     var location: Observable<LocationModel> { currentLocationResultSubject.skip(1).asObservable() }
     var confirm: Observable<LocationModel> { confirmLocationResultSubject.asObservable() }
     var isMapMarker: Observable<Bool> { isMarkerSubject.asObservable() }
-    var next: Observable<Void> { nextResultSubject.asObservable() }
+    var next: Observable<LocationModel> { nextResultSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
     var city: Observable<Void> { citySubject.asObservable() }
     var citySelected: Observable<String> { citySelectSubject.asObserver() }
@@ -76,7 +76,7 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     // MARK: Subjects
     private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
     private var nextSubject = PublishSubject<Void>()
-    private var nextResultSubject = PublishSubject<Void>()
+    private var nextResultSubject = PublishSubject<LocationModel>()
     private var backObserSubject = PublishSubject<Void>()
     private var backSubject = PublishSubject<Void>()
     private var citySubject = PublishSubject<Void>()
@@ -154,9 +154,8 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
             .disposed(by: disposeBag)
 
         locationDecoded.elements().bind(to: currentLocationResultSubject).disposed(by: disposeBag)
-
-        // <<<<<<< Updated upstream
-        let saveAddressRequest = nextSubject
+       
+        nextSubject
             .withLatestFrom(Observable.combineLatest(currentLocationResultSubject,addressObserverSubject))
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .map({ (location, address) -> LocationModel in
@@ -166,40 +165,7 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
                     location.address.append(address)
                 }
                 return location
-            })
-            .withUnretained(self)
-            .flatMapLatest { `self`, location in
-                return self.kycRepository.saveUserAddress(address: String(location.formattAdaddress.prefix(50)),
-                                                          // =======
-                                                          //        let saveAddressRequest = nextSubject
-                                                          //            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-                                                          //            .withLatestFrom(currentLocationResultSubject)
-                                                          //            .withUnretained(self)
-                                                          //            .flatMapLatest { `self`, location in
-                                                          //                self.kycRepository.saveUserAddress(address: location.formattAdaddress,
-                                                          // >>>>>>> Stashed changes
-                                                          city: location.city,
-                                                          country: location.country,
-                                                          postCode: "05400",
-                                                          latitude: "\(location.latitude)",
-                                                          longitude: "\(location.longitude)" )
-            }.share()
-        
-        saveAddressRequest.elements().subscribe(onNext: { value in
-            print("save addres request \(value)")
-        }).disposed(by: disposeBag)
-
-        saveAddressRequest.elements()
-            .flatMap({ [unowned self] _ in self.accountProvider.refreshAccount() })
-            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
-            .bind(to: nextResultSubject)
-            .disposed(by: disposeBag)
-
-        saveAddressRequest.errors()
-            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
-            .map({ $0.localizedDescription })
-            .bind(to: errorSubject )
-            .disposed(by: disposeBag)
+            }).bind(to: nextResultSubject).disposed(by: disposeBag)
     }
 
     struct LanguageStrings {

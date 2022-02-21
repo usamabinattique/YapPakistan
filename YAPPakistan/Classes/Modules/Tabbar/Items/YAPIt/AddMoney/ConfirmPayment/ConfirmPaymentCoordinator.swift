@@ -22,18 +22,20 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     
     private var shouldPresent: Bool = false
     
+    private var locationData: LocationModel?
+    
 //    public override var feature: CoordinatorFeature { .y2yTransfer }
     
-    public init(root: UINavigationController, container: UserSessionContainer,  repository: Y2YRepositoryType, shouldPresent: Bool? = false) {
+    public init(root: UINavigationController, container: UserSessionContainer,  repository: Y2YRepositoryType, shouldPresent: Bool? = false, locationData: LocationModel?) {
         self.root = root
         self.repository = repository
         self.shouldPresent = shouldPresent ?? false
         self.container = container
-        
+        self.locationData = locationData
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel = ConfirmPaymentViewModel(ConfirmPaymentViewModel.LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000"))
+        let viewModel = ConfirmPaymentViewModel(ConfirmPaymentViewModel.LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000"), location: locationData)
         let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
         if self.shouldPresent {
             self.presentConfirmPaymentController(present:viewController)
@@ -42,28 +44,6 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
         root.pushViewController(viewController, animated: true)
         }
         
-//        viewModel.outputs.result.subscribe(onNext: { [weak self] in
-//          //  self?.tranferSuccess($0.0, $0.1)
-//        }).disposed(by: rx.disposeBag)
-        
-        
-      /*  viewModel.outputs.close.subscribe(onNext: { [weak self] in
-            if self?.shouldPresent ?? false {
-                self?.root.dismiss(animated: true, completion: nil)
-            } else {
-                self?.root.popViewController(animated: true)
-            }
-            self?.result.onNext(ResultType.cancel)
-            self?.result.onCompleted()
-        }).disposed(by: rx.disposeBag) */
-        
-     /*   viewModel.outputs.back.subscribe(onNext: { [weak self] in
-            guard let self = self else { return }
-            if self.shouldPresent { self.localNavigationController.dismiss(animated: true, completion: nil) } else {
-                (self.root.popViewController(animated: true)) }
-            self.result.onNext(.cancel)
-            self.result.onCompleted()
-        }).disposed(by: rx.disposeBag) */
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
             guard let self = self else { return }

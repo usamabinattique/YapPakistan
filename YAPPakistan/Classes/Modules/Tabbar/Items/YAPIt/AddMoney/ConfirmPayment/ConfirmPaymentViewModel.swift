@@ -59,7 +59,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     // MARK: Properties
     private let disposeBag = DisposeBag()
 
-    init(_ strings: LocalizedStrings ){
+    init(_ strings: LocalizedStrings, location: LocationModel? ){
         localizedStringsSubject.onNext(strings)
         
         //TODO: implemented api

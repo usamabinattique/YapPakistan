@@ -59,10 +59,10 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
         
         //TODO: connect flow properly
         /// for paypak flow
-        viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
+        viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] location in
             guard let `self` = self else { return }
             print("next called in address")
-            self.confirmPayment().subscribe(onNext: { [weak self] value in
+            self.confirmPayment(location: location).subscribe(onNext: { [weak self] value in
                 guard let `self` = self else { return }
                 print("confrim called in address")
                 switch value {
@@ -96,8 +96,8 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
         return coordinate(to: KYCResultCoordinator(root: root, container: container))
     }
     
-    func confirmPayment() -> Observable<ResultType<Void>> {
-        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true))
+    func confirmPayment(location: LocationModel) -> Observable<ResultType<Void>> {
+        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true, locationData: location))
     }
     
     func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String) {
