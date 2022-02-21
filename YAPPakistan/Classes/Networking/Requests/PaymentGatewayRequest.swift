@@ -13,6 +13,7 @@ struct PaymentGatewayRequest: Codable {
 }
 
 struct PaymentGatewayAmountRequest: Codable {
+    let id: String
     let amount: String
     let currency: String
 }

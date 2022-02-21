@@ -77,7 +77,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
 
     // MARK: Properties
     private let disposeBag = DisposeBag()
-    private let paymentGateawayM: PaymentGateawayLocalModel!
+    private let paymentGatewayM: PaymentGatewayLocalModel!
 
     init(paymentGateawayObj: PaymentGateawayLocalModel? = nil){
         self.paymentGateawayM = paymentGateawayObj

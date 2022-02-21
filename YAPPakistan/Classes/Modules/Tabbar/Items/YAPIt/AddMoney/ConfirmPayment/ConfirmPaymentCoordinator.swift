@@ -19,18 +19,18 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     let repository: Y2YRepositoryType!
     var localNavigationController: UINavigationController!
     private var container: UserSessionContainer!
-    private var paymentGateawayM: PaymentGateawayLocalModel!
+    private var paymentGatewayM: PaymentGatewayLocalModel!
     
     private var shouldPresent: Bool = false
     
 //    public override var feature: CoordinatorFeature { .y2yTransfer }
     
-    public init(root: UINavigationController, container: UserSessionContainer,  repository: Y2YRepositoryType, shouldPresent: Bool? = false, paymentGateawayM: PaymentGateawayLocalModel? = nil) {
+    public init(root: UINavigationController, container: UserSessionContainer,  repository: Y2YRepositoryType, shouldPresent: Bool? = false, paymentGatewayM: PaymentGatewayLocalModel? = nil) {
         self.root = root
         self.repository = repository
         self.shouldPresent = shouldPresent ?? false
         self.container = container
-        self.paymentGateawayM = paymentGateawayM
+        self.paymentGatewayM = paymentGatewayM
         
     }
     
