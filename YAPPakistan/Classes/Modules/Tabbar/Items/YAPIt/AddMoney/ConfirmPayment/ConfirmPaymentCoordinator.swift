@@ -68,14 +68,28 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag) */
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
-               guard let self = self else { return }
-               if self.shouldPresent { self.localNavigationController.dismiss(animated: true, completion: nil) } else {
-                   (self.root.popViewController(animated: true)) }
-               self.result.onNext(.cancel)
-               self.result.onCompleted()
-           }).disposed(by: rx.disposeBag)
+            guard let self = self else { return }
+            self.finishCoordinator(.cancel)
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.edit.subscribe(onNext: { [weak self] in
+            guard let self = self else { return }
+            self.finishCoordinator(.cancel)
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            self.finishCoordinator(.success(()))
+        }).disposed(by: rx.disposeBag)
         
         return result.asObservable()
+    }
+    
+    private func finishCoordinator(_ type: ResultType<Void>) {
+        if self.shouldPresent { self.localNavigationController.dismiss(animated: true, completion: nil) } else {
+            (self.root.popViewController(animated: true)) }
+        self.result.onNext(type)
+        self.result.onCompleted()
     }
     
     func presentConfirmPaymentController(present: UIViewController)  {
