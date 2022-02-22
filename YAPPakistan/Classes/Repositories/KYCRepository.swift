@@ -28,10 +28,10 @@ protocol KYCRepositoryType {
     func uploadSelfie(_ selfie: (data: Data, format: String)) -> Observable<Event<[String: String?]>>
     func setCardName(cardName: String) -> Observable<Event<String?>>
     func getCities() -> Observable<Event<[Cities]>>
-    func saveUserAddress(address: String,
+    func saveUserAddress(addressOne: String,
+                         addressTwo: String,
                          city: String,
                          country: String,
-                         postCode: String,
                          latitude: String,
                          longitude: String ) -> Observable<Event<Account>>
     
@@ -101,10 +101,10 @@ class KYCRepository: KYCRepositoryType {
         return customersService.getCities().materialize()
     }
 
-    func saveUserAddress(address: String,
+    func saveUserAddress(addressOne: String,
+                         addressTwo: String,
                          city: String,
                          country: String,
-                         postCode: String,
                          latitude: String,
                          longitude: String ) -> Observable<Event<Account>> {
         
@@ -112,10 +112,10 @@ class KYCRepository: KYCRepositoryType {
 //        return Observable.just("Card is saved").materialize()
        
         //TODO: ucomment following line
-       return cardsService.saveUserAddress(address: address,
+       return cardsService.saveUserAddress(addressOne: addressOne,
+                                           addressTwo: addressTwo,
                                             city: city,
                                             country: country,
-                                            postCode: postCode,
                                             latitude: latitude,
                                             longitude: longitude).materialize()
     }

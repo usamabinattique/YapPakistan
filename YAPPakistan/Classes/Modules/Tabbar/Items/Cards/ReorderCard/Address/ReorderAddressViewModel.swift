@@ -160,10 +160,10 @@ class ReorderAddressViewModel: ReorderAddressViewModelType, ReorderAddressViewMo
             })
             .withUnretained(self)
             .flatMapLatest { `self`, location in
-                return self.kycRepository.saveUserAddress(address: location.formattAdaddress,
+                return self.kycRepository.saveUserAddress(addressOne: location.formattAdaddress,
+                                                          addressTwo: location.formattAdaddress,
                                                           city: location.city,
                                                           country: location.country,
-                                                          postCode: "05400",
                                                           latitude: "\(location.latitude)",
                                                           longitude: "\(location.longitude)" )
             }.share()

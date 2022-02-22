@@ -136,7 +136,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         // second checkoutSession api
         let fetchCheckoutSessionRequest = transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
         
-        let paymentGatewayCheckoutSessionRequest =  kycRepository.saveUserAddress(address: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude)).skip(1)//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
+        let paymentGatewayCheckoutSessionRequest =  kycRepository.saveUserAddress(addressOne: String(locationObj.formattAdaddress.prefix(50)), addressTwo: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, latitude: String(locationObj.latitude), longitude: String(locationObj.longitude)).skip(1)//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .do(onNext: { _ in
                 print("save user address called")
                 YAPProgressHud.showProgressHud()

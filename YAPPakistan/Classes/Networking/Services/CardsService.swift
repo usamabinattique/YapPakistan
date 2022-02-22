@@ -9,12 +9,12 @@ import Foundation
 import RxSwift
 
 protocol CardsServiceType {
-    func saveUserAddress<T: Codable>(address: String,
-                                     city: String,
-                                     country: String,
-                                     postCode: String,
-                                     latitude: String,
-                                     longitude: String ) -> Observable<T>
+    func saveUserAddress<T: Codable>(addressOne: String,
+                                            addressTwo: String,
+                                            city: String,
+                                            country: String,
+                                            latitude: String,
+                                            longitude: String ) -> Observable<T>
     func getCards<T: Codable>() -> Observable<T>
     func getCardDetail<T: Codable>(cardSerialNumber: String) -> Observable<T>
     func setPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T>
@@ -46,19 +46,18 @@ protocol CardsServiceType {
 
 public class CardsService: BaseService, CardsServiceType {
 
-    public func saveUserAddress<T: Codable>(address: String,
+    public func saveUserAddress<T: Codable>(addressOne: String,
+                                            addressTwo: String,
                                             city: String,
                                             country: String,
-                                            postCode: String,
                                             latitude: String,
-                                            longitude: String ) -> Observable<T> {
+                                            longitude: String) -> Observable<T> {
 
         let body: [String: String] = [
-            "address1": address,
-            "address2": "0",
+            "address1": addressOne,
+            "address2": addressTwo,
             "city": city,
             "country": country,
-            "postCode": postCode,
             "latitude": latitude,
             "longitude": longitude
         ]

@@ -16,6 +16,8 @@ public struct LocationModel {
     var country: String = ""
     var state: String = ""
     var city: String = ""
+    var addressOne: String = ""
+    var addressTwo: String = ""
     var address: [String] = []
     var formattAdaddress: String { return address.joined(separator: ", ") }
 
