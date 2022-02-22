@@ -13,7 +13,7 @@ struct PaymentGatewayRequest: Codable {
 }
 
 struct PaymentGatewayAmountRequest: Codable {
-    let id: String
+    var id: String? = nil
     let amount: String
     let currency: String
 }

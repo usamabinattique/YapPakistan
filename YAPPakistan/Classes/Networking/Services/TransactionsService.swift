@@ -23,7 +23,7 @@ protocol TransactionsServiceType {
     func getFee<T: Codable>(productCode: String) -> Observable<T>
     func getTransactionProductLimit<T: Codable>(transactionProductCode: String) -> Observable<T>
     func getThresholdLimits<T: Codable>() -> Observable<T>
-    func createCheckoutSession<T: Codable>(orderId: String, amount: String, currency: String, sessionId: String) -> Observable<T>
+    func createCheckoutSession<T: Codable>(amount: String, currency: String, sessionId: String) -> Observable<T>
     func check3DSEnrollment<T: Codable>(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T>
     func retrieveACSResults<T: Codable>(threeDSecureID: String) -> Observable<T>
     func paymentGatewayTopup<T: Codable>(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<T>
@@ -130,14 +130,14 @@ class TransactionsService: BaseService, TransactionsServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func createCheckoutSession<T: Codable>(orderId: String, amount: String, currency: String, sessionId: String) -> Observable<T> {
-        let body = PaymentGatewayRequest(order: PaymentGatewayAmountRequest(id: orderId, amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: "SESSION0002255503807J8363138J24"))
+    public func createCheckoutSession<T: Codable>(amount: String, currency: String, sessionId: String) -> Observable<T> {
+        let body = PaymentGatewayRequest(order: PaymentGatewayAmountRequest(amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: sessionId))
         let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/mastercard/create-checkout-session", body: body ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func check3DSEnrollment<T: Codable>(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T> {
-        let body = PaymentGateway3DSEnrollmentRequest(beneficiaryID: beneficiaryID, order: PaymentGatewayAmountRequest(id: orderId, amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: sessionID))
+        let body = PaymentGateway3DSEnrollmentRequest(beneficiaryID: beneficiaryID == 0 ? nil : beneficiaryID, order: PaymentGatewayAmountRequest(id: orderId, amount: amount, currency: currency), session: sessionID.count > 0 ? PaymentGatewaySessionRequest(id: sessionID) : nil)
         let route = APIEndpoint(.put, apiConfig.transactionsURL, "/api/mastercard/check-3ds-enrollment", body: body ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
