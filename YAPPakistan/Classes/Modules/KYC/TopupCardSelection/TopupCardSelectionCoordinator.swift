@@ -26,13 +26,15 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
     private var container: KYCFeatureContainer
     private let repository: Y2YRepositoryType
     private let cardsRepository: CardsRepositoryType
+    private let paymentGatewayM: PaymentGatewayLocalModel
     
-    init(root: UINavigationController, container: KYCFeatureContainer, successButtonTitle: String? = nil,  repository: Y2YRepositoryType, cardsRepository: CardsRepositoryType) {
+    init(root: UINavigationController, container: KYCFeatureContainer, successButtonTitle: String? = nil,  repository: Y2YRepositoryType, cardsRepository: CardsRepositoryType, paymentGatewayM: PaymentGatewayLocalModel) {
         self.root = root
         self.successButtonTitle = successButtonTitle
         self.container = container
         self.repository = repository
         self.cardsRepository = cardsRepository
+        self.paymentGatewayM = paymentGatewayM
     }
     
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -54,7 +56,9 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.beneficiarySelected.withUnretained(self).subscribe(onNext: { `self` ,externalPaymentCard in
-            
+            print("in topupcard selectionCoordinator")
+            self.paymentGatewayM.beneficary = externalPaymentCard
+            self.addressPending()
         }).disposed(by: rx.disposeBag)
 
         
@@ -95,6 +99,24 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         navigationRoot.navigationBar.isHidden = false
         navigationRoot.pushViewController(viewController, completion: nil)
         self.root.present(navigationRoot, animated: true, completion: nil)
+    }
+    
+    private func addressPending() {
+        root.setNavigationBarHidden(true, animated: false)
+        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
+            .subscribe(onNext: { [weak self] result in
+                self?.root.setNavigationBarHidden(false, animated: false)
+                switch result {
+                case .success:
+                    print("go next from address")
+                case .cancel:
+                    //                    self?.navigationRoot.popToRootViewController(animated: true)
+                    print("go back from address")
+                    
+                    break
+                }
+            }).disposed(by: rx.disposeBag)
+        
     }
 }
 
