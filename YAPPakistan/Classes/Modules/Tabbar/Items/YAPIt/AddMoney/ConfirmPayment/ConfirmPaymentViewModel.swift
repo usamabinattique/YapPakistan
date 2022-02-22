@@ -128,37 +128,106 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
                 YAPProgressHud.showProgressHud()
             })
        
-        
-//        // first call this api
-//        saveAddressRequest.elements().withUnretained(self).subscribe(onNext: { `self`, result in
-//
-//        }).disposed(by: disposeBag)
-//
-//        saveAddressRequest.errors().withUnretained(self).subscribe(onNext: { `self`, error in
-//
-//        }).disposed(by: disposeBag)
         guard let cardObject = paymentGatewayM.cardDetailObject else { return }
+        
+      /*  // second checkoutSession api
+        let fetchCheckoutSessionRequest = transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
+        
+       let paymentGateway3DSEnrollmentRequest =  saveAddressRequest.withUnretained(self).flatMap { `self` , eventAccount -> Observable<PaymentGateway3DSEnrollmentResult> in
+            
+            switch eventAccount {
+            case .next(let account):
+                return fetchCheckoutSessionRequest.withUnretained(self).flatMapLatest { `self`,  event ->
+                    Observable<PaymentGateway3DSEnrollmentResult> in
+                   
+                    switch event {
+                    case .next(let paymentGatewayCheckoutSession):
+                        let fetch3DSEnrollmentRequest = self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
+                        return fetch3DSEnrollmentRequest.elements()
+                    case .error(let error):
+                        print("error \(error)")
+                    default:
+                        break
+                    }
+                    return Observable.just(PaymentGateway3DSEnrollmentResult(html: "", formattedHTML: "", threeDSecureId: ""))
+                }
+            case .error(let error):
+                //TODO: Add error subject
+                print("error is \(error.localizedDescription)")
+            default:
+                break
+            }
+            return Observable.just(PaymentGateway3DSEnrollmentResult(html: "", formattedHTML: "", threeDSecureId: ""))
+        }.share()
+        
+        
+        paymentGateway3DSEnrollmentRequest.withUnretained(self).subscribe(onNext: { `self`, paymentGateway3DSEnrollmentResult in
+            YAPProgressHud.hideProgressHud()
+            guard paymentGateway3DSEnrollmentResult.threeDSecureId != "" else { return }
+           
+            //TODO: call topup api here
+            
+        }).disposed(by: disposeBag) */
         
         // second checkoutSession api
         let fetchCheckoutSessionRequest = transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
         
-        saveAddressRequest.withUnretained(self).flatMap { `self` , eventAccount -> Observable<PaymentGateway3DSEnrollmentResult> in
-            return fetchCheckoutSessionRequest.withUnretained(self).flatMapLatest { `self`,  event ->
-                Observable<PaymentGateway3DSEnrollmentResult> in
-                //guard let `self` else = self else { return }
-                if let paymentGatewayCheckoutSession = event.element {
-                    let fetch3DSEnrollmentRequest = self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
+       let paymentGatewayCheckoutSessionRequest =  saveAddressRequest.withUnretained(self).flatMap { `self` , eventAccount -> Observable<PaymentGatewayCheckoutSession> in
+            
+            switch eventAccount {
+            case .next(let account):
+                return fetchCheckoutSessionRequest.elements()
+            case .error(let error):
+                //TODO: Add error subject
+                print("error is \(error.localizedDescription)")
+            default:
+                break
+            }
+           return Observable.just(PaymentGatewayCheckoutSession(beneficiaryId: "", apiOperation: "", interaction: "", error: "", securityCode: "", threeDSecureId: ""))
+        }.share()
+        
+        let fetch3dsEnrollmentRequest = paymentGatewayCheckoutSessionRequest.withUnretained(self).flatMapLatest { `self`, paymentGatewayCheckoutSession -> Observable<PaymentGateway3DSEnrollmentResult> in
+            
+            let fetch3DSEnrollmentRequest = self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
+            
+            return fetch3DSEnrollmentRequest.withUnretained(self).flatMapLatest { `self`, event -> Observable<PaymentGateway3DSEnrollmentResult> in
+                
+                
+                switch event {
+                case .next(_):
                     return fetch3DSEnrollmentRequest.elements()
-                } else {
-                    return Observable.just(PaymentGateway3DSEnrollmentResult(html: "", formattedHTML: "", threeDSecureId: ""))
+                case .error(let error):
+                    print("error \(error)")
+                default:
+                    break
                 }
+                return Observable.just(PaymentGateway3DSEnrollmentResult(html: "", formattedHTML: "", threeDSecureId: ""))
+            }
         }
-        }.withUnretained(self).subscribe(onNext: { `self`, paymentGateway3DSEnrollmentResult in
-            guard paymentGateway3DSEnrollmentResult.threeDSecureId != "" else { return }
+        
+        Observable.zip(paymentGatewayCheckoutSessionRequest,fetch3dsEnrollmentRequest) .flatMapLatest { [weak self] (paymentGatewayCheckoutSession, threeDSEnrollment) -> Observable<Int?>  in
+            
+            guard let `self` = self else { return Observable.just(nil) }
+            
+            let paymentGatewayTopupRequest = self.transactionRepository.paymentGatewayTopup(orderID: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", securityCode: paymentGatewayCheckoutSession.securityCode,threeDSecureID: threeDSEnrollment.threeDSecureId)
+            
+            return paymentGatewayTopupRequest.withUnretained(self).flatMapLatest { `self`, event -> Observable<Int?> in
+                switch event {
+                case .next(_):
+                    return paymentGatewayTopupRequest.elements()
+                case .error(let error):
+                    print("error \(error)")
+                default:
+                    break
+                }
+                return Observable.just(nil)
+            }
+        }.withUnretained(self).subscribe(onNext: { `self`, topupResponse in
             YAPProgressHud.hideProgressHud()
-            
-            
+            //TODO: add next step here
+            print("topup response")
         }).disposed(by: disposeBag)
+        
     }
     
     

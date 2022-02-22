@@ -11,6 +11,7 @@ struct PaymentGateway3DSEnrollmentResult: Codable {
     let html: String
     let formattedHTML: String
     let threeDSecureId: String
+    var topupResponse: Int?
 }
 
 extension PaymentGateway3DSEnrollmentResult {
