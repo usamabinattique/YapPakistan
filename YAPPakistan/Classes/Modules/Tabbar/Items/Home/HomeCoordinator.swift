@@ -144,7 +144,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 // MARK: Helpers
 extension HomeCoodinator {
     fileprivate func initializeRootNavigation() {
-        navigationRoot = UINavigationController()
+        navigationRoot =  UINavigationControllerFactory.createAppThemedNavigationController(themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular) //UINavigationController()
         navigationRoot.interactivePopGestureRecognizer?.isEnabled = false
         navigationRoot.navigationBar.isTranslucent = true
         navigationRoot.navigationBar.setBackgroundImage(UIImage(), for: .default)
