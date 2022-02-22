@@ -123,7 +123,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         
         guard let locationObj = self.paymentGatewayM.locationData else { return }
         
-        let saveAddressRequest = kycRepository.saveUserAddress(address: locationObj.formattAdaddress, city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
+        let saveAddressRequest = kycRepository.saveUserAddress(address: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .do(onNext: { _ in
                 YAPProgressHud.showProgressHud()
             })
