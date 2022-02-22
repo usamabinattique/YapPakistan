@@ -27,7 +27,6 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        
         let progressRoot = container.makeKYCProgressViewController()
         root.pushViewController(progressRoot)
         

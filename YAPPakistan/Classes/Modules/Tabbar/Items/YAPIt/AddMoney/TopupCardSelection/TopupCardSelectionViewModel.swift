@@ -189,69 +189,24 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
         
         selectSubject.withLatestFrom(currentIndex).filter { [unowned self] in $0 < self.beneficiaries.count }.map { [unowned self] in self.beneficiaries[$0] }.bind(to: beneficiarySelectedSubject).disposed(by: disposeBag)
         
-     /*   let itemSelected = itemSelectedSubject
-            .withLatestFrom(Observable.combineLatest(itemSelectedSubject.map{ $0.row }, cellViewModelsSubject)) //topupPaymentCardCellViewModelsSubject))
-            .filter{ $0.0 <= $0.1.count }
-            .map{ $0.1[$0.0] }
-            .share()
-        
-        itemSelected
-            .filter{ $0 is AddTopupPCCVCellViewModelType }
-            .do(onNext:{_ in /* AppAnalytics.shared.logEvent(TopUpEvent.addCard()) */ })
-            .map{ _ in }
-            .bind(to: addNewCardSubject)
-            .disposed(by: disposeBag) */
-        
-      /*  itemSelectedSubject
-            .filter{ [weak self] in $0.row == (self?.beneficiaries.count ?? 0) - 1 }
-            .map{ _ in }
-            .bind(to: addNewCardSubject)
-            .disposed(by: disposeBag) */
-        
         Observable.combineLatest(itemSelectedSubject,cellViewModelsSubject).withUnretained(self).subscribe(onNext: { `self` , _arg0 in
             let (index, sectionModel) = _arg0
+            var isAddCardModel = false
             for model in sectionModel {
                 if (model.items.count - 1) == index.row {
+                    isAddCardModel = true
                     self.addNewCardSubject.onNext(())
+                }
+                if !isAddCardModel {
+                    if self.beneficiaries.count == (model.items.count - 1) && (index.row != model.items.count - 1 ) {
+                        let selectedBenefeciary = self.beneficiaries[index.row]
+                        self.beneficiarySelectedSubject.onNext(selectedBenefeciary)
+                    }
                 }
                 break
             }
         }).disposed(by: disposeBag)
         
-        //TODO: handle this for addCard or select card flow
-        
-        beneficiarySelectedSubject.subscribe(onNext: { card in
-            print("item selected \(card)")
-        }).disposed(by: disposeBag)
-
-        
-     /*   itemSelected.subscribe(onNext: { model in
-            print("item selected")
-//            let vm =  model.items.filter{ $0 is TopupPCCVCellViewModelType }
-//            vm.compactMap { reusableCollectionViewCellViewModelType -> ExternalPaymentCard in
-//                return (reusableCollectionViewCellViewModelType as? TopupPCCVCellViewModel)?.paymentBeneficiary
-//            }
-        }).disposed(by: disposeBag) */
-
-        /*
-        itemSelected.map{ $0.items }
-            
-            .filter{ $0 is TopupPCCVCellViewModelType }
-            .map{ $0.map { reusableCollectionViewCellViewModelType -> ExternalPaymentCard in
-                <#code#>
-            }}
-            .compactMap{ ($0 as? TopupPCCVCellViewModel)?.paymentBeneficiary  }.unwrap()
-            //.map{ ($0 as? TopupPCCVCellViewModel)?.paymentBeneficiary }.unwrap()
-            .bind(to: beneficiarySelectedSubject)
-            .disposed(by: disposeBag) */
-        
-//        let type =  itemSelected
-//            .filter{ $0 is TopupPCCVCellViewModelType }
-//        type.map {
-//            $0.items.first
-//        }.map{ ($0 as? TopupPCCVCellViewModel)?.paymentBeneficiary }.unwrap()
-//            .bind(to: beneficiarySelectedSubject)
-//            .disposed(by: disposeBag)
 
     }
 }
