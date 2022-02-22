@@ -95,15 +95,10 @@ class ConfirmPaymentViewController: UIViewController {
         backButton = addBackButton(of: .closeCircled)
         editButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
         cardFeeLabel.text = "screen_yap_confirm_payment_display_text_Card_fee".localized
-      //  cardFeeValueLabel.text = "PKR 1,000.00"
         payWithLabel.text = "screen_yap_confirm_payment_display_text_pay_with".localized
-       // cardMasksLabel.text = "**** **** **** 1234"
-//        addressTitleLabel.text = "12 Street Road 10"
-//        addressDescLabel.text = "Suite 102. lahore"
        
         addressContainerStack.layer.borderWidth = 1
         addressContainerStack.layer.cornerRadius = 10
-       // actionButton.setTitle("Place order for PKR 1,000", for: .normal)
     }
 
     func setupResources() {
@@ -136,8 +131,6 @@ class ConfirmPaymentViewController: UIViewController {
             .subscribe(onNext: { `self`, strings in
                 self.title = strings.title
                 self.cardTypeLabel.text = strings.subTitle
-              //  self.statusView.strings = [strings.status.order, strings.status.build, strings.status.ship]
-               // self.actionButton.setTitle(strings.action, for: .normal)
             })
             .disposed(by: rx.disposeBag)
     }
@@ -173,6 +166,7 @@ class ConfirmPaymentViewController: UIViewController {
             })
             .disposed(by: rx.disposeBag)
         viewModel.outputs.buttonTitle.bind(to: actionButton.rx.title(for: .normal)).disposed(by: rx.disposeBag)
+        actionButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {
