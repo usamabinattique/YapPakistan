@@ -10,6 +10,9 @@ import Foundation
 import RxSwift
 import YAPCore
 import CardScanner
+import YAPCore
+import YAPComponents
+import RxTheme
 
 class KYCCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
@@ -19,6 +22,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 
     init(container: KYCFeatureContainer, root: UINavigationController) {
         self.container = container
+       
         self.root = root
         self.paymentGatewayM = PaymentGatewayLocalModel()
     }
@@ -55,7 +59,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         // CP06 Card Scheme External Card
         let cp6 = viewController.viewModel.outputs.next
             .filter({ $0 == .cardSchemeExternalCardPending }).withUnretained(self)
-            .flatMap({ `self`, _ in self.cardOrderSchemePending().materialize() })
+            .flatMap({ `self`, _ in self.carTopupCardSelection().materialize() })
         // CP07 address
         let cp7 = viewController.viewModel.outputs.next
             .filter({ $0 == .addressPending }).withUnretained(self)
@@ -145,6 +149,10 @@ extension KYCCoordinator {
     
     func cardOrderSchemePending() -> Observable<ResultType<Void>>  {
         return coordinate(to: container.makeCardSchemeCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
+    }
+    
+    func carTopupCardSelection() -> Observable<ResultType<Void>>  {
+        return coordinate(to: container.makeTopupCardSelectionCoordinator(root: root, paymentGatewayM: paymentGatewayM))
     }
 
     func addressPending() -> Observable<ResultType<Void>> {

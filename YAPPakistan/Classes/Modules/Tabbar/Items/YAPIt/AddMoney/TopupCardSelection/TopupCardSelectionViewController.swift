@@ -79,11 +79,12 @@ class TopupCardSelectionViewController: UIViewController {
         bind(viewModel: viewModel)
     }
     
+    
+    
     // MARK: Actions
     
     @objc
     private func closeAction() {
-        navigationController?.popViewController(animated: true)
         viewModel.inputs.backObserver.onNext(())
     }
     

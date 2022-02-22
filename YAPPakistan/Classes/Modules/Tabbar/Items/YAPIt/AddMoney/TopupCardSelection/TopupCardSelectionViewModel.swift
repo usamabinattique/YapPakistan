@@ -32,6 +32,7 @@ protocol TopupCardSelectionViewModelOutputs {
     var addCardEnabled: Observable<Bool> { get }
     var error: Observable<String> { get }
     var cellViewModels: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { get }
+    var back: Observable<Void> { get }
 }
 
 protocol TopupCardSelectionViewModelType {
@@ -81,6 +82,7 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
     var addCardEnabled: Observable<Bool> { return addCardEnabledSubject.asObservable() }
     var error: Observable<String> { return errorSubject.asObservable() }
     public var cellViewModels: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { cellViewModelsSubject.asObservable() }
+    var back: Observable<Void> { backSubject.asObservable() }
 
     private let disposeBag = DisposeBag()
     private let repository: Y2YRepositoryType
@@ -201,11 +203,31 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
             .disposed(by: disposeBag)
         
         //TODO: handle this for addCard or select card flow
-//        itemSelected
-//            .filter{ $0 is TopupPCCVCellViewModelType }
-//            .map{ ($0 as? TopupPCCVCellViewModel)?.paymentBeneficiary }.unwrap()
-//            .bind(to: beneficiarySelectedSubject)
-//            .disposed(by: disposeBag)
+        
+        beneficiarySelectedSubject.subscribe(onNext: { card in
+            print("item selected \(card)")
+        }).disposed(by: disposeBag)
+
+        
+        itemSelected.subscribe(onNext: { model in
+            print("item selected")
+//            let vm =  model.items.filter{ $0 is TopupPCCVCellViewModelType }
+//            vm.compactMap { reusableCollectionViewCellViewModelType -> ExternalPaymentCard in
+//                return (reusableCollectionViewCellViewModelType as? TopupPCCVCellViewModel)?.paymentBeneficiary
+//            }
+        }).disposed(by: disposeBag)
+
+        /*
+        itemSelected.map{ $0.items }
+            
+            .filter{ $0 is TopupPCCVCellViewModelType }
+            .map{ $0.map { reusableCollectionViewCellViewModelType -> ExternalPaymentCard in
+                <#code#>
+            }}
+            .compactMap{ ($0 as? TopupPCCVCellViewModel)?.paymentBeneficiary  }.unwrap()
+            //.map{ ($0 as? TopupPCCVCellViewModel)?.paymentBeneficiary }.unwrap()
+            .bind(to: beneficiarySelectedSubject)
+            .disposed(by: disposeBag) */
         
 //        let type =  itemSelected
 //            .filter{ $0 is TopupPCCVCellViewModelType }
