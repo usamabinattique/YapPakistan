@@ -127,80 +127,42 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     
     private func fetchApis() {
         print("fetch apis called")
-        guard let locationObj = self.paymentGatewayM.locationData else { return }
-        
-//        let saveAddressRequest = kycRepository.saveUserAddress(address: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
-//            .do(onNext: { _ in
-//                YAPProgressHud.showProgressHud()
-//            })
-       
-        // second checkoutSession api
-//        let fetchCheckoutSessionRequest = transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
-//
-        let paymentGatewayCheckoutSessionRequest =  kycRepository.saveUserAddress(addressOne: String(locationObj.formattAdaddress.prefix(50)), addressTwo: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
+        guard let locationObj = self.paymentGatewayM.locationData, let cardObject = self.paymentGatewayM.cardDetailObject else { return }
+        let saveUserAddress = kycRepository.saveUserAddress(addressOne: String(locationObj.formattAdaddress.prefix(50)), addressTwo: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .do(onNext: { _ in
                 print("save user address called")
                 YAPProgressHud.showProgressHud()
-            }).withUnretained(self).flatMap { `self` , eventAccount -> Observable<PaymentGatewayCheckoutSession> in
-            
-            switch eventAccount {
-            case .next(let account):
-                print("save user adddress response is \(account)")
-                guard let cardObject = self.paymentGatewayM.cardDetailObject
-                else { return Observable.just(PaymentGatewayCheckoutSession(beneficiaryId: "", apiOperation: "", interaction: "", error: "", securityCode: "", threeDSecureId: "")) }
+            })
+                let paymentGatewayCheckoutSessionRequest =    saveUserAddress.elements().withUnretained(self).flatMapLatest { `self` ,account -> Observable<Event<PaymentGatewayCheckoutSession>> in
+                    let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
+                    return  fetchCheckoutSessionRequest
+                }.share()
                 
-                return self.transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "").elements() // fetchCheckoutSessionRequest.elements()
-            case .error(let error):
-                //TODO: Add error subject
-                print("checkout session api error is \(error)")
-            default:
-                break
-            }
-           return Observable.just(PaymentGatewayCheckoutSession(beneficiaryId: "", apiOperation: "", interaction: "", error: "", securityCode: "", threeDSecureId: ""))
-        }.share()
-        
-        let fetch3dsEnrollmentRequest = paymentGatewayCheckoutSessionRequest.withUnretained(self).flatMapLatest { `self`, paymentGatewayCheckoutSession -> Observable<PaymentGateway3DSEnrollmentResult> in
-            
-            let fetch3DSEnrollmentRequest = self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
-            
-            return fetch3DSEnrollmentRequest.withUnretained(self).flatMapLatest { `self`, event -> Observable<PaymentGateway3DSEnrollmentResult> in
+                saveUserAddress.errors().subscribe(onNext: { [weak self] error in
+                    YAPProgressHud.hideProgressHud()
+                    print("save address error")
+                }).disposed(by: disposeBag)
                 
-                
-                switch event {
-                case .next(_):
-                    return fetch3DSEnrollmentRequest.elements()
-                case .error(let error):
-                    print("error \(error)")
-                default:
-                    break
+                let  fetch3DSEnrollmentRequest =     paymentGatewayCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
+                    self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
                 }
-                return Observable.just(PaymentGateway3DSEnrollmentResult(html: "", formattedHTML: "", threeDSecureId: ""))
-            }
-        }
-        
-        Observable.zip(paymentGatewayCheckoutSessionRequest,fetch3dsEnrollmentRequest) .flatMapLatest { [weak self] (paymentGatewayCheckoutSession, threeDSEnrollment) -> Observable<Int?>  in
+                paymentGatewayCheckoutSessionRequest.errors().subscribe(onNext: { [weak self] error in
+                    print("checkout session request error")
+                    YAPProgressHud.hideProgressHud()
+                }).disposed(by: disposeBag)
+                
+                fetch3DSEnrollmentRequest.elements().withUnretained(self).subscribe(onNext: { `self`, paymentGateway3DSEnrollmentResult in
+                    //TODO: present 3ds webview from ConfirmPayment coordinator.
+                }).disposed(by: disposeBag)
+
+                
+                fetch3DSEnrollmentRequest.errors().subscribe(onNext: { [weak self] error in
+                    print("3ds request error")
+                    YAPProgressHud.hideProgressHud()
+                }).disposed(by: disposeBag)
             
-            guard let `self` = self else { return Observable.just(nil) }
-            
-            let paymentGatewayTopupRequest = self.transactionRepository.paymentGatewayTopup(orderID: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", securityCode: paymentGatewayCheckoutSession.securityCode,threeDSecureID: threeDSEnrollment.threeDSecureId)
-            
-            return paymentGatewayTopupRequest.withUnretained(self).flatMapLatest { `self`, event -> Observable<Int?> in
-                switch event {
-                case .next(_):
-                    return paymentGatewayTopupRequest.elements()
-                case .error(let error):
-                    print("error \(error)")
-                default:
-                    break
-                }
-                return Observable.just(nil)
-            }
-        }.withUnretained(self).subscribe(onNext: { `self`, topupResponse in
-            YAPProgressHud.hideProgressHud()
-            //TODO: add next step here
-            print("topup response")
-        }).disposed(by: disposeBag)
-        
+                
+                
     }
     
     

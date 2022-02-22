@@ -72,7 +72,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
                 print("confrim called in address")
                 switch value {
                 case .cancel:
-                    break
+                    self.confirmPaymentCreated = 0
                 case .success(_):
                     //TODO: add proper CVV dependencies here
                     self.navigateToCVV(card: ExternalPaymentCard.mock, amount: 100.0, currency: "PKR", orderID: "1", threeDSecureId: "1")
