@@ -294,6 +294,7 @@ public enum PartnerBankStatus: String, Codable {
     case documentUploaded = "DOCUMENT_UPLOADED"
     case physicalCardPending = "PHYSICAL_CARD_PENDING"
     case physicalCardSuccess = "PHYSICAL_CARD_SUCCESS"
+    case ibanAssigned = "IBAN_ASSIGNED"
     case hardKycPending = "HARD_KYC_PENDING"
     case hardKycCompleted = "HARD_KYC_DONE"
     case approved = "APPROVED"

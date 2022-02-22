@@ -45,7 +45,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 guard let cardScheme = self.paymentGatewayM.cardSchemeObject else { return }
-                cardScheme.isPaidScheme ? self.cardDetailWebView() : self.addressPending()
+                cardScheme.isPaidScheme ? self.cardDetailWeb() : self.addressPending()
             })
             .disposed(by: rx.disposeBag)
 
@@ -70,25 +70,8 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
         return next
     }
     
-    private func cardDetailWebView() {
-        let viewModel = CommonWebViewModel(container: container, repository: container.parent.makeCardsRepository())
-        let viewController = container.makeCommonWebViewController(viewModel: viewModel)
-        
-        viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
-            viewController.dismiss(animated: true, completion: nil)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.confirm.subscribe(onNext: { [weak self] model in
-            self?.paymentGatewayM.cardDetailObject = model
-            viewController.dismiss(animated: true, completion: {
-                self?.addressPending()
-            })
-        }).disposed(by: rx.disposeBag)
-
-        let navigationRoot = makeNavigationController()
-        navigationRoot.navigationBar.isHidden = false
-        navigationRoot.pushViewController(viewController, completion: nil)
-        self.root.present(navigationRoot, animated: true, completion: nil)
+    private func cardDetailWeb() {
+        _ = coordinate(to: CommonWebViewCoordinator(root: root, container: container, paymentGatewayM: self.paymentGatewayM))
     }
     
     private func addressPending() {
@@ -118,43 +101,5 @@ fileprivate extension CardNameCoordinator {
         self.result.onNext(.success(()))
         self.result.onCompleted()
     }
-}
-
-extension CardNameCoordinator {
-    
-    func makeNavigationController(_ root: UIViewController? = nil) -> UINavigationController {
-
-            var navigation: UINavigationController!
-            if let root = root {
-                navigation = UINavigationController(rootViewController: root)
-            } else {
-                navigation = UINavigationController()
-            }
-            navigation.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.regular, NSAttributedString.Key.foregroundColor: UIColor(container.themeService.attrs.primary)]
-            navigation.modalPresentationStyle = .fullScreen
-            navigation.navigationBar.barTintColor = UIColor(container.themeService.attrs.primary)
-            navigation.interactivePopGestureRecognizer?.isEnabled = false
-            navigation.navigationBar.isTranslucent = false
-            navigation.navigationBar.isOpaque = true
-            navigation.navigationBar.setBackgroundImage(UIImage(), for: .default)
-            navigation.navigationBar.shadowImage = UIImage()
-            navigation.setNavigationBarHidden(false, animated: true)
-            
-            if #available(iOS 15, *) {
-                let textAttributes = [NSAttributedString.Key.font: UIFont.regular, NSAttributedString.Key.foregroundColor: UIColor(container.themeService.attrs.primary)]
-                let appearance = UINavigationBarAppearance()
-                appearance.configureWithOpaqueBackground()
-                appearance.titleTextAttributes = textAttributes
-                appearance.backgroundColor = UIColor.white // UIColor(red: 0.0/255.0, green: 125/255.0, blue: 0.0/255.0, alpha: 1.0)
-                appearance.shadowColor = .clear  //removing navigationbar 1 px bottom border.
-                UINavigationBar.appearance().standardAppearance = appearance
-                UINavigationBar.appearance().scrollEdgeAppearance = appearance
-            } else {
-                
-            }
-            
-
-            return navigation
-        }
 }
 
