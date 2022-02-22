@@ -81,6 +81,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     private let paymentGatewayM: PaymentGatewayLocalModel!
     private let kycRepository: KYCRepository
     private let transactionRepository: TransactionsRepository
+    private var confirmPaymentCreated = 0
 
     init(kycRepository: KYCRepository, transactionRepository: TransactionsRepository, paymentGatewayObj: PaymentGatewayLocalModel? = nil){
         
@@ -88,6 +89,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         
         self.kycRepository = kycRepository
         self.transactionRepository = transactionRepository
+        fetchApis()
         
         var theStrings = LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000")
     //    localizedStringsSubject.onNext(strings)
@@ -115,16 +117,16 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         }
         localizedStringsSubject.onNext(theStrings)
         
-        nextSubject
-            .subscribe(onNext:{
-                print("next button tapped")
-            }).disposed(by: disposeBag)
+//        nextSubject
+//            .subscribe(onNext:{
+//                print("next button tapped")
+//            }).disposed(by: disposeBag)
         
-//        fetchApis()
+        
     }
     
     private func fetchApis() {
-        
+        print("fetch apis called")
         guard let locationObj = self.paymentGatewayM.locationData else { return }
         
 //        let saveAddressRequest = kycRepository.saveUserAddress(address: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, postCode: "54000", latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
@@ -132,11 +134,10 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
 //                YAPProgressHud.showProgressHud()
 //            })
        
-        guard let cardObject = paymentGatewayM.cardDetailObject else { return }
         // second checkoutSession api
-        let fetchCheckoutSessionRequest = transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
-        
-        let paymentGatewayCheckoutSessionRequest =  kycRepository.saveUserAddress(addressOne: String(locationObj.formattAdaddress.prefix(50)), addressTwo: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, latitude: String(locationObj.latitude), longitude: String(locationObj.longitude)).skip(1)//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
+//        let fetchCheckoutSessionRequest = transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
+//
+        let paymentGatewayCheckoutSessionRequest =  kycRepository.saveUserAddress(addressOne: String(locationObj.formattAdaddress.prefix(50)), addressTwo: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))//.do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .do(onNext: { _ in
                 print("save user address called")
                 YAPProgressHud.showProgressHud()
@@ -144,7 +145,11 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
             
             switch eventAccount {
             case .next(let account):
-                return fetchCheckoutSessionRequest.elements()
+                print("save user adddress response is \(account)")
+                guard let cardObject = self.paymentGatewayM.cardDetailObject
+                else { return Observable.just(PaymentGatewayCheckoutSession(beneficiaryId: "", apiOperation: "", interaction: "", error: "", securityCode: "", threeDSecureId: "")) }
+                
+                return self.transactionRepository.fetchCheckoutSession(orderId: "", amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "").elements() // fetchCheckoutSessionRequest.elements()
             case .error(let error):
                 //TODO: Add error subject
                 print("checkout session api error is \(error)")

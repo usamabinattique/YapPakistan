@@ -15,6 +15,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
     private var paymentGatewayM: PaymentGatewayLocalModel!
+    private var confirmPaymentCreated = 0
 
     init(root: UINavigationController,
          container: KYCFeatureContainer, paymentGatewayM: PaymentGatewayLocalModel) {
@@ -62,7 +63,8 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
         //TODO: connect flow properly
         /// for paypak flow
         viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] location in
-            guard let `self` = self else { return }
+            guard let `self` = self, self.confirmPaymentCreated < 1 else { return }
+            self.confirmPaymentCreated = self.confirmPaymentCreated + 1
             self.paymentGatewayM.locationData = location
             print("next called in address")
             self.confirmPayment().subscribe(onNext: { [weak self] value in
