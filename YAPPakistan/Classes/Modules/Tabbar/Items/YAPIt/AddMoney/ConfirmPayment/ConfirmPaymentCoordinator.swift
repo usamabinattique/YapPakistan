@@ -18,14 +18,14 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     let result = PublishSubject<ResultType<Void>>()
     let repository: Y2YRepositoryType!
     var localNavigationController: UINavigationController!
-    private var container: UserSessionContainer!
+    private var container: KYCFeatureContainer!
     private var paymentGatewayM: PaymentGatewayLocalModel!
     
     private var shouldPresent: Bool = false
     
 //    public override var feature: CoordinatorFeature { .y2yTransfer }
     
-    public init(root: UINavigationController, container: UserSessionContainer,  repository: Y2YRepositoryType, shouldPresent: Bool? = false, paymentGatewayM: PaymentGatewayLocalModel? = nil) {
+    public init(root: UINavigationController, container: KYCFeatureContainer,  repository: Y2YRepositoryType, shouldPresent: Bool? = false, paymentGatewayM: PaymentGatewayLocalModel? = nil) {
         self.root = root
         self.repository = repository
         self.shouldPresent = shouldPresent ?? false
@@ -35,13 +35,13 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel = ConfirmPaymentViewModel(accountProvider: container.accountProvider, kycRepository: container.makeKYCRepository(), transactionRepository: container.makeTransactionsRepository(), paymentGatewayObj: self.paymentGatewayM)
+        let viewModel = ConfirmPaymentViewModel(accountProvider: container.accountProvider, kycRepository: container.makeKYCRepository(), transactionRepository: container.parent.makeTransactionsRepository(), paymentGatewayObj: self.paymentGatewayM)
         let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
         if self.shouldPresent {
             self.presentConfirmPaymentController(present:viewController)
         }
         else {
-        root.pushViewController(viewController, animated: true)
+            root.pushViewController(viewController, animated: true)
         }
         
         
@@ -60,6 +60,10 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
             self.finishCoordinator(.success(()))
         }).disposed(by: rx.disposeBag)
         
+        viewModel.outputs.html.withUnretained(self).subscribe(onNext:{ `self`, htmlString in
+            self.cardDetailWeb(html: htmlString, viewModel: viewModel)
+        }).disposed(by: rx.disposeBag)
+        
         return result.asObservable()
     }
     
@@ -74,6 +78,10 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
         self.localNavigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: present)
         self.root.present(self.localNavigationController, animated: true)
         
+    }
+    
+    private func cardDetailWeb(html: String, viewModel: ConfirmPaymentViewModel) {
+        _ = coordinate(to: CommonWebViewCoordinator(root: self.localNavigationController, container: self.container, paymentGatewayM: self.paymentGatewayM, html: html, resultObserver: viewModel.inputs.pollACSResultObserver))
     }
 }
 

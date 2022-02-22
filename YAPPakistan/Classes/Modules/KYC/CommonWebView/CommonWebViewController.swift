@@ -48,12 +48,11 @@ class CommonWebViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         backButton = makeAndAddBackButton(of:.closeEmpty)
-        title = "screen_kyc_card_details_screen_title".localized
-        self.webView.load(URLRequest(url: URL(string: "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html")!))
         
         setupViews()
         setupConstraints()
         setupTheme()
+        setupBindings()
     }
     
     override public func onTapBackButton() {
@@ -86,6 +85,23 @@ fileprivate extension CommonWebViewController {
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
             .bind({ UIColor($0.primaryDark)}, to: [backButton.rx.tintColor])
             .disposed(by: rx.disposeBag)
+    }
+    
+    func setupBindings(){
+        viewModel.outputs.html.subscribe(onNext: { [weak self] html in
+            guard let `self` = self else { return }
+            self.title = "screen_kyc_card_details_screen_title".localized
+            self.webView.loadHTMLString(html, baseURL: nil)
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.webUrl.subscribe(onNext: { [weak self] html in
+            guard let `self` = self else { return }
+            self.title = ""
+            guard let url = URL(string: html) else { return }
+            self.webView.load(URLRequest(url: url))
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
     }
 }
 

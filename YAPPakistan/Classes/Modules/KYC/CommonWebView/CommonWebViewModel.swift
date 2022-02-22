@@ -15,6 +15,7 @@ protocol CommonWebViewModelInput {
     var confirmObserver: AnyObserver<CommonWebViewM> { get }
     var closeObserver: AnyObserver<Void> { get }
     var navigationActionObserver: AnyObserver<WKNavigationAction>{ get }
+    var completionObserver: AnyObserver<Void> { get }
 }
 
 protocol CommonWebViewModelOutput {
@@ -22,6 +23,9 @@ protocol CommonWebViewModelOutput {
     var confirm: Observable<CommonWebViewM> { get }
     var error: Observable<String> { get }
     var navigationAction: Observable<WKNavigationAction> { get }
+    var complete: Observable<Void> { get }
+    var html: Observable<String> { get }
+    var webUrl: Observable<String> { get }
 }
 
 protocol CommonWebViewModelType {
@@ -36,6 +40,9 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     private let navigationActionSubject = ReplaySubject<WKNavigationAction>.create(bufferSize: 1)
     private let fetchExternalBeneficiarySubject = PublishSubject<Void>()
     private let errorSubject = PublishSubject<String>()
+    private let completionSubject = PublishSubject<Void>()
+    private let htmlSubject = BehaviorSubject<String>(value: "")
+    private let webUrlSubject = BehaviorSubject<String>(value: "")
     
     // MARK: - Properties
     private let disposeBag = DisposeBag()
@@ -45,18 +52,28 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     var confirmObserver: AnyObserver<CommonWebViewM> { confirmSubject.asObserver() }
     var closeObserver: AnyObserver<Void> { closeSubject.asObserver() }
     var navigationActionObserver: AnyObserver<WKNavigationAction>{ navigationActionSubject.asObserver() }
+    var completionObserver: AnyObserver<Void> { return completionSubject.asObserver() }
     
     //MARK: Outputs
     var close: Observable<Void> { closeSubject.asObservable() }
     var confirm: Observable<CommonWebViewM> { confirmSubject.asObservable() }
     var navigationAction: Observable<WKNavigationAction> { navigationActionSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
+    var complete: Observable<Void> { return completionSubject.asObservable() }
+    var html: Observable<String> { return htmlSubject.asObservable() }
+    var webUrl: Observable<String> { return webUrlSubject.asObservable() }
     
     var inputs: CommonWebViewModelInput { return self }
     var outputs: CommonWebViewModelOutput { return self }
     
-    init(container: KYCFeatureContainer, repository: CardsRepositoryType) {
+    init(container: KYCFeatureContainer, repository: CardsRepositoryType, html: String) {
         self.repository = repository
+        if html.hasPrefix("https://pk") {
+            self.webUrlSubject.onNext(html)
+        } else {
+            self.htmlSubject.onNext(html)
+        }
+        
         navigationActionSubject.subscribe(onNext: { [weak self] navigationAction in
             guard let `self` = self else { return }
             if let url = navigationAction.request.url {
@@ -65,6 +82,8 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
                         self.processModel(model: model)
                         self.fetchExternalBeneficiarySubject.onNext(())
                     }
+                } else if url.absoluteString.contains("transactions/api/mastercard") {
+                    self.completionSubject.onNext(())
                 }
             }
         }).disposed(by: disposeBag)

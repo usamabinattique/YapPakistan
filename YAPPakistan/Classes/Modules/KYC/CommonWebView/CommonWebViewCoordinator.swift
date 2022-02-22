@@ -14,13 +14,17 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
-    private var paymentGatewayM: PaymentGatewayLocalModel!
+    private var paymentGatewayM: PaymentGatewayLocalModel?
+    private var html: String!
+    private var resultObserver: AnyObserver<Void>?
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer, paymentGatewayM: PaymentGatewayLocalModel) {
+         container: KYCFeatureContainer, paymentGatewayM: PaymentGatewayLocalModel? = nil, html: String, resultObserver: AnyObserver<Void>? = nil) {
         self.root = root
         self.container = container
         self.paymentGatewayM = paymentGatewayM
+        self.html = html
+        self.resultObserver = resultObserver
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -29,28 +33,38 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func cardDetailWebView() {
-        let viewModel = CommonWebViewModel(container: container, repository: container.parent.makeCardsRepository())
+        let viewModel = CommonWebViewModel(container: container, repository: container.parent.makeCardsRepository(), html: self.html)
         let viewController = container.makeCommonWebViewController(viewModel: viewModel)
+        
+        let navigationRoot = makeNavigationController()
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
             viewController.dismiss(animated: true, completion: nil)
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.confirm.subscribe(onNext: { [weak self] model in
-            self?.paymentGatewayM.cardDetailObject = model
+            guard let paymentGatewayObject = self?.paymentGatewayM else { return }
+            paymentGatewayObject.cardDetailObject = model
             viewController.dismiss(animated: true, completion: {
                 self?.addressPending()
             })
         }).disposed(by: rx.disposeBag)
 
-        let navigationRoot = makeNavigationController()
+        viewModel.outputs.complete.subscribe(onNext:{ [weak self] obj in
+            guard let observer = self?.resultObserver else { return }
+            observer.onNext(())
+            navigationRoot.dismiss(animated: true)
+        })
+            .disposed(by: rx.disposeBag)
+        
         navigationRoot.navigationBar.isHidden = false
         navigationRoot.pushViewController(viewController, completion: nil)
         self.root.present(navigationRoot, animated: true, completion: nil)
     }
     
     private func addressPending() {
-        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
+        guard let paymentGatewayObject = self.paymentGatewayM else { return }
+        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: paymentGatewayObject))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:

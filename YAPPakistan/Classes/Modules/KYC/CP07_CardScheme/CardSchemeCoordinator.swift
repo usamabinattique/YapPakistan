@@ -85,11 +85,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
                 switch result {
                 case .success:
                     break
-//                    if schemeObj.isPaidScheme {
-//                        self?.cardDetailWebView()
-//                    } else {
-//                        self?.addressPending()
-//                    }
                 case .cancel:
                     //self?.navigationRoot.popToRootViewController(animated: true)
                     print("go back from Name")
@@ -110,21 +105,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
                 }
             }).disposed(by: rx.disposeBag)
         
-    }
-    
-    func cardDetailWebView() {
-        let viewModel = CommonWebViewModel(container: container, repository: container.parent.makeCardsRepository())
-        let viewController = container.makeCommonWebViewController(viewModel: viewModel)
-        
-        viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
-            print("close in coord")
-            viewController.dismiss(animated: true, completion: nil)
-        }).disposed(by: rx.disposeBag)
-
-        
-        self.navigationRoot.navigationBar.isHidden = false
-        self.navigationRoot.pushViewController(viewController, completion: nil)
-        self.root.present(self.navigationRoot, animated: true, completion: nil)
     }
 }
 

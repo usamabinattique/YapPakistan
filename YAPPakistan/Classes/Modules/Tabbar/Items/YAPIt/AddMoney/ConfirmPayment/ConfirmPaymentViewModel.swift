@@ -14,11 +14,13 @@ protocol ConfirmPaymentViewModelInputs {
     var closeObserver: AnyObserver<Void> { get }
     var nextObserver: AnyObserver<Void> { get }
     var editObserver: AnyObserver<Void> { get }
+    var pollACSResultObserver: AnyObserver<Void> { get }
 }
 
 protocol ConfirmPaymentViewModelOutputs {
     var close: Observable<Void> { get }
     var next: Observable<Int> { get }
+    var error: Observable<String> { get }
     var isEnabled: Observable<Bool> { get }
     var completedSteps: Observable<Int> { get }
     var localizedStrings: Observable<ConfirmPaymentViewModel.LocalizedStrings> { get }
@@ -29,6 +31,8 @@ protocol ConfirmPaymentViewModelOutputs {
     var cardNumber: Observable<String> { get }
     var address: Observable<LocationModel> { get }
     var buttonTitle: Observable<String> { get }
+    var html: Observable<String> { get }
+    var pollACSResult: Observable<Void> { get }
 }
 
 protocol ConfirmPaymentViewModelType {
@@ -46,10 +50,12 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
     var closeObserver: AnyObserver<Void> { backSubject.asObserver() }
     var editObserver: AnyObserver<Void> { editSubject.asObserver() }
+    var pollACSResultObserver: AnyObserver<Void> { return pollACSResultSubject.asObserver() }
     
     // MARK: Outputs
     var close: Observable<Void> { backSubject.asObservable() }
     var next: Observable<Int> { nextResultSubject.asObservable() }
+    var error: Observable<String> { return errorSubject.asObservable() }
     var isEnabled: Observable<Bool> { isEnabledSubject.asObservable() }
     var completedSteps: Observable<Int> { completedStepsSubject.asObservable() }
     var localizedStrings: Observable<LocalizedStrings> { localizedStringsSubject.asObservable() }
@@ -60,11 +66,14 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     var cardNumber: Observable<String> { cardNumberSubject.asObservable() }
     var address: Observable<LocationModel> { addressSubject.asObservable() }
     var buttonTitle: Observable<String> { buttonTitleSubject.asObservable() }
+    var html: Observable<String> { return htmlSubject.asObservable() }
+    var pollACSResult: Observable<Void> { return pollACSResultSubject.asObservable() }
     
     // MARK: Subjects
     private let backSubject = PublishSubject<Void>()
     private let nextSubject = PublishSubject<Void>()
     private let nextResultSubject = PublishSubject<Int>()
+    private let errorSubject = PublishSubject<String>()
     private let isEnabledSubject = BehaviorSubject<Bool>(value: false)
     private let completedStepsSubject = BehaviorSubject<Int>(value: 0)
     private let localizedStringsSubject = BehaviorSubject(value: LocalizedStrings())
@@ -75,6 +84,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     private let cardNumberSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let addressSubject = ReplaySubject<LocationModel>.create(bufferSize: 1)
     private let buttonTitleSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let htmlSubject = PublishSubject<String>()
+    private let pollACSResultSubject = PublishSubject<Void>()
     
     // MARK: Properties
     private let disposeBag = DisposeBag()
@@ -153,15 +164,56 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
                 YAPProgressHud.hideProgressHud()
             }).disposed(by: disposeBag)
 
-            fetch3DSEnrollmentRequest.elements().withUnretained(self).subscribe(onNext: { `self`, paymentGateway3DSEnrollmentResult in
-                //TODO: present 3ds webview from ConfirmPayment coordinator.
-            }).disposed(by: disposeBag)
-
-
+//            fetch3DSEnrollmentRequest.elements().withUnretained(self).subscribe(onNext: { `self`, threeDSEnrollmentObj in
+//                //TODO: present 3ds webview from ConfirmPayment coordinator.
+//                YAPProgressHud.hideProgressHud()
+//                self.htmlSubject.onNext(threeDSEnrollmentObj.formattedHTML)
+//            }).disposed(by: disposeBag)
+            
+            let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
+            threeDEnrollmentResult.do(onNext:{ _ in
+                YAPProgressHud.hideProgressHud()
+            }).map { $0.formattedHTML}.bind(to: htmlSubject).disposed(by: disposeBag)
+            
             fetch3DSEnrollmentRequest.errors().subscribe(onNext: { [weak self] error in
                 print("3ds request error")
                 YAPProgressHud.hideProgressHud()
             }).disposed(by: disposeBag)
+            
+            let acsResultRequest = pollACSResultSubject
+                .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+                .delay(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance).withLatestFrom(threeDEnrollmentResult).flatMap { [unowned self] result in
+                    self.transactionRepository.retrieveACSResults(threeDSecureID: result.threeDSecureId)
+            }.share()
+            
+            var count = 0
+            
+            acsResultRequest.elements().subscribe(onNext: { [weak self] result in
+                guard let `self` = self else { return }
+                
+                if let result = result {
+                    YAPProgressHud.hideProgressHud()
+                    if result == "Y" {
+                        print("3DS Successful -> go ahead")
+                        //call topup api
+                    } else {
+                        print("3DS Fail -> Unable to verify")
+                        self.errorSubject.onNext("Unable to verify")
+                    }
+                } else {
+                    count += 1
+                    guard count < 5 else {
+                        YAPProgressHud.hideProgressHud()
+                        print("time out - 3DS Fail -> Unable to verify")
+                        self.errorSubject.onNext("Unable to verify")
+                        return
+                    }
+                    self.pollACSResultObserver.onNext(())
+                }
+            }).disposed(by: disposeBag)
+            
+            acsResultRequest.errors().do(onNext: { _ in YAPProgressHud.hideProgressHud() }).map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
+            
         } else {
             //save address and complete flow
             print("save address and complete flow")
@@ -191,16 +243,56 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
                 print("checkout session request error")
                 YAPProgressHud.hideProgressHud()
             }).disposed(by: disposeBag)
+
+//            fetch3DSEnrollmentRequest.elements().withUnretained(self).subscribe(onNext: { `self`, threeDSEnrollmentObj in
+//                //TODO: present 3ds webview from ConfirmPayment coordinator.
+//                YAPProgressHud.hideProgressHud()
+//                self.htmlSubject.onNext(threeDSEnrollmentObj.formattedHTML)
+//            }).disposed(by: disposeBag)
             
-            fetch3DSEnrollmentRequest.elements().withUnretained(self).subscribe(onNext: { `self`, paymentGateway3DSEnrollmentResult in
-                //TODO: present 3ds webview from ConfirmPayment coordinator.
-            }).disposed(by: disposeBag)
-            
+            let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
+            threeDEnrollmentResult.do(onNext:{ _ in
+                YAPProgressHud.hideProgressHud()
+            }).map { $0.formattedHTML}.bind(to: htmlSubject).disposed(by: disposeBag)
             
             fetch3DSEnrollmentRequest.errors().subscribe(onNext: { [weak self] error in
                 print("3ds request error")
                 YAPProgressHud.hideProgressHud()
             }).disposed(by: disposeBag)
+            
+            let acsResultRequest = pollACSResultSubject
+                .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+                .delay(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance).withLatestFrom(threeDEnrollmentResult).flatMap { [unowned self] result in
+                    self.transactionRepository.retrieveACSResults(threeDSecureID: result.threeDSecureId)
+            }.share()
+            
+            var count = 0
+            
+            acsResultRequest.elements().subscribe(onNext: { [weak self] result in
+                guard let `self` = self else { return }
+                
+                if let result = result {
+                    YAPProgressHud.hideProgressHud()
+                    if result == "Y" {
+                        print("3DS Successful -> go ahead")
+                        //self.transferSubject.onNext(())
+                    } else {
+                        print("3DS Fail -> Unable to verify")
+                        //self.errorSubject.onNext("Unable to verify")
+                    }
+                } else {
+                    count += 1
+                    guard count < 5 else {
+                        YAPProgressHud.hideProgressHud()
+                        print("time out - 3DS Fail -> Unable to verify")
+                        //self.errorSubject.onNext("Unable to verify")
+                        return
+                    }
+                    self.pollACSResultObserver.onNext(())
+                }
+            }).disposed(by: disposeBag)
+            
+            acsResultRequest.errors().do(onNext: { _ in YAPProgressHud.hideProgressHud() }).map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
         }
 //        } else {
 //

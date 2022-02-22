@@ -403,6 +403,8 @@
 
 // MARK: KYC Card Benefits
 "screen_kyc_card_benefits_screen_next_button_title" = "Select";
+
+//MARK: Common WebView
 "screen_kyc_card_details_screen_title" = "Enter your card details";
 
 // MARK: - YAP it Screen

@@ -102,7 +102,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func confirmPayment() -> Observable<ResultType<Void>> {
-        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container.parent, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM))
+        return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM))
     }
     
     func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String) {
