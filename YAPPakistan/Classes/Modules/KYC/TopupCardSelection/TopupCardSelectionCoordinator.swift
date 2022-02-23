@@ -57,7 +57,6 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.beneficiarySelected.withUnretained(self).subscribe(onNext: { `self` ,externalPaymentCard in
             print("in topupcard selectionCoordinator")
-            self.paymentGatewayM.beneficary = externalPaymentCard
             self.addressPending()
         }).disposed(by: rx.disposeBag)
 

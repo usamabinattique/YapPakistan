@@ -82,8 +82,8 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
                         self.processModel(model: model)
                         self.fetchExternalBeneficiarySubject.onNext(())
                     }
-                } else if url.absoluteString.contains("transactions/api/mastercard") {
-                    self.completionSubject.onNext(())
+                } else if url.absoluteString.contains("transactions") {
+//                    self.completionSubject.onNext(())
                 }
             }
         }).disposed(by: disposeBag)

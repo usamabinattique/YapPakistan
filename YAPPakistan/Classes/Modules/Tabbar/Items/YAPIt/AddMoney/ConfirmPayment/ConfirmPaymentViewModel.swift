@@ -33,6 +33,7 @@ protocol ConfirmPaymentViewModelOutputs {
     var buttonTitle: Observable<String> { get }
     var html: Observable<String> { get }
     var pollACSResult: Observable<Void> { get }
+    var topupComplete: Observable<Void> { get }
 }
 
 protocol ConfirmPaymentViewModelType {
@@ -68,6 +69,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     var buttonTitle: Observable<String> { buttonTitleSubject.asObservable() }
     var html: Observable<String> { return htmlSubject.asObservable() }
     var pollACSResult: Observable<Void> { return pollACSResultSubject.asObservable() }
+    var topupComplete: Observable<Void> { return topupCompleteSubject.asObservable() }
     
     // MARK: Subjects
     private let backSubject = PublishSubject<Void>()
@@ -86,6 +88,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     private let buttonTitleSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let htmlSubject = PublishSubject<String>()
     private let pollACSResultSubject = PublishSubject<Void>()
+    private let topupCompleteSubject = PublishSubject<Void>()
     
     // MARK: Properties
     private let disposeBag = DisposeBag()
@@ -141,166 +144,137 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     
     private func fetchApis() {
         
-        guard let locationObj = self.paymentGatewayM.locationData else { return }
-        
         YAPProgressHud.showProgressHud()
         
         //!!!: check if user isFirstCredit is True then don't call saveAddress api
         if (accountProvider.currentAccountValue.value?.parnterBankStatus == .physicalCardPending || accountProvider.currentAccountValue.value?.parnterBankStatus == .ibanAssigned) && (accountProvider.currentAccountValue.value?.isFirstCredit == true || self.paymentGatewayM.cardSchemeObject?.isPaidScheme == false) {
+            
             //order card api directly
-            print("order card api directly")
+            self.fetchTopupApi()
+            
         } else if (accountProvider.currentAccountValue.value?.parnterBankStatus == .physicalCardPending || accountProvider.currentAccountValue.value?.parnterBankStatus == .ibanAssigned) && (self.paymentGatewayM.cardSchemeObject?.isPaidScheme == true) {
+            
             //create checkout session request and flow
-            print("create checkout session request and flow")
-            guard let cardObject = self.paymentGatewayM.cardDetailObject else { return }
-
-            let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
-
-            let  fetch3DSEnrollmentRequest =     fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
-                self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
-            }
-            fetchCheckoutSessionRequest.errors().subscribe(onNext: { [weak self] error in
-                print("checkout session request error")
-                YAPProgressHud.hideProgressHud()
-            }).disposed(by: disposeBag)
-
-//            fetch3DSEnrollmentRequest.elements().withUnretained(self).subscribe(onNext: { `self`, threeDSEnrollmentObj in
-//                //TODO: present 3ds webview from ConfirmPayment coordinator.
-//                YAPProgressHud.hideProgressHud()
-//                self.htmlSubject.onNext(threeDSEnrollmentObj.formattedHTML)
-//            }).disposed(by: disposeBag)
-            
-            let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
-            threeDEnrollmentResult.do(onNext:{ _ in
-                YAPProgressHud.hideProgressHud()
-            }).map { $0.formattedHTML}.bind(to: htmlSubject).disposed(by: disposeBag)
-            
-            fetch3DSEnrollmentRequest.errors().subscribe(onNext: { [weak self] error in
-                print("3ds request error")
-                YAPProgressHud.hideProgressHud()
-            }).disposed(by: disposeBag)
-            
-            let acsResultRequest = pollACSResultSubject
-                .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-                .delay(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance).withLatestFrom(threeDEnrollmentResult).flatMap { [unowned self] result in
-                    self.transactionRepository.retrieveACSResults(threeDSecureID: result.threeDSecureId)
-            }.share()
-            
-            var count = 0
-            
-            acsResultRequest.elements().subscribe(onNext: { [weak self] result in
-                guard let `self` = self else { return }
-                
-                if let result = result {
-                    YAPProgressHud.hideProgressHud()
-                    if result == "Y" {
-                        print("3DS Successful -> go ahead")
-                        //call topup api
-                    } else {
-                        print("3DS Fail -> Unable to verify")
-                        self.errorSubject.onNext("Unable to verify")
-                    }
-                } else {
-                    count += 1
-                    guard count < 5 else {
-                        YAPProgressHud.hideProgressHud()
-                        print("time out - 3DS Fail -> Unable to verify")
-                        self.errorSubject.onNext("Unable to verify")
-                        return
-                    }
-                    self.pollACSResultObserver.onNext(())
-                }
-            }).disposed(by: disposeBag)
-            
-            acsResultRequest.errors().do(onNext: { _ in YAPProgressHud.hideProgressHud() }).map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
+            self.fetchCheckoutSessionFlowApis()
             
         } else {
+            
             //save address and complete flow
-            print("save address and complete flow")
-            let saveUserAddressRequest = kycRepository.saveUserAddress(addressOne: String(locationObj.formattAdaddress.prefix(50)), addressTwo: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))
-                    
-            saveUserAddressRequest.errors().subscribe(onNext: { error in
-                YAPProgressHud.hideProgressHud()
-                print("save address error")
-            }).disposed(by: disposeBag)
-        
-        saveUserAddressRequest.elements().subscribe(onNext:{
-            print("save address response: \($0)")
-        }).disposed(by: disposeBag)
+            self.fetchSaveAddressApi()
             
-            guard let cardObject = self.paymentGatewayM.cardDetailObject else { return }
-        
-            let paymentGatewayCheckoutSessionRequest = saveUserAddressRequest.elements().withUnretained(self).flatMapLatest { `self`, newAccount -> Observable<Event<PaymentGatewayCheckoutSession>> in
-                
-                let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
-                return  fetchCheckoutSessionRequest
-            }.share()
-            
-            let  fetch3DSEnrollmentRequest =     paymentGatewayCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
-                self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
-            }
-            paymentGatewayCheckoutSessionRequest.errors().subscribe(onNext: { [weak self] error in
-                print("checkout session request error")
-                YAPProgressHud.hideProgressHud()
-            }).disposed(by: disposeBag)
-
-//            fetch3DSEnrollmentRequest.elements().withUnretained(self).subscribe(onNext: { `self`, threeDSEnrollmentObj in
-//                //TODO: present 3ds webview from ConfirmPayment coordinator.
-//                YAPProgressHud.hideProgressHud()
-//                self.htmlSubject.onNext(threeDSEnrollmentObj.formattedHTML)
-//            }).disposed(by: disposeBag)
-            
-            let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
-            threeDEnrollmentResult.do(onNext:{ _ in
-                YAPProgressHud.hideProgressHud()
-            }).map { $0.formattedHTML}.bind(to: htmlSubject).disposed(by: disposeBag)
-            
-            fetch3DSEnrollmentRequest.errors().subscribe(onNext: { [weak self] error in
-                print("3ds request error")
-                YAPProgressHud.hideProgressHud()
-            }).disposed(by: disposeBag)
-            
-            let acsResultRequest = pollACSResultSubject
-                .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-                .delay(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance).withLatestFrom(threeDEnrollmentResult).flatMap { [unowned self] result in
-                    self.transactionRepository.retrieveACSResults(threeDSecureID: result.threeDSecureId)
-            }.share()
-            
-            var count = 0
-            
-            acsResultRequest.elements().subscribe(onNext: { [weak self] result in
-                guard let `self` = self else { return }
-                
-                if let result = result {
-                    YAPProgressHud.hideProgressHud()
-                    if result == "Y" {
-                        print("3DS Successful -> go ahead")
-                        //self.transferSubject.onNext(())
-                    } else {
-                        print("3DS Fail -> Unable to verify")
-                        //self.errorSubject.onNext("Unable to verify")
-                    }
-                } else {
-                    count += 1
-                    guard count < 5 else {
-                        YAPProgressHud.hideProgressHud()
-                        print("time out - 3DS Fail -> Unable to verify")
-                        //self.errorSubject.onNext("Unable to verify")
-                        return
-                    }
-                    self.pollACSResultObserver.onNext(())
-                }
-            }).disposed(by: disposeBag)
-            
-            acsResultRequest.errors().do(onNext: { _ in YAPProgressHud.hideProgressHud() }).map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
         }
-//        } else {
-//
-//        }
     }
     
-    func fetchAddressApi(){
+    //MARK: - Apis helper methods
+    
+    private func fetchSaveAddressApi() {
+        guard let locationObj = self.paymentGatewayM.locationData else { return }
+        let saveUserAddressRequest = kycRepository.saveUserAddress(addressOne: String(locationObj.formattAdaddress.prefix(50)), addressTwo: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))
         
+        saveUserAddressRequest.elements().withUnretained(self)
+            .subscribe(onNext: { `self`, account in
+                self.fetchCheckoutSessionFlowApis()
+            })
+            .disposed(by: disposeBag)
+        
+        saveUserAddressRequest.errors().subscribe(onNext: { [weak self] error in
+            self?.errorSubject.onNext(error.localizedDescription)
+            YAPProgressHud.hideProgressHud()
+            print("save address error")
+        }).disposed(by: disposeBag)
+    }
+    
+    private func fetchCheckoutSessionFlowApis() {
+        guard let cardObject = self.paymentGatewayM.cardDetailObject else {
+            YAPProgressHud.hideProgressHud()
+            return
+        }
+        
+        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
+        
+        let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
+            self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
+        }
+        
+        fetchCheckoutSessionRequest.errors().subscribe(onNext: { [weak self] error in
+            self?.errorSubject.onNext(error.localizedDescription)
+            print("checkout session request error")
+            YAPProgressHud.hideProgressHud()
+        }).disposed(by: disposeBag)
+        
+        let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
+        threeDEnrollmentResult.do(onNext:{ _ in
+            YAPProgressHud.hideProgressHud()
+        }).map { $0.formattedHTML}.bind(to: htmlSubject).disposed(by: disposeBag)
+        
+        fetch3DSEnrollmentRequest.errors().subscribe(onNext: { [weak self] error in
+            print("3ds request error")
+            self?.errorSubject.onNext(error.localizedDescription)
+            YAPProgressHud.hideProgressHud()
+        }).disposed(by: disposeBag)
+        
+        let acsResultRequest = pollACSResultSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .delay(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance).withLatestFrom(threeDEnrollmentResult).flatMap { [unowned self] result in
+                self.transactionRepository.retrieveACSResults(threeDSecureID: result.threeDSecureId)
+        }.share()
+        
+        var count = 0
+        
+        acsResultRequest.elements().subscribe(onNext: { [weak self] result in
+            guard let `self` = self else { return }
+            
+            if let result = result {
+                if result == "Y" {
+                    print("3DS Successful -> go ahead")
+                    //call topup api
+                    self.fetchCVV()
+                } else {
+                    YAPProgressHud.hideProgressHud()
+                    print("3DS Fail -> Unable to verify")
+                    self.errorSubject.onNext("Unable to verify")
+                }
+            } else {
+                count += 1
+                guard count < 5 else {
+                    YAPProgressHud.hideProgressHud()
+                    print("time out - 3DS Fail -> Unable to verify")
+                    self.errorSubject.onNext("Unable to verify")
+                    return
+                }
+                self.pollACSResultObserver.onNext(())
+            }
+        }).disposed(by: disposeBag)
+        
+        acsResultRequest.errors().do(onNext: { _ in YAPProgressHud.hideProgressHud() }).map {
+            $0.localizedDescription
+        }.bind(to: errorSubject).disposed(by: disposeBag)
+    }
+    
+    func fetchTopupApi(){
+        let topupRequest = transactionRepository.paymentGatewayTopup(cardScheme: self.paymentGatewayM.cardSchemeObject?.schemeName ?? "", fee: self.paymentGatewayM.cardSchemeObject?.feeValue ?? "")
+        
+        topupRequest.elements().subscribe(onNext: { [weak self] response in
+            self?.topupCompleteSubject.onNext(())
+        }).disposed(by: disposeBag)
+        
+        topupRequest.errors()
+            .do(onNext:{ _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .map {
+                $0.localizedDescription
+            }
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+    }
+    
+    func fetchCVV(){
+        if self.paymentGatewayM.beneficiaryId != nil {
+            //TODO: [YASIR] - link CVV screen from here
+        } else {
+            self.fetchTopupApi()
+        }
     }
     
     

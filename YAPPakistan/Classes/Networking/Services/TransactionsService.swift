@@ -26,7 +26,7 @@ protocol TransactionsServiceType {
     func createCheckoutSession<T: Codable>(amount: String, currency: String, sessionId: String) -> Observable<T>
     func check3DSEnrollment<T: Codable>(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T>
     func retrieveACSResults<T: Codable>(threeDSecureID: String) -> Observable<T>
-    func paymentGatewayTopup<T: Codable>(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<T>
+    func paymentGatewayTopup<T: Codable>(cardScheme: String, fee: String) -> Observable<T>
     
     
 }
@@ -144,14 +144,14 @@ class TransactionsService: BaseService, TransactionsServiceType {
     
     public func retrieveACSResults<T: Codable>(threeDSecureID: String) -> Observable<T> {
         let pathVariables = [threeDSecureID]
-        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/mastercard/retrieve-acs-results/", pathVariables: pathVariables, body: nil ,headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/mastercard/retrieve-acs-results/3DSecureId/", pathVariables: pathVariables, body: nil ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func paymentGatewayTopup<T: Codable>(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<T> {
-        let pathVariables = [orderID]
-        let body = PaymentCardTopupRequest(beneficiaryID: beneficiaryID, order: PaymentGatewayAmountRequest(id: orderID, amount: amount, currency: currency), securityCode: securityCode, threeDSecureId: threeDSecureID)
-        let route = APIEndpoint(.get, apiConfig.cardsURL, "/api/order-physical-card-of-cardholder", pathVariables: pathVariables, body: body ,headers: authorizationProvider.authorizationHeaders)
+    public func paymentGatewayTopup<T: Codable>(cardScheme: String, fee: String) -> Observable<T> {
+//        let pathVariables = [orderID]
+        let body = PaymentCardTopupRequest(cardFee: fee, cardSchemeTitle: cardScheme)
+        let route = APIEndpoint(.get, apiConfig.cardsURL, "/api/order-physical-card-of-cardholder", body: body ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

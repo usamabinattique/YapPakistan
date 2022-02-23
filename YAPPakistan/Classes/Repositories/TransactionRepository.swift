@@ -31,7 +31,7 @@ protocol TransactionsRepositoryType {
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>>
     func fetchCheckoutSession(amount: String, currency: String, sessionId: String) ->  Observable<Event<PaymentGatewayCheckoutSession>>
-    func paymentGatewayTopup(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<Event<Int?>>
+    func paymentGatewayTopup(cardScheme: String, fee: String) -> Observable<Event<Int?>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType {
@@ -84,11 +84,12 @@ class TransactionsRepository: TransactionsRepositoryType {
     }
     
     func retrieveACSResults(threeDSecureID: String) -> Observable<Event<String?>> {
-        return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
+        return Observable.just("Y").materialize()
+        //return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
     }
     
-    public func paymentGatewayTopup(orderID: String, beneficiaryID: Int, amount: String, currency: String, securityCode: String, threeDSecureID: String) -> Observable<Event<Int?>> {
-        return transactionService.paymentGatewayTopup(orderID: orderID, beneficiaryID: beneficiaryID, amount: amount, currency: currency, securityCode: securityCode, threeDSecureID: threeDSecureID).materialize()
+    public func paymentGatewayTopup(cardScheme: String, fee: String) -> Observable<Event<Int?>> {
+        return transactionService.paymentGatewayTopup(cardScheme: cardScheme, fee: fee).materialize()
     }
 }
 

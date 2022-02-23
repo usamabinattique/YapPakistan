@@ -83,6 +83,10 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     private func cardDetailWeb(html: String, viewModel: ConfirmPaymentViewModel) {
         _ = coordinate(to: CommonWebViewCoordinator(root: self.localNavigationController, container: self.container, paymentGatewayM: self.paymentGatewayM, html: html, resultObserver: viewModel.inputs.pollACSResultObserver))
     }
+    
+    private func kycResult() -> Observable<ResultType<Void>> {
+        return coordinate(to: KYCResultCoordinator(root: root, container: container))
+    }
 }
 
 // MARK: Navigation

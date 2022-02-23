@@ -13,13 +13,11 @@ public class PaymentGatewayLocalModel: NSObject {
     var cardDetailObject: CommonWebViewM?
     var cardSchemeObject: KYCCardsSchemeM?
     var locationData: LocationModel?
-    var beneficary: ExternalPaymentCard?
     
-    init(beneficiaryId: String? = nil, cardDetailObject: CommonWebViewM? = nil, cardSchemeObject: KYCCardsSchemeM? = nil, locationData: LocationModel? = nil, beneficary: ExternalPaymentCard? = nil  ) {
+    init(beneficiaryId: String? = nil, cardDetailObject: CommonWebViewM? = nil, cardSchemeObject: KYCCardsSchemeM? = nil, locationData: LocationModel? = nil) {
         self.beneficiaryId = beneficiaryId
         self.cardDetailObject = cardDetailObject
         self.cardSchemeObject = cardSchemeObject
         self.locationData = locationData
-        self.beneficary = beneficary
     }
 }
