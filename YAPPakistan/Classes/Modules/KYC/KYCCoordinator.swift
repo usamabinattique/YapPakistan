@@ -156,6 +156,10 @@ extension KYCCoordinator {
         return coordinate(to: container.makeCardSchemeCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
     }
     
+    func confirmPayment() -> Observable<ResultType<Void>>  {
+        return coordinate(to: container.makeConfirmPaymentCoordinator(root: root, paymentGatewayM: paymentGatewayM))
+    }
+    
     func carTopupCardSelection(isPresented : Bool) -> Observable<ResultType<Void>>  {
         self.isPresented = isPresented
         return coordinate(to: container.makeTopupCardSelectionCoordinator(root: root, paymentGatewayM: paymentGatewayM))
