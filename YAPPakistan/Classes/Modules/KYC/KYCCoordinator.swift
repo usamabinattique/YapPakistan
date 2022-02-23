@@ -19,6 +19,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
     private var paymentGatewayM: PaymentGatewayLocalModel!
+    private var isPresented = false
 
     init(container: KYCFeatureContainer, root: UINavigationController) {
         self.container = container
@@ -59,7 +60,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         // CP06 Card Scheme External Card
         let cp6 = viewController.viewModel.outputs.next
             .filter({ $0 == .cardSchemeExternalCardPending }).withUnretained(self)
-            .flatMap({ `self`, _ in self.carTopupCardSelection().materialize() })
+            .flatMap({ `self`, _ in  self.cardOrderSchemePending().materialize() }) //self.carTopupCardSelection(isPresented: true).materialize() })
         // CP07 address
         let cp7 = viewController.viewModel.outputs.next
             .filter({ $0 == .addressPending }).withUnretained(self)
@@ -75,7 +76,11 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let sharedCPs = Observable.merge(cp1, cp2, cp3, cp5, cp6, cp7).elements().share()
 
         sharedCPs.filter({ $0.isCancel }).withUnretained(self) // moved back with completing
-            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .subscribe(onNext: { `self`, _ in
+                if !self.isPresented {
+                    self.root.popViewController(animated: true)
+                }
+            })
             .disposed(by: rx.disposeBag)
 
         let cpSuccess = sharedCPs.map({ $0.isSuccess }).unwrap().share() // completed successfully
@@ -151,7 +156,8 @@ extension KYCCoordinator {
         return coordinate(to: container.makeCardSchemeCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
     }
     
-    func carTopupCardSelection() -> Observable<ResultType<Void>>  {
+    func carTopupCardSelection(isPresented : Bool) -> Observable<ResultType<Void>>  {
+        self.isPresented = isPresented
         return coordinate(to: container.makeTopupCardSelectionCoordinator(root: root, paymentGatewayM: paymentGatewayM))
     }
 

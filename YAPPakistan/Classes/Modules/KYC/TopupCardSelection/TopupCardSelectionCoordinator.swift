@@ -42,11 +42,18 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = TopupCardSelectionViewModel(repository: self.repository)
         let viewControlelr = TopupCardSelectionViewController(themeService: container.themeService, viewModel: viewModel)
    
-        root.pushViewController(viewControlelr, completion: nil)
-        root.setNavigationBarHidden(false, animated: false)
+//        root.pushViewController(viewControlelr, completion: nil)
+//        root.setNavigationBarHidden(false, animated: false)
+        
+        
+        localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewControlelr,themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+        
+        localRoot.setNavigationBarHidden(false, animated: false)
+        root.present(localRoot, animated: true, completion: nil)
+        
         viewModel.outputs.back.subscribe(onNext: { [weak self] in
-          //  self?.localRoot.dismiss(animated: true, completion: nil)
-            self?.root.setNavigationBarHidden(true, animated: false)
+            self?.localRoot.dismiss(animated: true, completion: nil)
+//            self?.root.setNavigationBarHidden(true, animated: false)
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
@@ -95,17 +102,20 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
 //            })
 //        }).disposed(by: rx.disposeBag)
 //
+        
         let navigationRoot = makeNavigationController()
         navigationRoot.navigationBar.isHidden = false
         navigationRoot.pushViewController(viewController, completion: nil)
-        self.root.present(navigationRoot, animated: true, completion: nil)
+    //    self.root.present(navigationRoot, animated: true, completion: nil) 
+        localRoot.present(navigationRoot, animated: true, completion: nil)
     }
     
     private func addressPending() {
-        root.setNavigationBarHidden(true, animated: false)
-        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
+//        root.setNavigationBarHidden(true, animated: false)
+        coordinate(to: container.makeAddressCoordinator(root: localRoot, paymentGatewayM: self.paymentGatewayM,isPresented: true))
             .subscribe(onNext: { [weak self] result in
-                self?.root.setNavigationBarHidden(false, animated: false)
+//                self?.root.setNavigationBarHidden(false, animated: false)
+                //self?.localRoot.setNavigationBarHidden(false, animated: false)
                 switch result {
                 case .success:
                     print("go next from address")
