@@ -45,7 +45,16 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 guard let cardScheme = self.paymentGatewayM.cardSchemeObject else { return }
-                cardScheme.isPaidScheme ? self.cardDetailWeb() : self.addressPending()
+                if cardScheme.isPaidScheme {
+                    if self.container.parent.accountProvider.currentAccountValue.value?.accountStatus == .cardSchemeExternalCardPending {
+                        self.topupCardSelection()
+                    } else {
+                        self.cardDetailWeb()
+                    }
+                    
+                } else {
+                    self.addressPending()
+                }
             })
             .disposed(by: rx.disposeBag)
 
@@ -88,6 +97,10 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
                 }
             }).disposed(by: rx.disposeBag)
         
+    }
+    
+    func topupCardSelection() -> Observable<ResultType<Void>>  {
+        return coordinate(to: container.makeTopupCardSelectionCoordinator(root: root, paymentGatewayM: paymentGatewayM))
     }
 }
 

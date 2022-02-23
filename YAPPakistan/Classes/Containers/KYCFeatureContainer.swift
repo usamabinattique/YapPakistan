@@ -75,8 +75,12 @@ public final class KYCFeatureContainer {
         CardNameCoordinator(root: root, container: self ,schemeObj: schemeObj, paymentGatewayM: paymentGatewayM)
     }
 
-    func makeAddressCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> AddressCoordinator {
-        AddressCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM)
+    func makeAddressCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel,isPresented: Bool = false) -> AddressCoordinator {
+        AddressCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM,isPresented: isPresented)
+    }
+    
+    func makeConfirmPaymentCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> ConfirmPaymentCoordinator {
+        ConfirmPaymentCoordinator(root: root, container: self, repository: self.makeY2YRepository(), paymentGatewayM: paymentGatewayM)
     }
 
     // MARK: Controllers
