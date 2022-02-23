@@ -45,7 +45,6 @@ class TopupCardCVVViewController: UIViewController {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
-        
     }
     
     required init?(coder: NSCoder) {
@@ -111,8 +110,8 @@ private extension TopupCardCVVViewController {
 //            .bind({ UIColor($0.primary) }, to: textField.rx.bottomLineColorWhileEditing)
 //            .bind({ UIColor($0.greyDark) }, to: tipsLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: confirm.rx.backgroundColor)
-//            .bind({ UIColor($0.primary) }, to: selectButton.rx.enabledBackgroundColor)
-//            .bind({ UIColor($0.greyDark) }, to: selectButton.rx.disabledBackgroundColor)
+            .bind({ UIColor($0.primary) }, to: confirm.rx.enabledBackgroundColor)
+            .bind({ UIColor($0.greyDark) }, to: confirm.rx.disabledBackgroundColor)
             .disposed(by: rx.disposeBag)
     }
     
@@ -165,10 +164,8 @@ private extension TopupCardCVVViewController {
         viewModel.outputs.cardNumber.bind(to: cardNumber.rx.text).disposed(by: disposeBag)
         viewModel.outputs.amount.bind(to: amount.rx.attributedText).disposed(by: disposeBag)
         viewModel.outputs.cvvCount.subscribe(onNext: { [weak self] in self?.cvv.numberOfTextFields = $0 }).disposed(by: disposeBag)
-        //TODO: uncomment following line
-      //  viewModel.outputs.confirmEnabled.bind(to: confirm.rx.isEnabled).disposed(by: disposeBag)
+        viewModel.outputs.confirmEnabled.bind(to: confirm.rx.isEnabled).disposed(by: disposeBag)
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
-        
         cvv.rx.text.bind(to: viewModel.inputs.cvvObserver).disposed(by: disposeBag)
         confirm.rx.tap
             .do(onNext: { [weak self] _ in self?.view.endEditing(true) })

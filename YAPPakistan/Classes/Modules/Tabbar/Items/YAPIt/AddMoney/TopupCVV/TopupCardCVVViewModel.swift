@@ -24,7 +24,7 @@ protocol TopupCardCVVViewModelOutput {
     var cvvCount: Observable<Int> { get }
     var amount: Observable<NSAttributedString?> { get }
     var error: Observable<String> { get }
-    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard)> { get }
+    var result: Observable<String> { get }
     var confirmEnabled: Observable<Bool> { get }
     var backObservable: Observable<Void> { get }
 }
@@ -51,7 +51,7 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
     private let cvvCountSubject: BehaviorSubject<Int>
     private let amountSubject: BehaviorSubject<NSAttributedString?>
     private let errorSubject = PublishSubject<String>()
-    private let resultSubject = PublishSubject<(amount: Double, currency: String, card: ExternalPaymentCard)>()
+    private let resultSubject = PublishSubject<String>()
     private let confirmEnabledSubject = BehaviorSubject<Bool>(value: false)
     
     // MARK: - Inputs
@@ -66,14 +66,14 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
     var amount: Observable<NSAttributedString?> { return amountSubject.asObservable()}
     var cvvCount: Observable<Int> { return cvvCountSubject.asObservable() }
     var error: Observable<String> { return errorSubject.asObservable() }
-    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard)> { return resultSubject.asObservable() }
+    var result: Observable<String> { return resultSubject.asObservable() }
     var confirmEnabled: Observable<Bool> { return confirmEnabledSubject.asObservable() }
     var backObservable: Observable<Void> { backSubject.asObservable() }
     
  //   private let repository = PaymentGatewayRepository()
     
     // MARK: - Init
-    init(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String) {
+    init(card: ExternalPaymentCard,amount: Double, currency: String) {
         
         cardImageSubject = BehaviorSubject<UIImage?>(value: card.cardImage(withWidth: 100))
         cardTitleSubject = BehaviorSubject<String?>(value: card.nickName)
@@ -107,11 +107,10 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
         
         backSubject.subscribe(onNext: { [weak self] in self?.resultSubject.onCompleted() }).disposed(by: disposeBag)
         
-        //TODO: remove following line
-        confirmSubject.subscribe(onNext: { [weak self] _  in
-            print("confirm tapped in cvv")
-            self?.resultSubject.onNext((amount: 0.0, currency: "PKR", card: ExternalPaymentCard.mock))
-            self?.resultSubject.onCompleted()
+        
+        confirmSubject.withLatestFrom(cvvSubject).withUnretained(self).subscribe(onNext: { `self`, cvv  in
+            self.resultSubject.onNext(cvv ?? "")
+            self.resultSubject.onCompleted()
             
         }).disposed(by: disposeBag)
         

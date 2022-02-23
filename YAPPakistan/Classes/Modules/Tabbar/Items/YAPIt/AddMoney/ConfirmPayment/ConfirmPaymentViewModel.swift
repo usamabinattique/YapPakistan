@@ -15,6 +15,7 @@ protocol ConfirmPaymentViewModelInputs {
     var nextObserver: AnyObserver<Void> { get }
     var editObserver: AnyObserver<Void> { get }
     var pollACSResultObserver: AnyObserver<Void> { get }
+    var enteredCVV: AnyObserver<String> { get }
 }
 
 protocol ConfirmPaymentViewModelOutputs {
@@ -34,6 +35,7 @@ protocol ConfirmPaymentViewModelOutputs {
     var html: Observable<String> { get }
     var pollACSResult: Observable<Void> { get }
     var topupComplete: Observable<Void> { get }
+    var showCVV: Observable<Void> { get }
 }
 
 protocol ConfirmPaymentViewModelType {
@@ -52,6 +54,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     var closeObserver: AnyObserver<Void> { backSubject.asObserver() }
     var editObserver: AnyObserver<Void> { editSubject.asObserver() }
     var pollACSResultObserver: AnyObserver<Void> { return pollACSResultSubject.asObserver() }
+    var enteredCVV: AnyObserver<String> { enteredCVVSubject.asObserver() }
     
     // MARK: Outputs
     var close: Observable<Void> { backSubject.asObservable() }
@@ -70,6 +73,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     var html: Observable<String> { return htmlSubject.asObservable() }
     var pollACSResult: Observable<Void> { return pollACSResultSubject.asObservable() }
     var topupComplete: Observable<Void> { return topupCompleteSubject.asObservable() }
+    var showCVV: Observable<Void> { showCVVSubject.asObservable() }
     
     // MARK: Subjects
     private let backSubject = PublishSubject<Void>()
@@ -89,6 +93,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     private let htmlSubject = PublishSubject<String>()
     private let pollACSResultSubject = PublishSubject<Void>()
     private let topupCompleteSubject = PublishSubject<Void>()
+    private let showCVVSubject = PublishSubject<Void>()
+    private let enteredCVVSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     // MARK: Properties
     private let disposeBag = DisposeBag()
@@ -135,11 +141,14 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         // TODO: [UMAIR] - Remove this skip once multiple calls issue fixed
         nextSubject.skip(1).withUnretained(self)
             .subscribe(onNext:{ `self`, _ in
-                print("next button tapped")
                 self.fetchApis()
             }).disposed(by: disposeBag)
         
-        
+        enteredCVVSubject.withUnretained(self).subscribe(onNext: { `self` ,cvv in
+            print("user entered cvv is \(cvv)")
+            //TODO: [UMAIR] - CVV Comes here
+        }).disposed(by: disposeBag)
+
     }
     
     private func fetchApis() {
@@ -270,8 +279,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     }
     
     func fetchCVV(){
-        if self.paymentGatewayM.beneficiaryId != nil {
-            //TODO: [YASIR] - link CVV screen from here
+        if self.paymentGatewayM.beneficiaryId != nil && paymentGatewayM.cardSchemeObject?.fee != nil {
+            showCVVSubject.onNext(())
         } else {
             self.fetchTopupApi()
         }

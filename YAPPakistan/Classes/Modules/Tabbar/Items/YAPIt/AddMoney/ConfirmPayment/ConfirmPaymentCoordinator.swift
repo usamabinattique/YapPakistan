@@ -22,6 +22,7 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     private var paymentGatewayM: PaymentGatewayLocalModel!
     
     private var shouldPresent: Bool = false
+    private var isCVVPushed = false
     
 //    public override var feature: CoordinatorFeature { .y2yTransfer }
     
@@ -44,6 +45,13 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
             root.pushViewController(viewController, animated: true)
         }
         
+        
+        viewModel.outputs.showCVV.withUnretained(self).subscribe(onNext: { `self`,_ in
+            guard let card = self.paymentGatewayM.beneficiary, let amount = self.paymentGatewayM.cardSchemeObject?.fee, !self.isCVVPushed else { return }
+            self.isCVVPushed = true
+            self.navigateToCVV(card: card, amount: amount, currency: "PKR",viewModel: viewModel)
+        }).disposed(by: rx.disposeBag)
+
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
             guard let self = self else { return }
@@ -86,6 +94,23 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     
     private func kycResult() -> Observable<ResultType<Void>> {
         return coordinate(to: KYCResultCoordinator(root: root, container: container))
+    }
+    
+    
+    private func navigateToCVV(card: ExternalPaymentCard ,amount: Double, currency: String, viewModel vm :ConfirmPaymentViewModel) {
+        let viewModel = TopupCardCVVViewModel(card: card, amount: amount, currency: currency)
+        let viewController = TopupCardCVVViewController(themeService: container.themeService, viewModel: viewModel)
+        self.localNavigationController.pushViewController(viewController, completion: nil)
+        viewModel.outputs.result.subscribe(onNext: { [weak self] cvv in
+            self?.isCVVPushed = false
+            vm.inputs.enteredCVV.onNext(cvv)
+            self?.localNavigationController.popViewController()
+         }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.backObservable.subscribe(onNext: { [weak self] _ in
+            self?.isCVVPushed = false
+            self?.localNavigationController.popViewController()
+        }).disposed(by: rx.disposeBag)
     }
 }
 

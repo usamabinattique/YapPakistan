@@ -85,15 +85,15 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
             print("next called in address")
             self.confirmPayment().subscribe(onNext: { [weak self] value in
                 guard let `self` = self else { return }
-                print("confrim called in address")
+                print("confirm called in address")
                 switch value {
                 case .cancel:
                     self.confirmPaymentCreated = 0
                 case .success(_):
                     //TODO: add proper CVV dependencies here
-                    self.navigateToCVV(card: ExternalPaymentCard.mock, amount: 100.0, currency: "PKR", orderID: "1", threeDSecureId: "1")
+                    print("success")
+                  //  self.navigateToCVV(card: ExternalPaymentCard.mock, amount: 100.0, currency: "PKR", orderID: "1", threeDSecureId: "1")
                 }
-               
             }).disposed(by: self.rx.disposeBag)
         }).disposed(by: rx.disposeBag)
         
@@ -130,7 +130,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
         return coordinate(to: ConfirmPaymentCoordinator(root: localRoot, container: container, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM))
     }
     
-    func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String) {
+  /*  func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String) {
         let viewModel = TopupCardCVVViewModel(card: card, amount: amount, currency: currency, orderID: orderID, threeDSecureId: threeDSecureId)
         let viewController = TopupCardCVVViewController(themeService: container.themeService, viewModel: viewModel)
       //  root.setNavigationBarHidden(false, animated: false)
@@ -171,7 +171,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
             self?.localRoot.setNavigationBarHidden(true, animated: false)
             self?.localRoot.popViewController()
         }).disposed(by: rx.disposeBag)
-    }
+    } */
     
     func goToHome() {
      //   self.root.popToRootViewController(animated: true)
