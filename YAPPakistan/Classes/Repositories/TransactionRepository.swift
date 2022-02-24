@@ -31,7 +31,8 @@ protocol TransactionsRepositoryType {
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>>
     func fetchCheckoutSession(amount: String, currency: String, sessionId: String) ->  Observable<Event<PaymentGatewayCheckoutSession>>
-    func paymentGatewayTopup(cardScheme: String, fee: String) -> Observable<Event<Int?>>
+    func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<Int?>>
+    func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<Event<Account>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType {
@@ -76,6 +77,10 @@ class TransactionsRepository: TransactionsRepositoryType {
     }
     
     func fetchCheckoutSession(amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>> {
+        
+//        {"beneficiaryId":null,"apiOperation":null,"order":{"id":"4744915f-6b1c-4069-a9d6-e65585f72611","currency":"PKR","amount":"500.0","creationTime":null,"totalAuthorizedAmount":null,"status":null},"interaction":null,"session":{"id":"SESSION0002154417762F50921517L4","updateStatus":"SUCCESS","version":"9887235c03","authenticationLimit":null,"aes256Key":null},"error":null,"securityCode":null,"3DSecureId":null}
+        
+//        return Observable.just(PaymentGatewayCheckoutSession(beneficiaryId: "", apiOperation: "", interaction: "", error: "", securityCode: "", threeDSecureId: "", order: PaymentGatewayOrder(id: "4744915f-6b1c-4069-a9d6-e65585f72611", currency: "PKR", amount: "500.0", creationTime: "", totalAuthorizedAmount: "", status: ""), session: PaymentGatewaySession(id: "SESSION0002154417762F50921517L4", updateStatus: "SUCCESS", version: "9887235c03", authenticationLimit: "", aes256Key: ""))).materialize()
         return transactionService.createCheckoutSession(amount: amount, currency: currency, sessionId: sessionId).materialize()
     }
     
@@ -85,93 +90,14 @@ class TransactionsRepository: TransactionsRepositoryType {
     
     func retrieveACSResults(threeDSecureID: String) -> Observable<Event<String?>> {
         return Observable.just("Y").materialize()
-        //return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
+//        return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
     }
     
-    public func paymentGatewayTopup(cardScheme: String, fee: String) -> Observable<Event<Int?>> {
-        return transactionService.paymentGatewayTopup(cardScheme: cardScheme, fee: fee).materialize()
-    }
-}
-
-/*
- class TransactionsRepository: YAPRepository {
-    
-
-    
-    func fetchTransactionDetails(transactionId: String) -> Observable<Event<TransactionDetails>> {
-        return transactionService.fetchTransactionDetails(transactionId: transactionId).materialize()
+    public func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<Event<Account>> {
+        return transactionService.paymentGatewayTopup(threeDSecureId: threeDSecureId, orderId: orderId, currency: currency, amount: amount, sessionId: sessionId).materialize()
     }
     
-    func addNote(transactionId: String, senderTransactionNote: String?, receiverTransactionNote: String?) -> Observable<Event<String?>> {
-        return transactionService.addNote(transactionId: transactionId, senderTransactionNote: senderTransactionNote, receiverTransactionNote: receiverTransactionNote).materialize()
-    }
-    
-    func fetchCardTransactions(pageNo: Int, pageSize: Int, cardSerialNo: String, debitSearch: Bool = false) -> Observable<Event<PagableResponse<TransactionResponse>>> {
-        return transactionService.getCardTransactions(cardSerialNumber: cardSerialNo, pageNumber: pageNo, pageSize: pageSize, debitSearch: debitSearch).materialize()
-    }
-    
-    func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>> {
-        return transactionService.getDenominationAmount(productCode: productCode).materialize()
-    }
-    
-    func getProductLimit() -> Observable<Event<ProductLimit>> {
-        return transactionService.getProductLimit().materialize()
-    }
-    
-    func subCardTopup(amount: String, cardSerial: String) -> Observable<Event<AddRemoveFundsResponse>> {
-        return transactionService.performSubCardTopUp(amount, toCard: cardSerial).materialize()
-    }
-    
-    func subCardWithdraw(amount: String, cardSerial: String) -> Observable<Event<AddRemoveFundsResponse>> {
-        return transactionService.performSubCardWithdraw(amount, fromCard: cardSerial).materialize()
-    }
-    
-    func getWithdrawProductLimit() -> Observable<Event<ProductLimit>> {
-        return transactionService.getWithdrawProductLimits().materialize()
-    }
-    
-    func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>> {
-        return transactionService.getTransactionFilters().materialize()
-    }
-    
-    func getTopupTransactionFee(productName: String) -> Observable<Event<TransferFee?>> {
-        return transactionService.getFee(productCode: productName).materialize()
-    }
-    
-    func getTransactionProductLimit(transactionProductCode: String) -> Observable<Event<ProductLimit>> {
-        return transactionService.getTransactionProductLimit(transactionProductCode: transactionProductCode).materialize()
-    }
-    
-    func sendHouseholdPayment(to uuid: String, amount: String, remarks: String, beneficiaryName: String)  -> Observable<Event<HouseholdPayNow?>> {
-        return transactionService.sendHouseholdPayment(to: uuid, amount: amount, remarks: remarks, beneficiaryName: beneficiaryName).materialize()
-    }
-    
-    func addReceiptPhoto(_ transactionId: String, _ data: Data, _ name: String, _ fileName: String, _ mimeType: String) -> Observable<Event<String?>> {
-        return transactionService.uploadReceiptPhoto(transactionId: transactionId, data: data, name: name, fileName: fileName, mimeType: mimeType, progressObserver: nil).materialize()
-    }
-    
-    func getAllReceipts(_ transactionId: String) -> Observable<Event<[String]?>>{
-        return transactionService.getAllReceipts(transactionId).materialize()
-    }
-    
-    func deleteReceipt(_ transactionId: String, imageName: String) -> Observable<Event<String?>>{
-        return transactionService.deleteReceipts(transactionId, imageName: imageName).materialize()
-    }
-    
-    func fetchTotalPurchaseData(transactionType: String, beneficiaryId: String?, receiverCustomerId: String?, productCode: String, merchantName: String?, senderCustomerId: String?) -> Observable<Event<TotalPurchase>>{
-        return transactionService.fetchTotalPurchaseData(transactionType: transactionType, beneficiaryId: beneficiaryId, receiverCustomerId: receiverCustomerId, productCode: productCode, merchantName: merchantName, senderCustomerId: senderCustomerId).materialize()
-    }
-    
-    func getTapixCategories() -> Observable<Event<[TapixTransactionCategory]>> {
-        transactionService.getAllTransactionCategories().materialize()
-    }
-    
-    func updateTransactionCategory(transactionId: String, categoryId: String) -> Observable<Event<String?>> {
-        transactionService.updateTransactionCategory(transactionId: transactionId, categoryId: categoryId).materialize()
-    }
-    
-    func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>{
-        transactionService.emailStatement(url: request.url?.absoluteString ?? "", month: request.month ?? "", year: request.year ?? "", statementType: request.statementType ?? "").materialize()
+    public func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<Int?>> {
+        return transactionService.createCardHolder(cardScheme: cardScheme, fee: fee).materialize()
     }
 }
-*/

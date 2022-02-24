@@ -62,22 +62,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
             .flatMap{ `self`, _ in self.selectCityName() }
             .bind(to: viewController.viewModel.inputs.citySelectObserver)
             .disposed(by: rx.disposeBag)
-
-    /*    viewController.viewModel.outputs.next.withUnretained(self)
-            .flatMap({  _ in self.confirmPayment()
-            }).withUnretained(self).subscribe(onNext: { `self`, value in
-                switch value {
-                case .cancel:
-                    break
-                case .success(_):
-                    //TODO: add proper CVV dependencies here
-                    self.navigateToCVV(card: ExternalPaymentCard.mock, amount: 100.0, currency: "PKR", orderID: "1", threeDSecureId: "1")
-                }
-                
-            }).disposed(by: rx.disposeBag) */
         
-        //TODO: connect flow properly
-        /// for paypak flow
         viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] location in
             guard let `self` = self, self.confirmPaymentCreated < 1 else { return }
             self.confirmPaymentCreated = self.confirmPaymentCreated + 1
@@ -90,9 +75,16 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
                 case .cancel:
                     self.confirmPaymentCreated = 0
                 case .success(_):
-                    //TODO: add proper CVV dependencies here
+                    if self.isPresented {
+                        self.localRoot.dismiss(animated: true) {
+                            self.kycResult()
+                            self.moveNext()
+                        }
+                    } else {
+                        self.root.popViewController()
+                        self.kycResult()
+                    }
                     print("success")
-                  //  self.navigateToCVV(card: ExternalPaymentCard.mock, amount: 100.0, currency: "PKR", orderID: "1", threeDSecureId: "1")
                 }
             }).disposed(by: self.rx.disposeBag)
         }).disposed(by: rx.disposeBag)
@@ -121,8 +113,19 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
              .do(onNext: { [weak self] _ in viewController.dismiss(animated: true) })
     }
     
-    func kycResult() -> Observable<ResultType<Void>> {
-        return coordinate(to: KYCResultCoordinator(root: root, container: container))
+    func kycResult() {
+        coordinate(to: KYCResultCoordinator(root: root, container: container))
+            .subscribe(onNext:{ [weak self] result in
+                switch result {
+                case .success:
+                    print("go next from Name address")
+                    self?.goToHome()
+                case .cancel:
+//                    self?.navigationRoot.popToRootViewController(animated: true)
+                    print("go back from Name address")
+                    break
+                }
+            }).disposed(by: rx.disposeBag)
     }
     
     func confirmPayment() -> Observable<ResultType<Void>> {

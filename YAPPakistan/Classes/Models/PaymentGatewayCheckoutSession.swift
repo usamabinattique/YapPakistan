@@ -29,15 +29,15 @@ struct PaymentGatewayCheckoutSession: Codable {
         case session
     }
     
-    public init(beneficiaryId: String,apiOperation: String, interaction: String, error: String, securityCode: String,threeDSecureId: String  ) {
+    public init(beneficiaryId: String,apiOperation: String, interaction: String, error: String, securityCode: String,threeDSecureId: String, order: PaymentGatewayOrder? = nil, session: PaymentGatewaySession? = nil) {
         self.beneficiaryId = beneficiaryId
         self.apiOperation = apiOperation
         self.interaction = interaction
         self.error = error
         self.securityCode =  securityCode
         self.threeDSecureId = threeDSecureId
-        self.order = nil
-        self.session = nil
+        self.order = order
+        self.session = session
     }
 
     public init(from decoder: Decoder) throws {
@@ -83,6 +83,19 @@ struct PaymentGatewayOrder: Codable {
         status = (try? container.decode(String?.self, forKey: .status)) ?? ""
     }
     
+    public init(id: String,
+        currency: String,
+        amount: String,
+        creationTime: String,
+        totalAuthorizedAmount: String,
+                status: String) {
+        self.id = id
+        self.currency = currency
+        self.amount = amount
+        self.creationTime = creationTime
+        self.totalAuthorizedAmount = totalAuthorizedAmount
+        self.status = status
+    }
     
     
 }
@@ -112,5 +125,20 @@ struct PaymentGatewaySession: Codable {
         authenticationLimit = (try? container.decode(String?.self, forKey: .authenticationLimit)) ?? ""
         aes256Key = (try? container.decode(String?.self, forKey: .aes256Key)) ?? ""
     }
+    
+    public init(
+        id: String,
+        updateStatus: String,
+        version: String,
+        authenticationLimit: String,
+        aes256Key: String) {
+            
+            self.id = id
+            self.updateStatus = updateStatus
+            self.version = version
+            self.authenticationLimit = authenticationLimit
+            self.aes256Key = aes256Key
+            
+        }
 }
 

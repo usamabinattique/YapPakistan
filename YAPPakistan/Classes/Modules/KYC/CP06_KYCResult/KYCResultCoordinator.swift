@@ -47,6 +47,13 @@ fileprivate extension KYCResultCoordinator {
         self.result.onNext(.success(()))
         self.result.onCompleted()
     }
+    
+    func goToHome() {
+     //   self.root.popToRootViewController(animated: true)
+        self.root.popToRootViewController(animated: true)
+        self.result.onNext(.success(()))
+        self.result.onCompleted()
+    }
 }
 
 extension KYCResultCoordinator {
@@ -54,8 +61,13 @@ extension KYCResultCoordinator {
         let viewController = container.makeCardOnItsWayViewController()
         self.root.pushViewController(viewController)
 
-        viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.moveNext() })
+        viewController.viewModel.outputs.back.debug("back button from result").withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                print("back from card on its way")
+                self.root.popViewController(animated: true) {
+                    self.goToHome()
+                }
+            })
             .disposed(by: rx.disposeBag)
     }
 

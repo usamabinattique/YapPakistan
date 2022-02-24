@@ -85,14 +85,14 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func addressPending() {
-        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
+        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM, isPresented: true))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:
-                    print("go next from address")
+                    print("go next from Name address")
                 case .cancel:
 //                    self?.navigationRoot.popToRootViewController(animated: true)
-                    print("go back from address")
+                    print("go back from Name address")
                     break
                 }
             }).disposed(by: rx.disposeBag)
