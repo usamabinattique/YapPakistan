@@ -101,8 +101,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     private let paymentGatewayM: PaymentGatewayLocalModel!
     private let kycRepository: KYCRepository
     private let transactionRepository: TransactionsRepository
-    private var confirmPaymentCreated = 0
     private var accountProvider: AccountProvider!
+    private var checkoutSessionObject: PaymentGatewayCheckoutSession?
     
     init(accountProvider: AccountProvider, kycRepository: KYCRepository, transactionRepository: TransactionsRepository, paymentGatewayObj: PaymentGatewayLocalModel? = nil){
         
@@ -202,7 +202,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
         
         let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
-            self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
+            self.checkoutSessionObject = paymentGatewayCheckoutSession
+            return self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
         }
         
         fetchCheckoutSessionRequest.errors().subscribe(onNext: { [weak self] error in
@@ -261,14 +262,42 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     }
     
     func fetchTopupApi(){
-        let topupRequest = transactionRepository.paymentGatewayTopup(cardScheme: self.paymentGatewayM.cardSchemeObject?.schemeName ?? "", fee: self.paymentGatewayM.cardSchemeObject?.feeValue ?? "")
         
-        topupRequest.elements().subscribe(onNext: { [weak self] response in
-            self?.topupCompleteSubject.onNext(())
+        var sessionId = ""
+        if let beneficiaryId = self.checkoutSessionObject?.beneficiaryId {
+            sessionId = beneficiaryId
+        } else {
+            sessionId = self.checkoutSessionObject?.session?.id ?? ""
+        }
+        
+        let topupRequest = transactionRepository.paymentGatewayTopup(threeDSecureId: self.checkoutSessionObject?.threeDSecureId ?? "", orderId: self.checkoutSessionObject?.order?.id ?? "", currency: self.checkoutSessionObject?.order?.currency ?? "", amount: self.checkoutSessionObject?.order?.amount ?? "", sessionId: sessionId)
+        
+        topupRequest.elements().subscribe(onNext: { [weak self] responseObj in
+            self?.fetchOrderCardHolderApi()
             YAPProgressHud.hideProgressHud()
         }).disposed(by: disposeBag)
         
         topupRequest.errors()
+            .do(onNext:{ _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .map {
+                $0.localizedDescription
+            }
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+    }
+    
+    func fetchOrderCardHolderApi() {
+        
+        let cardOrderRequest = transactionRepository.createCardHolder(cardScheme: self.paymentGatewayM.cardSchemeObject?.schemeName ?? "", fee: self.paymentGatewayM.cardSchemeObject?.feeValue ?? "")
+        
+        cardOrderRequest.elements().subscribe(onNext: { [weak self] responseObj in
+            self?.topupCompleteSubject.onNext(())
+            YAPProgressHud.hideProgressHud()
+        }).disposed(by: disposeBag)
+        
+        cardOrderRequest.errors()
             .do(onNext:{ _ in
                 YAPProgressHud.hideProgressHud()
             })
