@@ -86,7 +86,7 @@ class CardOnItsWayViewController: UIViewController {
     }
 
     func setupBindings() {
-        dashboardButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        dashboardButton.rx.tap.debug("back button tapped from cardonitsway").bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {

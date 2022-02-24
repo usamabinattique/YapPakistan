@@ -89,7 +89,8 @@ class TransactionsRepository: TransactionsRepositoryType {
     }
     
     public func paymentGatewayTopup(cardScheme: String, fee: String) -> Observable<Event<Int?>> {
-        return transactionService.paymentGatewayTopup(cardScheme: cardScheme, fee: fee).materialize()
+        return Observable.just(1).materialize()
+        //return transactionService.paymentGatewayTopup(cardScheme: cardScheme, fee: fee).materialize()
     }
 }
 
