@@ -72,6 +72,20 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
             self.cardDetailWeb(html: htmlString, viewModel: viewModel)
         }).disposed(by: rx.disposeBag)
         
+        viewModel.outputs.topupComplete.withUnretained(self).subscribe(onNext: { `self`, _ in
+            if self.shouldPresent {
+                
+                self.root.dismiss(animated: true) {
+                    self.moveNext()
+                }
+            }
+            else {
+                self.root.popViewController(animated: true) {
+                    self.moveNext()
+                }
+            }
+        }).disposed(by: rx.disposeBag)
+        
         return result.asObservable()
     }
     
@@ -92,11 +106,6 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
         _ = coordinate(to: CommonWebViewCoordinator(root: self.localNavigationController, container: self.container, paymentGatewayM: self.paymentGatewayM, html: html, resultObserver: viewModel.inputs.pollACSResultObserver))
     }
     
-    private func kycResult() -> Observable<ResultType<Void>> {
-        return coordinate(to: KYCResultCoordinator(root: root, container: container))
-    }
-    
-    
     private func navigateToCVV(card: ExternalPaymentCard ,amount: Double, currency: String, viewModel vm :ConfirmPaymentViewModel) {
         let viewModel = TopupCardCVVViewModel(card: card, amount: amount, currency: currency)
         let viewController = TopupCardCVVViewController(themeService: container.themeService, viewModel: viewModel)
@@ -115,6 +124,18 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
 }
 
 // MARK: Navigation
+
+fileprivate extension ConfirmPaymentCoordinator {
+    func goBack() {
+        self.result.onNext(.cancel)
+        self.result.onCompleted()
+    }
+
+    func moveNext() {
+        self.result.onNext(.success(()))
+        self.result.onCompleted()
+    }
+}
 
 private extension Y2YFundsTransferCoordinator {
    /* func otp(_ contact: YAPContact, _ amount: Double, result: AnyObserver<Void>) {

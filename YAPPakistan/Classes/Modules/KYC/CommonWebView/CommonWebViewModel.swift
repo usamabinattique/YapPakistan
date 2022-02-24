@@ -83,7 +83,7 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
                         self.fetchExternalBeneficiarySubject.onNext(())
                     }
                 } else if url.absoluteString.contains("transactions") {
-//                    self.completionSubject.onNext(())
+                    self.completionSubject.onNext(())
                 }
             }
         }).disposed(by: disposeBag)

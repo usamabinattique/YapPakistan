@@ -64,14 +64,14 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
     
     private func addressPending() {
         guard let paymentGatewayObject = self.paymentGatewayM else { return }
-        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: paymentGatewayObject))
+        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: paymentGatewayObject, isPresented: true))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:
-                    print("go next from address")
+                    print("go next from commonWeb address")
                 case .cancel:
 //                    self?.navigationRoot.popToRootViewController(animated: true)
-                    print("go back from address")
+                    print("go back from commonWeb address")
                     break
                 }
             }).disposed(by: rx.disposeBag)
