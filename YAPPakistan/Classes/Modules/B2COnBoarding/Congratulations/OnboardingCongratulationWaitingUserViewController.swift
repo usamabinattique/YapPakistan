@@ -28,6 +28,11 @@ class OnboardingCongratulationWaitingUserViewController: OnboardingCongratulatio
             self?.animatePaymentCard()
             self?.animateFootnote()
             self?.animateCompleteVerificationButton()
+            
+            self?.animateCompleteVerificationCompleted = { [weak self] in
+                print("animation completed")
+                self?.bindTimeInterval()
+            }
         }
         
 //        _ = rowHeight
