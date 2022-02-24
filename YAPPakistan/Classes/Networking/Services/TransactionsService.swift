@@ -157,7 +157,7 @@ class TransactionsService: BaseService, TransactionsServiceType {
     public func paymentGatewayTopup<T: Codable>(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<T> {
         let pathVariables = [orderId]
         let body = OrderCardRequest(threeDSecureId: threeDSecureId, order: PaymentGatewayAmountRequest(id: orderId, amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: sessionId))
-        let route = APIEndpoint(.put, apiConfig.cardsURL, "/api/mastercard/first-credit/order-id/", pathVariables: pathVariables, body: body, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint(.put, apiConfig.transactionsURL, "/api/mastercard/first-credit/order-id/", pathVariables: pathVariables, body: body, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

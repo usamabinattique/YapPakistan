@@ -159,7 +159,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         if (accountProvider.currentAccountValue.value?.parnterBankStatus == .physicalCardPending || accountProvider.currentAccountValue.value?.parnterBankStatus == .ibanAssigned) && (accountProvider.currentAccountValue.value?.isFirstCredit == true || self.paymentGatewayM.cardSchemeObject?.isPaidScheme == false) {
             
             //order card api directly
-            self.fetchTopupApi()
+            self.fetchOrderCardHolderApi()
             
         } else if (accountProvider.currentAccountValue.value?.parnterBankStatus == .physicalCardPending || accountProvider.currentAccountValue.value?.parnterBankStatus == .ibanAssigned) && (self.paymentGatewayM.cardSchemeObject?.isPaidScheme == true) {
             
@@ -194,12 +194,14 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     }
     
     private func fetchCheckoutSessionFlowApis() {
-        guard let cardObject = self.paymentGatewayM.cardDetailObject else {
-            YAPProgressHud.hideProgressHud()
-            return
+        var sessionID = ""
+        if let cardObject = self.paymentGatewayM.cardDetailObject {
+            sessionID = cardObject.sessionID ?? ""
+        } else {
+            sessionID = self.paymentGatewayM.beneficiaryId ?? ""
         }
         
-        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: cardObject.sessionID ?? "")
+        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: sessionID)
         
         let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
             self.checkoutSessionObject = paymentGatewayCheckoutSession
@@ -290,7 +292,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     
     func fetchOrderCardHolderApi() {
         
-        let cardOrderRequest = transactionRepository.createCardHolder(cardScheme: self.paymentGatewayM.cardSchemeObject?.schemeName ?? "", fee: self.paymentGatewayM.cardSchemeObject?.feeValue ?? "")
+        let cardOrderRequest = transactionRepository.createCardHolder(cardScheme: self.paymentGatewayM.cardSchemeObject?.schemeName ?? "", fee: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0))
         
         cardOrderRequest.elements().subscribe(onNext: { [weak self] responseObj in
             self?.topupCompleteSubject.onNext(())

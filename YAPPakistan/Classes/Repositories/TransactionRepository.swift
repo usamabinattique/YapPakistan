@@ -78,8 +78,6 @@ class TransactionsRepository: TransactionsRepositoryType {
     
     func fetchCheckoutSession(amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>> {
         
-//        {"beneficiaryId":null,"apiOperation":null,"order":{"id":"4744915f-6b1c-4069-a9d6-e65585f72611","currency":"PKR","amount":"500.0","creationTime":null,"totalAuthorizedAmount":null,"status":null},"interaction":null,"session":{"id":"SESSION0002154417762F50921517L4","updateStatus":"SUCCESS","version":"9887235c03","authenticationLimit":null,"aes256Key":null},"error":null,"securityCode":null,"3DSecureId":null}
-        
 //        return Observable.just(PaymentGatewayCheckoutSession(beneficiaryId: "", apiOperation: "", interaction: "", error: "", securityCode: "", threeDSecureId: "", order: PaymentGatewayOrder(id: "4744915f-6b1c-4069-a9d6-e65585f72611", currency: "PKR", amount: "500.0", creationTime: "", totalAuthorizedAmount: "", status: ""), session: PaymentGatewaySession(id: "SESSION0002154417762F50921517L4", updateStatus: "SUCCESS", version: "9887235c03", authenticationLimit: "", aes256Key: ""))).materialize()
         return transactionService.createCheckoutSession(amount: amount, currency: currency, sessionId: sessionId).materialize()
     }
@@ -98,6 +96,7 @@ class TransactionsRepository: TransactionsRepositoryType {
     }
     
     public func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<Int?>> {
-        return transactionService.createCardHolder(cardScheme: cardScheme, fee: fee).materialize()
+        return Observable.just(1).materialize()
+        //return transactionService.createCardHolder(cardScheme: cardScheme, fee: fee).materialize()
     }
 }

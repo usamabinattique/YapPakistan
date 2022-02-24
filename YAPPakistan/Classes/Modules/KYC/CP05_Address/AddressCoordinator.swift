@@ -78,7 +78,6 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
                     if self.isPresented {
                         self.localRoot.dismiss(animated: true) {
                             self.kycResult()
-                            self.moveNext()
                         }
                     } else {
                         self.root.popViewController()

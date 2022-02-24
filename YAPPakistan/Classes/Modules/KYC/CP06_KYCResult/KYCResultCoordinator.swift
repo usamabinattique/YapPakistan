@@ -23,18 +23,12 @@ class KYCResultCoordinator: Coordinator<ResultType<Void>> {
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
-        Observable.just(())
-            // .delay(.milliseconds(500), scheduler: MainScheduler.instance)
-            .withLatestFrom(container.accountProvider.currentAccount).unwrap()
-            .map({ $0.isSecretQuestionVerified }).withUnretained(self)
-            .subscribe(onNext: { `self`, isVerified in
-                  if isVerified == true {
-                    self.cardOnItsWay()
-                } else {
-                    self.manualVerification()
-                } 
-            })
-            .disposed(by: rx.disposeBag)
+        let account = container.accountProvider.currentAccountValue.value
+        if account?.isSecretQuestionVerified == true {
+            self.cardOnItsWay()
+        } else {
+            self.manualVerification()
+        }
 
         return result
     }
