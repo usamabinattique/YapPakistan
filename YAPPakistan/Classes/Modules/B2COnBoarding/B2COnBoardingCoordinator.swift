@@ -105,7 +105,13 @@ private extension B2COnBoardingCoordinator {
         containerViewModel.outputs.send.bind(to: verificationViewModel.inputs.sendObserver).disposed(by: disposeBag)
 
         verificationViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
+            //TODO: uncomment following
             self.navigateToCreatePasscode(user: result)
+            
+//            //TODO: remove following line
+//            var newResult = result
+//            newResult.timeTaken = 15
+//            self.navigateToWaitingUserCongratulation(user: newResult, session: Session(sessionToken: " abc "))
         }).disposed(by: disposeBag)
     }
 

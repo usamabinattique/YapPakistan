@@ -48,7 +48,6 @@ class CommonWebViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         backButton = makeAndAddBackButton(of:.closeEmpty)
-        
         setupViews()
         setupConstraints()
         setupTheme()
