@@ -103,7 +103,7 @@ public class WebClient: APIClient {
                 }
             })
             return Disposables.create()
-        }
+        }.share()
     }
 
     public func upload(documents: [DocumentDataConvertible],
