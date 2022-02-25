@@ -138,8 +138,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         }
         localizedStringsSubject.onNext(theStrings)
         
-        // TODO: [UMAIR] - Remove this skip once multiple calls issue fixed
-        nextSubject.skip(1).withUnretained(self)
+        nextSubject.withUnretained(self)
             .subscribe(onNext:{ `self`, _ in
                 self.fetchApis()
             }).disposed(by: disposeBag)
@@ -206,7 +205,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
             self.checkoutSessionObject = paymentGatewayCheckoutSession
             return self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
-        }
+        }.share()
         
         fetchCheckoutSessionRequest.errors().subscribe(onNext: { [weak self] error in
             self?.errorSubject.onNext(error.localizedDescription)
@@ -215,8 +214,9 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         }).disposed(by: disposeBag)
         
         let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
-        threeDEnrollmentResult.do(onNext:{ _ in
+        threeDEnrollmentResult.do(onNext:{ threeDSResult in
             YAPProgressHud.hideProgressHud()
+            self.checkoutSessionObject?.threeDSecureId = threeDSResult.threeDSecureId
         }).map { $0.formattedHTML}.bind(to: htmlSubject).disposed(by: disposeBag)
         
         fetch3DSEnrollmentRequest.errors().subscribe(onNext: { [weak self] error in
@@ -266,7 +266,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     func fetchTopupApi(){
         
         var sessionId = ""
-        if let beneficiaryId = self.checkoutSessionObject?.beneficiaryId {
+        if let beneficiaryId = self.checkoutSessionObject?.beneficiaryId, beneficiaryId.count > 0 {
             sessionId = beneficiaryId
         } else {
             sessionId = self.checkoutSessionObject?.session?.id ?? ""

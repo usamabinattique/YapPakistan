@@ -13,8 +13,8 @@ struct PaymentGatewayCheckoutSession: Codable {
     let apiOperation: String
     let interaction: String
     let error: String
-    let securityCode: String
-    let threeDSecureId: String
+    var securityCode: String
+    var threeDSecureId: String
     let order: PaymentGatewayOrder?
     let session: PaymentGatewaySession?
     

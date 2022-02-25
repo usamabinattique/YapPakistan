@@ -89,13 +89,13 @@ fileprivate extension CommonWebViewController {
     func setupBindings(){
         viewModel.outputs.html.subscribe(onNext: { [weak self] html in
             guard let `self` = self else { return }
-            self.title = "screen_kyc_card_details_screen_title".localized
+            self.title = "".localized
             self.webView.loadHTMLString(html, baseURL: nil)
         }).disposed(by: disposeBag)
         
         viewModel.outputs.webUrl.subscribe(onNext: { [weak self] html in
             guard let `self` = self else { return }
-            self.title = ""
+            self.title = "screen_kyc_card_details_screen_title".localized
             guard let url = URL(string: html) else { return }
             self.webView.load(URLRequest(url: url))
         }).disposed(by: disposeBag)

@@ -17,7 +17,6 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     private var localRoot: UINavigationController!
     private let container: KYCFeatureContainer
     private var paymentGatewayM: PaymentGatewayLocalModel!
-    private var confirmPaymentCreated = 0
     private var isPresented: Bool
 
     init(root: UINavigationController,
@@ -64,8 +63,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] location in
-            guard let `self` = self, self.confirmPaymentCreated < 1 else { return }
-            self.confirmPaymentCreated = self.confirmPaymentCreated + 1
+            guard let `self` = self else { return }
             self.paymentGatewayM.locationData = location
             print("next called in address")
             self.confirmPayment().subscribe(onNext: { [weak self] value in
@@ -73,7 +71,7 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
                 print("confirm called in address")
                 switch value {
                 case .cancel:
-                    self.confirmPaymentCreated = 0
+                    print("confirm payment cancel ")
                 case .success(_):
                     if self.isPresented {
                         self.localRoot.dismiss(animated: true) {

@@ -74,21 +74,9 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
     
     private func cardDetailWebView() {
         
-        var html = ""
-        let myURLString = "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
-        guard let myURL = URL(string: myURLString) else {
-            print("Error: \(myURLString) doesn't seem to be a valid URL")
-            return
-        }
-
-        do {
-            let myHTMLString = try String(contentsOf: myURL, encoding: .ascii)
-            html = myHTMLString
-        } catch let error {
-            print("Error: \(error)")
-        }
+        let htmlUrlString = "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
         
-        let viewModel = CommonWebViewModel(container: container, repository: cardsRepository, html: html)
+        let viewModel = CommonWebViewModel(container: container, repository: cardsRepository, html: htmlUrlString)
         let viewController = container.makeCommonWebViewController(viewModel: viewModel)
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in

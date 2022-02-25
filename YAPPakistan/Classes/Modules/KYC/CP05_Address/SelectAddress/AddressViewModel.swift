@@ -149,14 +149,19 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
         confirmLocationSubject
             .withLatestFrom(currentLocationResultSubject).withUnretained(self)
             .subscribe(onNext: {`self`, loc in
-                DispatchQueue.main.async { self.currentLocationResultSubject.onNext(loc) }
+                DispatchQueue.main.async {
+                    self.currentLocationResultSubject.onNext(loc)
+                }
             })
             .disposed(by: disposeBag)
+        
+        locationDecoded.elements().debug("locationDecoded going to bind").bind(to: currentLocationResultSubject).disposed(by: disposeBag)
 
-        locationDecoded.elements().bind(to: currentLocationResultSubject).disposed(by: disposeBag)
-
-        let saveAddressRequest = nextSubject
-            .withLatestFrom(Observable.combineLatest(currentLocationResultSubject,addressObserverSubject))
+        //TODO: [UMAIR] - Discuss this skip with Hussaan and replace with appropriate solution
+        let saveAddressRequest = nextSubject.skip(1)
+            .withLatestFrom(
+                Observable.combineLatest(currentLocationResultSubject,addressObserverSubject)
+            )
           //  .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(true) })
             .map({ (location, address) -> LocationModel in
                 var location = location

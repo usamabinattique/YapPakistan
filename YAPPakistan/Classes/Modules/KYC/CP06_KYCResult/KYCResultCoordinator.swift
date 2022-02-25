@@ -70,7 +70,11 @@ extension KYCResultCoordinator {
         root.pushViewController(viewController, animated: true)
 
         viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.moveNext() })
+            .subscribe(onNext: { `self`, _ in
+                self.root.popViewController(animated: true) {
+                    self.goToHome()
+                }
+            })
             .disposed(by: rx.disposeBag)
     }
  }

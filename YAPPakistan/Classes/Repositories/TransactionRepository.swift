@@ -31,8 +31,8 @@ protocol TransactionsRepositoryType {
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>>
     func fetchCheckoutSession(amount: String, currency: String, sessionId: String) ->  Observable<Event<PaymentGatewayCheckoutSession>>
-    func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<Int?>>
-    func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<Event<Account>>
+    func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<Event<String?>>
+    func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<[String: String?]?>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType {
@@ -77,8 +77,6 @@ class TransactionsRepository: TransactionsRepositoryType {
     }
     
     func fetchCheckoutSession(amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>> {
-        
-//        return Observable.just(PaymentGatewayCheckoutSession(beneficiaryId: "", apiOperation: "", interaction: "", error: "", securityCode: "", threeDSecureId: "", order: PaymentGatewayOrder(id: "4744915f-6b1c-4069-a9d6-e65585f72611", currency: "PKR", amount: "500.0", creationTime: "", totalAuthorizedAmount: "", status: ""), session: PaymentGatewaySession(id: "SESSION0002154417762F50921517L4", updateStatus: "SUCCESS", version: "9887235c03", authenticationLimit: "", aes256Key: ""))).materialize()
         return transactionService.createCheckoutSession(amount: amount, currency: currency, sessionId: sessionId).materialize()
     }
     
@@ -87,16 +85,14 @@ class TransactionsRepository: TransactionsRepositoryType {
     }
     
     func retrieveACSResults(threeDSecureID: String) -> Observable<Event<String?>> {
-        return Observable.just("Y").materialize()
-//        return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
+        return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
     }
     
-    public func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<Event<Account>> {
+    public func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<Event<String?>> {
         return transactionService.paymentGatewayTopup(threeDSecureId: threeDSecureId, orderId: orderId, currency: currency, amount: amount, sessionId: sessionId).materialize()
     }
     
-    public func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<Int?>> {
-        return Observable.just(1).materialize()
-        //return transactionService.createCardHolder(cardScheme: cardScheme, fee: fee).materialize()
+    public func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<[String: String?]?>> {
+        return transactionService.createCardHolder(cardScheme: cardScheme, fee: fee).materialize()
     }
 }

@@ -215,7 +215,6 @@ class ConfirmPaymentViewController: UIViewController {
             })
             .disposed(by: rx.disposeBag)
         viewModel.outputs.buttonTitle.bind(to: actionButton.rx.title(for: .normal)).disposed(by: rx.disposeBag)
-        actionButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }
 
