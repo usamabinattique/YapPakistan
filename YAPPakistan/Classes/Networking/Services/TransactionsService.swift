@@ -148,7 +148,6 @@ class TransactionsService: BaseService, TransactionsServiceType {
     }
     
     public func createCardHolder<T: Codable>(cardScheme: String, fee: String) -> Observable<T> {
-//        let pathVariables = [orderID]
         let body = PaymentCardTopupRequest(cardFee: fee, cardSchemeTitle: cardScheme)
         let route = APIEndpoint(.post, apiConfig.cardsURL, "/api/order-physical-card-of-cardholder", body: body ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)

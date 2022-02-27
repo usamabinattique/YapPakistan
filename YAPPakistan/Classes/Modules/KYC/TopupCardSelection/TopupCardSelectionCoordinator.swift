@@ -59,7 +59,7 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
     
         viewModel.outputs.addNewCard.subscribe(onNext: { [weak self] in
-            self?.cardDetailWebView()
+            self?.cardDetailWebView(isComingFromTopup: true)
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.beneficiarySelected.withUnretained(self).subscribe(onNext: { `self` ,externalPaymentCard in
@@ -72,7 +72,7 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         return result.asObservable()
     }
     
-    private func cardDetailWebView() {
+    private func cardDetailWebView(isComingFromTopup: Bool) {
         
         let htmlUrlString = "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
         
@@ -83,13 +83,13 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
             viewController.dismiss(animated: true, completion: nil)
         }).disposed(by: rx.disposeBag)
         
-//        viewModel.outputs.confirm.subscribe(onNext: { [weak self] model in
-//            self?.paymentGatewayM.cardDetailObject = model
-//            viewController.dismiss(animated: true, completion: {
-//                self?.addressPending()
-//            })
-//        }).disposed(by: rx.disposeBag)
-//
+        viewModel.outputs.confirm.subscribe(onNext: { [weak self] model in
+            self?.paymentGatewayM.cardDetailObject = model
+            viewController.dismiss(animated: true, completion: {
+                self?.addressPending()
+            })
+        }).disposed(by: rx.disposeBag)
+
         
         let navigationRoot = makeNavigationController()
         navigationRoot.navigationBar.isHidden = false

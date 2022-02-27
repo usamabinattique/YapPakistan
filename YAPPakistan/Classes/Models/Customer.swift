@@ -21,6 +21,10 @@ public struct Customer: Codable {
     public let emailVerified: Bool
     public let mobileNoVerified: Bool
     public let status: String
+    public let gender: String?
+    public let nationalityId: String?
+    public let isEmailVerified: String?
+    public let isMobileNoVerified: String?
     public let dob: String?
     public let passportNo: String?
     public let nationality: String?
@@ -36,6 +40,8 @@ public struct Customer: Codable {
 
     private enum CodingKeys: String, CodingKey {
         case uuid, countryCode, mobileNo, firstName, lastName, companyName, emailVerified, mobileNoVerified, status, dob, passportNo, nationality, customerId, homeCountry, customerColor
+        case gender, nationalityId
+        case isMobileNoVerified, isEmailVerified
         case _email = "email"
         case imageURL = "profilePictureName"
         case founder = "founder"
@@ -62,6 +68,11 @@ public extension Customer {
         self.homeCountry = customer.homeCountry
         self.founder = customer.founder
         self.customerColor = customer.customerColor
+        self.isEmailVerified = customer.isEmailVerified
+        self.isMobileNoVerified = customer.isMobileNoVerified
+        self.gender = customer.gender
+        self.nationalityId = customer.nationalityId
+        
     }
 
     init(customer: Customer, updatedEmail: String) {
@@ -83,6 +94,11 @@ public extension Customer {
         self.homeCountry = customer.homeCountry
         self.founder = customer.founder
         self.customerColor = customer.customerColor
+        self.isEmailVerified = customer.isEmailVerified
+        self.isMobileNoVerified = customer.isMobileNoVerified
+        self.gender = customer.gender
+        self.nationalityId = customer.nationalityId
+        
     }
 }
 

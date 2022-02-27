@@ -47,6 +47,10 @@ public struct Account: Codable {
     public let packageName: String?
     public let status: String
     public let active: Bool
+    public let cardName: String?
+    private let currency: Currency?
+    public let isDocumentsVerified: String?
+    public let isActive: String?
     public let documentsVerified: Bool
     public var companyType: String?
     public var soleProprietary: Bool
@@ -96,6 +100,10 @@ public struct Account: Codable {
         case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active,
              documentsVerified, companyType, soleProprietary, customer, bank, parentAccount,
              otpBlocked, isSecretQuestionVerified, isFirstCredit
+        case cardName
+        case isDocumentsVerified
+        case isActive
+        case currency
         case _accountStatus = "notificationStatuses"
         case accountNumber = "accountNo"
         case _parnterBankStatus = "partnerBankStatus"
@@ -144,6 +152,10 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
+        self.cardName = account.cardName
+        self.currency = account.currency
+        self.isDocumentsVerified = account.isDocumentsVerified
+        self.isActive = account.isActive
     }
 
     init(account: Account, updatedEmail: String) {
@@ -175,6 +187,10 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
+        self.cardName = account.cardName
+        self.currency = account.currency
+        self.isDocumentsVerified = account.isDocumentsVerified
+        self.isActive = account.isActive
     }
 
     init(account: Account, soleProprietary: Bool) {
@@ -206,6 +222,10 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
+        self.cardName = account.cardName
+        self.currency = account.currency
+        self.isDocumentsVerified = account.isDocumentsVerified
+        self.isActive = account.isActive
     }
 
     init(account: Account, accountStatus: AccountStatus) {
@@ -237,6 +257,10 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
+        self.cardName = account.cardName
+        self.currency = account.currency
+        self.isDocumentsVerified = account.isDocumentsVerified
+        self.isActive = account.isActive
     }
 }
 
