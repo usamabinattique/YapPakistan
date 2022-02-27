@@ -10,8 +10,10 @@ import YAPCore
 
 public struct APIConfiguration {
     public let baseURL: URL
+    private let environment: AppEnvironment
 
     init(environment: AppEnvironment) {
+        self.environment = environment
         switch environment {
         case .dev:
             self.baseURL = URL(string: "https://pk-dev.yap.co")!
@@ -44,5 +46,20 @@ public struct APIConfiguration {
 
     public var transactionsURL: URL {
         return baseURL.appendingPathComponent("/transactions")
+    }
+    
+    public var cardDetailWebURL: String {
+        switch self.environment {
+        case .dev:
+            return "https://pk-dev-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
+        case .qa:
+            return "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
+        case .stg:
+            return "https://pk-stg-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
+        case .preprod:
+            return ""
+        case .prod:
+            return ""
+        }
     }
 }

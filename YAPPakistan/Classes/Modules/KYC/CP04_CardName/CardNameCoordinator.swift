@@ -80,8 +80,8 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func cardDetailWeb() {
-        //self.webView.load(URLRequest(url: URL(string: "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html")!))
-        _ = coordinate(to: CommonWebViewCoordinator(root: root, container: container, paymentGatewayM: self.paymentGatewayM, html: "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"))
+        let apiConfig = self.container.mainContainer.makeAPIConfiguration()
+        _ = coordinate(to: CommonWebViewCoordinator(root: root, container: container, paymentGatewayM: self.paymentGatewayM, html: apiConfig.cardDetailWebURL))
     }
     
     private func addressPending() {

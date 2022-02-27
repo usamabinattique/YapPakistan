@@ -74,9 +74,9 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
     
     private func cardDetailWebView(isComingFromTopup: Bool) {
         
-        let htmlUrlString = "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
+        let apiConfig = self.container.mainContainer.makeAPIConfiguration()
         
-        let viewModel = CommonWebViewModel(container: container, repository: cardsRepository, html: htmlUrlString)
+        let viewModel = CommonWebViewModel(container: container, repository: cardsRepository, html: apiConfig.cardDetailWebURL)
         let viewController = container.makeCommonWebViewController(viewModel: viewModel)
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
