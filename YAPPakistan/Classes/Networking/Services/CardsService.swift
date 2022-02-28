@@ -9,12 +9,12 @@ import Foundation
 import RxSwift
 
 protocol CardsServiceType {
-    func saveUserAddress<T: Codable>(address: String,
-                                     city: String,
-                                     country: String,
-                                     postCode: String,
-                                     latitude: String,
-                                     longitude: String ) -> Observable<T>
+    func saveUserAddress<T: Codable>(addressOne: String,
+                                            addressTwo: String,
+                                            city: String,
+                                            country: String,
+                                            latitude: String,
+                                            longitude: String ) -> Observable<T>
     func getCards<T: Codable>() -> Observable<T>
     func getCardDetail<T: Codable>(cardSerialNumber: String) -> Observable<T>
     func setPin<T: Codable>(cardSerialNumber: String, pin: String) -> Observable<T>
@@ -40,32 +40,34 @@ protocol CardsServiceType {
                                       postCode: String,
                                       latitude: String,
                                       longitude: String) -> Observable<T>
+    func getCardsScheme<T: Codable>() -> Observable<T>
+    func getCardBenefits<T: Codable>(scheme type: SchemeType) -> Observable<T>
 }
 
 public class CardsService: BaseService, CardsServiceType {
 
-    public func saveUserAddress<T: Codable>(address: String,
+    public func saveUserAddress<T: Codable>(addressOne: String,
+                                            addressTwo: String,
                                             city: String,
                                             country: String,
-                                            postCode: String,
                                             latitude: String,
-                                            longitude: String ) -> Observable<T> {
+                                            longitude: String) -> Observable<T> {
 
         let body: [String: String] = [
-            "address1": address,
-            "address2": "0",
+            "address1": addressOne,
+            "address2": addressTwo,
             "city": city,
             "country": country,
-            "postCode": postCode,
             "latitude": latitude,
             "longitude": longitude
         ]
 
         let route = APIEndpoint(.post,
-                                apiConfig.cardsURL, "/api/save-address-and-order-card",
+                                apiConfig.cardsURL, "/api/save-address-and-create-cardholder",
                                 body: body,
                                 headers: authorizationProvider.authorizationHeaders)
-
+        
+        
         return self.request(apiClient: self.apiClient, route: route)
     }
 
@@ -237,6 +239,18 @@ public class CardsService: BaseService, CardsServiceType {
             body: body,
             headers: authorizationProvider.authorizationHeaders
         )
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getCardsScheme<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.cardsURL, "/api/schemes/active", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getCardBenefits<T: Codable>(scheme type: SchemeType) -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.cardsURL, "/api/scheme-benefits/active/\(type.rawValue)", headers: authorizationProvider.authorizationHeaders)
+
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

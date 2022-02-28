@@ -15,15 +15,36 @@ class OnboardingCongratulationWaitingUserViewController: OnboardingCongratulatio
         constraint.isActive = true
         return constraint
     }()
+    
+    public var resumeAnimation: (() -> Void)?
 
     override func setup() {
-        _ = rowHeight
-        animateHeading()
-        animateSubheading()
-        animatePaymentCard()
-        animateFootnote()
-        animateCompleteVerificationButton()
+        self.viewModel.inputs.progressObserver.onNext(1)
+        
+        resumeAnimation = { [weak self] in
+            _ = self?.rowHeight
+            self?.animateHeading()
+            self?.animateSubheading()
+            self?.animatePaymentCard()
+            self?.animateFootnote()
+            self?.animateCompleteVerificationButton()
+            
+            self?.animateCompleteVerificationCompleted = { [weak self] in
+                print("animation completed")
+                self?.bindTimeInterval()
+            }
+        }
+        
+//        _ = rowHeight
+//        animateHeading()
+//        animateSubheading()
+//        animatePaymentCard()
+//        animateFootnote()
+//        animateCompleteVerificationButton()
+       
     }
+    
+    
 
     override func addFootnoteTopConstraint() -> NSLayoutConstraint {
        return footnoteWairingUserTopConstraint

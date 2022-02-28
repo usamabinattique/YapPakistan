@@ -75,7 +75,7 @@ PODS:
   - SwifterSwift/StoreKit (5.2.0)
   - SwifterSwift/SwiftStdlib (5.2.0)
   - SwifterSwift/UIKit (5.2.0)
-  - SwiftyGif (5.4.1)
+  - SwiftyGif (5.4.0)
   - SwipeCellKit (2.7.1)
   - YAPComponents (0.1.0)
   - YAPCore (0.1.0):
@@ -172,7 +172,7 @@ SPEC CHECKSUMS:
   RxTheme: ff66d4e8f8947a5b0ffc776e04f0fef85526011b
   SDWebImage: 4dc3e42d9ec0c1028b960a33ac6b637bb432207b
   SwifterSwift: 334181863c416882d97b7a60c05054d9e4d799e2
-  SwiftyGif: 6895c887f5551618a3c5dd3ecb512419105bacca
+  SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   SwipeCellKit: 3972254a826da74609926daf59b08d6c72e619ea
   YAPComponents: 06fc14e894e5d686e147a822dec5b99a40baa58b
   YAPCore: 5a4338ac7ae434e7c5a2afb3655e414cd9cc7e8d

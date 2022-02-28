@@ -116,6 +116,7 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
     }
     
     // MARK: - Outputs
+    // ???: [YASIR] - make AppReferralManager environment dynamic, use global instance
     var invite: Observable<String> { return inviteSubject.withLatestFrom(currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}).asObservable() }
     var search: Observable<[YAPContact]?> { return searchSubject.withLatestFrom(contactResults) }
     var recentContactsAvailable: Observable<Bool> { return recentBeneficiariesSubject.map{ $0.count > 0 }.asObservable() }

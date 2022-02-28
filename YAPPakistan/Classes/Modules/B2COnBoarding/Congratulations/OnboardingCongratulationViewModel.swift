@@ -13,6 +13,7 @@ import YAPComponents
 protocol OnboardingCongratulationViewModelInputs {
     var completeVerificationObserver: AnyObserver<Void> { get }
     var stageObserver: AnyObserver<OnboardingStage> { get }
+    var progressObserver: AnyObserver<Float> { get }
 }
 
 protocol OnboardingCongratulationViewModelOutputs {
@@ -21,6 +22,7 @@ protocol OnboardingCongratulationViewModelOutputs {
     var iban: Observable<String> { get }
     var stage: Observable<OnboardingStage> { get }
     var completeVerification: Observable<Void> { get }
+    var progress: Observable<Float> { get }
 }
 
 protocol OnboardingCongratulationViewModelType {
@@ -38,6 +40,7 @@ class OnboardingCongratulationViewModel: OnboardingCongratulationViewModelType, 
     let ibanSubject: BehaviorSubject<String?>!
     private let stageSubject = PublishSubject<OnboardingStage>()
     let completeVerificationSubject = PublishSubject<Void>()
+    private let progressSubject = PublishSubject<Float>()
 
     public var inputs: OnboardingCongratulationViewModelInputs { return self }
     public var outputs: OnboardingCongratulationViewModelOutputs { return self }
@@ -45,6 +48,7 @@ class OnboardingCongratulationViewModel: OnboardingCongratulationViewModelType, 
     // MARK: - Inputs
     public var completeVerificationObserver: AnyObserver<Void> { return completeVerificationSubject.asObserver() }
     var stageObserver: AnyObserver<OnboardingStage> { return stageSubject.asObserver() }
+    public var progressObserver: AnyObserver<Float> { return progressSubject.asObserver() }
 
     // MARK: - Outputs
     public var name: Observable<String> { return nameSubject.unwrap().asObservable() }
@@ -52,6 +56,7 @@ class OnboardingCongratulationViewModel: OnboardingCongratulationViewModelType, 
     public var iban: Observable<String> { return ibanSubject.unwrap().map { format(iban: mask(iban: $0)) }.asObservable() }
     var stage: Observable<OnboardingStage> { return stageSubject.asObservable() }
     public var completeVerification: Observable<Void> { return completeVerificationSubject.asObservable() }
+    public var  progress:  Observable<Float> { return progressSubject.asObservable() }
 
     // MARK: - Init
     init(user: OnBoardingUser) {

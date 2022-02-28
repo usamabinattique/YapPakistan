@@ -23,18 +23,12 @@ class KYCResultCoordinator: Coordinator<ResultType<Void>> {
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
-        Observable.just(())
-            // .delay(.milliseconds(500), scheduler: MainScheduler.instance)
-            .withLatestFrom(container.accountProvider.currentAccount).unwrap()
-            .map({ $0.isSecretQuestionVerified }).withUnretained(self)
-            .subscribe(onNext: { `self`, isVerified in
-                if isVerified == true {
-                    self.cardOnItsWay()
-                } else {
-                    self.manualVerification()
-                }
-            })
-            .disposed(by: rx.disposeBag)
+        let account = container.accountProvider.currentAccountValue.value
+        if account?.isSecretQuestionVerified == true {
+            self.cardOnItsWay()
+        } else {
+            self.manualVerification()
+        }
 
         return result
     }
@@ -47,6 +41,13 @@ fileprivate extension KYCResultCoordinator {
         self.result.onNext(.success(()))
         self.result.onCompleted()
     }
+    
+    func goToHome() {
+     //   self.root.popToRootViewController(animated: true)
+        self.root.popToRootViewController(animated: true)
+        self.result.onNext(.success(()))
+        self.result.onCompleted()
+    }
 }
 
 extension KYCResultCoordinator {
@@ -54,8 +55,13 @@ extension KYCResultCoordinator {
         let viewController = container.makeCardOnItsWayViewController()
         self.root.pushViewController(viewController)
 
-        viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.moveNext() })
+        viewController.viewModel.outputs.back.debug("back button from result").withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                print("back from card on its way")
+                self.root.popViewController(animated: true) {
+                    self.goToHome()
+                }
+            })
             .disposed(by: rx.disposeBag)
     }
 
@@ -64,7 +70,11 @@ extension KYCResultCoordinator {
         root.pushViewController(viewController, animated: true)
 
         viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.moveNext() })
+            .subscribe(onNext: { `self`, _ in
+                self.root.popViewController(animated: true) {
+                    self.goToHome()
+                }
+            })
             .disposed(by: rx.disposeBag)
     }
  }

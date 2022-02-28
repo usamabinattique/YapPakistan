@@ -128,8 +128,8 @@ class WaitingListRankViewModel: WaitingListRankViewModelInput, WaitingListRankVi
             self.seeInviteeButtonTitleSubject.onNext(String(format: "screen_waiting_list_rank_invitees_list_button_title_text".localized, waitingListRank.inviteeDetails?.count ?? 0))
         }).disposed(by: disposeBag)
 
-        let customerId = accountProvider.currentAccount
-            .map { $0?.customer.customerId }.unwrap()
+        let customerId = accountProvider.currentAccount.unwrap()
+            .map { $0.customer.customerId }.unwrap()
 
         let sendInviteRequest = bumpMeUpSubject.withLatestFrom(customerId)
 

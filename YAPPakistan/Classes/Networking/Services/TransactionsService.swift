@@ -23,6 +23,11 @@ protocol TransactionsServiceType {
     func getFee<T: Codable>(productCode: String) -> Observable<T>
     func getTransactionProductLimit<T: Codable>(transactionProductCode: String) -> Observable<T>
     func getThresholdLimits<T: Codable>() -> Observable<T>
+    func createCheckoutSession<T: Codable>(amount: String, currency: String, sessionId: String) -> Observable<T>
+    func check3DSEnrollment<T: Codable>(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T>
+    func retrieveACSResults<T: Codable>(threeDSecureID: String) -> Observable<T>
+    func createCardHolder<T: Codable>(cardScheme: String, fee: String) -> Observable<T>
+    func paymentGatewayTopup<T: Codable>(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
@@ -121,6 +126,37 @@ class TransactionsService: BaseService, TransactionsServiceType {
     
     func getThresholdLimits<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction-thresholds", pathVariables: nil,body: nil ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func createCheckoutSession<T: Codable>(amount: String, currency: String, sessionId: String) -> Observable<T> {
+        let body = PaymentGatewayRequest(order: PaymentGatewayAmountRequest(amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: sessionId))
+        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/mastercard/create-checkout-session", body: body ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func check3DSEnrollment<T: Codable>(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<T> {
+        let body = PaymentGateway3DSEnrollmentRequest(beneficiaryID: beneficiaryID == 0 ? nil : beneficiaryID, order: PaymentGatewayAmountRequest(id: orderId, amount: amount, currency: currency), session: sessionID.count > 0 ? PaymentGatewaySessionRequest(id: sessionID) : nil)
+        let route = APIEndpoint(.put, apiConfig.transactionsURL, "/api/mastercard/check-3ds-enrollment", body: body ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func retrieveACSResults<T: Codable>(threeDSecureID: String) -> Observable<T> {
+        let pathVariables = [threeDSecureID]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/mastercard/retrieve-acs-results/3DSecureId/", pathVariables: pathVariables, body: nil ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func createCardHolder<T: Codable>(cardScheme: String, fee: String) -> Observable<T> {
+        let body = PaymentCardTopupRequest(cardFee: fee, cardSchemeTitle: cardScheme)
+        let route = APIEndpoint(.post, apiConfig.cardsURL, "/api/order-physical-card-of-cardholder", body: body ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func paymentGatewayTopup<T: Codable>(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<T> {
+        let pathVariables = [orderId]
+        let body = OrderCardRequest(threeDSecureId: threeDSecureId, order: PaymentGatewayAmountRequest(id: orderId, amount: amount, currency: currency), session: PaymentGatewaySessionRequest(id: sessionId))
+        let route = APIEndpoint(.put, apiConfig.transactionsURL, "/api/mastercard/first-credit/order-id/", pathVariables: pathVariables, body: body, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

@@ -105,7 +105,13 @@ private extension B2COnBoardingCoordinator {
         containerViewModel.outputs.send.bind(to: verificationViewModel.inputs.sendObserver).disposed(by: disposeBag)
 
         verificationViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
+            //TODO: uncomment following
             self.navigateToCreatePasscode(user: result)
+            
+//            //TODO: remove following line
+//            var newResult = result
+//            newResult.timeTaken = 15
+//            self.navigateToWaitingUserCongratulation(user: newResult, session: Session(sessionToken: " abc "))
         }).disposed(by: disposeBag)
     }
 
@@ -169,10 +175,12 @@ private extension B2COnBoardingCoordinator {
         childContainerNavigation.pushViewController(enterEmailViewController, animated: true)
 
         enterEmailViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
+            print("enter email progress \(progress)")
             self.viewModel.inputs.progressObserver.onNext(progress)
         }).disposed(by: disposeBag)
 
         enterEmailViewModel.outputs.stage.subscribe(onNext: { [unowned self] stage in
+            print("enter email progress \(stage)")
             self.containerViewModel.inputs.activeStageObserver.onNext(stage)
         }).disposed(by: disposeBag)
 
@@ -219,7 +227,17 @@ private extension B2COnBoardingCoordinator {
 
         // #warning("Progress marked completed!")
         // self.viewModel.inputs.progressObserver.onNext(1)
+        
+        congratulationViewModel.outputs.progress.subscribe(onNext: { [weak self] progress in
+            self?.viewModel.inputs.progressObserver.onNext(progress)
+        }).disposed(by: disposeBag)
+        
+        self.viewModel.outputs.animationCompleted.subscribe(onNext: {  _ in
+            print("animation completed call in B@COn")
+            congratulationViewController.resumeAnimation?()
+        }).disposed(by: disposeBag)
 
+        
         containerNavigation.pushViewController(congratulationViewController, animated: true)
 
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in

@@ -251,7 +251,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
         sharedDemographics.map { _ in  "screen_email_verification_display_text_title".localized }
             .bind(to: headingSubject)
             .disposed(by: disposeBag)
-        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? 1.0 : 0.285 }
+        sharedDemographics.map { [unowned self] _ in self.user.accountType == .b2cAccount ? 0.8 : 0.285 } //1.0 : 0.285 }
             .bind(to: progressSubject)
             .disposed(by: disposeBag)
 

@@ -264,16 +264,7 @@ class AddressViewController: UIViewController {
         editingDidBegin.map({ _ in false }).bind(to: cityTextField.rx.isFirstResponder ).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
         nextButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
-//<<<<<<< Updated upstream
-//=======
-//
-//        // searchButton.rx.tap.bind(to: viewModel.inputs.searchObserver).disposed(by: rx.disposeBag)
-//        searchButton.rx.tap.withUnretained(self)
-//            .subscribe(onNext: { `self`, _ in self.autocompleteClicked() })
-//            .disposed(by: rx.disposeBag)
-//>>>>>>> Stashed changes
-
-        // searchButton.rx.tap.bind(to: viewModel.inputs.searchObserver).disposed(by: rx.disposeBag)
+        
         searchButton.rx.tap.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.autocompleteClicked() })
             .disposed(by: rx.disposeBag)
@@ -318,7 +309,7 @@ class AddressViewController: UIViewController {
 
         let flatNumber = flatTextField.rx.text.asObservable().unwrap()
         let address = addressTextField.rx.text.asObservable().unwrap()
-        Observable.combineLatest(flatNumber, address).map{ $0 + $1 }.bind(to: viewModel.inputs.addressObserver)
+        Observable.combineLatest(flatNumber, address).map{ $0 + $1 }.bind(to: viewModel.inputs.addressObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {

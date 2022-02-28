@@ -101,7 +101,7 @@
 "screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
 
 //MARK: Create passcode screen
-"screen_create_passcode_display_text_title" = "Create a 4-6 digit passcode to access your account​";
+"screen_create_passcode_display_text_title" = "Create a 4 digit passcode to access your account​";
 "screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our";
 "screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
 "screen_create_passcode_button_create_passcode" = "Create passcode";
@@ -150,6 +150,10 @@
 "screen_onboarding_congratulations_button_complete_verification" = "Complete verification";
 "screen_onboarding_congratulations_waiting_user_button_complete_verification" = "Queue up!";
 
+// MARK: - Onboarding Missing screen
+"screen_onboarding_missing_information_display_text_title" = "Some information is still needed! ";
+"screen_onboarding_missing_information_display_text_sub_title" = "A member from our customer service team will reach out to you.";
+
 //MARK: Email verification screen
 "screen_email_verification_display_text_title" = "Great!";
 "screen_email_verification_b2c_display_text_email_sent" = "you should now receive an email on";
@@ -157,11 +161,30 @@
 "screen_email_verification_b2b_display_text_email_sent" = "you should now receive an email on";
 "screen_email_verification_b2b_display_text_email_confirmation" = "We’ve sent you this so we can remain connected and give you important updates about your account.";
 
+//MARK: Preferred Email screen
+"screen_email_description_display_text_title" = "Please validate your email address after signing up and we promise not to spam you.";
+
 //MARK: Enter passcode screen
 "screen_enter_passcode_display_text_title" = "Enter your passcode to access your account​";
 "screen_enter_passcode_display_text_user_blocked" = "Sorry, that's too many incorrect attempts. Click on Forgot passcode to set a new one.​";
 "screen_create_passcode_button_signin" = "Sign in";
 "screen_create_passcode_button_forgot_passcode" = "Forgot passcode?";
+
+//MARK: Signup Failures screen
+"screen_signup_failure_display_text_screen_title_non_valid_cnic" = "We’re sorry :(";
+"screen_signup_failure_display_text_screen_title_expired_cnic" = "Looks like your CNIC is expired!";
+"screen_signup_failure_display_text_screen_title_cnic_doesn_not_exist" = "Oops, looks like that CNIC doesn’t exist!";
+"screen_signup_failure_display_text_screen_title_under_18" = "Looks like you’re under 18!";
+"screen_signup_failure_display_text_screen_title_cnic_linked_to_another_account" = "Oops! You’re CNIC is linked to another account!";
+
+"screen_signup_failure_display_text_screen_description_non_valid_cnic" = "Unfortunately, we’re unable to proceed with creating your account at this time. However, we do appreciate your interest in getting a YAP account.";
+"screen_signup_failure_display_text_screen_description_expired_cnic" = "To complete your YAP account. please re-scan with a valid CNIC and try again.";
+"screen_signup_failure_display_text_screen_description_cnic_doesn_not_exist" = "To complete your YAP account. please re-scan with a valid CNIC and try again.";
+"screen_signup_failure_display_text_screen_description_under_18" = "Unfortunately, YAP is only available to users over the age of 18. But don’t worry! We’re working on bringing something special to our younger audiences soon 😉";
+"screen_signup_failure_display_text_screen_description_cnic_linked_to_another_account" = "Your CNIC is already linked to another account! Please log out and try logging into that account. If you forgot your details, please reach out to our customer service team for help.";
+"screen_signup_failure_display_text_screen_description_blacklist" = "Unfortunately, we’re unable to proceed with creating your account at this time. However, we do appreciate your interest in getting a YAP account.";
+
+
 
 
 //MARK: Filters
@@ -302,6 +325,7 @@
 // MARK: KYC CARD NAME
 
 "screen_kyc_card_title" = "What name would you like on your card?";
+"screen_kyc_card_edit_title" = "What name would you like printed on your card?";
 "screen_kyc_card_subtitle" = "Please keep this as close to your real name.";
 "screen_kyc_card_is_it" = "Is it?";
 "screen_kyc_card_tip" = "We can only print 26 characters on the card, so if you have a long name, we suggest you use initials where possible.";
@@ -327,6 +351,29 @@
 "screen_kyc_manualverification_title" = "Some information is still needed!";
 "screen_kyc_manualverification_subtitle" = "A member from our customer service team will reach out to you.";
 
+// MARK: Topup Card
+"screen_topup_secure_title" = "Secured by YAP";
+"screen_topup_card_selection_display_text_title" = "Top up using card";
+"screen_topup_card_selection_display_text_sub_heading_no_cards" = "No cards are connected to this account yet";
+"screen_topup_card_selection_display_text_heading_1_card" = "You have 1 card";
+"screen_topup_card_selection_display_text_heading_cards" = "You have %d cards";
+"screen_topup_card_selection_display_text_sub_heading_cards" = "Choose which card you want to top up with";
+"screen_topup_card_selection_display_text_add_new_card" = "Add a new card";
+"screen_topup_card_selection_display_text_add_card" = "Add card";
+"screen_topup_card_selection_display_text_heading_no_cards" = "Start by adding a card";
+
+// MARK: Confirm Payment
+"screen_yap_confirm_payment_display_text_toolbar_title" = "Confirm payment";
+"screen_yap_confirm_payment_display_text_toolbar_subtitle" = "PayPak Card";
+"screen_yap_confirm_payment_display_text_Card_fee" = "Card fees";
+"screen_yap_confirm_payment_display_text_pay_with" = "Pay with";
+"screen_yap_confirm_payment_display_text_place_order_for" = "Place order for %@";
+
+// MARK: Screend topup card cvv
+"screen_topup_card_cvv_display_text_title" = "Top up confirmation";
+"screen_topup_card_cvv_display_text_cvv" = "Enter the CVV to top up your acccount with";
+
+
 // MARK: Set Pin
 
 "screen_kyc_setpinIntro_title" = "Great, looks like you just\nreceived your YAP card!";
@@ -344,6 +391,21 @@
 "screen_setpincode_craete" = "Create PIN code";
 "screen_setpincode_text_terms_and_conditions" = "By creating a passcode you agree to our";
 "screen_setpincode_button_terms_and_conditions" = "Terms & Conditions";
+
+// MARK: KYC Card Scheme
+"screen_kyc_card_scheme_screen_title" = "Select a card";
+"screen_kyc_card_scheme_title_mastercard" = "Mastercard";
+"screen_kyc_card_scheme_title_paypak" = "PayPak";
+"screen_kyc_card_scheme_button_buy_now" = "Buy now";
+"screen_kyc_card_scheme_button_free" = "Get it for free";
+"screen_kyc_card_scheme_description_free" = "Get YAP free card and enjoy mastercard benefits";
+"screen_kyc_card_scheme_description_with_fee" = "Get the local PayPak YAP card for PKR %@";
+
+// MARK: KYC Card Benefits
+"screen_kyc_card_benefits_screen_next_button_title" = "Select";
+
+//MARK: Common WebView
+"screen_kyc_card_details_screen_title" = "Enter your card details";
 
 // MARK: - YAP it Screen
 "screen_yap_it_button_send_money" = "Send money";

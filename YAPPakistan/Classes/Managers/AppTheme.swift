@@ -24,6 +24,7 @@ public protocol Theme {
     var success: Color            { get }
     var warning: Color            { get }
     var error: Color              { get }
+    var secondaryPurple: Color    { get }
     var secondaryBlue: Color      { get }
     var secondaryGreen: Color     { get }
     var secondaryOrange: Color    { get }
@@ -33,6 +34,7 @@ public protocol Theme {
     var icon: Color               { get }
     var iconHolder: Color         { get }
     var backgroundColor: Color    { get }
+    var separatorColor: Color     { get }
     var clear: UIColor            { get }
 }
 
@@ -52,6 +54,7 @@ struct LightTheme: Theme {
     var success: Color              { Color(hex: "#44D389") }
     var warning: Color              { Color(hex: "#FFC430") }
     var error: Color                { Color(hex: "#FF3B30") }
+    var secondaryPurple: Color      { Color(hex: "#E1DBFA") }
     var secondaryBlue: Color        { Color(hex: "#478DF4") }
     var secondaryGreen: Color       { Color(hex: "#00B9AE") }
     var secondaryOrange: Color      { Color(hex: "#F57F17") }
@@ -61,6 +64,7 @@ struct LightTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var separatorColor: Color       { Color(hex: "#979797") }
     var clear: UIColor                { UIColor.clear }
 
 }
@@ -81,6 +85,7 @@ struct DarkTheme: Theme {
     var success: Color              { Color(hex: "#44D389") }
     var warning: Color              { Color(hex: "#FFC430") }
     var error: Color                { Color(hex: "#FF3B30") }
+    var secondaryPurple: Color      { Color(hex: "#E1DBFA") }
     var secondaryBlue: Color        { Color(hex: "#478DF4") }
     var secondaryGreen: Color       { Color(hex: "#00B9AE") }
     var secondaryOrange: Color      { Color(hex: "#F57F17") }
@@ -90,6 +95,7 @@ struct DarkTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var separatorColor: Color       { Color(hex: "#979797") }
     var clear: UIColor              { UIColor.clear }
 }
 

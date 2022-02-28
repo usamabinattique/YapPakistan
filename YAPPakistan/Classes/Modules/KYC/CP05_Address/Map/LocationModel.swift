@@ -9,19 +9,17 @@
 import Foundation
 import CoreLocation
 
-struct LocationModel {
+public struct LocationModel {
     var latitude: Double = 0
     var longitude: Double = 0
     var placeId = ""
     var country: String = ""
     var state: String = ""
     var city: String = ""
-// <<<<<<< Updated upstream
+    var addressOne: String = ""
+    var addressTwo: String = ""
     var address: [String] = []
     var formattAdaddress: String { return address.joined(separator: ", ") }
-// =======
-//   var formattAdaddress: String = ""
-// >>>>>>> Stashed changes
 
     var distanceMeters: Double = 0 // From current location
 
@@ -38,11 +36,7 @@ struct LocationModel {
          country: String? = nil,
          state: String? = nil,
          city: String? = nil,
-//<<<<<<< Updated upstream
          address: [String] = []) {
-// =======
-//         formattAdaddress: String? = nil) {
-// >>>>>>> Stashed changes
 
         self.latitude = latitude
         self.longitude = longitude

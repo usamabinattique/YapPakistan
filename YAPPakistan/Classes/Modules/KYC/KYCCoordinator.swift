@@ -10,15 +10,22 @@ import Foundation
 import RxSwift
 import YAPCore
 import CardScanner
+import YAPCore
+import YAPComponents
+import RxTheme
 
 class KYCCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
     private let container: KYCFeatureContainer
+    private var paymentGatewayM: PaymentGatewayLocalModel!
+    private var isPresented = false
 
     init(container: KYCFeatureContainer, root: UINavigationController) {
         self.container = container
+       
         self.root = root
+        self.paymentGatewayM = PaymentGatewayLocalModel()
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -42,25 +49,38 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
         let cp3 = viewController.viewModel.outputs.next
             .filter({ $0 == .selfiePending }).withUnretained(self)
             .flatMap({ `self`, _ in self.selfiePending().materialize() })
-        // CP04 Card name
-        let cp4 = viewController.viewModel.outputs.next
-            .filter({ $0 == .cardNamePending }).withUnretained(self)
-            .flatMap({ `self`, _ in self.cardNamePending().materialize() })
-        // CP05 address
+        // CP04 Card scheme
+//        let cp4 = viewController.viewModel.outputs.next
+//            .filter({ $0 == .cardNamePending }).withUnretained(self)
+//            .flatMap({ `self`, _ in self.cardNamePending().materialize() })
+        // CP05 Card Scheme
         let cp5 = viewController.viewModel.outputs.next
+            .filter({ $0 == .cardSchemePending }).withUnretained(self)
+            .flatMap({ `self`, _ in self.cardOrderSchemePending().materialize() })
+        // CP06 Card Scheme External Card
+        let cp6 = viewController.viewModel.outputs.next
+            .filter({ $0 == .cardSchemeExternalCardPending }).withUnretained(self)
+            .flatMap({ `self`, _ in  self.cardOrderSchemePending().materialize() }) //self.carTopupCardSelection(isPresented: true).materialize() })
+        // CP07 address
+        let cp7 = viewController.viewModel.outputs.next
             .filter({ $0 == .addressPending }).withUnretained(self)
-            .flatMap({ `self`, _ in self.addressPending().materialize() })
-        // CP06 address
+            .flatMap({
+                `self`, _ in self.addressPending().materialize()
+            })
         viewController.viewModel.outputs.next
             .filter({ $0.stepValue > AccountStatus.addressPending.stepValue }).withUnretained(self)
             .flatMap({ `self`, _ in self.kycResult().materialize() }).withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.goToHome() })
             .disposed(by: rx.disposeBag)
-
-        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp4, cp5).elements().share()
+        
+        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp5, cp6, cp7).elements().share()
 
         sharedCPs.filter({ $0.isCancel }).withUnretained(self) // moved back with completing
-            .subscribe(onNext: { `self`, _ in self.root.popViewController(animated: true) })
+            .subscribe(onNext: { `self`, _ in
+                if !self.isPresented {
+                    self.root.popViewController(animated: true)
+                }
+            })
             .disposed(by: rx.disposeBag)
 
         let cpSuccess = sharedCPs.map({ $0.isSuccess }).unwrap().share() // completed successfully
@@ -131,13 +151,22 @@ extension KYCCoordinator {
     func selfiePending() -> Observable<ResultType<Void>>  {
         return coordinate(to: container.makeSelfieCoordinator(root: root))
     }
-
-    func cardNamePending() -> Observable<ResultType<Void>> {
-        return coordinate(to: container.makeCardNameCoordinator(root: root))
+    
+    func cardOrderSchemePending() -> Observable<ResultType<Void>>  {
+        return coordinate(to: container.makeCardSchemeCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
+    }
+    
+    func confirmPayment() -> Observable<ResultType<Void>>  {
+        return coordinate(to: container.makeConfirmPaymentCoordinator(root: root, paymentGatewayM: paymentGatewayM))
+    }
+    
+    func carTopupCardSelection(isPresented : Bool) -> Observable<ResultType<Void>>  {
+        self.isPresented = isPresented
+        return coordinate(to: container.makeTopupCardSelectionCoordinator(root: root, paymentGatewayM: paymentGatewayM))
     }
 
     func addressPending() -> Observable<ResultType<Void>> {
-        return coordinate(to: container.makeAddressCoordinator(root: root))
+        return coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
     }
 
     func kycResult() -> Observable<ResultType<Void>> {

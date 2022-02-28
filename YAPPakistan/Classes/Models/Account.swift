@@ -47,6 +47,10 @@ public struct Account: Codable {
     public let packageName: String?
     public let status: String
     public let active: Bool
+    public let cardName: String?
+    private let currency: Currency?
+    public let isDocumentsVerified: String?
+    public let isActive: String?
     public let documentsVerified: Bool
     public var companyType: String?
     public var soleProprietary: Bool
@@ -55,6 +59,7 @@ public struct Account: Codable {
     public let customer: Customer
     public let bank: Bank
     public var parnterBankStatus: PartnerBankStatus? { PartnerBankStatus(rawValue: _parnterBankStatus ?? "") }
+    public let isFirstCredit: Bool
     private let _parnterBankStatus: String?
     public let createdDate: String
     public let parentAccount: ParentAccount?
@@ -94,7 +99,11 @@ public struct Account: Codable {
     private enum CodingKeys: String, CodingKey {
         case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active,
              documentsVerified, companyType, soleProprietary, customer, bank, parentAccount,
-             otpBlocked, isSecretQuestionVerified
+             otpBlocked, isSecretQuestionVerified, isFirstCredit
+        case cardName
+        case isDocumentsVerified
+        case isActive
+        case currency
         case _accountStatus = "notificationStatuses"
         case accountNumber = "accountNo"
         case _parnterBankStatus = "partnerBankStatus"
@@ -132,6 +141,7 @@ public extension Account {
         self.customer = Customer(customer: account.customer, updatedMobileNumber: updatedMobileNumber)
         self._parnterBankStatus = account._parnterBankStatus
         self.createdDate = account.createdDate
+        self.isFirstCredit = account.isFirstCredit
         self.parentAccount = account.parentAccount
         self.otpBlocked = account.otpBlocked
         self._eidExpiryStatus = account._eidExpiryStatus
@@ -142,6 +152,10 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
+        self.cardName = account.cardName
+        self.currency = account.currency
+        self.isDocumentsVerified = account.isDocumentsVerified
+        self.isActive = account.isActive
     }
 
     init(account: Account, updatedEmail: String) {
@@ -161,6 +175,7 @@ public extension Account {
         self.bank = account.bank
         self.customer = Customer(customer: account.customer, updatedEmail: updatedEmail)
         self._parnterBankStatus = account._parnterBankStatus
+        self.isFirstCredit = account.isFirstCredit
         self.createdDate = account.createdDate
         self.parentAccount = account.parentAccount
         self.otpBlocked = account.otpBlocked
@@ -172,6 +187,10 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
+        self.cardName = account.cardName
+        self.currency = account.currency
+        self.isDocumentsVerified = account.isDocumentsVerified
+        self.isActive = account.isActive
     }
 
     init(account: Account, soleProprietary: Bool) {
@@ -191,6 +210,7 @@ public extension Account {
         self.bank = account.bank
         self.customer = account.customer
         self._parnterBankStatus = account._parnterBankStatus
+        self.isFirstCredit = account.isFirstCredit
         self.createdDate = account.createdDate
         self.parentAccount = account.parentAccount
         self.otpBlocked = account.otpBlocked
@@ -202,6 +222,10 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
+        self.cardName = account.cardName
+        self.currency = account.currency
+        self.isDocumentsVerified = account.isDocumentsVerified
+        self.isActive = account.isActive
     }
 
     init(account: Account, accountStatus: AccountStatus) {
@@ -221,6 +245,7 @@ public extension Account {
         self.bank = account.bank
         self.customer = account.customer
         self._parnterBankStatus = account._parnterBankStatus
+        self.isFirstCredit = account.isFirstCredit
         self.createdDate = account.createdDate
         self.parentAccount = account.parentAccount
         self.otpBlocked = account.otpBlocked
@@ -232,6 +257,10 @@ public extension Account {
         self._partnerBankApprovalDate = account._partnerBankApprovalDate
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
+        self.cardName = account.cardName
+        self.currency = account.currency
+        self.isDocumentsVerified = account.isDocumentsVerified
+        self.isActive = account.isActive
     }
 }
 
@@ -247,6 +276,8 @@ public enum AccountStatus: String, Hashable, Codable {
     case selfiePending = "SELFIE_PENDING"
     case secretQuestionPending = "SECRET_QUESTION_PENDING"
     case cardNamePending = "CARD_NAME_PENDING"
+    case cardSchemePending = "CARD_SCHEME_PENDING"
+    case cardSchemeExternalCardPending = "CARD_SCHEME_WITH_EXTERNAL_CARD_PENDING"
     case addressPending = "ADDRESS_PENDING"
     case addressCaptured = "ADDRESS_CAPTURED"
     case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
@@ -258,10 +289,12 @@ public enum AccountStatus: String, Hashable, Codable {
         case .selfiePending: return 1
         case .secretQuestionPending: return 2
         case .cardNamePending: return 3
-        case .addressPending: return 4
-        case .addressCaptured: return 5
-        case .verificationSucceed: return 6
-        case .cardActivated: return 7
+        case .cardSchemePending: return 4
+        case .cardSchemeExternalCardPending: return 5
+        case .addressPending: return 6
+        case .addressCaptured: return 7
+        case .verificationSucceed: return 8
+        case .cardActivated: return 9
         }
     }
 
@@ -285,6 +318,7 @@ public enum PartnerBankStatus: String, Codable {
     case documentUploaded = "DOCUMENT_UPLOADED"
     case physicalCardPending = "PHYSICAL_CARD_PENDING"
     case physicalCardSuccess = "PHYSICAL_CARD_SUCCESS"
+    case ibanAssigned = "IBAN_ASSIGNED"
     case hardKycPending = "HARD_KYC_PENDING"
     case hardKycCompleted = "HARD_KYC_DONE"
     case approved = "APPROVED"

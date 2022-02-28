@@ -73,9 +73,10 @@ class CardNameViewController: UIViewController {
             .bind({ UIColor($0.backgroundColor) }, to: [ view.rx.backgroundColor ])
             .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
             .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
-            .bind({ UIColor($0.greyDark) }, to: tipsLabel.rx.textColor)
-            .bind({ UIColor($0.primaryExtraLight) }, to: nameContainer.rx.backgroundColor)
-            .bind({ UIColor($0.primary) }, to: nameLabel.rx.textColor)
+            .bind({ UIColor($0.greyDark) }, to: [tipsLabel.rx.textColor,nameLabel.rx.textColor])
+            //.bind({ UIColor($0.primaryExtraLight) }, to: nameContainer.rx.backgroundColor)
+            .bind({ UIColor($0.greyLight).withAlphaComponent(0.50) }, to: nameContainer.rx.backgroundColor)
+           // .bind({ UIColor($0.primary) }, to: nameLabel.rx.textColor)
             .bind({ UIColor($0.greyDark) }, to: isThisLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: thisIsFineButton.rx.enabledBackgroundColor)
             .bind({ UIColor($0.primary) }, to: editNameButton.rx.titleColor(for: .normal))
@@ -111,6 +112,15 @@ class CardNameViewController: UIViewController {
         thisIsFineButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         editNameButton.rx.tap.bind(to: viewModel.inputs.editObserver).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+//        backButton.rx.tap.subscribe(onNext: { [weak self] _ in
+//            self?.navigationController?.popViewController()
+//            self?.viewModel.inputs.backObserver.onNext(())
+////            self?.navigationController?.dismiss(animated: true
+////                                                , completion: {
+////                self?.viewModel.inputs.backObserver.onNext(())
+////            })
+//        }).disposed(by: rx.disposeBag)
+
     }
 
     func setupConstraints() {

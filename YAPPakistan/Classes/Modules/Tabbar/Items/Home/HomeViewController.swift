@@ -40,7 +40,7 @@ class HomeViewController: UIViewController {
     }()
     
     private lazy var completeVerificationButton = UIFactory.makeAppRoundedButton(with: .large, title: "Complete verification")
-
+    
     // MARK: Properties
 
     private var themeService: ThemeService<AppTheme>!
@@ -101,7 +101,7 @@ class HomeViewController: UIViewController {
             .bind({ UIColor($0.greyDark) }, to: headingLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: logoutButton.rx.backgroundColor)
             .bind({ UIColor($0.greyDark) }, to: biometryLabel.rx.textColor)
-            .bind({ UIColor($0.primary) }, to: completeVerificationButton.rx.backgroundColor)
+            .bind({ UIColor($0.primary) }, to: [completeVerificationButton.rx.backgroundColor])
             .disposed(by: disposeBag)
     }
 
@@ -181,5 +181,9 @@ class HomeViewController: UIViewController {
         viewModel.outputs.error
             .bind(to: rx.showErrorMessage)
             .disposed(by: disposeBag)
+        
+        
+        
+       
     }
 }

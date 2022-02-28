@@ -51,7 +51,7 @@ class TransactionFilterCheckBoxCell: RxUITableViewCell {
         //setupResources()
         //setupLocalizedStrings()
         //setupBindings()
-        setupConstraints()
+//        setupConstraints()
     }
     
     // MARK: Configurations

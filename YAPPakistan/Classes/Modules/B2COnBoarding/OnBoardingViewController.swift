@@ -97,5 +97,9 @@ fileprivate extension OnBoardingViewController {
         viewModel.outputs.progress.bind(to: progressView.rx.progress).disposed(by: rx.disposeBag)
         viewModel.outputs.progressCompletion.bind(to: progressView.rx.animateCompletion).disposed(by: rx.disposeBag)
         progressView.rx.tapBack.bind(to: viewModel.inputs.backTapObserver).disposed(by: rx.disposeBag)
+        progressView.animationCompleted = { [weak self] in
+            print("animation completed called")
+            self?.viewModel.inputs.animationCompletedObserver.onNext(())
+        }
     }
 }

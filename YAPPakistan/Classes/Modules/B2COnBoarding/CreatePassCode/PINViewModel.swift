@@ -118,7 +118,7 @@ open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutpu
 
     // MARK: - Init
     public init(pinRange: ClosedRange<Int>) {
-
+        print("range is \(pinRange)")
         self.pinRange = pinRange
 
         pinChangeSubject.withLatestFrom(Observable.combineLatest(pinChangeSubject, pinSubject))
@@ -139,6 +139,7 @@ open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutpu
 
         pinSubject.map { [unowned self] pin -> Bool in
             guard let pin = pin else { return false }
+            print("pin is \(pin)")
             return self.pinRange.contains(pin.count)
         }
             .bind(to: pinValidSubject)

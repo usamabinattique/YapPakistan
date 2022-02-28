@@ -8,6 +8,8 @@
 import CardScanner
 import Foundation
 import RxTheme
+import RxSwift
+import RxCocoa
 
 public final class KYCFeatureContainer {
     let parent: UserSessionContainer
@@ -39,6 +41,10 @@ public final class KYCFeatureContainer {
     func makeKYCRepository() -> KYCRepository {
         return parent.makeKYCRepository()
     }
+    
+    func makeY2YRepository() -> Y2YRepository {
+        return parent.makeY2YRepository()
+    }
 
     // MARK: Coordinators
 
@@ -56,13 +62,25 @@ public final class KYCFeatureContainer {
     func makeSelfieCoordinator(root: UINavigationController) -> SelfieCoordinator {
         SelfieCoordinator(root: root, container: self)
     }
-
-    func makeCardNameCoordinator(root: UINavigationController) -> CardNameCoordinator {
-        CardNameCoordinator(root: root, container: self)
+    
+    func makeCardSchemeCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> CardSchemeCoordinator {
+        CardSchemeCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM)
+    }
+    
+    func makeTopupCardSelectionCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> TopupCardSelectionCoordinator {
+        TopupCardSelectionCoordinator(root: root, container: self, repository: self.makeY2YRepository(), cardsRepository: self.parent.makeCardsRepository(), paymentGatewayM: paymentGatewayM )
     }
 
-    func makeAddressCoordinator(root: UINavigationController) -> AddressCoordinator {
-        AddressCoordinator(root: root, container: self)
+    func makeCardNameCoordinator(root: UINavigationController,  schemeObj: KYCCardsSchemeM, paymentGatewayM: PaymentGatewayLocalModel) -> CardNameCoordinator {
+        CardNameCoordinator(root: root, container: self ,schemeObj: schemeObj, paymentGatewayM: paymentGatewayM)
+    }
+
+    func makeAddressCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel,isPresented: Bool = false) -> AddressCoordinator {
+        AddressCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM,isPresented: isPresented)
+    }
+    
+    func makeConfirmPaymentCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> ConfirmPaymentCoordinator {
+        ConfirmPaymentCoordinator(root: root, container: self, repository: self.makeY2YRepository(), paymentGatewayM: paymentGatewayM)
     }
 
     // MARK: Controllers
@@ -145,8 +163,8 @@ extension KYCFeatureContainer {
         CardNameModuleBuilder(container: self).viewController()
     }
 
-    func makeEditCardNameViewController() -> EditCardNameViewController {
-        EditCardNameModuleBuilder(container: self).viewController()
+    func makeEditCardNameViewController(name: String) -> EditCardNameViewController {
+        EditCardNameModuleBuilder(container: self).viewController(name: name)
     }
 
     func makeAddressViewController() -> AddressViewController {
@@ -164,5 +182,19 @@ extension KYCFeatureContainer {
 
     func makeManualVerificationViewController() -> ManualVerificationViewController {
         ManualVerificationModuleBuilder(container: self).viewController()
+    }
+    
+    func makeCardSchemeViewController() -> CardSchemeViewController {
+        let viewModel = CardSchemeViewModel(self.parent.makeKYCRepository(), accountProvider: self.accountProvider)
+        return CardSchemeViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+    
+    func makeCardBenefitsViewController() -> CardBenefitsViewController {
+        let viewModel = CardBenefitsViewModel(self.parent.makeKYCRepository())
+        return CardBenefitsViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+    
+    func makeCommonWebViewController(viewModel: CommonWebViewModel) -> CommonWebViewController {
+        return CommonWebViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }
