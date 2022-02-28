@@ -134,12 +134,12 @@ extension ExternalPaymentCard {
         let bgColor = ((color?.isHexString ?? false) ? UIColor(hexString: color!) :  UIColor(Color(hex: "#5E35B1")) ) ?? .white //primary
         let view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
        
-        
-        let gradiant = CAGradientLayer()
-        gradiant.frame = view.bounds
-        
-        gradiant.colors = [(bgColor.lighten(by: 10)).cgColor, (bgColor.darken(by: 10)).cgColor]
-        view.layer.addSublayer(gradiant)
+        view.backgroundColor = bgColor
+//        let gradiant = CAGradientLayer()
+//        gradiant.frame = view.bounds
+//        
+//        gradiant.colors = [(bgColor.lighten(by: 10)).cgColor, (bgColor.darken(by: 10)).cgColor]
+//        view.layer.addSublayer(gradiant)
         
         view.layer.cornerRadius = 0.055 * width
         view.clipsToBounds = true
