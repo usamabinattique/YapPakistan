@@ -98,7 +98,7 @@ final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelIn
         self.repository = onBoardingRepository
         self.user = user
         self.otpTime = otpTime
-        self.phoneNumberText = user.mobileNo.formattedValue ?? ""
+        self.phoneNumberText = user.mobileNo.displayFormattedValue ?? ""
         self.otpResendTime = otpTime
 
         phoneNumberSubject.onNext( "screen_verify_phone_number_display_text_sub_title".localized + "\n" + phoneNumberText)

@@ -16,9 +16,10 @@ final class DemoApplicationContainer {
     let themeService: ThemeService<AppTheme>
     let featureFlagProvider: RemoteFallBackToLocalProvider!
     let countryListProvider: CountryListProviderType
+    let eventCallback: (PKAppEvent) -> Void = { event in }
 
     private lazy var yapPakistanContainer: YAPPakistanMainContainer  =  {
-        YAPPakistanMainContainer(configuration: YAPPakistanConfiguration(environment: .current))
+        YAPPakistanMainContainer(configuration: YAPPakistanConfiguration(environment: .current, googleMapsAPIKey: "AIzaSyCy_1KJ3iHy2SSQDo3Q35YS96vNDx4xZuI", buildConfig: ("1.0", "1.0"), callback: eventCallback))
     }()
 
     init(store: CredentialsStoreType) {
@@ -34,7 +35,7 @@ final class DemoApplicationContainer {
                                                             defaultProvider: defaultProvider)
         countryListProvider = CountryListProvider(featureFlagProvider: featureFlagProvider)
         self.themeService = AppTheme.service(initial: .light)
-        yapPakistanContainer = YAPPakistanMainContainer(configuration: YAPPakistanConfiguration(environment: .current))
+        yapPakistanContainer = YAPPakistanMainContainer(configuration: YAPPakistanConfiguration(environment: .current, googleMapsAPIKey: "AIzaSyCy_1KJ3iHy2SSQDo3Q35YS96vNDx4xZuI", buildConfig: ("1.0", "1.0"), callback: eventCallback))
     }
 }
 

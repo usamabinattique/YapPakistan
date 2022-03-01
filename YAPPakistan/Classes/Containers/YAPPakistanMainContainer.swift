@@ -10,14 +10,6 @@ import RxSwift
 import RxTheme
 import YAPCore
 
-public struct YAPPakistanConfiguration {
-    let environment: AppEnvironment
-
-    public init(environment: AppEnvironment) {
-        self.environment = environment
-    }
-}
-
 public final class YAPPakistanMainContainer {
     let configuration: YAPPakistanConfiguration
     let themeService: ThemeService<AppTheme>
@@ -33,6 +25,24 @@ public final class YAPPakistanMainContainer {
 
     public func makeNotificationManager() -> NotificationManager {
         return NotificationManager()
+    }
+    
+    public func makeSignInVerifyService() -> UserVerificationType {
+        return PKUserVerificationService(loginRepository: makeLoginRepository())
+    }
+    
+    public func makeSignUpVerifyService() -> UserVerificationType {
+        return PKUserVerificationService(onBoardRepository: makeOnBoardingRepository())
+    }
+    
+    public func makeSigUpRootCoordinator(window: UIWindow,
+                                         navigationController: UINavigationController, formattedNum: String) -> AppCoordinator {
+        return rootCoordinator(window: window, navigationController: navigationController, flow: Flow.onboarding(formattedPhoneNumber: formattedNum))
+    }
+    
+    public func makeSigInRootCoordinator(window: UIWindow,
+                                         navigationController: UINavigationController, formattedNum: String) -> AppCoordinator {
+        return rootCoordinator(window: window, navigationController: navigationController, flow: Flow.passcode(formattedPhoneNumber: formattedNum))
     }
 
     public func rootCoordinator(window: UIWindow,
