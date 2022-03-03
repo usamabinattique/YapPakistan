@@ -78,7 +78,8 @@ public protocol CustomerServiceType {
     func classifyContacts<T: Codable>(contacts: [(name: String, phoneNumber: String, email: String?, photoUrl: String?, countryCode: String)]) -> Observable<T>
     func fetchCustomerAccountBalance<T: Codable>() -> Observable<T>
     func fetchPaymentGatewayBeneficiaries<T: Codable>() -> Observable<T>
-    func fetchExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
+    func addOnboardingExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
+    func addTopupExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
 }
 
     
@@ -393,11 +394,20 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func fetchExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T> {
+    public func addOnboardingExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T> {
         
         let body = ExternalBeneficiaryRequest(alias: alias, color: color, session: SessionR(id: sessionId, number: cardNumber))
         
         let route = APIEndpoint(.post, apiConfig.customersURL, "/api/external-card/beneficiaries", body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func addTopupExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T> {
+        
+        let body = ExternalBeneficiaryRequest(alias: alias, color: color, session: SessionR(id: sessionId, number: cardNumber))
+        
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/mastercard/beneficiaries", body: body, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }

@@ -85,6 +85,67 @@ private extension AddMoneyCoordinator {
         let viewController = TopupCardSelectionViewController(themeService: container.themeService, viewModel: viewModel)
         localRoot.pushViewController(viewController, animated: true)
         
+        //Add new card
+        viewModel.outputs.addNewCard.debug("add new card observer").withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                //move to add new card screen
+                print("open add new card detail screen")
+                self.addNewCardDetailWebView()
+            })
+            .disposed(by: rx.disposeBag)
+        
+        //open send money detail
+        viewModel.outputs.beneficiarySelected
+            .subscribe(onNext: { beneficiaryObj in
+                print("open send money detail")
+            })
+            .disposed(by: rx.disposeBag)
+        
+        //info icon from card is pressed
+        viewModel.outputs.openCardDetails.subscribe { obj in
+            print("open card detail")
+        }.disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.back
+            .subscribe(onNext:{ _ in
+                self.localRoot.popViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
+        
+    }
+    
+    private func addNewCardDetailWebView() {
+        
+        let apiConfig = self.container.parent.makeAPIConfiguration()
+        
+        let viewModel = CommonWebViewModel(commonWebType: .topUpAddCardWeb, repository: self.container.makeCardsRepository(), html: apiConfig.topUpCardDetailWebURL)
+        let viewController = self.container.makeCommonWebViewController(viewModel: viewModel)
+        
+        viewModel.outputs.close
+            .subscribe(onNext: { [weak self] _ in
+                viewController.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.showTopup
+            .subscribe(onNext: { [weak self] _ in
+                self?.localRoot.dismiss(animated: false, completion: nil)
+                print("show topup flow")
+            })
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.showTopupDashboard
+            .subscribe(onNext: { [weak self] _ in
+                self?.localRoot.dismiss(animated: false, completion:nil)
+                print("show topup DASHBOARD flow")
+            })
+            .disposed(by: rx.disposeBag)
+
+        
+        let navigationRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: self.root, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+        navigationRoot.navigationBar.isHidden = false
+        navigationRoot.pushViewController(viewController, completion: nil)
+        localRoot.present(navigationRoot, animated: true, completion: nil)
     }
 }
 

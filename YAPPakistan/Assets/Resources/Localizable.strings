@@ -353,8 +353,9 @@
 
 // MARK: Topup Card
 "screen_topup_secure_title" = "Secured by YAP";
-"screen_topup_card_selection_display_text_title" = "Top up using card";
-"screen_topup_card_selection_display_text_sub_heading_no_cards" = "No cards are connected to this account yet";
+"screen_topup_card_selection_display_no_card_text_title" = "Add money using a card";
+"screen_topup_card_selection_display_card_text_title" = "Top up using card";
+"screen_topup_card_selection_display_text_sub_heading_no_cards" = "Add a debit or credit card to top up";
 "screen_topup_card_selection_display_text_heading_1_card" = "You have 1 card";
 "screen_topup_card_selection_display_text_heading_cards" = "You have %d cards";
 "screen_topup_card_selection_display_text_sub_heading_cards" = "Choose which card you want to top up with";

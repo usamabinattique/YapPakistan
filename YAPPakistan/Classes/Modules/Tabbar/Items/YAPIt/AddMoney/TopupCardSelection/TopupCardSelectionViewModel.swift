@@ -22,6 +22,7 @@ protocol TopupCardSelectionViewModelInputs {
 }
 
 protocol TopupCardSelectionViewModelOutputs {
+    var screenTitle: Observable<String> { get }
     var topupPaymentCardCellViewModels: Observable<[ReusableCollectionViewCellViewModelType]> { get }
     var addNewCard: Observable<Void> { get }
     var beneficiarySelected: Observable<ExternalPaymentCard> { get }
@@ -46,6 +47,7 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
     var inputs: TopupCardSelectionViewModelInputs { return self }
     var outputs: TopupCardSelectionViewModelOutputs { return self }
     
+    private let screenTitleSubject = PublishSubject<String>()
     private let topupPaymentCardCellViewModelsSubject = BehaviorSubject<[ReusableCollectionViewCellViewModelType]>(value: [])
     private let addNewCardSubject = PublishSubject<Void>()
     private let beneficiarySelectedSubject = PublishSubject<ExternalPaymentCard>()
@@ -71,6 +73,7 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
     var itemSelectedObserver: AnyObserver<IndexPath> { itemSelectedSubject.asObserver() }
 
     // MARK: - Outputs
+    var screenTitle: Observable<String> { screenTitleSubject.asObservable() }
     var topupPaymentCardCellViewModels: Observable<[ReusableCollectionViewCellViewModelType]> { return topupPaymentCardCellViewModelsSubject.asObservable() }
     var addNewCard: Observable<Void> { return addNewCardSubject.asObservable() }
     var beneficiarySelected: Observable<ExternalPaymentCard> { return beneficiarySelectedSubject.asObservable() }
@@ -88,42 +91,21 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
     private let repository: Y2YRepositoryType
     private var beneficiaries = [ExternalPaymentCard]()
     // MARK: - Init
-//    init(repository: PaymentGatewayRepository = PaymentGatewayRepository()) {
+    
     init(repository: Y2YRepositoryType) {
-      /*  self.repository = repository
-        let addCardCellViewModel = AddTopupPCCVCellViewModel()
-        addCardCellViewModel.outputs.addNewCard.bind(to: addNewCardSubject).disposed(by: disposeBag)
-        self.beneficiaries = [.mock,.mock,.mock]
-        let beneficiarisVMs = beneficiaries.map {  model -> TopupPCCVCellViewModel  in
-            return TopupPCCVCellViewModel( model)
-        }
-        var cellVMs:[ReusableCollectionViewCellViewModelType] = beneficiarisVMs
-        cellVMs.append(addCardCellViewModel)
-        
-        cellViewModelsSubject.onNext([SectionModel(model: 0, items: cellVMs)])
-        
-        let _cardCount = BehaviorSubject(value: cellVMs)
-        
-        _cardCount.map { vms -> String in
-           
-            return vms.count == 0 ? "screen_topup_card_selection_display_text_heading_no_cards".localized : vms.count == 1 ? "screen_topup_card_selection_display_text_heading_1_card".localized : String.init(format: "screen_topup_card_selection_display_text_heading_cards".localized, beneficiarisVMs.count)
-        }.bind(to: cardCountSubject).disposed(by: disposeBag)
-        
-        _cardCount.map { $0.count == 0 ? "screen_topup_card_selection_display_text_sub_heading_no_cards".localized : "screen_topup_card_selection_display_text_sub_heading_cards".localized }.bind(to: subHeadingSubject).disposed(by: disposeBag)
-        
-        currentIndex.map { [weak self] in $0 < self?.beneficiaries.count ?? 0 ? self?.beneficiaries[$0].nickName : nil }.bind(to: cardNickNameSubject).disposed(by: disposeBag)
-        
-        _cardCount.map{ $0.count > 0 }.bind(to: addCardCellViewModel.inputs.cardAlreadyExistsObserver).disposed(by: disposeBag)
-        self.currentIndex.onNext(0) */
-        
         
         self.repository = repository
       
         let addCardCellViewModel = AddTopupPCCVCellViewModel()
-        addCardCellViewModel.outputs.addNewCard.bind(to: addNewCardSubject).disposed(by: disposeBag)
+        //addCardCellViewModel.outputs.addNewCard.bind(to: addNewCardSubject).disposed(by: disposeBag)
+        
+//        let fetchRequest = refreshCardsSubject
+//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+//            .flatMap{ repository.fetchPaymentGatewayBeneficiaries() }
+//            .share()
         
         let fetchSubject = refreshCardsSubject.startWith(()).do(onNext: { _ in YAPProgressHud.showProgressHud() })
-        
+
         let fetchRequest = fetchSubject
             .flatMap { repository.fetchPaymentGatewayBeneficiaries() } //fetchPaymentGatewayBeneficiries() }
             .share()
@@ -138,28 +120,13 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
         fetchRequest.map{ _ in }.subscribe(onNext: { _ in YAPProgressHud.hideProgressHud() }).disposed(by: disposeBag)
         fetchRequest.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
         
-       
-        
-     /*   Observable.combineLatest(fetchRequest.elements(), limitRequest.elements())
-            .subscribe(onNext: { [weak self] beneficiaries, limit in
-                guard let `self` = self else { return }
-                self.beneficiaries = beneficiaries
-                var viewModels: [ReusableCollectionViewCellViewModelType] = beneficiaries.map { TopupPCCVCellViewModel(paymentGatewayBeneficiary: $0) }
-                if limit.remaining > 0 {
-                    viewModels.append(addCardCellViewModel)
-                }
-                viewModels.forEach { [unowned self] in ($0 as? TopupPCCVCellViewModelType)?.outputs.openDetails.bind(to: self.openCardDetailsSubject).disposed(by: self.disposeBag) }
-                self.topupPaymentCardCellViewModelsSubject.onNext(viewModels)
-                self.currentIndex.onNext(0)
-            })
-            .disposed(by: disposeBag) */
-        
         fetchRequest.elements()
             .subscribe(onNext: { [weak self] beneficiaries in
                 guard let `self` = self else { return }
                 self.beneficiaries = beneficiaries
                 var viewModels: [ReusableCollectionViewCellViewModelType] = beneficiaries.map { TopupPCCVCellViewModel($0) }
-                viewModels.forEach { [unowned self] in ($0 as? TopupPCCVCellViewModelType)?.outputs.openDetails.bind(to: self.openCardDetailsSubject).disposed(by: self.disposeBag) }
+                viewModels.forEach { [unowned self] in
+                    ($0 as? TopupPCCVCellViewModelType)?.outputs.openDetails.bind(to: self.openCardDetailsSubject).disposed(by: self.disposeBag) }
                 viewModels.append(addCardCellViewModel)
                // self.topupPaymentCardCellViewModelsSubject.onNext(viewModels)
                 self.cellViewModelsSubject.onNext([SectionModel(model: 0, items: viewModels)])
@@ -173,6 +140,8 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
         isCardEnabeld.bind(to: addCardEnabledSubject).disposed(by: disposeBag)
         
         let cardCount = fetchRequest.elements().map{ $0.count }.share()
+        
+        cardCount.map { $0 == 0 ? "screen_topup_card_selection_display_no_card_text_title".localized : "screen_topup_card_selection_display_card_text_title".localized }.bind(to: screenTitleSubject).disposed(by: disposeBag)
         
         cardCount.map { $0 == 0 ? "screen_topup_card_selection_display_text_heading_no_cards".localized : $0 == 1 ? "screen_topup_card_selection_display_text_heading_1_card".localized : String.init(format: "screen_topup_card_selection_display_text_heading_cards".localized, $0)}.bind(to: cardCountSubject).disposed(by: disposeBag)
         

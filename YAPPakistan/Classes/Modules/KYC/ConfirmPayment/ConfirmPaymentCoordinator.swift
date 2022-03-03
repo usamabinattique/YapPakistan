@@ -103,7 +103,7 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func cardDetailWeb(html: String, viewModel: ConfirmPaymentViewModel) {
-        _ = coordinate(to: CommonWebViewCoordinator(root: self.localNavigationController, container: self.container, paymentGatewayM: self.paymentGatewayM, html: html, resultObserver: viewModel.inputs.pollACSResultObserver))
+        _ = coordinate(to: CommonWebViewCoordinator(root: self.localNavigationController, container: self.container, commonWebType: .onBoardingOTPWeb, paymentGatewayM: self.paymentGatewayM, html: html, resultObserver: viewModel.inputs.pollACSResultObserver))
     }
     
     private func navigateToCVV(card: ExternalPaymentCard ,amount: Double, currency: String, viewModel vm :ConfirmPaymentViewModel) {

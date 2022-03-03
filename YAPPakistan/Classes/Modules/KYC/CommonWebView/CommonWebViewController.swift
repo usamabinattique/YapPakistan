@@ -52,6 +52,7 @@ class CommonWebViewController: UIViewController {
         setupConstraints()
         setupTheme()
         setupBindings()
+        showCardAddedAlert()
     }
     
     override public func onTapBackButton() {
@@ -101,6 +102,10 @@ fileprivate extension CommonWebViewController {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
+        viewModel.outputs.cardAddedAlert.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.showCardAddedAlert()
+            })
     }
 }
 
@@ -119,5 +124,31 @@ extension CommonWebViewController: WKURLSchemeHandler, WKNavigationDelegate {
         decisionHandler(.allow)
     }
     
+}
+
+extension CommonWebViewController {
+    func showCardAddedAlert() {
+        let title = "Your card has been added successfully".localized
+        let details = "Top up now with this card?".localized
+        let text = title + "\n\n\n" + details + "\n"
+        
+        let attributted = NSMutableAttributedString(string: text)
+        
+        attributted.addAttributes([.foregroundColor: UIColor(self.themeService.attrs.primaryDark), .font: UIFont.title3], range: NSRange(location: 0, length: title.count))
+        attributted.addAttributes([.foregroundColor: UIColor(self.themeService.attrs.greyDark), .font: UIFont.small], range: NSRange(location: text.count - details.count - 1, length: details.count))
+        
+        let alert = YAPAlertView(theme: self.themeService, icon: UIImage(named: "icon_check_fill_purple", in: .yapPakistan), text: attributted, primaryButtonTitle: "Yes, top up now".localized, cancelButtonTitle: "No, do it later".localized)
+        
+        alert.show()
+        
+        alert.rx.cancelTap.withUnretained(self).subscribe(onNext: { `self`, _ in
+            self.viewModel.inputs.alertTopupDashboardObserver.onNext(())
+        }).disposed(by: disposeBag)
+        
+        alert.rx.primaryTap.withUnretained(self).subscribe(onNext: { `self`,_ in
+            self.viewModel.inputs.alertTopupObserver.onNext(())
+        }).disposed(by: disposeBag)
+        
+    }
 }
 

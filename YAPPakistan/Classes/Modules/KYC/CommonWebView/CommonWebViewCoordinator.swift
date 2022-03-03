@@ -9,6 +9,13 @@ import Foundation
 import RxSwift
 import YAPCore
 
+public enum CommonWebType {
+    case onBoardingAddCardWeb
+    case onBoardingOTPWeb
+    case topUpAddCardWeb
+    case topUpOTPWeb
+}
+
 class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
 
     private let result = PublishSubject<ResultType<Void>>()
@@ -17,11 +24,13 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
     private var paymentGatewayM: PaymentGatewayLocalModel?
     private var html: String!
     private var resultObserver: AnyObserver<Void>?
+    private var commonWebType: CommonWebType
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer, paymentGatewayM: PaymentGatewayLocalModel? = nil, html: String, resultObserver: AnyObserver<Void>? = nil) {
+         container: KYCFeatureContainer, commonWebType: CommonWebType, paymentGatewayM: PaymentGatewayLocalModel? = nil, html: String, resultObserver: AnyObserver<Void>? = nil) {
         self.root = root
         self.container = container
+        self.commonWebType = commonWebType
         self.paymentGatewayM = paymentGatewayM
         self.html = html
         self.resultObserver = resultObserver
@@ -33,8 +42,8 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func cardDetailWebView() {
-        let viewModel = CommonWebViewModel(container: container, repository: container.parent.makeCardsRepository(), html: self.html)
-        let viewController = container.makeCommonWebViewController(viewModel: viewModel)
+        let viewModel = CommonWebViewModel(commonWebType: self.commonWebType, repository: container.parent.makeCardsRepository(), html: self.html)
+        let viewController = container.parent.makeCommonWebViewController(viewModel: viewModel)
         
         let navigationRoot = makeNavigationController()
         

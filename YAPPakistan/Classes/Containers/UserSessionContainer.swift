@@ -171,4 +171,8 @@ public final class UserSessionContainer {
     func makeHomeViewController() -> HomeViewController {
         return HomeModuleBuilder(container: self).viewController()
     }
+    
+    func makeCommonWebViewController(viewModel: CommonWebViewModel) -> CommonWebViewController {
+        return CommonWebViewController(themeService: self.themeService, viewModel: viewModel)
+    }
 }
