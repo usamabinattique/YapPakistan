@@ -11,6 +11,7 @@ struct OrderCardRequest: Codable {
     let threeDSecureId: String
     let order: PaymentGatewayAmountRequest
     let session: PaymentGatewaySessionRequest
+    let securityCode: String?
     
 //    public init(from decoder: Decoder) throws {
 //        let container = try decoder.container(keyedBy: OrderCardRequest.CodingKeys.self)
@@ -19,16 +20,18 @@ struct OrderCardRequest: Codable {
 //        self.session = (try? container.decode(PaymentGatewaySessionRequest?.self, forKey: .session))
 //    }
     
-    init(threeDSecureId: String, order: PaymentGatewayAmountRequest, session: PaymentGatewaySessionRequest) {
+    init(threeDSecureId: String, order: PaymentGatewayAmountRequest, session: PaymentGatewaySessionRequest, securityCode: String?) {
         self.threeDSecureId = threeDSecureId
         self.order = order
         self.session = session
+        self.securityCode = securityCode
     }
     
     private enum CodingKeys: String, CodingKey {
         case threeDSecureId = "3DSecureId"
         case order
         case session
+        case securityCode
         
     }
 }
