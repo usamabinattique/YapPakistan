@@ -17,7 +17,7 @@ protocol CommonWebViewModelInput {
     var closeObserver: AnyObserver<Void> { get }
     var navigationActionObserver: AnyObserver<WKNavigationAction>{ get }
     var completionObserver: AnyObserver<Void> { get }
-    var alertTopupObserver: AnyObserver<Void> { get }
+    var alertTopupObserver: AnyObserver<ExternalPaymentCard> { get }
     var alertTopupDashboardObserver: AnyObserver<Void> { get }
 }
 
@@ -29,8 +29,8 @@ protocol CommonWebViewModelOutput {
     var complete: Observable<Void> { get }
     var html: Observable<String> { get }
     var webUrl: Observable<String> { get }
-    var cardAddedAlert: Observable<Void> { get }
-    var showTopup: Observable<Void> { get }
+    var cardAddedAlert: Observable<ExternalPaymentCard> { get }
+    var showTopup: Observable<ExternalPaymentCard> { get }
     var showTopupDashboard: Observable<Void> { get }
 }
 
@@ -43,16 +43,16 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     
     private let confirmSubject = PublishSubject<CommonWebViewM>()
     private let closeSubject = PublishSubject<Void>()
-    private let showCardAddedAlertSubject = PublishSubject<Void>()
+    private let showCardAddedAlertSubject = PublishSubject<ExternalPaymentCard>()
     private let navigationActionSubject = ReplaySubject<WKNavigationAction>.create(bufferSize: 1)
     private let fetchExternalBeneficiarySubject = PublishSubject<Void>()
     private let errorSubject = PublishSubject<String>()
     private let completionSubject = PublishSubject<Void>()
     private let htmlSubject = BehaviorSubject<String>(value: "")
     private let webUrlSubject = BehaviorSubject<String>(value: "")
-    private var alertTopupSubject = PublishSubject<Void>()
+    private var alertTopupSubject = PublishSubject<ExternalPaymentCard>()
     private var alertTopupDashboardSubject = PublishSubject<Void>()
-    private var showTopupFlowSubject = PublishSubject<Void>()
+    private var showTopupFlowSubject = PublishSubject<ExternalPaymentCard>()
     private var showTopupDashboardFlowSubject = PublishSubject<Void>()
     
     // MARK: - Properties
@@ -65,7 +65,7 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     var closeObserver: AnyObserver<Void> { closeSubject.asObserver() }
     var navigationActionObserver: AnyObserver<WKNavigationAction>{ navigationActionSubject.asObserver() }
     var completionObserver: AnyObserver<Void> { return completionSubject.asObserver() }
-    var alertTopupObserver: AnyObserver<Void> { alertTopupSubject.asObserver() }
+    var alertTopupObserver: AnyObserver<ExternalPaymentCard> { alertTopupSubject.asObserver() }
     var alertTopupDashboardObserver: AnyObserver<Void> { alertTopupDashboardSubject.asObserver() }
     
     //MARK: Outputs
@@ -76,8 +76,8 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     var complete: Observable<Void> { return completionSubject.asObservable() }
     var html: Observable<String> { return htmlSubject.asObservable() }
     var webUrl: Observable<String> { return webUrlSubject.asObservable() }
-    var cardAddedAlert: Observable<Void> { return showCardAddedAlertSubject.asObservable() }
-    var showTopup: Observable<Void> { showTopupFlowSubject.asObservable() }
+    var cardAddedAlert: Observable<ExternalPaymentCard> { return showCardAddedAlertSubject.asObservable() }
+    var showTopup: Observable<ExternalPaymentCard> { showTopupFlowSubject.asObservable() }
     var showTopupDashboard: Observable<Void> { showTopupDashboardFlowSubject.asObservable() }
     
     var inputs: CommonWebViewModelInput { return self }
@@ -141,7 +141,8 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
                     if self.webType == .onBoardingOTPWeb {
                         self.confirmSubject.onNext(model)
                     } else if self.webType == .topUpAddCardWeb {
-                        self.showCardAddedAlertSubject.onNext(())
+                        guard let paymentCard = paymentCardObj else { return }
+                        self.showCardAddedAlertSubject.onNext(paymentCard)
                     }
                 })
                 .disposed(by: disposeBag)

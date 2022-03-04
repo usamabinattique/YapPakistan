@@ -40,6 +40,7 @@ protocol CardsRepositoryType: AnyObject {
     func fetchReorderFee() -> Observable<Event<CardReorderFee?>>
     func addOnboardingExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
     func addTopupExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
+    func deletePaymentGatewayBeneficiary(id: String) -> Observable<Event<String?>>
 }
 
 class CardsRepository: CardsRepositoryType {
@@ -157,6 +158,11 @@ class CardsRepository: CardsRepositoryType {
 
     func fetchReorderFee() -> Observable<Event<CardReorderFee?>> {
         transactionsService.fetchReorderFee().materialize()
+    }
+    
+    func deletePaymentGatewayBeneficiary(id: String) -> Observable<Event<String?>> {
+
+        return self.customerService.deletePaymentGatewayBeneficiary(id: id).materialize()
     }
 }
 

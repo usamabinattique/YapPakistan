@@ -99,16 +99,16 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
         let addCardCellViewModel = AddTopupPCCVCellViewModel()
         //addCardCellViewModel.outputs.addNewCard.bind(to: addNewCardSubject).disposed(by: disposeBag)
         
-//        let fetchRequest = refreshCardsSubject
-//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-//            .flatMap{ repository.fetchPaymentGatewayBeneficiaries() }
-//            .share()
-        
-        let fetchSubject = refreshCardsSubject.startWith(()).do(onNext: { _ in YAPProgressHud.showProgressHud() })
-
-        let fetchRequest = fetchSubject
-            .flatMap { repository.fetchPaymentGatewayBeneficiaries() } //fetchPaymentGatewayBeneficiries() }
+        let fetchRequest = refreshCardsSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .flatMap{ repository.fetchPaymentGatewayBeneficiaries() }
             .share()
+        
+//        let fetchSubject = refreshCardsSubject.startWith(()).do(onNext: { _ in YAPProgressHud.showProgressHud() })
+//
+//        let fetchRequest = fetchSubject
+//            .flatMap { repository.fetchPaymentGatewayBeneficiaries() } //fetchPaymentGatewayBeneficiries() }
+//            .share()
         
       //  let limitRequest = fetchSubject.share()
 //            .flatMap { repository.fetchPaymentGatewayLimit() }
@@ -158,7 +158,7 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
         
         selectSubject.withLatestFrom(currentIndex).filter { [unowned self] in $0 < self.beneficiaries.count }.map { [unowned self] in self.beneficiaries[$0] }.bind(to: beneficiarySelectedSubject).disposed(by: disposeBag)
         
-        Observable.combineLatest(itemSelectedSubject,cellViewModelsSubject).withUnretained(self).subscribe(onNext: { `self` , _arg0 in
+        Observable.zip(itemSelectedSubject,cellViewModelsSubject).withUnretained(self).subscribe(onNext: { `self` , _arg0 in
             let (index, sectionModel) = _arg0
             var isAddCardModel = false
             for model in sectionModel {

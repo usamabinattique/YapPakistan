@@ -86,7 +86,7 @@ private extension AddMoneyCoordinator {
         localRoot.pushViewController(viewController, animated: true)
         
         //Add new card
-        viewModel.outputs.addNewCard.debug("add new card observer").withUnretained(self)
+        viewModel.outputs.addNewCard.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 //move to add new card screen
                 print("open add new card detail screen")
@@ -102,8 +102,9 @@ private extension AddMoneyCoordinator {
             .disposed(by: rx.disposeBag)
         
         //info icon from card is pressed
-        viewModel.outputs.openCardDetails.subscribe { obj in
+        viewModel.outputs.openCardDetails.withUnretained(self).subscribe { `self`, externalCardObj in
             print("open card detail")
+            self.showTopupCardDetail(externalCard: externalCardObj)
         }.disposed(by: rx.disposeBag)
         
         viewModel.outputs.back
@@ -128,9 +129,9 @@ private extension AddMoneyCoordinator {
             .disposed(by: rx.disposeBag)
         
         viewModel.outputs.showTopup
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] externalCardObj in
                 self?.localRoot.dismiss(animated: false, completion: nil)
-                print("show topup flow")
+                //print("show topup flow")
             })
             .disposed(by: rx.disposeBag)
         
@@ -146,6 +147,21 @@ private extension AddMoneyCoordinator {
         navigationRoot.navigationBar.isHidden = false
         navigationRoot.pushViewController(viewController, completion: nil)
         localRoot.present(navigationRoot, animated: true, completion: nil)
+    }
+    
+    func showTopupCardDetail(externalCard: ExternalPaymentCard) {
+        let viewController = self.container.makeTopupCardDetailViewController(externalCard: externalCard)
+
+        let navigationRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: self.root, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+        navigationRoot.navigationBar.isHidden = false
+        navigationRoot.pushViewController(viewController, completion: nil)
+        localRoot.present(navigationRoot, animated: true, completion: nil)
+        
+        viewController.viewModel.outputs.close.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.localRoot.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: rx.disposeBag)
     }
 }
 

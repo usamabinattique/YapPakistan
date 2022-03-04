@@ -52,12 +52,10 @@ class CommonWebViewController: UIViewController {
         setupConstraints()
         setupTheme()
         setupBindings()
-        showCardAddedAlert()
+//        showCardAddedAlert()
     }
     
     override public func onTapBackButton() {
-       // self.dismiss(animated: true, completion: nil)
-        //navigationController?.popViewController(animated: true)
         viewModel.inputs.closeObserver.onNext(())
     }
 }
@@ -72,11 +70,6 @@ fileprivate extension CommonWebViewController {
     
     func setupConstraints() {
         webView
-//            .alignEdgeWithSuperviewSafeArea(.top)
-//            .alignEdgeWithSuperviewSafeArea(.bottom)
-//            .alignEdgeWithSuperviewSafeArea(.left)
-//            .alignEdgeWithSuperviewSafeArea(.right)
-            
             .alignAllEdgesWithSuperview()
     }
     
@@ -103,8 +96,8 @@ fileprivate extension CommonWebViewController {
         
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
         viewModel.outputs.cardAddedAlert.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
-                self.showCardAddedAlert()
+            .subscribe(onNext: { `self`, paymentCardObj in
+                self.showCardAddedAlert(externalCard: paymentCardObj)
             })
     }
 }
@@ -127,9 +120,9 @@ extension CommonWebViewController: WKURLSchemeHandler, WKNavigationDelegate {
 }
 
 extension CommonWebViewController {
-    func showCardAddedAlert() {
-        let title = "Your card has been added successfully".localized
-        let details = "Top up now with this card?".localized
+    func showCardAddedAlert(externalCard: ExternalPaymentCard) {
+        let title = "screen_topup_card_selection_display_topup_success_title".localized
+        let details = "screen_topup_card_selection_display_topup_success_description".localized
         let text = title + "\n\n\n" + details + "\n"
         
         let attributted = NSMutableAttributedString(string: text)
@@ -137,7 +130,7 @@ extension CommonWebViewController {
         attributted.addAttributes([.foregroundColor: UIColor(self.themeService.attrs.primaryDark), .font: UIFont.title3], range: NSRange(location: 0, length: title.count))
         attributted.addAttributes([.foregroundColor: UIColor(self.themeService.attrs.greyDark), .font: UIFont.small], range: NSRange(location: text.count - details.count - 1, length: details.count))
         
-        let alert = YAPAlertView(theme: self.themeService, icon: UIImage(named: "icon_check_fill_purple", in: .yapPakistan), text: attributted, primaryButtonTitle: "Yes, top up now".localized, cancelButtonTitle: "No, do it later".localized)
+        let alert = YAPAlertView(theme: self.themeService, icon: UIImage(named: "icon_check_fill_purple", in: .yapPakistan), text: attributted, primaryButtonTitle: "screen_topup_card_selection_display_topup_success_yes".localized, cancelButtonTitle: "screen_topup_card_selection_display_topup_success_no".localized)
         
         alert.show()
         
@@ -146,7 +139,7 @@ extension CommonWebViewController {
         }).disposed(by: disposeBag)
         
         alert.rx.primaryTap.withUnretained(self).subscribe(onNext: { `self`,_ in
-            self.viewModel.inputs.alertTopupObserver.onNext(())
+            self.viewModel.inputs.alertTopupObserver.onNext(externalCard)
         }).disposed(by: disposeBag)
         
     }

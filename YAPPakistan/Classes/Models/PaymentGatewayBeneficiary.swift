@@ -189,4 +189,16 @@ extension ExternalPaymentCard {
         
         return roundedImage!
     }
+    
+    func checkIfCardExpired() -> Bool {
+        
+        let isoDate = "20\(self.expiry.subString(2, length: 4))-\(self.expiry.subString(0, length: 2))-01T00:00:00+0000"
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        let date = dateFormatter.date(from:isoDate)!
+        
+        return date.timeIntervalSince1970 < Date().timeIntervalSince1970
+    }
 }

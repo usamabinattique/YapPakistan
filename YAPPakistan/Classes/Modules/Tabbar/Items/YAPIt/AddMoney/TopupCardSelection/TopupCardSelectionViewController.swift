@@ -77,7 +77,7 @@ class TopupCardSelectionViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        viewModel.inputs.refreshCardsObserver.onNext(())
+        viewModel.inputs.refreshCardsObserver.onNext(())
     }
     
     // MARK: Actions

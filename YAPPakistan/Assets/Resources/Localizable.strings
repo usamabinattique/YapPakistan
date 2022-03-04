@@ -363,6 +363,22 @@
 "screen_topup_card_selection_display_text_add_card" = "Add card";
 "screen_topup_card_selection_display_text_heading_no_cards" = "Start by adding a card";
 
+"screen_topup_card_selection_display_topup_success_title" = "Your card has been added successfully";
+"screen_topup_card_selection_display_topup_success_description" = "Top up now with this card?";
+"screen_topup_card_selection_display_topup_success_yes" = "Yes, top up now";
+"screen_topup_card_selection_display_topup_success_no" = "No, do it later";
+
+// MARK: - Top Up Card Details Screen
+"screen_topup_card_details_display_text_title" = "Card details";
+"screen_topup_card_details_display_text_placeholder_card_nickname" = "Card nickname";
+"screen_topup_card_details_display_text_placeholder_card_number" = "Card";
+"screen_topup_card_details_display_text_placeholder_card_type" = "Type";
+"screen_topup_card_details_display_text_placeholder_expiry" = "Expiry date";
+"screen_topup_card_details_button_remove_card" = "Remove card";
+"screen_topup_card_details_display_text_remove_card_confirmation" = "This card will be removed from your top-up methods";
+"screen_topup_card_details_display_text_remove_card_confirmation_remove" = "Remove";
+"screen_topup_card_details_button_remove_card_message" = "Card removed successfully.";
+
 // MARK: Confirm Payment
 "screen_yap_confirm_payment_display_text_toolbar_title" = "Confirm payment";
 "screen_yap_confirm_payment_display_text_toolbar_subtitle" = "PayPak Card";
