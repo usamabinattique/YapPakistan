@@ -122,6 +122,7 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
     func dashboard() {
         let window = root.view.window ?? UIWindow()
         let coordinator = TabbarCoodinator(container: sessionContainer, window: window)
+        container.configuration.eventCallback(.loggedIn)
 
         coordinate(to: coordinator).subscribe(onNext: { _ in
             self.result.onNext(.logout)

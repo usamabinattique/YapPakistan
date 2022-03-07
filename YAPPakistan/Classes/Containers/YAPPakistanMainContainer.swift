@@ -27,12 +27,8 @@ public final class YAPPakistanMainContainer {
         return NotificationManager()
     }
     
-    public func makeSignInVerifyService() -> UserVerificationType {
-        return PKUserVerificationService(loginRepository: makeLoginRepository())
-    }
-    
-    public func makeSignUpVerifyService() -> UserVerificationType {
-        return PKUserVerificationService(onBoardRepository: makeOnBoardingRepository())
+    public func makeVerifyService() -> UserVerificationType {
+        return PKUserVerificationService(loginRepository: makeLoginRepository(), onBoardRepository: makeOnBoardingRepository())
     }
     
     public func makeSigUpRootCoordinator(window: UIWindow,

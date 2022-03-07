@@ -17,11 +17,11 @@ public protocol UserVerificationType {
 
 final class PKUserVerificationService: UserVerificationType {
     
-    private var loginRepository: LoginRepositoryType?
-    private var onBoardRepository: OnBoardingRepositoryType?
+    private var loginRepository: LoginRepositoryType
+    private var onBoardRepository: OnBoardingRepositoryType
     private let disposeBag = DisposeBag()
     
-    init(loginRepository: LoginRepository? = nil , onBoardRepository: OnBoardingRepositoryType? = nil) {
+    init(loginRepository: LoginRepository, onBoardRepository: OnBoardingRepositoryType) {
         self.loginRepository = loginRepository
         self.onBoardRepository = onBoardRepository
     }
@@ -29,17 +29,17 @@ final class PKUserVerificationService: UserVerificationType {
     // need to verify user
     public func verifySignInUser(username: String, _ observer: AnyObserver<(Bool, Error?)>) {
         
-        let userRequest = loginRepository?.verifyUser(username: username).share()
+        let userRequest = loginRepository.verifyUser(username: username).share()
         
-        userRequest?.elements().filter { $0 == false }.subscribe(onNext: { _ in
+        userRequest.elements().filter { $0 == false }.subscribe(onNext: { _ in
             observer.onNext((false, nil))
         }).disposed(by: disposeBag)
         
-        userRequest?.elements().filter { $0 == true }.subscribe(onNext: { _ in
+        userRequest.elements().filter { $0 == true }.subscribe(onNext: { _ in
             observer.onNext((true, nil))
         }).disposed(by: disposeBag)
         
-        userRequest?.errors().subscribe(onNext: { error in
+        userRequest.errors().subscribe(onNext: { error in
             observer.onNext((false, error))
         }).disposed(by: disposeBag)
     }
@@ -48,13 +48,13 @@ final class PKUserVerificationService: UserVerificationType {
     public func verifySignUpUser(countryCode: String, username: String, _ observer: AnyObserver<(Bool, Error?)>) {
         // call generateOTP API
         
-        let otpRequest = onBoardRepository?.signUpOTP(countryCode: countryCode, mobileNo: username, accountType: AccountType.b2cAccount.rawValue).share()
+        let otpRequest = onBoardRepository.signUpOTP(countryCode: countryCode, mobileNo: username, accountType: AccountType.b2cAccount.rawValue).share()
         
-        otpRequest?.elements().subscribe(onNext: { _ in
+        otpRequest.elements().subscribe(onNext: { _ in
             observer.onNext((true, nil))
         }).disposed(by: disposeBag)
         
-        otpRequest?.errors().subscribe(onNext: { error in
+        otpRequest.errors().subscribe(onNext: { error in
             observer.onNext((false, error))
         }).disposed(by: disposeBag)
     }
