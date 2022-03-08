@@ -105,7 +105,7 @@ class QRCodeScanFrameView: UIView {
         croppingRect = CGRect(x: originX, y: 150, width: width, height: height)
         rentangleImage.frame = croppingRect
         
-        rentangleImage.image = UIImage.init(named: "crop_rectangle", in: .yapPakistan, compatibleWith: nil)
+        rentangleImage.image = UIImage.init(named: "crop_rectangle", in: .yapPakistan, compatibleWith: nil)?.asTemplate
         addSubview(rentangleImage)
         
         rentangleImage
@@ -145,7 +145,8 @@ class QRCodeScanFrameView: UIView {
     
     func setQrCodeValid(_ valid: Bool) {
         //TODO: add color here
-        innerLayer.strokeColor = valid ? UIColor.white.cgColor : UIColor.red.cgColor //UIColor.error.cgColor
+      //  innerLayer.strokeColor = valid ? UIColor.white.cgColor : UIColor.red.cgColor //UIColor.error.cgColor
+        rentangleImage.tintColor = valid ? UIColor.white : UIColor.red
     }
     
 }
