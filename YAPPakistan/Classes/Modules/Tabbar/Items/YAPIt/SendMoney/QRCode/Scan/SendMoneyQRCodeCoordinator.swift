@@ -105,13 +105,13 @@ private extension SendMoneyQRCodeCoordinator {
         let viewModel = SendMoneyQRCodeViewModel(container.makeYapItRepository())
         let viewController = SendMoneyQRCodeViewController(themeService: container.themeService, viewModel: viewModel)
         
-        localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular) //UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
-        
+        localRoot = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
+        localRoot.setNavigationBarHidden(true, animated: false)
         root.present(localRoot, animated: true) { [weak self] in
-           // self?.localRoot.setNavigationBarHidden(true, animated: false)
+          //  self?.localRoot.setNavigationBarHidden(true, animated: false)
         }
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
-           // self?.localRoot.setNavigationBarHidden(false, animated: false)
+            //self?.localRoot.setNavigationBarHidden(false, animated: false)
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
         }).disposed(by: disposeBag)

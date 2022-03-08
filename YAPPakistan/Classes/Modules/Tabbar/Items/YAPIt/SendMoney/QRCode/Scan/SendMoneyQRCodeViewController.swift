@@ -118,6 +118,7 @@ class SendMoneyQRCodeViewController: UIViewController {
         addCloseButton()
         setupViews()
         setupConstraints()
+        setupTheme()
         bindViews(viewModel)
     }
     
@@ -136,6 +137,7 @@ class SendMoneyQRCodeViewController: UIViewController {
     
     func addCloseButton(_ type: BackButtonType = .backCircled) {
         let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
         button.setImage(UIImage.init(named: "icon_close_white_bg", in: .yapPakistan), for: .normal)
         // TODO: add colour here
@@ -144,9 +146,13 @@ class SendMoneyQRCodeViewController: UIViewController {
         button.layer.cornerRadius = 0.5 * button.bounds.size.width
         button.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
         
-        let backButton = UIBarButtonItem()
-        backButton.customView = button
-        navigationItem.leftBarButtonItem  = backButton
+//        let backButton = UIBarButtonItem()
+//        backButton.customView = button
+//        navigationItem.leftBarButtonItem  = backButton
+        self.frameView.addSubview(button)
+        
+        button.alignEdgeWithSuperview(.top, constant: 50)
+        button.alignEdgeWithSuperview(.left, constant: 24)
     }
     
     override func onTapBackButton() {
@@ -192,6 +198,15 @@ private extension SendMoneyQRCodeViewController {
             .toTopOf(myQrCodeButton, .greaterThanOrEqualTo, constant: 15)
         
         headingLabel.alignEdgesWithSuperview([.left, .top, .right, .bottom], constants: [3.5, 1.5, 3.5, 1.5])
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.backgroundColor) }, to: [headingLabel.rx.textColor])
+            .disposed(by: rx.disposeBag)
+
+
+
     }
 }
 
