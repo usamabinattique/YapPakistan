@@ -21,7 +21,7 @@ final class PKUserVerificationService: UserVerificationType {
     private var onBoardRepository: OnBoardingRepositoryType
     private let disposeBag = DisposeBag()
     
-    init(loginRepository: LoginRepository, onBoardRepository: OnBoardingRepositoryType) {
+    init(loginRepository: LoginRepositoryType, onBoardRepository: OnBoardingRepositoryType) {
         self.loginRepository = loginRepository
         self.onBoardRepository = onBoardRepository
     }

@@ -6,9 +6,7 @@
 //
 
 import Foundation
-import GoogleMaps
-import GooglePlaces
-import  YAPCore
+import YAPCore
 
 public class YAPPakistanConfiguration {
     private(set) var environment: AppEnvironment
