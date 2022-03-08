@@ -188,9 +188,13 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func generateLoginOTP<T: Codable>(username: String, passcode: String, deviceID: String) -> Observable<T> {
+        //TODO: replace hardcodedUsername with username
+        let hardcodedUsername = "00923216730417"
+        let hardcodedPasscode = "1212"
+        
         let request = [
-            "clientId": username,
-            "clientSecret": passcode,
+            "clientId": hardcodedUsername,
+            "clientSecret": hardcodedPasscode,
             "deviceId": deviceID
         ]
 
@@ -201,9 +205,12 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func verifyLoginOTP<T: Codable>(username: String, passcode: String, deviceID: String, otp: String) -> Observable<T> {
+        //TODO: replace hardcodedUsername with username
+        let hardcodedUsername = "00923216730417"
+        let hardcodedPasscode = "1212"
         let body = [
-            "clientId": username,
-            "clientSecret": passcode,
+            "clientId": hardcodedUsername,
+            "clientSecret": hardcodedPasscode,
             "deviceId": deviceID,
             "otp": otp
         ]

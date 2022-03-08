@@ -51,7 +51,7 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.action
-            .subscribe(onNext: { [weak self] in
+            .subscribe(onNext: { [unowned self] in
 //                guard let `self` = self else { return }
                 switch $0 {
                 case .localTransfer:
@@ -62,7 +62,7 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
                     //self.sendMoneyInternationally(localRoot: self.localRoot, refreshObserver: viewModel.inputs.refreshObserver)
                 case .qrCode:
                     print("QR")
-                    //self.sendMoneyViaQrCode(localRoot: self.localRoot)
+                    self.sendMoneyViaQrCode(localRoot: self.localRoot)
                 default:
                     break
                 }
@@ -137,6 +137,14 @@ private extension SendMoneyDashboardCoordinator {
             if case let ResultType.success(result) = $0 {
                 self?.result.onNext(.success(result))
                 self?.result.onCompleted()
+            }
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    func sendMoneyViaQrCode(localRoot: UINavigationController) {
+        coordinate(to: SendMoneyQRCodeCoordinator(root: localRoot, container: container)).subscribe(onNext: { [weak self] in
+            if case let ResultType.success(result) = $0 {
+                //self?.qrFundsTransfer(localRoot: localRoot, contact: result)
             }
         }).disposed(by: rx.disposeBag)
     }
