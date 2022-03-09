@@ -155,8 +155,7 @@ class AddMoneyQRCodeViewController: UIViewController {
 
     @objc
     private func addAction() {
-       // self.viewModel.inputs.goToQRScanner.onNext(())
-        hide()
+        self.viewModel.inputs.goToQRScanner.onNext(())
     }
 
     override func onTapBackButton() {

@@ -24,7 +24,7 @@ class AddMoneyQRCodeCoordinator: Coordinator<ResultType<Void>> {
     
     init(root: UINavigationController, scanAllowed: Bool, container: UserSessionContainer) {
         self.root = root
-        self.scanAllowed = true //scanAllowed
+        self.scanAllowed = scanAllowed
         self.container = container
     }
     

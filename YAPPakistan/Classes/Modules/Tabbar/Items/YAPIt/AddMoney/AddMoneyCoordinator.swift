@@ -65,9 +65,8 @@ class AddMoneyCoordinator: Coordinator<ResultType<Void>> {
                 break
 //                self?.navigateToLocateATM()
             case .qrCode:
-                break
 //                AppAnalytics.shared.logEvent(TopUpEvent.topUpQrCode())
-//                self?.navigateToAddMoneyQRCode()
+                self?.navigateToAddMoneyQRCode()
             case .localTransfer, .internationalTransfer, .homeCountry, .yapContact, .requestMoeny:
                 break
             }
@@ -85,6 +84,10 @@ private extension AddMoneyCoordinator {
         let viewController = TopupCardSelectionViewController(themeService: container.themeService, viewModel: viewModel)
         localRoot.pushViewController(viewController, animated: true)
         
+    }
+    
+    func navigateToAddMoneyQRCode() {
+        coordinate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: true, container: container)).subscribe().disposed(by: rx.disposeBag)
     }
 }
 
