@@ -33,7 +33,13 @@ class YapItRepository: YapItRepositoryType {
         return customersService.fetchRecentBeneficiaries().materialize()
     }
     
+    public func getCustomerInfoFromQR(_ qrString: String) -> Observable<Event<QRContact>> {
+        return customersService.getCustomerInfoFromQR(qrString).materialize()
+    }
+    
 //    func fetchBeneficiaryCountries() -> Observable<Event<[SendMoneyBeneficiaryCountry]>> {
 //        return self.customersService.fetchBeneficiaryCountries().materialize()
 //    }
+    
+    
 }

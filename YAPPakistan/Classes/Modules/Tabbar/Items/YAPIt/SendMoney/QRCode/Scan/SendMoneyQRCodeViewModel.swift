@@ -71,18 +71,18 @@ class SendMoneyQRCodeViewModel: SendMoneyQRCodeViewModelInput, SendMoneyQRCodeVi
     var invalidQRDetection: Observable<Bool> { qrCodeSubject.map{ [unowned self] in !$0.hasPrefix(self.qrCodePrefix) && $0.count > 0 }.asObservable() }
     
     private let qrCodePrefix = "yap-app:"
-    
-    init(_ repository: YapItRepository) {
+    private var accountProvider: AccountProvider
+    init(_ repository: YapItRepository, accountProvider: AccountProvider) {
         self.repository = repository
-//
-//        validateQrCode(repository)
-//        validatePickedImage()
+        self.accountProvider = accountProvider
+        validateQrCode(repository)
+        validatePickedImage()
     }
     
 }
 
 // MARK: - QR code validation
-/*
+
 private extension SendMoneyQRCodeViewModel {
     func validateQrCode(_ repository: YapItRepository) {
         let validQrCode = qrCodeSubject
@@ -94,14 +94,14 @@ private extension SendMoneyQRCodeViewModel {
             .do(onNext: { _ in
                 YAPProgressHud.showProgressHud()
             })
-            .flatMap{ [unowned self] in repository.getCustomerInfo(for: $0.replacingOccurrences(of: self.qrCodePrefix, with: "")) }
+                .flatMap{ [unowned self] in repository.getCustomerInfoFromQR($0.replacingOccurrences(of: self.qrCodePrefix, with: "")) }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
         
         infoRequst.errors().map{ $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
         infoRequst.errors().map{ _ in false }.bind(to: pauseScanningSubject).disposed(by: disposeBag)
         
-        let account = infoRequst.elements().withLatestFrom(Observable.combineLatest(infoRequst.elements(), SessionManager.current.currentAccount.unwrap())).share()
+        let account = infoRequst.elements().withLatestFrom(Observable.combineLatest(infoRequst.elements(), accountProvider.currentAccount.unwrap())).share()
         
         account
             .filter{ $0.0.accountUUID != $0.1.uuid }
@@ -126,4 +126,4 @@ private extension SendMoneyQRCodeViewModel {
             .disposed(by: disposeBag)
     }
 }
-*/
+

@@ -110,7 +110,7 @@ class QRCodeScanFrameView: UIView {
         
         rentangleImage
             .centerHorizontallyInSuperview()
-            //.alignEdgesWithSuperview([.left, .right], constant: 44)
+            
         rentangleImage.alignEdgeWithSuperview(.top, constant: 144)//144)
         
              /* innerLayer.path = pathForinnerLayer().cgPath

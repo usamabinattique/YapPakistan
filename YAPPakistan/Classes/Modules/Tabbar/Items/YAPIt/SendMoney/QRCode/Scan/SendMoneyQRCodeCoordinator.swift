@@ -102,7 +102,7 @@ private extension SendMoneyQRCodeCoordinator {
     }
     
     func qrCodeScanner() {
-        let viewModel = SendMoneyQRCodeViewModel(container.makeYapItRepository())
+        let viewModel = SendMoneyQRCodeViewModel(container.makeYapItRepository(),accountProvider: container.accountProvider)
         let viewController = SendMoneyQRCodeViewController(themeService: container.themeService, viewModel: viewModel)
         
         localRoot = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
@@ -127,6 +127,7 @@ private extension SendMoneyQRCodeCoordinator {
         pickedImageSubject.bind(to: viewModel.inputs.pickedImageObserver).disposed(by: disposeBag)
         
         viewModel.outputs.result.subscribe(onNext: { [weak self] in
+            print("qr code is \($0)")
             self?.result.onNext(.success($0))
             self?.result.onCompleted()
         }).disposed(by: disposeBag)
