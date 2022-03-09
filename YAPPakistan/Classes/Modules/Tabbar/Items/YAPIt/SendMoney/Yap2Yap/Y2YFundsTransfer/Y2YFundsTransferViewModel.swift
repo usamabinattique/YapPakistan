@@ -253,7 +253,8 @@ private extension Y2YFundsTransferViewModel {
                 
         Observable.combineLatest(fundsTransferRequest.elements().map { [unowned self] _ in self.contact }, amountSubject.map { Double($0 ?? "") ?? 0 })
             .map { ($0.0, $0.1) }
-            .do(onNext: { _ in
+            .do(onNext: { [weak self] _ in
+               // self?.container.accountProvider.refreshAccount()
              //   SessionManager.current.refreshBalance()
              //   AppAnalytics.shared.logEvent(transferType == .qrCode ? SendMoneyEvent.sendMoneyViaQR() : SendMoneyEvent.yaptoyap())
             })
@@ -262,7 +263,7 @@ private extension Y2YFundsTransferViewModel {
     }
     
     func fetchData() {
-        YAPProgressHud.showProgressHud()
+       // YAPProgressHud.showProgressHud()
         
         let getThreshold = repository.getThresholdLimits()
         let getCustomerBalance = repository.fetchCustomerAccountBalance()
@@ -291,6 +292,7 @@ private extension Y2YFundsTransferViewModel {
                     
                 case let .error(error):
                     print("error \(error)")
+                    
                 case .completed: break
                 }
             }).disposed(by: disposeBag)

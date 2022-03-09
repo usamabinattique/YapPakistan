@@ -33,6 +33,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>YAP would like to access camera to scan your document</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>YAP would like to access photos to scan your document</string>
 	<key>NSContactsUsageDescription</key>
 	<string>YAP would like to access your contacts for finding your YAP friends</string>
 	<key>NSFaceIDUsageDescription</key>
