@@ -11,27 +11,30 @@ import YAPComponents
 import RxSwift
 //import AppAnalytics
 //import YapToYap
-/*
+
 class AddMoneyQRCodeCoordinator: Coordinator<ResultType<Void>> {
     
     private let root: UINavigationController!
     private var localRoot: UINavigationController!
     private let result = PublishSubject<ResultType<Void>>()
     private var scanAllowed = false
+    private let container: UserSessionContainer
+    private let disposeBag = DisposeBag()
 //    override var feature: CoordinatorFeature { .addFunds }
     
-    init(root: UINavigationController, scanAllowed: Bool) {
+    init(root: UINavigationController, scanAllowed: Bool, container: UserSessionContainer) {
         self.root = root
-        self.scanAllowed = scanAllowed
+        self.scanAllowed = true //scanAllowed
+        self.container = container
     }
     
-    override func start() -> Observable<ResultType<Void>> {
+    override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = AddMoneyQRCodeViewModel(scanAllowed: self.scanAllowed)
-        let viewController = AddMoneyQRCodeViewController(viewModel: viewModel)
+        let viewModel = AddMoneyQRCodeViewModel(scanAllowed: scanAllowed, accountProvider: container.accountProvider, themeService: container.themeService)
+        let viewController = AddMoneyQRCodeViewController(themeService: container.themeService,viewModel: viewModel)
         viewController.modalPresentationStyle = .overCurrentContext
         localRoot = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
-
+        localRoot.setNavigationBarHidden(true, animated: false)
         localRoot.modalPresentationStyle = .overCurrentContext
         localRoot.view.backgroundColor = .clear
         root.present(localRoot, animated: false, completion: nil)
@@ -50,7 +53,7 @@ class AddMoneyQRCodeCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: self.disposeBag)
         
         viewModel.outputs.shareQr.subscribe(onNext: { [weak self] in
-            AppAnalytics.shared.logEvent(QRCodeEvent.shareQrCode())
+           // AppAnalytics.shared.logEvent(QRCodeEvent.shareQrCode())
             self?.shareQRImage($0)
         }).disposed(by: disposeBag)
         
@@ -68,7 +71,7 @@ private extension AddMoneyQRCodeCoordinator {
     }
 
     private func sendMoneyQRCode(_ root: UINavigationController) {
-        coordinate(to: SendMoneyQRCodeCoordinator.init(root: root)).subscribe(onNext: { [weak self] in
+        coordinate(to: SendMoneyQRCodeCoordinator.init(root: root, container: container)).subscribe(onNext: { [weak self] in
          if case let ResultType.success(result) = $0 {
              self?.qrFundsTransfer(localRoot: root, contact: result)
          }
@@ -76,7 +79,7 @@ private extension AddMoneyQRCodeCoordinator {
     }
     
     func qrFundsTransfer(localRoot: UINavigationController, contact: QRContact) {
-        coordinate(to: Y2YFundsTransferCoordinator(root: localRoot, contact: contact.yapContact, repository: Y2YRepository(), transferType: .qrCode, shouldPresent: true)).subscribe(onNext: { [weak self] in
+        coordinate(to: Y2YFundsTransferCoordinator(root: localRoot, container: container, contact: contact.yapContact, repository: container.makeY2YRepository(), transferType: .qrCode, shouldPresent: true)).subscribe(onNext: { [weak self] in
                 
          if case let ResultType.success(result) = $0 {
              self?.result.onNext(.success(result))
@@ -86,4 +89,4 @@ private extension AddMoneyQRCodeCoordinator {
      }).disposed(by: disposeBag)
     }
 }
-*/
+

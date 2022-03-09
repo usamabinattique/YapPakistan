@@ -10,8 +10,9 @@ import UIKit
 import YAPCore
 import YAPComponents
 import RxSwift
+import RxTheme
 //import AppAnalytics
-/*
+
 class AddMoneyQRCodeViewController: UIViewController {
     
     // MARK: - Views
@@ -34,13 +35,13 @@ class AddMoneyQRCodeViewController: UIViewController {
         return view
     }()
     
-    private lazy var userImage = UIImageViewFactory.createImageView(mode: .scaleAspectFill)
+    private lazy var userImage = UIFactory.makeImageView(contentMode: .scaleAspectFill) //UIImageViewFactory.createImageView(mode: .scaleAspectFill)
     
-    private lazy var nameLabel = UILabelFactory.createUILabel(with: .primaryDark, textStyle: .large, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var nameLabel = UIFactory.makeLabel(font: .large, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .large, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     
-    private lazy var qrImage = UIImageViewFactory.createImageView(mode: .scaleAspectFit, tintColor: .primaryDark)
+    private lazy var qrImage =  UIFactory.makeImageView(contentMode: .scaleAspectFit) //UIImageViewFactory.createImageView(mode: .scaleAspectFit, tintColor: .primaryDark)
     
-    private lazy var yapLogoImage = UIImageViewFactory.createBackgroundImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_qr_yap_logo", in: yapBundle, compatibleWith: nil)!)
+    private lazy var yapLogoImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)// UIImageViewFactory.createBackgroundImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_qr_yap_logo", in: .yapPakistan, compatibleWith: nil)!)
     
     private lazy var qrView: UIView = {
         let view = UIView()
@@ -50,13 +51,13 @@ class AddMoneyQRCodeViewController: UIViewController {
     }()
     
 
-    private lazy var shareQRButton = UIButtonFactory.createButton(title: "Share my code", backgroundColor: .clear, textColor: .primary)
+    private lazy var shareQRButton = UIFactory.makeButton(with: .regular, backgroundColor: .clear, title: "Share my code") // UIButtonFactory.createButton(title: "Share my code", backgroundColor: .clear, textColor: .primary)
     
-    private lazy var shareQRIcon = UIImageViewFactory.createImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_qr_share", in: yapBundle, compatibleWith: nil))
+    private lazy var shareQRIcon = UIFactory.makeImageView(contentMode: .scaleAspectFit)//UIImageViewFactory.createImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_qr_share", in: yapBundle, compatibleWith: nil))
     
-    private lazy var saveQRButton = UIButtonFactory.createButton(title: "Save to gallery", backgroundColor: .clear, textColor: .primary)
+    private lazy var saveQRButton = UIFactory.makeButton(with: .regular, backgroundColor: .clear, title: "Save to gallery") //UIButtonFactory.createButton(title: "Save to gallery", backgroundColor: .clear, textColor: .primary)
     
-    private lazy var saveQRIcon = UIImageViewFactory.createImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_qr_save", in: yapBundle, compatibleWith: nil))
+    private lazy var saveQRIcon = UIFactory.makeImageView(contentMode: .scaleAspectFit) //UIImageViewFactory.createImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_qr_save", in: yapBundle, compatibleWith: nil))
     
     private lazy var bottomLableView: UIView = {
         let view = UIView()
@@ -67,7 +68,7 @@ class AddMoneyQRCodeViewController: UIViewController {
         return view
     }()
     
-    private lazy var bottomLabel = UILabelFactory.createUILabel(with: .white, textStyle: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "Share your unique YAP QR payments code to proceed")
+    private lazy var bottomLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "Share your unique YAP QR payments code to proceed") //UILabelFactory.createUILabel(with: .white, textStyle: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "Share your unique YAP QR payments code to proceed")
     
     // MARK: - Properties
     
@@ -75,24 +76,27 @@ class AddMoneyQRCodeViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var popUpTop: NSLayoutConstraint!
     private var labelBottom: NSLayoutConstraint!
+    private var themeService: ThemeService<AppTheme>
     
     // MARK: Initialization
     
-    init(viewModel: AddMoneyQRCodeViewModelType) {
-        super.init(nibName: nil, bundle: nil)
+    init(themeService: ThemeService<AppTheme>,viewModel: AddMoneyQRCodeViewModelType) {
         self.viewModel = viewModel
+        self.themeService = themeService
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        fatalError("init(coder: \(coder) has not been implemented")
     }
     
     // MARK: - View cycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupViews()
+        setupResources()
+        setupTheme()
         setupContraints()
         bindViews(viewModel)
         
@@ -113,35 +117,47 @@ class AddMoneyQRCodeViewController: UIViewController {
     
     func addCloseButton(_ type: BackButtonType = .backCircled) {
         let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
-        button.setImage(UIImage.sharedImage(named: "icon_close")?.asTemplate, for: .normal)
-        button.tintColor =  .primary
-        button.backgroundColor = .white
+        button.setImage(UIImage.init(named: "icon_close_white_bg", in: .yapPakistan), for: .normal)
+     //   button.tintColor =  .primary
+     //   button.backgroundColor = .white
         button.layer.cornerRadius = 0.5 * button.bounds.size.width
         button.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
         
-        let backButton = UIBarButtonItem()
-        backButton.customView = button
-        navigationItem.leftBarButtonItem  = backButton
+       // let backButton = UIBarButtonItem()
+       // backButton.customView = button
+       // navigationItem.leftBarButtonItem  = backButton
+        
+        self.view.addSubview(button)
+        
+        button.alignEdgeWithSuperview(.top, constant: 50)
+        button.alignEdgeWithSuperview(.left, constant: 24)
     }
     
     func addQRScannerButton(_ type: BackButtonType = .backCircled) {
         let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
-        button.setImage(UIImage.sharedImage(named: "QRScanner")?.asTemplate, for: .normal)
-        button.tintColor =  .primary
-        button.backgroundColor = .white
+        button.setImage(UIImage.init(named: "qr_scanner", in: .yapPakistan), for: .normal)
+       // button.tintColor =  .primary
+       // button.backgroundColor = .white
         button.layer.cornerRadius = 0.5 * button.bounds.size.width
         button.addTarget(self, action: #selector(addAction), for: .touchUpInside)
         
-        let backButton = UIBarButtonItem()
+      /*  let backButton = UIBarButtonItem()
         backButton.customView = button
-        navigationItem.rightBarButtonItem  = backButton
+        navigationItem.rightBarButtonItem  = backButton */
+        self.view.addSubview(button)
+        
+        button.alignEdgeWithSuperview(.top, constant: 50)
+        button.alignEdgeWithSuperview(.right, constant: 24)
     }
 
     @objc
     private func addAction() {
-        self.viewModel.inputs.goToQRScanner.onNext(())
+       // self.viewModel.inputs.goToQRScanner.onNext(())
+        hide()
     }
 
     override func onTapBackButton() {
@@ -150,7 +166,7 @@ class AddMoneyQRCodeViewController: UIViewController {
     
     @objc
     func saveImageToPhotoLibray(_ sender: UIButton) {
-        AppAnalytics.shared.logEvent(QRCodeEvent.saveQrCode())
+       // AppAnalytics.shared.logEvent(QRCodeEvent.saveQrCode())
         UIImageWriteToSavedPhotosAlbum(qrView.asImage, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
     }
     
@@ -192,6 +208,30 @@ private extension AddMoneyQRCodeViewController {
         view.backgroundColor = .clear
         
         saveQRButton.addTarget(self, action: #selector(saveImageToPhotoLibray(_:)), for: .touchUpInside)
+    }
+    
+    func setupResources() {
+        shareQRIcon.image = UIImage(named: "icon_qr_share", in: .yapPakistan)
+        saveQRIcon.image = UIImage(named: "icon_qr_save", in: .yapPakistan)
+        yapLogoImage.image = UIImage(named: "icon_qr_yap_logo", in: .yapPakistan)
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.backgroundColor) }, to: [bottomLabel.rx.textColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [nameLabel.rx.textColor])
+            .bind({ UIColor($0.primary        ) }, to: [shareQRButton.rx.titleColor(for: .normal),saveQRButton.rx.titleColor(for: .normal)])
+          /*  .bind({ UIColor($0.primaryDark    ) }, to: [mobileNumber.rx.secondaryColor])
+            .bind({ UIColor($0.greyLight      ) }, to: [mobileNumber.rx.bgColor])
+            .bind({ UIColor($0.error          ) }, to: [mobileNumber.rx.errorColor])
+            .bind({ UIColor($0.primary        ) }, to: [signInButton.rx.enabledBackgroundColor])
+            .bind({ UIColor($0.greyDark       ) }, to: [signInButton.rx.disabledBackgroundColor])
+            .bind({ UIColor($0.primary        ) }, to: [signUpButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.greyDark       ) }, to: [signUpLabel.rx.textColor])
+            .bind({ UIColor($0.primary        ) }, to: [rememberIDSwitch.rx.onTintColor])
+            .bind({ UIColor($0.greyLight      ) }, to: [rememberIDSwitch.rx.offTintColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [rememberIDLabel.rx.textColor]) */
+            .disposed(by: rx.disposeBag)
     }
     
     func setupContraints() {
@@ -257,7 +297,7 @@ private extension AddMoneyQRCodeViewController {
         bottomLabel
             .alignEdgesWithSuperview([.left, .top, .right, .bottom], constant: 8)
         
-        popUpTop = popupView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: UIScreen.main.bounds.height)
+        popUpTop = popupView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: UIScreen.main.bounds.height) //popupView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: UIScreen.main.bounds.height)
         popUpTop.isActive = true
     }
     
@@ -315,7 +355,7 @@ private extension AddMoneyQRCodeViewController {
 
 private extension AddMoneyQRCodeViewController {
     func show() {
-        popUpTop.constant = 15
+        popUpTop.constant = 100 //15
         labelBottom = view.safeAreaLayoutGuide.bottomAnchor.constraint(greaterThanOrEqualTo: bottomLableView.bottomAnchor, constant: 15)
         labelBottom.isActive = true
         
@@ -351,4 +391,4 @@ fileprivate extension UIView {
         }
     }
 }
-*/
+

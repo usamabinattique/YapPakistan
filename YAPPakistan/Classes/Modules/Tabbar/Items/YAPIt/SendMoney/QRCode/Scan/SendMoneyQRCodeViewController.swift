@@ -101,7 +101,6 @@ class SendMoneyQRCodeViewController: UIViewController {
         
     // MARK: Initialization
     init(themeService: ThemeService<AppTheme>, viewModel: SendMoneyQRCodeViewModelType) {
-        
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)

@@ -127,14 +127,13 @@ private extension SendMoneyQRCodeCoordinator {
         pickedImageSubject.bind(to: viewModel.inputs.pickedImageObserver).disposed(by: disposeBag)
         
         viewModel.outputs.result.subscribe(onNext: { [weak self] in
-            print("qr code is \($0)")
             self?.result.onNext(.success($0))
             self?.result.onCompleted()
         }).disposed(by: disposeBag)
     }
     
     func myQrCode() {
-        //coordinate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: false)).subscribe().disposed(by: disposeBag)
+        coordinate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: false, container: container)).subscribe().disposed(by: disposeBag)
     }
     
     func photoLibrary() {
