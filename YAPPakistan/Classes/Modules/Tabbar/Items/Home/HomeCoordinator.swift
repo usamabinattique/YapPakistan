@@ -160,6 +160,6 @@ extension HomeCoodinator {
        // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
         let name = Notification.Name.init(.logout)
         NotificationCenter.default.post(name: name,object: nil)
-        container.parent.configuration.eventCallback(.logout)
+        container.parent.configuration.eventCallback?(.logout)
     }
 }
