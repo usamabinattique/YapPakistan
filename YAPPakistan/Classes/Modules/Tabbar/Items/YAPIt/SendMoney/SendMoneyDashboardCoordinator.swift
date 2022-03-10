@@ -149,8 +149,17 @@ private extension SendMoneyDashboardCoordinator {
         }).disposed(by: rx.disposeBag)
     }
     
-    func qrFundsTransfer(localRoot: UINavigationController, contact: QRContact) {
+   /* func qrFundsTransfer(localRoot: UINavigationController, contact: QRContact) {
         coordinate(to: Y2YFundsTransferCoordinator(root: localRoot, container: container, contact: contact.yapContact, repository: container.makeY2YRepository(), transferType: .qrCode)).subscribe(onNext: { [weak self] in
+            if case let ResultType.success(result) = $0 {
+                self?.result.onNext(.success(result))
+                self?.result.onCompleted()
+            }
+        }).disposed(by: rx.disposeBag)
+    } */
+    
+    func qrFundsTransfer(localRoot: UINavigationController, contact: QRContact) {
+        coordinate(to: QRPaymentCoordinator(root: localRoot, container: container, contact: contact.yapContact, repository: container.makeY2YRepository(), transferType: .qrCode)).subscribe(onNext: { [weak self] in
             if case let ResultType.success(result) = $0 {
                 self?.result.onNext(.success(result))
                 self?.result.onCompleted()

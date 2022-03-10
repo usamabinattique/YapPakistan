@@ -45,9 +45,7 @@ public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
     }
 
     public func authenticate<T: Codable>(username: String, password: String, deviceId: String) -> Observable<T> {
-        //TODO: replace hardcodedUsername with username
-        let hardcodedUsername = "00923216730417"
-        let params = ["client_id": hardcodedUsername, "client_secret": password, "grant_type": "client_credentials", "device_id": deviceId] //, "isInternalUser":"true"]
+        let params = ["client_id": username, "client_secret": password, "grant_type": "client_credentials", "device_id": deviceId] //, "isInternalUser":"true"]
         let route = APIEndpoint(.post, apiConfig.authURL, "/oauth/oidc/login-token", body: params,
                                 headers: authorizationProvider.authorizationHeaders)
 

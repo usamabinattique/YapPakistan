@@ -19,6 +19,8 @@ public struct TransferFeeTier {
     let feePercentage: Double
     let vatPercentage: Double
     public let feeInPercentage: Bool
+    let fixedAmount: Double
+    let  feeCurrency: String
 }
 
 extension TransferFeeTier: Codable {
@@ -30,12 +32,14 @@ extension TransferFeeTier: Codable {
         self.feePercentage = (try? container.decode(Double?.self, forKey: .feePercentage)) ?? 0
         self.vatPercentage = (try? container.decode(Double?.self, forKey: .vatPercentage)) ?? 0
         self.feeInPercentage = (try? container.decode(Bool?.self, forKey: .feeInPercentage)) ?? false
+        self.fixedAmount = (try? container.decode(Double?.self, forKey: .fixedAmount)) ?? 0
+        self.feeCurrency = (try? container.decode(String?.self, forKey: .feeCurrency)) ?? ""
     }
 }
 
 public extension TransferFeeTier {
-    static func mocked(from: Double, to: Double, fee: Double, vatAmount: Double, feePercentage: Double, vatPercentage: Double, feeInPercentage: Bool) -> TransferFeeTier {
-        TransferFeeTier(amountFrom: from, amountTo: to, feeAmount: fee, feePercentage: feePercentage, vatPercentage: vatPercentage, feeInPercentage: feeInPercentage)
+    static func mocked(from: Double, to: Double, fee: Double, vatAmount: Double, feePercentage: Double, vatPercentage: Double, feeInPercentage: Bool, fixedAmount: Double, feeCurrency: String) -> TransferFeeTier {
+        TransferFeeTier(amountFrom: from, amountTo: to, feeAmount: fee, feePercentage: feePercentage, vatPercentage: vatPercentage, feeInPercentage: feeInPercentage,fixedAmount: fixedAmount, feeCurrency: feeCurrency)
     }
 }
 
@@ -149,6 +153,6 @@ public extension TransferFee {
 
 public extension TransferFee {
     static var mock: TransferFee {
-        TransferFee(feeType: TransferFeeType.flat, fixedAmount: 0, slabCurrency: "AED", feeCurrency: "AED", tiers: [TransferFeeTier.mocked(from: 0, to: 0, fee: 0, vatAmount: 0, feePercentage: 0, vatPercentage: 0, feeInPercentage: false)])
+        TransferFee(feeType: TransferFeeType.flat, fixedAmount: 0, slabCurrency: "AED", feeCurrency: "AED", tiers: [TransferFeeTier.mocked(from: 0, to: 0, fee: 0, vatAmount: 0, feePercentage: 0, vatPercentage: 0, feeInPercentage: false,fixedAmount: 0, feeCurrency: "PKR")])
     }
 }

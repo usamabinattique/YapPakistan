@@ -1,19 +1,20 @@
 //
-//  Y2YFundsTransferViewModel.swift
+//  QRPaymentViewModel.swift
 //  YAPPakistan
 //
-//  Created by Yasir on 24/01/2022.
+//  Created by Yasir on 10/03/2022.
 //
 
 import Foundation
 import YAPComponents
 import YAPCore
 import RxSwift
+import UIKit
 
 
-typealias Y2YFundsTransferResult = (contact: YAPContact, amount: Double)
 
-protocol Y2YFundsTransferViewModelInput {
+
+protocol QRPaymentViewModelInput {
     var amountObserver: AnyObserver<String?> { get }
     var noteObserver: AnyObserver<String?> { get }
     var confirmObserver: AnyObserver<Void> { get }
@@ -22,7 +23,7 @@ protocol Y2YFundsTransferViewModelInput {
     var closeObserver: AnyObserver<Void> { get }
 }
 
-protocol Y2YFundsTransferViewModelOutput {
+protocol QRPaymentViewModelOutput {
     var userImage: Observable<(String?, UIImage?)> { get }
     var userName: Observable<String?> { get }
     var balance: Observable<NSAttributedString?> { get }
@@ -35,7 +36,7 @@ protocol Y2YFundsTransferViewModelOutput {
     var isInputValid: Observable<Bool> { get }
     var fee: Observable<NSAttributedString?> { get }
     
-    var result: Observable<(YAPContact, Double)> { get }
+    var result: Observable<(YAPContact, Y2YTransactionResponse)> { get }
     
     var otpRequired: Observable<Y2YFundsTransferResult> { get }
     
@@ -50,18 +51,18 @@ protocol Y2YFundsTransferViewModelOutput {
     var isPresented: Bool { get}
 }
 
-protocol Y2YFundsTransferViewModelType {
-    var inputs: Y2YFundsTransferViewModelInput { get }
-    var outputs: Y2YFundsTransferViewModelOutput { get }
+protocol QRPaymentViewModelType {
+    var inputs: QRPaymentViewModelInput { get }
+    var outputs: QRPaymentViewModelOutput { get }
 }
 
-class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransferViewModelInput, Y2YFundsTransferViewModelOutput {
+class QRPaymentViewModel: QRPaymentViewModelType, QRPaymentViewModelInput, QRPaymentViewModelOutput {
     
     
     // MARK: - Properties
     let disposeBag = DisposeBag()
-    var inputs: Y2YFundsTransferViewModelInput { return self }
-    var outputs: Y2YFundsTransferViewModelOutput { return self }
+    var inputs: QRPaymentViewModelInput { return self }
+    var outputs: QRPaymentViewModelOutput { return self }
     let contact: YAPContact
     private let repository: Y2YRepositoryType
     
@@ -81,7 +82,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
     private let feeSubject = BehaviorSubject<NSAttributedString?>(value: nil)
     private let showErrorSubject = PublishSubject<String>()
     private let confirmEnabledSubject = BehaviorSubject<Bool>(value: false)
-    private let resultSubject = PublishSubject<(YAPContact, Double)>()
+    private let resultSubject = PublishSubject<(YAPContact, Y2YTransactionResponse)>()
     private let backSubject = PublishSubject<Void>()
     private let otpRequiredSubject = PublishSubject<Y2YFundsTransferResult>()
     private let amountErrorSubject = PublishSubject<String?>()
@@ -115,7 +116,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
     var flag: Observable<UIImage?> { return flagSubject.asObservable() }
     var showError: Observable<String> { return showErrorSubject.asObservable() }
     var confirmEnabled: Observable<Bool> { return confirmEnabledSubject.asObservable() }
-    var result: Observable<(YAPContact, Double)> { return resultSubject.asObservable() }
+    var result: Observable<(YAPContact, Y2YTransactionResponse)> { return resultSubject.asObservable() }
     var isInputValid: Observable<Bool> { return Observable.merge(amountSubject.map { _ in true }, showError.map { _ in false })}
     var fee: Observable<NSAttributedString?> { feeSubject.asObservable() }
     var otpRequired: Observable<Y2YFundsTransferResult> { otpRequiredSubject.asObservable() }
@@ -148,23 +149,11 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
         self.container = container
         self.isPresentedSubject = presented
         
-        showsFlagSubject = BehaviorSubject(value: transferType == .yapContact)
-        phoneNumberSubject = BehaviorSubject(value: contact.phoneNumber)//contact.formattedPhoneNumber)
+        showsFlagSubject = BehaviorSubject(value: transferType == .qrCode)
+        phoneNumberSubject = BehaviorSubject(value: contact.formattedPhoneNumberForQRCode)
         allowedDecimalSucject = BehaviorSubject(value: CurrencyFormatter.decimalPlaces(for: "PKR"))
         titleSubject = BehaviorSubject(value: transferType.title)
 
-      /*
-        SessionManager.current.currentBalance
-            .map { balance -> NSAttributedString in
-                let balance = balance.formattedBalance()
-                let text = String.init(format: "screen_y2y_funds_transfer_display_text_balance".localized, balance)
-                let attributed = NSMutableAttributedString(string: text)
-                attributed.addAttributes([.foregroundColor: UIColor.primaryDark], range: NSRange(location: text.count - balance.count, length: balance.count))
-                return attributed as NSAttributedString }
-            .bind(to: balanceSubject).disposed(by: disposeBag) */
-//        Observable.combineLatest(feeRes,customerBalanceRes).map { (fee, balance) in
-//            fee.
-//        }
         customerBalanceRes.map { balance -> NSAttributedString in
             let blnceFormatted = String(format: "%.2f", balance.currentBalance)
             let balance = "PKR \(blnceFormatted)"
@@ -177,7 +166,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
         .bind(to: balanceSubject).disposed(by: disposeBag)
         
         
-        userImageSubject.onNext((contact.photoUrl, contact.thumbnailImage ?? contact.name.initialsImage(color: .green)))//.secondaryGreen)))
+        userImageSubject.onNext((contact.photoUrl, contact.name.initialsImage(color: UIColor(Color(hex: "#F44774"))) ))
         userNameSubject.onNext(contact.name)
         
         verifications()
@@ -199,7 +188,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
     }
 }
 
-private extension Y2YFundsTransferViewModel {
+private extension QRPaymentViewModel {
     func verifications() {
         let validNote = noteSubject.map{ ValidationService.shared.validateTransactionRemarks($0) }
         Observable.combineLatest(amountSubject.map { Double($0 ?? "") ?? 0 }, amountErrorSubject, validNote)
@@ -253,83 +242,63 @@ private extension Y2YFundsTransferViewModel {
                 print("hide")
             })
         
-//        fundsTransferRequest.errors().subscribe(onNext: { [weak self] in self?.amountErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
-
-//                fundsTransferRequest.errors().subscribe(onNext: { [unowned self] _ in self.resultSubject.onNext((self.contact, 1.0)) }).disposed(by: disposeBag)
-                
-        Observable.combineLatest(fundsTransferRequest.elements().map { [unowned self] _ in self.contact }, amountSubject.map { Double($0 ?? "") ?? 0 })
-            .map { ($0.0, $0.1) }
-            .do(onNext: { [weak self] _ in
-                print("success funds transfer")
-               // self?.container.accountProvider.refreshAccount()
-             //   SessionManager.current.refreshBalance()
-             //   AppAnalytics.shared.logEvent(transferType == .qrCode ? SendMoneyEvent.sendMoneyViaQR() : SendMoneyEvent.yaptoyap())
-            })
-            .bind(to: resultSubject)
-            .disposed(by: disposeBag)
+        fundsTransferRequest.errors().subscribe(onNext: { [weak self] in self?.amountErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
+    
+        Observable.combineLatest(amountSubject.map { [unowned self] _ in self.contact } , fundsTransferRequest.elements().map { $0 })
+                    .map { ($0.0, $0.1) }
+                    .do(onNext: { [weak self] _ in
+                        print("success funds transfer")
+                        self?.container.accountProvider.refreshAccount()
+                     //   SessionManager.current.refreshBalance()
+                    })
+                    .bind(to: resultSubject)
+                    .disposed(by: disposeBag)
     }
     
     func fetchData() {
         YAPProgressHud.showProgressHud()
         
-        let getThreshold = repository.getThresholdLimits()
-        let getCustomerBalance = repository.fetchCustomerAccountBalance()
-        let getTransactionLimit = repository.getTransactionProductLimit(transactionProductCode: TransactionProductCode.y2yTransfer.rawValue)
-        let getFee = repository.getFee(productCode: TransactionProductCode.y2yTransfer.rawValue)
+        let request = repository.fee(productCode: TransactionProductCode.y2yTransfer.rawValue).share()
         
+        Observable.combineLatest(amountSubject.map{ Double($0 ?? "") ?? 0 }, request.elements().do(onNext: { [unowned self] in self.transferFee = $0 }))
+            .map {
+                let amount = "PKR \($0.1.getTaxedFee(for: $0.0).formattedAmount)"
+                let text = String.init(format: "screen_y2y_funds_transfer_display_text_fee".localized, amount)
+                
+                let attributed = NSMutableAttributedString(string: text)
+                attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
+                return attributed as NSAttributedString }
+            .bind(to: feeSubject)
+            .disposed(by: disposeBag)
         
+        let customerBalanceRequest = repository.fetchCustomerAccountBalance().share()
         
-        let zipped = Observable.zip(getThreshold, getCustomerBalance,getTransactionLimit,getFee)
-        getThreshold.do(onNext: { _ in
-//            YAPProgressHud.showProgressHud()
-//            print("show")
-        })
-            .flatMap{ _ in zipped.materialize() }
-            .do(onNext: { _ in
-                YAPProgressHud.hideProgressHud()
-                print("hide")
-            } )
-            .subscribe(onNext: { [unowned self] materializeEvent in
-                YAPProgressHud.hideProgressHud()
-                switch materializeEvent {
-                case let .next((thresholdRes, customerBalanceRes, transactionLimtRes,feeRes)):
-                    if let thRes = thresholdRes.element, let blnce = customerBalanceRes.element, let limit = transactionLimtRes.element, let fee = feeRes.element {
-                        self.transactionThreshold = thRes
-                        self.thresholdRes.onNext(thRes)
-                        self.customerBalanceRes.onNext(blnce)
-                        self.limitRes.onNext(limit)
-                        self.feeRes.onNext(fee)
-                        self.transactionFee = fee
-                        let min =  Double(limit.min) ?? 0
-                        let max = Double(limit.max) ?? 0
-                        self.transactionRange = min...max
-                    }
-                    
-                case let .error(error):
-                    print("error \(error)")
-                    
-                case .completed:
-                    print("completed")
-                }
-            }).disposed(by: disposeBag)
-      
+        customerBalanceRequest.elements().bind(to: customerBalanceRes).disposed(by: disposeBag)
         
-        Observable.combineLatest(amountSubject.map{ Double($0 ?? "") ?? 0 }, feeRes).map { (amount,fee) -> NSAttributedString in
-            let amountFormatted = String(format: "%.2f", fee.fixedAmount)
-            let amount = "PKR \(amountFormatted)"
-            let text = String.init(format: "screen_y2y_funds_transfer_display_text_fee".localized, amount)
-            
-//                let attributed = NSMutableAttributedString(string: text)
-//                attributed.addAttributes([.foregroundColor : UIColor.primaryDark], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
-            let attributed = NSMutableAttributedString(string: text)
-            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
-            return attributed as NSAttributedString }.bind(to: feeSubject).disposed(by: disposeBag)
+        let dailyLimitRequest = repository.getThresholdLimits().share()
+        
+        dailyLimitRequest.elements().subscribe(onNext: { [unowned self] in self.transactionThreshold = $0 }).disposed(by: disposeBag)
+        
+        Observable.merge(request.errors(), dailyLimitRequest.errors(),customerBalanceRequest.errors() )
+            .subscribe(onNext: { [weak self] in self?.showErrorSubject.onNext($0.localizedDescription) })
+            .disposed(by: disposeBag)
+        
+        let transactionLimitRequest = self.repository.getTransactionProductLimit(transactionProductCode: TransactionProductCode.y2yTransfer.rawValue).share()
+        
+        transactionLimitRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
+        transactionLimitRequest.elements().subscribe(onNext: { [unowned self] in
+            let min = Double($0.min) ?? 0
+            let max = Double($0.max) ?? 0
+            self.transactionRange = min...max
+        }).disposed(by: disposeBag)
+        
+        Observable.zip(request.map{ _ in }, customerBalanceRequest.map{ _ in } ,dailyLimitRequest.map{ _ in }, transactionLimitRequest.map{ _ in }).subscribe(onNext: { _ in YAPProgressHud.hideProgressHud() }).disposed(by: disposeBag)
     }
 }
 
 // MARK: Error handling
 
-private extension Y2YFundsTransferViewModel {
+private extension QRPaymentViewModel {
     func handleErrors() {
         Observable.combineLatest(customerBalanceRes, amountSubject.map{ Double($0 ?? "") ?? 0 })
             .map{ [unowned self] in self.getError(forAmount: $0.1, availableBalance: $0.0.currentBalance) }

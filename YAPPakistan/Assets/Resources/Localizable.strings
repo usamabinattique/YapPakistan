@@ -232,6 +232,9 @@
 "screen_y2y_funds_transfer_success_display_text_transfer" = "You have sent";
 "screen_y2y_funds_transfer_success_button_back" = "Go to dashboard";
 
+// MARK: - QR Payment success
+"screen_qr_payment_transfer_success_display_text_title" = "Payment successful!";
+
 //MARK: Report Cards
 "screen_report_card_display_text_title" = "Report lost or stolen card";
 "screen_report_card_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";
