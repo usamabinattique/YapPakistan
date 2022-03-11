@@ -10,6 +10,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import YAPComponents
+import UIKit
 
 
 //TODO: Remove viewmodel dependancy and use reactive extension
@@ -31,7 +32,7 @@ open class AmountView: UIView {
 
     public lazy var amountContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.lightGray.withAlphaComponent(0.36) //UIColor.greyLight.withAlphaComponent(0.36)
+        view.backgroundColor = UIColor(Color(hex: "#DAE0F0")).withAlphaComponent(0.36) //UIColor.lightGray.withAlphaComponent(0.36) //UIColor.greyLight.withAlphaComponent(0.36)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

@@ -30,17 +30,27 @@ protocol TransactionsRepositoryType {
     ) -> Observable<Event<PagableResponse<TransactionResponse>>>
     
     func getTransactionLimit() -> Observable<Event<TransactionFilterAmountRange>>
-    func fetchCheckoutSession(amount: String, currency: String, sessionId: String) ->  Observable<Event<PaymentGatewayCheckoutSession>>
-    func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<Event<String?>>
+    func fetchCheckoutSession(beneficiaryId: String, amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>>
+    func fetch3DSEnrollment(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<Event<PaymentGateway3DSEnrollmentResult>>
+    func retrieveACSResults(threeDSecureID: String) -> Observable<Event<String?>>
+    func paymentGatewayFirstCreditTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<String?>>
+    func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<String?>>
     func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<String?>>
+    func fetchCustomerAccountBalance() -> Observable<Event<CustomerBalanceResponse>>
+    func getFee(productCode: String) -> Observable<Event<TransactionProductCodeFeeResponse>>
+    func getTransactionProductLimit(transactionProductCode: String) -> Observable<Event<TransactionLimit>>
+    func getThresholdLimits() -> Observable<Event<TransactionThreshold>>
+    func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType {
 
     private let transactionService: TransactionsService
+    private let customersService: CustomersService
 
-    init(transactionService: TransactionsService) {
+    init(transactionService: TransactionsService, customersService: CustomersService) {
         self.transactionService = transactionService
+        self.customersService = customersService
     }
 
     func fetchTransactions(
@@ -76,8 +86,8 @@ class TransactionsRepository: TransactionsRepositoryType {
         return transactionService.getTransactionFilters().materialize()
     }
     
-    func fetchCheckoutSession(amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>> {
-        return transactionService.createCheckoutSession(amount: amount, currency: currency, sessionId: sessionId).materialize()
+    func fetchCheckoutSession(beneficiaryId: String, amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>> {
+        return transactionService.createCheckoutSession(beneficiaryId: beneficiaryId, amount: amount, currency: currency, sessionId: sessionId).materialize()
     }
     
     func fetch3DSEnrollment(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<Event<PaymentGateway3DSEnrollmentResult>> {
@@ -88,11 +98,39 @@ class TransactionsRepository: TransactionsRepositoryType {
         return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
     }
     
-    public func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String) -> Observable<Event<String?>> {
-        return transactionService.paymentGatewayTopup(threeDSecureId: threeDSecureId, orderId: orderId, currency: currency, amount: amount, sessionId: sessionId).materialize()
+    public func paymentGatewayFirstCreditTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<String?>> {
+        return transactionService.paymentGatewayFirstCreditTopup(threeDSecureId: threeDSecureId, orderId: orderId, currency: currency, amount: amount, sessionId: sessionId, securityCode: securityCode, beneficiaryId: beneficiaryId).materialize()
+    }
+    
+    public func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<String?>> {
+        return transactionService.paymentGatewayTopup(threeDSecureId: threeDSecureId, orderId: orderId, currency: currency, amount: amount, sessionId: sessionId, securityCode: securityCode, beneficiaryId: beneficiaryId).materialize()
     }
     
     public func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<String?>> {
         return transactionService.createCardHolder(cardScheme: cardScheme, fee: fee).materialize()
+    }
+    
+    public func fetchCustomerAccountBalance() -> Observable<Event<CustomerBalanceResponse>> {
+//        Observable.create { observer in
+//            observer.onNext(.mock)
+//            return Disposables.create()
+//        }.materialize()
+        return customersService.fetchCustomerAccountBalance().materialize()
+    }
+    
+    public func getFee(productCode: String) -> Observable<Event<TransactionProductCodeFeeResponse>> {
+        return transactionService.getFee(productCode: productCode).materialize()
+    }
+    
+    public func getTransactionProductLimit(transactionProductCode: String) -> Observable<Event<TransactionLimit>> {
+        transactionService.getTransactionProductLimit(transactionProductCode: transactionProductCode).materialize()
+    }
+    
+    public func getThresholdLimits() -> Observable<Event<TransactionThreshold>> {
+        return transactionService.getThresholdLimits().materialize()
+    }
+    
+    public func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>> {
+        return transactionService.getDenominationAmount(productCode: productCode).materialize()
     }
 }

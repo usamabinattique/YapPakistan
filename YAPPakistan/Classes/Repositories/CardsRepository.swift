@@ -38,7 +38,9 @@ protocol CardsRepositoryType: AnyObject {
                           latitude: String,
                           longitude: String) -> Observable<Event<String?>>
     func fetchReorderFee() -> Observable<Event<CardReorderFee?>>
-    func externalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
+    func addOnboardingExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
+    func addTopupExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
+    func deletePaymentGatewayBeneficiary(id: String) -> Observable<Event<String?>>
 }
 
 class CardsRepository: CardsRepositoryType {
@@ -108,9 +110,14 @@ class CardsRepository: CardsRepositoryType {
         customerService.verifyPasscode(passcode: passcode).materialize()
     }
     
-    //External card beneficiary for topup
-    func externalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>> {
-        customerService.fetchExternalCardBeneficiaries(alias: alias, color: color, sessionId: sessionId, cardNumber: cardNumber).materialize()
+    //Onboarding External card beneficiary for topup
+    func addOnboardingExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>> {
+        customerService.addOnboardingExternalCardBeneficiaries(alias: alias, color: color, sessionId: sessionId, cardNumber: cardNumber).materialize()
+    }
+    
+    //Topup External card beneficiary for topup
+    func addTopupExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>> {
+        customerService.addTopupExternalCardBeneficiaries(alias: alias, color: color, sessionId: sessionId, cardNumber: cardNumber).materialize()
     }
 
     //"action": "FORGOT_CARD_PIN"
@@ -151,6 +158,11 @@ class CardsRepository: CardsRepositoryType {
 
     func fetchReorderFee() -> Observable<Event<CardReorderFee?>> {
         transactionsService.fetchReorderFee().materialize()
+    }
+    
+    func deletePaymentGatewayBeneficiary(id: String) -> Observable<Event<String?>> {
+
+        return self.customerService.deletePaymentGatewayBeneficiary(id: id).materialize()
     }
 }
 

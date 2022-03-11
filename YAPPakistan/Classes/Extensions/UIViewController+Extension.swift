@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import UIKit
 // import AppAnalytics
 
 public enum BackButtonType {
@@ -104,6 +105,40 @@ public extension UIViewController {
 
         DispatchQueue.main.async { [weak self] in
             self?.present(alert, animated: true, completion: completion)
+        }
+    }
+    
+    
+    /// It takes screen without carrier status bar
+    /// - Parameters:
+    ///   - message: message to show (optional)
+    ///   - link: link to go to  (optional)
+    func takeScreenshotAndShare(_ message: String?,_ link: String?) {
+        // Screenshot:
+        UIGraphicsBeginImageContextWithOptions(self.view.frame.size, true, 0.0)
+        self.view.drawHierarchy(in: self.view.frame, afterScreenUpdates: false)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        //Set the link, message, image to share.
+        if let msg = message, let link = link , let img = image {
+            let objectsToShare = [msg,link,img] as [Any]
+            let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+            activityVC.excludedActivityTypes = [UIActivity.ActivityType.airDrop, UIActivity.ActivityType.addToReadingList]
+        } else if let msg = message, let img = image {
+            share(objectToShare: [msg,img] as [Any])
+        } else if let link = link, let img = image {
+            share(objectToShare: [link,img] as [Any])
+        }
+        else if  let img = image {
+            share(objectToShare: [img] as [Any])
+        }
+    }
+    
+    private func share(objectToShare object: [Any]) {
+        let activityVC = UIActivityViewController(activityItems: object, applicationActivities: nil)
+        activityVC.excludedActivityTypes = [UIActivity.ActivityType.airDrop, UIActivity.ActivityType.addToReadingList]
+        DispatchQueue.main.async { [weak self] in
+            self?.present(activityVC, animated: true, completion: nil)
         }
     }
 }

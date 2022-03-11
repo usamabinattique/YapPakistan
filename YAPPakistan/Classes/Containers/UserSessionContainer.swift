@@ -73,7 +73,7 @@ public final class UserSessionContainer {
     
     func makeTransactionsRepository() -> TransactionsRepository {
         let service = makeTransactionsService()
-        return TransactionsRepository(transactionService: service)
+        return TransactionsRepository(transactionService: service, customersService: makeCustomersService())
     }
 
     func makeOTPRepository() -> OTPRepositoryType {
@@ -170,5 +170,24 @@ public final class UserSessionContainer {
 
     func makeHomeViewController() -> HomeViewController {
         return HomeModuleBuilder(container: self).viewController()
+    }
+    
+    func makeCommonWebViewController(viewModel: CommonWebViewModel) -> CommonWebViewController {
+        return CommonWebViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+    
+    func makeTopupCardDetailViewController(externalCard: ExternalPaymentCard) -> TopUpCardDetailsViewController {
+        let viewModel = TopUpCardDetailsViewModel(externalCard: externalCard, repository: self.makeCardsRepository())
+        return TopUpCardDetailsViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+    
+    func makeTopupTransferViewController(paymentGatewayModel: PaymentGatewayLocalModel) -> TopupTransferViewController {
+        let viewModel = TopupTransferViewModel(repository: self.makeTransactionsRepository(), paymentGatewayModel: paymentGatewayModel)
+        return TopupTransferViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+    
+    // MARK: Coordinators
+    func makeTopupTransferCoordinator(root: UINavigationController, paymentGatewayModel: PaymentGatewayLocalModel) -> TopupTransferCoordinator {
+        TopupTransferCoordinator(root: root, container: self, paymentGatewayModel: paymentGatewayModel)
     }
 }

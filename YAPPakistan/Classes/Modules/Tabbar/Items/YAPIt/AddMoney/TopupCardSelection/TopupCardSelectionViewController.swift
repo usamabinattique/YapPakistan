@@ -16,8 +16,8 @@ import RxDataSources
 class TopupCardSelectionViewController: UIViewController {
     
     // MARK: - Views
-    private lazy var headingLabel: UILabel =  UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .large, alignment: .center)
-    private lazy var subheadingLabel: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center)
+    private lazy var headingLabel: UILabel =  UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
+    private lazy var subheadingLabel: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
     private lazy var alert: YAPAlert = {
         let alert = YAPAlert()
         alert.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +38,7 @@ class TopupCardSelectionViewController: UIViewController {
         return collectionView
     }()
     
-    private lazy var cardBankNameLabel: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .micro, alignment: .center)
+    private lazy var cardBankNameLabel: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
     private lazy var secureByYAPView: SecureByYAPView = SecureByYAPView(frame: CGRect.zero)
     
     private lazy var selectButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_kyc_card_benefits_screen_next_button_title".localized)
@@ -46,8 +46,6 @@ class TopupCardSelectionViewController: UIViewController {
     private lazy var securedByYapStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 8, arrangedSubviews: [cardBankNameLabel, secureByYAPView])
     
     // MARK: - Properties
-//    let disposeBag: DisposeBag
-    
     private var themeService: ThemeService<AppTheme>
     private var viewModel: TopupCardSelectionViewModelType!
     private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionModel<Int, ReusableCollectionViewCellViewModelType>>!
@@ -69,17 +67,18 @@ class TopupCardSelectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.title = "screen_topup_card_selection_display_text_title".localized
+        navigationItem.title = "screen_topup_card_selection_display_no_card_text_title".localized
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_back", in: .yapPakistan), style: .plain, target: self, action: #selector(closeAction))
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_add_card", in: .yapPakistan), style: .plain, target: self, action: #selector(addCardAction))
         
-//        headingLabel.text = "You have 2 cards"
-//        subheadingLabel.text = "Choose which card you want to top up with"
         setup()
-        bind(viewModel: viewModel)
+        bindView()
     }
     
-    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.inputs.refreshCardsObserver.onNext(())
+    }
     
     // MARK: Actions
     
@@ -173,7 +172,7 @@ fileprivate extension TopupCardSelectionViewController {
 
 // MARK: - Bind
 fileprivate extension TopupCardSelectionViewController {
-    func bind(viewModel: TopupCardSelectionViewModelType) {
+    func bindView() {
 //        viewModel.outputs.topupPaymentCardCellViewModels.bind(to: cardsCollectionView.rx.items) { [unowned self] collectionView, item, viewModel in
 //            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: IndexPath(item: item, section: 0)) as! RxUICollectionViewCell
 //            cell.configure(with: viewModel, theme: self.themeService)
@@ -212,6 +211,8 @@ fileprivate extension TopupCardSelectionViewController {
         selectButton.rx.tap.subscribe(onNext: {[unowned self] _ in
             self.onTapSelectButton()
         }).disposed(by: rx.disposeBag)
-
+        
+        viewModel.outputs.screenTitle.bind(to: self.rx.title).disposed(by: rx.disposeBag)
+        
     }
 }

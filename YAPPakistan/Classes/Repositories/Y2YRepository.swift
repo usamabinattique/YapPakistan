@@ -173,7 +173,7 @@ public class MockY2YRepository: Y2YRepositoryType {
 
     public func tranferFunds(uuid: String, name: String, amount: String, note: String?) -> Observable<Event<Y2YTransactionResponse>> {
         Observable.create { observer in
-            observer.onNext(Y2YTransactionResponse.init(transactionId: "", balance: "2252", currency: "AED"))
+            observer.onNext(Y2YTransactionResponse.init(transactionId: "", balance: "2252", currency: "PKR", senderUUID: "dfd", receiverUUID: "dfdf", amountTransferred: "0.0", date: "dfd", receiverContactNo: "dfdjfdjf"))
             return Disposables.create()
         }.materialize()
     }

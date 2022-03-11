@@ -59,7 +59,7 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
     
         viewModel.outputs.addNewCard.subscribe(onNext: { [weak self] in
-            self?.cardDetailWebView(isComingFromTopup: true)
+            self?.cardDetailWebView()
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.beneficiarySelected.withUnretained(self).subscribe(onNext: { `self` ,externalPaymentCard in
@@ -72,12 +72,12 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         return result.asObservable()
     }
     
-    private func cardDetailWebView(isComingFromTopup: Bool) {
+    private func cardDetailWebView() {
         
         let apiConfig = self.container.mainContainer.makeAPIConfiguration()
         
-        let viewModel = CommonWebViewModel(container: container, repository: cardsRepository, html: apiConfig.cardDetailWebURL)
-        let viewController = container.makeCommonWebViewController(viewModel: viewModel)
+        let viewModel = CommonWebViewModel(commonWebType: .onBoardingAddCardWeb, repository: self.cardsRepository, html: apiConfig.onBoardingCardDetailWebURL)
+        let viewController = self.container.parent.makeCommonWebViewController(viewModel: viewModel)
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
             viewController.dismiss(animated: true, completion: nil)

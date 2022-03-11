@@ -241,11 +241,17 @@ private extension Y2YFundsTransferViewModel {
             .disposed(by: disposeBag)
        
         let fundsTransferRequest = Observable.merge(verifiedAmount.filter{ [unowned self] _, amount, _ in amount <= self.transactionThreshold.y2yOTPRemainingLimit }, otpVerfifiedSubject.withLatestFrom(verifiedAmount))
-            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .do(onNext: { _ in
+                YAPProgressHud.showProgressHud()
+                print("show")
+            })
             .flatMap { [unowned self] in
                 self.repository.tranferFunds(uuid: self.contact.yapAccountDetails?.first?.uuid ?? "", name: self.contact.name, amount: String($0.1), note: $0.2) }
             .share()
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+                print("hide")
+            })
         
 //        fundsTransferRequest.errors().subscribe(onNext: { [weak self] in self?.amountErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
@@ -253,7 +259,9 @@ private extension Y2YFundsTransferViewModel {
                 
         Observable.combineLatest(fundsTransferRequest.elements().map { [unowned self] _ in self.contact }, amountSubject.map { Double($0 ?? "") ?? 0 })
             .map { ($0.0, $0.1) }
-            .do(onNext: { _ in
+            .do(onNext: { [weak self] _ in
+                print("success funds transfer")
+               // self?.container.accountProvider.refreshAccount()
              //   SessionManager.current.refreshBalance()
              //   AppAnalytics.shared.logEvent(transferType == .qrCode ? SendMoneyEvent.sendMoneyViaQR() : SendMoneyEvent.yaptoyap())
             })
@@ -269,12 +277,20 @@ private extension Y2YFundsTransferViewModel {
         let getTransactionLimit = repository.getTransactionProductLimit(transactionProductCode: TransactionProductCode.y2yTransfer.rawValue)
         let getFee = repository.getFee(productCode: TransactionProductCode.y2yTransfer.rawValue)
         
+        
+        
         let zipped = Observable.zip(getThreshold, getCustomerBalance,getTransactionLimit,getFee)
-        getThreshold.do(onNext: { _ in YAPProgressHud.showProgressHud() })
+        getThreshold.do(onNext: { _ in
+//            YAPProgressHud.showProgressHud()
+//            print("show")
+        })
             .flatMap{ _ in zipped.materialize() }
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() } )
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+                print("hide")
+            } )
             .subscribe(onNext: { [unowned self] materializeEvent in
-                
+                YAPProgressHud.hideProgressHud()
                 switch materializeEvent {
                 case let .next((thresholdRes, customerBalanceRes, transactionLimtRes,feeRes)):
                     if let thRes = thresholdRes.element, let blnce = customerBalanceRes.element, let limit = transactionLimtRes.element, let fee = feeRes.element {
@@ -284,20 +300,22 @@ private extension Y2YFundsTransferViewModel {
                         self.limitRes.onNext(limit)
                         self.feeRes.onNext(fee)
                         self.transactionFee = fee
-                        let min =  Double(limit.min) ?? 0
-                        let max = Double(limit.max) ?? 0
+                        let min =  Double(limit.minLimit) ?? 0
+                        let max = Double(limit.maxLimit) ?? 0
                         self.transactionRange = min...max
                     }
                     
                 case let .error(error):
                     print("error \(error)")
-                case .completed: break
+                    
+                case .completed:
+                    print("completed")
                 }
             }).disposed(by: disposeBag)
       
         
         Observable.combineLatest(amountSubject.map{ Double($0 ?? "") ?? 0 }, feeRes).map { (amount,fee) -> NSAttributedString in
-            let amountFormatted = String(format: "%.2f", fee.fixedAmount)
+            let amountFormatted = String(format: "%.2f", fee.fixedAmount ?? 0.0)
             let amount = "PKR \(amountFormatted)"
             let text = String.init(format: "screen_y2y_funds_transfer_display_text_fee".localized, amount)
             
@@ -320,7 +338,7 @@ private extension Y2YFundsTransferViewModel {
     }
     
     func getError(forAmount amount: Double, availableBalance balance: Double) -> String? {
-        let fee =  transactionFee.fixedAmount //transferFee.getTaxedFee(for: amount)
+        let fee =  transactionFee.fixedAmount ?? 0.0 //transferFee.getTaxedFee(for: amount)
         
         guard amount + fee <= balance else {
             return String.init(format: "common_display_text_available_balance_error".localized, CurrencyFormatter.formatAmountInLocalCurrency(amount))
