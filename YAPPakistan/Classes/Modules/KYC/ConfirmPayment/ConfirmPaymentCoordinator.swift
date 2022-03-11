@@ -69,7 +69,7 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.html.withUnretained(self).subscribe(onNext:{ `self`, htmlString in
-            self.cardDetailWeb(html: htmlString, viewModel: viewModel).debug("html loaded from coordinator")
+            self.cardDetailWeb(html: htmlString, viewModel: viewModel)
                 .subscribe(onNext: { [weak self] _ in
                     guard let `self` = self else { return }
                     print("confirm payment subscription for webview")

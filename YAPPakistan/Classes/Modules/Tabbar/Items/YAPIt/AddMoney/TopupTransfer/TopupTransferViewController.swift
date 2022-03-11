@@ -177,7 +177,7 @@ extension TopupTransferViewController: ViewDesignable {
             .do(onNext: { [weak self] _ in self?.amountView.isInputValid = true })
             .bind(to: viewModel.inputs.enteredAmountObserver)
             .disposed(by: disposeBag)
-                
+        
                 viewModel.outputs.isValidAmount
                 .map { argv in argv.0 }
                 .unwrap()
@@ -205,7 +205,7 @@ extension TopupTransferViewController: ViewDesignable {
             .subscribe()
             .disposed(by: disposeBag)
         
-                viewModel.outputs.amountError
+        viewModel.outputs.amountError
                 .subscribe(onNext: { [weak self] in
                     guard let `self` = self else { return }
                     guard $0 != nil else {
@@ -221,7 +221,7 @@ extension TopupTransferViewController: ViewDesignable {
                 nextButton.rx.tap.do(onNext: { [weak self] _ in self?.dismissKeyboard() }).bind(to: viewModel.inputs.actionButtonObserver).disposed(by: disposeBag)
                 
                 //cardView binding
-                    viewModel.outputs.cardImage.bind(to: cardImageView.rx.image).disposed(by: disposeBag)
+                viewModel.outputs.cardImage.bind(to: cardImageView.rx.image).disposed(by: disposeBag)
                     viewModel.outputs.cardTitle.bind(to: cardTitle.rx.text).disposed(by: disposeBag)
                     viewModel.outputs.panNumber.bind(to: cardPANNumber.rx.text).disposed(by: disposeBag)
                     //

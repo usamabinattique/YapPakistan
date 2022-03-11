@@ -82,11 +82,6 @@ class TopupCardCVVViewController: UIViewController {
     func tapped() {
         view.endEditing(true)
     }
-    
-//    override func onTapBackButton() {
-//        navigationController?.popViewController(animated: true)
-//        viewModel.inputs.back.onNext(())
-//    }
 }
 
 // MARK: View setup
@@ -175,7 +170,7 @@ private extension TopupCardCVVViewController {
                 
         backButton.rx.tap
                 .do(onNext: { [weak self] _ in self?.view.endEditing(true) })
-                .bind(to: viewModel.inputs.back)
+                .bind(to: viewModel.inputs.backObserver)
                     .disposed(by: disposeBag)
     }
 }
