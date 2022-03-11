@@ -146,6 +146,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         enteredCVVSubject.withUnretained(self).subscribe(onNext: { `self` ,cvv in
             print("user entered cvv is \(cvv)")
             //TODO: [UMAIR] - CVV Comes here
+            self.fetchTopupApi(securityCode: cvv)
         }).disposed(by: disposeBag)
 
     }
@@ -259,7 +260,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         }.bind(to: errorSubject).disposed(by: disposeBag)
     }
     
-    func fetchTopupApi(){
+    func fetchTopupApi(securityCode: String?){
         
         var sessionId = ""
         
@@ -293,9 +294,14 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         
         let cardOrderRequest = transactionRepository.createCardHolder(cardScheme: self.paymentGatewayM.cardSchemeObject?.schemeName ?? "", fee: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0))
         
-        cardOrderRequest.elements().subscribe(onNext: { [weak self] responseObj in
-            self?.topupCompleteSubject.onNext(())
+        
+        cardOrderRequest.elements().subscribe(onNext: { [unowned self] responseObj in
             YAPProgressHud.hideProgressHud()
+            self.accountProvider.refreshAccount().bind(to: self.topupCompleteSubject).disposed(by: self.disposeBag)
+//            self.accountProvider.refreshAccount().subscribe(onNext: { [weak self] _ in
+//
+//                self?.topupCompleteSubject.onNext(())
+//            }).disposed(by: self.disposeBag)
         }).disposed(by: disposeBag)
         
         cardOrderRequest.errors()
@@ -313,7 +319,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         if self.paymentGatewayM.beneficiaryId != nil && paymentGatewayM.cardSchemeObject?.fee != nil {
             showCVVSubject.onNext(())
         } else {
-            self.fetchTopupApi()
+            self.fetchTopupApi(securityCode: nil)
         }
     }
     

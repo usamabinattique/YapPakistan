@@ -70,6 +70,10 @@ public extension YAPContact {
     var formattedPhoneNumber: String {
         return countryCode.replacePrefix("00", with: "+") + " " + phoneNumber
     }
+    
+    var formattedPhoneNumberForQRCode: String {
+        return countryCode.replacePrefix("00", with: "+")  + String(phoneNumber.prefix(2)) + " " + String(phoneNumber.suffix(4)) + " " + String(phoneNumber.suffix(3))
+    }
 
     var fullPhoneNumber: String {
         return countryCode + phoneNumber

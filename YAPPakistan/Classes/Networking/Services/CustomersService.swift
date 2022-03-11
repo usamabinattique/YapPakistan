@@ -81,6 +81,8 @@ public protocol CustomerServiceType {
     func addOnboardingExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
     func addTopupExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
     func deletePaymentGatewayBeneficiary<T: Codable>(id: String) -> Observable<T>
+    func getCustomerInfoFromQR<T: Codable>(_ qrString: String) -> Observable<T>
+
 }
 
     
@@ -400,6 +402,13 @@ public class CustomersService: BaseService, CustomerServiceType {
         let body = ExternalBeneficiaryRequest(alias: alias, color: color, session: SessionR(id: sessionId, number: cardNumber))
         
         let route = APIEndpoint(.post, apiConfig.customersURL, "/api/external-card/beneficiaries", body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getCustomerInfoFromQR<T: Codable>(_ qrString: String) -> Observable<T> {
+        let body = ["uuid": qrString]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/customers-info/\(qrString)",  headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }

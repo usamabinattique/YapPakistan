@@ -19,7 +19,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 
     fileprivate lazy var biometricManager = container.parent.makeBiometricsManager()
     fileprivate lazy var notifManager = NotificationManager()
-    fileprivate lazy var username: String! = container.parent.credentialsStore.getUsername()
+    fileprivate lazy var username: String! = container.parent.credentialsStore.getUsername() ?? ""
 
     init(container: UserSessionContainer,
          root: UITabBarController) {

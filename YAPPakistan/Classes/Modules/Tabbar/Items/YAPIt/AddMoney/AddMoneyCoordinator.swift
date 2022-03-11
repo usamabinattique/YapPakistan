@@ -65,9 +65,8 @@ class AddMoneyCoordinator: Coordinator<ResultType<Void>> {
                 break
 //                self?.navigateToLocateATM()
             case .qrCode:
-                break
 //                AppAnalytics.shared.logEvent(TopUpEvent.topUpQrCode())
-//                self?.navigateToAddMoneyQRCode()
+                self?.navigateToAddMoneyQRCode()
             case .localTransfer, .internationalTransfer, .homeCountry, .yapContact, .requestMoeny:
                 break
             }
@@ -171,6 +170,10 @@ private extension AddMoneyCoordinator {
     func showTopupTransfer(paymentGatewayModel: PaymentGatewayLocalModel = PaymentGatewayLocalModel()) -> Observable<ResultType<Void>>  {
         print("show topup transfer")
         return coordinate(to: container.makeTopupTransferCoordinator(root: self.localRoot, paymentGatewayModel: paymentGatewayModel))
+    }
+    
+    func navigateToAddMoneyQRCode() {
+        coordinate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: true, container: container)).subscribe().disposed(by: rx.disposeBag)
     }
 }
 
