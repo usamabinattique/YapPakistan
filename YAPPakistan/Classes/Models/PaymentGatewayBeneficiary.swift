@@ -72,6 +72,20 @@ public struct ExternalPaymentCard: Codable {
     var type: ExternalPaymentCardType {
         return ExternalPaymentCardType(rawValue: name) ?? .mastercard
     }
+    
+    init(id: Int? = nil,
+        name: String? = nil,
+        expiry: String? = nil,
+        last4Digits: String? = nil,
+        nickName: String? = nil,
+        color: String? = nil) {
+        self.id = id ?? 0
+        self.name = name ?? ""
+        self.expiry = expiry ?? ""
+        self.last4Digits = last4Digits ?? ""
+        self.nickName = nickName ?? ""
+        self.color = color ?? ""
+    }
 }
 
 public extension ExternalPaymentCard {
@@ -134,12 +148,12 @@ extension ExternalPaymentCard {
         let bgColor = ((color?.isHexString ?? false) ? UIColor(hexString: color!) :  UIColor(Color(hex: "#5E35B1")) ) ?? .white //primary
         let view = UIView(frame: CGRect(x: 0, y: 0, width: width, height: height))
        
-        
-        let gradiant = CAGradientLayer()
-        gradiant.frame = view.bounds
-        
-        gradiant.colors = [(bgColor.lighten(by: 10)).cgColor, (bgColor.darken(by: 10)).cgColor]
-        view.layer.addSublayer(gradiant)
+        view.backgroundColor = bgColor
+//        let gradiant = CAGradientLayer()
+//        gradiant.frame = view.bounds
+//        
+//        gradiant.colors = [(bgColor.lighten(by: 10)).cgColor, (bgColor.darken(by: 10)).cgColor]
+//        view.layer.addSublayer(gradiant)
         
         view.layer.cornerRadius = 0.055 * width
         view.clipsToBounds = true
@@ -188,5 +202,17 @@ extension ExternalPaymentCard {
         UIGraphicsEndImageContext()
         
         return roundedImage!
+    }
+    
+    func checkIfCardExpired() -> Bool {
+        
+        let isoDate = "20\(self.expiry.subString(2, length: 4))-\(self.expiry.subString(0, length: 2))-01T00:00:00+0000"
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        let date = dateFormatter.date(from:isoDate)!
+        
+        return date.timeIntervalSince1970 < Date().timeIntervalSince1970
     }
 }

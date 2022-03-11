@@ -127,51 +127,8 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     
     func confirmPayment() -> Observable<ResultType<Void>> {
        /* return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM)) */
-        return coordinate(to: ConfirmPaymentCoordinator(root: localRoot, container: container, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM))
+        return coordinate(to: ConfirmPaymentCoordinator(root: localRoot, container: container, repository: container.makeY2YRepository(), shouldPresent: true, paymentGatewayM: paymentGatewayM))
     }
-    
-  /*  func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String) {
-        let viewModel = TopupCardCVVViewModel(card: card, amount: amount, currency: currency, orderID: orderID, threeDSecureId: threeDSecureId)
-        let viewController = TopupCardCVVViewController(themeService: container.themeService, viewModel: viewModel)
-      //  root.setNavigationBarHidden(false, animated: false)
-      /*  self.root.pushViewController(viewController) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.root.setNavigationBarHidden(false, animated: false)
-            }
-           
-        }//present(navigationRoot, animated: true, completion: nil) */
-        self.localRoot.pushViewController(viewController) {
-             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                 self.localRoot.setNavigationBarHidden(false, animated: false)
-             }
-            
-         }
-        
-//        navigationController.navigationBar.isHidden = false
-//        navigationController.pushViewController(viewController, animated: true)
-        
-       /* viewModel.outputs.result.subscribe(onNext: { [weak self] _ in
-            self?.root.setNavigationBarHidden(true, animated: false)
-           // self?.navigateToTopupSuccess(amount: $0.amount, currency: $0.currency, card: $0.card, navigationController: navigationController)
-            //TODO: remove following line
-            self?.goToHome()
-        }).disposed(by: rx.disposeBag) */
-        viewModel.outputs.result.subscribe(onNext: { [weak self] _ in
-             self?.localRoot.setNavigationBarHidden(true, animated: false)
-            // self?.navigateToTopupSuccess(amount: $0.amount, currency: $0.currency, card: $0.card, navigationController: navigationController)
-             //TODO: remove following line
-             self?.goToHome()
-         }).disposed(by: rx.disposeBag)
-        
-       /* viewModel.outputs.backObservable.subscribe(onNext: { [weak self] _ in
-            self?.root.setNavigationBarHidden(true, animated: false)
-            self?.root.popViewController()
-        }).disposed(by: rx.disposeBag)  */
-        viewModel.outputs.backObservable.subscribe(onNext: { [weak self] _ in
-            self?.localRoot.setNavigationBarHidden(true, animated: false)
-            self?.localRoot.popViewController()
-        }).disposed(by: rx.disposeBag)
-    } */
     
     func goToHome() {
      //   self.root.popToRootViewController(animated: true)

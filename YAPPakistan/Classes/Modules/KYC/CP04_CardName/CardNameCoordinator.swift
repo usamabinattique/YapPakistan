@@ -48,6 +48,9 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
                 if cardScheme.isPaidScheme {
                     if self.container.parent.accountProvider.currentAccountValue.value?.accountStatus == .cardSchemeExternalCardPending {
                         self.topupCardSelection()
+                            .subscribe(onNext: { _ in
+                                print("In cardName -> TopupCardSelection is subscribed")
+                            })
                     } else {
                         self.cardDetailWeb()
                     }
@@ -81,7 +84,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     
     private func cardDetailWeb() {
         let apiConfig = self.container.mainContainer.makeAPIConfiguration()
-        _ = coordinate(to: CommonWebViewCoordinator(root: root, container: container, paymentGatewayM: self.paymentGatewayM, html: apiConfig.cardDetailWebURL))
+        _ = coordinate(to: CommonWebViewCoordinator(root: root, container: container, commonWebType: .onBoardingAddCardWeb, paymentGatewayM: self.paymentGatewayM, html: apiConfig.onBoardingCardDetailWebURL))
     }
     
     private func addressPending() {

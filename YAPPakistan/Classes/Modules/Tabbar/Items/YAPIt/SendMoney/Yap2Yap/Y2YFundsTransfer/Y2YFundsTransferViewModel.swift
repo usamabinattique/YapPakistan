@@ -300,8 +300,8 @@ private extension Y2YFundsTransferViewModel {
                         self.limitRes.onNext(limit)
                         self.feeRes.onNext(fee)
                         self.transactionFee = fee
-                        let min =  Double(limit.min) ?? 0
-                        let max = Double(limit.max) ?? 0
+                        let min =  Double(limit.minLimit) ?? 0
+                        let max = Double(limit.maxLimit) ?? 0
                         self.transactionRange = min...max
                     }
                     
@@ -315,7 +315,7 @@ private extension Y2YFundsTransferViewModel {
       
         
         Observable.combineLatest(amountSubject.map{ Double($0 ?? "") ?? 0 }, feeRes).map { (amount,fee) -> NSAttributedString in
-            let amountFormatted = String(format: "%.2f", fee.fixedAmount)
+            let amountFormatted = String(format: "%.2f", fee.fixedAmount ?? 0.0)
             let amount = "PKR \(amountFormatted)"
             let text = String.init(format: "screen_y2y_funds_transfer_display_text_fee".localized, amount)
             
@@ -338,7 +338,7 @@ private extension Y2YFundsTransferViewModel {
     }
     
     func getError(forAmount amount: Double, availableBalance balance: Double) -> String? {
-        let fee =  transactionFee.fixedAmount //transferFee.getTaxedFee(for: amount)
+        let fee =  transactionFee.fixedAmount ?? 0.0 //transferFee.getTaxedFee(for: amount)
         
         guard amount + fee <= balance else {
             return String.init(format: "common_display_text_available_balance_error".localized, CurrencyFormatter.formatAmountInLocalCurrency(amount))

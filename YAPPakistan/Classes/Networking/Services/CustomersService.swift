@@ -78,8 +78,11 @@ public protocol CustomerServiceType {
     func classifyContacts<T: Codable>(contacts: [(name: String, phoneNumber: String, email: String?, photoUrl: String?, countryCode: String)]) -> Observable<T>
     func fetchCustomerAccountBalance<T: Codable>() -> Observable<T>
     func fetchPaymentGatewayBeneficiaries<T: Codable>() -> Observable<T>
-    func fetchExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
+    func addOnboardingExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
+    func addTopupExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
+    func deletePaymentGatewayBeneficiary<T: Codable>(id: String) -> Observable<T>
     func getCustomerInfoFromQR<T: Codable>(_ qrString: String) -> Observable<T>
+
 }
 
     
@@ -394,7 +397,7 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func fetchExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T> {
+    public func addOnboardingExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T> {
         
         let body = ExternalBeneficiaryRequest(alias: alias, color: color, session: SessionR(id: sessionId, number: cardNumber))
         
@@ -407,6 +410,21 @@ public class CustomersService: BaseService, CustomerServiceType {
         let body = ["uuid": qrString]
         let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/customers-info/\(qrString)",  headers: authorizationProvider.authorizationHeaders)
 
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func addTopupExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T> {
+        
+        let body = ExternalBeneficiaryRequest(alias: alias, color: color, session: SessionR(id: sessionId, number: cardNumber))
+        
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/mastercard/beneficiaries", body: body, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func deletePaymentGatewayBeneficiary<T: Codable>(id: String) -> Observable<T> {
+        let pathVariables = [id]
+        let route = APIEndpoint<String>(.delete, apiConfig.customersURL, "/api/mastercard/beneficiaries/", pathVariables: pathVariables, body: nil, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

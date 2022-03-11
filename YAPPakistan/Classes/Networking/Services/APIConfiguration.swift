@@ -48,7 +48,7 @@ public struct APIConfiguration {
         return baseURL.appendingPathComponent("/transactions")
     }
     
-    public var cardDetailWebURL: String {
+    public var onBoardingCardDetailWebURL: String {
         switch self.environment {
         case .dev:
             return "https://pk-dev-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
@@ -56,6 +56,21 @@ public struct APIConfiguration {
             return "https://pk-qa-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
         case .stg:
             return "https://pk-stg-hci.yap.co/YAP_PK_BANK_ALFALAH/HostedSessionIntegration.html"
+        case .preprod:
+            return ""
+        case .prod:
+            return ""
+        }
+    }
+    
+    public var topUpCardDetailWebURL: String {
+        switch self.environment {
+        case .dev:
+            return "https://pk-dev-hci.yap.co/admin-web/HostedSessionIntegration.html"
+        case .qa:
+            return "https://pk-qa-hci.yap.co/admin-web/HostedSessionIntegration.html"
+        case .stg:
+            return "https://pk-stg-hci.yap.co/admin-web/HostedSessionIntegration.html"
         case .preprod:
             return ""
         case .prod:
