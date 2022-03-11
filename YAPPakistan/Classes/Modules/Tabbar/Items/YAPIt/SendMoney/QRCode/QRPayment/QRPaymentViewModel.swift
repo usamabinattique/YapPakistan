@@ -287,8 +287,8 @@ private extension QRPaymentViewModel {
         
         transactionLimitRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
         transactionLimitRequest.elements().subscribe(onNext: { [unowned self] in
-            let min = Double($0.min) ?? 0
-            let max = Double($0.max) ?? 0
+            let min = Double($0.minLimit) ?? 0
+            let max = Double($0.maxLimit) ?? 0
             self.transactionRange = min...max
         }).disposed(by: disposeBag)
         
@@ -307,7 +307,7 @@ private extension QRPaymentViewModel {
     }
     
     func getError(forAmount amount: Double, availableBalance balance: Double) -> String? {
-        let fee =  transactionFee.fixedAmount //transferFee.getTaxedFee(for: amount)
+        let fee =  transactionFee.fixedAmount ?? 0 //transferFee.getTaxedFee(for: amount)
         
         guard amount + fee <= balance else {
             return String.init(format: "common_display_text_available_balance_error".localized, CurrencyFormatter.formatAmountInLocalCurrency(amount))
