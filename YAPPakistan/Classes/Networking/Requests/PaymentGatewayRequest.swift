@@ -9,7 +9,7 @@ import Foundation
 
 struct PaymentGatewayRequest: Codable {
     let order: PaymentGatewayAmountRequest
-    let session: PaymentGatewaySessionRequest
+    var session: PaymentGatewaySessionRequest? = nil
 }
 
 struct PaymentGatewayAmountRequest: Codable {
@@ -19,7 +19,7 @@ struct PaymentGatewayAmountRequest: Codable {
 }
 
 struct PaymentGatewaySessionRequest: Codable {
-    let id: String
+    var id: String? = nil
 }
 
 struct CreatePaymentGatewaySessionRequest: Codable {

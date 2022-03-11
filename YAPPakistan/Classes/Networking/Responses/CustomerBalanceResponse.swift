@@ -17,10 +17,32 @@ public struct CustomerBalanceResponse: Codable {
     }
 }
 
+extension CustomerBalanceResponse {
+    public var amount: Double {
+        return currentBalance
+    }
+    
+    public func formattedBalance(showCurrencyCode: Bool = true, shortFormat: Bool = true) -> String {
+        let readable = amount.userReadable
+        
+        var formatted = CurrencyFormatter.format(amount: shortFormat ? readable.value : amount, in: currency)
+        
+        if !showCurrencyCode {
+            formatted = formatted.amountFromFormattedAmount
+        }
+        
+        if shortFormat {
+            formatted += readable.denomination
+        }
+        
+        return formatted
+    }
+}
+
 // MARK: - Mocked data
 
 public extension CustomerBalanceResponse {
     static var mock: CustomerBalanceResponse {
-        CustomerBalanceResponse(currentBalance: 0.0, currency: "0.0")
+        CustomerBalanceResponse(currentBalance: 20000.0, currency: "PKR")
     }
 }

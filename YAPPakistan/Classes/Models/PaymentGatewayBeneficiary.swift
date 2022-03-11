@@ -72,6 +72,20 @@ public struct ExternalPaymentCard: Codable {
     var type: ExternalPaymentCardType {
         return ExternalPaymentCardType(rawValue: name) ?? .mastercard
     }
+    
+    init(id: Int? = nil,
+        name: String? = nil,
+        expiry: String? = nil,
+        last4Digits: String? = nil,
+        nickName: String? = nil,
+        color: String? = nil) {
+        self.id = id ?? 0
+        self.name = name ?? ""
+        self.expiry = expiry ?? ""
+        self.last4Digits = last4Digits ?? ""
+        self.nickName = nickName ?? ""
+        self.color = color ?? ""
+    }
 }
 
 public extension ExternalPaymentCard {

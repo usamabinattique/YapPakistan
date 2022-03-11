@@ -379,6 +379,24 @@
 "screen_topup_card_details_display_text_remove_card_confirmation_remove" = "Remove";
 "screen_topup_card_details_button_remove_card_message" = "Card removed successfully.";
 
+// MARK: - Topup transfer screen
+"screen_topup_transfer_display_text_screen_title" = "Top up using card";
+"screen_topup_transfer_display_text_amount_title" = "Enter the top up amount";
+"screen_topup_transfer_display_text_available_balance" = "Your available YAP balance is %@";
+"screen_topup_transfer_display_text_transaction_fee" = "Fee: %@";
+
+"screen_topup_daily_limit_error" = "Hi there! You have exceeded the amount you can top-up your YAP card for today. Please try again tomorrow.";
+"screen_topup_remaining_daily_limit_error" = "Hi there! The top-up amount requested exceeds your daily limit. Please try again with a lesser amount.";
+
+// MARK: - Remove funds Screen
+"screen_remove_funds_display_text_remove_funds" = "Remove funds";
+"screen_remove_funds_button_remove" = "Remove";
+"screen_remove_funds_display_text_enter_amount" = "Enter the amount to remove";
+"screen_remove_funds_display_text_available_balance" = "Your available balance is %@";
+"screen_remove_funds_display_text_available_balance_error" = "You can only move an amount less than or equal to your current balance of %@";
+"screen_remove_funds_display_text_fee" = "Fee: %@";
+"screen_remove_funds_display_text_max_limit_error" = "You cannot move an amount more than %@";
+
 // MARK: Confirm Payment
 "screen_yap_confirm_payment_display_text_toolbar_title" = "Confirm payment";
 "screen_yap_confirm_payment_display_text_toolbar_subtitle" = "PayPak Card";

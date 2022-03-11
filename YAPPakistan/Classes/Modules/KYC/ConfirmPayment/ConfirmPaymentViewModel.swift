@@ -193,14 +193,10 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     }
     
     private func fetchCheckoutSessionFlowApis() {
-        var sessionID = ""
-        if let cardObject = self.paymentGatewayM.cardDetailObject {
-            sessionID = cardObject.sessionID ?? ""
-        } else {
-            sessionID = self.paymentGatewayM.beneficiaryId ?? ""
-        }
+        let sessionID = self.paymentGatewayM.cardDetailObject?.sessionID ?? ""
+        let beneficiaryID = String(self.paymentGatewayM.beneficiary?.id ?? 0)
         
-        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: sessionID)
+        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(beneficiaryId: beneficiaryID, amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: sessionID)
         
         let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
             self.checkoutSessionObject = paymentGatewayCheckoutSession
@@ -266,13 +262,16 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     func fetchTopupApi(){
         
         var sessionId = ""
-        if let beneficiaryId = self.checkoutSessionObject?.beneficiaryId, beneficiaryId.count > 0 {
-            sessionId = beneficiaryId
+        
+        guard let checkoutSessionObj = self.checkoutSessionObject else { return }
+        
+        if checkoutSessionObj.beneficiaryId.count > 0 {
+            sessionId = checkoutSessionObj.beneficiaryId
         } else {
-            sessionId = self.checkoutSessionObject?.session?.id ?? ""
+            sessionId = checkoutSessionObj.session?.id ?? ""
         }
         
-        let topupRequest = transactionRepository.paymentGatewayTopup(threeDSecureId: self.checkoutSessionObject?.threeDSecureId ?? "", orderId: self.checkoutSessionObject?.order?.id ?? "", currency: self.checkoutSessionObject?.order?.currency ?? "", amount: self.checkoutSessionObject?.order?.amount ?? "", sessionId: sessionId)
+        let topupRequest = transactionRepository.paymentGatewayFirstCreditTopup(threeDSecureId: checkoutSessionObj.threeDSecureId, orderId: checkoutSessionObj.order?.id ?? "", currency: checkoutSessionObj.order?.currency ?? "", amount: checkoutSessionObj.order?.amount ?? "", sessionId: sessionId, securityCode: checkoutSessionObj.securityCode, beneficiaryId: "")
         
         topupRequest.elements().subscribe(onNext: { [weak self] responseObj in
             self?.fetchOrderCardHolderApi()

@@ -48,6 +48,9 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
                 if cardScheme.isPaidScheme {
                     if self.container.parent.accountProvider.currentAccountValue.value?.accountStatus == .cardSchemeExternalCardPending {
                         self.topupCardSelection()
+                            .subscribe(onNext: { _ in
+                                print("In cardName -> TopupCardSelection is subscribed")
+                            })
                     } else {
                         self.cardDetailWeb()
                     }

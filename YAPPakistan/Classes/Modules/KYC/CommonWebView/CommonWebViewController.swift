@@ -52,7 +52,6 @@ class CommonWebViewController: UIViewController {
         setupConstraints()
         setupTheme()
         setupBindings()
-//        showCardAddedAlert()
     }
     
     override public func onTapBackButton() {

@@ -64,7 +64,7 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     var confirmObserver: AnyObserver<CommonWebViewM> { confirmSubject.asObserver() }
     var closeObserver: AnyObserver<Void> { closeSubject.asObserver() }
     var navigationActionObserver: AnyObserver<WKNavigationAction>{ navigationActionSubject.asObserver() }
-    var completionObserver: AnyObserver<Void> { return completionSubject.asObserver() }
+    var completionObserver: AnyObserver<Void> { completionSubject.asObserver() }
     var alertTopupObserver: AnyObserver<ExternalPaymentCard> { alertTopupSubject.asObserver() }
     var alertTopupDashboardObserver: AnyObserver<Void> { alertTopupDashboardSubject.asObserver() }
     
@@ -73,7 +73,7 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
     var confirm: Observable<CommonWebViewM> { confirmSubject.asObservable() }
     var navigationAction: Observable<WKNavigationAction> { navigationActionSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
-    var complete: Observable<Void> { return completionSubject.asObservable() }
+    var complete: Observable<Void> { completionSubject.asObservable() }
     var html: Observable<String> { return htmlSubject.asObservable() }
     var webUrl: Observable<String> { return webUrlSubject.asObservable() }
     var cardAddedAlert: Observable<ExternalPaymentCard> { return showCardAddedAlertSubject.asObservable() }

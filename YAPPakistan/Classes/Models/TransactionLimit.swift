@@ -8,19 +8,19 @@
 import Foundation
 
 public struct TransactionLimit: Codable {
-    public let min: String
-    public let max: String
+    public let minLimit: String
+    public let maxLimit: String
     public let isActive: Bool
     
     enum CodingKeys: String, CodingKey {
-        case min = "minLimit"
-        case max = "maxLimit"
+        case minLimit
+        case maxLimit
         case isActive = "active"
     }
 }
 
 extension TransactionLimit {
     public static var mock: TransactionLimit {
-        return TransactionLimit.init(min: "100", max: "100000", isActive: true)
+        return TransactionLimit.init(minLimit:"100", maxLimit: "100000", isActive: true)
     }
 }

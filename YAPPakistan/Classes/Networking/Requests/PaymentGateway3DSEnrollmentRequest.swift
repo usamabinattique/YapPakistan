@@ -8,9 +8,9 @@
 import Foundation
 
 struct PaymentGateway3DSEnrollmentRequest: Codable {
-    let beneficiaryID: Int?
+    var beneficiaryID: Int? = nil
     let order: PaymentGatewayAmountRequest
-    let session: PaymentGatewaySessionRequest?
+    var session: PaymentGatewaySessionRequest? = nil
     
     private enum CodingKeys: String, CodingKey {
         case beneficiaryID = "beneficiaryId"

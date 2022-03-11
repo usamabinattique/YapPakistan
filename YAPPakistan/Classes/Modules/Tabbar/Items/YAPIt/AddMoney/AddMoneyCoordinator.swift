@@ -89,7 +89,6 @@ private extension AddMoneyCoordinator {
         viewModel.outputs.addNewCard.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 //move to add new card screen
-                print("open add new card detail screen")
                 self.addNewCardDetailWebView()
             })
             .disposed(by: rx.disposeBag)
@@ -97,13 +96,13 @@ private extension AddMoneyCoordinator {
         //open send money detail
         viewModel.outputs.beneficiarySelected
             .subscribe(onNext: { beneficiaryObj in
-                print("open send money detail")
+                let paymentGatewayM = PaymentGatewayLocalModel(beneficiary:beneficiaryObj)
+                _ = self.showTopupTransfer(paymentGatewayModel: paymentGatewayM)
             })
             .disposed(by: rx.disposeBag)
         
         //info icon from card is pressed
         viewModel.outputs.openCardDetails.withUnretained(self).subscribe { `self`, externalCardObj in
-            print("open card detail")
             self.showTopupCardDetail(externalCard: externalCardObj)
         }.disposed(by: rx.disposeBag)
         
@@ -130,15 +129,20 @@ private extension AddMoneyCoordinator {
         
         viewModel.outputs.showTopup
             .subscribe(onNext: { [weak self] externalCardObj in
-                self?.localRoot.dismiss(animated: false, completion: nil)
-                //print("show topup flow")
+                //show topup flow
+                self?.localRoot.dismiss(animated: false, completion: {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+0.64) {
+                        let paymentGatewayM = PaymentGatewayLocalModel(beneficiary:externalCardObj)
+                        _ = self?.showTopupTransfer(paymentGatewayModel: paymentGatewayM)
+                    }
+                })
             })
             .disposed(by: rx.disposeBag)
         
         viewModel.outputs.showTopupDashboard
             .subscribe(onNext: { [weak self] _ in
+                //show topup DASHBOARD flow
                 self?.localRoot.dismiss(animated: false, completion:nil)
-                print("show topup DASHBOARD flow")
             })
             .disposed(by: rx.disposeBag)
 
@@ -162,6 +166,11 @@ private extension AddMoneyCoordinator {
                 self.localRoot.dismiss(animated: true, completion: nil)
             })
             .disposed(by: rx.disposeBag)
+    }
+    
+    func showTopupTransfer(paymentGatewayModel: PaymentGatewayLocalModel = PaymentGatewayLocalModel()) -> Observable<ResultType<Void>>  {
+        print("show topup transfer")
+        return coordinate(to: container.makeTopupTransferCoordinator(root: self.localRoot, paymentGatewayModel: paymentGatewayModel))
     }
 }
 

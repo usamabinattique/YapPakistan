@@ -38,7 +38,7 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         cardDetailWebView()
-        return result
+        return result.asObservable()
     }
     
     private func cardDetailWebView() {
@@ -47,7 +47,7 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
         
         let navigationRoot = makeNavigationController()
         
-        viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
+        viewModel.outputs.close.subscribe(onNext: { _ in
             viewController.dismiss(animated: true, completion: nil)
         }).disposed(by: rx.disposeBag)
         

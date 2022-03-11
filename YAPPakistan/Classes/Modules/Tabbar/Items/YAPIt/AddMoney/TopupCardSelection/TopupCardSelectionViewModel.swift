@@ -156,7 +156,15 @@ class TopupCardSelectionViewModel: TopupCardSelectionViewModelType, TopupCardSel
         
         currentIndex.map { [weak self] in $0 < self?.beneficiaries.count ?? 0 ? self?.beneficiaries[$0].nickName : nil }.bind(to: cardNickNameSubject).disposed(by: disposeBag)
         
-        selectSubject.withLatestFrom(currentIndex).filter { [unowned self] in $0 < self.beneficiaries.count }.map { [unowned self] in self.beneficiaries[$0] }.bind(to: beneficiarySelectedSubject).disposed(by: disposeBag)
+        selectSubject.withLatestFrom(currentIndex)
+            .filter { [unowned self] in
+                $0 < self.beneficiaries.count
+            }
+            .map { [unowned self] in
+                self.beneficiaries[$0]
+        }
+        .bind(to: beneficiarySelectedSubject)
+        .disposed(by: disposeBag)
         
         Observable.zip(itemSelectedSubject,cellViewModelsSubject).withUnretained(self).subscribe(onNext: { `self` , _arg0 in
             let (index, sectionModel) = _arg0

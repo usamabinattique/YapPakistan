@@ -69,7 +69,11 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.html.withUnretained(self).subscribe(onNext:{ `self`, htmlString in
-            self.cardDetailWeb(html: htmlString, viewModel: viewModel)
+            self.cardDetailWeb(html: htmlString, viewModel: viewModel).debug("html loaded from coordinator")
+                .subscribe(onNext: { [weak self] _ in
+                    guard let `self` = self else { return }
+                    print("confirm payment subscription for webview")
+                }).disposed(by: self.rx.disposeBag)
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.topupComplete.withUnretained(self).subscribe(onNext: { `self`, _ in
@@ -102,13 +106,13 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
         
     }
     
-    private func cardDetailWeb(html: String, viewModel: ConfirmPaymentViewModel) {
-        _ = coordinate(to: CommonWebViewCoordinator(root: self.localNavigationController, container: self.container, commonWebType: .onBoardingOTPWeb, paymentGatewayM: self.paymentGatewayM, html: html, resultObserver: viewModel.inputs.pollACSResultObserver))
+    private func cardDetailWeb(html: String, viewModel: ConfirmPaymentViewModel) -> Observable<ResultType<Void>>  {
+        return coordinate(to: CommonWebViewCoordinator(root: self.localNavigationController, container: self.container, commonWebType: .onBoardingOTPWeb, paymentGatewayM: self.paymentGatewayM, html: html, resultObserver: viewModel.inputs.pollACSResultObserver))
     }
     
     private func navigateToCVV(card: ExternalPaymentCard ,amount: Double, currency: String, viewModel vm :ConfirmPaymentViewModel) {
-        let viewModel = TopupCardCVVViewModel(card: card, amount: amount, currency: currency)
-        let viewController = TopupCardCVVViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewModel = OnBoardingTopupCardCVVViewModel(card: card, amount: amount, currency: currency)
+        let viewController = OnBoardingTopupCardCVVViewController(themeService: container.themeService, viewModel: viewModel)
         self.localNavigationController.pushViewController(viewController, completion: nil)
         viewModel.outputs.result.subscribe(onNext: { [weak self] cvv in
             self?.isCVVPushed = false
