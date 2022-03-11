@@ -13,7 +13,7 @@ import YAPComponents
 protocol TopupCardCVVViewModelInput {
     var cvvObserver: AnyObserver<String?> { get }
     var confirmObserver: AnyObserver<Void> { get }
-    var back: AnyObserver<Void> { get }
+    var backObserver: AnyObserver<Void> { get }
 }
 
 protocol TopupCardCVVViewModelOutput {
@@ -23,8 +23,9 @@ protocol TopupCardCVVViewModelOutput {
     var cvvCount: Observable<Int> { get }
     var amount: Observable<NSAttributedString?> { get }
     var error: Observable<String> { get }
-    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard)> { get }
+    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)> { get }
     var confirmEnabled: Observable<Bool> { get }
+    var back: Observable<Void> { get }
 }
 
 protocol TopupCardCVVViewModelType {
@@ -38,10 +39,12 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
     let disposeBag = DisposeBag()
     var inputs: TopupCardCVVViewModelInput { return self }
     var outputs: TopupCardCVVViewModelOutput { return self }
+    var accountBalance = ""
     
     private let cvvSubject = PublishSubject<String?>()
     private let confirmSubject = PublishSubject<Void>()
     private let backSubject = PublishSubject<Void>()
+    private let accountBalanceSubject = BehaviorSubject<String?>(value: nil)
     
     private let cardImageSubject: BehaviorSubject<UIImage?>
     private let cardTitleSubject: BehaviorSubject<String?>
@@ -49,13 +52,13 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
     private let cvvCountSubject: BehaviorSubject<Int>
     private let amountSubject: BehaviorSubject<NSAttributedString?>
     private let errorSubject = PublishSubject<String>()
-    private let resultSubject = PublishSubject<(amount: Double, currency: String, card: ExternalPaymentCard)>()
+    private let resultSubject = PublishSubject<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)>()
     private let confirmEnabledSubject = BehaviorSubject<Bool>(value: false)
     
     // MARK: - Inputs
     var cvvObserver: AnyObserver<String?> { return cvvSubject.asObserver() }
     var confirmObserver: AnyObserver<Void> { return confirmSubject.asObserver() }
-    var back: AnyObserver<Void> { return backSubject.asObserver() }
+    var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     
     // MARK: - Outputs
     var cardImage: Observable<UIImage?> { return cardImageSubject.asObservable() }
@@ -64,8 +67,9 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
     var amount: Observable<NSAttributedString?> { return amountSubject.asObservable()}
     var cvvCount: Observable<Int> { return cvvCountSubject.asObservable() }
     var error: Observable<String> { return errorSubject.asObservable() }
-    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard)> { return resultSubject.asObservable() }
+    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)> { return resultSubject.asObservable() }
     var confirmEnabled: Observable<Bool> { return confirmEnabledSubject.asObservable() }
+    var back: Observable<Void> { return backSubject.asObservable() }
     
     private let repository: TransactionsRepository
     
@@ -103,13 +107,37 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
             .disposed(by: disposeBag)
         
         paymentRequest.elements()
-            //.flatMap{ _ in SessionManager.current.refreshBalance() }
+                .flatMap{ _ in self.getCustomerAccountBalance() }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
-            .subscribe(onNext: { [weak self] _ in self?.resultSubject.onNext((amount: amount, currency: currency, card: card)) })
+            .subscribe(onNext: { [weak self] _ in
+                self?.resultSubject.onNext((amount: amount, currency: currency, card: card, newBalance: self?.accountBalance ?? "")) })
             .disposed(by: disposeBag)
         
         backSubject.subscribe(onNext: { [weak self] in self?.resultSubject.onCompleted() }).disposed(by: disposeBag)
         
         cvvSubject.unwrap().map { $0.count == (card.type == .americanExpress ? 4 : 3) }.bind(to: confirmEnabledSubject).disposed(by: disposeBag)
+    }
+    
+    fileprivate func getCustomerAccountBalance() -> Observable<Event<CustomerBalanceResponse>> {
+        let accountBalanceRequest = repository.fetchCustomerAccountBalance().share(replay: 1, scope: .whileConnected)
+        
+        accountBalanceRequest.elements()
+            .map { [weak self] in
+                self?.accountBalance = $0.formattedBalance()
+                return $0.formattedBalance()
+            }
+            .bind(to: accountBalanceSubject)
+            .disposed(by: disposeBag)
+
+        accountBalanceRequest
+            .errors()
+            .do(onNext: { [unowned self] _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .map { $0.localizedDescription }
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+        
+        return accountBalanceRequest
     }
 }

@@ -409,9 +409,10 @@ extension TopupTransferViewModel {
         
         let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
         threeDEnrollmentResult
-            .map {
-                $0.formattedHTML
-            }
+            .map ({ enrolmentResult in
+                YAPProgressHud.hideProgressHud()
+                return enrolmentResult.formattedHTML
+            })
             .bind(to: htmlSubject)
             .disposed(by: disposeBag)
 
@@ -465,10 +466,10 @@ extension TopupTransferViewModel {
     private func getAttributedBalance(balance: String) -> NSMutableAttributedString {
         let balanceAttributedString = NSMutableAttributedString(string: String(format: "screen_topup_transfer_display_text_available_balance".localized, balance ), attributes: [
             .font: UIFont.systemFont(ofSize: 12.0, weight: .regular),
-            .foregroundColor: UIColor.gray//UIColor.greyDark
+            .foregroundColor: UIColor(Color(hex: "#9391B1"))//UIColor.greyDark
         ])
 
-        balanceAttributedString.addAttribute(.foregroundColor, value: UIColor.purple/*UIColor.primaryDark*/, range: NSRange(location: 26, length: balance.count))
+        balanceAttributedString.addAttribute(.foregroundColor, value: UIColor(Color(hex: "#272262"))/*UIColor.primaryDark*/, range: NSRange(location: 26, length: balance.count))
 
         return balanceAttributedString
     }
@@ -479,10 +480,10 @@ extension TopupTransferViewModel {
 
         let feeAttributedString = NSMutableAttributedString(string: text, attributes: [
             .font: UIFont.systemFont(ofSize: 12.0, weight: .regular),
-            .foregroundColor: UIColor.gray//UIColor.greyDark
+            .foregroundColor: UIColor(Color(hex: "#9391B1"))//UIColor.greyDark
         ])
 
-        feeAttributedString.addAttribute(.foregroundColor, value: UIColor.purple/*UIColor.primaryDark*/, range: (text as NSString).range(of: fee))
+        feeAttributedString.addAttribute(.foregroundColor, value: UIColor(Color(hex: "#272262"))/*UIColor.primaryDark*/, range: (text as NSString).range(of: fee))
 
         return feeAttributedString
     }

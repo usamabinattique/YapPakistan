@@ -391,6 +391,12 @@
 "screen_topup_daily_limit_error" = "Hi there! You have exceeded the amount you can top-up your YAP card for today. Please try again tomorrow.";
 "screen_topup_remaining_daily_limit_error" = "Hi there! The top-up amount requested exceeds your daily limit. Please try again with a lesser amount.";
 
+// MARK: - Topup success screen
+"screen_topup_success_display_text_title" = "Top up successful";
+"screen_topup_success_display_text_success_transaction_message" = "You have now added %@ to your account";
+"screen_topup_success_display_text_account_balance_title" = "Your new YAP balance is";
+"screen_topup_success_display_text_dashboard_action_button_title" = "Go to dashboard";
+
 // MARK: - Remove funds Screen
 "screen_remove_funds_display_text_remove_funds" = "Remove funds";
 "screen_remove_funds_button_remove" = "Remove";
