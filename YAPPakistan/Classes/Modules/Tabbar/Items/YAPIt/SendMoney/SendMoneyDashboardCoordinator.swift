@@ -56,7 +56,7 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
                 switch $0 {
                 case .localTransfer:
                     print("Local")
-                    //self.sendMoneyLocally(localRoot: self.localRoot, refreshObserver: viewModel.inputs.refreshObserver)
+                    self.sendMoneyLocally(localRoot: self.localRoot, refreshObserver: viewModel.inputs.refreshObserver)
                 case .internationalTransfer:
                     print("Int")
                     //self.sendMoneyInternationally(localRoot: self.localRoot, refreshObserver: viewModel.inputs.refreshObserver)
@@ -94,6 +94,17 @@ private extension SendMoneyDashboardCoordinator {
                 self?.result.onCompleted()
             } else {
                 //refreshObserver.onNext(())
+            }
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    func sendMoneyLocally(localRoot: UINavigationController, refreshObserver: AnyObserver<Void>) {
+        coordinate(to: SendMoneyHomeCoordinator(root: localRoot, container: container, sendMoneyType: .local)).subscribe(onNext: { [weak self] in
+            if case let ResultType.success(result) = $0 {
+                self?.result.onNext(.success(result))
+                self?.result.onCompleted()
+            } else {
+                refreshObserver.onNext(())
             }
         }).disposed(by: rx.disposeBag)
     }

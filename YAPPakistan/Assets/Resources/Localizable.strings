@@ -457,6 +457,19 @@
 "screen_yap_it_button_pay_bills" = "Pay bills";
 "screen_yap_it_button_request_money" = "Request Money";
 
+// MARK: Screen send money
+
+"screen_send_money_display_text_title" = "Send money";
+"screen_send_money_display_text_recent_transfer" = "Recent transfers";
+"screen_send_money_input_text_search_hint" = "Search";
+"screen_send_money_display_text_all_beneficiaries" = "All beneficiaries";
+"screen_send_money_display_text_edit" = "Edit";
+"screen_send_money_display_text_delete" = "Delete";
+"screen_send_money_no_contacts_display_text_title" = "YAP to YAP";
+"screen_send_money_no_contacts_display_text_sub_heading" = "Who would you like to send money to?";
+"screen_send_money_no_contacts_display_text_detail" = "Send money to contacts outside your YAP network by adding them as a beneficiary. You can do so by tapping the + button on the top right of this screen. For now, start adding beneficiaries by clicking below.";
+"screen_send_money_no_contacts_button_title_add_now" = "Add now";
+
 // MARK: - Home Screen
 "screen_home_display_text_nothing_to_report" = "Start using your account to see all your transactions here";
 
