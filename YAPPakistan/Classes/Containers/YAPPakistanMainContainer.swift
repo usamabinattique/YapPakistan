@@ -10,7 +10,8 @@ import RxSwift
 import RxTheme
 import YAPCore
 
-public final class YAPPakistanMainContainer {
+public final class YAPPakistanMainContainer: CountryContainerType {
+    
     let configuration: YAPPakistanConfiguration
     let themeService: ThemeService<AppTheme>
     let credentialsStore: CredentialsStoreType
@@ -31,14 +32,9 @@ public final class YAPPakistanMainContainer {
         return PKUserVerificationService(loginRepository: makeLoginRepository(), onBoardRepository: makeOnBoardingRepository())
     }
     
-    public func makeSigUpRootCoordinator(window: UIWindow,
-                                         navigationController: UINavigationController, formattedNum: String) -> AppCoordinator {
-        return rootCoordinator(window: window, navigationController: navigationController, flow: Flow.onboarding(formattedPhoneNumber: formattedNum))
-    }
-    
-    public func makeSigInRootCoordinator(window: UIWindow,
-                                         navigationController: UINavigationController, formattedNum: String) -> AppCoordinator {
-        return rootCoordinator(window: window, navigationController: navigationController, flow: Flow.passcode(formattedPhoneNumber: formattedNum))
+    public func makeAppCoordinator(window: UIWindow, navigationController: UINavigationController, formattedNum: String, onboarding: Bool) -> Coordinator<ResultType<Void>> {
+        let flow = onboarding ? Flow.onboarding(formattedPhoneNumber: formattedNum) : Flow.passcode(formattedPhoneNumber: formattedNum)
+        return rootCoordinator(window: window, navigationController: navigationController, flow: flow)
     }
 
     public func rootCoordinator(window: UIWindow,
