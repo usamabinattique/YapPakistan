@@ -98,7 +98,8 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
             })
             .flatMap { issueDate -> Observable<Event<CNICInfo?>> in
                 let cnic = cnicOCR.cnicNumber.replace(string: "-", replacement: "")
-                // randomString()  // FIXME this temporary for testing
+                // !!!: Random Cnic for testing
+                //let cnic = randomString()
                 let dateFormatter = DateFormatter.serverReadableDateFromatter
                 let dateOfIssuance = dateFormatter.string(from: issueDate)
 

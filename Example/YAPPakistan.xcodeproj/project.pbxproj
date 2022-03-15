@@ -51,9 +51,9 @@
 		0DEEE19526FDBC5800BABB41 /* FeatureFlagFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19426FDBC5800BABB41 /* FeatureFlagFileManager.swift */; };
 		0DEEE19926FDE28100BABB41 /* DefaultFeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACDB1AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		607FACDB1AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
-		607FACE01AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		607FACE01AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		7D7A880526F45FD1004CAEE3 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7A880426F45FD1004CAEE3 /* AppConstants.swift */; };
 		7D7BA3FD26EF65590007074C /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7BA3FC26EF65590007074C /* AppEnvironment.swift */; };
@@ -524,8 +524,8 @@
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				0DEEE12226F9CC4500BABB41 /* DefaultFeatureFlags.json in Resources */,
 				0D51950826E1FA5000B81639 /* LaunchScreen.storyboard in Resources */,
-				607FACDB1AFB9204008FA782 /* (null) in Resources */,
-				607FACE01AFB9204008FA782 /* (null) in Resources */,
+				607FACDB1AFB9204008FA782 /* BuildFile in Resources */,
+				607FACE01AFB9204008FA782 /* BuildFile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -666,16 +666,16 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-YAPPakistan_Example/Pods-YAPPakistan_Example-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/CardScanner/IdentityScanner.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/YAPCardScanner/IdentityScanner.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/YAPPakistan/YAPPakistan.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/IdentityScanner.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/IdentityScanner.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/YAPPakistan.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;

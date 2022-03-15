@@ -5,7 +5,7 @@
 //  Created by Tayyab on 30/09/2021.
 //
 
-import CardScanner
+import YAPCardScanner
 import Foundation
 import RxSwift
 import YAPComponents
@@ -98,7 +98,8 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
 
                 let documentType = "CNIC"
                 let identityNo = cnicNumber.replace(string: "-", replacement: "")
-                                 // getRandomNumber() // FIXME this temporary for testing
+                //!!!: Random Cnic for testing
+//                let identityNo = self.getRandomNumber()
                 let nationality = "PAK"
                 let fullName = cnicInfo.name
                 let gender = cnicInfo.gender
@@ -158,7 +159,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
     }
     
     private func getRandomNumber() -> String {
-        var prefix = "784198243"
+        var prefix = "352028243"
         let randomInt1 = Int.random(in: 1000 ... 5000)
         prefix += "\(randomInt1)"
         return prefix

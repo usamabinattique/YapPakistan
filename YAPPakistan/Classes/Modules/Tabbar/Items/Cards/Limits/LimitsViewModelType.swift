@@ -5,7 +5,7 @@
 //  Created by Sarmad on 29/11/2021.
 //
 
-import CardScanner
+import YAPCardScanner
 import Foundation
 import RxSwift
 import YAPComponents

@@ -2,7 +2,7 @@ use_frameworks!
 
 platform :ios, '11.4'
 
-source 'https://bitbucket.org/mb28/privatetrunk.git'
+source 'https://bitbucket.org/yap-technology/cardscanner-b2b.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'YAPPakistan_Example' do
