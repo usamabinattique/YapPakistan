@@ -108,6 +108,8 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
 
 //        fetchBeneficiaries()
 //        deleteBeneficiary()
+        
+
 
         allBeneficiaryDataSourceSubject.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
 

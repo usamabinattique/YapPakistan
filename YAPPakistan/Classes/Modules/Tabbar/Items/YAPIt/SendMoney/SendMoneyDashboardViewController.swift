@@ -144,9 +144,7 @@ fileprivate extension SendMoneyDashboardViewController {
         
         collectionView.rx.modelSelected(YapItTileCellViewModel.self)
             .subscribe(onNext: { model in
-                //TODO: replace hardcode action with model.action
-                //self.viewModel.inputs.actionObserver.onNext(model.action)
-                self.viewModel.inputs.actionObserver.onNext(.localTransfer("Pakistan"))
+                self.viewModel.inputs.actionObserver.onNext(model.action)
             })
             .disposed(by: rx.disposeBag)
         
