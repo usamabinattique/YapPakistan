@@ -18,6 +18,7 @@ class BankListSearchViewController: UIViewController {
     // MARK: Views
     private lazy var searchBar: AppSearchBar = {
        let searchBar = AppSearchBar()
+        searchBar.textField.placeholder = "Search banks"
        searchBar.autoHidesCancelButton = false
        searchBar.delegate = self
        searchBar.translatesAutoresizingMaskIntoConstraints = false
