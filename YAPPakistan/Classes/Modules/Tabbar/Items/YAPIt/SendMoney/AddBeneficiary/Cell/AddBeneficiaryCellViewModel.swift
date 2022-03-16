@@ -84,16 +84,17 @@ class AddBeneficiaryCellViewModel: AddBeneficiaryCellViewModelType, AddBeneficia
         bankImageSubject.onNext((bank.bankLogoUrl, thumbnail(name: bank.bankName)))
     }
     
-//    init() {
+    init() {
 //        contact =  YAPContact(name: "Dummy looooooooooooooong Name", phoneNumber: "Dummy long Nick", countryCode: "", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: 0)
-//
-//        nameSubject.onNext(contact.name)
+
+//        nameSubject.onNext("Dummy looooooo")
 //        phoneNumberSubject.onNext(contact.formattedPhoneNumber)
 //        isYapUserSubject.onNext(contact.isYapUser)
-//
-//        shimmeringSubject = BehaviorSubject(value: true)
-//        isShimmering = true
-//    }
+        bank = BankDetail(bankLogoUrl: nil, bankName: "Dummy looooooooooooooong Name", accountNoMinLength: 0, accountNoMaxLength: 0, ibanMinLength: 0, ibanMaxLength: 0, consumerId: "adf", formatMessage: "abc")
+        nameSubject.onNext(bank.bankName)
+        shimmeringSubject = BehaviorSubject(value: true)
+        isShimmering = true
+    }
     
     private func thumbnail(name: String) -> UIImage? {
         let color = UIColor.randomColor()

@@ -73,7 +73,7 @@ class AddBeneficiaryCell: RxUITableViewCell {
 private extension AddBeneficiaryCell {
     func setupViews() {
         contentView.addSubview(userImage)
-        contentView.addSubview(nameStack)
+        contentView.addSubview(name)
     }
     
     func setupConstraints() {
@@ -82,7 +82,7 @@ private extension AddBeneficiaryCell {
             .height(constant: 42)
             .width(constant: 42)
         
-        nameStack
+        name
             .toRightOf(userImage, constant: 15)
             .alignEdge(.centerY, withView: userImage)
     }
@@ -107,7 +107,7 @@ private extension AddBeneficiaryCell {
 private extension AddBeneficiaryCell {
     func bindViews() {
         
-        viewModel.outputs.bankImage.bind(to: userImage.rx.loadImage(true)).disposed(by: disposeBag)
+        viewModel.outputs.bankImage.bind(to: userImage.rx.loadImage()).disposed(by: disposeBag)
         
         //userImage.rx.loadImage()
         

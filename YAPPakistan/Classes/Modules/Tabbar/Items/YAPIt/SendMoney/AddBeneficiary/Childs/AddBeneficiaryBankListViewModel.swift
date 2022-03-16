@@ -145,6 +145,15 @@ class AddBeneficiaryBankListViewModel: AddBeneficiaryBankListViewModelType, AddB
     }
     
     func fetchRequiredData() {}
+    
+    private func showLoadingEffects() {
+        var dummyObjects: [AddBeneficiaryCellViewModel] = []
+        for _ in 1...12 {
+            dummyObjects.append(AddBeneficiaryCellViewModel())
+        }
+       // allBeneficiaryDataSourceSubject.onNext([SectionModel(model: 0, items: dummyObjects)])
+        self.dataSourceSubject.onNext([SectionModel(model: 0, items: dummyObjects)])
+    }
 }
 
 // MARK: Beneficiary Added
@@ -205,24 +214,25 @@ extension AddBeneficiaryBankListViewModel {
     }
     
     func fetchBankList() {
-        YAPProgressHud.showProgressHud()
-          
-          let bankListRequest = repository.getBankDetail()
-              .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-              .share()
-          
-                  bankListRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-              self?.showErrorSubject.onNext($0)
-          }).disposed(by: disposeBag)
-          
+        //  YAPProgressHud.showProgressHud()
+        showLoadingEffects()
+        let bankListRequest = repository.getBankDetail()
+        // .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .share()
+        
+        bankListRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
+            self?.dataSourceSubject.onNext([SectionModel(model: 0, items: [])])
+            self?.showErrorSubject.onNext($0)
+        }).disposed(by: disposeBag)
+        
         bankListRequest.elements().subscribe(onNext:{ [weak self] bankList in
-             // self?.otpRequiredSubject.onNext(self?.beneficiary ?? SendMoneyBeneficiary())
+            // self?.otpRequiredSubject.onNext(self?.beneficiary ?? SendMoneyBeneficiary())
             self?.bankResultsSubject.onNext(bankList)
             let cellVMs = bankList.map { bank -> AddBeneficiaryCellViewModel in
                 return AddBeneficiaryCellViewModel(bank)
             }
             self?.dataSourceSubject.onNext([SectionModel(model: 0, items: cellVMs)])
-          }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag)
     }
 }
 

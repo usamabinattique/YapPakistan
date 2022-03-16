@@ -179,9 +179,26 @@ private extension AddSendMoneyBeneficiaryCoordinator {
             self?.result.onCompleted()
         }).disposed(by: disposeBag)
         
-        viewModel.outputs.cancel.subscribe(onNext: {[weak self] in
+        viewModel.outputs.cancel.subscribe(onNext: {[weak self]  in
+            self?.root.popViewController(animated: true, nil)
             self?.result.onNext(ResultType.cancel)
             self?.result.onCompleted()
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.back.withLatestFrom(containerViewModel.outputs.progress).subscribe(onNext: {[weak self] stage in
+            switch stage {
+            case .bankName:
+                self?.root.popViewController(animated: true, nil)
+                self?.result.onNext(ResultType.cancel)
+                self?.result.onCompleted()
+            case .bankNameComplete:
+                self?.childContainerNavigation.popViewController(animated: true)?.didPopFromNavigationController()
+                self?.containerViewModel.inputs.progressObserver.onNext(.bankName)
+            default:
+                break
+            }
+            
+           
         }).disposed(by: disposeBag)
     }
     
@@ -377,7 +394,7 @@ extension AddSendMoneyBeneficiaryCoordinator {
                                                                                 viewModel: bankDetailViewModel)
 
         
-        childContainerNavigation.popViewController(animated: false)?.didPopFromNavigationController()
+        //childContainerNavigation.popViewController(animated: false)?.didPopFromNavigationController()
         childContainerNavigation.pushViewController(bankDetailViewController, animated: true)
         
         containerViewModel.inputs.progressObserver.onNext(.bankNameComplete)

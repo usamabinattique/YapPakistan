@@ -173,7 +173,7 @@ final class BeneficiaryStatusView: UIView {
             updateProgoress(isCountHidden: false, backgroundColour: primaryDark, index: 2)
         case .bankNameComplete:
             updateProgoress(isCountHidden: true, backgroundColour: primary, index: 0)
-            updateProgoress(isCountHidden: false, backgroundColour: primaryDark, index: 1)
+            updateProgoress(isCountHidden: false, backgroundColour: primary, index: 1)
             updateProgoress(isCountHidden: false, backgroundColour: primaryDark, index: 2)
         case .bankAccountDetail:
             updateProgoress(isCountHidden: true, backgroundColour: primary, index: 0)
