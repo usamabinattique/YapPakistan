@@ -34,7 +34,14 @@ class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChild
 //                                                               returnKeyType: .search )
     
     private lazy var searchButton = UIFactory.makeButton(with: .small, backgroundColor: .groupTableViewBackground, title: "screen_y2y_display_text_search".localized)
-    private lazy var tableView = UIFactory.makeTableView(allowsSelection: true)
+    //private lazy var tableView = UIFactory.makeTableView(allowsSelection: true)
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .white
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
 
 //    override var firstReponder: UITextField? {
 //        return searchTextField
@@ -92,7 +99,7 @@ extension AddBeneficiaryBankListViewController {
         beneficiariesView.addSubview(tableView)
         
         tableView.register(AddBeneficiaryCell.self, forCellReuseIdentifier: AddBeneficiaryCell.defaultIdentifier)
-        tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: 24, left: 0, bottom: UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0, right: 0)
     }
 
     func setupTheme() {
@@ -126,7 +133,7 @@ extension AddBeneficiaryBankListViewController {
             .height(constant: 30)
         
         tableView
-            .toBottomOf(searchButton, constant: 24)
+            .toBottomOf(searchButton, constant: 0)//24)
             .alignEdgesWithSuperview([.left, .right, .bottom])
     }
 }
@@ -159,7 +166,7 @@ private extension AddBeneficiaryBankListViewController {
         
         searchButton.rx.tap.subscribe(onNext: { [weak self] _ in
             self?.searchButton.isEnabled = false
-          //  self?.viewModel.inputs.searchObserver.onNext(())
+            self?.viewModel.inputs.searchObserver.onNext(())
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.showError.subscribe(onNext: { [weak self] error in

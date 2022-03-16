@@ -19,6 +19,7 @@ protocol AddBeneficiaryBankListViewModelInput {
     var cellSelected: AnyObserver<ReusableTableViewCellViewModelType> { get }
     var otpResultObserver: AnyObserver<ResultType<Void>> { get }
     var cancelObserver: AnyObserver<Void>{ get }
+    var searchObserver: AnyObserver<Void> { get }
 }
 
 protocol AddBeneficiaryBankListViewModelOutput {
@@ -37,6 +38,7 @@ protocol AddBeneficiaryBankListViewModelOutput {
     var title: Observable<String?> { get }
     var otpRequired: Observable<SendMoneyBeneficiary> { get }
     var cancel: Observable<Void>{ get }
+    var search: Observable<[BankDetail]?> { get }
 }
 
 protocol AddBeneficiaryBankListViewModelType {
@@ -71,12 +73,16 @@ class AddBeneficiaryBankListViewModel: AddBeneficiaryBankListViewModelType, AddB
     let otpResultSubject = PublishSubject<ResultType<Void>>()
     let cancelSubject = PublishSubject<Void>()
     
+    private let searchSubject = PublishSubject<Void>()
     var beneficiary: SendMoneyBeneficiary!
     var viewModels: [ReusableTableViewCellViewModelType] = []
     let sendMoneyType: SendMoneyType
     
+    private let bankResultsSubject = BehaviorSubject<[BankDetail]?>(value: nil)
+    
     
     // MARK: - Inputs
+    var searchObserver: AnyObserver<Void> { return searchSubject.asObserver() }
     var cancelObserver: AnyObserver<Void>{ return cancelSubject.asObserver() }
     var doneObserver: AnyObserver<Void> { return doneSubject.asObserver() }
     var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
@@ -97,6 +103,7 @@ class AddBeneficiaryBankListViewModel: AddBeneficiaryBankListViewModelType, AddB
     var beneficairyAdded: Observable<SendMoneyBeneficiary?> { return beneficiaryAddedSubject.asObservable() }
     var title: Observable<String?> { return titleSubject.asObservable() }
     var otpRequired: Observable<SendMoneyBeneficiary> { otpRequiredSubject.asObservable() }
+    var search: Observable<[BankDetail]?> { return searchSubject.withLatestFrom(bankResultsSubject) }
     
     private var searchableActionSheet: SearchableActionSheet?
     private var themeService: ThemeService<AppTheme>
@@ -208,6 +215,7 @@ extension AddBeneficiaryBankListViewModel {
           
         bankListRequest.elements().subscribe(onNext:{ [weak self] bankList in
              // self?.otpRequiredSubject.onNext(self?.beneficiary ?? SendMoneyBeneficiary())
+            self?.bankResultsSubject.onNext(bankList)
             let cellVMs = bankList.map { bank -> AddBeneficiaryCellViewModel in
                 return AddBeneficiaryCellViewModel(bank)
             }

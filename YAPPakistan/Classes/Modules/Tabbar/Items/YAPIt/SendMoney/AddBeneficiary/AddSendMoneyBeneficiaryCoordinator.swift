@@ -341,5 +341,25 @@ extension AddSendMoneyBeneficiaryCoordinator {
 //            newResult.timeTaken = 15
 //            self.navigateToWaitingUserCongratulation(user: newResult, session: Session(sessionToken: " abc "))
         }).disposed(by: disposeBag) */
+        
+        
+        bankListViewModel.outputs.search.subscribe(onNext: { [unowned self] result in
+            self.navigateToSearchBanks(result ?? [])
+    
+        }).disposed(by: disposeBag)
+    }
+    
+    func navigateToSearchBanks(_ banks: [BankDetail]) {
+        let viewModel = BankListSearchViewModel(banks)
+        let viewController = BankListSearchViewController(themeService: container.themeService, viewModel: viewModel)
+        root.pushViewController(viewController, animated: true)
+
+//        viewModel.outputs.invite.subscribe(onNext: { [weak self] in
+//            self?.inviteFriend($0.0, self?.name ?? "", appShareUrl: $0.1)
+//        }).disposed(by: rx.disposeBag)
+//
+//        viewModel.outputs.contactSelected.subscribe(onNext: { [weak self] in
+//            self?.sendMoney($0)
+//        }).disposed(by: rx.disposeBag)
     }
 }
