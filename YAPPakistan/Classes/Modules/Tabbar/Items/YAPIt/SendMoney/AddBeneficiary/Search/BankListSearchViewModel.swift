@@ -14,12 +14,14 @@ import RxDataSources
 protocol BankListSearchViewModelInputs {
     var textObserver: AnyObserver<String?> { get }
     var cancelObserver: AnyObserver<Void> { get }
+    var cellSelected: AnyObserver<BankDetail> { get }
 }
 
 protocol BankListSearchViewModelOutputs {
     var billerText: Observable<String?> { get }
     var showError: Observable<String> { get }
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
+    var bank: Observable<BankDetail> { get }
 }
 
 protocol BankListSearchViewModelType {
@@ -32,6 +34,7 @@ class BankListSearchViewModel: BankListSearchViewModelType, BankListSearchViewMo
     // MARK: - Properties
     private let disposeBag = DisposeBag()
     private var banks: [BankDetail]
+    private let cellSelectedSubject = PublishSubject<BankDetail>()
     var inputs: BankListSearchViewModelInputs { return self }
     var outputs: BankListSearchViewModelOutputs { return self }
     
@@ -50,12 +53,14 @@ class BankListSearchViewModel: BankListSearchViewModelType, BankListSearchViewMo
     
     var textObserver: AnyObserver<String?> { return textSubject.asObserver() }
     var cancelObserver: AnyObserver<Void> { return cancelSubject.asObserver() }
+    var cellSelected: AnyObserver<BankDetail> { return cellSelectedSubject.asObserver() }
     
     // MARK: - Outputs
     
     var showError: Observable<String> { return showErrorSubject.asObservable() }
     var billerText: Observable<String?> { return billerTextSubject.asObservable() }
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
+    var bank: Observable<BankDetail> { cellSelectedSubject.asObservable() }
     
     // MARK: - Init
     init(_ banks: [BankDetail]) {

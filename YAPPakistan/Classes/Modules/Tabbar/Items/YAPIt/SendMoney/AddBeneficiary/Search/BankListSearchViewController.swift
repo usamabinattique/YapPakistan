@@ -153,6 +153,11 @@ private extension BankListSearchViewController {
             return cell
         })
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+        
+        tableView.rx.modelSelected(AddBeneficiaryCellViewModel.self)
+            .do(onNext: { [weak self] _ in self?.navigationController?.popViewController(animated: false) })
+            .map{ $0.bank }.bind(to: viewModel.inputs.cellSelected)
+            .disposed(by: rx.disposeBag)
     }
 }
 

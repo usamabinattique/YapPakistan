@@ -472,6 +472,8 @@
 "screen_add_beneficiary_display_text_title" = "Add beneficiary";
 "screen_add_beneficiary_detail_display_text_cancel_popup_title" = "Are you sure you want to exit?";
 "screen_add_beneficiary_detail_display_text_cancel_popup_message" = "The information you've entered will be lost";
+"screen_add_beneficiary_detail_display_text_bank_name_heading" = "What is the bank name?";
+"screen_add_beneficiary_detail_display_text_bank_account_detail_heading" = "Beneficiary account details";
 
 // MARK: - Home Screen
 "screen_home_display_text_nothing_to_report" = "Start using your account to see all your transactions here";

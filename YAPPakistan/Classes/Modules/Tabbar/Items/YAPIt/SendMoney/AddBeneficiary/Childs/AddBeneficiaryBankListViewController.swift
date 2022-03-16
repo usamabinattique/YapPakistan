@@ -16,7 +16,7 @@ class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChild
 
     private lazy var headingLabel: UILabel = {
         let label = UILabel()
-        label.text = "What is the bank name?" //"screen_verify_phone_number_display_text_title".localized
+        label.text = "screen_add_beneficiary_detail_display_text_bank_name_heading".localized
         label.font = UIFont.title3
         // label.textColor = UIColor.blue //.appColor(ofType: .primaryDark)
         label.textAlignment = .center
@@ -185,10 +185,8 @@ private extension AddBeneficiaryBankListViewController {
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
         
         tableView.rx.modelSelected(AddBeneficiaryCellViewModel.self)
-            .subscribe(onNext: { [weak self] model in
-                print("model is \(model)")
-                self?.viewModel.inputs.cellSelected.onNext(model)
-            })
+            .map{ $0.bank }
+            .bind(to: viewModel.inputs.cellSelected)
             .disposed(by: rx.disposeBag)
         
        // viewModel.outputs.enableSearch.bind(to: searchButton.rx.isEnabled).disposed(by: rx.disposeBag)

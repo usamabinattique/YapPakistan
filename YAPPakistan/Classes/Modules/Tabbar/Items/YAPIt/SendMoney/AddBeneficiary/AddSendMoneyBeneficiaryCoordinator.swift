@@ -344,12 +344,15 @@ extension AddSendMoneyBeneficiaryCoordinator {
         
         
         bankListViewModel.outputs.search.subscribe(onNext: { [unowned self] result in
-            self.navigateToSearchBanks(result ?? [])
-    
+            self.navigateToSearchBanks(beneficiary,result ?? [])
+        }).disposed(by: disposeBag)
+        
+        bankListViewModel.outputs.bank.subscribe(onNext: { [unowned self] bank in
+            self.navigateToBankDetail(beneficiary, bank: bank)
         }).disposed(by: disposeBag)
     }
     
-    func navigateToSearchBanks(_ banks: [BankDetail]) {
+    func navigateToSearchBanks(_ beneficiary: SendMoneyBeneficiary ,_ banks: [BankDetail]) {
         let viewModel = BankListSearchViewModel(banks)
         let viewController = BankListSearchViewController(themeService: container.themeService, viewModel: viewModel)
         root.pushViewController(viewController, animated: true)
@@ -361,5 +364,46 @@ extension AddSendMoneyBeneficiaryCoordinator {
 //        viewModel.outputs.contactSelected.subscribe(onNext: { [weak self] in
 //            self?.sendMoney($0)
 //        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.bank.subscribe(onNext: { [unowned self] bank in
+            self.navigateToBankDetail(beneficiary, bank: bank)
+        }).disposed(by: disposeBag)
+    }
+    
+    func navigateToBankDetail(_ beneficiary: SendMoneyBeneficiary, bank: BankDetail) {
+        
+        let bankDetailViewModel = AddBeneficiaryBankDetailViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank)
+        let bankDetailViewController = AddBeneficiaryBankDetailViewController(themeService: container.parent.themeService,
+                                                                                viewModel: bankDetailViewModel)
+
+        
+        childContainerNavigation.popViewController(animated: false)?.didPopFromNavigationController()
+        childContainerNavigation.pushViewController(bankDetailViewController, animated: true)
+        
+        containerViewModel.inputs.progressObserver.onNext(.bankNameComplete)
+        
+      /*  verificationViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
+            self.viewModel.inputs.progressObserver.onNext(progress)
+        }).disposed(by: disposeBag)
+
+        verificationViewModel.outputs.stage.subscribe(onNext: { [unowned self] stage in
+            self.containerViewModel.inputs.activeStageObserver.onNext(stage)
+        }).disposed(by: disposeBag)
+
+        verificationViewModel.outputs.valid.subscribe(onNext: { [unowned self] valid in
+            self.containerViewModel.inputs.validObserver.onNext(valid)
+        }).disposed(by: disposeBag)
+
+        containerViewModel.outputs.send.bind(to: verificationViewModel.inputs.sendObserver).disposed(by: disposeBag)
+
+        verificationViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
+            //TODO: uncomment following
+            self.navigateToCreatePasscode(user: result)
+            
+//            //TODO: remove following line
+//            var newResult = result
+//            newResult.timeTaken = 15
+//            self.navigateToWaitingUserCongratulation(user: newResult, session: Session(sessionToken: " abc "))
+        }).disposed(by: disposeBag) */
     }
 }

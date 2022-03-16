@@ -111,7 +111,7 @@ private extension AddSendMoneyBeneficiaryViewController {
     
     func setupConstraints() {
        statusView
-            .alignEdgeWithSuperview(.top,constant: 44)
+            .alignEdgeWithSuperview(.top,constant: 12)
             .centerHorizontallyInSuperview()
         
         childView?

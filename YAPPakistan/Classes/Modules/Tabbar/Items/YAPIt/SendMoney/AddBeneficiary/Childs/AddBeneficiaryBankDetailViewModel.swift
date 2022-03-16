@@ -1,8 +1,8 @@
 //
-//  AddBeneficiaryBankListViewModel.swift
+//  AddBeneficiaryBankDetailViewModel.swift
 //  YAPPakistan
 //
-//  Created by Yasir on 15/03/2022.
+//  Created by Yasir on 16/03/2022.
 //
 
 import Foundation
@@ -13,16 +13,16 @@ import RxCocoa
 import RxDataSources
 import RxTheme
 
-protocol AddBeneficiaryBankListViewModelInput {
+protocol AddBeneficiaryBankDetailViewModelInput {
     var doneObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
-    var cellSelected: AnyObserver<BankDetail> { get }
+    var cellSelected: AnyObserver<ReusableTableViewCellViewModelType> { get }
     var otpResultObserver: AnyObserver<ResultType<Void>> { get }
     var cancelObserver: AnyObserver<Void>{ get }
     var searchObserver: AnyObserver<Void> { get }
 }
 
-protocol AddBeneficiaryBankListViewModelOutput {
+protocol AddBeneficiaryBankDetailViewModelOutput {
     
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     
@@ -38,21 +38,20 @@ protocol AddBeneficiaryBankListViewModelOutput {
     var title: Observable<String?> { get }
     var otpRequired: Observable<SendMoneyBeneficiary> { get }
     var cancel: Observable<Void>{ get }
-    var search: Observable<[BankDetail ]?> { get }
-    var bank: Observable<BankDetail> { get }
+    var search: Observable<[BankDetail]?> { get }
 }
 
-protocol AddBeneficiaryBankListViewModelType {
-    var inputs: AddBeneficiaryBankListViewModelInput { get }
-    var outputs: AddBeneficiaryBankListViewModelOutput { get }
+protocol AddBeneficiaryBankDetailViewModelType {
+    var inputs: AddBeneficiaryBankDetailViewModelInput { get }
+    var outputs: AddBeneficiaryBankDetailViewModelOutput { get }
 }
 
-class AddBeneficiaryBankListViewModel: AddBeneficiaryBankListViewModelType, AddBeneficiaryBankListViewModelInput, AddBeneficiaryBankListViewModelOutput {
+class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, AddBeneficiaryBankDetailViewModelInput, AddBeneficiaryBankDetailViewModelOutput {
     
     // MARK: - Properties
     let disposeBag = DisposeBag()
-    var inputs: AddBeneficiaryBankListViewModelInput { return self }
-    var outputs: AddBeneficiaryBankListViewModelOutput { return self }
+    var inputs: AddBeneficiaryBankDetailViewModelInput { return self }
+    var outputs: AddBeneficiaryBankDetailViewModelOutput { return self }
     
     var repository : YapItRepositoryType!
     
@@ -68,7 +67,7 @@ class AddBeneficiaryBankListViewModel: AddBeneficiaryBankListViewModelType, AddB
     let showErrorSubject = PublishSubject<String>()
     let resultSubject = PublishSubject<SendMoneyBeneficiary>()
     private let backSubject = PublishSubject<Void>()
-    let cellSelectedSubject = PublishSubject<BankDetail>()
+    let cellSelectedSubject = PublishSubject<ReusableTableViewCellViewModelType>()
     let titleSubject = BehaviorSubject<String?>(value: "screen_add_beneficiary_display_text_title".localized)
     let otpRequiredSubject = PublishSubject<SendMoneyBeneficiary>()
     let otpResultSubject = PublishSubject<ResultType<Void>>()
@@ -87,7 +86,7 @@ class AddBeneficiaryBankListViewModel: AddBeneficiaryBankListViewModelType, AddB
     var cancelObserver: AnyObserver<Void>{ return cancelSubject.asObserver() }
     var doneObserver: AnyObserver<Void> { return doneSubject.asObserver() }
     var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
-    var cellSelected: AnyObserver<BankDetail> { return cellSelectedSubject.asObserver() }
+    var cellSelected: AnyObserver<ReusableTableViewCellViewModelType> { return cellSelectedSubject.asObserver() }
     var otpResultObserver: AnyObserver<ResultType<Void>> { otpResultSubject.asObserver() }
     
     // MARK: - Outputs
@@ -105,22 +104,22 @@ class AddBeneficiaryBankListViewModel: AddBeneficiaryBankListViewModelType, AddB
     var title: Observable<String?> { return titleSubject.asObservable() }
     var otpRequired: Observable<SendMoneyBeneficiary> { otpRequiredSubject.asObservable() }
     var search: Observable<[BankDetail]?> { return searchSubject.withLatestFrom(bankResultsSubject) }
-    var bank: Observable<BankDetail> { cellSelectedSubject.asObservable() }
     
     private var searchableActionSheet: SearchableActionSheet?
     private var themeService: ThemeService<AppTheme>
+    private var bank: BankDetail
     
     // MARK: - Init
     init(beneficiary: SendMoneyBeneficiary,
          repository: YapItRepositoryType,
-         sendMoneyType: SendMoneyType, themeService: ThemeService<AppTheme>) {
+         sendMoneyType: SendMoneyType, themeService: ThemeService<AppTheme>, bank: BankDetail) {
         
         self.sendMoneyType = sendMoneyType
         self.repository = repository
         self.beneficiary = beneficiary
         self.themeService = themeService
+        self.bank = bank
         
-        fetchBankList()
         
        // generateCellViewModels()
 //        loadCells()
@@ -149,7 +148,7 @@ class AddBeneficiaryBankListViewModel: AddBeneficiaryBankListViewModelType, AddB
 
 // MARK: Beneficiary Added
 
-extension AddBeneficiaryBankListViewModel {
+extension AddBeneficiaryBankDetailViewModel {
     func showBeneficiaryAddedAlert() {
         let title = "screen_add_beneficiary_detail_display_text_alert_title".localized
         let details = "screen_add_beneficiary_detail_display_button_block_alert_description".localized
@@ -224,18 +223,4 @@ extension AddBeneficiaryBankListViewModel {
             self?.dataSourceSubject.onNext([SectionModel(model: 0, items: cellVMs)])
           }).disposed(by: disposeBag)
     }
-}
-
-extension AddBeneficiaryBankListViewModel {
- /*   func selectCountry(countries: [SendMoneyBeneficiaryCountry]) -> Observable<SendMoneyBeneficiaryCountry> {
-        searchableActionSheet = SearchableActionSheet(title: "Select country", searchPlaceholderText: "Search country", items: countries)
-        searchableActionSheet!.show()
-        return searchableActionSheet!.itemSelected.map{ countries[$0] }
-    }
-    
-    func selectCurrency(currencies: [SendMoneyBeneficiaryCurrency]) -> Observable<SendMoneyBeneficiaryCurrency> {
-        searchableActionSheet = SearchableActionSheet(title: "Select currency", searchPlaceholderText: "Search currency", items: currencies)
-        searchableActionSheet!.show()
-        return searchableActionSheet!.itemSelected.map{ currencies[$0] }
-    } */
 }
