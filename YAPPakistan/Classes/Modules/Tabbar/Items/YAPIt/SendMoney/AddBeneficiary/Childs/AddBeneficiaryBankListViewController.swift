@@ -10,6 +10,7 @@ import YAPComponents
 import RxSwift
 import RxCocoa
 import RxTheme
+import RxDataSources
 
 class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChildViewController {
 
@@ -41,6 +42,7 @@ class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChild
 
     private var viewModel: AddBeneficiaryBankListViewModelType!
     private var themeService:ThemeService<AppTheme>!
+    private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
 
     init(themeService:ThemeService<AppTheme>, viewModel: AddBeneficiaryBankListViewModelType?) {
         self.viewModel = viewModel
@@ -66,7 +68,7 @@ class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChild
         setupResources()
         setupConstraints()
         setupTheme()
-      //  bindViews()
+        bindViews()
 
     }
 
@@ -89,7 +91,8 @@ extension AddBeneficiaryBankListViewController {
         beneficiariesView.addSubview(searchButton)
         beneficiariesView.addSubview(tableView)
         
-        tableView.backgroundColor = .red
+        tableView.register(AddBeneficiaryCell.self, forCellReuseIdentifier: AddBeneficiaryCell.defaultIdentifier)
+        tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0, right: 0)
     }
 
     func setupTheme() {
@@ -158,6 +161,28 @@ private extension AddBeneficiaryBankListViewController {
             self?.searchButton.isEnabled = false
           //  self?.viewModel.inputs.searchObserver.onNext(())
         }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
+            self?.showAlert(title: "", message: error, defaultButtonTitle: "common_button_ok".localized)
+        }).disposed(by: rx.disposeBag)
+        
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { [weak self] (data, tableView, index, viewModel) in
+            
+            guard let self = self else { return UITableViewCell() }
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
+            cell.configure(with: self.themeService, viewModel: viewModel)
+            return cell
+        })
+        
+        viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
+        
+        tableView.rx.modelSelected(AddBeneficiaryCellViewModel.self)
+            .subscribe(onNext: { [weak self] model in
+                print("model is \(model)")
+                self?.viewModel.inputs.cellSelected.onNext(model)
+            })
+            .disposed(by: rx.disposeBag)
         
        // viewModel.outputs.enableSearch.bind(to: searchButton.rx.isEnabled).disposed(by: rx.disposeBag)
     }
