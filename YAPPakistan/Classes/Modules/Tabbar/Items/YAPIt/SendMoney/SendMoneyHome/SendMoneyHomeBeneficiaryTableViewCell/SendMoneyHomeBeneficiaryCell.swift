@@ -14,50 +14,17 @@ class SendMoneyHomeBeneficiaryCell: RxUITableViewCell {
     // MARK: Views
     
     private lazy var userImage = UIFactory.makeImageView(tintColor: UIColor.red, contentMode: .scaleAspectFill)
-
-//    private lazy var userImage: UIImageView = {
-//        let imageView = UIImageView()
-//        imageView.contentMode = .scaleAspectFill
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        return imageView
-//    }()
-
-    
     private lazy var nickName = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
     private lazy var fullName = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
-    
-    //private lazy var nickname = UIFactory.makeLabel(with: .primaryDark, textStyle: .small)
-    //private lazy var fullName = UILabelFactory.createUILabel(with: .greyDark, textStyle:  .micro)
-
     private lazy var nameStack: UIStackView = UIFactory.makeStackView(axis: .vertical, alignment: .leading, spacing: 2, arrangedSubviews: [nickName, fullName])
-    
-//    private lazy var nameStack: UIStackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .leading, spacing: 2, arrangedSubviews: [nickname, fullName])
-
     private lazy var typeImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
-    
-//    private lazy var typeImage: UIImageView = {
-//        let imageView = UIImageView()
-//        imageView.contentMode = .center
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        return imageView
-//    }()
-
     private lazy var flag = UIFactory.makeImageView(contentMode: .scaleAspectFit)
-    
-//    private lazy var flag: UIImageView = {
-//        let imageView = UIImageView()
-//        imageView.contentMode = .scaleAspectFit
-//        imageView.translatesAutoresizingMaskIntoConstraints = false
-//        return imageView
-//    }()
 
     // MARK: Properties
-
     var viewModel: SendMoneyHomeBeneficiaryCellViewModel!
     private var themeService: ThemeService<AppTheme>!
 
     // MARK: Initialization
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         commonInit()
@@ -89,21 +56,11 @@ class SendMoneyHomeBeneficiaryCell: RxUITableViewCell {
         guard let vm = viewModel as? SendMoneyHomeBeneficiaryCellViewModel else { return }
         self.themeService = themeService
         self.viewModel = vm
-        
-//        setupBindings()
-//        setupTheme()
-//        setupResources()
         setupViews()
         setupConstraints()
         bindViews()
         setupTheme()
     }
-
-//    override func configure(with viewModel: Any) {
-//        guard let viewModel = viewModel as? SendMoneyHomeBeneficiaryCellViewModelType else { return }
-//        self.viewModel = viewModel
-//        bindViews()
-//    }
 }
 
 // MARK: View setup

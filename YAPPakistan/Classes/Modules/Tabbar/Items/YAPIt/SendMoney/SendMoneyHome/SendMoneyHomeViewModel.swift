@@ -29,7 +29,7 @@ protocol SendMoneyHomeViewModelOutput {
     var recentBeneficiaryAvailable: Observable<Bool> { get }
     var showError: Observable<String> { get }
     var allBeneficiaryDataSource: Observable<[SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>]> { get }
-    var recentBeneficiaryCellViewModel: Observable<[SectionModel<Int, SendMoneyHomeBeneficiaryCollectionCellViewModel>]> { get }
+    var recentBeneficiaryCellViewModel: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { get }
 
     var sendMoney: Observable<SendMoneyBeneficiary> { get }
     var showActivity: Observable<Bool> { get }
@@ -68,7 +68,7 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
     private let showActivitySubject = PublishSubject<Bool>()
 
     private let allBeneficiaryDataSourceSubject = BehaviorSubject<[SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>]>(value: [])
-    private let recentBeneficiaryDataSourceSubject = BehaviorSubject<[SectionModel<Int, SendMoneyHomeBeneficiaryCollectionCellViewModel>]>(value: [])
+    private let recentBeneficiaryDataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]>(value: [])
     private let cellViewModelsSubject = BehaviorSubject<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]>(value: [])
     private let sendMoneySubject = PublishSubject<SendMoneyBeneficiary>()
     private let editBeneficiarySubject = PublishSubject<SendMoneyBeneficiary>()
@@ -94,7 +94,7 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
     var beneficiaryAvailable: Observable<Bool> { return beneficiaryAvailableSubject.asObservable() }
     var showError: Observable<String> { return showErrorSubject.asObservable() }
     var allBeneficiaryDataSource: Observable<[SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>]> { return allBeneficiaryDataSourceSubject.asObservable() }
-    var recentBeneficiaryCellViewModel: Observable<[SectionModel<Int, SendMoneyHomeBeneficiaryCollectionCellViewModel>]> { return recentBeneficiaryDataSourceSubject.asObservable() }
+    var recentBeneficiaryCellViewModel: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { return recentBeneficiaryDataSourceSubject.asObservable() }
     var cellViewModels: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { cellViewModelsSubject.asObservable() }
     var recentBeneficiaryAvailable: Observable<Bool> { return recentBeneficiaryAvailableSubject.asObservable() }
     var sendMoney: Observable<SendMoneyBeneficiary> { return sendMoneySubject.asObservable() }

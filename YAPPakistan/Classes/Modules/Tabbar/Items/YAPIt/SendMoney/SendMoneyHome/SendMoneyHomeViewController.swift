@@ -88,7 +88,7 @@ class SendMoneyHomeViewController: UIViewController {
     
     private var viewModel: SendMoneyHomeViewModelType!
     private let disposeBag = DisposeBag()
-    private var recentBeneficiaryDataSource: RxCollectionViewSectionedReloadDataSource<SectionModel<Int, SendMoneyHomeBeneficiaryCollectionCellViewModel>>!
+    private var recentBeneficiaryDataSource: RxCollectionViewSectionedReloadDataSource<SectionModel<Int, ReusableCollectionViewCellViewModelType>>!
     private var allBeneficiaryDataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>>!
     private var themeService: ThemeService<AppTheme>
     
@@ -283,7 +283,6 @@ private extension SendMoneyHomeViewController {
             .do(onNext: { model in
                 
                 print("Hello")
-                
                 
             }).bind(to: collectionView.rx.items(dataSource: recentBeneficiaryDataSource)).disposed(by: disposeBag)
                 
