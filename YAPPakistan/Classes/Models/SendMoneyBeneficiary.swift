@@ -14,12 +14,13 @@ enum SendMoneyBeneficiaryType: String, Codable {
     case cashPayout = "CASHPAYOUT"
     case domestic = "DOMESTIC"
     case uaefts = "UAEFTS"
+    case IBFT = "IBFT"
 }
 
 extension SendMoneyBeneficiaryType {
     var localizeDescription: String {
         switch self {
-        case .swift, .rmt, .domestic, .uaefts:
+        case .swift, .rmt, .domestic, .uaefts, .IBFT:
             return "Bank transfer"
         case .cashPayout:
             return "Cash pickup"
@@ -47,6 +48,8 @@ extension SendMoneyBeneficiaryType {
             return .domestic
         case .uaefts:
             return .uaeftsTransfer
+        case .IBFT:
+            return .domestic
         }
     }
 }
@@ -62,6 +65,7 @@ public struct SendMoneyBeneficiary: Codable {
     var nickName: String?
     public var firstName: String?
     public var lastName: String?
+    var title: String?
     var currency: String?
     var phoneNumber: String?
     var IBAN: String?
@@ -90,7 +94,8 @@ public struct SendMoneyBeneficiary: Codable {
         case country = "country"
         case id = "id"
         case beneficiaryID = "beneficiaryId"
-        case nickName = "title"
+        case nickName = "nickName"
+        case title = "title"
         case firstName = "firstName"
         case lastName = "lastName"
         case currency = "currency"
@@ -133,6 +138,7 @@ public extension SendMoneyBeneficiary {
         id = beneficiary.id
         beneficiaryID = beneficiary.beneficiaryID
         nickName = beneficiary.nickName
+        title = beneficiary.title
         firstName = beneficiary.firstName
         lastName = beneficiary.lastName
         currency = beneficiary.currency
@@ -162,7 +168,6 @@ public extension SendMoneyBeneficiary {
     var color: UIColor {
         UIColor.colorFor(listItemIndex: index ?? 0)
     }
-    
 }
 
 extension SendMoneyBeneficiary {

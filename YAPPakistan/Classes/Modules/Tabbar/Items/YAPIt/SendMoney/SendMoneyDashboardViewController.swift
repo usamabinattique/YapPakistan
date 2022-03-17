@@ -132,6 +132,8 @@ fileprivate extension SendMoneyDashboardViewController {
     }
     
     func setupBindings() {
+        
+        
         dataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: indexPath) as! RxUICollectionViewCell
             cell.configure(with: viewModel, theme: self.themeService)
@@ -139,6 +141,8 @@ fileprivate extension SendMoneyDashboardViewController {
         })
         
         viewModel.outputs.cellViewModels.bind(to: collectionView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
+        
+        
         
 //        collectionView.rx.modelSelected(YapItTileCellViewModel.self).subscribe(on: MainScheduler.instance).map{ $0.action }.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
         

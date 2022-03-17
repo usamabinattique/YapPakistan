@@ -10,7 +10,7 @@ import RxSwift
 
 protocol YapItRepositoryType {
     func fetchRecentSendMoneyBeneficiaries() -> Observable<Event<[SendMoneyBeneficiary]>>
-    
+    func fetchAllIBFTBeneficiaries() -> Observable<Event<[SendMoneyBeneficiary]>>
     func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>>
     
 //    func fetchBeneficiaryCountries() -> Observable<Event<[SendMoneyBeneficiaryCountry]>>
@@ -29,9 +29,13 @@ class YapItRepository: YapItRepositoryType {
         return customersService.fetchRecentSendMoneyBeneficiaries().materialize()
     }
     
+    func fetchAllIBFTBeneficiaries() -> Observable<Event<[SendMoneyBeneficiary]>> {
+        return customersService.fetchAllIBFTBeneficiaries().materialize()
+    }
+    
     public func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>> {
 //        return Observable.of([Y2YRecentBeneficiary.mock]).materialize()
-        return customersService.fetchRecentBeneficiaries().materialize()
+        return customersService.fetchAllIBFTBeneficiaries().materialize()
     }
     
     public func getCustomerInfoFromQR(_ qrString: String) -> Observable<Event<QRContact>> {

@@ -53,10 +53,10 @@ class SendMoneyHomeViewController: UIViewController {
     private lazy var searchButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .groupTableViewBackground
-      //  button.tintColor = .greyDark
+        //  button.tintColor = .greyDark
         button.setImage(UIImage.sharedImage(named: "icon_search")?.asTemplate, for: .normal)
         button.setTitle("screen_send_money_input_text_search_hint".localized, for: .normal)
-       // button.setTitleColor(.greyDark, for: .normal)
+        // button.setTitleColor(.greyDark, for: .normal)
         button.titleLabel?.font = .small
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -72,12 +72,24 @@ class SendMoneyHomeViewController: UIViewController {
         return tableView
     }()
     
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        
+        layout.scrollDirection = .vertical
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.delegate = self
+        collectionView.isDirectionalLockEnabled = true
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
+    
     // MARK: Properties
     
     private var viewModel: SendMoneyHomeViewModelType!
     private let disposeBag = DisposeBag()
     private var recentBeneficiaryDataSource: RxCollectionViewSectionedReloadDataSource<SectionModel<Int, ReusableCollectionViewCellViewModelType>>!
-    private var allBeneficiaryDataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
+    private var allBeneficiaryDataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>>!
     private var themeService: ThemeService<AppTheme>
     
     // MARK: Initialization
@@ -95,16 +107,17 @@ class SendMoneyHomeViewController: UIViewController {
     // MARK: View cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_close", in: .yapPakistan), style: .plain, target: self, action: #selector(closeAction))
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_add_beneficiary", in: .yapPakistan, compatibleWith: nil)?.asTemplate, style: .plain, target: self, action: #selector(addBeneficiary))
         
+        title = "Bank transfer"
         setupViews()
         setupConstraints()
         setupTheme()
         bindViews()
         bindTableView()
-        
+        bindRecentBeneficiaryCollectionView()
         viewModel.inputs.refreshObserver.onNext(())
     }
     
@@ -120,7 +133,7 @@ class SendMoneyHomeViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-       // SessionManager.current.refreshCurrencies()
+        // SessionManager.current.refreshCurrencies()
     }
     
     // MARK: Actions
@@ -158,8 +171,13 @@ private extension SendMoneyHomeViewController {
         allBeneficiaryView.addSubview(allBeneficiaryLabel)
         allBeneficiaryView.addSubview(tableView)
         
-     //   tableView.register(SendMoneyHomeBeneficiaryCell.self, forCellReuseIdentifier: SendMoneyHomeBeneficiaryCell.reuseIdentifier)
+        recentBeneficiaryView.addSubview(collectionView)
+        
+        tableView.register(SendMoneyHomeBeneficiaryCell.self, forCellReuseIdentifier: SendMoneyHomeBeneficiaryCell.defaultIdentifier)
         tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0, right: 0)
+        
+        collectionView.register(SendMoneyHomeBeneficiaryCoolectionCell.self, forCellWithReuseIdentifier: SendMoneyHomeBeneficiaryCoolectionCell.defaultIdentifier)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
     }
     
     func setupConstraints() {
@@ -217,6 +235,11 @@ private extension SendMoneyHomeViewController {
 private extension SendMoneyHomeViewController {
     func bindViews() {
         addNowButton.rx.tap.bind(to: viewModel.inputs.addObserver).disposed(by: disposeBag)
+        
+        //        self.noBeneficiaryView.isHidden = true
+        //        self.beneficiaryView.isHidden = false
+        //        self.tableView.isHidden = false
+        
         viewModel.outputs.beneficiaryAvailable.bind(to: noBeneficiaryView.rx.isHidden).disposed(by: disposeBag)
         viewModel.outputs.beneficiaryAvailable.map { !$0 }.bind(to: beneficiaryView.rx.isHidden).disposed(by: disposeBag)
         viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
@@ -224,27 +247,66 @@ private extension SendMoneyHomeViewController {
         
         searchButton.rx.tap.bind(to: viewModel.inputs.searchObserver).disposed(by: disposeBag)
         
-//        tableView.rx.modelSelected(SendMoneyHomeBeneficiaryCellViewModel.self).filter { (model) -> Bool in
-//            return !model.isShimmering
-//        }.map{ $0.beneficiary }.bind(to: viewModel.inputs.beneficiaryObserver).disposed(by: disposeBag)
+        //        tableView.rx.modelSelected(SendMoneyHomeBeneficiaryCellViewModel.self).filter { (model) -> Bool in
+        //            return !model.isShimmering
+        //        }.map{ $0.beneficiary }.bind(to: viewModel.inputs.beneficiaryObserver).disposed(by: disposeBag)
         
         viewModel.outputs.showActivity.bind(to: navigationController?.view.rx.showActivity ?? view.rx.showActivity).disposed(by: disposeBag)
         
-      //  recentBeneficiaryView.configure(with: viewModel.outputs.recentBeneficiaryViewModel)
+        //  recentBeneficiaryView.configure(with: viewModel.outputs.recentBeneficiaryViewModel)
         
         viewModel.outputs.title.debug("Screen title:").bind(to: navigationItem.rx.title).disposed(by: disposeBag)
         viewModel.outputs.listLabel.bind(to: allBeneficiaryLabel.rx.text).disposed(by: disposeBag)
     }
     
     func bindTableView() {
-//        allBeneficiaryDataSource = RxTableViewSectionedReloadDataSource(configureCell: { [unowned self] (_, tableView, _, viewModel) in
-//            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxSwipeTableViewCell
-//            cell.configure(with: viewModel)
-//            cell.delegate = self
-//            return cell
-//        })
+        allBeneficiaryDataSource = RxTableViewSectionedReloadDataSource(configureCell: { [unowned self] (_, tableView, _, viewModel) in
+            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
+            cell.configure(with: themeService, viewModel: viewModel)
+            //cell.delegate = self
+            return cell
+        })
         
-     //   viewModel.outputs.allBeneficiaryDataSource.bind(to: tableView.rx.items(dataSource: allBeneficiaryDataSource)).disposed(by: disposeBag)
+        viewModel.outputs.allBeneficiaryDataSource.bind(to: tableView.rx.items(dataSource: allBeneficiaryDataSource)).disposed(by: disposeBag)
+    }
+    
+    func bindRecentBeneficiaryCollectionView() {
+        recentBeneficiaryDataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: indexPath) as! RxUICollectionViewCell
+            cell.configure(with: viewModel, theme: self.themeService)
+            return cell
+            
+        })
+        
+        viewModel.outputs.recentBeneficiaryCellViewModel
+            .do(onNext: { model in
+                
+                print("Hello")
+                
+            }).bind(to: collectionView.rx.items(dataSource: recentBeneficiaryDataSource)).disposed(by: disposeBag)
+                
+                
+                
+                
+        //SendMoneyHomeBeneficiaryCellViewModel
+        
+//        collectionView.rx.modelSelected(YapItTileCellViewModel.self).subscribe(on: MainScheduler.instance).map{ $0.action }.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
+        
+//        collectionView.rx.modelSelected(YapItTileCellViewModel.self)
+//            .subscribe(onNext: { model in
+//                //TODO: replace hardcode action with model.action
+//                //self.viewModel.inputs.actionObserver.onNext(model.action)
+//                self.viewModel.inputs.actionObserver.onNext(.localTransfer("Pakistan"))
+//            })
+//            .disposed(by: rx.disposeBag)
+        
+        
+        
+//        viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
+//        viewModel.outputs.showsRecentBeneficiary.map{ !$0 }.bind(to: recentBeneficiaryView.rx.isHidden).disposed(by: rx.disposeBag)
+//        recentBeneficiaryView.configure(with: self.themeService, viewModel: viewModel.outputs.recentBeneficiaryViewModel)
+//        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }
 }
 
@@ -263,7 +325,7 @@ extension SendMoneyHomeViewController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: 70, height: collectionView.bounds.height)
     }
 }
-/*
+
 extension SendMoneyHomeViewController: SwipeTableViewCellDelegate {
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
@@ -272,43 +334,43 @@ extension SendMoneyHomeViewController: SwipeTableViewCellDelegate {
         let edit = SwipeAction(style: .default, title: "screen_send_money_display_text_edit".localized) { [unowned self] (_, indexPath) in
             self.viewModel.inputs.editBeneficiaryObserver.onNext(((tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
         }
-        edit.backgroundColor = .primary
-        edit.image = UIImage.init(named: "icon_edit", in: sendMoneyBundle, compatibleWith: nil)?.asTemplate
+        edit.backgroundColor = UIColor.red
+        //edit.image = UIImage.init(named: "icon_edit", in: sendMoneyBundle, compatibleWith: nil)?.asTemplate
         
         let delete = SwipeAction(style: .default, title: "screen_send_money_display_text_delete".localized) { [unowned self] (_, indexPath) in
             self.deleteBeneficiary(at: indexPath)
         }
         
-        delete.backgroundColor = .secondaryMagenta
+        delete.backgroundColor = UIColor.red
         delete.image = UIImage.sharedImage(named: "icon_close")?.asTemplate
         
         return [delete, edit]
     }
 }
-
-// MARK: Delete
-
+//
+//// MARK: Delete
+//
 private extension SendMoneyHomeViewController {
     func deleteBeneficiary(at indexPath: IndexPath) {
         
-        guard !(SessionManager.current.currentProfile?.restrictions.contains(.otpBlocked) ?? false) else {
-            UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
-            return
-        }
+        //        guard !(SessionManager.current.currentProfile?.restrictions.contains(.otpBlocked) ?? false) else {
+        //            UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
+        //            return
+        //        }
         
-        showAlert(message: "Are you sure you want to delete this beneficiary?", defaultButtonTitle: "common_button_cancel".localized, secondayButtonTitle: "screen_send_money_display_text_delete".localized, defaultButtonHandler: nil, secondaryButtonHandler: { _ in
-            self.viewModel.inputs.deleteBeneficiaryObserver.onNext(((self.tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
-        }, completion: nil)
+        //        showAlert(message: "Are you sure you want to delete this beneficiary?", defaultButtonTitle: "common_button_cancel".localized, secondayButtonTitle: "screen_send_money_display_text_delete".localized, defaultButtonHandler: nil, secondaryButtonHandler: { _ in
+        //            self.viewModel.inputs.deleteBeneficiaryObserver.onNext(((self.tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
+        //        }, completion: nil)
     }
 }
-*/
+
 extension SendMoneyHomeViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField,
                    shouldChangeCharactersIn range: NSRange,
                    replacementString string: String) -> Bool {
         
-     let verticalStack = UIStackView()
-
+        let verticalStack = UIStackView()
+        
         verticalStack.translatesAutoresizingMaskIntoConstraints = false
         verticalStack.isLayoutMarginsRelativeArrangement = true
         verticalStack.axis = .vertical
@@ -316,5 +378,27 @@ extension SendMoneyHomeViewController: UITextFieldDelegate {
         verticalStack.distribution = .fillProportionally
         
         return true
+    }
+}
+
+open class RxSwipeTableViewCell: SwipeTableViewCell, ReusableView, ConfigurableTableViewCell {
+    public func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
+        fatalError("Configure with viewModel must be implemented.")
+    }
+    
+    private(set) public var disposeBag = DisposeBag()
+    public var indexPath: IndexPath!
+    
+    override open func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
+    }
+    
+//    open func configure(with viewModel: Any) {
+//        fatalError("Configure with viewModel must be implemented.")
+//    }
+    
+    public func setIndexPath(_ indexPath: IndexPath) {
+        self.indexPath = indexPath
     }
 }
