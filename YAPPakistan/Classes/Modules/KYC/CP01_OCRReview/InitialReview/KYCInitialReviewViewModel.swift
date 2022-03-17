@@ -99,7 +99,7 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
             .flatMap { issueDate -> Observable<Event<CNICInfo?>> in
                 let cnic = cnicOCR.cnicNumber.replace(string: "-", replacement: "")
                 // !!!: Random Cnic for testing
-                //let cnic = randomString()
+                //let cnic = getRandomNumber()
                 let dateFormatter = DateFormatter.serverReadableDateFromatter
                 let dateOfIssuance = dateFormatter.string(from: issueDate)
 
@@ -122,20 +122,10 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
     }
 }
 
-func randomString(length: Int = 13) -> String{
-
-    enum Stringbase {
-        static let ccc = Array("1234567890")
-        static let kkk = UInt32(ccc.count)
-    }
-
-    var result = [Character](repeating: "-", count: length)
-
-    for iii in 0..<length {
-        let rrr = Int(arc4random_uniform(Stringbase.kkk))
-        result[iii] = Stringbase.ccc[rrr]
-    }
-
-    return String(result)
+private func getRandomNumber() -> String {
+    var prefix = "352023333"
+    let randomInt1 = Int.random(in: 1000 ... 5000)
+    prefix += "\(randomInt1)"
+    return prefix
 }
 

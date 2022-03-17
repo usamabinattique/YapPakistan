@@ -79,6 +79,8 @@ class KYCReviewDetailsViewController: UIViewController {
         setupTheme()
         setupConstraints()
         bindViewModel()
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(endEditingAction)))
     }
 
     // MARK: View Setup
@@ -91,6 +93,11 @@ class KYCReviewDetailsViewController: UIViewController {
         view.addSubview(nextButton)
 
         tableView.register(KYCReviewFieldCell.self, forCellReuseIdentifier: KYCReviewFieldCell.defaultIdentifier)
+    }
+    
+    @objc
+    func endEditingAction() {
+        view.endEditing(true)
     }
 
     private func setupTheme() {
@@ -146,8 +153,9 @@ class KYCReviewDetailsViewController: UIViewController {
                             defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: disposeBag)
 
-        viewModel.outputs.cnicFields.bind(to: tableView.rx.items(cellIdentifier: KYCReviewFieldCell.defaultIdentifier,
-                                                                 cellType: KYCReviewFieldCell.self)) {
+        viewModel.outputs.cnicFields
+            .bind(to: tableView.rx.items(cellIdentifier: KYCReviewFieldCell.defaultIdentifier,
+                                          cellType: KYCReviewFieldCell.self)) {
             [weak self] (_, viewModel: KYCReviewFieldViewModelType, cell) in
             guard let self = self else { return }
             cell.configure(with: self.themeService, viewModel: viewModel)

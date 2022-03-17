@@ -9,6 +9,7 @@ import Foundation
 
 struct CNICInfo: Codable {
     var name: String
+    var fatherSpouseName: String? = nil
     var gender: String
     var dob: String
     var issueDate: String
@@ -17,6 +18,7 @@ struct CNICInfo: Codable {
 
     enum CodingKeys: String, CodingKey {
         case name
+        case fatherSpouseName
         case gender
         case dob
         case issueDate
@@ -26,10 +28,11 @@ struct CNICInfo: Codable {
 
     init() {
         self.name = "Sarmad Abbas"
+        self.fatherSpouseName = ""
         self.gender = "M"
         self.dob = "1991-09-05"
         self.issueDate = "2020-09-05"
         self.expiryDate = "2027-09-05"
-        self.residentialAddress = "SALAM PURA LAHORE"
+        self.residentialAddress = "Johar Town LAHORE"
     }
 }

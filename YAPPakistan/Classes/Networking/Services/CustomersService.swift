@@ -271,7 +271,7 @@ public class CustomersService: BaseService, CustomerServiceType {
 
     public func saveDocuments<T: Codable>(_ documents: [(data: Data, format: String)],
                                           documentType: String, identityNo: String,
-                                          nationality: String, fullName: String, gender: String,
+                                          nationality: String, fullName: String, fatherName: String, gender: String,
                                           dob: String, dateIssue: String, dateExpiry: String) -> Observable<T> {
         var docs: [DocumentUploadRequest] = []
         for document in documents {
@@ -283,7 +283,8 @@ public class CustomersService: BaseService, CustomerServiceType {
             "documentType": documentType,
             "identityNo": identityNo,
             "nationality": nationality,
-            "fullName": fullName,
+            "firstName": fullName,
+            "lastName": fatherName,
             "gender": gender,
             "dob": dob,
             "dateIssue": dateIssue,
