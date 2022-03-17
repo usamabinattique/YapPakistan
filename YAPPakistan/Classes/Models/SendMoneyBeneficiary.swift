@@ -26,6 +26,15 @@ extension SendMoneyBeneficiaryType {
         }
     }
     
+    var iconName: String? {
+        switch self {
+        case .swift, .rmt, .domestic, .uaefts:
+            return "icon_edit_money_bank_transfer"
+        default:
+            return nil
+        }
+    }
+    
     var productCode: TransactionProductCode {
         switch self {
         case .swift:
@@ -109,7 +118,7 @@ public struct SendMoneyBeneficiary: Codable {
 public extension SendMoneyBeneficiary {
     
     static var mocked: SendMoneyBeneficiary {
-        return SendMoneyBeneficiary(type: .domestic, country: "GB", isRMTCountry: true, isCashPickUpAvailable: nil, id: 123, beneficiaryID: "12344", nickName: "John Doe", firstName: "John", lastName: "Doe", currency: "GBP", phoneNumber: nil, IBAN: nil, swiftCode: nil, bankName: nil, branchName: nil, branchAddress: nil, identifierCode1Name: nil, identifierCode2Name: nil, identifierCode1: nil, identifierCode2: nil, selectedCountry: nil, bankCity: nil, cbwsiCompliant: nil, lastTranseferDate: nil)
+        return SendMoneyBeneficiary(type: .domestic, country: "GB", isRMTCountry: true, isCashPickUpAvailable: nil, id: 123, beneficiaryID: "12344", nickName: "John Doe", firstName: "John", lastName: "Doe", currency: "GBP", phoneNumber: "(403) 292-1100", IBAN: "AE02345612344567", swiftCode: nil, bankName: "Allied Bank Limited", branchName: nil, branchAddress: "Pakistan, 340 5TH AVE SW, CALGARY, AB", identifierCode1Name: nil, identifierCode2Name: nil, identifierCode1: nil, identifierCode2: nil, selectedCountry: nil, bankCity: nil, cbwsiCompliant: nil, lastTranseferDate: nil)
     }
     
     var fullName: String {

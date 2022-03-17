@@ -14,6 +14,7 @@ protocol YapItRepositoryType {
     func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>>
     
 //    func fetchBeneficiaryCountries() -> Observable<Event<[SendMoneyBeneficiaryCountry]>>
+    func editBeneficiary(_ documents: [(data: Data, format: String)], id: String, nickname: String?) -> Observable<Event<SendMoneyBeneficiary>>
 }
 
 class YapItRepository: YapItRepositoryType {
@@ -41,5 +42,7 @@ class YapItRepository: YapItRepositoryType {
 //        return self.customersService.fetchBeneficiaryCountries().materialize()
 //    }
     
-    
+    func editBeneficiary(_ documents: [(data: Data, format: String)], id: String, nickname: String?) -> Observable<Event<SendMoneyBeneficiary>> {
+        customersService.editBeneficiary(documents, id: id, nickname: nickname).materialize()
+    }
 }

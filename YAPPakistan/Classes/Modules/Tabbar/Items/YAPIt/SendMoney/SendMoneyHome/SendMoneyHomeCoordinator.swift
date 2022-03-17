@@ -53,7 +53,7 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
    // public override var feature: CoordinatorFeature { .sendMoney }
     
     public init(root: UIViewController, container: UserSessionContainer, sendMoneyType: SendMoneyType) {
-       // self.repository = repository
+//        self.repository = repository
         self.container = container
         self.sendMoneyType = sendMoneyType
         self.root = root
