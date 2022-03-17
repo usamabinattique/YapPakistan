@@ -2,6 +2,8 @@ use_frameworks!
 
 platform :ios, '11.4'
 
+install! 'cocoapods', :deterministic_uuids => false
+
 source 'https://bitbucket.org/yap-technology/cardscanner-b2b.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
