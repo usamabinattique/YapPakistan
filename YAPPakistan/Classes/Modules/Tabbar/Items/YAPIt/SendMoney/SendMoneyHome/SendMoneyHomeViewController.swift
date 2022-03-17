@@ -176,7 +176,7 @@ private extension SendMoneyHomeViewController {
         tableView.register(SendMoneyHomeBeneficiaryCell.self, forCellReuseIdentifier: SendMoneyHomeBeneficiaryCell.defaultIdentifier)
         tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0, right: 0)
         
-        collectionView.register(SendMoneyHomeBeneficiaryCoolectionCell.self, forCellWithReuseIdentifier: YapItTileCell.defaultIdentifier)
+        collectionView.register(SendMoneyHomeBeneficiaryCoolectionCell.self, forCellWithReuseIdentifier: SendMoneyHomeBeneficiaryCoolectionCell.defaultIdentifier)
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
     }
     
@@ -279,15 +279,17 @@ private extension SendMoneyHomeViewController {
             
         })
         
-        
-        
-        viewModel.outputs.recentBeneficiaryDataSource
+        viewModel.outputs.recentBeneficiaryCellViewModel
             .do(onNext: { model in
                 
                 print("Hello")
                 
                 
             }).bind(to: collectionView.rx.items(dataSource: recentBeneficiaryDataSource)).disposed(by: disposeBag)
+                
+                
+                
+                
         //SendMoneyHomeBeneficiaryCellViewModel
         
 //        collectionView.rx.modelSelected(YapItTileCellViewModel.self).subscribe(on: MainScheduler.instance).map{ $0.action }.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
