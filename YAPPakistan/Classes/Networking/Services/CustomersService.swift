@@ -367,9 +367,17 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
+    public func fetchAllIBFTBeneficiaries<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
     public func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T> {
-        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=BANK_TRANSFER", headers: authorizationProvider.authorizationHeaders)
-
+//        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent", query: ["type" : "BANK_TRANSFER"], headers: authorizationProvider.authorizationHeaders)
+//
+//        return self.request(apiClient: self.apiClient, route: route)
+        
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     
