@@ -194,11 +194,15 @@ private extension AddSendMoneyBeneficiaryCoordinator {
             case .bankNameComplete:
                 self?.childContainerNavigation.popViewController(animated: true)?.didPopFromNavigationController()
                 self?.containerViewModel.inputs.progressObserver.onNext(.bankName)
+            case .confirmBeneficiary:
+                self?.childContainerNavigation.popViewController(animated: true)?.didPopFromNavigationController()
+                self?.containerViewModel.inputs.progressObserver.onNext(.bankAccountDetailComplete)
+            case .bankAccountDetailComplete:
+                self?.childContainerNavigation.popViewController(animated: true)?.didPopFromNavigationController()
+                self?.containerViewModel.inputs.progressObserver.onNext(.bankName)
             default:
                 break
             }
-            
-           
         }).disposed(by: disposeBag)
     }
     
@@ -393,34 +397,28 @@ extension AddSendMoneyBeneficiaryCoordinator {
         let bankDetailViewController = AddBeneficiaryBankDetailViewController(themeService: container.parent.themeService,
                                                                                 viewModel: bankDetailViewModel)
 
-        
-        //childContainerNavigation.popViewController(animated: false)?.didPopFromNavigationController()
         childContainerNavigation.pushViewController(bankDetailViewController, animated: true)
         
         containerViewModel.inputs.progressObserver.onNext(.bankNameComplete)
         
-      /*  verificationViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
-            self.viewModel.inputs.progressObserver.onNext(progress)
+        bankDetailViewModel.outputs.showError.map { _ -> String? in
+           return "screen_add_beneficiary_detail_display_text_bank_account_detail_error".localized
+        }.bind(to: containerViewModel.inputs.bankDetailErrorObserver).disposed(by: disposeBag)
+        
+        bankDetailViewModel.outputs.confirmBeneficiaryData.subscribe(onNext: { [unowned self] _arg1 in
+            let (bank, accountTitle) = _arg1
+            self.navigateToConfirmBeneficiary(beneficiary, bank: bank, accountTitle: accountTitle)
         }).disposed(by: disposeBag)
+    }
+    
+    func navigateToConfirmBeneficiary(_ beneficiary: SendMoneyBeneficiary, bank: BankDetail, accountTitle: BankAccountDetail) {
+        
+        let confirmBeneficiaryViewModel = AddBeneficiaryConfirmViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank, accountDetail: accountTitle)
+        let confirmBeneficiaryViewController = AddBeneficiaryConfirmViewController(themeService: container.parent.themeService,
+                                                                                viewModel: confirmBeneficiaryViewModel)
 
-        verificationViewModel.outputs.stage.subscribe(onNext: { [unowned self] stage in
-            self.containerViewModel.inputs.activeStageObserver.onNext(stage)
-        }).disposed(by: disposeBag)
-
-        verificationViewModel.outputs.valid.subscribe(onNext: { [unowned self] valid in
-            self.containerViewModel.inputs.validObserver.onNext(valid)
-        }).disposed(by: disposeBag)
-
-        containerViewModel.outputs.send.bind(to: verificationViewModel.inputs.sendObserver).disposed(by: disposeBag)
-
-        verificationViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
-            //TODO: uncomment following
-            self.navigateToCreatePasscode(user: result)
-            
-//            //TODO: remove following line
-//            var newResult = result
-//            newResult.timeTaken = 15
-//            self.navigateToWaitingUserCongratulation(user: newResult, session: Session(sessionToken: " abc "))
-        }).disposed(by: disposeBag) */
+        childContainerNavigation.pushViewController(confirmBeneficiaryViewController, animated: true)
+        
+        containerViewModel.inputs.progressObserver.onNext(.confirmBeneficiary)
     }
 }

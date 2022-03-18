@@ -8,7 +8,7 @@
 import YAPComponents
 
 
-class AddBeneficiaryBankListContainerChildViewController: UIViewController {
+class AddBeneficiaryBankListContainerChildViewController: KeyboardAvoidingViewController {
 
     var firstReponder: UITextField? {
         return nil
@@ -21,6 +21,7 @@ class AddBeneficiaryBankListContainerChildViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         guard UIScreen.screenType != .iPhone5 else { return }
+        
         guard (self.navigationController as? OnBoardingContainerNavigationController)?.keyboardShown ?? false else { return }
         _ = firstReponder?.becomeFirstResponder()
     }

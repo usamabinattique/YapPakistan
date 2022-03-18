@@ -1,8 +1,8 @@
 //
-//  BankDetailViewController.swift
+//  AddBeneficiaryConfirmViewController.swift
 //  YAPPakistan
 //
-//  Created by Yasir on 16/03/2022.
+//  Created by Yasir on 17/03/2022.
 //
 
 import UIKit
@@ -12,11 +12,11 @@ import RxCocoa
 import RxTheme
 import RxDataSources
 
-class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChildViewController {
+class AddBeneficiaryConfirmViewController: AddBeneficiaryBankListContainerChildViewController {
 
     private lazy var headingLabel: UILabel = {
         let label = UILabel()
-        label.text = "screen_add_beneficiary_detail_display_text_bank_account_detail_heading".localized
+        label.text = "screen_add_beneficiary_detail_display_text_bank_account_confirm_heading".localized
         label.font = .title3
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
@@ -30,8 +30,12 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
     private lazy var bankImageContainerView = UIFactory.makeCircularView(  borderColor: UIColor(Color(hex: "#F1F5FE")), borderWidth: 0.7)
     private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var bankName = UIFactory.makeLabel(font: .regular,alignment: .center)
+    private lazy var bankAccount = UIFactory.makeLabel(font: .micro,alignment: .center)
     
-    private lazy var detailsStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fillEqually, spacing: 2, arrangedSubviews: [bankImageContainerView,bankName])
+    private lazy var beneficiaryFountLabel =  UIFactory.makeLabel(font: .regular,alignment: .center)
+    
+    
+    private lazy var detailsStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fillEqually, spacing: 2, arrangedSubviews: [bankImageContainerView,bankName,bankAccount])
     private lazy var detailsStackContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -82,10 +86,11 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
         return view
     }()
 
-    private var viewModel: AddBeneficiaryBankDetailViewModelType!
+
+    private var viewModel: AddBeneficiaryConfirmViewModelType!
     private var themeService:ThemeService<AppTheme>!
 
-    init(themeService:ThemeService<AppTheme>, viewModel: AddBeneficiaryBankDetailViewModelType?) {
+    init(themeService:ThemeService<AppTheme>, viewModel: AddBeneficiaryConfirmViewModelType?) {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
@@ -113,8 +118,7 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
     }
 
     override func didPopFromNavigationController() {
-        viewModel?.inputs.poppedObserver.onNext(())
-        textField.resignFirstResponder()
+       // viewModel?.inputs.poppedObserver.onNext(())
     }
     
     @objc
@@ -134,7 +138,7 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
         toolBar.autoresizingMask = .flexibleHeight
         toolBar.barStyle = .default
         toolBar.isTranslucent = true
-       // toolBar.tintColor = UIColor(Color(hex: "#272262")) // primary dark
+        toolBar.tintColor = UIColor(Color(hex: "#272262")) // primary dark
         toolBar.sizeToFit()
         
         // Adding Button ToolBar
@@ -154,43 +158,28 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
 
 // MARK: View setup
 
-extension AddBeneficiaryBankDetailViewController {
+extension AddBeneficiaryConfirmViewController {
     func setupViews() {
-      /*  view.addSubview(headingLabel)
+        view.addSubview(headingLabel)
         view.addSubview(detailsStackContainer)
-        bankImageContainerView.addSubview(bankImage)
-        detailsStackContainer.addSubview(detailsStack)
-        detailsStackContainer.layer.cornerRadius = 12
-        detailsStackContainer.layer.borderWidth = 0.7 */
-        /*
-        view.addSubview(textField)
-        view.addSubview(infoButton)
-        view.addSubview(doneButton)
-        view.addSubview(titleField) */
-        doneButton.setTitle("Find account", for: .normal)
-        titleField.text = "Account number/IBAN"
-        textField.placeholder = "Enter account number/IBAN"
-        
-        view.addSubview(scrollView)
-       scrollView.addSubview(contentView)
-        scrollView.addSubview(headingLabel)
-       scrollView.addSubview(detailsStackContainer)
-        
         bankImageContainerView.addSubview(bankImage)
         detailsStackContainer.addSubview(detailsStack)
         detailsStackContainer.layer.cornerRadius = 12
         detailsStackContainer.layer.borderWidth = 0.7
         
-       scrollView.addSubview(textField)
-       scrollView.addSubview(infoButton)
-       scrollView.addSubview(doneButton)
-       scrollView.addSubview(titleField)
+        view.addSubview(textField)
+        view.addSubview(infoButton)
+        view.addSubview(doneButton)
+        view.addSubview(titleField)
+        doneButton.setTitle("Find account", for: .normal)
+        titleField.text = "Account number/IBAN"
+        textField.placeholder = "Enter account number/IBAN"
     }
 
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor, bankImageContainerView.rx.backgroundColor])
-            .bind({ UIColor($0.primaryDark    ) }, to: [headingLabel.rx.textColor, bankName.rx.textColor, infoLabel.rx.textColor,titleField.rx.textColor, infoButton.rx.tintColor, toolbar.rx.tintColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [headingLabel.rx.textColor, bankName.rx.textColor, infoLabel.rx.textColor,titleField.rx.textColor, infoButton.rx.tintColor])
             .bind({ UIColor($0.greyLight    ) }, to: [detailsStackContainer.rx.borderColor])
             .bind({ UIColor($0.primary    ) }, to: [doneButton.rx.enabledBackgroundColor])
             .bind({ UIColor($0.primaryLight    ) }, to: [doneButton.rx.disabledBackgroundColor])
@@ -203,17 +192,6 @@ extension AddBeneficiaryBankDetailViewController {
     }
     
     func setupConstraints() {
-        
-        scrollView
-            .alignEdgesWithSuperview([.top,.left,.right])
-            .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 0)
-            .centerHorizontallyInSuperview()
-            .widthEqualTo(view: view)
-        contentView
-            .alignEdgesWithSuperview([.top,.bottom, .left,.right])
-            .centerHorizontallyInSuperview()
-            .widthEqualTo(view: scrollView)
-            .heightEqualTo(view: scrollView)
         
         headingLabel
             .alignEdgesWithSuperview([.left, .right], constant: 25)
@@ -256,7 +234,7 @@ extension AddBeneficiaryBankDetailViewController {
             .height(constant: 30)
         
         doneButton
-            .alignEdgeWithSuperviewSafeArea(.bottom, constant: 34)
+            .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 34)
             .toBottomOf(textField, .greaterThanOrEqualTo)
             .centerHorizontallyInSuperview()
             .height(constant: 52)
@@ -266,16 +244,16 @@ extension AddBeneficiaryBankDetailViewController {
 
 // MARK: Binding
 
-private extension AddBeneficiaryBankDetailViewController {
+private extension AddBeneficiaryConfirmViewController {
     func bindViews() {
         guard let viewModel = viewModel else { return }
         
         viewModel.outputs.bankImage.bind(to: bankImage.rx.loadImage()).disposed(by: rx.disposeBag)
         viewModel.outputs.name.bind(to: bankName.rx.text).disposed(by: rx.disposeBag)
         
-//        viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
-//            self?.showAlert(title: "", message: error, defaultButtonTitle: "common_button_ok".localized)
-//        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
+            self?.showAlert(title: "", message: error, defaultButtonTitle: "common_button_ok".localized)
+        }).disposed(by: rx.disposeBag)
         
         bindAccountInfo()
        
@@ -330,7 +308,7 @@ private extension AddBeneficiaryBankDetailViewController {
 }
 
 // MARK: Textfield delegate
-extension AddBeneficiaryBankDetailViewController: UITextFieldDelegate {
+extension AddBeneficiaryConfirmViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return viewModel.outputs.canEdit(text: textField.text ?? "", replacementText: string, inRange: range)
     }

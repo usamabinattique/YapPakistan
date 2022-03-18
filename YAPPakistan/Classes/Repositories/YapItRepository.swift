@@ -14,6 +14,7 @@ protocol YapItRepositoryType {
     func fetchRecentY2YBeneficiaries() -> Observable<Event<[Y2YRecentBeneficiary]>>
     func getCustomerInfoFromQR(_ qrString: String) -> Observable<Event<QRContact>>
     func getBankDetail() -> Observable<Event<[BankDetail]>>
+    func getBeneficiaryAccountTitle(accountNo: String, consumerId: String) -> Observable<Event<BankAccountDetail>>
 //    func fetchBeneficiaryCountries() -> Observable<Event<[SendMoneyBeneficiaryCountry]>>
 }
 
@@ -40,6 +41,10 @@ class YapItRepository: YapItRepositoryType {
     
     public func getBankDetail() -> Observable<Event<[BankDetail]>>{
         return customersService.getBankDetail().materialize()
+    }
+    
+    public func getBeneficiaryAccountTitle(accountNo: String, consumerId: String) -> Observable<Event<BankAccountDetail>> {
+        return customersService.fetchBeneficiaryAccountTitle(accountNo: accountNo, consumerId: consumerId).materialize()
     }
     
     

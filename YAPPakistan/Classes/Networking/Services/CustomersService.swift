@@ -82,8 +82,8 @@ public protocol CustomerServiceType {
     func addTopupExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
     func deletePaymentGatewayBeneficiary<T: Codable>(id: String) -> Observable<T>
     func getCustomerInfoFromQR<T: Codable>(_ qrString: String) -> Observable<T>
-    //api/bank-detail
     func getBankDetail<T: Codable>() -> Observable<T>
+    func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T>
 }
 
     
@@ -431,6 +431,13 @@ public class CustomersService: BaseService, CustomerServiceType {
     
     public func getBankDetail<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/bank-detail",  headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T> {
+        let params = ["accountNo": accountNo, "consumerId": consumerId]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/fetch-beneficiary-account-title", query: params, headers: authorizationProvider.authorizationHeaders)
+
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

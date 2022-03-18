@@ -25,6 +25,9 @@ class AddSendMoneyBeneficiaryViewController: UIViewController {
     private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton()
     private let statusView = UIFactory.makeBeneficiaryStatusView()
     private lazy var childContainerView = UIFactory.makeView()
+    private lazy var accountAlert: YAPAlert = {
+        return YAPAlert()
+    }()
     
     
     // MARK: Properties
@@ -70,9 +73,9 @@ class AddSendMoneyBeneficiaryViewController: UIViewController {
     }
     
     // MARK: Actions
-    
     @objc
     private func backAction() {
+        accountAlert.hide()
         viewModel.inputs.backObserver.onNext(())
     }
     
@@ -100,7 +103,7 @@ private extension AddSendMoneyBeneficiaryViewController {
         }
         childNavigation?.didMove(toParent: self)
         
-        
+        doneButton.setTitle("done", for: .normal)
        // view.addSubview(doneButton)
     }
     
@@ -118,7 +121,7 @@ private extension AddSendMoneyBeneficiaryViewController {
             .alignEdgesWithSuperview([.left,.right,.bottom])
 //        doneButton
 //            .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 15)
-//            .toBottomOf(formTableViewController.view)
+//            .toBottomOf(childView!)
 //            .centerHorizontallyInSuperview()
 //            .height(constant: 52)
 //            .width(constant: 190)
@@ -160,6 +163,12 @@ private extension AddSendMoneyBeneficiaryViewController {
             self?.statusView.updateProgress(for: progress)
         }).disposed(by: disposeBag)
 
+        viewModel
+            .outputs.bankDetailError.debug("Account Error")
+            .subscribe(onNext: { [weak self] in
+                guard let `self` = self else { return }
+                        $0 == nil ? self.accountAlert.hide() : $0 != "" ? self.accountAlert.show(inView: self.view, type: .error, text: $0!, autoHides: true) : self.accountAlert.hide() })
+            .disposed(by: disposeBag)
         
 //        let done = doneButton.rx.tap
 //            .do(onNext: { [weak self] _ in self?.view.endEditing(true) })

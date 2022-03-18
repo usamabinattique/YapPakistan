@@ -20,6 +20,7 @@ protocol AddSendMoneyBeneficiaryViewModelInput {
     var otpResultObserver: AnyObserver<ResultType<Void>> { get }
     var cancelObserver: AnyObserver<Void>{ get }
     var progressObserver: AnyObserver<AddBeneficiaryStage> { get }
+    var bankDetailErrorObserver: AnyObserver<String?>{ get }
 }
 
 protocol AddSendMoneyBeneficiaryViewModelOutput {
@@ -39,6 +40,7 @@ protocol AddSendMoneyBeneficiaryViewModelOutput {
     var otpRequired: Observable<SendMoneyBeneficiary> { get }
     var cancel: Observable<Void>{ get }
     var progress: Observable<AddBeneficiaryStage> { get }
+    var bankDetailError: Observable<String?>{ get }
 }
 
 protocol AddSendMoneyBeneficiaryViewModelType {
@@ -57,6 +59,7 @@ class AddSendMoneyBeneficiaryViewModel: AddSendMoneyBeneficiaryViewModelType, Ad
     
     let beneficiaryAddedSubject = PublishSubject<SendMoneyBeneficiary?>()
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
+    private let bankDetailErrorSubject = PublishSubject<String?>()
     
     let doneSubject = PublishSubject<Void>()
     let showsDoneSubject = BehaviorSubject<Bool>(value: true)
@@ -85,6 +88,7 @@ class AddSendMoneyBeneficiaryViewModel: AddSendMoneyBeneficiaryViewModelType, Ad
     var cellSelected: AnyObserver<ReusableTableViewCellViewModelType> { return cellSelectedSubject.asObserver() }
     var otpResultObserver: AnyObserver<ResultType<Void>> { otpResultSubject.asObserver() }
     var progressObserver: AnyObserver<AddBeneficiaryStage> { return progressSubject.asObserver() }
+    var bankDetailErrorObserver:  AnyObserver<String?>  { bankDetailErrorSubject.asObserver() }
     
     // MARK: - Outputs
     var cancel: Observable<Void>{ return cancelSubject.asObservable() }
@@ -101,6 +105,7 @@ class AddSendMoneyBeneficiaryViewModel: AddSendMoneyBeneficiaryViewModelType, Ad
     var title: Observable<String?> { return titleSubject.asObservable() }
     var otpRequired: Observable<SendMoneyBeneficiary> { otpRequiredSubject.asObservable() }
     var progress: Observable<AddBeneficiaryStage> { return progressSubject.asObservable() }
+    var bankDetailError: Observable<String?>  { bankDetailErrorSubject.asObservable() }
     
     private var searchableActionSheet: SearchableActionSheet?
     private var themeService: ThemeService<AppTheme>
@@ -119,11 +124,11 @@ class AddSendMoneyBeneficiaryViewModel: AddSendMoneyBeneficiaryViewModelType, Ad
         loadCells()
         fetchRequiredData()
         
-        backSubject.subscribe(onNext: { [unowned self] in
-            self.resultSubject.onCompleted()
-            self.otpRequiredSubject.onCompleted()
-            self.beneficiaryAddedSubject.onCompleted()
-        }).disposed(by: disposeBag)
+//        backSubject.subscribe(onNext: { [unowned self] in
+//            self.resultSubject.onCompleted()
+//            self.otpRequiredSubject.onCompleted()
+//            self.beneficiaryAddedSubject.onCompleted()
+//        }).disposed(by: disposeBag)
         
         otpResultSubject.filter{ if case ResultType.success = $0 { return true }; return false }.map{ _ in }.subscribe(onNext: { [unowned self] in self.addBeneficiary(self.beneficiary) }).disposed(by: disposeBag)
     }

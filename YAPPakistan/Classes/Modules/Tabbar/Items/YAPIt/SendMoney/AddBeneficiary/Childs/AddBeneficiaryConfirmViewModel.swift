@@ -1,8 +1,8 @@
 //
-//  AddBeneficiaryBankDetailViewModel.swift
+//  AddBeneficiaryConfirmViewModel.swift
 //  YAPPakistan
 //
-//  Created by Yasir on 16/03/2022.
+//  Created by Yasir on 17/03/2022.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ import RxCocoa
 import RxDataSources
 import RxTheme
 
-protocol AddBeneficiaryBankDetailViewModelInput {
+protocol AddBeneficiaryConfirmViewModelInput {
     var doneObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
     var cellSelected: AnyObserver<ReusableTableViewCellViewModelType> { get }
@@ -29,10 +29,10 @@ protocol AddBeneficiaryBankDetailViewModelInput {
     var configObserver: AnyObserver<Void> { get }
     var editingEndObserver: AnyObserver<Void> { get }
     var validObserver: AnyObserver<Bool> { get }
-    var poppedObserver: AnyObserver<Void> { get }
+    
 }
 
-protocol AddBeneficiaryBankDetailViewModelOutput {
+protocol AddBeneficiaryConfirmViewModelOutput {
     
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     
@@ -73,20 +73,19 @@ protocol AddBeneficiaryBankDetailViewModelOutput {
     var captalizationType: Observable<UITextAutocapitalizationType> { get }
     var showsAccessory: Observable<Bool> { get }
     var inputError: Observable<Bool> { get }
-    var confirmBeneficiaryData: Observable<(BankDetail, BankAccountDetail)> { get }
 }
 
-protocol AddBeneficiaryBankDetailViewModelType {
-    var inputs: AddBeneficiaryBankDetailViewModelInput { get }
-    var outputs: AddBeneficiaryBankDetailViewModelOutput { get }
+protocol AddBeneficiaryConfirmViewModelType {
+    var inputs: AddBeneficiaryConfirmViewModelInput { get }
+    var outputs: AddBeneficiaryConfirmViewModelOutput { get }
 }
 
-class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, AddBeneficiaryBankDetailViewModelInput, AddBeneficiaryBankDetailViewModelOutput {
+class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBeneficiaryConfirmViewModelInput, AddBeneficiaryConfirmViewModelOutput {
     
     // MARK: - Properties
     let disposeBag = DisposeBag()
-    var inputs: AddBeneficiaryBankDetailViewModelInput { return self }
-    var outputs: AddBeneficiaryBankDetailViewModelOutput { return self }
+    var inputs: AddBeneficiaryConfirmViewModelInput { return self }
+    var outputs: AddBeneficiaryConfirmViewModelOutput { return self }
     
     var repository : YapItRepositoryType!
     
@@ -116,7 +115,6 @@ class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, 
     let sendMoneyType: SendMoneyType
     
     private let bankResultsSubject = BehaviorSubject<[BankDetail]?>(value: nil)
-    private let confirmBeneficiaryDataSubject = PublishSubject<(BankDetail, BankAccountDetail)>()
     
     
     //Account number/IBAN
@@ -141,7 +139,6 @@ class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, 
     let returnTypeSubject = BehaviorSubject<UIReturnKeyType>(value: .next)
     let captalizationTypeSubject = BehaviorSubject<UITextAutocapitalizationType>(value: .sentences)
     let showsAccessorySubject = BehaviorSubject<Bool>(value: false)
-    var poppedObserver: AnyObserver<Void> { return poppedSubject.asObserver() }
     
    
     private let inputErrorSubject = PublishSubject<Bool>()
@@ -180,7 +177,6 @@ class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, 
     var search: Observable<[BankDetail]?> { return searchSubject.withLatestFrom(bankResultsSubject) }
     var name: Observable<String?> { return nameSubject.asObservable() }
     var bankImage: Observable<(String?, UIImage?)> { return bankImageSubject.asObservable() }
-    var confirmBeneficiaryData: Observable<(BankDetail, BankAccountDetail)> { confirmBeneficiaryDataSubject.asObservable() }
     
     //Account number/IBAN
     public var text: Observable<String?> { return textSubject.map{ $0?.trimmingCharacters(in: .whitespacesAndNewlines) }.asObservable() }
@@ -200,7 +196,6 @@ class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, 
     public var captalizationType: Observable<UITextAutocapitalizationType> { return captalizationTypeSubject.asObservable() }
     public var showsAccessory: Observable<Bool> { return showsAccessorySubject.asObservable() }
     public var inputError: Observable<Bool> { inputErrorSubject.asObservable() }
-    private let poppedSubject = PublishSubject<Void>()
     
     private var searchableActionSheet: SearchableActionSheet?
     private var themeService: ThemeService<AppTheme>
@@ -209,7 +204,7 @@ class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, 
     // MARK: - Init
     init(beneficiary: SendMoneyBeneficiary,
          repository: YapItRepositoryType,
-         sendMoneyType: SendMoneyType, themeService: ThemeService<AppTheme>, bank: BankDetail) {
+         sendMoneyType: SendMoneyType, themeService: ThemeService<AppTheme>, bank: BankDetail, accountDetail: BankAccountDetail) {
         
         self.sendMoneyType = sendMoneyType
         self.repository = repository
@@ -284,7 +279,7 @@ class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, 
 
 // MARK: Beneficiary Added
 
-extension AddBeneficiaryBankDetailViewModel {
+extension AddBeneficiaryConfirmViewModel {
     func showBeneficiaryAddedAlert() {
         let title = "screen_add_beneficiary_detail_display_text_alert_title".localized
         let details = "screen_add_beneficiary_detail_display_button_block_alert_description".localized
@@ -342,8 +337,6 @@ extension AddBeneficiaryBankDetailViewModel {
     func fetchBeneficiaryAccountTitle(accountNo: String) {
         YAPProgressHud.showProgressHud()
           
-        
-        //TODO: remove dummy data
         let beneficiaryAccountTitleRequest = repository.getBeneficiaryAccountTitle(accountNo: "0002000001100111", consumerId: "221166")
               .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
               .share()
@@ -352,8 +345,8 @@ extension AddBeneficiaryBankDetailViewModel {
               self?.showErrorSubject.onNext($0)
           }).disposed(by: disposeBag)
           
-        beneficiaryAccountTitleRequest.elements().subscribe(onNext:{ [unowned self] accountTitle in
-            self.confirmBeneficiaryDataSubject.onNext((self.bank, accountTitle))
+        beneficiaryAccountTitleRequest.elements().subscribe(onNext:{ [weak self] accountTitle in
+            
           }).disposed(by: disposeBag)
     }
 }
