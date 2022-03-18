@@ -115,7 +115,7 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
         listLabelSubject = BehaviorSubject(value: sendMoneyType.listLabel)
 
         fetchBeneficiaries()
-//        deleteBeneficiary()
+        deleteBeneficiary()
         fetchRecentBeneficiaries()
 
         allBeneficiaryDataSourceSubject.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
@@ -351,19 +351,19 @@ private extension SendMoneyHomeViewModel {
 //            .disposed(by: disposeBag)
     }
 
-//    func deleteBeneficiary() {
-//
-//        deleteBeneficiarySubject.map { _ in true }.bind(to: showActivitySubject).disposed(by: disposeBag)
-//
-//        let deleteRequest = deleteBeneficiarySubject.flatMap { [unowned self] in self.repository.deleteBeneficiary(String($0.id ?? 0))}.share()
-//
-//        deleteRequest.errors().map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
-//
-//        deleteRequest.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
-//
-//        deleteRequest.elements().map { _ in }.bind(to: refreshSubject).disposed(by: disposeBag)
+    func deleteBeneficiary() {
+
+        deleteBeneficiarySubject.map { _ in true }.bind(to: showActivitySubject).disposed(by: disposeBag)
+
+        let deleteRequest = deleteBeneficiarySubject.flatMap { [unowned self] in self.repository.deleteBeneficiary(id: String($0.id ?? 0))}.share()
+
+        deleteRequest.errors().map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
+
+        deleteRequest.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
+
+        deleteRequest.elements().map { _ in }.bind(to: refreshSubject).disposed(by: disposeBag)
 //        deleteRequest.elements().map{ _ in SendMoneyEvent.deleteBeneficiary() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
-//    }
+    }
 //
     func showLoadingEffects() {
         var dummyObjects: [SendMoneyHomeBeneficiaryCellViewModel] = []

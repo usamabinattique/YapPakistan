@@ -355,14 +355,14 @@ extension SendMoneyHomeViewController: SwipeTableViewCellDelegate {
 private extension SendMoneyHomeViewController {
     func deleteBeneficiary(at indexPath: IndexPath) {
         
-        //        guard !(SessionManager.current.currentProfile?.restrictions.contains(.otpBlocked) ?? false) else {
-        //            UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
-        //            return
-        //        }
+//                guard !(SessionManager.current.currentProfile?.restrictions.contains(.otpBlocked) ?? false) else {
+//                    UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
+//                    return
+//                }
         
-        //        showAlert(message: "Are you sure you want to delete this beneficiary?", defaultButtonTitle: "common_button_cancel".localized, secondayButtonTitle: "screen_send_money_display_text_delete".localized, defaultButtonHandler: nil, secondaryButtonHandler: { _ in
-        //            self.viewModel.inputs.deleteBeneficiaryObserver.onNext(((self.tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
-        //        }, completion: nil)
+        showAlert(message: "screen_send_money_edit_beneficiary_delete_message_popup".localized, defaultButtonTitle: "common_button_cancel_lowercase".localized, secondayButtonTitle: "screen_send_money_display_text_delete".localized, defaultButtonHandler: nil, secondaryButtonHandler: { _ in
+                    self.viewModel.inputs.deleteBeneficiaryObserver.onNext(((self.tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
+                }, completion: nil)
     }
 }
 
