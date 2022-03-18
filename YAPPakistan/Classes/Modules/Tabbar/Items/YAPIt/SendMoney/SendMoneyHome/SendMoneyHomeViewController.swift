@@ -235,11 +235,6 @@ private extension SendMoneyHomeViewController {
 private extension SendMoneyHomeViewController {
     func bindViews() {
         addNowButton.rx.tap.bind(to: viewModel.inputs.addObserver).disposed(by: disposeBag)
-        
-        //        self.noBeneficiaryView.isHidden = true
-        //        self.beneficiaryView.isHidden = false
-        //        self.tableView.isHidden = false
-        
         viewModel.outputs.beneficiaryAvailable.bind(to: noBeneficiaryView.rx.isHidden).disposed(by: disposeBag)
         viewModel.outputs.beneficiaryAvailable.map { !$0 }.bind(to: beneficiaryView.rx.isHidden).disposed(by: disposeBag)
         viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
@@ -261,13 +256,17 @@ private extension SendMoneyHomeViewController {
     
     func bindTableView() {
         allBeneficiaryDataSource = RxTableViewSectionedReloadDataSource(configureCell: { [unowned self] (_, tableView, _, viewModel) in
-            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxSwipeTableViewCell
             cell.configure(with: themeService, viewModel: viewModel)
-            //cell.delegate = self
+            cell.delegate = self
             return cell
         })
         
         viewModel.outputs.allBeneficiaryDataSource.bind(to: tableView.rx.items(dataSource: allBeneficiaryDataSource)).disposed(by: disposeBag)
+        
+        tableView.rx.modelSelected(SendMoneyHomeBeneficiaryCellViewModel.self).filter { (model) -> Bool in
+            return !model.isShimmering
+        }.map{ $0.beneficiary }.bind(to: viewModel.inputs.beneficiaryObserver).disposed(by: disposeBag)
     }
     
     func bindRecentBeneficiaryCollectionView() {
@@ -331,19 +330,22 @@ extension SendMoneyHomeViewController: SwipeTableViewCellDelegate {
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
         guard orientation == .right else { return nil }
         
-        let edit = SwipeAction(style: .default, title: "screen_send_money_display_text_edit".localized) { [unowned self] (_, indexPath) in
+        let edit = SwipeAction(style: .default, title: "screen_send_money_display_text_view".localized) { [unowned self] (_, indexPath) in
             self.viewModel.inputs.editBeneficiaryObserver.onNext(((tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
         }
+        
+        
         edit.backgroundColor = UIColor.red
-        //edit.image = UIImage.init(named: "icon_edit", in: sendMoneyBundle, compatibleWith: nil)?.asTemplate
+        edit.image = UIImage.init(named: "icon_view_cell", in: .yapPakistan, compatibleWith: nil)?.asTemplate
+        themeService.rx
+            .bind({ UIColor($0.primary)}, to: [edit.rx.backgroundColor])
         
         let delete = SwipeAction(style: .default, title: "screen_send_money_display_text_delete".localized) { [unowned self] (_, indexPath) in
             self.deleteBeneficiary(at: indexPath)
         }
-        
-        delete.backgroundColor = UIColor.red
-        delete.image = UIImage.sharedImage(named: "icon_close")?.asTemplate
-        
+        delete.image = UIImage(named: "icon_delete_cell", in: .yapPakistan, compatibleWith: nil)
+        themeService.rx
+            .bind({ UIColor($0.secondaryMagenta)}, to: [delete.rx.backgroundColor])
         return [delete, edit]
     }
 }

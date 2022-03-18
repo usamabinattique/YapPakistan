@@ -28,6 +28,7 @@ class SearchSendMoneyBeneficiaryViewController: UIViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .white
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        //tableView.delegate = self
         return tableView
     }()
     
@@ -123,7 +124,7 @@ private extension SearchSendMoneyBeneficiaryViewController {
         dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! ConfigurableTableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
-            (cell as? SwipeTableViewCell)?.delegate = self
+            //(cell as? SwipeTableViewCell)?.delegate = self
             return cell as! UITableViewCell
         })
         
@@ -146,24 +147,26 @@ extension SearchSendMoneyBeneficiaryViewController: SwipeTableViewCellDelegate {
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
         guard orientation == .right else { return nil }
-
-        let edit = SwipeAction(style: .default, title: "screen_send_money_display_text_edit".localized) { [unowned self] (_, indexPath) in
-            self.viewModel.inputs.editBeneficiaryObserver.onNext(((tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
+        
+        let edit = SwipeAction(style: .default, title: "screen_send_money_display_text_edit".localized) { (_, indexPath) in
+            
+            
+            
+//            self.viewModel.inputs.editBeneficiaryObserver.onNext(((tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
+            
+            
+            
         }
-        
-        themeService.rx
-            .bind({ UIColor($0.primaryDark)}, to: [edit.rx.backgroundColor])
-        
-//        edit.backgroundColor = UIColor.red
+        edit.backgroundColor = UIColor.red
         edit.image = UIImage.init(named: "iconsLock", in: .yapPakistan, compatibleWith: nil)?.asTemplate
-
+        
         let delete = SwipeAction(style: .default, title: "screen_send_money_display_text_delete".localized) { [unowned self] (_, indexPath) in
-            //self.deleteBeneficiary(at: indexPath)
+            self.deleteBeneficiary(at: indexPath)
         }
-
+        
         delete.backgroundColor = UIColor.red
-        delete.image = UIImage.sharedImage(named: "icon_close")?.asTemplate
-
+        delete.image = UIImage.sharedImage(named: "iconsLock")?.asTemplate
+        
         return [delete, edit]
     }
 }
@@ -171,7 +174,7 @@ extension SearchSendMoneyBeneficiaryViewController: SwipeTableViewCellDelegate {
 // MARK: Delete
 
 private extension SearchSendMoneyBeneficiaryViewController {
-//    func deleteBeneficiary(at indexPath: IndexPath) {
+    func deleteBeneficiary(at indexPath: IndexPath) {
 //        guard !(SessionManager.current.currentProfile?.restrictions.contains(.otpBlocked) ?? false) else {
 //            UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
 //            return
@@ -180,5 +183,5 @@ private extension SearchSendMoneyBeneficiaryViewController {
 //        showAlert(message: "Are you sure you want to delete this beneficiary?", defaultButtonTitle: "common_button_cancel".localized, secondayButtonTitle: "screen_send_money_display_text_delete".localized, defaultButtonHandler: nil, secondaryButtonHandler: { _ in
 //            self.viewModel.inputs.deleteBeneficiaryObserver.onNext(((self.tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
 //        }, completion: nil)
-//    }
+    }
 }

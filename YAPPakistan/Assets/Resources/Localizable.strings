@@ -472,6 +472,7 @@
 "screen_send_money_input_text_search_hint" = "Search";
 "screen_send_money_display_text_all_beneficiaries" = "All beneficiaries";
 "screen_send_money_display_text_edit" = "Edit";
+"screen_send_money_display_text_view" = "View";
 "screen_send_money_display_text_delete" = "Delete";
 "screen_send_money_no_contacts_display_text_title" = "YAP to YAP";
 "screen_send_money_no_contacts_display_text_sub_heading" = "Who would you like to send money to?";

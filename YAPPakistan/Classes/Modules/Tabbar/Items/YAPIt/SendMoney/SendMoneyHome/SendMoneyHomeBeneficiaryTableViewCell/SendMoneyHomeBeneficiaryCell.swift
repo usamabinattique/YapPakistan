@@ -9,7 +9,7 @@ import Foundation
 import YAPComponents
 import RxTheme
 
-class SendMoneyHomeBeneficiaryCell: RxUITableViewCell {
+class SendMoneyHomeBeneficiaryCell: RxSwipeTableViewCell {
 
     // MARK: Views
     
