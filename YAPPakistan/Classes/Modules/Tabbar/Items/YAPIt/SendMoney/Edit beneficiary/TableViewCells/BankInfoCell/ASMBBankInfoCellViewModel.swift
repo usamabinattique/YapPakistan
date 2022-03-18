@@ -50,7 +50,7 @@ class ASMBBankInfoCellViewModel: ASMBBankInfoCellViewModelType, ASMBBankInfoCell
     
     // MARK: - Init
     init(_ beneficiary: SendMoneyBeneficiary) {
-        imageSubject.onNext((nil, beneficiary.bankName?.initialsImage(color: .darkGray)))
+        imageSubject.onNext((beneficiary.bankLogoUrl, beneficiary.bankName?.initialsImage(color: .darkGray)))
         nameSubject.onNext(beneficiary.bankName)
         addressSubject.onNext([beneficiary.branchAddress, beneficiary.phoneNumber].compactMap { $0 }.joined(separator: "\n"))
     }
