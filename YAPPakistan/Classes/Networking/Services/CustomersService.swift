@@ -400,6 +400,12 @@ public class CustomersService: BaseService, CustomerServiceType {
                       progressObserver: nil, otherFormValues: formData)
     }
     
+    public func deleteBeneficiary<T: Codable>(id: String) -> Observable<T> {
+        let route = APIEndpoint<String>(.delete, apiConfig.customersURL, "/api/beneficiaries/bank-transfer/\(id)", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
     public func classifyContacts<T: Codable>(contacts: [(name: String, phoneNumber: String, email: String?, photoUrl: String?, countryCode: String)]) -> Observable<T> {
         var allContacts = [Contact]()
         for contact in contacts {

@@ -79,7 +79,7 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.addBeneficiary.subscribe(onNext: { [weak self] in
-           // self?.addBeneficiary()
+            self?.editBeneficiary()
         }).disposed(by: disposeBag)
         
         viewModel.outputs.sendMoney.subscribe(onNext: { [weak self] in
@@ -106,6 +106,14 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
 }
 
 private extension SendMoneyHomeCoordinator {
+    
+    func editBeneficiary() {
+        coordinate(to: EditSendMoneyBeneficiaryCoordinator(root: localRoot, container: container, beneficiary: SendMoneyBeneficiary.mocked, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
+            if case ResultType.success = $0 {
+                self?.refreshBeneficiaries.onNext(())
+            }
+        }).disposed(by: disposeBag)
+    }
     
    /* func addBeneficiary() {
         coordinate(to: AddSendMoneyBeneficiaryCoordinator(root: localRoot, repository: repository, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
