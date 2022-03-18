@@ -121,7 +121,26 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
         allBeneficiaryDataSourceSubject.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
 
         /// firebase event logging
-//        sendMoneySubject.map{ _ in SendMoneyEvent.beneficiaryTapped() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
+        
+        
+//        sendMoneySubject.do( onNext: { _ in
+//
+//        }).subscribe(onNext: { _ in
+//
+//        }).disposed(by: disposeBag)
+        
+        sendMoneySubject.subscribe(onNext: { _ in
+            
+            print("Beneficary tapped")
+            
+        }).disposed(by: disposeBag)
+            
+        
+        //sendMoneySubject.map{ _ in SendMoneyEvent.beneficiaryTapped() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
+        
+        
+        
+        
 //        addSubject.map{ _ in SendMoneyEvent.addBeneficiary() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
 //        editBeneficiarySubject.map{ _ in SendMoneyEvent.editBeneficiary() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
     }
