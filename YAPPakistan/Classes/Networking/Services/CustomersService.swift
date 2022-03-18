@@ -391,9 +391,9 @@ public class CustomersService: BaseService, CustomerServiceType {
         }
 
         var formData = [ "id": id ]
-        if let nick = nickname { formData.updateValue(nick, forKey: "nickname") }
+        if let nick = nickname { formData.updateValue(nick, forKey: "nickName") }
 
-        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/beneficiaries/bank-transfer",
+        let route = APIEndpoint<String>(.put, apiConfig.customersURL, "/api/beneficiaries/bank-transfer",
                                         headers: authorizationProvider.authorizationHeaders)
 
         return upload(apiClient: apiClient, documents: docs, route: route,

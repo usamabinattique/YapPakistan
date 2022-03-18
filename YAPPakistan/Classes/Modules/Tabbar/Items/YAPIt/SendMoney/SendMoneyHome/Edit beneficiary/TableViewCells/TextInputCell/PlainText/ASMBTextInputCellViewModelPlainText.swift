@@ -82,7 +82,7 @@ public class ASMBTextInputCellViewModelPlainText: ASMBTextInputCellViewModel {
         
         if inputType == .transferType {
             textFieldTextFontSubject.onNext(.micro)
-            iconSubject.onNext(UIImage.init(named: beneficiary?.type?.iconName ?? "", in: .yapPakistan))
+            iconSubject.onNext(UIImage.init(named: "icon_edit_money_bank_transfer".localized, in: .yapPakistan))
         }
         
         if inputType == .nickname {

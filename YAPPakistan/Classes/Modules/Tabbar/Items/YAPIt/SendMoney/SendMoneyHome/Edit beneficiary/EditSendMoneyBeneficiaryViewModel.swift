@@ -102,7 +102,7 @@ extension EditSendMoneyBeneficiaryViewModel {
 
         let request = saveBeneficiarySubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-                .flatMap { repository.editBeneficiary([], id: self.beneficiary.beneficiaryID ?? "", nickname: self.beneficiary.nickName) }
+                .flatMap { repository.editBeneficiary([], id: String(self.beneficiary.id ?? 0), nickname: self.beneficiary.nickName) }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
 
@@ -115,7 +115,7 @@ extension EditSendMoneyBeneficiaryViewModel {
 
         let request = deleteBeneficiarySubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-                .flatMap { repository.deleteBeneficiary(id: self.beneficiary.beneficiaryID ?? "") }
+                .flatMap { repository.deleteBeneficiary(id: String(self.beneficiary.id ?? 0) ) }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
 
