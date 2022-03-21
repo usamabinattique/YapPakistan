@@ -195,7 +195,7 @@ extension AddBeneficiaryConfirmViewController {
         
         headingLabel
             .alignEdgesWithSuperview([.left, .right], constant: 25)
-            .alignEdgeWithSuperviewSafeArea(.top, constant: 16)
+            .alignEdgeWithSuperviewSafeArea(.top, constant: 32)
         
         detailsStackContainer
             .toBottomOf(headingLabel, .equalTo, constant: 20)

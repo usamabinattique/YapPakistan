@@ -287,44 +287,45 @@ private extension AddSendMoneyBeneficiaryCoordinator {
             self.result.onNext(ResultType.cancel)
             self.result.onCompleted()
         }).disposed(by: disposeBag)
-    }
+    } */
     
     func otp(_ action: OTPAction, beneficiary: SendMoneyBeneficiary) {
-        var countryCode = ""
-        var mobileNumber = ""
-        SessionManager.current.currentAccount.subscribe(onNext: {
-            countryCode = $0?.customer.countryCode ?? ""
-            mobileNumber = $0?.customer.mobileNo ?? ""
-        }).dispose()
+        var countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
+        var mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
+//        SessionManager.current.currentAccount.subscribe(onNext: {
+//            countryCode = $0?.customer.countryCode ?? ""
+//            mobileNumber = $0?.customer.mobileNo ?? ""
+//        }).dispose()
         
-        let viewModel = VerifyMobileOTPViewModel(action: action, beneficiary: beneficiary, heading: NSAttributedString(string: "screen_add_beneificiary_otp_display_text_heading".localized), subheading: NSAttributedString(string: String.init(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, String.format(phoneNumber: countryCode + mobileNumber))), backButtonImage: .closeCircled)
-        let viewController = VerifyMobileOTPViewController(viewModel: viewModel)
+        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty)
+        let viewController = VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         
-        let nav = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
+//        let nav = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
         
-        root.present(nav, animated: true, completion: nil)
+//        root.present(nav, animated: true, completion: nil)
+        root.pushViewController(viewController, completion: nil)
         
         var otpSubscriptions = [Disposable]()
         
         let result = viewModel.outputs.result
             .map{ _ in ResultType<Void>.success(()) }
             .subscribe(onNext: { [weak self] in
-                nav.dismiss(animated: true, completion: nil)
-                self?.otpResult.onNext($0)
+//                nav.dismiss(animated: true, completion: nil)
+//                self?.otpResult.onNext($0)
             })
         
         let back = viewModel.outputs.back
             .map{ ResultType<Void>.cancel }
             .subscribe(onNext: { [weak self] in
-                nav.dismiss(animated: true, completion: nil)
-                self?.otpResult.onNext($0)
+//                nav.dismiss(animated: true, completion: nil)
+//                self?.otpResult.onNext($0)
             })
         
         otpSubscriptions.append(result)
         otpSubscriptions.append(back)
         
         otpResult.subscribe(onNext: { _ in otpSubscriptions.forEach{ $0.dispose() } }).disposed(by: disposeBag)
-    } */
+    }
 }
 
 extension AddSendMoneyBeneficiaryCoordinator {

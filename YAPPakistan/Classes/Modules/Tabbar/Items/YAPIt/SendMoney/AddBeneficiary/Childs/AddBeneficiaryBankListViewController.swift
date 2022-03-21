@@ -27,11 +27,6 @@ class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChild
 
     // Beneficiaries
     private lazy var beneficiariesView = UIFactory.makeView()
-//    private lazy var searchTextField = UIFactory.makeTextField(font: .regular,
-//                                                               isCircular: true,
-//                                                               textAlignment: .center,
-//                                                               clearButtonMode: .always,
-//                                                               returnKeyType: .search )
     
     private lazy var searchButton = UIFactory.makeButton(with: .small, backgroundColor: .groupTableViewBackground, title: "screen_y2y_display_text_search".localized)
     //private lazy var tableView = UIFactory.makeTableView(allowsSelection: true)
@@ -70,7 +65,6 @@ class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChild
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       
         setupViews()
         setupResources()
         setupConstraints()
@@ -104,7 +98,7 @@ extension AddBeneficiaryBankListViewController {
 
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
+           .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
             .bind({ UIColor($0.primaryDark    ) }, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.greyDark)}, to: [searchButton.rx.titleColor(for: .normal)])
             .bind({ UIColor($0.greyDark)}, to: [searchButton.rx.tintColor])

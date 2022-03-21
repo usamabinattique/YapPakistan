@@ -121,6 +121,7 @@ final class BeneficiaryStatusView: UIView {
         iconContainers[0]
             .alignEdgesWithSuperview([.top, .left], constant: 10)
             .height(constant: 32)
+//            .width(constant: 32)
             .aspectRatio()
 
         statusLines[0]
@@ -134,6 +135,7 @@ final class BeneficiaryStatusView: UIView {
             .alignEdgeWithSuperview(.top, constant: 10)
             .height(constant: 32)
             .aspectRatio()
+//            .width(constant: 32)
 
         statusLines[1]
             .toRightOf(iconContainers[1], constant: 10)
@@ -146,14 +148,19 @@ final class BeneficiaryStatusView: UIView {
             .alignEdgesWithSuperview([.top, .right], constant: 10)
             .height(constant: 32)
             .aspectRatio()
+//            .width(constant: 32)
 
         for index in 0..<iconViews.count {
-            iconViews[index].alignEdgesWithSuperview([.top, .bottom, .right, .left], constant: 6)
+            iconViews[index]//.alignEdgesWithSuperview([.top, .bottom, .right, .left], constant: 6)
+                .centerVerticallyInSuperview()
+                .centerHorizontallyInSuperview()
         }
 
         for index in 0..<statusLabels.count {
             statusLabels[index]
-                .alignEdgesWithSuperview([.top, .bottom, .right, .left], constant: 6)
+                .centerVerticallyInSuperview()
+                .centerHorizontallyInSuperview()
+                //.alignEdgesWithSuperview([.top, .bottom, .right, .left], constant: 6)
         }
 
         iconContainers[0]

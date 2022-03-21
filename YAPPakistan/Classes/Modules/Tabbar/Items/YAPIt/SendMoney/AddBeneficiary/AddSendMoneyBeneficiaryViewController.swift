@@ -103,8 +103,6 @@ private extension AddSendMoneyBeneficiaryViewController {
         }
         childNavigation?.didMove(toParent: self)
         
-        doneButton.setTitle("done", for: .normal)
-       // view.addSubview(doneButton)
     }
     
     func setupResources() {
@@ -115,6 +113,8 @@ private extension AddSendMoneyBeneficiaryViewController {
        statusView
             .alignEdgeWithSuperview(.top,constant: 12)
             .centerHorizontallyInSuperview()
+           // .width(constant: 210)
+            .height(constant: 32)
         
         childView?
             .toBottomOf(statusView,constant: 32)

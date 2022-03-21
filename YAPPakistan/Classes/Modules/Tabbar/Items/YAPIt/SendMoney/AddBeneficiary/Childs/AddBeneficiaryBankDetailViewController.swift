@@ -217,7 +217,7 @@ extension AddBeneficiaryBankDetailViewController {
         
         headingLabel
             .alignEdgesWithSuperview([.left, .right], constant: 25)
-            .alignEdgeWithSuperviewSafeArea(.top, constant: 16)
+            .alignEdgeWithSuperviewSafeArea(.top, constant: 32)
         
         detailsStackContainer
             .toBottomOf(headingLabel, .equalTo, constant: 20)
@@ -228,6 +228,7 @@ extension AddBeneficiaryBankDetailViewController {
         detailsStack
             .centerHorizontallyInSuperview()
             .alignEdgeWithSuperview(.top,constant: 20)
+            .alignEdgeWithSuperview(.bottom,.greaterThanOrEqualTo)
             //.centerVerticallyInSuperview()
         
         bankImage
