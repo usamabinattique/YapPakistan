@@ -30,8 +30,9 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
     private lazy var bankImageContainerView = UIFactory.makeCircularView(  borderColor: UIColor(Color(hex: "#F1F5FE")), borderWidth: 0.7)
     private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var bankName = UIFactory.makeLabel(font: .regular,alignment: .center)
+    private lazy var accountNumber = UIFactory.makeLabel(font: .micro,alignment: .center)
     
-    private lazy var detailsStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fillEqually, spacing: 2, arrangedSubviews: [bankImageContainerView,bankName])
+    private lazy var detailsStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fillEqually, spacing: 2, arrangedSubviews: [bankImageContainerView,bankName,accountNumber])
     private lazy var detailsStackContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +48,7 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
         textField.returnKeyType = .next
         textField.autocorrectionType = .no
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.bottomBarColor = UIColor(Color(hex: "#DAE0F0")) // greyLight
+        textField.bottomBarColor = UIColor(themeService.attrs.greyLight) // greyLight
         return textField
     }()
     
@@ -119,8 +120,8 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
     
     @objc
     private func doneAction() {
-        textField.resignFirstResponder()
         viewModel.inputs.resigneObserver.onNext(())
+        textField.resignFirstResponder()
     }
     
     @objc
@@ -185,6 +186,10 @@ extension AddBeneficiaryBankDetailViewController {
        scrollView.addSubview(infoButton)
        scrollView.addSubview(doneButton)
        scrollView.addSubview(titleField)
+        
+        bankImage.clipsToBounds = true
+        bankImage.layer.cornerRadius = bankImage.frame.size.height / 2
+        
     }
 
     func setupTheme() {
@@ -195,6 +200,7 @@ extension AddBeneficiaryBankDetailViewController {
             .bind({ UIColor($0.primary    ) }, to: [doneButton.rx.enabledBackgroundColor])
             .bind({ UIColor($0.primaryLight    ) }, to: [doneButton.rx.disabledBackgroundColor])
             .bind({ UIColor($0.primaryDark).withAlphaComponent(0.50) }, to: [textField.rx.placeholderColor])
+            .bind({ UIColor($0.greyDark    ) }, to: [accountNumber.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
     
@@ -234,8 +240,10 @@ extension AddBeneficiaryBankDetailViewController {
         bankImage
             .height(constant: 32)
             .width(constant: 32)
-            .alignEdgesWithSuperview([.top,.right,.left], constants: [6,6,6])
-           
+//            .alignEdgesWithSuperview([.top,.right,.left], constants: [6,6,6])
+//            .alignEdgeWithSuperview(.top,constant: 20)
+            .centerHorizontallyInSuperview()
+            .centerVerticallyInSuperview()
         
         bankImageContainerView
             .height(constant: 44)
@@ -257,7 +265,7 @@ extension AddBeneficiaryBankDetailViewController {
             .height(constant: 30)
         
         doneButton
-            .alignEdgeWithSuperviewSafeArea(.bottom, constant: 34)
+            .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 34)
             .toBottomOf(textField, .greaterThanOrEqualTo)
             .centerHorizontallyInSuperview()
             .height(constant: 52)
@@ -313,7 +321,7 @@ private extension AddBeneficiaryBankDetailViewController {
         viewModel.outputs.becomeResponder.filter { $0 }.subscribe(onNext: { [weak self] _ in _ = self?.textField.becomeFirstResponder() }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.inputError.subscribe(onNext: { [unowned self] isOkay in
-            self.textField.bottomBarColor = isOkay ?  UIColor(Color(hex: "#DAE0F0")) : .red
+            self.textField.bottomBarColor = isOkay ?  UIColor(self.themeService.attrs.greyLight) : .red
             self.infoButton.setTintColor(isOkay ? UIColor(self.themeService.attrs.primaryDark) : .red)
         }).disposed(by: rx.disposeBag)
         

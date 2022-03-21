@@ -21,6 +21,7 @@ protocol AddSendMoneyBeneficiaryViewModelInput {
     var cancelObserver: AnyObserver<Void>{ get }
     var progressObserver: AnyObserver<AddBeneficiaryStage> { get }
     var bankDetailErrorObserver: AnyObserver<String?>{ get }
+    var showBeneficiaryAddedObserver: AnyObserver<Void> { get }
 }
 
 protocol AddSendMoneyBeneficiaryViewModelOutput {
@@ -76,6 +77,7 @@ class AddSendMoneyBeneficiaryViewModel: AddSendMoneyBeneficiaryViewModelType, Ad
     let otpResultSubject = PublishSubject<ResultType<Void>>()
     let cancelSubject = PublishSubject<Void>()
     private let progressSubject = ReplaySubject<AddBeneficiaryStage>.create(bufferSize: 1)
+    private let  showBeneficiaryAddedSubject = PublishSubject<Void>()
     
     var beneficiary: SendMoneyBeneficiary!
     var viewModels: [ReusableTableViewCellViewModelType] = []
@@ -106,6 +108,7 @@ class AddSendMoneyBeneficiaryViewModel: AddSendMoneyBeneficiaryViewModelType, Ad
     var otpRequired: Observable<SendMoneyBeneficiary> { otpRequiredSubject.asObservable() }
     var progress: Observable<AddBeneficiaryStage> { return progressSubject.asObservable() }
     var bankDetailError: Observable<String?>  { bankDetailErrorSubject.asObservable() }
+    var showBeneficiaryAddedObserver: AnyObserver<Void> { showBeneficiaryAddedSubject.asObserver() }
     
     private var searchableActionSheet: SearchableActionSheet?
     private var themeService: ThemeService<AppTheme>
@@ -131,6 +134,11 @@ class AddSendMoneyBeneficiaryViewModel: AddSendMoneyBeneficiaryViewModelType, Ad
 //        }).disposed(by: disposeBag)
         
         otpResultSubject.filter{ if case ResultType.success = $0 { return true }; return false }.map{ _ in }.subscribe(onNext: { [unowned self] in self.addBeneficiary(self.beneficiary) }).disposed(by: disposeBag)
+        
+        showBeneficiaryAddedSubject.subscribe(onNext: { [weak self] _ in
+            self?.showBeneficiaryAddedAlert()
+        }).disposed(by: disposeBag)
+
     }
     
     func generateCellViewModels() {

@@ -308,43 +308,10 @@ extension AddBeneficiaryBankDetailViewModel {
         })).bind(to: beneficiaryAddedSubject).disposed(by: disposeBag)
     }
     
-    func addBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-      /*  YAPProgressHud.showProgressHud()
-        
-        let addBeneficiaryRequest = repository.addBeneficiary(beneficiary).share().do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-        
-        addBeneficiaryRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-            self?.showErrorSubject.onNext($0)
-        }).disposed(by: disposeBag)
-        
-        addBeneficiaryRequest.elements().subscribe(onNext: { [weak self] in
-            self?.beneficiary = $0
-            self?.showBeneficiaryAddedAlert()
-        }).disposed(by: disposeBag) */
-    }
-    
-    func verifyBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-      /*  YAPProgressHud.showProgressHud()
-        
-        let verifyRequest = repository.verifyBeneficiaryDetails(beneficiary)
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-            .share()
-        
-        verifyRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-            self?.showErrorSubject.onNext($0)
-        }).disposed(by: disposeBag)
-        
-        verifyRequest.elements().subscribe(onNext:{ [weak self] _ in
-            self?.otpRequiredSubject.onNext(self?.beneficiary ?? SendMoneyBeneficiary())
-        }).disposed(by: disposeBag) */
-    }
-    
     func fetchBeneficiaryAccountTitle(accountNo: String) {
         YAPProgressHud.showProgressHud()
           
-        
-        //TODO: remove dummy data
-        let beneficiaryAccountTitleRequest = repository.getBeneficiaryAccountTitle(accountNo: "0002000001100111", consumerId: "221166")
+        let beneficiaryAccountTitleRequest = repository.getBeneficiaryAccountTitle(accountNo: accountNo, consumerId: bank.consumerId)
               .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
               .share()
           

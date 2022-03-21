@@ -81,7 +81,7 @@ class AddBeneficiaryCellViewModel: AddBeneficiaryCellViewModelType, AddBeneficia
         shimmeringSubject = BehaviorSubject(value: false)
         self.isShimmering = false
         
-        bankImageSubject.onNext((bank.bankLogoUrl, thumbnail(name: bank.bankName)))
+        bankImageSubject.onNext((bank.bankLogoUrl, bank.bankName.thumbnail))
     }
     
     init() {

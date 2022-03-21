@@ -12,24 +12,20 @@ import YAPComponents
 import RxCocoa
 import RxDataSources
 import RxTheme
+import UIKit
 
 protocol AddBeneficiaryConfirmViewModelInput {
     var doneObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
-    var cellSelected: AnyObserver<ReusableTableViewCellViewModelType> { get }
-    var otpResultObserver: AnyObserver<ResultType<Void>> { get }
+//    var otpResultObserver: AnyObserver<ResultType<String?>> { get }
     var cancelObserver: AnyObserver<Void>{ get }
-    var searchObserver: AnyObserver<Void> { get }
     
-    //Account number/IBAN
-    var textObserver: AnyObserver<String?> { get }
-    var infoTappedObserver: AnyObserver<Void> { get }
-    var becomeResponderObserver: AnyObserver<Bool> { get }
     var resigneObserver: AnyObserver<Void> { get }
     var configObserver: AnyObserver<Void> { get }
     var editingEndObserver: AnyObserver<Void> { get }
-    var validObserver: AnyObserver<Bool> { get }
     
+    //Account number/IBAN
+    var textObserver: AnyObserver<String?> { get }
 }
 
 protocol AddBeneficiaryConfirmViewModelOutput {
@@ -52,6 +48,7 @@ protocol AddBeneficiaryConfirmViewModelOutput {
     
     var name: Observable<String?> { get }
     var bankImage: Observable<(String?, UIImage?)> { get }
+    var accountNumber: Observable<String> { get }
     
     //Account number/IBAN
     var title: Observable<String?> { get }
@@ -73,6 +70,9 @@ protocol AddBeneficiaryConfirmViewModelOutput {
     var captalizationType: Observable<UITextAutocapitalizationType> { get }
     var showsAccessory: Observable<Bool> { get }
     var inputError: Observable<Bool> { get }
+    var userImage: Observable<(String?,UIImage?)> { get }
+    var accountTitle: Observable<String> { get }
+    var otpResult: Observable<ResultType<AddBankBeneficiaryRequest>> { get }
 }
 
 protocol AddBeneficiaryConfirmViewModelType {
@@ -82,12 +82,13 @@ protocol AddBeneficiaryConfirmViewModelType {
 
 class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBeneficiaryConfirmViewModelInput, AddBeneficiaryConfirmViewModelOutput {
     
+    
     // MARK: - Properties
     let disposeBag = DisposeBag()
     var inputs: AddBeneficiaryConfirmViewModelInput { return self }
     var outputs: AddBeneficiaryConfirmViewModelOutput { return self }
     
-    var repository : YapItRepositoryType!
+    var repository : OTPRepositoryType!
     
     let beneficiaryAddedSubject = PublishSubject<SendMoneyBeneficiary?>()
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
@@ -106,7 +107,7 @@ class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBen
     let cellSelectedSubject = PublishSubject<ReusableTableViewCellViewModelType>()
     let navTitleSubject = BehaviorSubject<String?>(value: "screen_add_beneficiary_display_text_title".localized)
     let otpRequiredSubject = PublishSubject<SendMoneyBeneficiary>()
-    let otpResultSubject = PublishSubject<ResultType<Void>>()
+    let otpResultSubject = PublishSubject<ResultType<AddBankBeneficiaryRequest>>()
     let cancelSubject = PublishSubject<Void>()
     
     private let searchSubject = PublishSubject<Void>()
@@ -139,6 +140,9 @@ class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBen
     let returnTypeSubject = BehaviorSubject<UIReturnKeyType>(value: .next)
     let captalizationTypeSubject = BehaviorSubject<UITextAutocapitalizationType>(value: .sentences)
     let showsAccessorySubject = BehaviorSubject<Bool>(value: false)
+    let accountNumberSubject = ReplaySubject<String>.create(bufferSize: 1)
+    let userImageSubject = ReplaySubject<UIImage?>.create(bufferSize: 1)
+    let accountTitleSubject = ReplaySubject<String>.create(bufferSize: 1)
     
    
     private let inputErrorSubject = PublishSubject<Bool>()
@@ -149,7 +153,7 @@ class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBen
     var doneObserver: AnyObserver<Void> { return doneSubject.asObserver() }
     var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     var cellSelected: AnyObserver<ReusableTableViewCellViewModelType> { return cellSelectedSubject.asObserver() }
-    var otpResultObserver: AnyObserver<ResultType<Void>> { otpResultSubject.asObserver() }
+    var otpResultObserver: AnyObserver<ResultType<AddBankBeneficiaryRequest>> { otpResultSubject.asObserver() }
     
     //Account number/IBAN
     public var textObserver: AnyObserver<String?> { return textObserverSubject.asObserver() }
@@ -196,6 +200,13 @@ class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBen
     public var captalizationType: Observable<UITextAutocapitalizationType> { return captalizationTypeSubject.asObservable() }
     public var showsAccessory: Observable<Bool> { return showsAccessorySubject.asObservable() }
     public var inputError: Observable<Bool> { inputErrorSubject.asObservable() }
+    var userImage: Observable<(String?,UIImage?)> { userImageSubject.map({ img -> (String?, UIImage?) in
+        return (nil,img)
+    }).asObservable() }
+    var accountTitle: Observable<String> { accountTitleSubject.asObservable() }
+    
+    var accountNumber: Observable<String> { accountNumberSubject.asObservable() }
+    var otpResult: Observable<ResultType<AddBankBeneficiaryRequest>> { otpResultSubject.asObservable() }
     
     private var searchableActionSheet: SearchableActionSheet?
     private var themeService: ThemeService<AppTheme>
@@ -203,7 +214,7 @@ class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBen
     
     // MARK: - Init
     init(beneficiary: SendMoneyBeneficiary,
-         repository: YapItRepositoryType,
+         repository: OTPRepositoryType,
          sendMoneyType: SendMoneyType, themeService: ThemeService<AppTheme>, bank: BankDetail, accountDetail: BankAccountDetail) {
         
         self.sendMoneyType = sendMoneyType
@@ -213,7 +224,10 @@ class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBen
         self.bank = bank
         
         nameSubject.onNext(bank.bankName)
-        bankImageSubject.onNext((bank.bankLogoUrl, thumbnail(name: bank.bankName)))
+        bankImageSubject.onNext((bank.bankLogoUrl, bank.bankName.thumbnail))
+        accountNumberSubject.onNext(accountDetail.accountNo)
+        userImageSubject.onNext(accountDetail.title.thumbnail)
+        accountTitleSubject.onNext(accountDetail.title)
        // generateCellViewModels()
 //        loadCells()
 //        fetchRequiredData()
@@ -250,8 +264,10 @@ class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBen
         
         textObserverSubject.bind(to: textSubject).disposed(by: disposeBag)
         
-        doneSubject.withLatestFrom(textObserverSubject).unwrap().subscribe(onNext: { [weak self] account in
-            self?.fetchBeneficiaryAccountTitle(accountNo: account)
+        doneSubject.withLatestFrom(textObserverSubject).unwrap().subscribe(onNext: { [weak self] nickName in
+            let theName = nickName.count > 0 ? nickName : nil
+            let input = AddBankBeneficiaryRequest(title: accountDetail.title, accountNo: accountDetail.accountNo, bankName: bank.bankName, nickName: theName, beneficiaryType: "IBFT")
+            self?.generateOtp(input: input)
         }).disposed(by: disposeBag)
 
     }
@@ -266,11 +282,6 @@ class AddBeneficiaryConfirmViewModel: AddBeneficiaryConfirmViewModelType, AddBen
     }
     
     func fetchRequiredData() {}
-    
-    private func thumbnail(name: String) -> UIImage? {
-        let color = UIColor.randomColor()
-        return name.initialsImage(color: color)
-    }
     
     public func canEdit(text: String, replacementText: String, inRange range: NSRange) -> Bool {
         return true
@@ -303,50 +314,7 @@ extension AddBeneficiaryConfirmViewModel {
         })).bind(to: beneficiaryAddedSubject).disposed(by: disposeBag)
     }
     
-    func addBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-      /*  YAPProgressHud.showProgressHud()
-        
-        let addBeneficiaryRequest = repository.addBeneficiary(beneficiary).share().do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-        
-        addBeneficiaryRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-            self?.showErrorSubject.onNext($0)
-        }).disposed(by: disposeBag)
-        
-        addBeneficiaryRequest.elements().subscribe(onNext: { [weak self] in
-            self?.beneficiary = $0
-            self?.showBeneficiaryAddedAlert()
-        }).disposed(by: disposeBag) */
-    }
-    
-    func verifyBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-      /*  YAPProgressHud.showProgressHud()
-        
-        let verifyRequest = repository.verifyBeneficiaryDetails(beneficiary)
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-            .share()
-        
-        verifyRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-            self?.showErrorSubject.onNext($0)
-        }).disposed(by: disposeBag)
-        
-        verifyRequest.elements().subscribe(onNext:{ [weak self] _ in
-            self?.otpRequiredSubject.onNext(self?.beneficiary ?? SendMoneyBeneficiary())
-        }).disposed(by: disposeBag) */
-    }
-    
-    func fetchBeneficiaryAccountTitle(accountNo: String) {
-        YAPProgressHud.showProgressHud()
-          
-        let beneficiaryAccountTitleRequest = repository.getBeneficiaryAccountTitle(accountNo: "0002000001100111", consumerId: "221166")
-              .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-              .share()
-          
-                  beneficiaryAccountTitleRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-              self?.showErrorSubject.onNext($0)
-          }).disposed(by: disposeBag)
-          
-        beneficiaryAccountTitleRequest.elements().subscribe(onNext:{ [weak self] accountTitle in
-            
-          }).disposed(by: disposeBag)
+    func generateOtp(input: AddBankBeneficiaryRequest) {
+        self.otpResultSubject.onNext(.success((input)))
     }
 }

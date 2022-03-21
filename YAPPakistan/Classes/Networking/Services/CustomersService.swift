@@ -84,6 +84,8 @@ public protocol CustomerServiceType {
     func getCustomerInfoFromQR<T: Codable>(_ qrString: String) -> Observable<T>
     func getBankDetail<T: Codable>() -> Observable<T>
     func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T>
+    func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T>
+
 }
 
     
@@ -408,7 +410,6 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func getCustomerInfoFromQR<T: Codable>(_ qrString: String) -> Observable<T> {
-        let body = ["uuid": qrString]
         let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/customers-info/\(qrString)",  headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
@@ -437,6 +438,15 @@ public class CustomersService: BaseService, CustomerServiceType {
     public func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T> {
         let params = ["accountNo": accountNo, "consumerId": consumerId]
         let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/fetch-beneficiary-account-title", query: params, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T> {
+        
+       // let body = AddBankBeneficiaryRequest(title: title, accountNo: accountNo, bankName: bankName, nickName: nickName, beneficiaryType: beneficiaryType)
+        
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", body: body, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }

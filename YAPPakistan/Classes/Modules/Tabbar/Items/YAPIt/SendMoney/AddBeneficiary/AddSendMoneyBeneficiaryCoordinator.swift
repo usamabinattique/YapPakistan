@@ -282,15 +282,16 @@ private extension AddSendMoneyBeneficiaryCoordinator {
         }).disposed(by: disposeBag)
     } */
     
-    func otp(_ action: OTPAction, beneficiary: SendMoneyBeneficiary) {
+    func otp(_ action: OTPAction, beneficiary: SendMoneyBeneficiary,input: AddBankBeneficiaryRequest) {
         let countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
         let mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
+        let formattedPhoneNumber: String = countryCode.replacePrefix("00", with: "+") + " " + mobileNumber
 //        SessionManager.current.currentAccount.subscribe(onNext: {
 //            countryCode = $0?.customer.countryCode ?? ""
 //            mobileNumber = $0?.customer.mobileNo ?? ""
 //        }).dispose()
         
-        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.parent.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty) //VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty)
+        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.parent.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty, addBankBeneficiaryInput: input) //VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty)
         let viewController = container.makeVerifyMobileOTPViewController(withViewModel: viewModel) //VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         
 //        let nav = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
@@ -300,22 +301,46 @@ private extension AddSendMoneyBeneficiaryCoordinator {
         
         var otpSubscriptions = [Disposable]()
         
-        let result = viewModel.outputs.result
+        viewModel.outputs.addBankBeneficiaryResult
             .map{ _ in ResultType<Void>.success(()) }
             .subscribe(onNext: { [weak self] in
-//                nav.dismiss(animated: true, completion: nil)
-//                self?.otpResult.onNext($0)
-            })
+                self?.root.popViewController(animated: true)
+                self?.containerViewModel.inputs.progressObserver.onNext(.confirmBeneficiaryComplete)
+                self?.containerViewModel.inputs.showBeneficiaryAddedObserver.onNext(())
+                
+                //self?.otpResult.onNext($0)
+            }).disposed(by: disposeBag)
+        
+//        let result = viewModel.outputs.result
+//            .map{ _ in ResultType<Void>.success(()) }
+//            .subscribe(onNext: { [weak self] in
+//                self?.root.popViewController(animated: true)
+//                self?.containerViewModel.inputs.progressObserver.onNext(.confirmBeneficiaryComplete)
+//                self?.containerViewModel.inputs.showBeneficiaryAddedObserver.onNext(())
+//
+//                //self?.otpResult.onNext($0)
+//            })
         
         let back = viewModel.outputs.back
             .map{ ResultType<Void>.cancel }
             .subscribe(onNext: { [weak self] in
-//                nav.dismiss(animated: true, completion: nil)
-//                self?.otpResult.onNext($0)
+                self?.root.popViewController(animated: true)
+               // self?.otpResult.onNext($0)
             })
         
         otpSubscriptions.append(result)
         otpSubscriptions.append(back)
+        
+        
+        containerViewModel.outputs.beneficairyAdded.subscribe(onNext: { [weak self] beneficiary in
+            if let bene = beneficiary {
+                self?.result.onNext(ResultType.success(bene))
+            } else {
+                self?.result.onNext(ResultType.success(nil))
+            }
+            self?.result.onCompleted()
+        }).disposed(by: disposeBag)
+
         
         otpResult.subscribe(onNext: { _ in otpSubscriptions.forEach{ $0.dispose() } }).disposed(by: disposeBag)
     }
@@ -324,9 +349,8 @@ private extension AddSendMoneyBeneficiaryCoordinator {
 extension AddSendMoneyBeneficiaryCoordinator {
     func navigateToBankList(_ beneficiary: SendMoneyBeneficiary) {
         
-        let bankListViewModel = AddBeneficiaryBankListViewModel(beneficiary: beneficiary, repository: container.parent.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService) //AddBeneficiaryBankListViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService)
-        let bankListViewController = container.makeAddBeneficiaryBankListViewController(withViewModel: bankListViewModel) //AddBeneficiaryBankListViewController(themeService: container.parent.themeService,
-//                                                                                viewModel: bankListViewModel)
+        let bankListViewModel = AddBeneficiaryBankListViewModel(beneficiary: beneficiary, repository: container.parent.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService)
+        let bankListViewController = container.makeAddBeneficiaryBankListViewController(withViewModel: bankListViewModel)
 
         
         childContainerNavigation = container.makeAddBeneficiaryBankListContainerNavigationController(rootViewController: bankListViewController) //AddBeneficiaryBankListContainerNavigationController(themeService: container.parent.themeService,
@@ -407,12 +431,23 @@ extension AddSendMoneyBeneficiaryCoordinator {
     
     func navigateToConfirmBeneficiary(_ beneficiary: SendMoneyBeneficiary, bank: BankDetail, accountTitle: BankAccountDetail) {
         
-        let confirmBeneficiaryViewModel = AddBeneficiaryConfirmViewModel(beneficiary: beneficiary, repository: container.parent.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank, accountDetail: accountTitle) //AddBeneficiaryConfirmViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank, accountDetail: accountTitle)
+        let confirmBeneficiaryViewModel = AddBeneficiaryConfirmViewModel(beneficiary: beneficiary, repository: container.parent.makeOTPRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank, accountDetail: accountTitle) //AddBeneficiaryConfirmViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank, accountDetail: accountTitle)
         let confirmBeneficiaryViewController =  container.makeAddBeneficiaryConfirmViewController(withViewModel: confirmBeneficiaryViewModel) //AddBeneficiaryConfirmViewController(themeService: container.parent.themeService,
 //                                                                                viewModel: confirmBeneficiaryViewModel)
 
         childContainerNavigation.pushViewController(confirmBeneficiaryViewController, animated: true)
         
         containerViewModel.inputs.progressObserver.onNext(.confirmBeneficiary)
+        
+        confirmBeneficiaryViewModel.outputs.otpResult.withUnretained(self).subscribe(onNext: {  `self`,result in
+            switch result {
+            case .success(let input):
+                print(input)
+                self.otp(.ibft, beneficiary: beneficiary,  input: input)
+            case .cancel:
+                break
+            }
+        }).disposed(by: disposeBag)
+
     }
 }

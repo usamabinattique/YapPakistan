@@ -35,15 +35,28 @@ class AddBeneficiaryConfirmViewController: AddBeneficiaryBankListContainerChildV
     private lazy var beneficiaryFountLabel =  UIFactory.makeLabel(font: .regular,alignment: .center)
     
     
-    private lazy var detailsStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fillEqually, spacing: 2, arrangedSubviews: [bankImageContainerView,bankName,bankAccount])
+   // private lazy var imageStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fillEqually, spacing: 0, arrangedSubviews: [bankImageContainerView])
+    private lazy var detailsStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fillEqually, spacing: 0, arrangedSubviews: [bankName,bankAccount])
     private lazy var detailsStackContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
     //Account number/IBAN
-    private lazy var titleField: UILabel = UIFactory.makeLabel(font: .small, numberOfLines: 0)
+    private lazy var titleField: UILabel = UIFactory.makeLabel(font: .micro, numberOfLines: 0)
+    
+    // MARK: Views
+    private lazy var userImage: UIImageView = {
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 42, height: 42))
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    private lazy var name = UIFactory.makeLabel(font: .small)
+    
+    private lazy var nameStack = UIFactory.makeStackView(axis: .vertical, alignment: .leading, distribution: .fill, spacing: 4, arrangedSubviews: [name])
     
     private lazy var textField: AppTextField = {
         let textField = AppTextField()
@@ -51,24 +64,15 @@ class AddBeneficiaryConfirmViewController: AddBeneficiaryBankListContainerChildV
         textField.returnKeyType = .next
         textField.autocorrectionType = .no
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.bottomBarColor = UIColor(Color(hex: "#DAE0F0")) // greyLight
+        textField.bottomBarColor = UIColor(themeService.attrs.greyLight) //UIColor(Color(hex: "#DAE0F0")) // greyLight
         return textField
-    }()
-    
-    private lazy var infoButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
-       // button.tintColor = .primaryDark
-        button.setImage(UIImage.init(named: "icon_help",in: .yapPakistan)?.asTemplate, for: .normal)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
     }()
     
     private lazy var toolbar: UIView = {
         return getToolBar(target: self, done: #selector(doneAction), cancel: #selector(cancelAction))
     }()
     
-    private lazy var infoLabel = UIFactory.makeLabel(font: .small, alignment: .left, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var infoLabel = UIFactory.makeLabel(font: .large, alignment: .left, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     
     private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton()
     
@@ -138,7 +142,7 @@ class AddBeneficiaryConfirmViewController: AddBeneficiaryBankListContainerChildV
         toolBar.autoresizingMask = .flexibleHeight
         toolBar.barStyle = .default
         toolBar.isTranslucent = true
-        toolBar.tintColor = UIColor(Color(hex: "#272262")) // primary dark
+        toolBar.tintColor = UIColor(themeService.attrs.primaryDark) // primary dark
         toolBar.sizeToFit()
         
         // Adding Button ToolBar
@@ -163,23 +167,29 @@ extension AddBeneficiaryConfirmViewController {
         view.addSubview(headingLabel)
         view.addSubview(detailsStackContainer)
         bankImageContainerView.addSubview(bankImage)
+        detailsStackContainer.addSubview(bankImageContainerView)
         detailsStackContainer.addSubview(detailsStack)
         detailsStackContainer.layer.cornerRadius = 12
         detailsStackContainer.layer.borderWidth = 0.7
         
         view.addSubview(textField)
-        view.addSubview(infoButton)
+        view.addSubview(infoLabel)
         view.addSubview(doneButton)
         view.addSubview(titleField)
-        doneButton.setTitle("Find account", for: .normal)
-        titleField.text = "Account number/IBAN"
-        textField.placeholder = "Enter account number/IBAN"
+        doneButton.setTitle("Add", for: .normal)
+        titleField.text = "Nickname"
+        textField.placeholder = "Dad"
+        infoLabel.text = "The beneficiary found:"
+        
+        userImage.roundView()
+        view.addSubview(userImage)
+        view.addSubview(name)
     }
 
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor, bankImageContainerView.rx.backgroundColor])
-            .bind({ UIColor($0.primaryDark    ) }, to: [headingLabel.rx.textColor, bankName.rx.textColor, infoLabel.rx.textColor,titleField.rx.textColor, infoButton.rx.tintColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [headingLabel.rx.textColor, bankName.rx.textColor, infoLabel.rx.textColor,titleField.rx.textColor,name.rx.textColor])
             .bind({ UIColor($0.greyLight    ) }, to: [detailsStackContainer.rx.borderColor])
             .bind({ UIColor($0.primary    ) }, to: [doneButton.rx.enabledBackgroundColor])
             .bind({ UIColor($0.primaryLight    ) }, to: [doneButton.rx.disabledBackgroundColor])
@@ -203,35 +213,52 @@ extension AddBeneficiaryConfirmViewController {
             .alignEdgeWithSuperviewSafeArea(.right, constant: 24)
             .centerHorizontallyInSuperview()
             .height(constant: 136)
-        detailsStack
-            .centerHorizontallyInSuperview()
-            .alignEdgeWithSuperview(.top,constant: 20)
-            //.centerVerticallyInSuperview()
+        
+           
         
         bankImage
             .height(constant: 32)
             .width(constant: 32)
-            .alignEdgesWithSuperview([.top,.right,.left], constants: [6,6,6])
-           
+//            .alignEdgesWithSuperview([.top,.right,.left], constants: [6,6,6])
+//            .alignEdgeWithSuperview(.bottom,.greaterThanOrEqualTo,constant: 0)
+            .centerHorizontallyInSuperview()
+            .centerVerticallyInSuperview()
         
         bankImageContainerView
             .height(constant: 44)
             .width(constant: 44)
+            .alignEdgeWithSuperview(.top,constant: 16)
+            .centerHorizontallyInSuperview()
+        
+        detailsStack
+            .centerHorizontallyInSuperview()
+            .toBottomOf(bankImageContainerView, constant: 16)
+            .alignEdgeWithSuperview(.bottom, .greaterThanOrEqualTo ,constant: 0)
+        
+        infoLabel
+            .alignEdgesWithSuperview([.right, .left], constants: [24, 24])
+            .toBottomOf(detailsStackContainer, constant: 20)
+        
+        userImage
+            .alignEdgesWithSuperview([ .left], constants: [24])
+            .toBottomOf(infoLabel, constant: 20)
+            .height(constant: 42)
+            .width(constant: 42)
+        
+        name
+            .toRightOf(userImage, constant: 20)
+            .alignEdge(.centerY, withView: userImage)
         
         titleField
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
-            .toBottomOf(detailsStackContainer,constant: 28)
+            .toBottomOf(userImage,constant: 32)
         
         textField
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
             .toBottomOf(titleField, constant: -20)
             .height(constant: 80)
         
-        infoButton
-            .alignEdgeWithSuperview(.right, constant: 25)
-            .alignEdge(.centerY, withView: textField)
-            .width(constant: 30)
-            .height(constant: 30)
+       
         
         doneButton
             .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 34)
@@ -279,31 +306,16 @@ private extension AddBeneficiaryConfirmViewController {
         viewModel.outputs.captalizationType.subscribe(onNext: { [weak self] in self?.textField.autocapitalizationType = $0 }).disposed(by: rx.disposeBag)
         viewModel.outputs.showsAccessory.filter { $0 }.subscribe(onNext: { [weak self] _ in self?.textField.inputAccessoryView = self?.toolbar }).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.showInfo.unwrap().subscribe(onNext: { [weak self] in
-            guard let `self` = self else { return }
-            YAPInfoView.show(info: $0, fromView: self.infoButton, infoLabel: self.infoLabel)
-        }).disposed(by: rx.disposeBag)
+        
         
         textField.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
-        infoButton.rx.tap.bind(to: viewModel.inputs.infoTappedObserver).disposed(by: rx.disposeBag)
+        
         
         viewModel.outputs.becomeResponder.filter { $0 }.subscribe(onNext: { [weak self] _ in _ = self?.textField.becomeFirstResponder() }).disposed(by: rx.disposeBag)
         
-        viewModel.outputs.inputError.subscribe(onNext: { [unowned self] isOkay in
-            self.textField.bottomBarColor = isOkay ?  UIColor(Color(hex: "#DAE0F0")) : .red
-            self.infoButton.setTintColor(isOkay ? UIColor(self.themeService.attrs.primaryDark) : .red)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.inputError.bind(to: doneButton.rx.isEnabled).disposed(by: rx.disposeBag)
-        doneButton.isEnabled = false
-//        viewModel.outputs.valid
-//            .map{ [weak self] in self?.infoButton.isHidden ?? true && $0 ? .valid : .normal }
-//            .bind(to: textField.rx.validationState).disposed(by: rx.disposeBag)
-        
-        
-//        viewModel.outputs.inputError.bind(to: textField.rx.errorText).disposed(by: disposeBag)
-//        viewModel.outputs.inputError.map{ $0 == nil ? .normal : .invalid }
-//            .bind(to: textField.rx.validationState).disposed(by: disposeBag)
+        viewModel.outputs.accountNumber.bind(to:  bankAccount.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.accountTitle.bind(to:  name.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.userImage.bind(to: userImage.rx.loadImage()).disposed(by: rx.disposeBag)
     }
 }
 

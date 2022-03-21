@@ -476,6 +476,10 @@
 "screen_add_beneficiary_detail_display_text_bank_account_detail_heading" = "Beneficiary account details";
 "screen_add_beneficiary_detail_display_text_bank_account_detail_error" = "Oops Looks like the account number is incorrect, please try again.";
 "screen_add_beneficiary_detail_display_text_bank_account_confirm_heading" = "Confirm the beneficiary";
+"screen_add_beneficiary_detail_display_text_alert_title" = "Beneficiary has been added successfully";
+"screen_add_beneficiary_detail_display_button_block_alert_description" = "Send money to this beneficiary now?";
+"screen_add_beneficiary_detail_display_button_block_alert_yes" = "Yes, send now";
+"screen_add_beneficiary_detail_display_button_block_alert_no" = "No, send later";
 
 
 // MARK: - Home Screen
@@ -520,3 +524,8 @@
 "screen_transaction_details_display_text_improve_attribute" = "Improve logo or location?";
 "screen_transaction_details_display_text_category_declined" = "Declined";
 "screen_transaction_details_display_text_category_declined_name" = "ATM decline fee";
+
+// MARK: Screen add beneficiary OTP
+
+"screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
+"screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
