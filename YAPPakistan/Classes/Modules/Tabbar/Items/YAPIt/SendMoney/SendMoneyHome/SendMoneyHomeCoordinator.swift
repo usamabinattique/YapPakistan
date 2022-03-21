@@ -108,7 +108,8 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
 private extension SendMoneyHomeCoordinator {
     
     func addBeneficiary() {
-        coordinate(to: AddSendMoneyBeneficiaryCoordinator(root: localRoot, container: container, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
+        let coordinator = AddSendMoneyBeneficiaryCoordinator(root: localRoot, container: AddBankBeneficiaryContainer(parent: self.container), sendMoneyType: sendMoneyType)
+        coordinate(to: coordinator).subscribe(onNext: { [weak self] in
             if case let ResultType.success(result) = $0 {
                 self?.refreshBeneficiaries.onNext(())
                 if let beneficiary = result {

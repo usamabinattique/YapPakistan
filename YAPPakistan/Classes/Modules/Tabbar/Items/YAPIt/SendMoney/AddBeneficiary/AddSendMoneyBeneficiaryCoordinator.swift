@@ -17,7 +17,7 @@ class AddSendMoneyBeneficiaryCoordinator: Coordinator<ResultType<SendMoneyBenefi
    // let root: UINavigationController!
    // var repository: YapItRepositoryType!
     private let sendMoneyType: SendMoneyType!
-    private var container: UserSessionContainer
+    private var container: AddBankBeneficiaryContainer //UserSessionContainer
     private let disposeBag = DisposeBag()
    // override var feature: CoordinatorFeature { .addSendMoneyBeneficiary }
     
@@ -26,7 +26,7 @@ class AddSendMoneyBeneficiaryCoordinator: Coordinator<ResultType<SendMoneyBenefi
     weak var root: UINavigationController!
     private var containerViewModel: AddSendMoneyBeneficiaryViewModel!
     
-    init(root: UINavigationController, container: UserSessionContainer, sendMoneyType: SendMoneyType) {
+    init(root: UINavigationController, container: AddBankBeneficiaryContainer, sendMoneyType: SendMoneyType) {
         self.root = root
        // self.repository = repository
         self.container = container
@@ -144,20 +144,13 @@ private extension AddSendMoneyBeneficiaryCoordinator {
     } */
     
     func localBankTransfer(_ beneficiary: SendMoneyBeneficiary) {
-//        let viewModel = ASMBLocalBankTransferViewModel(beneficiary: beneficiary, repository: repository, sendMoneyType: sendMoneyType)
-//        let viewController = AddSendMoneyBeneficiaryViewController(viewModel)
-     /*   let viewModel = AddSendMoneyBeneficiaryViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService)
-        self.containerViewModel = viewModel
         
-        let viewController = AddSendMoneyBeneficiaryViewController(themeService: container.themeService, viewModel)
-        root.pushViewController(viewController, animated: true) */
-        
-        let viewModel = AddSendMoneyBeneficiaryViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService)
+        let viewModel = AddSendMoneyBeneficiaryViewModel(beneficiary: beneficiary, repository: container.parent.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService) //AddSendMoneyBeneficiaryViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService)
         self.containerViewModel = viewModel
         
         navigateToBankList(beneficiary)
         
-        let containerView = AddBeneficiaryContainerViewController(themeService: container.themeService, viewModel: viewModel, childNavigation: childContainerNavigation) //AddSendMoneyBeneficiaryViewController(themeService: container.themeService, containerViewModel, childNavigation: childContainerNavigation)
+        let containerView = container.makeAddBeneficiaryContainerViewController(withViewModel: viewModel, childNavigation: childContainerNavigation) //AddBeneficiaryContainerViewController(themeService: container.themeService, viewModel: viewModel, childNavigation: childContainerNavigation)
         
         containerNavigation = UINavigationController(rootViewController: containerView)
         containerNavigation.navigationBar.isHidden = true
@@ -165,7 +158,7 @@ private extension AddSendMoneyBeneficiaryCoordinator {
         childContainerNavigation.interactivePopGestureRecognizer?.isEnabled = false
         
            
-        let viewController = AddSendMoneyBeneficiaryViewController(themeService: container.themeService, containerViewModel, childNavigation: containerNavigation)
+        let viewController = container.makeAddSendMoneyBeneficiaryViewController(withViewModel: viewModel, childNavigation: containerNavigation) //AddSendMoneyBeneficiaryViewController(themeService: container.themeService, containerViewModel, childNavigation: containerNavigation)
 
         root.pushViewController(viewController, animated: true)
         
@@ -290,15 +283,15 @@ private extension AddSendMoneyBeneficiaryCoordinator {
     } */
     
     func otp(_ action: OTPAction, beneficiary: SendMoneyBeneficiary) {
-        var countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
-        var mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
+        let countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
+        let mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
 //        SessionManager.current.currentAccount.subscribe(onNext: {
 //            countryCode = $0?.customer.countryCode ?? ""
 //            mobileNumber = $0?.customer.mobileNo ?? ""
 //        }).dispose()
         
-        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty)
-        let viewController = VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.parent.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty) //VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty)
+        let viewController = container.makeVerifyMobileOTPViewController(withViewModel: viewModel) //VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         
 //        let nav = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
         
@@ -331,13 +324,13 @@ private extension AddSendMoneyBeneficiaryCoordinator {
 extension AddSendMoneyBeneficiaryCoordinator {
     func navigateToBankList(_ beneficiary: SendMoneyBeneficiary) {
         
-        let bankListViewModel = AddBeneficiaryBankListViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService)
-        let bankListViewController = AddBeneficiaryBankListViewController(themeService: container.parent.themeService,
-                                                                                viewModel: bankListViewModel)
+        let bankListViewModel = AddBeneficiaryBankListViewModel(beneficiary: beneficiary, repository: container.parent.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService) //AddBeneficiaryBankListViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService)
+        let bankListViewController = container.makeAddBeneficiaryBankListViewController(withViewModel: bankListViewModel) //AddBeneficiaryBankListViewController(themeService: container.parent.themeService,
+//                                                                                viewModel: bankListViewModel)
 
         
-        childContainerNavigation = AddBeneficiaryBankListContainerNavigationController(themeService: container.parent.themeService,
-                                                                           rootViewController: bankListViewController)
+        childContainerNavigation = container.makeAddBeneficiaryBankListContainerNavigationController(rootViewController: bankListViewController) //AddBeneficiaryBankListContainerNavigationController(themeService: container.parent.themeService,
+//                                                                           rootViewController: bankListViewController)
         childContainerNavigation.navigationBar.isHidden = true
 
       /*  verificationViewModel.outputs.progress.subscribe(onNext: { [unowned self] progress in
@@ -394,9 +387,9 @@ extension AddSendMoneyBeneficiaryCoordinator {
     
     func navigateToBankDetail(_ beneficiary: SendMoneyBeneficiary, bank: BankDetail) {
         
-        let bankDetailViewModel = AddBeneficiaryBankDetailViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank)
-        let bankDetailViewController = AddBeneficiaryBankDetailViewController(themeService: container.parent.themeService,
-                                                                                viewModel: bankDetailViewModel)
+        let bankDetailViewModel = AddBeneficiaryBankDetailViewModel(beneficiary: beneficiary, repository: container.parent.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank) //AddBeneficiaryBankDetailViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank)
+        let bankDetailViewController = container.makeAddBeneficiaryBankDetailViewController(withViewModel: bankDetailViewModel) //AddBeneficiaryBankDetailViewController(themeService: container.parent.themeService,
+//                                                                                viewModel: bankDetailViewModel)
 
         childContainerNavigation.pushViewController(bankDetailViewController, animated: true)
         
@@ -414,9 +407,9 @@ extension AddSendMoneyBeneficiaryCoordinator {
     
     func navigateToConfirmBeneficiary(_ beneficiary: SendMoneyBeneficiary, bank: BankDetail, accountTitle: BankAccountDetail) {
         
-        let confirmBeneficiaryViewModel = AddBeneficiaryConfirmViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank, accountDetail: accountTitle)
-        let confirmBeneficiaryViewController = AddBeneficiaryConfirmViewController(themeService: container.parent.themeService,
-                                                                                viewModel: confirmBeneficiaryViewModel)
+        let confirmBeneficiaryViewModel = AddBeneficiaryConfirmViewModel(beneficiary: beneficiary, repository: container.parent.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank, accountDetail: accountTitle) //AddBeneficiaryConfirmViewModel(beneficiary: beneficiary, repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, themeService: container.themeService, bank: bank, accountDetail: accountTitle)
+        let confirmBeneficiaryViewController =  container.makeAddBeneficiaryConfirmViewController(withViewModel: confirmBeneficiaryViewModel) //AddBeneficiaryConfirmViewController(themeService: container.parent.themeService,
+//                                                                                viewModel: confirmBeneficiaryViewModel)
 
         childContainerNavigation.pushViewController(confirmBeneficiaryViewController, animated: true)
         
