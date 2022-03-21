@@ -10,7 +10,7 @@ import YAPCore
 
 
 
-public enum PKAppEvent: BaseEventType {
+public enum PKAppEvent: AppEventType {
     case logout
     case loggedIn
     
