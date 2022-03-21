@@ -11,6 +11,7 @@ import Foundation
 import Foundation
 import RxSwift
 import RxDataSources
+import YAPCore
 
 protocol Y2YSearchViewModelInput {
     var textObserver: AnyObserver<String?> { get }
@@ -63,28 +64,27 @@ class Y2YSearchViewModel: Y2YSearchViewModelType, Y2YSearchViewModelInput, Y2YSe
     var contactObserver: AnyObserver<YAPContact> { return contactSubject.asObserver() }
     var yapContactObserver: AnyObserver<Void> { return yapContactSubject.asObserver() }
     var allContactObserver: AnyObserver<Void> { return allContactSubject.asObserver() }
-    var invite: Observable<(YAPContact, String)> { return inviteSubject.asObservable() }
     
     // MARK: - Outputs
     var showError: Observable<String> { return showErrorSubject.asObservable() }
     var contactSelected: Observable<YAPContact> { return contactSelectedSubject.asObservable() }
     var contactText: Observable<String?> { return contactTextSubject.asObservable() }
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObserver() }
+    var invite: Observable<(YAPContact, String)> { return inviteSubject.asObservable() }
     
     // MARK: - Init
-    init(_ contacts: [YAPContact]) {
+    init(_ contacts: [YAPContact], accountProvider: AccountProvider) {
         self.contacts = contacts.map {
             [unowned self] in
             let viewModel = Y2YContactCellViewModel($0)
             
-//            let a = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}
-//            let obs = Observable.just(contact)
-//            let comb = Observable.combineLatest(obs,a)
-//            viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteFriendSubject).disposed(by: disposeBag)
+            //FIXME: [UMAIR] - Remove this hardcoded .qa environment and move AppReferralManager initialization in common place
+            let currentAccount = accountProvider.currentAccount
+            let appRefMessage = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}
+            let obs = Observable.just($0)
+            let comb = Observable.combineLatest(obs,appRefMessage)
+            viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteSubject).disposed(by: disposeBag)
             
-            viewModel.outputs.invite.subscribe(onNext:{
-            })
-            .disposed(by: self.disposeBag)
             return viewModel
         }
         

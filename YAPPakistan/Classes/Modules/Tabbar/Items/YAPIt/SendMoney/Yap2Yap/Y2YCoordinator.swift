@@ -92,7 +92,7 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
 private extension Y2YCoordinator {
 
     func searchContacts(_ contacts: [YAPContact]) {
-        let viewModel = Y2YSearchViewModel(contacts)
+        let viewModel = Y2YSearchViewModel(contacts, accountProvider: self.container.accountProvider)
         let viewController = Y2YSearchViewController(viewModel: viewModel, themeService: self.container.themeService)
         root.pushViewController(viewController, animated: true)
 
