@@ -13,10 +13,10 @@ import RxTheme
 
 class AddBeneficiaryContainerViewController: KeyboardAvoidingViewController {
 
-    private lazy var sendButton = UIFactory.makeAppRoundedButton(
-        with: .large,
-        title: "common_button_next".localized
-    )
+//    private lazy var sendButton = UIFactory.makeAppRoundedButton(
+//        with: .large,
+//        title: "common_button_next".localized
+//    )
     
     
     
@@ -55,7 +55,7 @@ class AddBeneficiaryContainerViewController: KeyboardAvoidingViewController {
 
 fileprivate extension AddBeneficiaryContainerViewController {
     func setupViews() {
-        view.addSubview(sendButton)
+//        view.addSubview(sendButton)
        
 
         childView?.translatesAutoresizingMaskIntoConstraints = false
@@ -69,12 +69,12 @@ fileprivate extension AddBeneficiaryContainerViewController {
     }
 
     func setupTheme() {
-        view.backgroundColor = .clear
+        
         themeService.rx
-           // .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
-            .bind({ UIColor($0.primary) }, to: [sendButton.rx.enabledBackgroundColor])
-            .bind({ UIColor($0.greyDark) }, to: [sendButton.rx.disabledBackgroundColor])
-            .bind({ UIColor($0.primaryExtraLight) }, to: [sendButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
+//            .bind({ UIColor($0.primary) }, to: [sendButton.rx.enabledBackgroundColor])
+//            .bind({ UIColor($0.greyDark) }, to: [sendButton.rx.disabledBackgroundColor])
+//            .bind({ UIColor($0.primaryExtraLight) }, to: [sendButton.rx.titleColor(for: .normal)])
             .disposed(by: disposeBag)
     }
 
@@ -82,17 +82,17 @@ fileprivate extension AddBeneficiaryContainerViewController {
        
         
         
-        sendButton
-            .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 34)
-            .centerHorizontallyInSuperview()
-            .height(constant: 52)
-            .width(constant: 192)
+//        sendButton
+//            .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 34)
+//            .centerHorizontallyInSuperview()
+//            .height(constant: 52)
+//            .width(constant: 192)
 
         childView?
-//            .alignEdgesWithSuperview([.left, .right, .top,.bottom])
-            .alignEdgesWithSuperview([.left, .right, .bottom])
+            .alignEdgesWithSuperview([.left, .right, .top,.bottom])
+//            .alignEdgesWithSuperview([.left, .right, .bottom])
             .alignEdgeWithSuperview(.top,constant: 32)
-            .toTopOf(sendButton)
+//            .toTopOf(sendButton)
     }
 }
 
