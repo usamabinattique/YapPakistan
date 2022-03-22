@@ -22,14 +22,14 @@ class AddBeneficiaryBankListContainerChildViewController: KeyboardAvoidingViewCo
         super.viewWillAppear(animated)
         guard UIScreen.screenType != .iPhone5 else { return }
         
-        guard (self.navigationController as? OnBoardingContainerNavigationController)?.keyboardShown ?? false else { return }
+        guard ((self.navigationController as? AddBeneficiaryBankListContainerNavigationController)?.keyboardShown ?? false) else { return }
         _ = firstReponder?.becomeFirstResponder()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard UIScreen.screenType != .iPhone5 else { return }
-        guard !((self.navigationController as? OnBoardingContainerNavigationController)?.keyboardShown ?? false) else { return }
+        guard !((self.navigationController as? AddBeneficiaryBankListContainerNavigationController)?.keyboardShown ?? false) else { return }
         _ = firstReponder?.becomeFirstResponder()
     }
 }

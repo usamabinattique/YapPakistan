@@ -159,7 +159,7 @@ private extension AddSendMoneyBeneficiaryCoordinator {
         
            
         let viewController = container.makeAddSendMoneyBeneficiaryViewController(withViewModel: viewModel, childNavigation: containerNavigation) //AddSendMoneyBeneficiaryViewController(themeService: container.themeService, containerViewModel, childNavigation: containerNavigation)
-
+        
         root.pushViewController(viewController, animated: true)
         
         
@@ -286,12 +286,10 @@ private extension AddSendMoneyBeneficiaryCoordinator {
         let countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
         let mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
         let formattedPhoneNumber: String = countryCode.replacePrefix("00", with: "+") + " " + mobileNumber
-//        SessionManager.current.currentAccount.subscribe(onNext: {
-//            countryCode = $0?.customer.countryCode ?? ""
-//            mobileNumber = $0?.customer.mobileNo ?? ""
-//        }).dispose()
-        
-        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.parent.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty, addBankBeneficiaryInput: input) //VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty)
+       
+       
+        let subHeadingText = String(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, formattedPhoneNumber)
+        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , repository: container.parent.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty, addBankBeneficiaryInput: input) //VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: "screen_add_beneificiary_otp_display_text_sub_heading".localized , repository: container.makeOTPRepository(), mobileNo: countryCode + mobileNumber, passcode: "" , backButtonImage: .backEmpty)
         let viewController = container.makeVerifyMobileOTPViewController(withViewModel: viewModel) //VerifyMobileOTPViewController(themeService: container.themeService, viewModel: viewModel)
         
 //        let nav = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)

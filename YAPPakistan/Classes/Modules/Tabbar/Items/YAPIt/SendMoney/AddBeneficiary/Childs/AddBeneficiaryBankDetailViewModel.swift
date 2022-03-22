@@ -321,6 +321,6 @@ extension AddBeneficiaryBankDetailViewModel {
           
         beneficiaryAccountTitleRequest.elements().subscribe(onNext:{ [unowned self] accountTitle in
             self.confirmBeneficiaryDataSubject.onNext((self.bank, accountTitle))
-          }).disposed(by: disposeBag)
+          }).disposed(by: disposeBag) 
     }
 }

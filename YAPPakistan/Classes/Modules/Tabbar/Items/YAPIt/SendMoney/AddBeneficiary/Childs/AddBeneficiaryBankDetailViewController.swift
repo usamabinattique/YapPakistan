@@ -85,6 +85,7 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
 
     private var viewModel: AddBeneficiaryBankDetailViewModelType!
     private var themeService:ThemeService<AppTheme>!
+    private var sendButtonBottomConstraint: NSLayoutConstraint!
 
     init(themeService:ThemeService<AppTheme>, viewModel: AddBeneficiaryBankDetailViewModelType?) {
         self.viewModel = viewModel
@@ -266,10 +267,14 @@ extension AddBeneficiaryBankDetailViewController {
         
         doneButton
             .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 34)
-            .toBottomOf(textField, .greaterThanOrEqualTo)
+            .toBottomOf(textField, .greaterThanOrEqualTo, constant: 12)
             .centerHorizontallyInSuperview()
             .height(constant: 52)
             .width(constant: 190)
+
+//        sendButtonBottomConstraint = view.safeAreaLayoutGuide.bottomAnchor
+//            .constraint(equalTo: doneButton.bottomAnchor, constant: 12)
+//        sendButtonBottomConstraint.isActive = true
     }
 }
 
@@ -341,6 +346,7 @@ private extension AddBeneficiaryBankDetailViewController {
 // MARK: Textfield delegate
 extension AddBeneficiaryBankDetailViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        return true
         return viewModel.outputs.canEdit(text: textField.text ?? "", replacementText: string, inRange: range)
     }
     
@@ -353,3 +359,41 @@ extension AddBeneficiaryBankDetailViewController: UITextFieldDelegate {
         viewModel.inputs.editingEndObserver.onNext(())
     }
 }
+/*
+extension AddBeneficiaryBankDetailViewController {
+
+    func removeForKeyboardNotifications() {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    func registerForKeyboardNotifications() {
+        NotificationCenter.default
+            .addObserver(self,
+                         selector: #selector(keyboardWillShow),
+                         name: UIResponder.keyboardWillShowNotification,
+                         object: nil)
+        NotificationCenter.default
+            .addObserver(self,
+                         selector: #selector(keyboardWillHide),
+                         name: UIResponder.keyboardWillHideNotification,
+                         object: nil)
+    }
+
+    @objc  func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?
+            .cgRectValue {
+
+            let keyboardHeight = keyboardSize.height
+            sendButtonBottomConstraint.constant = keyboardHeight + 12
+            UIView.animate(withDuration: 1.0) { self.view.layoutIfNeeded() }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        sendButtonBottomConstraint.constant = 12
+        UIView.animate(withDuration: 1.0) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+} */

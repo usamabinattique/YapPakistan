@@ -327,7 +327,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             })
             .flatMap { [unowned self] (otp,action) -> Observable<Event<String?>> in
                 return self.repository.verifyOTP(action: action?.rawValue ?? OTPAction.ibft.rawValue, otp: otp)
-                   // .generateLoginOTP(username: mobileNo, passcode: passcode, deviceId: UIDevice.deviceId)
+                   
             }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .share()
