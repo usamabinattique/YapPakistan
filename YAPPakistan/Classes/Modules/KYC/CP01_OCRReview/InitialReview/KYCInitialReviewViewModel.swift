@@ -97,9 +97,9 @@ class KYCInitialReviewViewModel: KYCInitialReviewViewModelInput, KYCInitialRevie
                 YAPProgressHud.showProgressHud()
             })
             .flatMap { issueDate -> Observable<Event<CNICInfo?>> in
-                let cnic = cnicOCR.cnicNumber.replace(string: "-", replacement: "")
+//                let cnic = cnicOCR.cnicNumber.replace(string: "-", replacement: "")
                 // !!!: Random Cnic for testing
-                //let cnic = getRandomNumber()
+                let cnic = getRandomNumber()
                 let dateFormatter = DateFormatter.serverReadableDateFromatter
                 let dateOfIssuance = dateFormatter.string(from: issueDate)
 
