@@ -108,18 +108,18 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
 private extension SendMoneyHomeCoordinator {
     
     func editBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-        //        coordinate(to: EditSendMoneyBeneficiaryCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
-        //            if case ResultType.success = $0 {
-        //                self?.refreshBeneficiaries.onNext(())
-        //            }
-        //        }).disposed(by: disposeBag)
+                coordinate(to: EditSendMoneyBeneficiaryCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
+                    if case ResultType.success = $0 {
+                        self?.refreshBeneficiaries.onNext(())
+                    }
+                }).disposed(by: disposeBag)
         
         
-        coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
-            if case ResultType.success = $0 {
-                self?.refreshBeneficiaries.onNext(())
-            }
-        }).disposed(by: disposeBag)
+//        coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
+//            if case ResultType.success = $0 {
+//                self?.refreshBeneficiaries.onNext(())
+//            }
+//        }).disposed(by: disposeBag)
     }
     
     /* func addBeneficiary() {
