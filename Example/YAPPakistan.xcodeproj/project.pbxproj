@@ -666,16 +666,16 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-YAPPakistan_Example/Pods-YAPPakistan_Example-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/CardScanner/IdentityScanner.bundle",
 				"${PODS_ROOT}/GoogleMaps/Maps/Frameworks/GoogleMaps.framework/Resources/GoogleMaps.bundle",
 				"${PODS_ROOT}/GooglePlaces/Frameworks/GooglePlaces.framework/Resources/GooglePlaces.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/YAPCardScanner/IdentityScanner.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/YAPPakistan/YAPPakistan.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/IdentityScanner.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleMaps.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GooglePlaces.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/IdentityScanner.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/YAPPakistan.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -874,7 +874,7 @@
 				CODE_SIGN_ENTITLEMENTS = "YAP PK Dev.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_TEAM = J459F5C925;
 				INFOPLIST_FILE = YAPPakistan/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
@@ -898,7 +898,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 53;
 				DEVELOPMENT_TEAM = J459F5C925;
 				INFOPLIST_FILE = YAPPakistan/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;

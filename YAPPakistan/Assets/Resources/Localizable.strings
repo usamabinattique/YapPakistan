@@ -302,6 +302,8 @@
 "screen_kyc_review_details_screen_subtitle" = "Your details should be accurate to your CNIC.";
 "screen_kyc_review_details_cnic_number" = "CNIC Number";
 "screen_kyc_review_details_full_name" = "Full name as per CNIC";
+"screen_kyc_review_details_father_spouse_name" = "Father/Spouse Name";
+"screen_kyc_review_details_father_spouse_name_placeholder" = "Enter your Father/Spouse name";
 "screen_kyc_review_details_gender" = "Gender";
 "screen_kyc_review_details_dob" = "Date of birth";
 "screen_kyc_review_details_issue_date" = "Issue date";
@@ -478,6 +480,18 @@
 "screen_send_money_no_contacts_display_text_sub_heading" = "Who would you like to send money to?";
 "screen_send_money_no_contacts_display_text_detail" = "Send money to contacts outside your YAP network by adding them as a beneficiary. You can do so by tapping the + button on the top right of this screen. For now, start adding beneficiaries by clicking below.";
 "screen_send_money_no_contacts_button_title_add_now" = "Add now";
+"screen_add_beneficiary_display_text_title" = "Add beneficiary";
+"screen_add_beneficiary_detail_display_text_cancel_popup_title" = "Are you sure you want to exit?";
+"screen_add_beneficiary_detail_display_text_cancel_popup_message" = "The information you've entered will be lost";
+"screen_add_beneficiary_detail_display_text_bank_name_heading" = "What is the bank name?";
+"screen_add_beneficiary_detail_display_text_bank_account_detail_heading" = "Beneficiary account details";
+"screen_add_beneficiary_detail_display_text_bank_account_detail_error" = "Oops Looks like the account number is incorrect, please try again.";
+"screen_add_beneficiary_detail_display_text_bank_account_confirm_heading" = "Confirm the beneficiary";
+"screen_add_beneficiary_detail_display_text_alert_title" = "Beneficiary has been added successfully";
+"screen_add_beneficiary_detail_display_button_block_alert_description" = "Send money to this beneficiary now?";
+"screen_add_beneficiary_detail_display_button_block_alert_yes" = "Yes, send now";
+"screen_add_beneficiary_detail_display_button_block_alert_no" = "No, send later";
+
 
 // MARK: - Home Screen
 "screen_home_display_text_nothing_to_report" = "Start using your account to see all your transactions here";
@@ -521,3 +535,8 @@
 "screen_transaction_details_display_text_improve_attribute" = "Improve logo or location?";
 "screen_transaction_details_display_text_category_declined" = "Declined";
 "screen_transaction_details_display_text_category_declined_name" = "ATM decline fee";
+
+// MARK: Screen add beneficiary OTP
+
+"screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
+"screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
