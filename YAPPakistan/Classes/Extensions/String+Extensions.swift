@@ -147,6 +147,17 @@ public extension String {
 
         return UIImage(data: data)!
     }
+    
+    private func thumbnail(name: String) -> UIImage? {
+        let color = UIColor.randomColor()
+        return name.initialsImage(color: color)
+       // return thumbnailData != nil ? UIImage.init(data: thumbnailData!) : name.initialsImage(color: color)
+    }
+    
+    var thumbnail : UIImage? {
+        let color = UIColor.randomColor()
+        return self.initialsImage(color: color)
+    }
 }
 
 public extension String {

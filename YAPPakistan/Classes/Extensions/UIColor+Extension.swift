@@ -31,12 +31,12 @@ extension UIColor {
 public extension UIColor {
     static func colorFor(listItemIndex: Int) -> UIColor {
         switch listItemIndex % 6 {
-        case 0: return .green//.primarySoft
-        case 1: return .green//.secondaryOrange
-        case 2: return .green//.secondaryMagenta
-        case 3: return .green//.secondaryBlue
-        case 4: return .green//.secondaryGreen
-        default: return .green//.primary
+        case 0: return UIColor(Color(hex: "#A682FF"))//.primarySoft
+        case 1: return UIColor(Color(hex: "#F57F17")) //.secondaryOrange
+        case 2: return UIColor(Color(hex: "#F44774")) //.secondaryMagenta
+        case 3: return UIColor(Color(hex: "#478DF4")) //.secondaryBlue
+        case 4: return UIColor(Color(hex: "#00B9AE")) //.secondaryGreen
+        default: return UIColor(Color(hex: "#5E35B1"))  //.primary
         }
     }
     

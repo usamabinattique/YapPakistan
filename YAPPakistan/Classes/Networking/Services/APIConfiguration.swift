@@ -21,7 +21,7 @@ public struct APIConfiguration {
             //self.baseURL = URL(string: "https://pk-qa.yap.co")!
             self.baseURL = URL(string: "https://pk-stg1.yap.co/")!
         case .stg:
-            self.baseURL = URL(string: "https://pk-stg.yap.co")!
+            self.baseURL = URL(string: "https://pk-stg1.yap.co/")! //URL(string: "https://pk-stg.yap.co")!
         case .preprod:
             self.baseURL = URL(string: "https://pk-preprod.yap.com")!
         case .prod:
