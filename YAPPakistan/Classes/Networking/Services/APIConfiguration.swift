@@ -18,8 +18,7 @@ public struct APIConfiguration {
         case .dev:
             self.baseURL = URL(string: "https://pk-dev.yap.co")!
         case .qa:
-            //self.baseURL = URL(string: "https://pk-qa.yap.co")!
-            self.baseURL = URL(string: "https://pk-stg1.yap.co/")!
+            self.baseURL = URL(string: "https://pk-qa.yap.co")!
         case .stg:
             self.baseURL = URL(string: "https://pk-stg1.yap.co/")! //URL(string: "https://pk-stg.yap.co")!
         case .preprod:
