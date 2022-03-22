@@ -7,7 +7,7 @@
 //
 
 import AVFoundation
-import CardScanner
+import YAPCardScanner
 import Foundation
 import RxSwift
 import YAPCore

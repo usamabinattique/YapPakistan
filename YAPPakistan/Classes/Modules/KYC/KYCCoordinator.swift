@@ -9,7 +9,7 @@
 import Foundation
 import RxSwift
 import YAPCore
-import CardScanner
+import YAPCardScanner
 import YAPCore
 import YAPComponents
 import RxTheme

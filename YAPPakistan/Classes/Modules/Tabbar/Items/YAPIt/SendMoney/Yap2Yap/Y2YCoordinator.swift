@@ -92,14 +92,14 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
 private extension Y2YCoordinator {
 
     func searchContacts(_ contacts: [YAPContact]) {
-        let viewModel = Y2YSearchViewModel(contacts)
+        let viewModel = Y2YSearchViewModel(contacts, accountProvider: self.container.accountProvider)
         let viewController = Y2YSearchViewController(viewModel: viewModel, themeService: self.container.themeService)
         root.pushViewController(viewController, animated: true)
 
-//        viewModel.outputs.invite.subscribe(onNext: { [weak self] in
-//            self?.inviteFriend($0.0, self?.name ?? "", appShareUrl: $0.1)
-//        }).disposed(by: rx.disposeBag)
-//
+        viewModel.outputs.invite.subscribe(onNext: { [weak self] in
+            self?.inviteFriend($0.0, self?.name ?? "", appShareUrl: $0.1)
+        }).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.contactSelected.subscribe(onNext: { [weak self] in
             self?.sendMoney($0)
         }).disposed(by: rx.disposeBag)

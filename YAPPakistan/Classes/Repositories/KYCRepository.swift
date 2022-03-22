@@ -18,6 +18,7 @@ protocol KYCRepositoryType {
                        identityNo: String,
                        nationality: String,
                        fullName: String,
+                       fatherName: String,
                        gender: String,
                        dob: String,
                        dateIssue: String,
@@ -65,13 +66,14 @@ class KYCRepository: KYCRepositoryType {
                        identityNo: String,
                        nationality: String,
                        fullName: String,
+                       fatherName: String,
                        gender: String,
                        dob: String,
                        dateIssue: String,
                        dateExpiry: String) -> Observable<Event<String?>> {
         return customersService.saveDocuments(documents, documentType: documentType,
                                               identityNo: identityNo, nationality: nationality,
-                                              fullName: fullName, gender: gender, dob: dob,
+                                              fullName: fullName, fatherName: fatherName, gender: gender, dob: dob,
                                               dateIssue: dateIssue, dateExpiry: dateExpiry).materialize()
     }
 

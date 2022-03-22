@@ -17,8 +17,7 @@ class KYCReviewFieldCell: UITableViewCell, ReusableView {
     lazy var headingLabel = UIFactory.makeLabel(
         font: .small, alignment: .natural, numberOfLines: 1)
 
-    lazy var valueLabel = UIFactory.makeLabel(
-        font: .large, alignment: .natural, numberOfLines: 1)
+    lazy var valueLabel = UIFactory.makeTextField(font: .large)
 
     private lazy var tickImageView: UIImageView = {
         let imageView = UIImageView()
@@ -34,7 +33,7 @@ class KYCReviewFieldCell: UITableViewCell, ReusableView {
     private var themeService: ThemeService<AppTheme>!
 
     private var disposeBag = DisposeBag()
-    private var viewModel: ReferredFriendViewModelType!
+    public var viewModel: KYCReviewFieldViewModelType!
 
     // MARK: Initialization
 
@@ -49,6 +48,7 @@ class KYCReviewFieldCell: UITableViewCell, ReusableView {
     }
 
     private func commonInit() {
+        valueLabel.isEnabled = false
         setupViews()
         setupConstraints()
     }
@@ -104,7 +104,32 @@ class KYCReviewFieldCell: UITableViewCell, ReusableView {
             .disposed(by: disposeBag)
 
         viewModel.outputs.value
-            .bind(to: valueLabel.rx.text)
+            .subscribe(onNext: { [weak self] valueString in
+                if valueString.length == 0 {
+                    self?.valueLabel.isEnabled = true
+                    self?.valueLabel.placeholder = "screen_kyc_review_details_father_spouse_name_placeholder".localized
+                } else {
+                    self?.valueLabel.text = valueString
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        viewModel.outputs.isValueEditable.withUnretained(self)
+            .subscribe(onNext: { `self`, isEditable in
+                self.valueLabel.isEnabled = isEditable
+            }).disposed(by: disposeBag)
+        
+        self.valueLabel.rx.controlEvent(.editingDidEndOnExit)
+            .subscribe(onNext: { [weak self] text in
+                viewModel.inputs.valueUpdated.onNext(self?.valueLabel.text ?? "")
+                self?.endEditing(true)
+            })
+            .disposed(by: disposeBag)
+        
+        self.valueLabel.rx.controlEvent(.editingChanged)
+            .subscribe(onNext: { [weak self] text in
+                viewModel.inputs.valueUpdated.onNext(self?.valueLabel.text ?? "")
+            })
             .disposed(by: disposeBag)
     }
 
@@ -112,6 +137,7 @@ class KYCReviewFieldCell: UITableViewCell, ReusableView {
 
     func configure(with themeService: ThemeService<AppTheme>,
                    viewModel: KYCReviewFieldViewModelType) {
+        self.viewModel = viewModel
         setupTheme(with: themeService)
         bindViewModel(viewModel)
     }
