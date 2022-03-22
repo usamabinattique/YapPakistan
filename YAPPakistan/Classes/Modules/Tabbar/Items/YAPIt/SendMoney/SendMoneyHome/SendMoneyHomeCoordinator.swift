@@ -118,52 +118,26 @@ private extension SendMoneyHomeCoordinator {
             }
         }).disposed(by: disposeBag)
     }
-  /*
+  
     func editBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
                 coordinate(to: EditSendMoneyBeneficiaryCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
                     if case ResultType.success = $0 {
                         self?.refreshBeneficiaries.onNext(())
                     }
                 }).disposed(by: disposeBag)
-        
-        
-//        coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
-//            if case ResultType.success = $0 {
-//                self?.refreshBeneficiaries.onNext(())
-//            }
-//        }).disposed(by: disposeBag)
     }
-    
-    /* func addBeneficiary() {
-     coordinate(to: AddSendMoneyBeneficiaryCoordinator(root: localRoot, repository: repository, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
-     if case let ResultType.success(result) = $0 {
-     self?.refreshBeneficiaries.onNext(())
-     if let beneficiary = result {
-     self?.sendMoney(beneficiary)
-     }
-     }
-     }).disposed(by: disposeBag)
-     }
      
-     func editBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-     coordinate(to: EditSendMoneyBeneficiaryCoordinator(root: localRoot, beneficiary: beneficiary, repository: repository)).subscribe(onNext: { [weak self] in
-     if case ResultType.success = $0 {
-     self?.refreshBeneficiaries.onNext(())
-     }
-     }).disposed(by: disposeBag)
-     }
-     
-     func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
-     
-     coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, beneficiary: beneficiary, repository: repository)).subscribe(onNext:{ [weak self] in
-     if case ResultType.success = $0 {
-     self?.result.onNext(.success(()))
-     self?.result.onCompleted()
-     }else{
-     self?.cancelFromSendMoneyFundTransfer.onNext(())
-     }
-     }).disposed(by: disposeBag)
-     }*/
+//     func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
+//
+//     coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, beneficiary: beneficiary, repository: repository)).subscribe(onNext:{ [weak self] in
+//     if case ResultType.success = $0 {
+//     self?.result.onNext(.success(()))
+//     self?.result.onCompleted()
+//     }else{
+//     self?.cancelFromSendMoneyFundTransfer.onNext(())
+//     }
+//     }).disposed(by: disposeBag)
+//     }
     
     func searchBeneficiaries(_ allBeneficiaries: [SendMoneyBeneficiary]) {
         let viewModel = SearchSendMoneyBeneficiaryViewModel(allBeneficiaries, repository: container.makeYapItRepository())
