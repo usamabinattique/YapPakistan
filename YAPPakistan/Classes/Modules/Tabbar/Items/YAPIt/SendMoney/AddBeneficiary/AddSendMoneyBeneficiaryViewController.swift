@@ -15,13 +15,7 @@ import RxTheme
 class AddSendMoneyBeneficiaryViewController: UIViewController {
     
     // MARK: Views
-    
-//    private lazy var formTableViewController: AddSendMoneyBeneficiaryFormTableViewController = {
-//        let form = AddSendMoneyBeneficiaryFormTableViewController(viewModel)
-//        form.view.translatesAutoresizingMaskIntoConstraints = false
-//        return form
-//    }()
-//
+
     private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton()
     private let statusView = UIFactory.makeBeneficiaryStatusView()
     private lazy var childContainerView = UIFactory.makeView()
@@ -69,7 +63,6 @@ class AddSendMoneyBeneficiaryViewController: UIViewController {
         setupTheme()
         bindViews()
         viewModel.inputs.progressObserver.onNext(.bankName)
-//        hideKeyboardWhenTappedAround()
     }
     
     // MARK: Actions
@@ -90,12 +83,6 @@ class AddSendMoneyBeneficiaryViewController: UIViewController {
 private extension AddSendMoneyBeneficiaryViewController {
     func setupViews() {
         view.addSubview(statusView)
-        
-        
-//        addChild(formTableViewController)
-//        view.addSubview(formTableViewController.view)
-//        formTableViewController.didMove(toParent: self)
-        
         childView?.translatesAutoresizingMaskIntoConstraints = false
         if childView != nil, childNavigation != nil {
             addChild(childNavigation!)
@@ -113,18 +100,11 @@ private extension AddSendMoneyBeneficiaryViewController {
        statusView
             .alignEdgeWithSuperview(.top,constant: 12)
             .centerHorizontallyInSuperview()
-           // .width(constant: 210)
             .height(constant: 32)
         
         childView?
             .toBottomOf(statusView,constant: 32)
             .alignEdgesWithSuperview([.left,.right,.bottom])
-//        doneButton
-//            .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 15)
-//            .toBottomOf(childView!)
-//            .centerHorizontallyInSuperview()
-//            .height(constant: 52)
-//            .width(constant: 190)
     }
     
     func setupTheme() {
@@ -156,8 +136,6 @@ private extension AddSendMoneyBeneficiaryViewController {
         viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
         viewModel.outputs.title.bind(to: navigationItem.rx.title).disposed(by: disposeBag)
         
-      //  viewModel.outputs.progress.map{ Int($0) }.bind(to: statusView.rx.progress).disposed(by: disposeBag)
-        
         viewModel.outputs.progress.subscribe(onNext: { [weak self] progress in
             print("status progoress \(progress)")
             self?.statusView.updateProgress(for: progress)
@@ -169,18 +147,6 @@ private extension AddSendMoneyBeneficiaryViewController {
                 guard let `self` = self else { return }
                         $0 == nil ? self.accountAlert.hide() : $0 != "" ? self.accountAlert.show(inView: self.view, type: .error, text: $0!, autoHides: true) : self.accountAlert.hide() })
             .disposed(by: disposeBag)
-        
-//        let done = doneButton.rx.tap
-//            .do(onNext: { [weak self] _ in self?.view.endEditing(true) })
-//            .withLatestFrom(SessionManager.current.currentAccount.map{ $0?.restrictions.contains(.otpBlocked) ?? false })
-//        
-//        done.filter{ $0 }.subscribe(onNext: { _ in
-//            UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
-//        }).disposed(by: disposeBag)
-        
-//        done.filter{ !$0 }.map{ _ in }
-//            .do(onNext: { [weak self] in self?.view.endEditing(true) })
-//            .bind(to: viewModel.inputs.doneObserver).disposed(by: disposeBag)
     }
 }
 

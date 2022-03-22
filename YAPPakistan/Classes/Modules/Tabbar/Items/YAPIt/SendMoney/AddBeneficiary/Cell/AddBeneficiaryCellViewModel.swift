@@ -61,10 +61,8 @@ class AddBeneficiaryCellViewModel: AddBeneficiaryCellViewModelType, AddBeneficia
     var phoneNubmer: Observable<String?> { return phoneNumberSubject.asObservable() }
     var badgeCount: Observable<Int> { return badgeCountSubject.asObservable() }
     var isYapUser: Observable<Bool> { return isYapUserSubject.asObservable() }
-//    var invite: Observable<(YAPContact, String)> { inviteSubject.withLatestFrom(SessionManager.current.currentAccount.map{ $0?.customer.customerId }.unwrap()).map{ AppReferralManager.getReferralUrl(for: $0) ?? "" }.map{ [unowned self] in (self.contact, $0) }.asObservable() }
     var shimmering: Observable<Bool> { shimmeringSubject.asObservable() }
     var invite: Observable<(Void)> { inviteSubject.asObservable() }
-  //  var bankImage: Observable<ImageWithURL> { bankImageSubject.asObservable() }
     func thumbnail(forIndexPath indexPath: IndexPath) -> (String?, UIImage?) {
         (bank.bankLogoUrl, bank.thumbnail(forIndex: indexPath.row))
     }
@@ -75,9 +73,6 @@ class AddBeneficiaryCellViewModel: AddBeneficiaryCellViewModelType, AddBeneficia
     init(_ bank: BankDetail) {
         self.bank = bank
         nameSubject.onNext(bank.bankName)
-//        phoneNumberSubject.onNext(contact.formattedPhoneNumber)
-//        isYapUserSubject.onNext(contact.isYapUser)
-      //  bankImageSubject = BehaviorSubject(value: bank.bankLogoUrl)
         shimmeringSubject = BehaviorSubject(value: false)
         self.isShimmering = false
         
@@ -85,11 +80,6 @@ class AddBeneficiaryCellViewModel: AddBeneficiaryCellViewModelType, AddBeneficia
     }
     
     init() {
-//        contact =  YAPContact(name: "Dummy looooooooooooooong Name", phoneNumber: "Dummy long Nick", countryCode: "", email: nil, isYapUser: true, photoUrl: nil, yapAccountDetails: nil, thumbnailData: nil, index: 0)
-
-//        nameSubject.onNext("Dummy looooooo")
-//        phoneNumberSubject.onNext(contact.formattedPhoneNumber)
-//        isYapUserSubject.onNext(contact.isYapUser)
         bank = BankDetail(bankLogoUrl: nil, bankName: "Dummy looooooooooooooong Name", accountNoMinLength: 0, accountNoMaxLength: 0, ibanMinLength: 0, ibanMaxLength: 0, consumerId: "adf", formatMessage: "abc")
         nameSubject.onNext(bank.bankName)
         shimmeringSubject = BehaviorSubject(value: true)
@@ -99,7 +89,6 @@ class AddBeneficiaryCellViewModel: AddBeneficiaryCellViewModelType, AddBeneficia
     private func thumbnail(name: String) -> UIImage? {
         let color = UIColor.randomColor()
         return name.initialsImage(color: color)
-       // return thumbnailData != nil ? UIImage.init(data: thumbnailData!) : name.initialsImage(color: color)
     }
 }
 

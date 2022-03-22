@@ -24,9 +24,6 @@ class AddBeneficiaryConfirmViewController: AddBeneficiaryBankListContainerChildV
         return label
     }()
     
-//    override var firstReponder: UITextField? {
-//        return searchTextField
-//    }
     private lazy var bankImageContainerView = UIFactory.makeCircularView(  borderColor: UIColor(Color(hex: "#F1F5FE")), borderWidth: 0.7)
     private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var bankName = UIFactory.makeLabel(font: .regular,alignment: .center)
@@ -106,8 +103,6 @@ class AddBeneficiaryConfirmViewController: AddBeneficiaryBankListContainerChildV
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        viewModel?.inputs.viewAppearedObserver.onNext(true)
-//        viewModel?.inputs.stageObserver.onNext(.otp)
     }
 
     override func viewDidLoad() {
@@ -219,8 +214,6 @@ extension AddBeneficiaryConfirmViewController {
         bankImage
             .height(constant: 32)
             .width(constant: 32)
-//            .alignEdgesWithSuperview([.top,.right,.left], constants: [6,6,6])
-//            .alignEdgeWithSuperview(.bottom,.greaterThanOrEqualTo,constant: 0)
             .centerHorizontallyInSuperview()
             .centerVerticallyInSuperview()
         

@@ -24,9 +24,6 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
         return label
     }()
     
-//    override var firstReponder: UITextField? {
-//        return searchTextField
-//    }
     private lazy var bankImageContainerView = UIFactory.makeCircularView(  borderColor: UIColor(Color(hex: "#F1F5FE")), borderWidth: 0.7)
     private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var bankName = UIFactory.makeLabel(font: .regular,alignment: .center)
@@ -99,8 +96,6 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        viewModel?.inputs.viewAppearedObserver.onNext(true)
-//        viewModel?.inputs.stageObserver.onNext(.otp)
     }
 
     override func viewDidLoad() {
@@ -158,17 +153,6 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
 
 extension AddBeneficiaryBankDetailViewController {
     func setupViews() {
-      /*  view.addSubview(headingLabel)
-        view.addSubview(detailsStackContainer)
-        bankImageContainerView.addSubview(bankImage)
-        detailsStackContainer.addSubview(detailsStack)
-        detailsStackContainer.layer.cornerRadius = 12
-        detailsStackContainer.layer.borderWidth = 0.7 */
-        /*
-        view.addSubview(textField)
-        view.addSubview(infoButton)
-        view.addSubview(doneButton)
-        view.addSubview(titleField) */
         doneButton.setTitle("Find account", for: .normal)
         titleField.text = "Account number/IBAN"
         textField.placeholder = "Enter account number/IBAN"
@@ -241,8 +225,6 @@ extension AddBeneficiaryBankDetailViewController {
         bankImage
             .height(constant: 32)
             .width(constant: 32)
-//            .alignEdgesWithSuperview([.top,.right,.left], constants: [6,6,6])
-//            .alignEdgeWithSuperview(.top,constant: 20)
             .centerHorizontallyInSuperview()
             .centerVerticallyInSuperview()
         
@@ -287,10 +269,6 @@ private extension AddBeneficiaryBankDetailViewController {
         viewModel.outputs.bankImage.bind(to: bankImage.rx.loadImage()).disposed(by: rx.disposeBag)
         viewModel.outputs.name.bind(to: bankName.rx.text).disposed(by: rx.disposeBag)
         
-//        viewModel.outputs.showError.subscribe(onNext: { [weak self] error in
-//            self?.showAlert(title: "", message: error, defaultButtonTitle: "common_button_ok".localized)
-//        }).disposed(by: rx.disposeBag)
-        
         bindAccountInfo()
        
     }
@@ -300,7 +278,6 @@ private extension AddBeneficiaryBankDetailViewController {
         viewModel.outputs.title.bind(to: textField.rx.titleText).disposed(by: rx.disposeBag)
         viewModel.outputs.animatesTitleOnEditingBegin.bind(to: textField.rx.animatesTitleOnEditingBegin).disposed(by: rx.disposeBag)
         viewModel.outputs.icon.bind(to: textField.rx.icon).disposed(by: rx.disposeBag)
-      //  viewModel.outputs.placeholder.subscribe(onNext: { [weak self] in self?.textField.placeholder = $0 }).disposed(by: rx.disposeBag)
         viewModel.outputs.attributedText.subscribe(onNext: { [weak self] in
             let selectedRange = self?.textField.selectedTextRange
             self?.textField.attributedText = $0
@@ -332,21 +309,12 @@ private extension AddBeneficiaryBankDetailViewController {
         
         viewModel.outputs.inputError.bind(to: doneButton.rx.isEnabled).disposed(by: rx.disposeBag)
         doneButton.isEnabled = false
-//        viewModel.outputs.valid
-//            .map{ [weak self] in self?.infoButton.isHidden ?? true && $0 ? .valid : .normal }
-//            .bind(to: textField.rx.validationState).disposed(by: rx.disposeBag)
-        
-        
-//        viewModel.outputs.inputError.bind(to: textField.rx.errorText).disposed(by: disposeBag)
-//        viewModel.outputs.inputError.map{ $0 == nil ? .normal : .invalid }
-//            .bind(to: textField.rx.validationState).disposed(by: disposeBag)
     }
 }
 
 // MARK: Textfield delegate
 extension AddBeneficiaryBankDetailViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return true
         return viewModel.outputs.canEdit(text: textField.text ?? "", replacementText: string, inRange: range)
     }
     
@@ -359,41 +327,3 @@ extension AddBeneficiaryBankDetailViewController: UITextFieldDelegate {
         viewModel.inputs.editingEndObserver.onNext(())
     }
 }
-/*
-extension AddBeneficiaryBankDetailViewController {
-
-    func removeForKeyboardNotifications() {
-        NotificationCenter.default.removeObserver(self)
-    }
-
-    func registerForKeyboardNotifications() {
-        NotificationCenter.default
-            .addObserver(self,
-                         selector: #selector(keyboardWillShow),
-                         name: UIResponder.keyboardWillShowNotification,
-                         object: nil)
-        NotificationCenter.default
-            .addObserver(self,
-                         selector: #selector(keyboardWillHide),
-                         name: UIResponder.keyboardWillHideNotification,
-                         object: nil)
-    }
-
-    @objc  func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?
-            .cgRectValue {
-
-            let keyboardHeight = keyboardSize.height
-            sendButtonBottomConstraint.constant = keyboardHeight + 12
-            UIView.animate(withDuration: 1.0) { self.view.layoutIfNeeded() }
-        }
-    }
-
-    @objc func keyboardWillHide(notification: NSNotification) {
-        sendButtonBottomConstraint.constant = 12
-        UIView.animate(withDuration: 1.0) {
-            self.view.layoutIfNeeded()
-        }
-    }
-
-} */

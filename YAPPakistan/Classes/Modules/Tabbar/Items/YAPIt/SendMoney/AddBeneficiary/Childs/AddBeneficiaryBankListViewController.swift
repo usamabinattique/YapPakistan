@@ -38,9 +38,6 @@ class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChild
         return tableView
     }()
 
-//    override var firstReponder: UITextField? {
-//        return searchTextField
-//    }
 
     private var viewModel: AddBeneficiaryBankListViewModelType!
     private var themeService:ThemeService<AppTheme>!
@@ -74,7 +71,7 @@ class AddBeneficiaryBankListViewController: AddBeneficiaryBankListContainerChild
     }
 
     override func didPopFromNavigationController() {
-       // viewModel?.inputs.poppedObserver.onNext(())
+       
     }
     
     override func viewDidLayoutSubviews() {
@@ -138,26 +135,6 @@ private extension AddBeneficiaryBankListViewController {
     func bindViews() {
         guard let viewModel = viewModel else { return }
         
-        /*codeTextField.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
-        viewModel.outputs.timerText.bind(to: timerLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.phoneNumber.bind(to: subHeadingLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.endEditting.bind(to: view.rx.endEditting).disposed(by: rx.disposeBag)
-        viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
-        viewModel.outputs.showError.map{ _ in }.bind(to: codeTextField.rx.clear).disposed(by: rx.disposeBag)
-        viewModel.outputs.showAlert.do(onNext: { [weak self] text in
-            self?.showAlert(title: "",
-                            message: text,
-                            defaultButtonTitle: "common_button_ok".localized,
-                            secondayButtonTitle: nil,
-                            defaultButtonHandler: { [weak self] _ in _ = self?.codeTextField.becomeFirstResponder() },
-                            secondaryButtonHandler: nil,
-                            completion: nil )
-        }).subscribe().disposed(by: rx.disposeBag)
-
-        viewModel.outputs.resendActive.bind(to: resendButton.rx.isEnabled).disposed(by: rx.disposeBag)
-        viewModel.outputs.resendActive.map { $0 ? 1.0 : 0.3 }.bind(to: resendButton.rx.alpha).disposed(by: rx.disposeBag)
-        resendButton.rx.tap.bind(to: viewModel.inputs.resendObserver).disposed(by: rx.disposeBag) */
-        
         searchButton.rx.tap.subscribe(onNext: { [weak self] _ in
             self?.searchButton.isEnabled = false
             self?.viewModel.inputs.searchObserver.onNext(())
@@ -182,15 +159,5 @@ private extension AddBeneficiaryBankListViewController {
             .map{ $0.bank }
             .bind(to: viewModel.inputs.cellSelected)
             .disposed(by: rx.disposeBag)
-        
-       // viewModel.outputs.enableSearch.bind(to: searchButton.rx.isEnabled).disposed(by: rx.disposeBag)
     }
 }
-
-// MARK: Text field delegate
-
-//extension AddBeneficiaryBankListViewController: UITextFieldDelegate {
-//    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-//        return range.location < codeTextField.numberOfTextFields
-//    }
-//}

@@ -123,17 +123,8 @@ class AddSendMoneyBeneficiaryViewModel: AddSendMoneyBeneficiaryViewModelType, Ad
         self.beneficiary = beneficiary
         self.themeService = themeService
         
-       // generateCellViewModels()
         loadCells()
         fetchRequiredData()
-        
-//        backSubject.subscribe(onNext: { [unowned self] in
-//            self.resultSubject.onCompleted()
-//            self.otpRequiredSubject.onCompleted()
-//            self.beneficiaryAddedSubject.onCompleted()
-//        }).disposed(by: disposeBag)
-        
-        otpResultSubject.filter{ if case ResultType.success = $0 { return true }; return false }.map{ _ in }.subscribe(onNext: { [unowned self] in self.addBeneficiary(self.beneficiary) }).disposed(by: disposeBag)
         
         showBeneficiaryAddedSubject.subscribe(onNext: { [weak self] _ in
             self?.showBeneficiaryAddedAlert()
@@ -179,48 +170,6 @@ extension AddSendMoneyBeneficiaryViewModel {
         })).bind(to: beneficiaryAddedSubject).disposed(by: disposeBag)
     }
     
-    func addBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-      /*  YAPProgressHud.showProgressHud()
-        
-        let addBeneficiaryRequest = repository.addBeneficiary(beneficiary).share().do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-        
-        addBeneficiaryRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-            self?.showErrorSubject.onNext($0)
-        }).disposed(by: disposeBag)
-        
-        addBeneficiaryRequest.elements().subscribe(onNext: { [weak self] in
-            self?.beneficiary = $0
-            self?.showBeneficiaryAddedAlert()
-        }).disposed(by: disposeBag) */
-    }
     
-    func verifyBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-      /*  YAPProgressHud.showProgressHud()
-        
-        let verifyRequest = repository.verifyBeneficiaryDetails(beneficiary)
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-            .share()
-        
-        verifyRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-            self?.showErrorSubject.onNext($0)
-        }).disposed(by: disposeBag)
-        
-        verifyRequest.elements().subscribe(onNext:{ [weak self] _ in
-            self?.otpRequiredSubject.onNext(self?.beneficiary ?? SendMoneyBeneficiary())
-        }).disposed(by: disposeBag) */
-    }
-}
-
-extension AddSendMoneyBeneficiaryViewModel {
- /*   func selectCountry(countries: [SendMoneyBeneficiaryCountry]) -> Observable<SendMoneyBeneficiaryCountry> {
-        searchableActionSheet = SearchableActionSheet(title: "Select country", searchPlaceholderText: "Search country", items: countries)
-        searchableActionSheet!.show()
-        return searchableActionSheet!.itemSelected.map{ countries[$0] }
-    }
-    
-    func selectCurrency(currencies: [SendMoneyBeneficiaryCurrency]) -> Observable<SendMoneyBeneficiaryCurrency> {
-        searchableActionSheet = SearchableActionSheet(title: "Select currency", searchPlaceholderText: "Search currency", items: currencies)
-        searchableActionSheet!.show()
-        return searchableActionSheet!.itemSelected.map{ currencies[$0] }
-    } */
+   
 }

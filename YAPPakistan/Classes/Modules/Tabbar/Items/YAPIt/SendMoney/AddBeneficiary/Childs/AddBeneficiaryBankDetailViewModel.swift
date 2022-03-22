@@ -219,17 +219,7 @@ class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, 
         
         nameSubject.onNext(bank.bankName)
         bankImageSubject.onNext((bank.bankLogoUrl, thumbnail(name: bank.bankName)))
-       // generateCellViewModels()
-//        loadCells()
-//        fetchRequiredData()
-//
-//        backSubject.subscribe(onNext: { [unowned self] in
-//            self.resultSubject.onCompleted()
-//            self.otpRequiredSubject.onCompleted()
-//            self.beneficiaryAddedSubject.onCompleted()
-//        }).disposed(by: disposeBag)
-//
-//        otpResultSubject.filter{ if case ResultType.success = $0 { return true }; return false }.map{ _ in }.subscribe(onNext: { [unowned self] in self.addBeneficiary(self.beneficiary) }).disposed(by: disposeBag)
+
         
         showsInfoButtonSubject.onNext(true)
         infoTappedObserverSubject.map { bank.formatMessage }.bind(to: showInfoSubject).disposed(by: disposeBag)
@@ -240,18 +230,9 @@ class AddBeneficiaryBankDetailViewModel: AddBeneficiaryBankDetailViewModelType, 
             .map { text -> Bool in
                 text.count >= bank.accountNoMinLength && text.count <= bank.ibanMaxLength
             }
-            //.map{ "\($0)" }
+          
             .bind(to: inputErrorSubject).disposed(by: disposeBag)
         
-//        textObserverSubject
-//            .map{ text -> String? in
-//                var text = text
-//                if let allowed = inputType.allowedCharacters {
-//                    text?.removeAll{ !allowed.contains($0) }
-//                }
-//                return text  }
-//            .bind(to: textSubject)
-//            .disposed(by: disposeBag)
         
         textObserverSubject.bind(to: textSubject).disposed(by: disposeBag)
         
