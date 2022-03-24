@@ -277,43 +277,32 @@ private extension Y2YFundsTransferViewModel {
         let getTransactionLimit = repository.getTransactionProductLimit(transactionProductCode: TransactionProductCode.y2yTransfer.rawValue)
         let getFee = repository.getFee(productCode: TransactionProductCode.y2yTransfer.rawValue)
         
-        
-        
-        let zipped = Observable.zip(getThreshold, getCustomerBalance,getTransactionLimit,getFee)
-        getThreshold.do(onNext: { _ in
-//            YAPProgressHud.showProgressHud()
-//            print("show")
-        })
-            .flatMap{ _ in zipped.materialize() }
+        Observable.zip(getThreshold, getCustomerBalance, getTransactionLimit, getFee).materialize()
             .do(onNext: { _ in
                 YAPProgressHud.hideProgressHud()
-                print("hide")
-            } )
+            })
             .subscribe(onNext: { [unowned self] materializeEvent in
-                YAPProgressHud.hideProgressHud()
+                
                 switch materializeEvent {
-                case let .next((thresholdRes, customerBalanceRes, transactionLimtRes,feeRes)):
-                    if let thRes = thresholdRes.element, let blnce = customerBalanceRes.element, let limit = transactionLimtRes.element, let fee = feeRes.element {
-                        self.transactionThreshold = thRes
-                        self.thresholdRes.onNext(thRes)
-                        self.customerBalanceRes.onNext(blnce)
-                        self.limitRes.onNext(limit)
+                case let .next((thresholdRes, customerBalanceRes, transactionLimtRes, feeRes)):
+                    if let threshold = thresholdRes.element, let customerBalance = customerBalanceRes.element, let transactionLimit = transactionLimtRes.element, let fee = feeRes.element {
+                        self.transactionThreshold = threshold
+                        self.thresholdRes.onNext(threshold)
+                        self.customerBalanceRes.onNext(customerBalance)
+                        self.limitRes.onNext(transactionLimit)
                         self.feeRes.onNext(fee)
                         self.transactionFee = fee
-                        let min =  Double(limit.minLimit) ?? 0
-                        let max = Double(limit.maxLimit) ?? 0
+                        let min =  Double(transactionLimit.minLimit) ?? 0
+                        let max = Double(transactionLimit.maxLimit) ?? 0
                         self.transactionRange = min...max
                     }
                     
                 case let .error(error):
                     print("error \(error)")
-                    
-                case .completed:
-                    print("completed")
+                case .completed: break
                 }
             }).disposed(by: disposeBag)
       
-        
         Observable.combineLatest(amountSubject.map{ Double($0 ?? "") ?? 0 }, feeRes).map { (amount,fee) -> NSAttributedString in
             let amountFormatted = String(format: "%.2f", fee.fixedAmount ?? 0.0)
             let amount = "PKR \(amountFormatted)"
