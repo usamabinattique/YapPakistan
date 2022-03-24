@@ -33,6 +33,7 @@ enum OTPAction: String, Codable {
     case rmtBeneficiary = "RMT_BENEFICIARY"
     case nonRmtBeneficiary = "SWIFT_BENEFICIARY"
     case cashPickupBeneficiary = "CASHPAYOUT_BENEFICIARY"
+    case ibft = "IBFT_BENEFICIARY"
 
 }
 
@@ -66,6 +67,8 @@ protocol VerifyMobileOTPViewModelOutput {
     var mobileNo: Observable<String?> { get }
     var showAlert: Observable<String> { get }
     var backImage: Observable<BackButtonType> { get }
+    
+    var addBankBeneficiaryResult: Observable<AddBankBeneficiaryResponse> { get }
 }
 
 protocol VerifyMobileOTPViewModelType {
@@ -113,6 +116,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
     private let imageFlagSubject: BehaviorSubject<Bool>
     private let mobileNoSubject = BehaviorSubject<String?>(value: nil)
     private let backImageSubject = BehaviorSubject<BackButtonType>(value: .backEmpty)
+    private let addBankBeneficiaryResultSubject = ReplaySubject<AddBankBeneficiaryResponse>.create(bufferSize: 1)
 
     // inputs
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
@@ -143,6 +147,8 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
     var mobileNo: Observable<String?> { mobileNoSubject.asObservable() }
     var showAlert: Observable<String> { showAlertSubject.asObservable() }
     var backImage: Observable<BackButtonType> { backImageSubject.asObservable() }
+    
+    var addBankBeneficiaryResult: Observable<AddBankBeneficiaryResponse> { addBankBeneficiaryResultSubject.asObservable() }
 
     let disposeBag = DisposeBag()
     let repository: OTPRepositoryType
@@ -160,7 +166,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
          repository: OTPRepositoryType,
          mobileNo: String = "",
          passcode: String,
-         backButtonImage: BackButtonType = .backEmpty) {
+         backButtonImage: BackButtonType = .backEmpty, addBankBeneficiaryInput: AddBankBeneficiaryRequest? = nil) {
         self.headingSubject = BehaviorSubject(value: heading)
         self.subheadingSubject = BehaviorSubject(value: subheading)
         self.badgeSubject = BehaviorSubject(value: badge)
@@ -178,9 +184,18 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
         Observable.combineLatest(textSubject, otpLengthSubject)
             .map { $0.0?.count ?? 0 == $0.1 }.bind(to: validSubject)
             .disposed(by: disposeBag)
-
-        generateOneTimePasscode(mobileNo: mobileNo)
-        verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
+//        generateOneTimePasscode(mobileNo: mobileNo)
+//        verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
+        if action != .ibft {
+            generateOneTimePasscode(mobileNo: mobileNo)
+            verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
+        } else {
+            generateOtpForIBFT(action: .ibft)
+            if let input = addBankBeneficiaryInput {
+                verifyOtpForIBFT(input: input)
+            }
+        }
+       
 
         Observable.combineLatest(otpBlocked, timerSubject.map{ $0 <= 0 })
             .map{ !$0.0 && $0.1 }
@@ -272,7 +287,85 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .map{ (token: $0?.first, phoneNumber: nil, session: nil) }
             .bind(to: resultSubject).disposed(by: disposeBag)
     }
+    
+    
+    func generateOtpForIBFT(action: OTPAction) {
+        
+        let generateOTPRequest = generateOTPSubject
+            .do(onNext: { YAPProgressHud.showProgressHud() })
+            .withLatestFrom(otpActionSubject).flatMap { [unowned self] otpAction -> Observable<Event<String?>> in
+                return self.repository.generate(action: otpAction!.rawValue)
+            }
+            .do(onNext: { _ in
+                    YAPProgressHud.hideProgressHud() })
+            .share()
 
+        generateOTPRequest.errors().map {
+            $0.localizedDescription
+
+        }.bind(to: generateOTPErrorSubject).disposed(by: disposeBag)
+
+        var timerDisposable: Disposable?
+
+        generateOTPRequest.elements().do(onNext: { _ in
+            timerDisposable?.dispose()
+            timerDisposable = self.startTimer()
+        }).map { _ in true }.bind(to: editingSubject).disposed(by: disposeBag)
+
+        generateOTPRequest.elements()
+            .map { _ in "screen_otp_genration_success".localized }
+            .bind(to: showAlertSubject)
+            .disposed(by: disposeBag)
+    }
+    
+    func verifyOtpForIBFT(input: AddBankBeneficiaryRequest) {
+        let verifyRequest = sendSubject
+            .withLatestFrom(Observable.combineLatest(textSubject.unwrap(), otpActionSubject))
+            .do(onNext: { [unowned self] _ in
+                self.editingSubject.onNext(false)
+                YAPProgressHud.showProgressHud()
+            })
+            .flatMap { [unowned self] (otp,action) -> Observable<Event<String?>> in
+                return self.repository.verifyOTP(action: action?.rawValue ?? OTPAction.ibft.rawValue, otp: otp)
+                   
+            }
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .share()
+
+        let isOtpBlocked = verifyRequest.errors().map{ error -> Bool in
+            guard case let NetworkErrors.internalServerError(serverError) = error else { return false }
+            guard serverError?.errors.first?.code == "1095" else { return false }
+            return true
+        }
+
+        isOtpBlocked.bind(to: otpBlocked).disposed(by: disposeBag)
+
+        Observable.merge(isOtpBlocked.filter{ !$0 }.map{ _ in })
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .withLatestFrom(verifyRequest.errors()).map{ $0.localizedDescription }
+            .bind(to: errorSuject)
+            .disposed(by: disposeBag)
+
+        verifyRequest.errors().map { _ in nil }
+            .do(onNext: { [unowned self] in self.otpForRequest = $0 })
+            .bind(to: textSubject).disposed(by: disposeBag)
+        let addBeneficiaryRequest = verifyRequest.elements()
+            .flatMap { [unowned self] _ -> Observable<Event<AddBankBeneficiaryResponse>> in
+                YAPProgressHud.showProgressHud()
+                return repository.addBankBenefiiary(input: input)
+                // .generateLoginOTP(username: mobileNo, passcode: passcode, deviceId: UIDevice.deviceId)
+            }
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .share()
+                
+                
+                addBeneficiaryRequest.errors().map{ $0.localizedDescription }
+                .bind(to: errorSuject)
+                .disposed(by: disposeBag)
+           
+        addBeneficiaryRequest.elements()
+            .bind(to: addBankBeneficiaryResultSubject).disposed(by: disposeBag)
+    }
 }
 
 public extension VerifyMobileOTPViewModel {

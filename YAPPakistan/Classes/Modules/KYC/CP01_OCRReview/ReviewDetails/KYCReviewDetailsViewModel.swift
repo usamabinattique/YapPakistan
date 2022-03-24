@@ -5,10 +5,11 @@
 //  Created by Tayyab on 30/09/2021.
 //
 
-import CardScanner
+import YAPCardScanner
 import Foundation
 import RxSwift
 import YAPComponents
+import Contacts
 
 protocol KYCReviewDetailsViewModelInput {
     var nextObserver: AnyObserver<Void> { get }
@@ -35,7 +36,11 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
     private let cnicNumberSubject = BehaviorSubject<String>(value: "")
     private var cnicFieldsSubject = BehaviorSubject<[KYCReviewFieldViewModel]>(value: [])
     private let showErrorSubject = PublishSubject<String>()
+    private let nameValueSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let fatherNameValueSubject = ReplaySubject<String>.create(bufferSize: 1)
 
+    private var cnicInfo: CNICInfo
+    
     private var nextSubject = PublishSubject<Void>()
     private var successSubject = PublishSubject<Void>()
 
@@ -60,32 +65,48 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
          identityDocument: IdentityDocument,
          cnicNumber: String,
          cnicInfo: CNICInfo) {
-        notifyFields(cnicNumber: cnicNumber, cnicInfo: cnicInfo)
-        bindSaveRequest(identityDocument: identityDocument, cnicNumber: cnicNumber, cnicInfo: cnicInfo,
-                        kycRepository: kycRepository, accountProvider: accountProvider)
+        
+        self.cnicInfo = cnicInfo
+        
+        notifyFields(cnicNumber: cnicNumber)
+        bindSaveRequest(identityDocument: identityDocument, cnicNumber: cnicNumber, kycRepository: kycRepository, accountProvider: accountProvider)
     }
 
-    private func notifyFields(cnicNumber: String, cnicInfo: CNICInfo) {
+    private func notifyFields(cnicNumber: String) {
         cnicNumberSubject.onNext(cnicNumber)
         cnicFieldsSubject.onNext([
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_full_name".localized,
-                                    value: cnicInfo.name),
+                                    value: self.cnicInfo.name, valueChanged: nameValueSubject.asObserver(), isEditable: true),
+            KYCReviewFieldViewModel(heading: "screen_kyc_review_details_father_spouse_name".localized,
+                                    value: self.cnicInfo.fatherSpouseName ?? "", valueChanged: fatherNameValueSubject.asObserver(), isEditable: true),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_gender".localized,
-                                    value: cnicInfo.gender),
+                                    value: self.cnicInfo.gender),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_dob".localized,
-                                    value: parseDate(cnicInfo.dob)),
+                                    value: parseDate(self.cnicInfo.dob)),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_issue_date".localized,
-                                    value: parseDate(cnicInfo.issueDate)),
+                                    value: parseDate(self.cnicInfo.issueDate)),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_expiry_date".localized,
-                                    value: parseDate(cnicInfo.expiryDate)),
+                                    value: parseDate(self.cnicInfo.expiryDate)),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_residential_address".localized,
-                                    value: cnicInfo.residentialAddress)
+                                    value: self.cnicInfo.residentialAddress)
         ])
+        
+        nameValueSubject
+            .subscribe(onNext: { value in
+                if value.length != 0 {
+                    self.cnicInfo.name = value
+                }
+            }).disposed(by: disposeBag)
+        fatherNameValueSubject
+            .subscribe(onNext: { value in
+                if value.length != 0 {
+                    self.cnicInfo.fatherSpouseName = value
+                }
+            }).disposed(by: disposeBag)
     }
 
     private func bindSaveRequest(identityDocument: IdentityDocument,
                                  cnicNumber: String,
-                                 cnicInfo: CNICInfo,
                                  kycRepository: KYCRepository,
                                  accountProvider: AccountProvider) {
         let saveRequest = nextSubject
@@ -95,20 +116,22 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                       let documents = self.extractDocuments(from: identityDocument) else {
                     return .empty()
                 }
-
+                
                 let documentType = "CNIC"
-                let identityNo = cnicNumber.replace(string: "-", replacement: "")
-                                 // getRandomNumber() // FIXME this temporary for testing
+//                let identityNo = cnicNumber.replace(string: "-", replacement: "")
+                //!!!: Random Cnic for testing
+                let identityNo = self.getRandomNumber()
                 let nationality = "PAK"
-                let fullName = cnicInfo.name
-                let gender = cnicInfo.gender
-                let dob = cnicInfo.dob
-                let dateIssue = cnicInfo.issueDate
-                let dateExpiry = cnicInfo.expiryDate
+                let fullName = self.cnicInfo.name
+                let fatherName = self.cnicInfo.fatherSpouseName ?? ""
+                let gender = self.cnicInfo.gender
+                let dob = self.cnicInfo.dob
+                let dateIssue = self.cnicInfo.issueDate
+                let dateExpiry = self.cnicInfo.expiryDate
 
                 return kycRepository.saveDocuments(documents, documentType: documentType,
                                                    identityNo: identityNo, nationality: nationality,
-                                                   fullName: fullName, gender: gender, dob: dob,
+                                                   fullName: fullName, fatherName: fatherName, gender: gender, dob: dob,
                                                    dateIssue: dateIssue, dateExpiry: dateExpiry)
             }
             .share()
@@ -158,7 +181,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
     }
     
     private func getRandomNumber() -> String {
-        var prefix = "784198243"
+        var prefix = "352023333"
         let randomInt1 = Int.random(in: 1000 ... 5000)
         prefix += "\(randomInt1)"
         return prefix

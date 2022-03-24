@@ -21,7 +21,7 @@ struct CreateNewPasscodeBuilder {
             terms: "screen_create_passcode_display_button_terms_and_conditions".localized,
             action: "screen_create_passcode_button_create_new_passcode".localized
         )
-        let pinRange: ClosedRange<Int> = 4...6
+        let pinRange: ClosedRange<Int> = 4...4
 
         let viewModel = CreateNewPasscodeViewModel(repository: pinRepository,
                                                    credentialsManager: container.credentialsStore,

@@ -53,7 +53,11 @@ class PasscodeViewModel: PasscodeViewModelType, PasscodeViewModelInputs, Passcod
     // MARK: - Outputs - Implementation of "outputs" protocol
     public var result: Observable<String> { resultSubject.asObservable() }
     public var pinValid: Observable<Bool> { pinValidSubject.asObservable() }
-    public var pinText: Observable<String?> { pinTextSubject.asObservable() }
+    public var pinText: Observable<String?> {
+        return pinTextSubject
+            .map({ String($0?.map{ _ in Character("\u{25CF}") } ?? []) })
+            .asObservable()
+    }
     public var error: Observable<String> { errorSubject.asObservable() }
     public var shake: Observable<Void> { shakeSubject.asObservable() }
     public var back: Observable<Void> { backSubject.asObservable() }
@@ -102,7 +106,9 @@ class PasscodeViewModel: PasscodeViewModelType, PasscodeViewModelInputs, Passcod
             }.bind(to: pinTextSubject).disposed(by: disposeBag)
 
         pinTextSubject.distinctUntilChanged()
-            .map({ [unowned self] in ($0 ?? "").count >= self.pinRange.lowerBound })
+            .map({ [unowned self] in
+                ($0 ?? "").count >= self.pinRange.lowerBound
+            })
             .bind(to: pinValidSubject)
             .disposed(by: disposeBag)
 
