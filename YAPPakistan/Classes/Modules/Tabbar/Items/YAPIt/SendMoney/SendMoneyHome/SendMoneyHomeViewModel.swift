@@ -67,7 +67,7 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
     private let showErrorSubject = PublishSubject<String>()
     private let showActivitySubject = PublishSubject<Bool>()
 
-    private let allBeneficiaryDataSourceSubject = BehaviorSubject<[SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>]>(value: [])
+    private let allBeneficiaryDataSourceSubject = ReplaySubject<[SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>]>.create(bufferSize: 1)
     private let recentBeneficiaryDataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]>(value: [])
     private let cellViewModelsSubject = BehaviorSubject<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]>(value: [])
     private let sendMoneySubject = PublishSubject<SendMoneyBeneficiary>()
@@ -119,7 +119,7 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
         fetchRecentBeneficiaries()
         
         
-        allBeneficiaryDataSourceSubject.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
+        allBeneficiaryDataSourceSubject.map { $0.count > 1 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
 
         /// firebase event logging
         
@@ -167,8 +167,11 @@ private extension SendMoneyHomeViewModel {
             self?.allBeneficiaryDataSourceSubject.onNext([SectionModel(model: 0, items: [])])
         }).disposed(by: disposeBag)
         
-        allIBFTBenefeciries.elements().subscribe(onNext: { responseData in
+        allIBFTBenefeciries.elements().subscribe(onNext: { [weak self] responseData in
             print("Elements: \(responseData)")
+            if responseData.isEmpty {
+                self?.allBeneficiaryDataSourceSubject.onNext([SectionModel(model: 0, items: [])])
+            }
         }).disposed(by: disposeBag)
         
         let allBeneficiaries = allIBFTBenefeciries.elements().withLatestFrom(
