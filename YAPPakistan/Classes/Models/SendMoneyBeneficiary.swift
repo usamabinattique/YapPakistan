@@ -66,6 +66,7 @@ public struct SendMoneyBeneficiary: Codable {
     public var firstName: String?
     public var lastName: String?
     var title: String?
+    var beneficiaryPictureUrl: String?
     var currency: String?
     var phoneNumber: String?
     var IBAN: String?
@@ -97,6 +98,7 @@ public struct SendMoneyBeneficiary: Codable {
         case beneficiaryID = "beneficiaryId"
         case nickName = "nickName"
         case title = "title"
+        case beneficiaryPictureUrl = "beneficiaryPictureUrl"
         case firstName = "firstName"
         case lastName = "lastName"
         case currency = "currency"
@@ -125,7 +127,7 @@ public struct SendMoneyBeneficiary: Codable {
 public extension SendMoneyBeneficiary {
     
     static var mocked: SendMoneyBeneficiary {
-        return SendMoneyBeneficiary(type: .domestic, country: "GB", isRMTCountry: true, isCashPickUpAvailable: nil, id: 123, beneficiaryID: "12344", nickName: "John Doe",  firstName: "John", lastName: "Doe", title: "John Doe", currency: "GBP", phoneNumber: "(403) 292-1100", IBAN: "AE02345612344567", swiftCode: nil, bankName: "Bank Alfalah", branchName: nil, bankLogoUrl: "https://s3-eu-west-1.amazonaws.com//qa-yap-pk-documents-public/banks/Bank Alfalah.png", branchAddress: "Pakistan, 340 5TH AVE SW, CALGARY, AB", identifierCode1Name: nil, identifierCode2Name: nil, identifierCode1: nil, identifierCode2: nil, selectedCountry: nil, bankCity: nil, cbwsiCompliant: nil, lastTranseferDate: nil)
+        return SendMoneyBeneficiary(type: .domestic, country: "GB", isRMTCountry: true, isCashPickUpAvailable: nil, id: 123, beneficiaryID: "12344", nickName: "John Doe",  firstName: "John", lastName: "Doe", title: "John Doe", beneficiaryPictureUrl: "", currency: "GBP", phoneNumber: "(403) 292-1100", IBAN: "AE02345612344567", swiftCode: nil, bankName: "Bank Alfalah", branchName: nil, bankLogoUrl: "https://s3-eu-west-1.amazonaws.com//qa-yap-pk-documents-public/banks/Bank Alfalah.png", branchAddress: "Pakistan, 340 5TH AVE SW, CALGARY, AB", identifierCode1Name: nil, identifierCode2Name: nil, identifierCode1: nil, identifierCode2: nil, selectedCountry: nil, bankCity: nil, cbwsiCompliant: nil, lastTranseferDate: nil)
     }
     
     var fullName: String {
@@ -141,6 +143,7 @@ public extension SendMoneyBeneficiary {
         beneficiaryID = beneficiary.beneficiaryID
         nickName = beneficiary.nickName
         title = beneficiary.title
+        beneficiaryPictureUrl = beneficiary.beneficiaryPictureUrl
         firstName = beneficiary.firstName
         lastName = beneficiary.lastName
         currency = beneficiary.currency
@@ -206,7 +209,7 @@ extension SendMoneyBeneficiary: YapItBeneficiary {
     }
     
     public var profilePhoto: (photoUrl: String?, initialsImage: UIImage?) {
-        (nil, title?.initialsImage(color: color))
+        (beneficiaryPictureUrl, title?.initialsImage(color: color))
     }
 }
 
@@ -214,7 +217,7 @@ extension SendMoneyBeneficiary: YapItBeneficiary {
 
 extension SendMoneyBeneficiary: RecentBeneficiaryType {
     public var beneficiaryImage: ImageWithURL {
-        (nil, fullName.initialsImage(color: color))
+        (beneficiaryPictureUrl, fullName.initialsImage(color: color))
     }
     
     public var beneficiaryTitle: String? {

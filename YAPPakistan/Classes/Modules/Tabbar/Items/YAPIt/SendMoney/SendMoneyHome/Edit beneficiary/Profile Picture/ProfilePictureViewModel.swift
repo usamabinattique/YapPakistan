@@ -78,6 +78,6 @@ extension ProfilePictureViewModel {
 
         request.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
 
-        request.elements().map { beneficiary in PictureReviewResult.uploaded("") }.bind(to: resultSubject).disposed(by: disposeBag)
+        request.elements().filter { $0.beneficiaryPictureUrl != nil }.map { beneficiary in PictureReviewResult.uploaded(beneficiary.beneficiaryPictureUrl!) }.bind(to: resultSubject).disposed(by: disposeBag)
     }
 }
