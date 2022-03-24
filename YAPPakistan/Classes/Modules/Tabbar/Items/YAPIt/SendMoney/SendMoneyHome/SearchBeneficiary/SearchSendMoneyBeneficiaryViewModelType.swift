@@ -97,7 +97,7 @@ private extension SearchSendMoneyBeneficiaryViewModel {
     func search() {
         
         let filtered = textSubject.filter { !($0?.isEmpty ?? true) }.unwrap().map { [unowned self] text -> [SendMoneyBeneficiary] in
-            return self.allBeneficiaries.filter { $0.fullName.lowercased().contains(text.lowercased()) || ($0.nickName?.lowercased().contains(text.lowercased()) ?? false) } }
+            return self.allBeneficiaries.filter { $0.accountTitle.lowercased().contains(text.lowercased()) || ($0.nickName?.lowercased().contains(text.lowercased()) ?? false) } }
         
         let unfiltered = textSubject.filter { $0?.isEmpty ?? true }.map { [unowned self] _ in self.allBeneficiaries }
         
