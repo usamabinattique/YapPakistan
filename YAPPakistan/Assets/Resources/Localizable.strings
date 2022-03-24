@@ -460,7 +460,13 @@
 "screen_yap_it_button_request_money" = "Request Money";
 
 // MARK: Screen send money
-
+"screen_send_money_edit_beneficiary_display_text_iban" = "IBAN: ";
+"screen_send_money_edit_beneficiary_display_text_transfer_type" = "Transfer type";
+"screen_add_beneficiary_detail_input_text_nick_name_hint" = "Add nickname";
+"screen_add_beneficiary_detail_display_text_transfer_nick_name" = "Nickname";
+"screen_send_money_edit_beneficiary_title" = "View beneficiary";
+"screen_send_money_save_beneficiary_button_title" = "Save";
+"screen_send_money_delete_beneficiary_button_title" = "Delete beneficiary";
 "screen_send_money_display_text_title" = "Send money";
 "screen_send_money_display_text_recent_transfer" = "Recent transfers";
 "screen_send_money_input_text_search_hint" = "Search";

@@ -377,6 +377,25 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
+    public func editBeneficiary<T: Codable>(_ documents: [(data: Data, format: String)],
+                                            id: String,
+                                            nickname: String?) -> Observable<T> {
+        var docs: [DocumentUploadRequest] = []
+        for document in documents {
+            let info = fileInfo(from: document.format)
+            docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
+        }
+
+        var formData = [ "id": id ]
+        if let nick = nickname { formData.updateValue(nick, forKey: "nickname") }
+
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/beneficiaries/bank-transfer",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient, documents: docs, route: route,
+                      progressObserver: nil, otherFormValues: formData)
+    }
+    
     public func classifyContacts<T: Codable>(contacts: [(name: String, phoneNumber: String, email: String?, photoUrl: String?, countryCode: String)]) -> Observable<T> {
         var allContacts = [Contact]()
         for contact in contacts {
