@@ -64,7 +64,8 @@ class SendMoneyHomeBeneficiaryCellViewModel: SendMoneyHomeBeneficiaryCellViewMod
         self.beneficiary = beneficiary
         let nickname = beneficiary.nickName
         let fullName = beneficiary.title
-        imageSubject.onNext((nil, fullName!.initialsImage(color: UIColor.red)))
+        let color = UIColor.randomColor()
+        imageSubject.onNext((nil, fullName!.initialsImage(color: color)))
         nameSubject.onNext(nickname)
         fullNameSubject.onNext(fullName)
         typeColorSubject.onNext(beneficiary.type! == .cashPayout ? UIColor.darkGray : UIColor.darkGray)

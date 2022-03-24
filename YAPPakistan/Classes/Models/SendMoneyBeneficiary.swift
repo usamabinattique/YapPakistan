@@ -132,6 +132,10 @@ public extension SendMoneyBeneficiary {
         return [firstName, lastName].compactMap { $0 }.joined(separator: " ")
     }
     
+    var accountTitle : String {
+        return title == nil ? "" : title as! String
+    }
+    
     init(_ beneficiary: SendMoneyBeneficiary, index: Int) {
         type = beneficiary.type
         country = beneficiary.country
@@ -206,7 +210,7 @@ extension SendMoneyBeneficiary: YapItBeneficiary {
     }
     
     public var profilePhoto: (photoUrl: String?, initialsImage: UIImage?) {
-        (nil, title?.initialsImage(color: color))
+        (nil, accountTitle.initialsImage(color: color))
     }
 }
 
@@ -214,7 +218,7 @@ extension SendMoneyBeneficiary: YapItBeneficiary {
 
 extension SendMoneyBeneficiary: RecentBeneficiaryType {
     public var beneficiaryImage: ImageWithURL {
-        (nil, fullName.initialsImage(color: color))
+        (nil, accountTitle.initialsImage(color: color))
     }
     
     public var beneficiaryTitle: String? {

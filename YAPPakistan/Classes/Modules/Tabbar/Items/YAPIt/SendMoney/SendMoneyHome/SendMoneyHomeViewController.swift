@@ -72,18 +72,6 @@ class SendMoneyHomeViewController: UIViewController {
         return tableView
     }()
     
-//    private lazy var collectionView: UICollectionView = {
-//        let layout = UICollectionViewFlowLayout()
-//
-//        layout.scrollDirection = .vertical
-//        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        collectionView.backgroundColor = .red
-//        collectionView.delegate = self
-//        collectionView.isDirectionalLockEnabled = true
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        return collectionView
-//    }()
-    
     // MARK: Properties
     
     private var viewModel: SendMoneyHomeViewModelType!
