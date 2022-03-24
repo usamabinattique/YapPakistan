@@ -14,12 +14,13 @@ enum SendMoneyBeneficiaryType: String, Codable {
     case cashPayout = "CASHPAYOUT"
     case domestic = "DOMESTIC"
     case uaefts = "UAEFTS"
+    case IBFT = "IBFT"
 }
 
 extension SendMoneyBeneficiaryType {
     var localizeDescription: String {
         switch self {
-        case .swift, .rmt, .domestic, .uaefts:
+        case .swift, .rmt, .domestic, .uaefts, .IBFT:
             return "Bank transfer"
         case .cashPayout:
             return "Cash pickup"
@@ -47,6 +48,8 @@ extension SendMoneyBeneficiaryType {
             return .domestic
         case .uaefts:
             return .uaeftsTransfer
+        case .IBFT:
+            return .domestic
         }
     }
 }
@@ -62,12 +65,14 @@ public struct SendMoneyBeneficiary: Codable {
     var nickName: String?
     public var firstName: String?
     public var lastName: String?
+    var title: String?
     var currency: String?
     var phoneNumber: String?
     var IBAN: String?
     var swiftCode: String?
     var bankName: String?
     var branchName: String?
+    var bankLogoUrl: String?
     var branchAddress: String?
     var identifierCode1Name: String?
     var identifierCode2Name: String?
@@ -90,7 +95,8 @@ public struct SendMoneyBeneficiary: Codable {
         case country = "country"
         case id = "id"
         case beneficiaryID = "beneficiaryId"
-        case nickName = "title"
+        case nickName = "nickName"
+        case title = "title"
         case firstName = "firstName"
         case lastName = "lastName"
         case currency = "currency"
@@ -99,6 +105,7 @@ public struct SendMoneyBeneficiary: Codable {
         case swiftCode = "swiftCode"
         case bankName = "bankName"
         case branchName = "branchName"
+        case bankLogoUrl = "bankLogoUrl"
         case branchAddress = "branchAddress"
         case identifierCode1Name = "identifierCode1Name"
         case identifierCode2Name = "identifierCode2Name"
@@ -118,11 +125,15 @@ public struct SendMoneyBeneficiary: Codable {
 public extension SendMoneyBeneficiary {
     
     static var mocked: SendMoneyBeneficiary {
-        return SendMoneyBeneficiary(type: .domestic, country: "GB", isRMTCountry: true, isCashPickUpAvailable: nil, id: 123, beneficiaryID: "12344", nickName: "John Doe", firstName: "John", lastName: "Doe", currency: "GBP", phoneNumber: "(403) 292-1100", IBAN: "AE02345612344567", swiftCode: nil, bankName: "Allied Bank Limited", branchName: nil, branchAddress: "Pakistan, 340 5TH AVE SW, CALGARY, AB", identifierCode1Name: nil, identifierCode2Name: nil, identifierCode1: nil, identifierCode2: nil, selectedCountry: nil, bankCity: nil, cbwsiCompliant: nil, lastTranseferDate: nil)
+        return SendMoneyBeneficiary(type: .domestic, country: "GB", isRMTCountry: true, isCashPickUpAvailable: nil, id: 123, beneficiaryID: "12344", nickName: "John Doe",  firstName: "John", lastName: "Doe", title: "John Doe", currency: "GBP", phoneNumber: "(403) 292-1100", IBAN: "AE02345612344567", swiftCode: nil, bankName: "Bank Alfalah", branchName: nil, bankLogoUrl: "https://s3-eu-west-1.amazonaws.com//qa-yap-pk-documents-public/banks/Bank Alfalah.png", branchAddress: "Pakistan, 340 5TH AVE SW, CALGARY, AB", identifierCode1Name: nil, identifierCode2Name: nil, identifierCode1: nil, identifierCode2: nil, selectedCountry: nil, bankCity: nil, cbwsiCompliant: nil, lastTranseferDate: nil)
     }
     
     var fullName: String {
         return [firstName, lastName].compactMap { $0 }.joined(separator: " ")
+    }
+    
+    var accountTitle : String {
+        return title == nil ? "" : title as! String
     }
     
     init(_ beneficiary: SendMoneyBeneficiary, index: Int) {
@@ -133,6 +144,7 @@ public extension SendMoneyBeneficiary {
         id = beneficiary.id
         beneficiaryID = beneficiary.beneficiaryID
         nickName = beneficiary.nickName
+        title = beneficiary.title
         firstName = beneficiary.firstName
         lastName = beneficiary.lastName
         currency = beneficiary.currency
@@ -162,7 +174,6 @@ public extension SendMoneyBeneficiary {
     var color: UIColor {
         UIColor.colorFor(listItemIndex: index ?? 0)
     }
-    
 }
 
 extension SendMoneyBeneficiary {
@@ -199,7 +210,7 @@ extension SendMoneyBeneficiary: YapItBeneficiary {
     }
     
     public var profilePhoto: (photoUrl: String?, initialsImage: UIImage?) {
-        (nil, fullName.initialsImage(color: color))
+        (nil, accountTitle.initialsImage(color: color))
     }
 }
 
@@ -207,11 +218,16 @@ extension SendMoneyBeneficiary: YapItBeneficiary {
 
 extension SendMoneyBeneficiary: RecentBeneficiaryType {
     public var beneficiaryImage: ImageWithURL {
-        (nil, fullName.initialsImage(color: color))
+        (nil, accountTitle.initialsImage(color: color))
     }
     
     public var beneficiaryTitle: String? {
-        self.name
+        if self.name == "" {
+            return self.title
+        }
+        else {
+            return self.name
+        }
     }
     
     public var beneficiarySubTitle: String? {

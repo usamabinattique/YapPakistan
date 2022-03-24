@@ -117,9 +117,15 @@ extension EditSendMoneyBeneficiaryViewController {
         backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
         saveBarButtonItem.button.rx.tap.bind(to: viewModel.inputs.saveBeneficiaryObserver).disposed(by: disposeBag)
         sendMoneyButton.rx.tap.bind(to: viewModel.inputs.sendMoneyObserver).disposed(by: disposeBag)
-        deleteBeneficiaryButton.rx.tap.bind(to: viewModel.inputs.deleteBeneficiaryObserver).disposed(by: disposeBag)
+        deleteBeneficiaryButton.rx.tap.bind(to: viewModel.inputs.showDeletePopupObserver).disposed(by: disposeBag)
         
         /// Event flow: VM -> VC
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
+            /// Delete Beneficiary
+        viewModel.outputs.showDeletePopup.subscribe(onNext: { [weak self] in
+            self?.showAlert(title: "", message: "screen_send_money_edit_beneficiary_delete_message_popup".localized, defaultButtonTitle: "screen_send_money_display_text_delete".localized, secondayButtonTitle: "common_button_cancel_lowercase".localized, defaultButtonHandler: { [weak self] _ in
+                self?.viewModel.inputs.deleteBeneficiaryObserver.onNext(())
+            }, secondaryButtonHandler: nil, completion: nil)
+        }).disposed(by: disposeBag)
     }
 }

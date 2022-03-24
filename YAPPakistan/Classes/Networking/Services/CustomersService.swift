@@ -371,10 +371,18 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
+    public func fetchAllIBFTBeneficiaries<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
     public func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T> {
-        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=BANK_TRANSFER", headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent", query: ["type" : "BANK_TRANSFER"], headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
+        
+//        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", headers: authorizationProvider.authorizationHeaders)
+//        return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func editBeneficiary<T: Codable>(_ documents: [(data: Data, format: String)],
@@ -387,13 +395,19 @@ public class CustomersService: BaseService, CustomerServiceType {
         }
 
         var formData = [ "id": id ]
-        if let nick = nickname { formData.updateValue(nick, forKey: "nickname") }
+        if let nick = nickname { formData.updateValue(nick, forKey: "nickName") }
 
-        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/beneficiaries/bank-transfer",
+        let route = APIEndpoint<String>(.put, apiConfig.customersURL, "/api/beneficiaries/bank-transfer",
                                         headers: authorizationProvider.authorizationHeaders)
 
         return upload(apiClient: apiClient, documents: docs, route: route,
                       progressObserver: nil, otherFormValues: formData)
+    }
+    
+    public func deleteBeneficiary<T: Codable>(id: String) -> Observable<T> {
+        let route = APIEndpoint<String>(.delete, apiConfig.customersURL, "/api/beneficiaries/bank-transfer/\(id)", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func classifyContacts<T: Codable>(contacts: [(name: String, phoneNumber: String, email: String?, photoUrl: String?, countryCode: String)]) -> Observable<T> {

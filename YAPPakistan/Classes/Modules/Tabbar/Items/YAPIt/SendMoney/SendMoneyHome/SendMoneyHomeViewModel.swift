@@ -28,7 +28,8 @@ protocol SendMoneyHomeViewModelOutput {
     var beneficiaryAvailable: Observable<Bool> { get }
     var recentBeneficiaryAvailable: Observable<Bool> { get }
     var showError: Observable<String> { get }
-    var allBeneficiaryDataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
+    var allBeneficiaryDataSource: Observable<[SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>]> { get }
+    var recentBeneficiaryCellViewModel: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { get }
 
     var sendMoney: Observable<SendMoneyBeneficiary> { get }
     var showActivity: Observable<Bool> { get }
@@ -37,6 +38,7 @@ protocol SendMoneyHomeViewModelOutput {
     var recentBeneficiaryViewModel: RecentBeneficiaryViewModelType { get }
     var title: Observable<String?> { get }
     var listLabel: Observable<String?> { get }
+    var cellViewModels: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { get }
 }
 
 protocol SendMoneyHomeViewModelType {
@@ -45,15 +47,16 @@ protocol SendMoneyHomeViewModelType {
 }
 
 class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModelInput, SendMoneyHomeViewModelOutput {
-
+    
     // MARK: - Properties
     let disposeBag = DisposeBag()
     var inputs: SendMoneyHomeViewModelInput { return self }
     var outputs: SendMoneyHomeViewModelOutput { return self }
+    
 
     private let repository : YapItRepositoryType!
     private let sendMoneyType: SendMoneyType!
-
+    private var accountProvider: AccountProvider!
     private let recentBeneficiariesViewModel = RecentBeneficiaryViewModel()
 
     private let closeSubject = PublishSubject<Void>()
@@ -64,7 +67,9 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
     private let showErrorSubject = PublishSubject<String>()
     private let showActivitySubject = PublishSubject<Bool>()
 
-    private let allBeneficiaryDataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
+    private let allBeneficiaryDataSourceSubject = BehaviorSubject<[SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>]>(value: [])
+    private let recentBeneficiaryDataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]>(value: [])
+    private let cellViewModelsSubject = BehaviorSubject<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]>(value: [])
     private let sendMoneySubject = PublishSubject<SendMoneyBeneficiary>()
     private let editBeneficiarySubject = PublishSubject<SendMoneyBeneficiary>()
     private let deleteBeneficiarySubject = PublishSubject<SendMoneyBeneficiary>()
@@ -88,7 +93,9 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
     var addBeneficiary: Observable<Void> { return addSubject.asObservable() }
     var beneficiaryAvailable: Observable<Bool> { return beneficiaryAvailableSubject.asObservable() }
     var showError: Observable<String> { return showErrorSubject.asObservable() }
-    var allBeneficiaryDataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return allBeneficiaryDataSourceSubject.asObservable() }
+    var allBeneficiaryDataSource: Observable<[SectionModel<Int, SendMoneyHomeBeneficiaryCellViewModel>]> { return allBeneficiaryDataSourceSubject.asObservable() }
+    var recentBeneficiaryCellViewModel: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { return recentBeneficiaryDataSourceSubject.asObservable() }
+    var cellViewModels: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { cellViewModelsSubject.asObservable() }
     var recentBeneficiaryAvailable: Observable<Bool> { return recentBeneficiaryAvailableSubject.asObservable() }
     var sendMoney: Observable<SendMoneyBeneficiary> { return sendMoneySubject.asObservable() }
     var showActivity: Observable<Bool> { return showActivitySubject.asObservable() }
@@ -99,47 +106,58 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
     var listLabel: Observable<String?> { listLabelSubject.asObservable() }
 
     // MARK: - Init
-    init(repository: YapItRepositoryType, sendMoneyType: SendMoneyType) {
+    init(repository: YapItRepositoryType, sendMoneyType: SendMoneyType, accountProvider: AccountProvider) {
         self.repository = repository
         self.sendMoneyType = sendMoneyType
+        self.accountProvider = accountProvider
 
         titleSubject = BehaviorSubject(value: sendMoneyType.title)
         listLabelSubject = BehaviorSubject(value: sendMoneyType.listLabel)
 
-//        fetchBeneficiaries()
-//        deleteBeneficiary()
-        
-
-
+        fetchBeneficiaries()
+        deleteBeneficiary()
+        fetchRecentBeneficiaries()
         allBeneficiaryDataSourceSubject.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
-
-        /// firebase event logging
-//        sendMoneySubject.map{ _ in SendMoneyEvent.beneficiaryTapped() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
-//        addSubject.map{ _ in SendMoneyEvent.addBeneficiary() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
-//        editBeneficiarySubject.map{ _ in SendMoneyEvent.editBeneficiary() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
+        
+        sendMoneySubject.subscribe(onNext: { _ in
+            
+            print("Beneficary tapped")
+            
+        }).disposed(by: disposeBag)
     }
 }
-/*
+
 private extension SendMoneyHomeViewModel {
     func fetchBeneficiaries() {
+        
+        self.showLoadingEffects()
+        let allIBFTBenefeciries = refreshSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+                .flatMap{ self.repository.fetchAllIBFTBeneficiaries() }
+            .share()
+        
+        allIBFTBenefeciries.subscribe(onNext: { _ in
+            YAPProgressHud.hideProgressHud()
 
-        let allBeneficiariesRequest = refreshSubject.withLatestFrom(showActivitySubject.startWith(false))
-            .do(onNext: { [weak self] in if !$0 { self?.showLoadingEffects() } })
-            .flatMap { [unowned self] _ in self.repository.fetchBeneficiaries() }.share()
-
-        allBeneficiariesRequest.map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
-
-        allBeneficiariesRequest.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
-
-        allBeneficiariesRequest.errors().subscribe(onNext: { [weak self] (_) in
+        }).disposed(by: disposeBag)
+        
+        allIBFTBenefeciries.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
+        
+        allIBFTBenefeciries.errors().subscribe(onNext: { [weak self] (_) in
             self?.allBeneficiaryDataSourceSubject.onNext([SectionModel(model: 0, items: [])])
         }).disposed(by: disposeBag)
-
-        let allBeneficiaries = allBeneficiariesRequest.elements().withLatestFrom(Observable.combineLatest(allBeneficiariesRequest.elements(), SessionManager.current.currentAccount.map{ $0?.customer.homeCountry2Digit }.unwrap()))
+        
+        allIBFTBenefeciries.elements().subscribe(onNext: { responseData in
+            print("Elements: \(responseData)")
+        }).disposed(by: disposeBag)
+        
+        let allBeneficiaries = allIBFTBenefeciries.elements().withLatestFrom(
+            Observable.combineLatest(allIBFTBenefeciries.elements(), self.accountProvider.currentAccount.map{ $0?.customer.homeCountry }.unwrap())
+        )
             .map{ [unowned self] beneficiaries, homeCountry -> [SendMoneyBeneficiary] in
                 switch self.sendMoneyType {
                 case .local:
-                    return beneficiaries.filter{ $0.type == .uaefts || $0.type == .domestic }
+                    return beneficiaries.filter{ $0.type == .uaefts || $0.type == .domestic || $0.type == .IBFT }
                 case .international:
                     return beneficiaries.filter{ ($0.type == .rmt || $0.type == .swift) && $0.country != homeCountry }
                 case .homeCountry(let country, _):
@@ -149,25 +167,39 @@ private extension SendMoneyHomeViewModel {
                 default:
                     return beneficiaries
                 } }
-
+        
         allBeneficiaries
             .map { $0.indexed.map { SendMoneyHomeBeneficiaryCellViewModel($0) } }
             .map { [SectionModel(model: 0, items: $0)] }
-            .bind(to: allBeneficiaryDataSourceSubject)
+            .subscribe(onNext : { [weak self] model in
+                print("Model Printed: \(model)")
+                self?.allBeneficiaryDataSourceSubject.onNext( (model) )
+            })
+            .disposed(by: disposeBag)
+        allBeneficiaries.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
+        searchObserverSubject.withLatestFrom(allBeneficiaries).bind(to: searchBeneficiariesSubject).disposed(by: disposeBag)
+    }
+    
+    func fetchRecentBeneficiaries() {
+        
+        let recentIBFTBenefeciries = refreshSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+                .flatMap{ self.repository.fetchRecentSendMoneyBeneficiaries() }
+            .share()
+        
+        recentIBFTBenefeciries.elements().map{ $0.count > 0 }.bind(to: recentBeneficiaryAvailableSubject).disposed(by: disposeBag)
+
+        recentIBFTBenefeciries.elements().map{ $0.map{ $0 as RecentBeneficiaryType }.indexed }.bind(to: recentBeneficiariesViewModel.inputs.recentBeneficiaryObserver).disposed(by: disposeBag)
+
+        recentIBFTBenefeciries.elements()
+            .subscribe(onNext: { responseData in
+                print("Recent Benefs Elements: \(responseData)")
+                print("Recent Benefs Elements Count: \(responseData.count)")
+            })
             .disposed(by: disposeBag)
 
-        allBeneficiaries.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
-
-        searchObserverSubject.withLatestFrom(allBeneficiaries).bind(to: searchBeneficiariesSubject).disposed(by: disposeBag)
-
-        let recentBeneficiaries = allBeneficiaries.map{ $0.filter{ $0.lastTranseferDate != nil }.sorted{ $0.beneficiaryLasTransferDate > $1.beneficiaryLasTransferDate }.prefix(15) }
-
-        recentBeneficiaries.map{ $0.count > 0 }.bind(to: recentBeneficiaryAvailableSubject).disposed(by: disposeBag)
-
-        recentBeneficiaries.map{ $0.map{ $0 as RecentBeneficiaryType }.indexed }.bind(to: recentBeneficiariesViewModel.inputs.recentBeneficiaryObserver).disposed(by: disposeBag)
-
         recentBeneficiariesViewModel.outputs.itemSelected
-            .withLatestFrom(Observable.combineLatest(recentBeneficiariesViewModel.outputs.itemSelected, recentBeneficiaries))
+            .withLatestFrom(Observable.combineLatest(recentBeneficiariesViewModel.outputs.itemSelected, recentIBFTBenefeciries.elements()))
             .map{ $0.1[$0.0] }
             .bind(to: sendMoneySubject)
             .disposed(by: disposeBag)
@@ -177,16 +209,16 @@ private extension SendMoneyHomeViewModel {
 
         deleteBeneficiarySubject.map { _ in true }.bind(to: showActivitySubject).disposed(by: disposeBag)
 
-        let deleteRequest = deleteBeneficiarySubject.flatMap { [unowned self] in self.repository.deleteBeneficiary(String($0.id ?? 0))}.share()
+        let deleteRequest = deleteBeneficiarySubject.flatMap { [unowned self] in self.repository.deleteBeneficiary(id: String($0.id ?? 0))}.share()
 
         deleteRequest.errors().map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
 
         deleteRequest.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
 
         deleteRequest.elements().map { _ in }.bind(to: refreshSubject).disposed(by: disposeBag)
-        deleteRequest.elements().map{ _ in SendMoneyEvent.deleteBeneficiary() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
+//        deleteRequest.elements().map{ _ in SendMoneyEvent.deleteBeneficiary() }.bind(to: AppAnalytics.shared.rx.logEvent).disposed(by: disposeBag)
     }
-
+//
     func showLoadingEffects() {
         var dummyObjects: [SendMoneyHomeBeneficiaryCellViewModel] = []
         for _ in 1...12 {
@@ -195,7 +227,7 @@ private extension SendMoneyHomeViewModel {
         allBeneficiaryDataSourceSubject.onNext([SectionModel(model: 0, items: dummyObjects)])
     }
 }
-*/
+
 fileprivate extension SendMoneyType {
     var title: String? {
         switch self {
@@ -213,7 +245,7 @@ fileprivate extension SendMoneyType {
     var listLabel: String {
         switch self {
         case .local:
-            return "All local beneficiaries"
+            return "All beneficiaries"
         default:
             return "All beneficiaries"
         }

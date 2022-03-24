@@ -44,6 +44,7 @@ class EditSendMoneyBeneficiaryCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.result.subscribe(onNext: { [weak self] status in
+            self?.localRoot.dismiss(animated: true, completion: nil)
             self?.result.onNext(.success(()))
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)

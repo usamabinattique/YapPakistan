@@ -25,6 +25,7 @@
 "common_button_settings" = "Settings";
 "common_button_completed" = "Completed";
 "common_button_cancel" = "Cancel";
+"common_button_cancel_lowercase" = "cancel";
 "common_button_install" = "Install";
 "common_button_yes" = "Yes";
 "common_button_go_to_dashboard"  =  "Go to dashboard";
@@ -460,6 +461,7 @@
 "screen_yap_it_button_request_money" = "Request Money";
 
 // MARK: Screen send money
+"screen_send_money_edit_beneficiary_delete_message_popup" = "Are you sure you want to delete this beneficiary?";
 "screen_send_money_edit_beneficiary_display_text_iban" = "IBAN: ";
 "screen_send_money_edit_beneficiary_display_text_transfer_type" = "Transfer type";
 "screen_add_beneficiary_detail_input_text_nick_name_hint" = "Add nickname";
@@ -472,6 +474,7 @@
 "screen_send_money_input_text_search_hint" = "Search";
 "screen_send_money_display_text_all_beneficiaries" = "All beneficiaries";
 "screen_send_money_display_text_edit" = "Edit";
+"screen_send_money_display_text_view" = "View";
 "screen_send_money_display_text_delete" = "Delete";
 "screen_send_money_no_contacts_display_text_title" = "YAP to YAP";
 "screen_send_money_no_contacts_display_text_sub_heading" = "Who would you like to send money to?";
