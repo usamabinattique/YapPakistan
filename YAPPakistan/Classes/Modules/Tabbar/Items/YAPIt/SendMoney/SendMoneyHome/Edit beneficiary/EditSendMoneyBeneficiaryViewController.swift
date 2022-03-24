@@ -28,6 +28,8 @@ class EditSendMoneyBeneficiaryViewController: KeyboardAvoidingViewController {
     private lazy var sendMoneyButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_send_money_display_text_title".localized)
     private lazy var deleteBeneficiaryButton = UIButtonFactory.createButton(title: "screen_send_money_delete_beneficiary_button_title".localized, backgroundColor: .clear)
     
+    private lazy var imagePicker = UIImagePickerController()
+    
     // MARK: Properties
     
     private let disposeBag = DisposeBag()
@@ -127,5 +129,67 @@ extension EditSendMoneyBeneficiaryViewController {
                 self?.viewModel.inputs.deleteBeneficiaryObserver.onNext(())
             }, secondaryButtonHandler: nil, completion: nil)
         }).disposed(by: disposeBag)
+        /// Open Action sheet for picture
+        viewModel.outputs.addProfilePicture.subscribe(onNext: { [weak self] _ in
+            self?.openActionSheet()
+        }).disposed(by: disposeBag)
+    }
+}
+
+// MARK: Image picker
+
+extension EditSendMoneyBeneficiaryViewController {
+    
+    func openActionSheet() {
+        let cameraAction = UIAlertAction(title: "Take a Photo", style: .default) { [unowned self] _ in
+            self.pickImageFromCamera()
+        }
+        
+        let gelleryAction = UIAlertAction(title: "Choose from Library", style: .default) { [unowned self] _ in
+            self.pickImageFromGallery()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        alertController.popoverPresentationController?.sourceView = self.view
+        alertController.popoverPresentationController?.sourceRect = self.view.frame
+        
+        alertController.addAction(gelleryAction)
+        alertController.addAction(cameraAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+        
+    }
+    
+    func pickImageFromCamera() {
+        imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .camera
+        imagePicker.allowsEditing = true
+        imagePicker.delegate = self
+        self.present(imagePicker, animated: true, completion: nil)
+        
+    }
+    
+    func pickImageFromGallery() {
+        imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.allowsEditing = false
+        imagePicker.delegate = self
+        self.present(imagePicker, animated: true, completion: nil)
+    }
+}
+
+extension EditSendMoneyBeneficiaryViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        imagePicker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as? UIImage else { return }
+        imagePicker.dismiss(animated: true) { [weak self] in
+            self?.viewModel.inputs.imageObserver.onNext(image)
+        }
     }
 }

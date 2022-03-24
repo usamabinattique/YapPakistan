@@ -163,6 +163,13 @@ public final class UserSessionContainer {
         return EditSendMoneyBeneficiaryViewController(themeService: parent.themeService, viewModel)
     }
     
+    func makeProfilePictureViewController(image: UIImage, beneficiary: SendMoneyBeneficiary) -> ProfilePictureViewController {
+        
+        let yapITRepository = makeYapItRepository()
+        let viewModel = ProfilePictureViewModel(beneficiary: beneficiary, repository: yapITRepository, image: image)
+        return ProfilePictureViewController(themeService: parent.themeService, viewModel)
+    }
+    
     func makeWaitingListController() -> WaitingListRankViewController {
         let onBoardingRepository = makeOnBoardingRepository()
         let viewModel = WaitingListRankViewModel(accountProvider: accountProvider, referralManager: parent.referralManager, onBoardingRepository: onBoardingRepository)

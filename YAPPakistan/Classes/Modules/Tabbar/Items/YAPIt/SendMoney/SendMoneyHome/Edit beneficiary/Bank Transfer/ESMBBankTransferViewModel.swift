@@ -14,8 +14,10 @@ class ESMBBankTransferViewModel: EditSendMoneyBeneficiaryViewModel {
         
         var validations = [Observable<Bool>]()
         
-        let userImage = YapContactCellViewModel(beneficiary.title ?? "", iban: beneficiary.IBAN ?? "", profilePhoto: beneficiary.profilePhoto)
-        viewModels.append(userImage)
+        let userImageAndInfo = YapContactCellViewModel(beneficiary.title ?? "", iban: beneficiary.IBAN ?? "", profilePhoto: beneficiary.profilePhoto)
+        profilePictureUpdatedSubject.subscribe(onNext: { imageURL in userImageAndInfo.inputs.updateProfilePicture.onNext((imageURL, nil))}).disposed(by: disposeBag)
+        userImageAndInfo.outputs.addProfilePicture.bind(to: addProfilePictureObserver).disposed(by: disposeBag)
+        viewModels.append(userImageAndInfo)
         
         let transferType = ASMBTextInputCellViewModelPlainText(.transferType, beneficiary: beneficiary, isReviewing: true, isEnabled: false)
         transferType.inputs.textObserver.onNext(beneficiary.type?.localizeDescription)

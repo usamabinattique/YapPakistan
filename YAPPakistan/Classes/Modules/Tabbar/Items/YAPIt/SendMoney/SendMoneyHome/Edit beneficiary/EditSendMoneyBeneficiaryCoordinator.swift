@@ -9,6 +9,7 @@ import Foundation
 import YAPCore
 import YAPComponents
 import RxSwift
+import MapKit
 
 class EditSendMoneyBeneficiaryCoordinator: Coordinator<ResultType<Void>> {
     
@@ -43,6 +44,11 @@ class EditSendMoneyBeneficiaryCoordinator: Coordinator<ResultType<Void>> {
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
         
+        viewController.viewModel.outputs.image.subscribe(onNext: { [unowned self] imageChoosed in
+            guard let image = imageChoosed else { return }
+            self.profilePictureReview(image, beneficiary: self.beneficiary, uploadedObserver: viewController.viewModel.inputs.profilePictureUpdatedObserver, retakeObserver: viewController.viewModel.inputs.retakeObserver)
+        }).disposed(by: rx.disposeBag)
+        
         viewController.viewModel.outputs.result.subscribe(onNext: { [weak self] status in
             self?.localRoot.dismiss(animated: true, completion: nil)
             self?.result.onNext(.success(()))
@@ -50,5 +56,22 @@ class EditSendMoneyBeneficiaryCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         return result
+    }
+    
+    func profilePictureReview(_ image: UIImage, beneficiary: SendMoneyBeneficiary, uploadedObserver: AnyObserver<String>, retakeObserver: AnyObserver<Void>) {
+        coordinate(to: ProfilePictureCoordinator(root: localRoot, container: container, image: image, beneficiary: beneficiary)).subscribe(onNext: {
+            
+            switch $0 {
+            case .success(let reivewResult):
+                switch reivewResult {
+                case .uploaded(let pictureUrl):
+                    uploadedObserver.onNext(pictureUrl)
+                case .retake:
+                    retakeObserver.onNext(())
+                }
+            case .cancel:
+                print("Canceled")
+            }
+        }).disposed(by: rx.disposeBag)
     }
 }

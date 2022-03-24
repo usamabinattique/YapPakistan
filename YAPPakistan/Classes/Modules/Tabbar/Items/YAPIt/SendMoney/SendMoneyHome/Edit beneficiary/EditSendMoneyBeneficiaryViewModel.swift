@@ -13,18 +13,25 @@ import YAPComponents
 
 protocol EditSendMoneyBeneficiaryViewModelInput {
     var backObserver: AnyObserver<Void> { get }
+    var retakeObserver: AnyObserver<Void> { get }
+    var imageObserver: AnyObserver<UIImage?> { get }
     var sendMoneyObserver: AnyObserver<Void> { get }
     var saveBeneficiaryObserver: AnyObserver<Void> { get }
     var showDeletePopupObserver: AnyObserver<Void> { get }
     var deleteBeneficiaryObserver: AnyObserver<Void> { get }
+    var addProfilePictureObserver: AnyObserver<Void> { get }
+    var profilePictureUpdatedObserver: AnyObserver<String> { get }
     var cellSelectedObserver: AnyObserver<ReusableTableViewCellViewModelType> { get }
 }
 
 protocol EditSendMoneyBeneficiaryViewModelOutput {
     var back: Observable<Void> { get }
-    var error: Observable<String> { get }
     var result: Observable<Void> { get }
+    var error: Observable<String> { get }
+    var image: Observable<UIImage?> { get }
     var showDeletePopup: Observable<Void> { get }
+    var addProfilePicture: Observable<Void> { get }
+    var profilePictureUpdated: Observable<String> { get }
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
 }
 
@@ -45,10 +52,13 @@ class EditSendMoneyBeneficiaryViewModel: EditSendMoneyBeneficiaryViewModelType, 
     private let backSubject = PublishSubject<Void>()
     private let resultSubject = PublishSubject<Void>()
     private let errorSubject = PublishSubject<String>()
+    private let imageSubject = PublishSubject<UIImage?>()
     private let sendMoneySubject = PublishSubject<Void>()
     private let saveBeneficiarySubject = PublishSubject<Void>()
     private let showDeletePopupSubject = PublishSubject<Void>()
     private let deleteBeneficiarySubject = PublishSubject<Void>()
+    private let addProfilePictureSubject = PublishSubject<Void>()
+    let profilePictureUpdatedSubject = PublishSubject<String>()
     private let cellSelectedSubject = PublishSubject<ReusableTableViewCellViewModelType>()
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     
@@ -58,17 +68,24 @@ class EditSendMoneyBeneficiaryViewModel: EditSendMoneyBeneficiaryViewModelType, 
     
     // MARK: inputs
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
+    var imageObserver: AnyObserver<UIImage?> { imageSubject.asObserver() }
     var sendMoneyObserver: AnyObserver<Void> { sendMoneySubject.asObserver() }
+    var retakeObserver: AnyObserver<Void> { addProfilePictureSubject.asObserver() }
     var saveBeneficiaryObserver: AnyObserver<Void> { saveBeneficiarySubject.asObserver() }
     var showDeletePopupObserver: AnyObserver<Void> { showDeletePopupSubject.asObserver() }
     var deleteBeneficiaryObserver: AnyObserver<Void> { deleteBeneficiarySubject.asObserver() }
+    var addProfilePictureObserver: AnyObserver<Void> { addProfilePictureSubject.asObserver() }
+    var profilePictureUpdatedObserver: AnyObserver<String> { profilePictureUpdatedSubject.asObserver() }
     var cellSelectedObserver: AnyObserver<ReusableTableViewCellViewModelType> { cellSelectedSubject.asObserver() }
     
     // MARK: outputs
     var back: Observable<Void> { backSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
     var result: Observable<Void> { resultSubject.asObservable() }
+    var image: Observable<UIImage?> { imageSubject.asObservable() }
     var showDeletePopup: Observable<Void> { showDeletePopupSubject.asObservable() }
+    var addProfilePicture: Observable<Void> { addProfilePictureSubject.asObservable() }
+    var profilePictureUpdated: Observable<String> { profilePictureUpdatedSubject.asObservable() }
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { dataSourceSubject.asObservable() }
     
     // MARK: - Init

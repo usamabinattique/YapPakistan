@@ -16,11 +16,13 @@ import UIKit
 
 protocol YapContactCellViewModelInput {
     var addProfilePictureObserver: AnyObserver<Void> { get }
+    var updateProfilePicture: AnyObserver<(String?, UIImage?)> { get }
 }
 
 protocol YapContactCellViewModelOutput {
     var name: Observable<String?> { get }
     var iban: Observable<String?> { get }
+    var addProfilePicture: Observable<Void> { get }
     var image: Observable<(String?, UIImage?)> { get }
 }
 
@@ -45,12 +47,14 @@ class YapContactCellViewModel: YapContactCellViewModelType, YapContactCellViewMo
     private let addProfilePictureSubject = PublishSubject<Void>()
     
     // MARK: - Inputs
+    var updateProfilePicture: AnyObserver<(String?, UIImage?)> { imageSubject.asObserver() }
     var addProfilePictureObserver: AnyObserver<Void> { addProfilePictureSubject.asObserver() }
     
     // MARK: - Outputs
     var name: Observable<String?> { return nameSubject.asObservable() }
     var iban: Observable<String?> { return ibanSubject.asObservable() }
     var image: Observable<(String?, UIImage?)> { imageSubject.asObservable() }
+    var addProfilePicture: Observable<Void> { addProfilePictureSubject.asObservable() }
     
     
     // MARK: - Init

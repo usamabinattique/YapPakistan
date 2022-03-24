@@ -123,6 +123,8 @@ private extension YapContactCell {
 
 private extension YapContactCell {
     func bindViews() {
+        addProfilePictureButton.rx.tap.bind(to: viewModel.inputs.addProfilePictureObserver).disposed(by: disposeBag)
+        
         viewModel.outputs.name.bind(to: name.rx.text).disposed(by: disposeBag)
         viewModel.outputs.iban.bind(to: iban.rx.text).disposed(by: disposeBag)
         viewModel.outputs.image.bind(to: userImage.rx.loadImage()).disposed(by: disposeBag)
