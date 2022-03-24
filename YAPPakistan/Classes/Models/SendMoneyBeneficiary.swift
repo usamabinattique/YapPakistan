@@ -218,7 +218,12 @@ extension SendMoneyBeneficiary: RecentBeneficiaryType {
     }
     
     public var beneficiaryTitle: String? {
-        self.name
+        if self.name == "" {
+            return self.title
+        }
+        else {
+            return self.name
+        }
     }
     
     public var beneficiarySubTitle: String? {
