@@ -53,10 +53,8 @@ class SendMoneyHomeViewController: UIViewController {
     private lazy var searchButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .groupTableViewBackground
-        //  button.tintColor = .greyDark
         button.setImage(UIImage.sharedImage(named: "icon_search")?.asTemplate, for: .normal)
         button.setTitle("screen_send_money_input_text_search_hint".localized, for: .normal)
-        // button.setTitleColor(.greyDark, for: .normal)
         button.titleLabel?.font = .small
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -105,7 +103,6 @@ class SendMoneyHomeViewController: UIViewController {
         setupTheme()
         bindViews()
         bindTableView()
-        //bindRecentBeneficiaryCollectionView()
         viewModel.inputs.refreshObserver.onNext(())
     }
     
@@ -212,6 +209,8 @@ private extension SendMoneyHomeViewController {
             .bind({ UIColor($0.primaryDark)}, to: [heading.rx.textColor, allBeneficiaryLabel.rx.textColor])
             .bind({ UIColor($0.greyDark)}, to: [subHeading.rx.textColor])//[searchBarButtonItem.barItem.rx.tintColor])
             .bind({ UIColor($0.primary)}, to: [addNowButton.rx.backgroundColor, navigationItem.rightBarButtonItem!.rx.tintColor, navigationItem.leftBarButtonItem!.rx.tintColor])
+            .bind({ UIColor($0.greyDark)}, to: [searchButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.greyDark)}, to: [searchButton.rx.tintColor])
             .disposed(by: rx.disposeBag)
     }
 }
