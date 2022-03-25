@@ -288,6 +288,7 @@ public class CustomersService: BaseService, CustomerServiceType {
             "nationality": nationality,
             "firstName": fullName,
             "lastName": fatherName,
+            "fullName": fullName+fatherName,
             "gender": gender,
             "dob": dob,
             "dateIssue": dateIssue,
