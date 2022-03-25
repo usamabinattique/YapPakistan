@@ -170,6 +170,17 @@ public final class UserSessionContainer {
         return ProfilePictureViewController(themeService: parent.themeService, viewModel)
     }
     
+    func makeSendMoneyFundsTransferViewController(sendMoneyType: SendMoneyType, beneficiary: SendMoneyBeneficiary) -> SendMoneyFundsTransferViewController {
+        
+        let yapITRepository = makeYapItRepository()
+        let viewModel: SendMoneyFundsTransferViewModel
+        
+        ///if sendMoneyType == .local {
+        viewModel = SendMoneyFundsTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: yapITRepository) //SendMoneyFundsTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: yapITRepository)
+        //}
+        return SendMoneyFundsTransferViewController(viewModel, themeService: parent.themeService) //EditSendMoneyBeneficiaryViewController(themeService: parent.themeService, viewModel)
+    }
+    
     func makeWaitingListController() -> WaitingListRankViewController {
         let onBoardingRepository = makeOnBoardingRepository()
         let viewModel = WaitingListRankViewModel(accountProvider: accountProvider, referralManager: parent.referralManager, onBoardingRepository: onBoardingRepository)

@@ -115,13 +115,13 @@ private extension SendMoneyDashboardCoordinator {
     func search(_ localRoot: UINavigationController, beneficairies: [SearchableBeneficiaryType]) {
         let viewModel = SendMoneySearchViewModel(beneficairies)
         let viewController = SendMoneySearchViewController(self.container.themeService, viewModel: viewModel)
-        
+
         localRoot.pushViewController(viewController, animated: true)
-        
+
         viewModel.outputs.cancel.subscribe(onNext: { [weak self] in
             self?.localRoot.popViewController(animated: true)
         }).disposed(by: rx.disposeBag)
-        
+
         viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
             if $0 is SendMoneyBeneficiary {
               //  self?.sendMoneyFundsTransfer($0 as! SendMoneyBeneficiary, localRoot: localRoot)

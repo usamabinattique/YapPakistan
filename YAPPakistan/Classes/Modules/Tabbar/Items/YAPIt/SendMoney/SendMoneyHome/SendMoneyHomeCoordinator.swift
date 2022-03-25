@@ -45,15 +45,15 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
     private let refreshBeneficiaries = PublishSubject<Void>()
     private let cancelFromSendMoneyFundTransfer = PublishSubject<Void>()
     private var sendOnlyOneEvent = 0
-   // private var repository: SendMoneyRepositoryType!
+    // private var repository: SendMoneyRepositoryType!
     private let sendMoneyType: SendMoneyType!
     private var container: UserSessionContainer!
     private let disposeBag = DisposeBag()
     
-   // public override var feature: CoordinatorFeature { .sendMoney }
+    // public override var feature: CoordinatorFeature { .sendMoney }
     
     public init(root: UIViewController, container: UserSessionContainer, sendMoneyType: SendMoneyType) {
-//        self.repository = repository
+        //        self.repository = repository
         self.container = container
         self.sendMoneyType = sendMoneyType
         self.root = root
@@ -63,10 +63,10 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = SendMoneyHomeViewModel(repository: container.makeYapItRepository(), sendMoneyType: sendMoneyType, accountProvider: container.accountProvider)
         let viewController = SendMoneyHomeViewController(themeService: container.themeService, viewModel: viewModel)
         
-//        #warning("set the UIBarStyle in a proper way")
-//       let statusBarStyle: UIBarStyle = SessionManager.current.currentAccountType == .household ? UIBarStyle.black : UIBarStyle.default
+        //        #warning("set the UIBarStyle in a proper way")
+        //       let statusBarStyle: UIBarStyle = SessionManager.current.currentAccountType == .household ? UIBarStyle.black : UIBarStyle.default
         
-     //   localRoot = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController, themed: SessionManager.current.currentAccountType == .household, barStyle: statusBarStyle)
+        //   localRoot = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController, themed: SessionManager.current.currentAccountType == .household, barStyle: statusBarStyle)
         
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         
@@ -83,7 +83,7 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.sendMoney.subscribe(onNext: { [weak self] in
-           // self?.sendMoney($0)
+            // self?.sendMoney($0)
             print($0)
         }).disposed(by: disposeBag)
         
@@ -102,7 +102,7 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
         return result.do(onNext: { [weak self] _ in
             self?.cancelFromSendMoneyFundTransfer.onCompleted()
         })
-    }
+            }
 }
 
 private extension SendMoneyHomeCoordinator {
@@ -118,7 +118,6 @@ private extension SendMoneyHomeCoordinator {
     func addBeneficiary() {
         let coordinator = AddSendMoneyBeneficiaryCoordinator(root: localRoot, container: AddBankBeneficiaryContainer(parent: self.container), sendMoneyType: sendMoneyType)
         coordinate(to: coordinator).subscribe(onNext: { [weak self] in
-
             if case let ResultType.success(result) = $0 {
                 self?.refreshBeneficiaries.onNext(())
                 if let beneficiary = result {
@@ -127,26 +126,26 @@ private extension SendMoneyHomeCoordinator {
             }
         }).disposed(by: disposeBag)
     }
-  /*
+  
     func editBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-        coordinate(to: EditSendMoneyBeneficiaryCoordinator(root: localRoot, beneficiary: beneficiary, repository: repository)).subscribe(onNext: { [weak self] in
-            if case ResultType.success = $0 {
-                self?.refreshBeneficiaries.onNext(())
-            }
-        }).disposed(by: disposeBag)
+                coordinate(to: EditSendMoneyBeneficiaryCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
+                    if case ResultType.success = $0 {
+                        self?.refreshBeneficiaries.onNext(())
+                    }
+                }).disposed(by: disposeBag)
     }
-    
-    func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
-        
-        coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, beneficiary: beneficiary, repository: repository)).subscribe(onNext:{ [weak self] in
-            if case ResultType.success = $0 {
-                self?.result.onNext(.success(()))
-                self?.result.onCompleted()
-            }else{
-                self?.cancelFromSendMoneyFundTransfer.onNext(())
-            }
-        }).disposed(by: disposeBag)
-    }*/
+     
+//     func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
+//
+//     coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, beneficiary: beneficiary, repository: repository)).subscribe(onNext:{ [weak self] in
+//     if case ResultType.success = $0 {
+//     self?.result.onNext(.success(()))
+//     self?.result.onCompleted()
+//     }else{
+//     self?.cancelFromSendMoneyFundTransfer.onNext(())
+//     }
+//     }).disposed(by: disposeBag)
+//     }
     
     func searchBeneficiaries(_ allBeneficiaries: [SendMoneyBeneficiary]) {
         let viewModel = SearchSendMoneyBeneficiaryViewModel(allBeneficiaries, repository: container.makeYapItRepository())
@@ -154,13 +153,13 @@ private extension SendMoneyHomeCoordinator {
         
         localRoot.pushViewController(viewController, animated: true)
         
-//        viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
-//            self?.sendMoney($0)
-//        }).disposed(by: disposeBag)
+        //        viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
+        //            self?.sendMoney($0)
+        //        }).disposed(by: disposeBag)
         
-//        viewModel.outputs.editBeneficiary.subscribe(onNext: { [weak self] in
-//            self?.editBeneficiary($0)
-//        }).disposed(by: disposeBag)
+        //        viewModel.outputs.editBeneficiary.subscribe(onNext: { [weak self] in
+        //            self?.editBeneficiary($0)
+        //        }).disposed(by: disposeBag)
         
         refreshBeneficiaries.bind(to: viewModel.inputs.refreshObserver).disposed(by: disposeBag)
         
@@ -170,5 +169,5 @@ private extension SendMoneyHomeCoordinator {
                 self?.sendOnlyOneEvent = 1
             }
         }).disposed(by: disposeBag)
-    } 
+    }
 }

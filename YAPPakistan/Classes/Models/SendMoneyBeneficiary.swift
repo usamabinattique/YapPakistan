@@ -134,6 +134,10 @@ public extension SendMoneyBeneficiary {
         return [firstName, lastName].compactMap { $0 }.joined(separator: " ")
     }
     
+    var accountTitle : String {
+        return title == nil ? "" : title as! String
+    }
+    
     init(_ beneficiary: SendMoneyBeneficiary, index: Int) {
         type = beneficiary.type
         country = beneficiary.country
@@ -221,7 +225,12 @@ extension SendMoneyBeneficiary: RecentBeneficiaryType {
     }
     
     public var beneficiaryTitle: String? {
-        self.name
+        if self.name == "" {
+            return self.title
+        }
+        else {
+            return self.name
+        }
     }
     
     public var beneficiarySubTitle: String? {

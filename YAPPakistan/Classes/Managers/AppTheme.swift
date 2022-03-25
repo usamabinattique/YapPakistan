@@ -64,7 +64,7 @@ struct LightTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
-    var separatorColor: Color       { Color(hex: "#DEE3F1") }
+    var separatorColor: Color       { Color(hex: "#979797") }
     var clear: UIColor                { UIColor.clear }
 
 }

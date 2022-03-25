@@ -39,7 +39,7 @@ class SendMoneyHomeViewController: UIViewController {
     private lazy var stackView: UIStackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .fill, distribution: .fill, spacing: 14)
     
     private lazy var recentBeneficiaryView: RecentBeneficiaryView = {
-        let view = RecentBeneficiaryView(with: themeService)
+        let view = RecentBeneficiaryView(with: self.themeService)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -53,10 +53,8 @@ class SendMoneyHomeViewController: UIViewController {
     private lazy var searchButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .groupTableViewBackground
-        //  button.tintColor = .greyDark
         button.setImage(UIImage.sharedImage(named: "icon_search")?.asTemplate, for: .normal)
         button.setTitle("screen_send_money_input_text_search_hint".localized, for: .normal)
-        // button.setTitleColor(.greyDark, for: .normal)
         button.titleLabel?.font = .small
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -70,18 +68,6 @@ class SendMoneyHomeViewController: UIViewController {
         tableView.backgroundColor = .white
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
-    }()
-    
-    private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        
-        layout.scrollDirection = .vertical
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .clear
-        collectionView.delegate = self
-        collectionView.isDirectionalLockEnabled = true
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        return collectionView
     }()
     
     // MARK: Properties
@@ -117,7 +103,6 @@ class SendMoneyHomeViewController: UIViewController {
         setupTheme()
         bindViews()
         bindTableView()
-        bindRecentBeneficiaryCollectionView()
         viewModel.inputs.refreshObserver.onNext(())
     }
     
@@ -171,13 +156,11 @@ private extension SendMoneyHomeViewController {
         allBeneficiaryView.addSubview(allBeneficiaryLabel)
         allBeneficiaryView.addSubview(tableView)
         
-        recentBeneficiaryView.addSubview(collectionView)
-        
         tableView.register(SendMoneyHomeBeneficiaryCell.self, forCellReuseIdentifier: SendMoneyHomeBeneficiaryCell.defaultIdentifier)
         tableView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0, right: 0)
         
-        collectionView.register(SendMoneyHomeBeneficiaryCoolectionCell.self, forCellWithReuseIdentifier: SendMoneyHomeBeneficiaryCoolectionCell.defaultIdentifier)
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
+//        collectionView.register(SendMoneyHomeBeneficiaryCoolectionCell.self, forCellWithReuseIdentifier: SendMoneyHomeBeneficiaryCoolectionCell.defaultIdentifier)
+//        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 15, right: 0)
     }
     
     func setupConstraints() {
@@ -226,6 +209,8 @@ private extension SendMoneyHomeViewController {
             .bind({ UIColor($0.primaryDark)}, to: [heading.rx.textColor, allBeneficiaryLabel.rx.textColor])
             .bind({ UIColor($0.greyDark)}, to: [subHeading.rx.textColor])//[searchBarButtonItem.barItem.rx.tintColor])
             .bind({ UIColor($0.primary)}, to: [addNowButton.rx.backgroundColor, navigationItem.rightBarButtonItem!.rx.tintColor, navigationItem.leftBarButtonItem!.rx.tintColor])
+            .bind({ UIColor($0.greyDark)}, to: [searchButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.greyDark)}, to: [searchButton.rx.tintColor])
             .disposed(by: rx.disposeBag)
     }
 }
@@ -234,6 +219,7 @@ private extension SendMoneyHomeViewController {
 
 private extension SendMoneyHomeViewController {
     func bindViews() {
+        
         addNowButton.rx.tap.bind(to: viewModel.inputs.addObserver).disposed(by: disposeBag)
         viewModel.outputs.beneficiaryAvailable.bind(to: noBeneficiaryView.rx.isHidden).disposed(by: disposeBag)
         viewModel.outputs.beneficiaryAvailable.map { !$0 }.bind(to: beneficiaryView.rx.isHidden).disposed(by: disposeBag)
@@ -242,13 +228,13 @@ private extension SendMoneyHomeViewController {
         
         searchButton.rx.tap.bind(to: viewModel.inputs.searchObserver).disposed(by: disposeBag)
         
-        //        tableView.rx.modelSelected(SendMoneyHomeBeneficiaryCellViewModel.self).filter { (model) -> Bool in
-        //            return !model.isShimmering
-        //        }.map{ $0.beneficiary }.bind(to: viewModel.inputs.beneficiaryObserver).disposed(by: disposeBag)
+        tableView.rx.modelSelected(SendMoneyHomeBeneficiaryCellViewModel.self).filter { (model) -> Bool in
+            return !model.isShimmering
+        }.map{ $0.beneficiary }.bind(to: viewModel.inputs.beneficiaryObserver).disposed(by: disposeBag)
         
         viewModel.outputs.showActivity.bind(to: navigationController?.view.rx.showActivity ?? view.rx.showActivity).disposed(by: disposeBag)
         
-        //  recentBeneficiaryView.configure(with: viewModel.outputs.recentBeneficiaryViewModel)
+        recentBeneficiaryView.configure(with: self.themeService, viewModel: viewModel.outputs.recentBeneficiaryViewModel)
         
         viewModel.outputs.title.debug("Screen title:").bind(to: navigationItem.rx.title).disposed(by: disposeBag)
         viewModel.outputs.listLabel.bind(to: allBeneficiaryLabel.rx.text).disposed(by: disposeBag)
@@ -267,45 +253,6 @@ private extension SendMoneyHomeViewController {
         tableView.rx.modelSelected(SendMoneyHomeBeneficiaryCellViewModel.self).filter { (model) -> Bool in
             return !model.isShimmering
         }.map{ $0.beneficiary }.bind(to: viewModel.inputs.beneficiaryObserver).disposed(by: disposeBag)
-    }
-    
-    func bindRecentBeneficiaryCollectionView() {
-        recentBeneficiaryDataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
-            
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: indexPath) as! RxUICollectionViewCell
-            cell.configure(with: viewModel, theme: self.themeService)
-            return cell
-            
-        })
-        
-        viewModel.outputs.recentBeneficiaryCellViewModel
-            .do(onNext: { model in
-                
-                print("Hello")
-                
-            }).bind(to: collectionView.rx.items(dataSource: recentBeneficiaryDataSource)).disposed(by: disposeBag)
-                
-                
-                
-                
-        //SendMoneyHomeBeneficiaryCellViewModel
-        
-//        collectionView.rx.modelSelected(YapItTileCellViewModel.self).subscribe(on: MainScheduler.instance).map{ $0.action }.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
-        
-//        collectionView.rx.modelSelected(YapItTileCellViewModel.self)
-//            .subscribe(onNext: { model in
-//                //TODO: replace hardcode action with model.action
-//                //self.viewModel.inputs.actionObserver.onNext(model.action)
-//                self.viewModel.inputs.actionObserver.onNext(.localTransfer("Pakistan"))
-//            })
-//            .disposed(by: rx.disposeBag)
-        
-        
-        
-//        viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
-//        viewModel.outputs.showsRecentBeneficiary.map{ !$0 }.bind(to: recentBeneficiaryView.rx.isHidden).disposed(by: rx.disposeBag)
-//        recentBeneficiaryView.configure(with: self.themeService, viewModel: viewModel.outputs.recentBeneficiaryViewModel)
-//        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }
 }
 
