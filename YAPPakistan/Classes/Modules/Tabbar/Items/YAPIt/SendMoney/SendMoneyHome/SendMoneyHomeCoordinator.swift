@@ -126,14 +126,6 @@ private extension SendMoneyHomeCoordinator {
             }
         }).disposed(by: disposeBag)
     }
-  
-    func editBeneficiary(_ beneficiary: SendMoneyBeneficiary) {
-                coordinate(to: EditSendMoneyBeneficiaryCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext: { [weak self] in
-                    if case ResultType.success = $0 {
-                        self?.refreshBeneficiaries.onNext(())
-                    }
-                }).disposed(by: disposeBag)
-    }
      
 //     func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
 //
