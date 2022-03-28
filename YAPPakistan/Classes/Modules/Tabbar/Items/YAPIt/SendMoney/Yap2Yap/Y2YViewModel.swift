@@ -196,7 +196,7 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
                         let comb = Observable.combineLatest(obs,a)
                         viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteFriendSubject).disposed(by: disposeBag)
                         return viewModel }
-                    self.allContactModels = allViewModels
+                    self.allContactModels = allViewModels.filter { !$0.contact.isYapUser }
                     self.yapContactModels = allViewModels.filter { $0.contact.isYapUser }
                     guard  let currentIndex = try? self.currentSelected.value() else {
                         self.yapContactSubject.onNext(())
@@ -223,7 +223,7 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
                     viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteFriendSubject).disposed(by: disposeBag)
                     
                     return viewModel }
-                self.allContactModels = allViewModels
+                self.allContactModels = allViewModels.filter { !$0.contact.isYapUser }
                 self.yapContactModels = allViewModels.filter { $0.contact.isYapUser }
                 guard  let currentIndex = try? self.currentSelected.value() else {
                     self.yapContactSubject.onNext(())

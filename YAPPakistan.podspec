@@ -3,8 +3,8 @@ Pod::Spec.new do |spec|
   spec.version               = '0.1.0'
   spec.summary               = 'YAP Pakistan Module'
 
-  spec.homepage              = 'https://bitbucket.org/mb28/ios-b2c-pk/'
-  spec.source                = { :git => 'https://bitbucket.org/mb28/ios-b2c-pk.git',
+  spec.homepage              = 'https://bitbucket.org/yap-technology/ios-b2c-pk/'
+  spec.source                = { :git => 'https://bitbucket.org/yap-technology/ios-b2c-pk.git',
                                  :tag => spec.version.to_s,
                                  :submodules => false }
 
@@ -37,7 +37,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'Alamofire', '~> 5.0'
 
   #MARK: Private
-  spec.dependency 'CardScanner', '1.2.7'
+  spec.dependency 'YAPCardScanner', '1.2.15'
   spec.dependency 'YAPCore', '~> 0'
   spec.dependency 'YAPComponents', '~> 0'
 

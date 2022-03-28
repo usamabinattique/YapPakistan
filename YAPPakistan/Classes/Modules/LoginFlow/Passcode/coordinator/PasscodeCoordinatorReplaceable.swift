@@ -77,7 +77,9 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
             }).disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.forgot.withUnretained(self)
-            .subscribe(onNext: { $0.0.forgotOTPVerification() })
+            .subscribe(onNext: { _ in
+                self.forgotOTPVerification()
+            })
             .disposed(by: rx.disposeBag)
 
         return result
@@ -127,5 +129,17 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
             self.result.onNext(.logout)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
+    }
+    
+    func forgotOTPVerification() {
+        
+        let forgotPasswordContainer = ForgotPasswordContainer(parent: self.container)
+
+        coordinate(to: forgotPasswordContainer.makeForgotPasscodeCoordinator(root: root) )
+            .subscribe(onNext: { [weak self] result in
+                self?.result.onNext(.cancel)
+                self?.result.onCompleted()
+            })
+            .disposed(by: rx.disposeBag)
     }
 }

@@ -152,6 +152,35 @@ public final class UserSessionContainer {
     
     // MARK: Controllers
     
+    func makeEditSendMoneyBeneficiaryViewController(sendMoneyType: SendMoneyType, beneficiary: SendMoneyBeneficiary) -> EditSendMoneyBeneficiaryViewController {
+        
+        let yapITRepository = makeYapItRepository()
+        let viewModel: EditSendMoneyBeneficiaryViewModel
+        
+        ///if sendMoneyType == .local {
+            viewModel = ESMBBankTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: yapITRepository)
+        //}
+        return EditSendMoneyBeneficiaryViewController(themeService: parent.themeService, viewModel)
+    }
+    
+    func makeProfilePictureViewController(image: UIImage, beneficiary: SendMoneyBeneficiary) -> ProfilePictureViewController {
+        
+        let yapITRepository = makeYapItRepository()
+        let viewModel = ProfilePictureViewModel(beneficiary: beneficiary, repository: yapITRepository, image: image)
+        return ProfilePictureViewController(themeService: parent.themeService, viewModel)
+    }
+    
+    func makeSendMoneyFundsTransferViewController(sendMoneyType: SendMoneyType, beneficiary: SendMoneyBeneficiary) -> SendMoneyFundsTransferViewController {
+        
+        let yapITRepository = makeYapItRepository()
+        let viewModel: SendMoneyFundsTransferViewModel
+        
+        ///if sendMoneyType == .local {
+        viewModel = SendMoneyFundsTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: makeY2YRepository(), accountProvider: accountProvider) //SendMoneyFundsTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: yapITRepository)
+        //}
+        return SendMoneyFundsTransferViewController(viewModel, themeService: parent.themeService) //EditSendMoneyBeneficiaryViewController(themeService: parent.themeService, viewModel)
+    }
+    
     func makeWaitingListController() -> WaitingListRankViewController {
         let onBoardingRepository = makeOnBoardingRepository()
         let viewModel = WaitingListRankViewModel(accountProvider: accountProvider, referralManager: parent.referralManager, onBoardingRepository: onBoardingRepository)

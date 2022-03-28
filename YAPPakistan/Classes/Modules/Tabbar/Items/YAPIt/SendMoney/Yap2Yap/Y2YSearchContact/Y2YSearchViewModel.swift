@@ -11,6 +11,7 @@ import Foundation
 import Foundation
 import RxSwift
 import RxDataSources
+import YAPCore
 
 protocol Y2YSearchViewModelInput {
     var textObserver: AnyObserver<String?> { get }
@@ -63,24 +64,32 @@ class Y2YSearchViewModel: Y2YSearchViewModelType, Y2YSearchViewModelInput, Y2YSe
     var contactObserver: AnyObserver<YAPContact> { return contactSubject.asObserver() }
     var yapContactObserver: AnyObserver<Void> { return yapContactSubject.asObserver() }
     var allContactObserver: AnyObserver<Void> { return allContactSubject.asObserver() }
-    var invite: Observable<(YAPContact, String)> { return inviteSubject.asObservable() }
     
     // MARK: - Outputs
     var showError: Observable<String> { return showErrorSubject.asObservable() }
     var contactSelected: Observable<YAPContact> { return contactSelectedSubject.asObservable() }
     var contactText: Observable<String?> { return contactTextSubject.asObservable() }
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObserver() }
+    var invite: Observable<(YAPContact, String)> { return inviteSubject.asObservable() }
     
     // MARK: - Init
-    init(_ contacts: [YAPContact]) {
+    init(_ contacts: [YAPContact], accountProvider: AccountProvider) {
         self.contacts = contacts.map {
-//            [unowned self] in
+            [unowned self] in
             let viewModel = Y2YContactCellViewModel($0)
-            //            viewModel.outputs.invite.bind(to: self.inviteSubject).disposed(by: self.disposeBag)
+            
+            //FIXME: [UMAIR] - Remove this hardcoded .qa environment and move AppReferralManager initialization in common place
+            let currentAccount = accountProvider.currentAccount
+            let appRefMessage = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}
+            let obs = Observable.just($0)
+            let comb = Observable.combineLatest(obs,appRefMessage)
+            viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteSubject).disposed(by: disposeBag)
+            
             return viewModel
         }
         
-        dataSourceSubject.onNext([SectionModel(model: 0, items: contacts
+        dataSourceSubject.onNext([SectionModel(model: 0,
+                                               items:contacts
                                                 .map({Y2YContactCellViewModel($0)})
                                               )])
         
@@ -109,7 +118,7 @@ private extension Y2YSearchViewModel {
                     let lowerText = text.lowercased()
                     let phoneText = text.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "^0", with: "", options: .regularExpression).replacingOccurrences(of: "^\\+", with: "00", options: .regularExpression)
                     
-                    return (text.count > 0 ? ($0.contact.name.lowercased().contains(lowerText) || ($0.contact.fullPhoneNumber.contains(phoneText) || phoneText.isEmpty)) : true) && (currentTab == 1 || $0.contact.isYapUser )
+                    return (text.count > 0 ? ($0.contact.name.lowercased().contains(lowerText) || ($0.contact.fullPhoneNumber.contains(phoneText) || phoneText.isEmpty)) : true) && ((currentTab == 1 && !$0.contact.isYapUser) || (currentTab == 0 && $0.contact.isYapUser))
                 }
                 
                 self.currentContactModels = filtered
@@ -124,32 +133,5 @@ private extension Y2YSearchViewModel {
                 dataSourceSubject.onNext(filteredList)
             })
             .disposed(by: disposeBag)
-        
-//        let filtered = Observable.combineLatest(textSubject.unwrap().map{ $0.trimmingCharacters(in: .whitespacesAndNewlines ) }, currentSelected)
-//            .map{ [unowned self] text, currentTab -> [Y2YContactCellViewModel] in
-//                self.contacts.filter{
-//                    let lowerText = text.lowercased()
-//                    let phoneText = text.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "^0", with: "", options: .regularExpression).replacingOccurrences(of: "^\\+", with: "00", options: .regularExpression)
-//
-//                    return (text.count > 0 ? ($0.contact.name.lowercased().contains(lowerText) || ($0.contact.fullPhoneNumber.contains(phoneText) || phoneText.isEmpty)) : true) && (currentTab == 1 || $0.contact.isYapUser )} }
-//
-//
-//
-//        let noResults = filtered.filter{ $0.count == 0 }.map { _ -> [SectionModel<Int, ReusableTableViewCellViewModelType>] in
-//            return [SectionModel(model: 0, items:  [NoSearchResultCellViewModel()])]
-//        }
-//
-//        let results = filtered.filter{ $0.count > 0 }.map{ allContacts -> [SectionModel<Int, ReusableTableViewCellViewModelType>] in
-//            return [SectionModel(model: 0, items: allContacts.map{ [unowned self] in
-//                let viewModel = Y2YContactCellViewModel($0)
-//                viewModel.outputs.invite.bind(to: self.inviteSubject).disposed(by: self.disposeBag)
-//                return viewModel
-//            })]
-//        }
-        
-//        Observable.combineLatest(contacts, currentSelected)
-//            .map{ $0.1 == 1 || $0.0.count == 0 ? nil : String.init(format: $0.0.count == 1 ? "screen_y2y_display_text_yap_contact".localized : "screen_y2y_display_text_yap_contacts".localized, $0.0.count)}
-//            .bind(to: contactTextSubject)
-//            .disposed(by: disposeBag)
     }
 }

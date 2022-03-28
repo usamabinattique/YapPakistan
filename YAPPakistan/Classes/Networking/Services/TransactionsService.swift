@@ -30,6 +30,7 @@ protocol TransactionsServiceType {
     func createCardHolder<T: Codable>(cardScheme: String, fee: String) -> Observable<T>
     func paymentGatewayFirstCreditTopup<T: Codable>(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<T>
     func paymentGatewayTopup<T: Codable>(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<T>
+    func fetchTransferReasons<T: Codable>() -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
@@ -169,4 +170,9 @@ class TransactionsService: BaseService, TransactionsServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
+    
+    public func fetchTransferReasons<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/reasons-of-transfer", pathVariables: nil, query: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: apiClient, route: route)
+    }
 }

@@ -82,6 +82,9 @@ public protocol CustomerServiceType {
     func addTopupExternalCardBeneficiaries<T: Codable>(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<T>
     func deletePaymentGatewayBeneficiary<T: Codable>(id: String) -> Observable<T>
     func getCustomerInfoFromQR<T: Codable>(_ qrString: String) -> Observable<T>
+    func getBankDetail<T: Codable>() -> Observable<T>
+    func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T>
+    func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T>
 
 }
 
@@ -271,7 +274,7 @@ public class CustomersService: BaseService, CustomerServiceType {
 
     public func saveDocuments<T: Codable>(_ documents: [(data: Data, format: String)],
                                           documentType: String, identityNo: String,
-                                          nationality: String, fullName: String, gender: String,
+                                          nationality: String, fullName: String, fatherName: String, gender: String,
                                           dob: String, dateIssue: String, dateExpiry: String) -> Observable<T> {
         var docs: [DocumentUploadRequest] = []
         for document in documents {
@@ -283,7 +286,9 @@ public class CustomersService: BaseService, CustomerServiceType {
             "documentType": documentType,
             "identityNo": identityNo,
             "nationality": nationality,
-            "fullName": fullName,
+            "firstName": fullName,
+            "lastName": fatherName,
+            "fullName": fullName+fatherName,
             "gender": gender,
             "dob": dob,
             "dateIssue": dateIssue,
@@ -367,8 +372,41 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
+    public func fetchAllIBFTBeneficiaries<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
     public func fetchRecentSendMoneyBeneficiaries<T: Codable>() -> Observable<T> {
-        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent?type=BANK_TRANSFER", headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/recent", query: ["type" : "BANK_TRANSFER"], headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+        
+//        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", headers: authorizationProvider.authorizationHeaders)
+//        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func editBeneficiary<T: Codable>(_ documents: [(data: Data, format: String)],
+                                            id: String,
+                                            nickname: String?) -> Observable<T> {
+        var docs: [DocumentUploadRequest] = []
+        for document in documents {
+            let info = fileInfo(from: document.format)
+            docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
+        }
+
+        var formData = [ "id": id ]
+        if let nick = nickname { formData.updateValue(nick, forKey: "nickName") }
+
+        let route = APIEndpoint<String>(.put, apiConfig.customersURL, "/api/beneficiaries/bank-transfer",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient, documents: docs, route: route,
+                      progressObserver: nil, otherFormValues: formData)
+    }
+    
+    public func deleteBeneficiary<T: Codable>(id: String) -> Observable<T> {
+        let route = APIEndpoint<String>(.delete, apiConfig.customersURL, "/api/beneficiaries/bank-transfer/\(id)", headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
@@ -407,7 +445,6 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func getCustomerInfoFromQR<T: Codable>(_ qrString: String) -> Observable<T> {
-        let body = ["uuid": qrString]
         let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/customers-info/\(qrString)",  headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
@@ -425,6 +462,27 @@ public class CustomersService: BaseService, CustomerServiceType {
     public func deletePaymentGatewayBeneficiary<T: Codable>(id: String) -> Observable<T> {
         let pathVariables = [id]
         let route = APIEndpoint<String>(.delete, apiConfig.customersURL, "/api/mastercard/beneficiaries/", pathVariables: pathVariables, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getBankDetail<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/bank-detail",  headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T> {
+        let params = ["accountNo": accountNo, "consumerId": consumerId]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/fetch-beneficiary-account-title", query: params, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T> {
+        
+       // let body = AddBankBeneficiaryRequest(title: title, accountNo: accountNo, bankName: bankName, nickName: nickName, beneficiaryType: beneficiaryType)
+        
+        let route = APIEndpoint(.post, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", body: body, headers: authorizationProvider.authorizationHeaders)
+
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

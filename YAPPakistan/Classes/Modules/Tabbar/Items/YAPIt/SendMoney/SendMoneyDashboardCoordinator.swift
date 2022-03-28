@@ -56,13 +56,16 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
                 switch $0 {
                 case .localTransfer:
                     print("Local")
-                    //self.sendMoneyLocally(localRoot: self.localRoot, refreshObserver: viewModel.inputs.refreshObserver)
+                //    self.sendMoneyLocally(localRoot: self.localRoot, refreshObserver: viewModel.inputs.refreshObserver)
                 case .internationalTransfer:
                     print("Int")
                     //self.sendMoneyInternationally(localRoot: self.localRoot, refreshObserver: viewModel.inputs.refreshObserver)
                 case .qrCode:
                     print("QR")
                     self.sendMoneyViaQrCode(localRoot: self.localRoot)
+                case .bankTransfer:
+                    print("bank transfer")
+                    self.sendMoneyLocally(localRoot: self.localRoot, refreshObserver: viewModel.inputs.refreshObserver)
                 default:
                     break
                 }
@@ -98,16 +101,27 @@ private extension SendMoneyDashboardCoordinator {
         }).disposed(by: rx.disposeBag)
     }
     
+    func sendMoneyLocally(localRoot: UINavigationController, refreshObserver: AnyObserver<Void>) {
+        coordinate(to: SendMoneyHomeCoordinator(root: localRoot, container: container, sendMoneyType: .local)).subscribe(onNext: { [weak self] in
+            if case let ResultType.success(result) = $0 {
+                self?.result.onNext(.success(result))
+                self?.result.onCompleted()
+            } else {
+              //  refreshObserver.onNext(())
+            }
+        }).disposed(by: rx.disposeBag)
+    }
+    
     func search(_ localRoot: UINavigationController, beneficairies: [SearchableBeneficiaryType]) {
         let viewModel = SendMoneySearchViewModel(beneficairies)
         let viewController = SendMoneySearchViewController(self.container.themeService, viewModel: viewModel)
-        
+
         localRoot.pushViewController(viewController, animated: true)
-        
+
         viewModel.outputs.cancel.subscribe(onNext: { [weak self] in
             self?.localRoot.popViewController(animated: true)
         }).disposed(by: rx.disposeBag)
-        
+
         viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
             if $0 is SendMoneyBeneficiary {
               //  self?.sendMoneyFundsTransfer($0 as! SendMoneyBeneficiary, localRoot: localRoot)

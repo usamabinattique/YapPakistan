@@ -42,7 +42,7 @@ public struct Account: Codable {
     public let iban: String?
     public let accountNumber: String?
     public let accountType: AccountType
-    public let defaultProfile: Bool
+    public let defaultProfile: Bool?
     public let companyName: String?
     public let packageName: String?
     public let status: String

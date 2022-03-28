@@ -16,19 +16,10 @@ import RxTheme
 class SendMoneyDashboardViewController: UIViewController {
     
     // MARK: - Views
-    
     private lazy var closeBarButtonItem = barButtonItem(image: UIImage(named: "icon_close", in: .yapPakistan), insectBy:.zero)
     private lazy var searchBarButtonItem = barButtonItem(image: UIImage(named: "icon_search_beneficiaries", in: .yapPakistan), insectBy:.zero)
-    
     private lazy var headingLabel = UIFactory.makeLabel(font: .title3, alignment: .center)
-    
-//    private lazy var recentBeneficiaryView: RecentBeneficiaryView = {
-//        let view = RecentBeneficiaryView()
-//        view.showsSaperator = false
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        return view
-//    }()
-    
+
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         
@@ -139,16 +130,11 @@ fileprivate extension SendMoneyDashboardViewController {
         })
         
         viewModel.outputs.cellViewModels.bind(to: collectionView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
-        
-//        collectionView.rx.modelSelected(YapItTileCellViewModel.self).subscribe(on: MainScheduler.instance).map{ $0.action }.bind(to: viewModel.inputs.actionObserver).disposed(by: rx.disposeBag)
-        
         collectionView.rx.modelSelected(YapItTileCellViewModel.self)
             .subscribe(onNext: { model in
                 self.viewModel.inputs.actionObserver.onNext(model.action)
             })
             .disposed(by: rx.disposeBag)
-        
-        
         
         viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.showsRecentBeneficiary.map{ !$0 }.bind(to: recentBeneficiaryView.rx.isHidden).disposed(by: rx.disposeBag)
@@ -157,9 +143,7 @@ fileprivate extension SendMoneyDashboardViewController {
         
     }
     
-    func setupResources() {
-        
-    }
+    func setupResources() {}
     
     func setupTheme() {
         themeService.rx
