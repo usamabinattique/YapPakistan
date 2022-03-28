@@ -54,6 +54,6 @@ class SMFTReasonCellViewModel: SMFTReasonCellViewModelType, SMFTReasonCellViewMo
     // MARK: - Init
     init() {
         titleSubject.onNext("screen_international_funds_transfer_display_text_reson".localized)
-        selectedReasonSubject.map{ $0.text }.bind(to: textSubject).disposed(by: disposeBag)
+        selectedReasonSubject.map{ $0.transferReason }.bind(to: textSubject).disposed(by: disposeBag)
     }
 }

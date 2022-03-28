@@ -51,8 +51,8 @@ class SendMoneyLocalTransferViewModel: SendMoneyFundsTransferViewModel {
             .bind(to: note.inputs.errorObserver)
             .disposed(by: disposeBag)
         
-        
-        Observable.combineLatest(tranferFee, enteredAmount.startWith(0), reasonSelectedSubject.startWith(.mocked))
+      
+     /*   Observable.combineLatest(tranferFee, enteredAmount.startWith(0), reasonSelectedSubject.startWith(.mock))
             .map { [weak self] fee, amount, reason -> FeeCharges in
                 
                 guard self?.beneficiary.type ?? .domestic == .uaefts else { return fee.getFeeCharges(for: amount) }
@@ -63,7 +63,7 @@ class SendMoneyLocalTransferViewModel: SendMoneyFundsTransferViewModel {
                 self.currentCharges = $0
                 return CurrencyFormatter.formatAmountInLocalCurrency($0.fee + $0.vat) }
             .bind(to: charges.inputs.feeObserver)
-            .disposed(by: disposeBag)
+            .disposed(by: disposeBag) */
     }
     
 //    override func fetchRequiredData() {

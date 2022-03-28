@@ -175,7 +175,7 @@ private extension SendMoneyHomeViewModel {
         }).disposed(by: disposeBag)
         
         let allBeneficiaries = allIBFTBenefeciries.elements().withLatestFrom(
-            Observable.combineLatest(allIBFTBenefeciries.elements(), self.accountProvider.currentAccount.map{ $0?.customer.homeCountry }.unwrap())
+            Observable.combineLatest(allIBFTBenefeciries.elements(), self.accountProvider.currentAccount.map{ $0?.customer.countryCode }.unwrap())
         )
             .map{ [unowned self] beneficiaries, homeCountry -> [SendMoneyBeneficiary] in
                 switch self.sendMoneyType {

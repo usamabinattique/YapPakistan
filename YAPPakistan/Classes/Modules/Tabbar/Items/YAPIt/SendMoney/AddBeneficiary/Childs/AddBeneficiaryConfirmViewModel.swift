@@ -298,3 +298,4 @@ extension AddBeneficiaryConfirmViewModel {
         self.otpResultSubject.onNext(.success((input)))
     }
 }
+

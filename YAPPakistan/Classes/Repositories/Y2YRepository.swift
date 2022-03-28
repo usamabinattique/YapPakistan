@@ -24,6 +24,7 @@ public protocol Y2YRepositoryType: ContactsRepositoryType {
     func getThresholdLimits() -> Observable<Event<TransactionThreshold>>
     func Y2YTransfer(receiverUUID: String, amount: String, beneficiaryName: String, note: String?, otpVerificationStatus: Bool) -> Observable<Event<Y2YFundsTransferResponse>>
     func fetchPaymentGatewayBeneficiaries() -> Observable<Event<[ExternalPaymentCard]>>
+    func fetchTransferReasons() -> Observable<Event<[TransferReason]>>
 }
 
 public class Y2YRepository: Y2YRepositoryType {
@@ -97,9 +98,20 @@ public class Y2YRepository: Y2YRepositoryType {
     public func fetchPaymentGatewayBeneficiaries() -> Observable<Event<[ExternalPaymentCard]>> {
         customersService.fetchPaymentGatewayBeneficiaries().materialize()
     }
+    
+    public func fetchTransferReasons() -> Observable<Event<[TransferReason]>> {
+        return transactionService.fetchTransferReasons().materialize()
+    }
 }
 
 public class MockY2YRepository: Y2YRepositoryType {
+    public func fetchTransferReasons() -> Observable<Event<[TransferReason]>> {
+        Observable.create { observer in
+            observer.onNext([.mock])
+            return Disposables.create()
+        }.materialize()
+    }
+    
     public func fetchPaymentGatewayBeneficiaries() -> Observable<Event<[ExternalPaymentCard]>> {
         Observable.create { observer in
             observer.onNext([.mock])
