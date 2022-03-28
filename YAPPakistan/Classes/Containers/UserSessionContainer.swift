@@ -176,7 +176,7 @@ public final class UserSessionContainer {
         let viewModel: SendMoneyFundsTransferViewModel
         
         ///if sendMoneyType == .local {
-        viewModel = SendMoneyFundsTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: yapITRepository) //SendMoneyFundsTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: yapITRepository)
+        viewModel = SendMoneyFundsTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: makeY2YRepository(), accountProvider: accountProvider) //SendMoneyFundsTransferViewModel(beneficiary: beneficiary, sendMoneyType: sendMoneyType, repository: yapITRepository)
         //}
         return SendMoneyFundsTransferViewController(viewModel, themeService: parent.themeService) //EditSendMoneyBeneficiaryViewController(themeService: parent.themeService, viewModel)
     }

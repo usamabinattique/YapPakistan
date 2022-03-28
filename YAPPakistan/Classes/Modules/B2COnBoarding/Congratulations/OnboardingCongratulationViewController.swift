@@ -445,43 +445,20 @@ extension OnboardingCongratulationViewController {
                 self?.subheadingLabel.text = "screen_onboarding_congratulations_display_text_sub_title_no_interval".localized
                 self?.subheadingLabel.sizeToFit()
             } else {
-               /* let secondsInString = String(format: "%.0f", ceil(interval))
-                print("secondsInString \(secondsInString)")
-                let maxValue = Int(secondsInString)!
-                let attributedString = NSMutableAttributedString(string: String(format: "screen_onboarding_congratulations_display_text_sub_title".localized, secondsInString), attributes: [
-                    .font: UIFont.regular,
-                    .foregroundColor: UIColor(self!.themeService.attrs.greyDark)
-                    ])
-                attributedString.addAttributes([
-                    .font: UIFont.systemFont(ofSize: 16.0, weight: .medium),
-                    .foregroundColor: UIColor(self!.themeService.attrs.primaryDark)
-                    ], range: NSRange(location: 61, length: 9 + secondsInString.count))
-                
-                print("attributedString is:\(attributedString.string)")
-                self?.subheadingLabel.attributedText = attributedString
-                let string = Array((maxValue > 30 ? maxValue - 30 : 9)...maxValue).map({ String(format: "%02d", $0) })
-                
-                self?.subheadingLabel.sizeToFit()
-                self?.subheadingLabel.animateCountDown(labels: Array((maxValue > 30 ? maxValue - 30 : 9)...maxValue).map({ String(format: "%02d", $0) }), withDuration: 2, inRange: NSRange(location: 61, length: secondsInString.count)) */
                 let secondsInString = String(format: "%.0f", ceil(interval))
-                let maxValue = Int(secondsInString)!
+                let maxValue = Int(secondsInString)! > 9 ? Int(secondsInString)! : 10
                 print("secondsInString:\(secondsInString)")
                 let attributedString = NSMutableAttributedString(string: String(format:  "screen_onboarding_congratulations_display_text_sub_title".localized, secondsInString), attributes: [
                     .font: UIFont.systemFont(ofSize: 16.0, weight: .regular),
                     .foregroundColor: UIColor(self!.themeService.attrs.greyDark)
                     ])
-                
-                print("string count is:\("screen_onboarding_congratulations_display_text_sub_title".localized.count)")
                 attributedString.addAttributes([
                     .font: UIFont.systemFont(ofSize: 16.0, weight: .medium),
                     .foregroundColor: UIColor(self!.themeService.attrs.primaryDark)
-                  //  ], range: NSRange(location: 62, length: 7 + secondsInString.count))
                 ], range: NSRange(location: attributedString.string.count - (9 + secondsInString.count), length: 9 + secondsInString.count))
                 self?.subheadingLabel.attributedText = attributedString
                 self?.subheadingLabel.sizeToFit()
                 let animatedString = Array((maxValue > 30 ? maxValue - 30 : 9)...maxValue).map({ String(format: "%02d", $0) })
-                print("animated string count is:\(animatedString.count)")
-               // self?.subheadingLabel.animateCountDown(labels: animatedString, withDuration: 2, inRange: NSRange(location: 58, length: secondsInString.count))
                 self?.subheadingLabel.animateCountDown(labels: animatedString, withDuration: 2, inRange: NSRange(location: attributedString.string.count - (9 + secondsInString.count), length: secondsInString.count))
             }
         }).disposed(by: rx.disposeBag)

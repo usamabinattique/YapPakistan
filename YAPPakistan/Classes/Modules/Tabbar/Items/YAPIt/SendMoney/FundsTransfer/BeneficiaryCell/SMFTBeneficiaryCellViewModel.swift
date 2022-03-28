@@ -54,9 +54,9 @@ class SMFTBeneficiaryCellViewModel: SMFTBeneficiaryCellViewModelType, SMFTBenefi
     init(_ beneficiary: SendMoneyBeneficiary, showsFlag: Bool = false, showsIban: Bool = false) {
         let name = [beneficiary.firstName ?? "", beneficiary.lastName ?? ""].joined(separator: " ")
         
-        imageSubject.onNext((nil, name.initialsImage(color: beneficiary.color)))
+        imageSubject.onNext((nil, name.thumbnail))//name.initialsImage(color: beneficiary.color)))
         nameSubject.onNext(name)
-        flagSubject.onNext(UIImage.sharedImage(named: beneficiary.country!))
+     //   flagSubject.onNext(UIImage.sharedImage(named: beneficiary.country!))
         showsFlagSubject.onNext(showsFlag)
         accounSubject.onNext(showsIban ? beneficiary.formattedIBAN : nil)
     }

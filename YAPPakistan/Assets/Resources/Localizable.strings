@@ -542,3 +542,9 @@
 
 "screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
 "screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
+
+
+"screen_domestic_funds_transfer_display_text_heading" = "Send money to";
+
+// MARK: - CustomView AmounView
+"custom_view_display_text_amount_view" = "PKR";
