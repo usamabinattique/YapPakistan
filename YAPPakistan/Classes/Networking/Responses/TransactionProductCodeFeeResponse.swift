@@ -8,12 +8,13 @@
 import Foundation
 
 public struct TransactionProductCodeFeeResponse: Codable {
-    
-    public let feeType: String
+   // "currency":"PKR","amount":0,"feeCurrency":"PKR","fixedAmount":0.7}
+    public let feeType: String?
     public let amount: Int?
     public let feeCurrency: String?
-    public let displayOnly: Bool
+    public let displayOnly: Bool?
     public let fixedAmount: Double?
+    public let currency: String?
 //    public let tierRateDTOList: Array?
     
     enum CodingKeys: String, CodingKey {
@@ -22,12 +23,13 @@ public struct TransactionProductCodeFeeResponse: Codable {
         case feeCurrency
         case displayOnly
         case fixedAmount
+        case currency
 //        case tierRateDTOList
     }
 }
 
 public extension TransactionProductCodeFeeResponse {
     static var mock: TransactionProductCodeFeeResponse {
-        TransactionProductCodeFeeResponse(feeType: "FLAT", amount: 0, feeCurrency: "PKR", displayOnly: false, fixedAmount: 3.6)
+        TransactionProductCodeFeeResponse(feeType: "FLAT", amount: 0, feeCurrency: "PKR", displayOnly: false, fixedAmount: 3.6, currency: "PKR")
     }
 }

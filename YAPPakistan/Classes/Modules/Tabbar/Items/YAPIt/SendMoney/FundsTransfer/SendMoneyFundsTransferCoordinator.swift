@@ -43,11 +43,11 @@ class SendMoneyFundsTransferCoordinator: Coordinator<ResultType<Void>> {
         
         self.root.present(self.localRoot, animated: true, completion: nil)
         
-//        viewController.viewModel.outputs.back.subscribe(onNext: { [weak self] in
-//            self?.localRoot.dismiss(animated: true, completion: nil)
-//            self?.result.onNext(.cancel)
-//            self?.result.onCompleted()
-//        }).disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.back.subscribe(onNext: { [weak self] in
+            self?.localRoot.dismiss(animated: true, completion: nil)
+            self?.result.onNext(.cancel)
+            self?.result.onCompleted()
+        }).disposed(by: rx.disposeBag)
 //
 //        viewController.viewModel.outputs.result.subscribe(onNext: { [weak self] status in
 //            self?.localRoot.dismiss(animated: true, completion: nil)
@@ -55,7 +55,31 @@ class SendMoneyFundsTransferCoordinator: Coordinator<ResultType<Void>> {
 //            self?.result.onCompleted()
 //        }).disposed(by: rx.disposeBag)
         
+        viewController.viewModel.outputs.selectReason.subscribe(onNext:{ [weak self] in
+            self?.selectReason($0, viewController.viewModel.inputs.reasonSelectedObserver)
+        }).disposed(by: rx.disposeBag)
+        
         return result
+    }
+    
+//    func selectReason(_ reasons: [TransferReasonType], _ selectedReasonObserver: AnyObserver<TransferReason>) {
+//        let viewModel = SMFTPOPSelectionViewModel(reasons)
+//        let viewController = SMFTPOPSelectionViewController(with: viewModel)
+//        viewController.show(in: localRoot)
+//
+//        viewModel.outputs.popSelected
+//            .subscribe(onNext: { selectedReasonObserver.onNext($0) })
+//            .disposed(by: disposeBag)
+//    }
+    
+    func selectReason(_ reasons: [TransferReason], _ selectedReasonObserver: AnyObserver<TransferReason>) {
+        let viewModel = SMFTPOPSelectionViewModel(reasons)
+        let viewController = SMFTPOPSelectionViewController(viewModel, themeService: container.themeService)
+        viewController.show(in: localRoot)
+        
+        viewModel.outputs.popSelected
+            .subscribe(onNext: { selectedReasonObserver.onNext($0) })
+            .disposed(by: rx.disposeBag)
     }
 }
 

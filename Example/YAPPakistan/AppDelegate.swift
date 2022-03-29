@@ -68,4 +68,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Adjust.appDidLaunch(adjustConfig)
     }
+    
 }
+

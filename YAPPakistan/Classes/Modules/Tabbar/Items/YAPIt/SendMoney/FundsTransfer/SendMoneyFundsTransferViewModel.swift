@@ -129,15 +129,9 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         reasonSelectedSubject.subscribe(onNext: { [weak self] in
             self?.selectedReason = $0
         }).disposed(by: disposeBag)
-
-        accountProvider.currentAccount.subscribe(onNext: { (balance) in
-           
-//            print(balance.amount)
-        }).disposed(by: disposeBag)
     }
 
     func generateCellViewModels() {
-      //  fatalError("'generateCellViewModels()' not implementd")
         
         titleSubject.onNext("screen_domestic_funds_transfer_display_text_heading".localized)
         var validations = [Observable<Bool>]()
@@ -145,15 +139,46 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         viewModels.append(SMFTBeneficiaryCellViewModel(beneficiary, showsIban: true))
         
         let amount = SMFTAmountInputCellViewModel(beneficiary.currency ?? "PKR")
+        
         amount.outputs.text.map{ Double(convertWithLocale: $0 ?? "0") ?? 0.0 }.bind(to: enteredAmount).disposed(by: disposeBag)
         self.amountErrorSubject.map{ $0 == nil }.bind(to: amount.inputs.isValidAmountObserver).disposed(by: disposeBag)
+        
+        feeRes.map { fee in
+            let amountFormatted = String(format: "%.2f", fee.fixedAmount ?? 0.0)
+            let amount = "PKR \(amountFormatted)"
+            let text = String.init(format: "screen_cash_pickup_funds_display_text_fee".localized, amount)
+            let attributed = NSMutableAttributedString(string: text)
+            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
+            return attributed
+        }.bind(to: amount.inputs.feeObserver).disposed(by: disposeBag)
+
+        
         viewModels.append(amount)
         validations.append(Observable.combineLatest(enteredAmount, amountErrorSubject).map{ $0.0 > 0 && $0.1 == nil })
         
-        let charges = SMFTChargesCellViewModel(chargesType: .cashPickup)
+        let charges = SMFTChargesCellViewModel() //SMFTChargesCellViewModel(chargesType: .cashPickup)
+        Observable.combineLatest(enteredAmount, feeRes).map { (amount,fee) -> NSAttributedString in
+            let amountFormatted = String(format: "%.2f", fee.fixedAmount ?? 0.0)
+            let amount = "PKR \(amountFormatted)"
+            let text = String.init(format: "screen_y2y_funds_transfer_display_text_fee".localized, amount)
+            let attributed = NSMutableAttributedString(string: text)
+            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
+            return attributed as NSAttributedString }.bind(to: charges.chargesSubject).disposed(by: disposeBag)
+        
         viewModels.append(charges)
         
-        viewModels.append(SMFTAvailableBalanceCellViewModel())
+        //TODO: add customer balance from api here in cellviewmodel
+        let availableBalance = SMFTAvailableBalanceCellViewModel(.mock,true)
+        //TODO: uncomment following comment
+        customerBalanceRes.map{
+            customerBalance -> NSAttributedString in
+            let balance = customerBalance.formattedBalance()
+            let text = "Your available balance is \(balance)"
+            let attributed = NSMutableAttributedString(string: text)
+            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
+            return attributed
+        }.bind(to: availableBalance.balanceSubject).disposed(by: disposeBag)
+        viewModels.append(availableBalance)
         
         let reason = SMFTReasonCellViewModel()
         viewModels.append(reason)
@@ -162,10 +187,14 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         
         validations.append(reasonSelectedSubject.map { _ in true })
         
+        //TODO: uncomment following line
         Observable.combineLatest(validations)
             .map { !$0.contains(false) }
             .bind(to: doneEnabledSubject)
             .disposed(by: disposeBag)
+        
+        //TODO: remove following line
+//        doneEnabledSubject.onNext(true)
         
         let note = SMFTNoteCellViewModel()
         note.outputs.text.subscribe(onNext: { [unowned self] in self.currentNote = $0 }).disposed(by: disposeBag)
@@ -223,7 +252,13 @@ private extension SendMoneyFundsTransferViewModel {
     func fetchRequiredData() {
         showActivitySubject.onNext(true)
         
-        Observable.zip(fetchTransactionLimit(), fetchTransactionReasons(), fetchTransactionFee(), fetchThresholdLimits(), fetchCustomerAccountBalance()).map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
+        //TODO: remove following comment
+//        Observable.zip(fetchTransactionLimit(), fetchTransactionReasons(), fetchTransactionFee(), fetchThresholdLimits(), fetchCustomerAccountBalance()).map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
+        
+        //TODO: remove following line
+        Observable.zip(fetchTransactionLimit(), fetchTransactionReasons(), fetchTransactionFee(), fetchThresholdLimits()).map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
+        
+//        fetchCustomerAccountBalance().map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
     }
     
     func fetchTransactionLimit() -> Observable<Void> {
@@ -270,6 +305,10 @@ private extension SendMoneyFundsTransferViewModel {
         request.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
         request.elements().bind(to: thresholdRes).disposed(by: disposeBag)
+        
+        request.elements().subscribe(onNext: { [unowned self] _ in
+            print("limits")
+        }).disposed(by: disposeBag)
         return request.map { _ in }
     }
     
