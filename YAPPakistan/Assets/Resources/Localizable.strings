@@ -310,6 +310,18 @@
 "screen_kyc_review_details_expiry_date" = "Expiry date";
 "screen_kyc_review_details_residential_address" = "Residential Address";
 
+// MARK: More Bank Details Screen
+
+"screen_more_bank_details_display_text_name" = "Name";
+"screen_more_bank_details_display_text_swift" = "SWIFT/BIC";
+"screen_more_bank_details_display_text_iban" = "IBAN";
+"screen_more_bank_details_display_text_account" = "Account";
+"screen_more_bank_details_display_text_bank" = "Bank";
+"screen_more_bank_details_display_text_address" = "Address";
+"screen_more_bank_details_button_share" = "Share";
+"screen_more_bank_details_display_text_title" = "YAP account details";
+"screen_more_bank_details_display_text_for_top_up_title" = "My YAP account details";
+"screen_more_bank_details_display_text_copy" = "Copy";
 
 // MARK: KYC Questions
 

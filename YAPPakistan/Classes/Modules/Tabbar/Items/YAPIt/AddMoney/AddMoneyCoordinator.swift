@@ -41,7 +41,7 @@ class AddMoneyCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = AddMoneyViewModel()
         let viewControlelr = AddMoneyViewController(themeService: container.themeService, viewModel: viewModel)
         
-        localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewControlelr, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+        localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewControlelr, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
         
         root.present(localRoot, animated: true, completion: nil)
         
@@ -55,9 +55,8 @@ class AddMoneyCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.action.subscribe(onNext: { [weak self] in
             switch $0 {
             case .bankTransfer:
-                break
 //                AppAnalytics.shared.logEvent(TopUpEvent.topUpBankTapped())
-//                self?.navigateToBankDetails()
+                self?.navigateToBankDetails()
             case .topupViaCard:
 //                AppAnalytics.shared.logEvent(TopUpEvent.topUpCardTapped())
                 self?.navigateToCardTransfer()
@@ -78,6 +77,19 @@ class AddMoneyCoordinator: Coordinator<ResultType<Void>> {
 }
 
 private extension AddMoneyCoordinator {
+    
+    func navigateToBankDetails() {
+        let viewModel = TopUpAccountDetailsViewModel(accountProvider: container.accountProvider)
+        let viewController = TopUpAccountDetailsViewController(with: viewModel, themeService: self.container.themeService)
+        localRoot.pushViewController(viewController, animated: true)
+        
+        viewModel.outputs.close
+            .subscribe(onNext: { [weak self] _ in
+                self?.localRoot.popViewController()
+            })
+            .disposed(by: rx.disposeBag)
+        
+    }
     
     func navigateToCardTransfer() {
         let viewModel = TopupCardSelectionViewModel(repository: self.repository)
@@ -108,6 +120,7 @@ private extension AddMoneyCoordinator {
         viewModel.outputs.back
             .subscribe(onNext:{ _ in
                 self.localRoot.popViewController(animated: true)
+                self.result.onNext(.cancel)
             })
             .disposed(by: rx.disposeBag)
         
@@ -120,9 +133,14 @@ private extension AddMoneyCoordinator {
         let viewModel = CommonWebViewModel(commonWebType: .topUpAddCardWeb, repository: self.container.makeCardsRepository(), html: apiConfig.topUpCardDetailWebURL)
         let viewController = self.container.makeCommonWebViewController(viewModel: viewModel)
         
+        let navigationRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: self.root, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+        navigationRoot.navigationBar.isHidden = false
+        navigationRoot.pushViewController(viewController, completion: nil)
+        
         viewModel.outputs.close
             .subscribe(onNext: { [weak self] _ in
-                viewController.dismiss(animated: true, completion: nil)
+                navigationRoot.dismiss(animated: false, completion:nil)
+                //viewController.dismiss(animated: true, completion: nil)
             })
             .disposed(by: rx.disposeBag)
         
@@ -144,11 +162,7 @@ private extension AddMoneyCoordinator {
                 self?.localRoot.dismiss(animated: false, completion:nil)
             })
             .disposed(by: rx.disposeBag)
-
         
-        let navigationRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: self.root, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
-        navigationRoot.navigationBar.isHidden = false
-        navigationRoot.pushViewController(viewController, completion: nil)
         localRoot.present(navigationRoot, animated: true, completion: nil)
     }
     
