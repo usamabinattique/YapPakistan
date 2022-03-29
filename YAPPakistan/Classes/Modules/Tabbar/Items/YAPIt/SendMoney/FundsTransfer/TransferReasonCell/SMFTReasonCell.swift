@@ -10,23 +10,26 @@ import Foundation
 import YAPComponents
 import RxSwift
 import RxTheme
+import UIKit
 
 class SMFTReasonCell: RxUITableViewCell {
     // MARK: Views
     
     private lazy var selectionField: AppTextField = {
         let textField = AppTextField()
-        textField.tintColor = .clear
-        textField.placeholder = "screen_international_funds_transfer_display_text_reson".localized
+        textField.placeholder = "screen_international_funds_transfer_dropdown_text_reason_hint".localized
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.delegate = self
+        textField.titleColor = UIColor(Color(hex: "#272262"))
+        //textField.bottomBarColor = UIColor(Color(hex: "#DAE0F0"))
+        textField.placeholderColor = UIColor(Color(hex: "#272262")).withAlphaComponent(0.50)
         return textField
     }()
     
     private lazy var dropDown: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = UIColor.gray // ?
-        imageView.image = UIImage.sharedImage(named: "icon_drop_down")?.withRenderingMode(.alwaysTemplate)
+        imageView.image = UIImage.init(named: "icon_drop_down", in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
@@ -61,6 +64,7 @@ class SMFTReasonCell: RxUITableViewCell {
         self.viewModel = viewModel
         self.themeService = themeService
         bindViews()
+        setupTheme()
     }
 }
 
@@ -91,6 +95,15 @@ private extension SMFTReasonCell {
         viewModel.outputs.text.bind(to: selectionField.rx.text).disposed(by: disposeBag)
         viewModel.outputs.title.bind(to: selectionField.rx.titleText).disposed(by: disposeBag)
         viewModel.outputs.endEditting.bind(to: rx.endEditting).disposed(by: disposeBag)
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.greyLight) }, to: [selectionField.rx.bottomBarColor])
+            .bind({ UIColor($0.primaryDark)}, to: [ selectionField.rx.tintColor])
+            .bind({ UIColor($0.primaryDark) }, to: [dropDown.rx.tintColor])
+        
+            .disposed(by: rx.disposeBag)
     }
 }
 

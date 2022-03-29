@@ -15,7 +15,6 @@ class SMFTAmountInputCell: RxUITableViewCell {
     // MARK: Views
 
     private lazy var currencyLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
-    //UIFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center)
 
     private lazy var amountView: AmountView = {
         let vm = AmountViewModel(heading:  "custom_view_display_text_amount_view".localized)
@@ -25,10 +24,11 @@ class SMFTAmountInputCell: RxUITableViewCell {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
+    private lazy var feeLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
 
     private lazy var toolbar: UIView = {
-        return UIView()
-//        return getToolBar(target: self, done: #selector(endEditingAction), cancel: #selector(endEditingAction))
+        return getToolBar(target: self, done: #selector(endEditingAction), cancel: #selector(endEditingAction))
     }()
 
     // MARK: Properties
@@ -77,6 +77,29 @@ class SMFTAmountInputCell: RxUITableViewCell {
         endEditing(true)
         viewModel.inputs.endEditingObserver.onNext(())
     }
+    
+    public func getToolBar(target: Any?, done: Selector?, cancel: Selector?) -> UIToolbar {
+        
+        let toolBar = UIToolbar()
+        toolBar.autoresizingMask = .flexibleHeight
+        toolBar.barStyle = .default
+        toolBar.isTranslucent = true
+        toolBar.tintColor = UIColor(Color(hex: "#272262")) // primary dark
+        toolBar.sizeToFit()
+        
+        // Adding Button ToolBar
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: target, action: done)
+        var items: [UIBarButtonItem] = [doneButton]
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        items.insert(spaceButton, at: 0)
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: target, action: cancel)
+        items.insert(cancelButton, at: 0)
+        
+        toolBar.setItems(items, animated: false)
+        toolBar.isUserInteractionEnabled = true
+        return toolBar
+    }
+
 }
 
 // MARK: View setup
@@ -86,6 +109,8 @@ private extension SMFTAmountInputCell {
     func setupViews() {
         contentView.addSubview(currencyLabel)
         contentView.addSubview(amountView)
+        contentView.addSubview(feeLabel)
+        
     }
 
     func setupConstraints() {
@@ -98,10 +123,16 @@ private extension SMFTAmountInputCell {
             .toBottomOf(currencyLabel, constant: 8)
             .width(constant: 175)
             .centerHorizontallyInSuperview()
-            .alignEdgeWithSuperview(.bottom)
+            
+            //.alignEdgeWithSuperview(.bottom)
 
         amountView
-            .alignEdgesWithSuperview([.left, .top, .right, .bottom], constants: [10, 0, 10, 0])
+            .alignEdgesWithSuperview([.left, .top, .right], constants: [10, 0, 10])
+        
+        feeLabel
+            .toBottomOf(amountView, constant: 8)
+            .centerHorizontallyInSuperview()
+           // .alignEdgeWithSuperview(.bottom,constant: 0)
 
     }
 }
@@ -123,5 +154,12 @@ private extension SMFTAmountInputCell {
         viewModel.outputs.allowedDecimalPlaces.subscribe(onNext: { [weak self] in
             self?.decimalPlaces = $0
         }).disposed(by: disposeBag)
+        
+        //viewModel.outputs.fee.bind(to: feeLabel.rx.attributedText).disposed(by: disposeBag)
+        viewModel.outputs.fee.subscribe(onNext: { [weak self] fee in
+            print("fee is \(fee)")
+            self?.feeLabel.attributedText = fee
+        }).disposed(by: disposeBag)
+
     }
 }

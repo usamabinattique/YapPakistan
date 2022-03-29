@@ -494,6 +494,11 @@
 "screen_add_beneficiary_detail_display_button_block_alert_yes" = "Yes, send now";
 "screen_add_beneficiary_detail_display_button_block_alert_no" = "No, send later";
 
+"screen_international_funds_transfer_display_text_reson" = "Select the reason for transfer";
+"screen_international_funds_transfer_dropdown_text_reason_hint" = "Transferring amount to a friend";
+"screen_bill_payments_details_input_text_add_note_placeholder" = "Type a note here (Optional)";
+"screen_international_funds_transfer_input_text_note_hint" = "Type a note here";
+
 
 // MARK: - Home Screen
 "screen_home_display_text_nothing_to_report" = "Start using your account to see all your transactions here";
@@ -548,3 +553,5 @@
 
 // MARK: - CustomView AmounView
 "custom_view_display_text_amount_view" = "PKR";
+"screen_cash_pickup_funds_display_text_fee" = "Fee %@";
+

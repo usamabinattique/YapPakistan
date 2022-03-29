@@ -31,7 +31,7 @@ class SMFTChargesCellViewModel: SMFTChargesCellViewModelType, SMFTChargesCellVie
     var outputs: SMFTChargesCellViewModelOutput { return self }
     var reusableIdentifier: String { return SMFTChargesCell.defaultIdentifier }
     
-    private let chargesSubject = BehaviorSubject<NSAttributedString?>(value: nil)
+    let chargesSubject = BehaviorSubject<NSAttributedString?>(value: nil)
     private let feeSubject = BehaviorSubject<String>(value: CurrencyFormatter.defaultFormattedFee)
     
     // MARK: - Inputs
@@ -49,6 +49,8 @@ class SMFTChargesCellViewModel: SMFTChargesCellViewModelType, SMFTChargesCellVie
             return attributed
         }.bind(to: chargesSubject).disposed(by: disposeBag)
     }
+    
+    init() {}
 }
 
 extension SMFTChargesCellViewModel {
@@ -62,7 +64,7 @@ extension SMFTChargesCellViewModel.ChargesType {
     var chargesText: String {
         switch self {
         case .cashPickup:
-            return  "screen_cash_pickup_funds_display_text_fee".localized
+            return  "screen_y2y_funds_transfer_display_text_fee".localized
         case .internationalTransfer:
             return  "screen_international_funds_transfer_display_text_fee_amount".localized
         

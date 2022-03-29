@@ -54,6 +54,7 @@ class SMFTNoteCell: RxUITableViewCell {
         self.viewModel = viewModel
         self.themeService = themeService
         bindViews()
+        setupTheme()
     }
 }
 
@@ -80,6 +81,14 @@ private extension SMFTNoteCell {
         viewModel.outputs.error.bind(to: textField.rx.errorText).disposed(by: disposeBag)
         viewModel.outputs.error.map{ $0 == nil ? .normal : .invalid }
             .bind(to: textField.rx.validationState).disposed(by: disposeBag)
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.greyLight) }, to: [textField.rx.bottomBarColor, textField.rx.placeholderColor])
+            .bind({ UIColor($0.primaryDark)}, to: [textField.title.rx.textColor, textField.rx.tintColor])
+            .bind({ UIColor($0.greyDark) }, to: [ textField.rx.placeholderColor])
+            .disposed(by: rx.disposeBag)
     }
 }
 

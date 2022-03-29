@@ -14,7 +14,7 @@ protocol SMFTAmountInputCellViewModelInput {
     var textObserver: AnyObserver<String?> { get }
     var endEditingObserver: AnyObserver<Void> { get }
     var isValidAmountObserver: AnyObserver<Bool> { get }
-    
+    var feeObserver: AnyObserver<NSAttributedString?>  { get }
 }
 
 protocol SMFTAmountInputCellViewModelOutput {
@@ -23,6 +23,7 @@ protocol SMFTAmountInputCellViewModelOutput {
     var completed: Observable<String?> { get }
     var isValidAmount: Observable<Bool> { get }
     var allowedDecimalPlaces: Observable<Int> { get }
+    var fee: Observable<NSAttributedString?>  { get }
 }
 
 protocol SMFTAmountInputCellViewModelType {
@@ -44,11 +45,13 @@ class SMFTAmountInputCellViewModel: SMFTAmountInputCellViewModelType, SMFTAmount
     private let completedSubject = PublishSubject<String?>()
     private let isValidAmountSubject = BehaviorSubject<Bool>(value: true)
     private let allowedDecimalPlacesSubject: BehaviorSubject<Int>
+    private let feeSubject = BehaviorSubject<NSAttributedString?>(value: nil)
     
     // MARK: - Inputs
     var textObserver: AnyObserver<String?> { return textSubject.asObserver() }
     var endEditingObserver: AnyObserver<Void> { return endEditingSubject.asObserver() }
     var isValidAmountObserver: AnyObserver<Bool> { isValidAmountSubject.asObserver() }
+    var feeObserver: AnyObserver<NSAttributedString?>  { feeSubject.asObserver() }
     
     // MARK: - Outputs
     var text: Observable<String?> { return textSubject.asObservable() }
@@ -56,6 +59,7 @@ class SMFTAmountInputCellViewModel: SMFTAmountInputCellViewModelType, SMFTAmount
     var completed: Observable<String?> { return completedSubject.asObservable() }
     var isValidAmount: Observable<Bool> { isValidAmountSubject.asObservable() }
     var allowedDecimalPlaces: Observable<Int> { allowedDecimalPlacesSubject.asObservable() }
+    var fee: Observable<NSAttributedString?>  { feeSubject.asObservable() }
     
     // MARK: - Init
     init(_ currency: String) {

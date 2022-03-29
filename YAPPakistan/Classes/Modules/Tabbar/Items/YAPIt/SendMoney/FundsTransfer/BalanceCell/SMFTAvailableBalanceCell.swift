@@ -16,7 +16,6 @@ class SMFTAvailableBalanceCell: RxUITableViewCell {
     // MARK: Views
     
     private lazy var balance = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
-    //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     
     // MARK: Properties
     
@@ -62,10 +61,10 @@ private extension SMFTAvailableBalanceCell {
     func setupConstraints() {
         balance
             .centerHorizontallyInSuperview()
-            .alignEdgesWithSuperview([.left, .bottom], constants: [25, 25])
+            .alignEdgesWithSuperview([.top,.left, .bottom], constants: [25,25, 25])
         
-        topConstraint = balance.topAnchor.constraint(equalTo: contentView.topAnchor)
-        topConstraint.isActive = true
+//        topConstraint = balance.topAnchor.constraint(equalTo: contentView.topAnchor)
+//        topConstraint.isActive = true
     }
 }
 
@@ -74,8 +73,8 @@ private extension SMFTAvailableBalanceCell {
 private extension SMFTAvailableBalanceCell {
     func bindViews() {
         viewModel.outputs.balance.bind(to: balance.rx.attributedText).disposed(by: disposeBag)
-        viewModel.outputs.addPadding
-            .subscribe(onNext: { [weak self] in self?.topConstraint.constant = $0 ? 20 : 0 })
-            .disposed(by: disposeBag)
+//        viewModel.outputs.addPadding
+//            .subscribe(onNext: { [weak self] in self?.topConstraint.constant = $0 ? 20 : 0 })
+//            .disposed(by: disposeBag)
     }
 }
