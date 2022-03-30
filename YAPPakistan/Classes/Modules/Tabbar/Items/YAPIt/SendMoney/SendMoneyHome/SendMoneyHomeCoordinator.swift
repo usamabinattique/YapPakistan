@@ -121,7 +121,7 @@ private extension SendMoneyHomeCoordinator {
             if case let ResultType.success(result) = $0 {
                 self?.refreshBeneficiaries.onNext(())
                 if let beneficiary = result {
-                   // self?.sendMoney(beneficiary)
+                    self?.sendMoney(beneficiary)
                 }
             }
         }).disposed(by: disposeBag)

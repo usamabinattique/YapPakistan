@@ -85,6 +85,13 @@ private extension SendMoneyConfirmFundsTransferViewController {
         
         viewModel.outputs.balance.bind(to: balance.rx.attributedText).disposed(by: disposeBag)
         viewModel.outputs.fee.bind(to: feeLabel.rx.attributedText).disposed(by: disposeBag)
+        doneButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: disposeBag)
+        
+        viewModel.outputs.error.subscribe(onNext: { [weak self] in
+            self?.showAlert(message: $0, defaultButtonHandler: { [weak self] _ in
+                self?.onTapBackButton()
+            })
+        }).disposed(by: disposeBag)
     }
 
     func setupConstraints() {

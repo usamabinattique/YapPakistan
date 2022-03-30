@@ -552,6 +552,7 @@
 
 
 "screen_domestic_funds_transfer_display_text_heading" = "Send money to";
+"screen_send_money_bank_transfer_success_display_text_title" = "Transfer successful!";
 
 // MARK: - CustomView AmounView
 "custom_view_display_text_amount_view" = "PKR";

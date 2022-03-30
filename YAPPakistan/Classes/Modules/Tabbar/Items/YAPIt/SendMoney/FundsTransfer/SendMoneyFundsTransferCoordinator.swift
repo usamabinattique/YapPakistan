@@ -87,9 +87,20 @@ class SendMoneyFundsTransferCoordinator: Coordinator<ResultType<Void>> {
             self?.localRoot.popViewController(animated: true, nil)
         }).disposed(by: rx.disposeBag)
 
-//        viewModel.outputs.result.subscribe(onNext: { [weak self] in
-//            self?.success($0)
-//        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.result.subscribe(onNext: { [weak self] in
+            self?.success($0.0,$0.1)
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    func success(_ beneficiary: SendMoneyBeneficiary,_ result: BankTransferResponse) {
+        let viewModel = SendMoneyFundsTransferViaBankSuccessViewModel(beneficiary,result)
+        let viewController = SendMoneyFundsTransferViaBankSuccessViewController(theme: container.themeService, viewModel: viewModel)
+        localRoot.pushViewController(viewController, animated: true)
+        
+        viewModel.outputs.confirm.subscribe(onNext: { [weak self] in
+            self?.result.onNext(.success(()))
+            self?.result.onCompleted()
+        }).disposed(by: rx.disposeBag)
     }
 }
 

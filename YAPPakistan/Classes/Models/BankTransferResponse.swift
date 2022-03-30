@@ -20,6 +20,6 @@ public struct BankTransferResponse: Codable {
 
 public extension BankTransferResponse {
     static var mock: BankTransferResponse {
-        BankTransferResponse(transactionId: "01", currency: "PKR", accountNo: "12343243423424", bankLogoURL: nil, bankName: "ABC", amountTransferred: "0", date: "")
+        BankTransferResponse(transactionId: "01", currency: "PKR", accountNo: "12343243423424", bankLogoURL: nil, bankName: "ABC", amountTransferred: "0", date: "2022-03-08T06:33:55.533292496")
     }
 }

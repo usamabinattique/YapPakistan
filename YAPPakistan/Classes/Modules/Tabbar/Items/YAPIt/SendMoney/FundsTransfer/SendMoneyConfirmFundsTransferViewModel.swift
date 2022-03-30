@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import UIKit
 import YAPComponents
+import MapKit
 
 protocol SendMoneyConfirmFundsTransferViewModelInputs {
     var backObserver: AnyObserver<Void> { get }
@@ -23,6 +24,7 @@ protocol SendMoneyConfirmFundsTransferViewModelOutputs {
     var error: Observable<String> { get }
     var fee: Observable<NSAttributedString?> { get }
     var balance: Observable<NSAttributedString?> { get }
+    var result: Observable<(SendMoneyBeneficiary,BankTransferResponse)> { get }
 }
 
 protocol SendMoneyConfirmFundsTransferViewModelType {
@@ -48,6 +50,7 @@ class SendMoneyConfirmFundsTransferViewModel: SendMoneyConfirmFundsTransferViewM
     var error: Observable<String> { errorSubject.asObservable() }
     var balance: Observable<NSAttributedString?> { balanceSubject.asObservable() }
     var fee: Observable<NSAttributedString?> { feeSubject.asObservable() }
+    var result: Observable<(SendMoneyBeneficiary,BankTransferResponse)> { resultSubject.asObservable() }
     
     // MARK: Subjects
     private let backSubject = PublishSubject<Void>()
@@ -58,6 +61,7 @@ class SendMoneyConfirmFundsTransferViewModel: SendMoneyConfirmFundsTransferViewM
     private let imageSubject = BehaviorSubject<(String?, UIImage?)>(value: (nil, nil))
     private let nameSubject = BehaviorSubject<String?>(value: nil)
     private let feeSubject = BehaviorSubject<NSAttributedString?>(value: nil)
+    private let resultSubject = PublishSubject<(SendMoneyBeneficiary,BankTransferResponse)>()
     
     // MARK: Properties
     private let disposeBag = DisposeBag()
@@ -90,26 +94,25 @@ class SendMoneyConfirmFundsTransferViewModel: SendMoneyConfirmFundsTransferViewM
         nextSubject.withUnretained(self)
             .subscribe(onNext:{ `self`, _ in
                 if let input = beneficiary.bankTransferReq {
-                    self.confirmTransfer(input: input)
+                    self.confirmTransfer(input: input,beneficiary: beneficiary)
                 }
             }).disposed(by: disposeBag)
     }
     
     //MARK: - Apis helper methods
-    private func confirmTransfer(input: SendMoneyBankTransferInput) {
+    private func confirmTransfer(input: SendMoneyBankTransferInput,beneficiary: SendMoneyBeneficiary) {
         YAPProgressHud.showProgressHud()
         let request = repository.sendMoneyViaBankTransfer(input: input).share()
         
         request.elements().withUnretained(self)
             .subscribe(onNext: { `self`, bankTransferResponse in
-             //   self.fetchCheckoutSessionFlowApis()
+                self.resultSubject.onNext((beneficiary, bankTransferResponse))
             })
             .disposed(by: disposeBag)
         
         request.errors().subscribe(onNext: { [weak self] error in
             self?.errorSubject.onNext(error.localizedDescription)
             YAPProgressHud.hideProgressHud()
-            print("save address error")
         }).disposed(by: disposeBag)
     }
     

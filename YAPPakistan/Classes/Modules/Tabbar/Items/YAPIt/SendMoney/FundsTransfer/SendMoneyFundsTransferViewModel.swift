@@ -172,12 +172,6 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         //TODO: uncomment following comment
         customerBalanceRes.map{
             customerBalance -> NSAttributedString in
-//            let balance = customerBalance.formattedBalance()
-//            let text = "Your available balance is \(balance)"
-//            let attributed = NSMutableAttributedString(string: text)
-//            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
-//            return attributed
-            
             let blnceFormatted = String(format: "%.2f", customerBalance.currentBalance)
             let balance = "PKR \(blnceFormatted)"
             let text = String.init(format: "screen_y2y_funds_transfer_display_text_balance".localized, balance)
@@ -196,13 +190,10 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         validations.append(reasonSelectedSubject.map { _ in true })
         
         //TODO: uncomment following line
-//        Observable.combineLatest(validations)
-//            .map { !$0.contains(false) }
-//            .bind(to: doneEnabledSubject)
-//            .disposed(by: disposeBag)
-        
-        //TODO: remove following line
-        doneEnabledSubject.onNext(true)
+        Observable.combineLatest(validations)
+            .map { !$0.contains(false) }
+            .bind(to: doneEnabledSubject)
+            .disposed(by: disposeBag)
         
         let note = SMFTNoteCellViewModel()
         note.outputs.text.subscribe(onNext: { [unowned self] in self.currentNote = $0 }).disposed(by: disposeBag)
@@ -215,9 +206,6 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
             .bind(to: note.inputs.errorObserver)
             .disposed(by: disposeBag)
         
-        //TODO: remove following line
-        customerBalanceRes.onNext(.mock)
-        
         let combineObj = Observable.combineLatest(enteredAmount,feeRes,customerBalanceRes,reason.outputs.selectedReason)
         doneSubject.withLatestFrom(combineObj).subscribe(onNext: { [weak self] _arg0 in
             guard let `self` = self else { return }
@@ -226,21 +214,6 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
             self.beneficiary.bankTransferReq = transferRequestInput
             self.resultSubject.onNext(self.beneficiary)
         }).disposed(by: disposeBag)
-
-        
-      
-     /*   Observable.combineLatest(tranferFee, enteredAmount.startWith(0), reasonSelectedSubject.startWith(.mock))
-            .map { [weak self] fee, amount, reason -> FeeCharges in
-                
-                guard self?.beneficiary.type ?? .domestic == .uaefts else { return fee.getFeeCharges(for: amount) }
-                guard reason.isFeeChargeable else { return (0, 0) }
-                guard reason.isCBWSIApplicable && (amount <= self?.transactionThreshold.cbwsiLimit ?? 0) && (self?.beneficiary.cbwsiCompliant ?? false) else { return fee.getFeeCharges(for: amount) }
-                return (0, 0) }
-            .map { [unowned self] in
-                self.currentCharges = $0
-                return CurrencyFormatter.formatAmountInLocalCurrency($0.fee + $0.vat) }
-            .bind(to: charges.inputs.feeObserver)
-            .disposed(by: disposeBag) */
     }
     
     internal func loadCells() {
@@ -272,14 +245,7 @@ private extension SendMoneyFundsTransferViewModel {
     
     func fetchRequiredData() {
         showActivitySubject.onNext(true)
-        
-        //TODO: remove following comment
-//        Observable.zip(fetchTransactionLimit(), fetchTransactionReasons(), fetchTransactionFee(), fetchThresholdLimits(), fetchCustomerAccountBalance()).map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
-        
-        //TODO: remove following line
-        Observable.zip(fetchTransactionLimit(), fetchTransactionReasons(), fetchTransactionFee(), fetchThresholdLimits()).map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
-        
-//        fetchCustomerAccountBalance().map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
+        Observable.zip(fetchTransactionLimit(), fetchTransactionReasons(), fetchTransactionFee(), fetchThresholdLimits(), fetchCustomerAccountBalance()).map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
     }
     
     func fetchTransactionLimit() -> Observable<Void> {
@@ -292,7 +258,7 @@ private extension SendMoneyFundsTransferViewModel {
             self.transactionRange = min...max
         }).disposed(by: disposeBag)
 
-        return transactionLimitRequest.map{ _ in }//in self.fetchTransactionLimitForCountry() }
+        return transactionLimitRequest.map{ _ in }
     }
 
     func fetchTransactionFee() -> Observable<Void> {
@@ -301,7 +267,6 @@ private extension SendMoneyFundsTransferViewModel {
 
         feeRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
-        //feeRequest.elements().map{ $0 == nil ? TransferFee.mock : $0! }.bind(to: tranferFee).disposed(by: disposeBag)
         feeRequest.elements().bind(to: feeRes).disposed(by: disposeBag)
         feeRequest.elements().subscribe(onNext: { [unowned self]  in
             self.transactionFee = $0
@@ -327,7 +292,7 @@ private extension SendMoneyFundsTransferViewModel {
 
         request.elements().bind(to: thresholdRes).disposed(by: disposeBag)
         
-        request.elements().subscribe(onNext: { [unowned self] _ in
+        request.elements().subscribe(onNext: { _ in
             print("limits")
         }).disposed(by: disposeBag)
         return request.map { _ in }
@@ -340,25 +305,8 @@ private extension SendMoneyFundsTransferViewModel {
         reasonsRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
         reasonsRequest.elements()
-            //.map { $0.filter { $0.code != nil } }
             .do(onNext: { [unowned self] in self.tranferReasons = $0 })
             .map{ reasons in
-              /*  var reasonTypes = [TransferReasonType]()
-
-                var reasonsWithoutCategory = reasons.filter{ $0.category == nil }
-                let reasonsWithCategory = reasons.filter{ $0.category != nil }
-
-                let groups = Dictionary(grouping: reasonsWithCategory, by: { $0.category })
-
-                reasonsWithoutCategory.append(contentsOf: groups.filter{ $0.1.count == 1 && $0.1.first?.category == $0.1.first?.title }.flatMap{ $0.1 })
-
-                groups.filter{ $0.1.count > 1 || $0.1.first?.category != $0.1.first?.title }
-                    .forEach { (category, reasons) in
-                        reasonTypes.append(TransferReasonCategory(categoryName: category ?? "", reasons: reasons)) }
-
-                reasonTypes.append(contentsOf: reasonsWithoutCategory)
-
-                return reasonTypes.sorted(by: { $0.title < $1.title }) } */
                 return reasons.sorted(by: { $0.transferReason < $1.transferReason }) }
             .bind(to: reasonsSubject)
             .disposed(by: disposeBag)
@@ -371,11 +319,6 @@ private extension SendMoneyFundsTransferViewModel {
 
 private extension SendMoneyFundsTransferViewModel {
     func handleErrors() {
-       
-//        Observable.combineLatest(customerBalanceRes, amountSubject.map{ Double($0 ?? "") ?? 0 })
-//            .map{ [unowned self] in self.getError(forAmount: $0.1, availableBalance: $0.0.currentBalance) }
-//            .bind(to: amountErrorSubject)
-//            .disposed(by: disposeBag)
         
         Observable.combineLatest(customerBalanceRes, enteredAmount, tranferFee, reasonSelectedSubject.startWith(.mock))
             .do(onNext: { [unowned self] in self.currentAmount = $0.1 })
