@@ -247,6 +247,11 @@ public extension String {
         return "\(firstCharacter) \(lastLetter)"
     }
     
+    var firstLetter: String {
+        let fullNameArr = self.components(separatedBy: " ")
+        return fullNameArr.first ?? ""
+    }
+    
     // number of spaces
     var splits: Int {
         return self.components(separatedBy: " ").count - 1

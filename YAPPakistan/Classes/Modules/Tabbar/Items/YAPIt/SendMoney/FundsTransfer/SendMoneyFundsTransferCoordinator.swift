@@ -59,18 +59,14 @@ class SendMoneyFundsTransferCoordinator: Coordinator<ResultType<Void>> {
             self?.selectReason($0, viewController.viewModel.inputs.reasonSelectedObserver)
         }).disposed(by: rx.disposeBag)
         
+        
+        viewController.viewModel.outputs.result.subscribe(onNext: { [weak self] theBene in
+            self?.confirmation(theBene)
+        }).disposed(by: rx.disposeBag)
+
+        
         return result
     }
-    
-//    func selectReason(_ reasons: [TransferReasonType], _ selectedReasonObserver: AnyObserver<TransferReason>) {
-//        let viewModel = SMFTPOPSelectionViewModel(reasons)
-//        let viewController = SMFTPOPSelectionViewController(with: viewModel)
-//        viewController.show(in: localRoot)
-//
-//        viewModel.outputs.popSelected
-//            .subscribe(onNext: { selectedReasonObserver.onNext($0) })
-//            .disposed(by: disposeBag)
-//    }
     
     func selectReason(_ reasons: [TransferReason], _ selectedReasonObserver: AnyObserver<TransferReason>) {
         let viewModel = SMFTPOPSelectionViewModel(reasons)
@@ -80,6 +76,20 @@ class SendMoneyFundsTransferCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.popSelected
             .subscribe(onNext: { selectedReasonObserver.onNext($0) })
             .disposed(by: rx.disposeBag)
+    }
+    
+    func confirmation(_ result: SendMoneyBeneficiary) {
+        let viewModel = SendMoneyConfirmFundsTransferViewModel(beneficiary: result, repository: container.makeY2YRepository())
+        let viewController = SendMoneyConfirmFundsTransferViewController(themeService: container.themeService, viewModel: viewModel)
+        localRoot.pushViewController(viewController, animated: true)
+        
+        viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
+            self?.localRoot.popViewController(animated: true, nil)
+        }).disposed(by: rx.disposeBag)
+
+//        viewModel.outputs.result.subscribe(onNext: { [weak self] in
+//            self?.success($0)
+//        }).disposed(by: rx.disposeBag)
     }
 }
 

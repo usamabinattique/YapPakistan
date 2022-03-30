@@ -67,6 +67,7 @@ class SMFTAmountInputCell: RxUITableViewCell {
         guard let viewModel = viewModel as? SMFTAmountInputCellViewModelType else { return }
         self.viewModel = viewModel
         self.themeService = themeService
+        setupTheme()
         bindViews()
     }
 
@@ -135,6 +136,11 @@ private extension SMFTAmountInputCell {
            // .alignEdgeWithSuperview(.bottom,constant: 0)
 
     }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [ feeLabel.rx.textColor])
+    }
 }
 
 // MARK: Binding
@@ -155,11 +161,7 @@ private extension SMFTAmountInputCell {
             self?.decimalPlaces = $0
         }).disposed(by: disposeBag)
         
-        //viewModel.outputs.fee.bind(to: feeLabel.rx.attributedText).disposed(by: disposeBag)
-        viewModel.outputs.fee.subscribe(onNext: { [weak self] fee in
-            print("fee is \(fee)")
-            self?.feeLabel.attributedText = fee
-        }).disposed(by: disposeBag)
+        viewModel.outputs.fee.bind(to: feeLabel.rx.attributedText).disposed(by: disposeBag)
 
     }
 }

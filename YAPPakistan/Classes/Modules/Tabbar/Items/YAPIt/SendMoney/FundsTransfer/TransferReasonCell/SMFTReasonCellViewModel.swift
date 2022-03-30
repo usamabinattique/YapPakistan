@@ -20,6 +20,7 @@ protocol SMFTReasonCellViewModelOutput {
     var title: Observable<String?> { get }
     var endEditting: Observable<Bool> { get }
     var selectReason: Observable<Void> { get }
+    var selectedReason: Observable<TransferReason> { get }
 }
 
 protocol SMFTReasonCellViewModelType {
@@ -50,6 +51,7 @@ class SMFTReasonCellViewModel: SMFTReasonCellViewModelType, SMFTReasonCellViewMo
     var endEditting: Observable<Bool> { return endEdittingSubject.asObservable() }
     var title: Observable<String?> { return titleSubject.asObservable() }
     var selectReason: Observable<Void> { selectReasonSubject.asObservable() }
+    var selectedReason: Observable<TransferReason> { selectedReasonSubject.asObservable() }
     
     // MARK: - Init
     init() {

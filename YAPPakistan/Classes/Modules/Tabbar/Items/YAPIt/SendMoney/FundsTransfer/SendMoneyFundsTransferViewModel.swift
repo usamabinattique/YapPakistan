@@ -32,7 +32,7 @@ protocol SendMoneyFundsTransferViewModelOutput {
     var title: Observable<String?> { get }
     var showActivity: Observable<Bool> { get }
     var otp: Observable<(beneficiary: SendMoneyBeneficiary, amount: Double)> { get }
-    var result: Observable<SendMoneyTransactionResult> { get }
+    var result: Observable<SendMoneyBeneficiary> { get }
     var selectReason: Observable<[TransferReason]> { get }
     var coolingTransactionReminderAlert: Observable<String?>{ get }
 }
@@ -53,10 +53,10 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private let otpSubject = PublishSubject<(beneficiary: SendMoneyBeneficiary, amount: Double)>()
     private let otpVerifiedSubject = PublishSubject<Void>()
-    private let resultSubject = PublishSubject<SendMoneyTransactionResult>()
+    private let resultSubject = PublishSubject<SendMoneyBeneficiary>()
     private let coolingTransactionReminderAlertSubject = PublishSubject<String?>()
 
-    let doneSubject = PublishSubject<Void>()
+    private let doneSubject = PublishSubject<Void>()
     let doneEnabledSubject = BehaviorSubject<Bool>(value: false)
     private let showErrorSubject = PublishSubject<String>()
     let amountErrorSubject = PublishSubject<String?>()
@@ -96,7 +96,7 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
     var title: Observable<String?> { return titleSubject.asObservable() }
     var showActivity: Observable<Bool> { return showActivitySubject.asObservable() }
     var otp: Observable<(beneficiary: SendMoneyBeneficiary, amount: Double)> { return otpSubject.asObservable() }
-    var result: Observable<SendMoneyTransactionResult> { return resultSubject.asObservable() }
+    var result: Observable<SendMoneyBeneficiary> { return resultSubject.asObservable() }
     var amountError: Observable<String?> { amountErrorSubject.asObservable() }
     let enteredAmount = PublishSubject<Double>()
     var selectReason: Observable<[TransferReason]> { selectReasonSubject.asObservable() }
@@ -172,11 +172,19 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         //TODO: uncomment following comment
         customerBalanceRes.map{
             customerBalance -> NSAttributedString in
-            let balance = customerBalance.formattedBalance()
-            let text = "Your available balance is \(balance)"
+//            let balance = customerBalance.formattedBalance()
+//            let text = "Your available balance is \(balance)"
+//            let attributed = NSMutableAttributedString(string: text)
+//            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
+//            return attributed
+            
+            let blnceFormatted = String(format: "%.2f", customerBalance.currentBalance)
+            let balance = "PKR \(blnceFormatted)"
+            let text = String.init(format: "screen_y2y_funds_transfer_display_text_balance".localized, balance)
             let attributed = NSMutableAttributedString(string: text)
-            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
-            return attributed
+            attributed.addAttributes([.foregroundColor: UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
+            return attributed as NSAttributedString
+            
         }.bind(to: availableBalance.balanceSubject).disposed(by: disposeBag)
         viewModels.append(availableBalance)
         
@@ -188,13 +196,13 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         validations.append(reasonSelectedSubject.map { _ in true })
         
         //TODO: uncomment following line
-        Observable.combineLatest(validations)
-            .map { !$0.contains(false) }
-            .bind(to: doneEnabledSubject)
-            .disposed(by: disposeBag)
+//        Observable.combineLatest(validations)
+//            .map { !$0.contains(false) }
+//            .bind(to: doneEnabledSubject)
+//            .disposed(by: disposeBag)
         
         //TODO: remove following line
-//        doneEnabledSubject.onNext(true)
+        doneEnabledSubject.onNext(true)
         
         let note = SMFTNoteCellViewModel()
         note.outputs.text.subscribe(onNext: { [unowned self] in self.currentNote = $0 }).disposed(by: disposeBag)
@@ -206,6 +214,19 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
             .map{ $0 ? nil : "Please remove special characters to continue" }
             .bind(to: note.inputs.errorObserver)
             .disposed(by: disposeBag)
+        
+        //TODO: remove following line
+        customerBalanceRes.onNext(.mock)
+        
+        let combineObj = Observable.combineLatest(enteredAmount,feeRes,customerBalanceRes,reason.outputs.selectedReason)
+        doneSubject.withLatestFrom(combineObj).subscribe(onNext: { [weak self] _arg0 in
+            guard let `self` = self else { return }
+            let (userEnteredAmount,fee,balance,selectedReason) = _arg0
+            let transferRequestInput = SendMoneyBankTransferInput(beneficiaryId: "\(self.beneficiary.id ?? 0)" ,amount: "\(userEnteredAmount)", purposeCode: selectedReason.code, purposeReason: selectedReason.transferReason, remarks: self.currentNote, feeAmount: "\(fee.fixedAmount ?? 0)")
+            self.beneficiary.bankTransferReq = transferRequestInput
+            self.resultSubject.onNext(self.beneficiary)
+        }).disposed(by: disposeBag)
+
         
       
      /*   Observable.combineLatest(tranferFee, enteredAmount.startWith(0), reasonSelectedSubject.startWith(.mock))

@@ -47,6 +47,7 @@ class SMFTAvailableBalanceCell: RxUITableViewCell {
         guard let `viewModel` = viewModel as? SMFTAvailableBalanceCellViewModelType else { return }
         self.viewModel = viewModel
         self.themeService = themeService
+        setupTheme()
         self.bindViews()
     }
 }
@@ -62,9 +63,13 @@ private extension SMFTAvailableBalanceCell {
         balance
             .centerHorizontallyInSuperview()
             .alignEdgesWithSuperview([.top,.left, .bottom], constants: [25,25, 25])
-        
 //        topConstraint = balance.topAnchor.constraint(equalTo: contentView.topAnchor)
 //        topConstraint.isActive = true
+    }
+                  
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [ balance.rx.textColor])
     }
 }
 
