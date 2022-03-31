@@ -11,6 +11,6 @@ import YAPCore
 
 public extension AppEnvironment {
     static var current: Self {
-        return .stg
+        return .qa
     }
 }
