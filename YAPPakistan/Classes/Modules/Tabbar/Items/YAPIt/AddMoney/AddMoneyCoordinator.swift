@@ -120,7 +120,6 @@ private extension AddMoneyCoordinator {
         viewModel.outputs.back
             .subscribe(onNext:{ _ in
                 self.localRoot.popViewController(animated: true)
-                self.result.onNext(.cancel)
             })
             .disposed(by: rx.disposeBag)
         
@@ -139,8 +138,7 @@ private extension AddMoneyCoordinator {
         
         viewModel.outputs.close
             .subscribe(onNext: { [weak self] _ in
-                navigationRoot.dismiss(animated: false, completion:nil)
-                //viewController.dismiss(animated: true, completion: nil)
+                viewController.dismiss(animated: true, completion: nil)
             })
             .disposed(by: rx.disposeBag)
         

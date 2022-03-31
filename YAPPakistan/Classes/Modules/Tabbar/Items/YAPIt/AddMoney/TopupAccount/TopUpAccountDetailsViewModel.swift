@@ -54,7 +54,7 @@ class TopUpAccountDetailsViewModel: TopUpAccountDetailsViewModelType, TopUpAccou
         let account = accountProvider.currentAccount
         
         let value = account.unwrap().map {
-            String.init(format: "Pay to: %@\nIBAN: %@\nBank name: %@\nBank address: %@\nAccount number: %@\nSWIFT/BIC: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.bank.name, $0.bank.address, $0.accountNumber ?? "", $0.bank.swiftCode) }
+            String.init(format: "Pay to: %@\nIBAN: %@\nAccount number: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.accountNumber ?? "") }
         value.bind(to: shareSubject)
             .disposed(by: disposeBag)
         
@@ -63,17 +63,14 @@ class TopUpAccountDetailsViewModel: TopUpAccountDetailsViewModelType, TopUpAccou
             .subscribe(onNext:{ [weak self] _ in
                 guard let `self` = self else { return }
                 let value = account.unwrap().map {
-                    String.init(format: "Pay to: %@\nIBAN: %@\nBank name: %@\nBank address: %@\nAccount number: %@\nSWIFT/BIC: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.bank.name, $0.bank.address, $0.accountNumber ?? "", $0.bank.swiftCode) }
+                    String.init(format: "Pay to: %@\nIBAN: %@\nAccount number: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.accountNumber ?? "") }
                 value.bind(to: self.shareSubject).disposed(by: self.disposeBag)
             }).disposed(by: disposeBag)
         account.map{ account -> [ReusableTableViewCellViewModelType] in
             [TopUpAccountDetailsUserCellViewModel(userImage: (account?.customer.imageURL?.absoluteString, (account?.customer.fullName ?? "").initialsImage(color: UIColor(hexString: "5E35B1") ?? .purple/*primary*/))),
              TopUpAccountDetailsCellViewModel(type: .accountName, details: account?.customer.fullName ?? ""),
              TopUpAccountDetailsCellViewModel(type: .iban, details: account?.iban ?? ""),
-             TopUpAccountDetailsCellViewModel(type: .bankName, details: account?.bank.name ?? ""),
-             TopUpAccountDetailsCellViewModel(type: .bankAddress, details: account?.bank.address ?? ""),
              TopUpAccountDetailsCellViewModel(type: .accountNumber, details: account?.accountNumber ?? ""),
-             TopUpAccountDetailsCellViewModel(type: .swiftCode, details: account?.bank.swiftCode ?? ""),
              tableViewButtonCellViewModel] }
             .map{ [SectionModel(model: 0, items: $0)] }
             .bind(to: dataSourceSubject)

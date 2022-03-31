@@ -80,7 +80,7 @@ extension TopUpAccountDetailsCellViewModel {
     var titleString: String {
         switch self.topupAcoountDetailsType {
         case .accountName:
-            return "Account name"
+            return "Account title"
         case .iban:
             return "IBAN"
         case .bankName:

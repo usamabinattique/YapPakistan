@@ -10,6 +10,7 @@ import Foundation
 import YAPComponents
 import RxSwift
 import RxTheme
+import UIKit
 
 class TopUpAccountDetailsUserCell: RxUITableViewCell {
     
@@ -17,8 +18,8 @@ class TopUpAccountDetailsUserCell: RxUITableViewCell {
 //
 //    private lazy var userImage = UIImageViewFactory.createBackgroundImageView(mode: .scaleAspectFill)
 //
-//    private lazy var logo = UIImageViewFactory.createImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_app_logo"))
-//
+    private lazy var logo = UIFactory.makeImageView()
+
     private lazy var details = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "This is your YAP account summary. Use these details to transfer funds from another account into YAP.")
     
 //    private lazy var borderView: UIView = {
@@ -75,6 +76,7 @@ class TopUpAccountDetailsUserCell: RxUITableViewCell {
         self.themeService = themeService
         bindViews()
         setupTheme()
+        setupResources()
     }
     
 }
@@ -83,6 +85,7 @@ class TopUpAccountDetailsUserCell: RxUITableViewCell {
 
 private extension TopUpAccountDetailsUserCell {
     private func setupViews() {
+        contentView.addSubview(logo)
         contentView.addSubview(details)
 //        borderView.addSubview(userImage)
 //        borderView.addSubview(logo)
@@ -99,10 +102,10 @@ private extension TopUpAccountDetailsUserCell {
 //            .height(constant: 45)
 //            .width(constant: 45)
 //
-//        logo
-//            .toBottomOf(userImage, constant: 8)
-//            .centerHorizontallyInSuperview()
-//            .height(constant: 45)
+        logo
+            .alignEdgesWithSuperview([.top], constants: [50])
+            .centerHorizontallyInSuperview()
+            .height(constant: 45)
 //
 //        details
 //            .toBottomOf(logo)
@@ -110,13 +113,18 @@ private extension TopUpAccountDetailsUserCell {
 //            .alignEdgesWithSuperview([.left, .bottom], constants: [20, 10])
         
         details
-            .alignEdgesWithSuperview([.left, .right, .top, .bottom], constants: [30, 30, 40, 50])
+            .toBottomOf(logo, constant: 21)
+            .alignEdgesWithSuperview([.left, .right, .bottom], constants: [30, 30, 50])
     }
     
     func setupTheme(){
         self.themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: details.rx.textColor)
             .disposed(by: disposeBag)
+    }
+    
+    func setupResources() {
+        logo.image = UIImage(named: "icon_app_logo", in: .yapPakistan)
     }
     
 //    private func render() {
