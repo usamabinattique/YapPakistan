@@ -95,6 +95,21 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
                 self?.navigateToKYC(isTrue)
             })
             .disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.showCreditLimit.subscribe(onNext: { [weak self] _ in
+            self?.showCreditLimit()
+        }).disposed(by: rx.disposeBag)
+
+    }
+    
+    func showCreditLimit() {
+        let viewModel = CreditLimitPopSelectionViewModel()
+        let viewController = CreditLimitPopSelectionViewController(viewModel, themeService: container.themeService)
+        viewController.show(in: navigationRoot)
+        
+//        viewModel.outputs.popSelected
+//            .subscribe(onNext: { selectedReasonObserver.onNext($0) })
+//            .disposed(by: rx.disposeBag)
     }
 
     #warning("FIXME")

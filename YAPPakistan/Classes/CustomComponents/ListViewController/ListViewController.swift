@@ -74,7 +74,11 @@ open class ListViewController: UIViewController {
         }
     }
     private var __startPointY: CGFloat = 0.0
-    private var __heightMutiplier: CGFloat = 0.70//0.85
+    var __heightMutiplier: CGFloat = 0.70//0.85
+    
+    public func setHeightMultiplier(multiplier: CGFloat) {
+        self.__heightMutiplier = multiplier
+    }
     
     // MARK: Public properties
     

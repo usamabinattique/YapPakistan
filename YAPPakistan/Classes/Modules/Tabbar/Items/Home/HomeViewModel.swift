@@ -174,16 +174,12 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
        
         generateCellViewModels()
-        
-        showCreditLimitSubject.subscribe(onNext: { _ in
-            print("show credit info")
-        }).disposed(by: disposeBag)
 
     }
     
     func generateCellViewModels() {
         var viewModels: [ReusableTableViewCellViewModelType] = []
-        let limitVM = CreditLimitCellViewModel(12000)
+        let limitVM = CreditLimitCellViewModel(12)
         limitVM.outputs.info.bind(to: showCreditLimitSubject).disposed(by: disposeBag)
         viewModels.append(limitVM)
         dataSourceSubject.onNext([SectionModel(model: 0, items: viewModels)])

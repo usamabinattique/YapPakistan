@@ -45,18 +45,39 @@ class CreditLimitCellViewModel: CreditLimitCellViewModelType, CreditLimitCellVie
     private let disposeBag = DisposeBag()
 
     init(_ limit: Double) {
-        let amountFormatted = String(format: "%.2f", limit)
-        let amount = "PKR \(amountFormatted)"
-        let text = String.init(format: "screen_dashboard_credit_limit_display_text".localized, amount)
+//        let amountFormatted = String(format: "%.2f", limit)
+//        let amount = "PKR \(amountFormatted)"
+//        let text = String.init(format: "screen_dashboard_credit_limit_display_text".localized, amount)
+//        let attributed = NSMutableAttributedString(string: text)
+//        attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
+        
+        let balance = formattedBalance(amount: limit)
+        let text = "Credit limit: \(balance)"
         let attributed = NSMutableAttributedString(string: text)
-        attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
-        limitSubject.onNext(attributed as NSAttributedString)
+        attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
+        limitSubject.onNext(attributed)
     }
     init() {
 //        bank = BankDetail(bankLogoUrl: nil, bankName: "Dummy looooooooooooooong Name", accountNoMinLength: 0, accountNoMaxLength: 0, ibanMinLength: 0, ibanMaxLength: 0, consumerId: "adf", formatMessage: "abc")
 //        nameSubject.onNext(bank.bankName)
 //        shimmeringSubject = BehaviorSubject(value: true)
 //        isShimmering = true
+    }
+    
+    private func formattedBalance(amount:Double,showCurrencyCode: Bool = true, shortFormat: Bool = true) -> String {
+        let readable = amount.userReadable
+        
+        var formatted = CurrencyFormatter.format(amount: shortFormat ? readable.value : amount, in: "PKR")
+        
+        if !showCurrencyCode {
+            formatted = formatted.amountFromFormattedAmount
+        }
+        
+        if shortFormat {
+            formatted += readable.denomination
+        }
+        
+        return formatted
     }
 }
 
