@@ -148,27 +148,11 @@ private extension SendMoneyHomeViewModel {
         }).disposed(by: disposeBag)
         
         allIBFTBenefeciries.elements().subscribe(onNext: { responseData in
-            print("Elements: \(responseData)")
+            print("All Benefs Elements: \(responseData)")
+            print("All Benefs Elements Count : \(responseData.count)")
         }).disposed(by: disposeBag)
         
-        let allBeneficiaries = allIBFTBenefeciries.elements().withLatestFrom(
-            Observable.combineLatest(allIBFTBenefeciries.elements(), self.accountProvider.currentAccount.map{ $0?.customer.homeCountry }.unwrap())
-        )
-            .map{ [unowned self] beneficiaries, homeCountry -> [SendMoneyBeneficiary] in
-                switch self.sendMoneyType {
-                case .local:
-                    return beneficiaries.filter{ $0.type == .uaefts || $0.type == .domestic || $0.type == .IBFT }
-                case .international:
-                    return beneficiaries.filter{ ($0.type == .rmt || $0.type == .swift) && $0.country != homeCountry }
-                case .homeCountry(let country, _):
-                    return beneficiaries.filter{ $0.country == country.isoCode2Digit }
-                case .cashPickUp:
-                    return beneficiaries.filter{ $0.type == .cashPayout }
-                default:
-                    return beneficiaries
-                } }
-        
-        allBeneficiaries
+        allIBFTBenefeciries.elements()
             .map { $0.indexed.map { SendMoneyHomeBeneficiaryCellViewModel($0) } }
             .map { [SectionModel(model: 0, items: $0)] }
             .subscribe(onNext : { [weak self] model in
@@ -176,8 +160,8 @@ private extension SendMoneyHomeViewModel {
                 self?.allBeneficiaryDataSourceSubject.onNext( (model) )
             })
             .disposed(by: disposeBag)
-        allBeneficiaries.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
-        searchObserverSubject.withLatestFrom(allBeneficiaries).bind(to: searchBeneficiariesSubject).disposed(by: disposeBag)
+        allIBFTBenefeciries.elements().map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
+        searchObserverSubject.withLatestFrom(allIBFTBenefeciries.elements()).bind(to: searchBeneficiariesSubject).disposed(by: disposeBag)
     }
     
     func fetchRecentBeneficiaries() {

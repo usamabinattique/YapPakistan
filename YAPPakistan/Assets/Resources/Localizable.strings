@@ -542,3 +542,16 @@
 
 "screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
 "screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
+
+
+// MARK: More Bank Details Screen
+
+"screen_more_bank_details_display_text_name" = "Name";
+"screen_more_bank_details_display_text_swift" = "SWIFT/BIC";
+"screen_more_bank_details_display_text_iban" = "IBAN";
+"screen_more_bank_details_display_text_account" = "Account";
+"screen_more_bank_details_display_text_bank" = "Bank";
+"screen_more_bank_details_display_text_address" = "Address";
+"screen_more_bank_details_button_share" = "Share";
+"screen_more_bank_details_display_text_title" = "Account Details";
+"screen_more_bank_details_display_text_for_top_up_title" = "My YAP account details";

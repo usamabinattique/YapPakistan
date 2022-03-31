@@ -127,34 +127,11 @@ private extension SendMoneyHomeCoordinator {
         }).disposed(by: disposeBag)
     }
      
-//     func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
-//
-//     coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, beneficiary: beneficiary, repository: repository)).subscribe(onNext:{ [weak self] in
-//     if case ResultType.success = $0 {
-//     self?.result.onNext(.success(()))
-//     self?.result.onCompleted()
-//     }else{
-//     self?.cancelFromSendMoneyFundTransfer.onNext(())
-//     }
-//     }).disposed(by: disposeBag)
-//     }
-    
     func searchBeneficiaries(_ allBeneficiaries: [SendMoneyBeneficiary]) {
         let viewModel = SearchSendMoneyBeneficiaryViewModel(allBeneficiaries, repository: container.makeYapItRepository())
         let viewController = SearchSendMoneyBeneficiaryViewController(themeService: container.themeService, viewModel: viewModel)
-        
         localRoot.pushViewController(viewController, animated: true)
-        
-        //        viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
-        //            self?.sendMoney($0)
-        //        }).disposed(by: disposeBag)
-        
-        //        viewModel.outputs.editBeneficiary.subscribe(onNext: { [weak self] in
-        //            self?.editBeneficiary($0)
-        //        }).disposed(by: disposeBag)
-        
         refreshBeneficiaries.bind(to: viewModel.inputs.refreshObserver).disposed(by: disposeBag)
-        
         cancelFromSendMoneyFundTransfer.take(1).subscribe(onNext: {[weak self] _ in
             if self?.sendOnlyOneEvent == 0 {
                 viewModel.inputs.cancelPressFromSenedMoneyFundTransferObserver.onNext(())
