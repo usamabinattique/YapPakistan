@@ -190,8 +190,8 @@ private extension SendMoneyHomeViewModel {
                 self?.allBeneficiaryDataSourceSubject.onNext( (model) )
             })
             .disposed(by: disposeBag)
-        allBeneficiaries.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
-        searchObserverSubject.withLatestFrom(allBeneficiaries).bind(to: searchBeneficiariesSubject).disposed(by: disposeBag)
+        allIBFTBenefeciries.elements().map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
+        searchObserverSubject.withLatestFrom(allIBFTBenefeciries.elements()).bind(to: searchBeneficiariesSubject).disposed(by: disposeBag)
     }
     
     func fetchRecentBeneficiaries() {

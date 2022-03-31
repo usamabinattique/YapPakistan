@@ -171,7 +171,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
 
     fileprivate func more(root: UITabBarController) {
-        self.coordinate(to: MoreCoordinator(root: root))
+        self.coordinate(to: MoreCoordinator(root: root, container: container))
             .subscribe()
             .disposed(by: disposeBag)
     }
