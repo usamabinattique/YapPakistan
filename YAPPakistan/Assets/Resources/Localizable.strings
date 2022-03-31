@@ -506,6 +506,13 @@
 "screen_add_beneficiary_detail_display_button_block_alert_yes" = "Yes, send now";
 "screen_add_beneficiary_detail_display_button_block_alert_no" = "No, send later";
 
+"screen_international_funds_transfer_display_text_reson" = "Select the reason for transfer";
+"screen_international_funds_transfer_dropdown_text_reason_hint" = "Transferring amount to a friend";
+"screen_bill_payments_details_input_text_add_note_placeholder" = "Type a note here (Optional)";
+"screen_international_funds_transfer_input_text_note_hint" = "Type a note here";
+
+"screen_send_money_otp_display_text_title" = "Confirm transfer";
+
 
 // MARK: - Home Screen
 "screen_home_display_text_nothing_to_report" = "Start using your account to see all your transactions here";
@@ -570,6 +577,13 @@
 
 
 "screen_domestic_funds_transfer_display_text_heading" = "Send money to";
+"screen_send_money_bank_transfer_success_display_text_title" = "Transfer successful!";
 
 // MARK: - CustomView AmounView
 "custom_view_display_text_amount_view" = "PKR";
+"screen_cash_pickup_funds_display_text_fee" = "Fee %@";
+
+//MARK: Dashboard
+// MARK: - CustomView AmounView
+"screen_dashboard_credit_limit_display_text" = "Credit limit: %@";
+

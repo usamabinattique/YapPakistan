@@ -122,6 +122,8 @@ public struct SendMoneyBeneficiary: Codable {
         case beneficiaryCreationDate = "beneficiaryCreationDate"
         case lastTranseferDate = "lastUsedDate"
     }
+    
+    var bankTransferReq: SendMoneyBankTransferInput?
 }
 
 public extension SendMoneyBeneficiary {
@@ -296,3 +298,4 @@ public extension Array where Element == SendMoneyBeneficiary {
         return enumerated().map{ SendMoneyBeneficiary($0.1, index: $0.0) }
     }
 }
+

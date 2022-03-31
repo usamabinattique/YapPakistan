@@ -52,12 +52,12 @@ class SMFTBeneficiaryCellViewModel: SMFTBeneficiaryCellViewModelType, SMFTBenefi
     
     // MARK: - Init
     init(_ beneficiary: SendMoneyBeneficiary, showsFlag: Bool = false, showsIban: Bool = false) {
-        let name = [beneficiary.firstName ?? "", beneficiary.lastName ?? ""].joined(separator: " ")
+        let name = beneficiary.title ?? "" //[beneficiary.firstName ?? "", beneficiary.lastName ?? ""].joined(separator: " ")
         
-        imageSubject.onNext((nil, name.thumbnail))//name.initialsImage(color: beneficiary.color)))
+        imageSubject.onNext((beneficiary.beneficiaryPictureUrl, name.thumbnail))//name.initialsImage(color: beneficiary.color)))
         nameSubject.onNext(name)
      //   flagSubject.onNext(UIImage.sharedImage(named: beneficiary.country!))
         showsFlagSubject.onNext(showsFlag)
-        accounSubject.onNext(showsIban ? beneficiary.formattedIBAN : nil)
+        accounSubject.onNext(beneficiary.IBAN)
     }
 }

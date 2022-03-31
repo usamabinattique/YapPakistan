@@ -25,6 +25,7 @@ public protocol Y2YRepositoryType: ContactsRepositoryType {
     func Y2YTransfer(receiverUUID: String, amount: String, beneficiaryName: String, note: String?, otpVerificationStatus: Bool) -> Observable<Event<Y2YFundsTransferResponse>>
     func fetchPaymentGatewayBeneficiaries() -> Observable<Event<[ExternalPaymentCard]>>
     func fetchTransferReasons() -> Observable<Event<[TransferReason]>>
+    func sendMoneyViaBankTransfer(input: SendMoneyBankTransferInput) -> Observable<Event<BankTransferResponse>>
 }
 
 public class Y2YRepository: Y2YRepositoryType {
@@ -102,9 +103,21 @@ public class Y2YRepository: Y2YRepositoryType {
     public func fetchTransferReasons() -> Observable<Event<[TransferReason]>> {
         return transactionService.fetchTransferReasons().materialize()
     }
+    
+    public func sendMoneyViaBankTransfer(input: SendMoneyBankTransferInput) -> Observable<Event<BankTransferResponse>> {
+        return transactionService.sendMoneyViaBankTransfer(input: input).materialize()
+    }
+    
 }
 
 public class MockY2YRepository: Y2YRepositoryType {
+    public func sendMoneyViaBankTransfer(input: SendMoneyBankTransferInput) -> Observable<Event<BankTransferResponse>> {
+        Observable.create { observer in
+            observer.onNext(.mock)
+            return Disposables.create()
+        }.materialize()
+    }
+    
     public func fetchTransferReasons() -> Observable<Event<[TransferReason]>> {
         Observable.create { observer in
             observer.onNext([.mock])
@@ -189,6 +202,8 @@ public class MockY2YRepository: Y2YRepositoryType {
             return Disposables.create()
         }.materialize()
     }
+    
+    
 //
 //    public func fee(productCode: String) -> Observable<Event<TransferFee>> {
 //        Observable.create { observer in

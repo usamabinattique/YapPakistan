@@ -13,7 +13,7 @@ import YAPComponents
 import RxTheme
 import RxSwift
 
-class SendMoneyFundsTransferViewController: UIViewController {
+class SendMoneyFundsTransferViewController: KeyboardAvoidingViewController {
     
     // MARK: Views
     
@@ -29,12 +29,12 @@ class SendMoneyFundsTransferViewController: UIViewController {
         return alert
     }()
     
-    private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_confirm".localized)
+    private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized)
     
     // MARK: Properties
     
     private let disposeBag = DisposeBag()
-    private var viewModel: SendMoneyFundsTransferViewModelType!
+    var viewModel: SendMoneyFundsTransferViewModelType!
     private var themeService: ThemeService<AppTheme>!
     
     // MARK: Initialization
@@ -119,7 +119,6 @@ private extension SendMoneyFundsTransferViewController {
         formTableViewController.didMove(toParent: self)
         
         view.addSubview(doneButton)
-        self.view.backgroundColor = UIColor.red
     }
     
     func setupConstraints() {
@@ -127,7 +126,7 @@ private extension SendMoneyFundsTransferViewController {
             .alignEdgesWithSuperview([.left, .safeAreaTop, .right])
         
         doneButton
-            .alignEdgeWithSuperviewSafeArea(.bottom, constant: 15)
+            .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard, constant: 15)
             .toBottomOf(formTableViewController.view)
             .centerHorizontallyInSuperview()
             .height(constant: 52)
@@ -135,13 +134,11 @@ private extension SendMoneyFundsTransferViewController {
     }
     
     func setupTheme() {
-//        themeService.rx
-//            .bind({ UIColor($0.primaryDark)}, to: [headingLabel.rx.textColor])
-//            .bind({ UIColor($0.primaryDark)}, to: [searchBarButtonItem.barItem.rx.tintColor])
-//            .disposed(by: rx.disposeBag)
-        
-        self.doneButton.titleColor = UIColor.white
-        self.doneButton.backgroundColor = UIColor.blue
+        themeService.rx
+            .bind({ UIColor($0.primary)}, to: [navigationItem.rightBarButtonItem!.rx.tintColor])
+            .bind({ UIColor($0.primary) }, to: [doneButton.rx.enabledBackgroundColor])
+            .bind({ UIColor($0.greyDark) }, to: [doneButton.rx.disabledBackgroundColor])
+            .disposed(by: rx.disposeBag)
     }
 }
 
@@ -164,7 +161,7 @@ private extension SendMoneyFundsTransferViewController {
                 self.amountAlert.show(inView: self.view, type: .error, text: $0!, autoHides: false) })
             .disposed(by: disposeBag)
         viewModel.outputs.title.bind(to: navigationItem.rx.title).disposed(by: disposeBag)
-//        viewModel.outputs.showActivity.bind(to: navigationController!.view.rx.showActivity).disposed(by: disposeBag)
+        viewModel.outputs.showActivity.bind(to: navigationController!.view.rx.showActivity).disposed(by: disposeBag)
         
 //        let done = doneButton.rx.tap
 //            .do(onNext: { [weak self] _ in self?.view.endEditing(true) })
@@ -173,14 +170,10 @@ private extension SendMoneyFundsTransferViewController {
 //        done.filter{ $0 }.subscribe(onNext: { [weak self] _ in
 //            UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
 //        }).disposed(by: disposeBag)
-//
-//        done.filter{ !$0 }.map{ _ in }
-//            .do(onNext: { [weak self] in self?.view.endEditing(true) })
-//            .bind(to: viewModel.inputs.doneObserver).disposed(by: disposeBag)
+
+        doneButton.rx.tap
+            .do(onNext: { [weak self] _ in self?.view.endEditing(true) })
+            .bind(to: viewModel.inputs.doneObserver).disposed(by: disposeBag)
         
-        viewModel.outputs.coolingTransactionReminderAlert.subscribe(onNext: {[weak self] message in
-            guard let `msg` = message else { return }
-            self?.showAlert(msg: msg)
-        }).disposed(by: disposeBag)
     }
 }

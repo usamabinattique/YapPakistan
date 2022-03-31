@@ -136,6 +136,7 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
         
         // Adding Button ToolBar
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: target, action: done)
+        
         var items: [UIBarButtonItem] = [doneButton]
         let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         items.insert(spaceButton, at: 0)

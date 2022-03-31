@@ -53,22 +53,12 @@ private extension SendMoneyFundsTransferFormViewController {
         tableView.dataSource = nil
         tableView.delegate = nil
         tableView.separatorStyle = .none
-        
-//        tableView.register(YapContactCell.self, forCellReuseIdentifier: YapContactCell.defaultIdentifier)
-//        tableView.register(ASMBTextInputCell.self, forCellReuseIdentifier: ASMBTextInputCell.defaultIdentifier)
-//        tableView.register(ASMBTitleCell.self, forCellReuseIdentifier: ASMBTitleCell.defaultIdentifier)
-//        tableView.register(ASMBBankInfoCell.self, forCellReuseIdentifier: ASMBBankInfoCell.defaultIdentifier)
-        
-        
-        
-        
+           
         tableView.register(SMFTNoteCell.self, forCellReuseIdentifier: SMFTNoteCell.defaultIdentifier)
         tableView.register(SMFTChargesCell.self, forCellReuseIdentifier: SMFTChargesCell.defaultIdentifier)
         tableView.register(SMFTAmountInputCell.self, forCellReuseIdentifier: SMFTAmountInputCell.defaultIdentifier)
-        tableView.register(SMFTConvertedAmountInputCell.self, forCellReuseIdentifier: SMFTConvertedAmountInputCell.defaultIdentifier)
         tableView.register(SMFTBeneficiaryCell.self, forCellReuseIdentifier: SMFTBeneficiaryCell.defaultIdentifier)
         tableView.register(SMFTReasonCell.self, forCellReuseIdentifier: SMFTReasonCell.defaultIdentifier)
-        tableView.register(SMFTCutOffTimeCell.self, forCellReuseIdentifier: SMFTCutOffTimeCell.defaultIdentifier)
         tableView.register(SMFTAvailableBalanceCell.self, forCellReuseIdentifier: SMFTAvailableBalanceCell.defaultIdentifier)
     }
 }
