@@ -558,3 +558,7 @@
 "custom_view_display_text_amount_view" = "PKR";
 "screen_cash_pickup_funds_display_text_fee" = "Fee %@";
 
+//MARK: Dashboard
+// MARK: - CustomView AmounView
+"screen_dashboard_credit_limit_display_text" = "Credit limit: %@";
+

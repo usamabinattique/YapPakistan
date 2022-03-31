@@ -75,7 +75,6 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         // UIView.transition(with: self.window, duration: 0.8, options: [.transitionFlipFromRight, .curveEaseInOut]) { }
 
         navigationRoot.pushViewController(viewController, animated: false)
-        navigationRoot.navigationBar.isHidden = true
         navigationRoot.tabBarItem = UITabBarItem(title: "Home",
                                                  image: UIImage(named: "icon_tabbar_home", in: .yapPakistan),
                                                  selectedImage: nil)
@@ -145,11 +144,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 extension HomeCoodinator {
     fileprivate func initializeRootNavigation() {
         navigationRoot =  UINavigationControllerFactory.createAppThemedNavigationController(themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular) //UINavigationController()
-        navigationRoot.interactivePopGestureRecognizer?.isEnabled = false
-        navigationRoot.navigationBar.isTranslucent = true
-        navigationRoot.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navigationRoot.navigationBar.shadowImage = UIImage()
-        navigationRoot.setNavigationBarHidden(true, animated: true)
+//        navigationRoot.interactivePopGestureRecognizer?.isEnabled = false
+//        navigationRoot.navigationBar.isTranslucent = true
+//        navigationRoot.navigationBar.setBackgroundImage(UIImage(), for: .default)
+//        navigationRoot.navigationBar.shadowImage = UIImage()
+//        navigationRoot.setNavigationBarHidden(true, animated: true)
     }
 
     fileprivate var isNeededBiometryPermissionPrompt: Bool {
