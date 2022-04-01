@@ -12,17 +12,17 @@ public class YAPPakistanConfiguration {
     private(set) var environment: AppEnvironment
     private(set) var googleMapsAPIKey : String
     private(set) var buildConfig: (version: String, build: String)
-    private(set) var analytics: AnalyticsTracker
+    private(set) var analytics: AnalyticsTracker?
     private(set) var eventCallback: ((PKAppEvent) -> Void)?
-    private(set) var notificationHandler: NotificationHandlerDelegate
-    private(set) var deeplinkHandler: DeepLinkHandlerDelegate
+    private(set) var notificationHandler: NotificationHandlerDelegate?
+    private(set) var deeplinkHandler: DeepLinkHandlerDelegate?
 
     public init(environment: AppEnvironment = .qa,
                 googleMapsAPIKey: String = "",
-                analytics: AnalyticsTracker,
+                analytics: AnalyticsTracker? = nil,
                 buildConfig: (version: String, build: String) = ("", ""),
-                notificationHandler: NotificationHandlerDelegate,
-                deeplinkHandler: DeepLinkHandlerDelegate,
+                notificationHandler: NotificationHandlerDelegate? = nil,
+                deeplinkHandler: DeepLinkHandlerDelegate? = nil,
                 callback: ((PKAppEvent) -> Void)?) {
         
         self.environment = environment
