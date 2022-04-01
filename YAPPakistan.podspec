@@ -37,29 +37,36 @@ Pod::Spec.new do |spec|
   spec.dependency 'Alamofire', '~> 5.0'
 
   #MARK: Private
-  spec.dependency 'CardScanner', '1.2.7'
+  spec.dependency 'CardScanner', '1.2.11'
   spec.dependency 'YAPCore', '~> 0'
   spec.dependency 'YAPComponents', '~> 0'
 
   #MARK: Reactive
-  spec.dependency 'RxCocoa', '~> 6.0'
-  spec.dependency 'RxDataSources', '~> 5.0'
-  spec.dependency 'RxGesture', '~> 4.0'
-  spec.dependency 'RxOptional', '~> 5.0'
-  spec.dependency 'RxSwift', '~> 6.0'
-  spec.dependency 'RxSwiftExt', '~> 6.0'
-  spec.dependency 'RxTheme', '~> 5.0'
+  #spec.dependency 'RxCocoa', '~> 6.0'
+  #spec.dependency 'RxDataSources', '~> 5.0'
+  #spec.dependency 'RxGesture', '~> 4.0'
+  #spec.dependency 'RxOptional', '~> 5.0'
+  #spec.dependency 'RxSwift', '~> 6.0'
+  #spec.dependency 'RxSwiftExt', '~> 6.0'
+  #spec.dependency 'RxTheme', '~> 5.0'
+  spec.dependency 'RxSwift', '6.2.0'
+   spec.dependency 'RxCocoa', '6.2.0'
+   spec.dependency 'RxSwiftExt', '6.0.1'
+   spec.dependency 'RxGesture', '4.0.2'
+   spec.dependency 'RxDataSources', '5.0.0'
+   spec.dependency 'RxOptional', '5.0.2'
+   spec.dependency 'RxTheme', '5.0.4'
 
   #MARK: UI
   spec.dependency 'HWPanModal', '~> 0'
   spec.dependency 'SDWebImage', '~> 5.0'
-  spec.dependency 'SwiftyGif', '~> 5.0'
+  spec.dependency 'SwiftyGif', '5.4.0'
   spec.dependency 'FSPagerView', '~> 0.8.3'
   spec.dependency 'SwipeCellKit'
   spec.dependency 'MXParallaxHeader'
 
   #MARK: Utilities
-  spec.dependency 'PhoneNumberKit', '~> 3.0'
+  spec.dependency 'PhoneNumberKit', '3.3.3'
   spec.dependency 'SwifterSwift', '~> 5.0'
 
   #MARK: Google
