@@ -147,22 +147,13 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .map { _ in () }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
-
+        
         accountProvider.currentAccount.unwrap()
-// <<<<<<< Updated upstream:YAPPakistan/Classes/Modules/Tabbar/Items/Home/HomeViewModel.swift
-            .map{ ($0.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue }
-// =======
-//            .map{ $0.accountStatus == .addressCaptured }
-// >>>>>>> Stashed changes:YAPPakistan/Classes/Modules/LiteDashboard/LiteDashboardViewModel.swift
-            .bind(to: completeVerificationHiddenSubject)
+            .map{ ($0.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue }            .bind(to: completeVerificationHiddenSubject)
             .disposed(by: disposeBag)
 
         completeVerificationSubject.withLatestFrom(accountProvider.currentAccount).unwrap()
-// <<<<<<< Updated upstream:YAPPakistan/Classes/Modules/Tabbar/Items/Home/HomeViewModel.swift
             .map({ ($0.accountStatus?.stepValue ?? 100) < AccountStatus.addressCaptured.stepValue })
-// =======
-//            .map({ $0.accountStatus != .addressCaptured })
-// >>>>>>> Stashed changes:YAPPakistan/Classes/Modules/LiteDashboard/LiteDashboardViewModel.swift
             .bind(to: completeVerificationResultSubject)
             .disposed(by: disposeBag)
 
@@ -174,7 +165,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
        
         generateCellViewModels()
-
+        
     }
     
     func generateCellViewModels() {

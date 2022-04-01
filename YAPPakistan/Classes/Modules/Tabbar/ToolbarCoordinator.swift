@@ -139,7 +139,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
 
     fileprivate func store(root: UITabBarController) {
-        self.coordinate(to: StoreCoordinator(root: root))
+        self.coordinate(to: StoreCoordinator(root: root, container: container))
             .subscribe()
             .disposed(by: disposeBag)
     }
