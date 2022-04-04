@@ -116,17 +116,19 @@ private extension SendMoneyHomeCoordinator {
     }
     
     func addBeneficiary() {
-        let coordinator = AddSendMoneyBeneficiaryCoordinator(root: localRoot, container: AddBankBeneficiaryContainer(parent: self.container), sendMoneyType: sendMoneyType)
-        coordinate(to: coordinator).subscribe(onNext: { [weak self] in
-            if case let ResultType.success(result) = $0 {
-                self?.refreshBeneficiaries.onNext(())
-                if let beneficiary = result {
-                    self?.sendMoney(beneficiary)
-                }
-            }
-        }).disposed(by: disposeBag)
+//        let coordinator = AddSendMoneyBeneficiaryCoordinator(root: localRoot, container: AddBankBeneficiaryContainer(parent: self.container), sendMoneyType: sendMoneyType)
+//        coordinate(to: coordinator).subscribe(onNext: { [weak self] in
+//            if case let ResultType.success(result) = $0 {
+//                self?.refreshBeneficiaries.onNext(())
+//                if let beneficiary = result {
+//                    self?.sendMoney(beneficiary)
+//                }
+//            }
+//        }).disposed(by: disposeBag)
         
-        
+        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap())
+        let viewController = UserProfileViewController(viewModel: viewModel, themeService: container.themeService)
+                localRoot.pushViewController(viewController, completion: nil)
     }
     
     func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
