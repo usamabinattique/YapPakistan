@@ -25,6 +25,8 @@
 "common_button_settings" = "Settings";
 "common_button_completed" = "Completed";
 "common_button_cancel" = "Cancel";
+"common_button_view" = "View";
+"common_button_change" = "Change";
 "common_button_cancel_lowercase" = "cancel";
 "common_button_install" = "Install";
 "common_button_yes" = "Yes";
@@ -587,3 +589,26 @@
 // MARK: - CustomView AmounView
 "screen_dashboard_credit_limit_display_text" = "Credit limit: %@";
 
+
+// MARK: - Profile Screen
+"screen_user_profile_display_text_profile" = "Profile";
+"screen_user_profile_display_text_update_profile_photo" = "Update profile photo";
+"screen_user_profile_display_text_open_camera" = "Open camera";
+"screen_user_profile_display_text_choose_photo" = "Choose photo";
+"screen_user_profile_display_text_remove_photo" = "Remove photo";
+"screen_user_profile_display_text_personal_details" = "Personal details";
+"screen_user_profile_display_text_security" = "Security";
+"screen_user_profile_display_text_privacy" = "Privacy";
+"screen_user_profile_display_text_passcode" = "Passcode";
+"screen_user_profile_display_text_app_notifications" = "App notifications";
+"screen_user_profile_display_text_face_id" = "Sign in with Face ID";
+"screen_user_profile_display_text_touch_id" = "Sign in with Touch ID";
+"screen_user_profile_display_text_about_us" = "About us";
+"screen_user_profile_display_text_terms_conditions" = "Terms and conditions";
+"screen_user_profile_display_text_pricing_plans" = "Fees & pricing plans";
+"screen_user_profile_display_text_instagram" = "Instagram";
+"screen_user_profile_display_text_twitter" = "Twitter";
+"screen_user_profile_button_follow_us" = "Follow us";
+"screen_user_profile_display_text_facebook" = "Facebook";
+"screen_user_profile_button_facebook" = "Like us";
+"screen_user_profile_button_logout" = "Log out";
