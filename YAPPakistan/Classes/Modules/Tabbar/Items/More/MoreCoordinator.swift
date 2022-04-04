@@ -55,7 +55,7 @@ extension MoreCoordinator {
         switch item {
         case .inviteAFriend:
             print("inviteAFriend")
-            //inviteFriend()
+            inviteFriend()
         case .help:
             print("help")
             //help()
@@ -67,6 +67,19 @@ extension MoreCoordinator {
             //navigateToYapForYou()
         default:
             break
+        }
+    }
+    
+    func inviteFriend() {
+        let customerId = container.accountProvider.currentAccountValue.value?.customer.customerId
+        let shareText = appShareMessageForMore(container.parent.referralManager.pkReferralURL(forInviter: customerId ?? ""))
+        
+        let activityViewController = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = root.view
+        
+        navigationRoot.present(activityViewController, animated: true, completion: nil)
+        activityViewController.completionWithItemsHandler = { _, _, _, _ in
+            
         }
     }
 }

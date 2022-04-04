@@ -343,6 +343,8 @@
 "screen_more_home_display_text_yap_for_you_title" = "YAP for you";
 "screen_more_home_display_text_yap_for_you_description" = "Bank your way and become a YAP pro";
 
+"screen_invite_friend_display_text_share_url" = "Connect with me on YAP! An innovative digital banking app that gives you total control of your finances. \n\n%@";
+
 // MARK: KYC Questions
 
 "screen_kyc_questions_mothers_name" = "Select your mother's maiden name";
