@@ -45,7 +45,7 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel = Y2YViewModel(repository: repository, contacts: contacts, recentBeneficiaries: recentBeneficiaries, presented: presentable, contactsManager: contactsManager, currentAccount: container.accountProvider.currentAccount)
+        let viewModel = Y2YViewModel(referralManager: container.parent.referralManager, repository: repository, contacts: contacts, recentBeneficiaries: recentBeneficiaries, presented: presentable, contactsManager: contactsManager, currentAccount: container.accountProvider.currentAccount)
         let viewController = Y2YViewController(themeService: container.themeService, viewModel: viewModel, recentBeneficiaryView: container.makeRecentBeneficiaryView())
 
 //        SessionManager.current.currentAccount.map { $0?.customer.firstName }.subscribe(onNext: { [weak self] in self?.name = $0}).dispose()
@@ -92,7 +92,7 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
 private extension Y2YCoordinator {
 
     func searchContacts(_ contacts: [YAPContact]) {
-        let viewModel = Y2YSearchViewModel(contacts, accountProvider: self.container.accountProvider)
+        let viewModel = Y2YSearchViewModel(contacts, accountProvider: self.container.accountProvider, referralManager: container.parent.referralManager)
         let viewController = Y2YSearchViewController(viewModel: viewModel, themeService: self.container.themeService)
         root.pushViewController(viewController, animated: true)
 

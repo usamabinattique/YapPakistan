@@ -116,8 +116,8 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
     }
     
     // MARK: - Outputs
-    // ???: [YASIR] - make AppReferralManager environment dynamic, use global instance
-    var invite: Observable<String> { return inviteSubject.withLatestFrom(currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}).asObservable() }
+    
+    var invite: Observable<String> { return inviteSubject.withLatestFrom(currentAccount.map{ $0?.customer.customerId }.unwrap().map{ self.referralManager.pkReferralURL(forInviter: $0)}).asObservable() }
     var search: Observable<[YAPContact]?> { return searchSubject.withLatestFrom(contactResults) }
     var recentContactsAvailable: Observable<Bool> { return recentBeneficiariesSubject.map{ $0.count > 0 }.asObservable() }
     var allContactsAvailable: Observable<Bool> { return allContactsAvailableSubject.asObservable() }
@@ -140,10 +140,11 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
     }
     
     private let contactsManager: ContactsManager
+    private let referralManager: AppReferralManager
     
     // MARK: Init
     
-    init(repository: Y2YRepositoryType, contacts: [YAPContact] = [], recentBeneficiaries: [Y2YRecentBeneficiary] = [], presented: Bool, contactsManager: ContactsManager, currentAccount: Observable<Account?>) {
+    init(referralManager: AppReferralManager, repository: Y2YRepositoryType, contacts: [YAPContact] = [], recentBeneficiaries: [Y2YRecentBeneficiary] = [], presented: Bool, contactsManager: ContactsManager, currentAccount: Observable<Account?>) {
         
         self.repository = repository
         self.recentBeneficiariesSubject = BehaviorSubject(value: recentBeneficiaries)
@@ -152,6 +153,7 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
         self.contactResults.onNext(contacts)
         self.currentAccount = currentAccount
         self.contactsManager.syncPhoneBookContacts()
+        self.referralManager = referralManager
         
         showLoadingEffects()
         self.refreshDataSubject.onNext(())
@@ -191,7 +193,7 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
                         let viewModel = Y2YContactCellViewModel(contact)
                        // viewModel.outputs.invite.bind(to: self.inviteFriendSubject).disposed(by: self.disposeBag)
                       
-                        let a = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}
+                        let a = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ self.referralManager.pkReferralURL(forInviter: $0)}
                         let obs = Observable.just(contact)
                         let comb = Observable.combineLatest(obs,a)
                         viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteFriendSubject).disposed(by: disposeBag)
@@ -217,7 +219,7 @@ class Y2YViewModel: Y2YViewModelType, Y2YViewModelInput, Y2YViewModelOutput {
 //                    viewModel.outputs.invite.bind(to: self.inviteFriendSubject).disposed(by: self.disposeBag)
                     
 
-                    let a = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}
+                    let a = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ self.referralManager.pkReferralURL(forInviter: $0)}
                     let obs = Observable.just(contact)
                     let comb = Observable.combineLatest(obs,a)
                     viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteFriendSubject).disposed(by: disposeBag)
