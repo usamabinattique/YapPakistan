@@ -22,12 +22,7 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
     }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<UserProfileResult>> {
-        
-//        let viewModel = MoreBankDetailsViewModel(accountProvider: container.accountProvider)
-//        let viewController = MoreBankDetailsViewController(themeService: container.themeService, viewModel: viewModel)
-//        self.localRoot.pushViewController(viewController, completion: nil)
 
-        
         let viewModel = MoreViewModel(accountProvider: container.accountProvider, repository: container.makeMoreRepository(), theme: container.themeService)
         let viewController = MoreViewController(viewModel: viewModel, themeService: container.themeService)
         navigationRoot = UINavigationController(rootViewController: viewController)
@@ -43,6 +38,10 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
         }
         
         viewModel.outputs.openMoreItem.subscribe(onNext: { [unowned self] item in self.openMoreItem(item) }).disposed(by: disposeBag)
+        
+        viewModel.outputs.bankDetails.subscribe(onNext: { [unowned self] in
+            openAccountDetails()
+        }).disposed(by: disposeBag)
 
         return result
     }
@@ -50,6 +49,25 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
 }
 
 extension MoreCoordinator {
+    
+    func openAccountDetails() {
+        
+        let viewModel = MoreBankDetailsViewModel(accountProvider: container.accountProvider)
+        let viewController = MoreBankDetailsViewController(themeService: container.themeService, viewModel: viewModel)
+        
+        let alertWindow = UIWindow(frame: UIScreen.main.bounds)
+        alertWindow.rootViewController = YAPActionSheetRootViewController(nibName: nil, bundle: nil)
+        alertWindow.backgroundColor = .clear
+        alertWindow.windowLevel = .alert + 1
+        alertWindow.makeKeyAndVisible()
+        let nav = UINavigationController(rootViewController: viewController)
+
+        nav.navigationBar.isHidden = true
+        nav.modalPresentationStyle = .overCurrentContext
+        alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
+
+        viewController.window = alertWindow
+    }
     
     func openMoreItem(_ item: MoreCollectionViewCellViewModel.CellType) {
         switch item {
