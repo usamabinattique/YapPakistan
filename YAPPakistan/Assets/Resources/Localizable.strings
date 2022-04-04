@@ -319,9 +319,29 @@
 "screen_more_bank_details_display_text_bank" = "Bank";
 "screen_more_bank_details_display_text_address" = "Address";
 "screen_more_bank_details_button_share" = "Share";
-"screen_more_bank_details_display_text_title" = "YAP account details";
+"screen_more_bank_details_display_text_title" = "Account Details";
 "screen_more_bank_details_display_text_for_top_up_title" = "My YAP account details";
 "screen_more_bank_details_display_text_copy" = "Copy";
+
+// MARK: More Home Screen
+
+"screen_more_home_display_text_your_bank_details" = "Account details";
+"screen_more_home_display_text_bank_your_way" = "Bank your way and become a YAP pro";
+"screen_more_home_display_text_yap_for_you" = "YAP for you";
+"screen_more_home_display_text_tile_notification" = "Notifications";
+"screen_more_home_display_text_tile_locate_atm" = "Locate ATM and CDM";
+"screen_more_home_display_text_atm_cdm" = "ATM and CDM";
+"screen_more_home_display_text_tile_invite_friend" = "Invite a friend";
+"screen_more_home_display_text_tile_help" = "Help and support";
+"screen_more_home_display_text_tile_subscriptions" = "Subscriptions";
+"screen_more_home_display_text_tile_business" = "YAP Business";
+"screen_more_home_display_text_tile_terms" = "Terms & conditions";
+"screen_more_home_display_text_tile_gift" = "Gift";
+"screen_more_home_display_text_open_maps" = "Open in Maps";
+"screen_more_home_display_text_open_google_maps" = "Open in Google Maps";
+"screen_more_home_display_text_get_direction" = "Get direction";
+"screen_more_home_display_text_yap_for_you_title" = "YAP for you";
+"screen_more_home_display_text_yap_for_you_description" = "Bank your way and become a YAP pro";
 
 // MARK: KYC Questions
 
@@ -561,19 +581,6 @@
 
 "screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
 "screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
-
-
-// MARK: More Bank Details Screen
-
-"screen_more_bank_details_display_text_name" = "Name";
-"screen_more_bank_details_display_text_swift" = "SWIFT/BIC";
-"screen_more_bank_details_display_text_iban" = "IBAN";
-"screen_more_bank_details_display_text_account" = "Account";
-"screen_more_bank_details_display_text_bank" = "Bank";
-"screen_more_bank_details_display_text_address" = "Address";
-"screen_more_bank_details_button_share" = "Share";
-"screen_more_bank_details_display_text_title" = "Account Details";
-"screen_more_bank_details_display_text_for_top_up_title" = "My YAP account details";
 
 
 "screen_domestic_funds_transfer_display_text_heading" = "Send money to";

@@ -16,6 +16,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private var root: UINavigationController!
     private var contactsManager: ContactsManager!
+//    private let moreCoordination = PublishSubject<MoreExternalCoordinationType>()
 
     private let disposeBag = DisposeBag()
 
@@ -169,6 +170,20 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
             .subscribe()
             .disposed(by: disposeBag)
     }
+    
+//    fileprivate func more(root: UITabBarController, notificationManager: InAppNotificationManager) {
+//        self.coordinate(to: MoreCoordinator(root: root, tourGuideRepository: tourGuideRepository, repository: moreRepository, externalCoordination: moreCoordination.asObserver(), notificationManager: notificationManager)).subscribe(onNext: { [weak self] result in
+//            guard let `self` = self else { return }
+//            if case ResultType.success(UserProfileResult.logout) = result {
+//                self.result.onNext(.success(.logout))
+//                self.result.onCompleted()
+//            }
+//        }).disposed(by: disposeBag)
+//
+//        moreCoordination.subscribe(onNext: { [weak self] in
+//            self?.moreExternalCoordination($0)
+//        }).disposed(by: disposeBag)
+//    }
 
     fileprivate func more(root: UITabBarController) {
         self.coordinate(to: MoreCoordinator(root: root, container: container))
