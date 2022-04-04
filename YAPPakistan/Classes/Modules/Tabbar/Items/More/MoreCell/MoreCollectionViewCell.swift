@@ -73,7 +73,6 @@ class MoreCollectionViewCell: RxUICollectionViewCell {
     private func commonInit() {
         setupSubViews()
         setupConstraints()
-        setupTheme()
     }
     
     // MARK: Configurations
@@ -83,6 +82,7 @@ class MoreCollectionViewCell: RxUICollectionViewCell {
         self.viewModel = viewModel
         self.themeService = theme
         setupBindings()
+        setupTheme()
     }
     
 }
@@ -141,9 +141,10 @@ extension MoreCollectionViewCell: ViewDesignable {
     }
     
     func setupTheme() {
-        //badge.backgroundColor = .secondaryMagenta
-        //badge.label.backgroundColor = .secondaryMagenta
-        //background.view.backgroundColor = UIColor.appColor(ofType: .paleLilac) //F1EDFF
-        //title //.primaryDark
+        self.themeService.rx
+            .bind({ UIColor($0.secondaryMagenta) }, to: badge.rx.backgroundColor)
+            .bind({ UIColor($0.paleLilac) }, to: background.rx.backgroundColor)
+            .bind({ UIColor($0.primaryDark) }, to: title.rx.textColor)
+            .disposed(by: disposeBag)
     }
 }

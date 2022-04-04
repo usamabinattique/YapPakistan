@@ -158,7 +158,20 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
         }.bind(to: bicSubject).disposed(by: disposeBag)
         
         itemTappedSubject.subscribe(onNext: { vm in
-            
+            switch (vm as? MoreCollectionViewCellViewModel)?.cellType  {
+                
+            case .yapForYou:
+                YAPToast.show("Coming Soon!")
+            case .locateAtm:
+                YAPToast.show("Coming Soon!")
+            case .subscriptions:
+                YAPToast.show("Coming Soon!")
+            case .gifts:
+                YAPToast.show("Coming Soon!")
+            default:
+                break
+                
+            }
         }).disposed(by: disposeBag)
         
         let action = itemTappedSubject.filter { $0 is MoreCollectionViewCellViewModelType }

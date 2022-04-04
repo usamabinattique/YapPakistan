@@ -20,7 +20,6 @@ class MoreViewController: UIViewController {
         layout.scrollDirection = .vertical
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
-        collectionView.delegate = self
         collectionView.isScrollEnabled = true
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         return collectionView
@@ -129,7 +128,7 @@ extension MoreViewController: ViewDesignable {
             .alignEdgesWithSuperview([.top, .bottom], .greaterThanOrEqualTo, constant: 0)
         
         let top = collectionView.topAnchor.constraint(equalTo: centeredView.topAnchor, constant: 30)
-        top.isActive = true //SessionManager.current.currentAccountType != .b2cAccount
+        top.isActive = false //SessionManager.current.currentAccountType != .b2cAccount
         
         let center = collectionView.centerYAnchor.constraint(equalTo: centeredView.centerYAnchor)
         center.isActive = !top.isActive
@@ -162,12 +161,16 @@ private extension MoreViewController {
     
     func bindCollectionView() {
         cardDataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { (_, collectionView, indexPath, viewModel) in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: indexPath) as! RxUICollectionViewCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoreCollectionViewCell.defaultIdentifier, for: indexPath) as! RxUICollectionViewCell
             cell.configure(with: viewModel, theme: self.themeService)
             return cell
         })
         
         viewModel.outputs.dataSource.bind(to: collectionView.rx.items(dataSource: cardDataSource)).disposed(by: disposeBag)
+        
+        collectionView.rx
+            .delegate
+            .setForwardToDelegate(self, retainDelegate: false)
         
         collectionView.rx.modelSelected(ReusableCollectionViewCellViewModelType.self).bind(to: viewModel.inputs.itemTappedObserver).disposed(by: disposeBag)
     }

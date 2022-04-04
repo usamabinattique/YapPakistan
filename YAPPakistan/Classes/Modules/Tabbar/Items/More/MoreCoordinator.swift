@@ -41,8 +41,32 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
         } else {
             root.viewControllers?.append(navigationRoot)
         }
+        
+        viewModel.outputs.openMoreItem.subscribe(onNext: { [unowned self] item in self.openMoreItem(item) }).disposed(by: disposeBag)
 
         return result
     }
 
+}
+
+extension MoreCoordinator {
+    
+    func openMoreItem(_ item: MoreCollectionViewCellViewModel.CellType) {
+        switch item {
+        case .inviteAFriend:
+            print("inviteAFriend")
+            //inviteFriend()
+        case .help:
+            print("help")
+            //help()
+        case .termsAndConditions:
+            print("termsAndConditions")
+            //termsAndConditions()
+        case .yapForYou:
+            print("yapForYou")
+            //navigateToYapForYou()
+        default:
+            break
+        }
+    }
 }
