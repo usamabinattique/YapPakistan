@@ -78,7 +78,7 @@ class MoreBankDetailsViewModel: MoreBankDetailsViewModelType, MoreBankDetailsVie
 
         account.map { $0?.customer.fullName }.bind(to: nameSubject).disposed(by: disposeBag)
         account.map { account in account?.parnterBankStatus == .activated ? account?.formattedIBAN : account?.maskedAndFormattedIBAN }.bind(to: ibanSubject).disposed(by: disposeBag)
-        account.map { $0?.bank.swiftCode }.bind(to: swiftSubject).disposed(by: disposeBag)
+        account.map { $0?.customer.fullMobileNo }.bind(to: swiftSubject).disposed(by: disposeBag)
         account.map { $0?.bank.name }.bind(to: bankSubject).disposed(by: disposeBag)
         account.map { $0?.bank.address }.bind(to: addressSubject).disposed(by: disposeBag)
         account.map { account in account?.parnterBankStatus == .activated ? account?.accountNumber : account?.maskedAccountNumber }.bind(to: accountSubject).disposed(by: disposeBag)

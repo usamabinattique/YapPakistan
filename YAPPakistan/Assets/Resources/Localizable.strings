@@ -316,6 +316,7 @@
 
 "screen_more_bank_details_display_text_name" = "Name";
 "screen_more_bank_details_display_text_swift" = "SWIFT/BIC";
+"screen_more_bank_details_display_text_phonenot" = "Phone no.";
 "screen_more_bank_details_display_text_iban" = "IBAN";
 "screen_more_bank_details_display_text_account" = "Account";
 "screen_more_bank_details_display_text_bank" = "Bank";

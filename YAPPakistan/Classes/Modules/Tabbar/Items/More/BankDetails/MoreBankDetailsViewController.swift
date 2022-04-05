@@ -57,9 +57,9 @@ class MoreBankDetailsViewController: UIViewController {
         return view
     }()
     
-    private lazy var swift: MoreBankDetailsInfoView = {
+    private lazy var phone: MoreBankDetailsInfoView = {
         let view = MoreBankDetailsInfoView()
-        view.titleText = "screen_more_bank_details_display_text_swift".localized
+        view.titleText = "screen_more_bank_details_display_text_phonenot".localized
         view.detailText = "Hello From World"
         view.canCopy = true
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -190,9 +190,9 @@ private extension MoreBankDetailsViewController {
     func setupTheme() {
         
         themeService.rx
-            .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, swift.rx.titleColor, iban.rx.titleColor, account.rx.titleColor, address.rx.titleColor, bank.rx.titleColor])
+            .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, phone.rx.titleColor, iban.rx.titleColor, account.rx.titleColor, address.rx.titleColor, bank.rx.titleColor])
         themeService.rx
-            .bind({ UIColor($0.primaryDark) }, to: [name.rx.detailsColor, swift.rx.detailsColor, iban.rx.detailsColor, account.rx.detailsColor, address.rx.detailsColor, bank.rx.detailsColor, shareButton.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark) }, to: [name.rx.detailsColor, phone.rx.detailsColor, iban.rx.detailsColor, account.rx.detailsColor, address.rx.detailsColor, bank.rx.detailsColor, shareButton.rx.backgroundColor])
         
 //        themeService.rx
 //            .bind({ UIColor($0.primaryDark)}, to: [heading.rx.textColor, allBeneficiaryLabel.rx.textColor])
@@ -210,10 +210,11 @@ private extension MoreBankDetailsViewController {
         sheetView.addSubview(headerTitle)
         stackView.addArrangedSubview(name)
         stackView.addArrangedSubview(iban)
-        stackView.addArrangedSubview(account)
-        stackView.addArrangedSubview(bank)
-        stackView.addArrangedSubview(swift)
-        stackView.addArrangedSubview(address)
+        stackView.addArrangedSubview(phone)
+        //stackView.addArrangedSubview(account)
+//        stackView.addArrangedSubview(bank)
+//        stackView.addArrangedSubview(swift)
+//        stackView.addArrangedSubview(address)
         sheetView.addSubview(stackView)
         sheetView.addSubview(shareButton)
 //        setupSensitiveViews()
@@ -265,7 +266,7 @@ private extension MoreBankDetailsViewController {
         //viewModel.outputs.profileImage.bind(to: profileImage.rx.loadImage()).disposed(by: disposeBag)
         viewModel.outputs.name.bind(to: name.rx.details).disposed(by: disposeBag)
         viewModel.outputs.iban.bind(to: iban.rx.details).disposed(by: disposeBag)
-        viewModel.outputs.swift.bind(to: swift.rx.details).disposed(by: disposeBag)
+        viewModel.outputs.swift.bind(to: phone.rx.details).disposed(by: disposeBag)
         viewModel.outputs.account.bind(to: account.rx.details).disposed(by: disposeBag)
         viewModel.outputs.bank.bind(to: bank.rx.details).disposed(by: disposeBag)
         viewModel.outputs.address.bind(to: address.rx.details).disposed(by: disposeBag)
