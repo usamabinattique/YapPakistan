@@ -23,6 +23,7 @@ target 'YAPPakistan_Example' do
 
   #MARK: Utilities
   pod 'PhoneNumberKit', '~> 3.0'
+  pod 'MXParallaxHeader'
 
   target 'YAPPakistan_Tests' do
     inherit! :search_paths
