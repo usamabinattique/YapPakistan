@@ -611,6 +611,9 @@
 "screen_user_profile_display_text_privacy" = "Privacy";
 "screen_user_profile_display_text_passcode" = "Passcode";
 "screen_user_profile_display_text_app_notifications" = "App notifications";
+"screen_user_profile_display_text_app_advanceSetting" = "Advance settings";
+"screen_user_profile_display_text_app_signinwithfaceID" = "Sign in FACE ID";
+"screen_user_profile_display_text_app_standardNumericFormat" = "Standard numeric format";
 "screen_user_profile_display_text_face_id" = "Sign in with Face ID";
 "screen_user_profile_display_text_touch_id" = "Sign in with Touch ID";
 "screen_user_profile_display_text_about_us" = "About us";
@@ -620,5 +623,6 @@
 "screen_user_profile_display_text_twitter" = "Twitter";
 "screen_user_profile_button_follow_us" = "Follow us";
 "screen_user_profile_display_text_facebook" = "Facebook";
+"screen_user_profile_display_text_linkedin" = "LinkedIn";
 "screen_user_profile_button_facebook" = "Like us";
 "screen_user_profile_button_logout" = "Log out";

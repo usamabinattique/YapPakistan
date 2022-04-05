@@ -7,10 +7,12 @@
 
 import RxSwift
 import YAPCore
+import UIKit
 
 public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
 
     private let root: UITabBarController
+    private var localRoot: UINavigationController!
     private var navigationRoot: UINavigationController!
     private let result = PublishSubject<ResultType<UserProfileResult>>()
     private var container: UserSessionContainer!
@@ -38,6 +40,11 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
         }
         
         viewModel.outputs.openMoreItem.subscribe(onNext: { [unowned self] item in self.openMoreItem(item) }).disposed(by: disposeBag)
+        
+        
+        viewModel.outputs.settings.subscribe(onNext: { [unowned self]  in
+            openUserProfileSettings()
+        }).disposed(by: disposeBag)
         
         viewModel.outputs.bankDetails.subscribe(onNext: { [unowned self] in
             openAccountDetails()
@@ -67,6 +74,16 @@ extension MoreCoordinator {
         alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
 
         viewController.window = alertWindow
+    }
+    
+    func openUserProfileSettings() {
+        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap())
+        let viewController = UserProfileViewController(viewModel: viewModel, themeService: container.themeService)
+        viewController.modalPresentationStyle = .fullScreen
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        
+        navigationRoot.present(navigationController, animated: true, completion: nil)
     }
     
     func openMoreItem(_ item: MoreCollectionViewCellViewModel.CellType) {
