@@ -65,8 +65,7 @@ class AddMoneyViewController: UIViewController {
     // MARK: - Actions
     
     @objc internal override func onTapBackButton() {
-        self.dismiss(animated: true, completion: nil)
-//        viewModel.inputs.closeObserver.onNext(())
+        viewModel.inputs.closeObserver.onNext(())
     }
 }
 
