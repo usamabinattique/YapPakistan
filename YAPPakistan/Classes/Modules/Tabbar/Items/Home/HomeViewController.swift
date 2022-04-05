@@ -12,6 +12,7 @@ import RxCocoa
 import RxTheme
 import YAPComponents
 import RxDataSources
+import MXParallaxHeader
 
 class HomeViewController: UIViewController {
 
@@ -85,6 +86,154 @@ class HomeViewController: UIViewController {
     
     private lazy var completeVerificationButton = UIFactory.makeAppRoundedButton(with: .large, title: "Complete verification")
     
+    //with Transactions
+    private lazy var parallaxHeaderView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var floatingButton: FloatingButton = {
+        let button = FloatingButton()
+        return button
+    }()
+
+    private lazy var alert: YAPAlert = {
+        let alert = YAPAlert()
+        alert.translatesAutoresizingMaskIntoConstraints = false
+        return alert
+    }()
+
+    private var safeAreaOffset: CGFloat {
+        (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) + (self.navigationController?.navigationBar.bounds.height ?? 0)
+    }
+
+    private var parallaxHeaderTopOffset: CGFloat {
+        20
+    }
+    
+    private var isTableViewReloaded: Bool = false
+
+    private lazy var scrollView: MXScrollView = {
+        let scrollView = MXScrollView()
+        scrollView.parallaxHeader.view = parallaxHeaderView
+        scrollView.parallaxHeader.mode = .fill
+        scrollView.parallaxHeader.delegate = self
+        scrollView.delegate = self
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    
+    private lazy var bottomContainerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+//    private lazy var toolBar: HomeBalanceToolbarUpdated = {
+//        let toolBar = HomeBalanceToolbarUpdated()
+//        toolBar.backgroundColor = .clear
+//        toolBar.delegate = self
+//        toolBar.translatesAutoresizingMaskIntoConstraints = false
+//        return toolBar
+//    }()
+
+    private lazy var notificationsView: NotificationsView = {
+        let view = NotificationsView(theme: self.themeService)
+        view.backgroundColor = .white
+        view.clipsToBounds = true
+        view.isHidden = true
+        return view
+    }()
+    
+    private lazy var welcomeView: WelcomeView = {
+        let view = WelcomeView(theme: self.themeService)
+        view.backgroundColor = .white
+        view.clipsToBounds = true
+        return view
+    }()
+
+
+//    lazy var barGraphView: BarGraphView = {
+//        let graph = BarGraphView()
+//        graph.translatesAutoresizingMaskIntoConstraints = false
+//        graph.isHidden = true
+//        graph.barWidth = 8
+//        return graph
+//    }()
+    
+    private var widgetViewHeightConstraints: NSLayoutConstraint!
+
+    private lazy var widgetView: DashboardWidgets = {
+        let buttons = DashboardWidgets(theme: self.themeService)
+        var res = DashboardWidgetsResponse.mock
+        res.iconPlaceholder = UIImage.init(named: "icon_add_card", in: .yapPakistan)
+        buttons.viewModel.inputs.widgetsDataObserver.onNext([res,res,res,res,res,res,res])
+        buttons.translatesAutoresizingMaskIntoConstraints = false
+        buttons.backgroundColor = .white
+        return buttons
+    }()
+    
+    private lazy var creditLimitView: CreditLimitView = {
+        let view = CreditLimitView(theme: self.themeService, viewModel: self.viewModel.outputs.getCreditLimitViewModel())
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    private lazy var headerStackView = UIStackViewFactory
+        .createStackView(with: .vertical,
+                         alignment: .fill,
+                         distribution: .fill,
+                         spacing: 0,
+                         arrangedSubviews: [notificationsView, widgetView])
+    
+    var showsNotification = false {
+        didSet {
+            if showsGraph {
+                self.showsGraph = !self.showsNotification
+            }
+            self.notificationsView.isHidden = !self.showsNotification
+            self.updateParallaxHeaderProgress()
+        }
+    }
+    var showsGraph = false {
+        didSet {
+       //     self.barGraphView.isHidden = !(!showsNotification && showsGraph)
+            self.updateParallaxHeaderProgress()
+          //  viewModel.inputs.isBarGraphVisibleObserver.onNext(showsGraph)
+        }
+    }
+    private var showsButtons = true
+    private var containerViewHeightConstraint: NSLayoutConstraint!
+
+    lazy var transactionContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+//    lazy var transactionsViewModel: TransactionsViewModelType = {
+//        let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(transactionDataProvider: DebitCardTransactionsProvider())
+//        return transactionViewModel
+//    }()
+//
+//    lazy var transactionViewController: TransactionsViewController = {
+//        let viewController = TransactionsViewController(viewModel: transactionsViewModel)
+//        return viewController
+//    }()
+
+    private lazy var refreshControl: UIRefreshControl = {
+        let control = UIRefreshControl()
+        control.tintColor = .clear
+        control.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        return control
+    }()
+    
+    private lazy var profileImageView = UIFactory.createGifImageView(mode: .scaleAspectFill, image: nil, tintColor: .clear)
+    private var selectionLocked: Bool = false
+    
     // MARK: Properties
 
     private var themeService: ThemeService<AppTheme>!
@@ -112,7 +261,6 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = userBarButtonItem.barItem
-       // navigationItem.rightBarButtonItem = menuButtonItem.barItem
         navigationItem.rightBarButtonItems = [menuButtonItem.barItem,searchBarButtonItem.barItem,analyticsBarButtonItem.barItem]
         setupViews()
         setupTheme()
@@ -132,19 +280,64 @@ class HomeViewController: UIViewController {
             print(self)
         }
     }
-
+    
+    @objc
+    private func refresh() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+            self?.refreshControl.endRefreshing()
+        }
+//        SessionManager.current.refreshAccount()
+//        viewModel.inputs.refreshObserver.onNext(())
+    }
+    
     // MARK: View Setup
 
     private func setupViews() {
         
         balanceView.addSubviews([balanceValueLabel,showButton,hideButton,balanceDateLabel,separtorView])
-       // containerView.addSubviews([balanceView,tableView])
-//        containerView.backgroundColor = .red
-//        balanceView.backgroundColor = .yellow
-//        tableView.backgroundColor = .gray
-        containerView.addSubview(balanceView)
+      //  containerView.addSubview(balanceView)
         containerView.addSubview(tableView)
         view.addSubview(containerView)
+        
+        containerView.isHidden = true
+        tableView.isHidden = true
+        
+        view.addSubview(balanceView)
+        view.addSubview(scrollView)
+
+       // scrollView.addSubview(transactionContainer)
+        scrollView.addSubview(bottomContainerView)
+        parallaxHeaderView.addSubview(headerStackView)
+        bottomContainerView.addSubview(welcomeView)
+        bottomContainerView.addSubview(creditLimitView)
+        
+        
+        
+        parallaxHeaderView
+            .width(with: .width, ofView: view)
+
+        headerStackView
+            .alignEdgesWithSuperview([.left, .right])
+        
+        scrollView
+            .alignEdgesWithSuperview([.left, .right, .safeAreaBottom])
+            .toBottomOf(balanceView)
+        notificationsView
+            .alignEdgesWithSuperview([.left, .right])
+
+//        barGraphView
+//            .alignEdgesWithSuperview([.left, .right])
+
+        widgetView
+            .alignEdgesWithSuperview([.left, .right])
+        widgetViewHeightConstraints = widgetView.heightAnchor.constraint(equalToConstant: 115)
+        widgetViewHeightConstraints.isActive = true
+        
+//        containerViewHeightConstraint = transactionContainer.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
+//        containerViewHeightConstraint.isActive = true
+        containerViewHeightConstraint = bottomContainerView.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
+        containerViewHeightConstraint.isActive = true
+        
         separtorView.alpha = 0
         
         tableView.register(CreditLimitCell.self, forCellReuseIdentifier: CreditLimitCell.defaultIdentifier)
@@ -223,6 +416,23 @@ class HomeViewController: UIViewController {
         balanceHeight = balanceValueLabel.heightAnchor.constraint(equalToConstant: 24)
         balanceHeight.priority = .required
         balanceHeight.isActive = true
+        
+//        transactionContainer
+//            .alignEdgesWithSuperview([.left, .top, .bottom])
+//            .width(with: .width, ofView: scrollView)
+        
+        bottomContainerView
+            .alignEdgesWithSuperview([.left, .top, .bottom])
+            .width(with: .width, ofView: scrollView)
+        
+        welcomeView
+            .alignEdgesWithSuperview([.left, .top, .right])
+            .height(constant: 94)
+        
+        creditLimitView
+            .alignEdgesWithSuperview([.left, .right])
+            .toBottomOf(welcomeView)
+            .height(constant: 42)
         
        /* headingLabel
             .alignEdgeWithSuperviewSafeArea(.top, constant: 30)
@@ -340,6 +550,63 @@ class HomeViewController: UIViewController {
         }).disposed(by: disposeBag)
 
     }
+    
+    func getParallaxHeaderHeight() -> CGFloat {
+        var height: CGFloat = 0
+        height += 0
+        height += !notificationsView.isHidden ? 150 : 0
+        height += widgetView.isHidden ? 5 : 120
+        return height
+    }
+
+    func getMinimumParallaxHeaderHeight() -> CGFloat {
+        var height: CGFloat = 0
+        height +=  0//!barGraphView.isHidden ? 20 : 0
+        return height
+    }
+    
+    func updateParallaxHeaderProgress() {
+        let diff: CGFloat = getParallaxHeaderHeight() - getMinimumParallaxHeaderHeight()
+        let actualProgress = (scrollView.parallaxHeader.contentView.bounds.height - getMinimumParallaxHeaderHeight()) / diff
+        _ = showsNotification ? notificationsView.changeHeight(by: actualProgress) : nil
+        startUpdatingHeader(actualProgress: actualProgress)
+        refreshControl.removeFromSuperview()
+        scrollView.addSubview(refreshControl)
+        layoutParallaxHeader()
+    }
+    
+    func startUpdatingHeader(actualProgress: CGFloat) {
+        if self.isTableViewReloaded && actualProgress == 0 {
+//            transactionsViewModel.inputs.showSectionData.onNext(())
+//            transactionsViewModel.inputs.canShowDynamicData.onNext(true)
+//            viewModel.inputs.increaseProgressViewHeightObserver.onNext(false)
+        }
+        if self.isTableViewReloaded && actualProgress > 0 {
+//            transactionsViewModel.inputs.showTodaysData.onNext(())
+//            transactionsViewModel.inputs.canShowDynamicData.onNext(false)
+            scrollView.addSubview(refreshControl)
+//            viewModel.inputs.increaseProgressViewHeightObserver.onNext(true)
+        }
+    }
+
+    func layoutParallaxHeader() {
+        DispatchQueue.main.async {
+            self.scrollView.parallaxHeader.height = self.getParallaxHeaderHeight()
+            self.scrollView.parallaxHeader.minimumHeight = self.getMinimumParallaxHeaderHeight()
+            self.containerViewHeightConstraint.constant = -1 * (self.getMinimumParallaxHeaderHeight())
+            self.view.layoutSubviews()
+        }
+    }
+
+    func showNotifications() {
+        showsNotification = true
+    }
+
+    func hideNotifications() {
+        showsNotification = false
+    }
+
+     
 }
 
 private extension HomeViewController {
@@ -372,3 +639,26 @@ private extension HomeViewController {
     }
 
 }
+
+// MARK: Parallex header delegate
+extension HomeViewController: MXParallaxHeaderDelegate {
+    func parallaxHeaderDidScroll(_ parallaxHeader: MXParallaxHeader) {
+        updateParallaxHeaderProgress()
+    }
+}
+
+extension HomeViewController: MXScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        selectionLocked = true
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) { self.selectionLocked = false }
+    }
+}
+
+//extension HomeViewController: ProgressBarDidTapped {
+//    func progressViewDidTapped(viewForMonth month: String) {
+//        viewModel.inputs.progressViewTappedObserver.onNext(())
+//    }
+//}

@@ -38,6 +38,8 @@ protocol HomeViewModelOutputs {
     
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var showCreditLimit: Observable<Void> { get }
+    
+    func getCreditLimitViewModel() -> CreditLimitCellViewModel
 }
 
 protocol HomeViewModelType {
@@ -174,5 +176,11 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         limitVM.outputs.info.bind(to: showCreditLimitSubject).disposed(by: disposeBag)
         viewModels.append(limitVM)
         dataSourceSubject.onNext([SectionModel(model: 0, items: viewModels)])
+    }
+    
+    func getCreditLimitViewModel() -> CreditLimitCellViewModel {
+        let limitVM = CreditLimitCellViewModel(12)
+        limitVM.outputs.info.bind(to: showCreditLimitSubject).disposed(by: disposeBag)
+        return limitVM
     }
 }
