@@ -24,7 +24,6 @@ class MoreBankDetailsViewController: UIViewController {
     
     public lazy var holder: UIView = {
         let view = UIView()
-        view.backgroundColor = .gray
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -207,6 +206,8 @@ private extension MoreBankDetailsViewController {
             .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, phone.rx.titleColor, iban.rx.titleColor, account.rx.titleColor, address.rx.titleColor, bank.rx.titleColor])
         themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: [name.rx.detailsColor, phone.rx.detailsColor, iban.rx.detailsColor, account.rx.detailsColor, address.rx.detailsColor, bank.rx.detailsColor, shareButton.rx.backgroundColor])
+        themeService.rx
+            .bind({ UIColor( $0.greyDark ) }, to: self.holder.rx.backgroundColor)
     }
     
     func setupViews() {
