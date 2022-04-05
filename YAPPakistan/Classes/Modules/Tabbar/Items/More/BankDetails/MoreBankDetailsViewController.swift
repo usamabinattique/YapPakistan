@@ -179,6 +179,15 @@ class MoreBankDetailsViewController: UIViewController {
         render()
     }
     
+    override public func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        holder.roundView()
+        sheetView.layer.cornerRadius = 18
+        sheetView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        sheetView.clipsToBounds = true
+    }
+    
     // MARK: Actions
 //    @objc func openProfile() {
 //        viewModel.inputs.settingsObserver.onNext(())
