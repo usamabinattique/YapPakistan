@@ -72,15 +72,19 @@ class Y2YSearchViewModel: Y2YSearchViewModelType, Y2YSearchViewModelInput, Y2YSe
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObserver() }
     var invite: Observable<(YAPContact, String)> { return inviteSubject.asObservable() }
     
+    private let referralManager: AppReferralManager
+    
     // MARK: - Init
-    init(_ contacts: [YAPContact], accountProvider: AccountProvider) {
+    init(_ contacts: [YAPContact], accountProvider: AccountProvider, referralManager: AppReferralManager) {
+        
+        self.referralManager = referralManager
+        
         self.contacts = contacts.map {
             [unowned self] in
             let viewModel = Y2YContactCellViewModel($0)
             
-            //FIXME: [UMAIR] - Remove this hardcoded .qa environment and move AppReferralManager initialization in common place
             let currentAccount = accountProvider.currentAccount
-            let appRefMessage = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ AppReferralManager(environment: .qa).pkReferralURL(forInviter: $0)}
+            let appRefMessage = currentAccount.map{ $0?.customer.customerId }.unwrap().map{ self.referralManager.pkReferralURL(forInviter: $0)}
             let obs = Observable.just($0)
             let comb = Observable.combineLatest(obs,appRefMessage)
             viewModel.outputs.invite.withLatestFrom(comb).bind(to: self.inviteSubject).disposed(by: disposeBag)

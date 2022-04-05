@@ -58,13 +58,3 @@ public extension SearchableActionSheet {
         viewController.window = alertWindow
     }
 }
-
-// MARK: Root View controller
-
-private class YAPActionSheetRootViewController: UIViewController {
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        get {
-            return UIApplication.shared.statusBarStyle
-        }
-    }
-}

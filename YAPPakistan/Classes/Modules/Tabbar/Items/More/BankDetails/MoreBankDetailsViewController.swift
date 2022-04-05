@@ -15,12 +15,28 @@ class MoreBankDetailsViewController: UIViewController {
     
     // MARK: Views
     
+    public lazy var sheetView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    public lazy var holder: UIView = {
+        let view = UIView()
+        view.backgroundColor = .gray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     private lazy var background: UIView = {
         let view = UIView()
         view.backgroundColor = UIColor.clear
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
+    public lazy var headerTitle: UILabel = UIFactory.makeLabel(font: .title3, text: "Account details") //.primaryDark
     
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()
@@ -95,7 +111,9 @@ class MoreBankDetailsViewController: UIViewController {
     }()
     
     // MARK: Properties
-    
+    public var window: UIWindow?
+    public var viewTop: NSLayoutConstraint!
+    public var start: CGFloat = 0
     private var viewModel: MoreBankDetailsViewModelType!
     private let disposeBag = DisposeBag()
     private var themeService: ThemeService<AppTheme>
@@ -117,16 +135,37 @@ class MoreBankDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(closeAction))
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(closeAction))
         
 //        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(openProfile))
         
-        navigationItem.title = "screen_more_bank_details_display_text_title".localized
+//        navigationItem.title = "screen_more_bank_details_display_text_title".localized
         
         setupViews()
         setupTheme()
         setupConstraints()
         bindViews()
+    }
+    
+    override public func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        view.window?.resignKey()
+        view.window?.removeFromSuperview()
+        window = nil
+    }
+    
+    override public func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        view.layoutIfNeeded()
+        
+        viewTop.constant = -1 * sheetView.bounds.height
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.backgroundColor = UIColor.init(red: 0, green: 0, blue: 0, alpha: 0.5)
+            self.view.layoutIfNeeded()
+        }
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -165,34 +204,51 @@ private extension MoreBankDetailsViewController {
     }
     
     func setupViews() {
-        view.backgroundColor = .white
-        //background.backgroundColor = UIColor.red
-        view.addSubview(background)
-        background.addSubview(stackView)
+        
+        view.addSubview(sheetView)
+        sheetView.addSubview(holder)
+        sheetView.addSubview(headerTitle)
         stackView.addArrangedSubview(name)
         stackView.addArrangedSubview(iban)
         stackView.addArrangedSubview(account)
         stackView.addArrangedSubview(bank)
         stackView.addArrangedSubview(swift)
         stackView.addArrangedSubview(address)
-        
-        view.addSubview(shareButton)
+        sheetView.addSubview(stackView)
+        sheetView.addSubview(shareButton)
+//        setupSensitiveViews()
     }
     
     func setupConstraints() {
         
-        background
-            .alignEdgeWithSuperviewSafeArea(.top, constant: 20)
+        sheetView
             .alignEdgesWithSuperview([.left, .right])
+            .height(.lessThanOrEqualTo, constant: 517)//UIScreen.main.bounds.height*0.59)
+        
+        holder
+            .alignEdgeWithSuperview(.top, constant: 15)
+            .height(constant: 4)
+            .width(constant: 60)
+            .centerHorizontallyInSuperview()
+        
+        headerTitle
+            .toBottomOf(holder,constant: 17)
+            .centerHorizontallyInSuperview()
         
         stackView
-            .alignEdgesWithSuperview([.left, .top, .right, .bottom], constants: [25, 25, 25, 25])
+            .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
+            .toBottomOf(headerTitle,constant: 17)
+            .centerHorizontallyInSuperview()
         
         shareButton
-            .alignEdgeWithSuperviewSafeArea(.bottom, constant: 15)
+            .toBottomOf(stackView)
+            .alignEdgeWithSuperview(.safeAreaBottom, constant: UIDevice.current.hasNotch ? 0 : 15)
             .height(constant: 52)
             .width(constant: 190)
             .centerHorizontallyInSuperview()
+        
+        viewTop = sheetView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+        viewTop.isActive = true
     }
     
     func render() {
@@ -225,5 +281,82 @@ private extension MoreBankDetailsViewController {
         }).disposed(by: disposeBag)
         
         
+    }
+}
+
+extension MoreBankDetailsViewController {
+    @objc
+    func closeAction(_ tap: UITapGestureRecognizer) {
+        guard tap.location(in: view).y < sheetView.frame.origin.y else { return }
+        
+        completeHide(0)
+    }
+    
+    @objc
+    func handlePan(_ pan: UIPanGestureRecognizer) {
+        switch pan.state {
+        case .began:
+            start = pan.location(in: sheetView).y
+            
+        case .changed:
+            changePosition(pan.location(in: view).y - start)
+            
+        case .ended:
+            let progress = ((sheetView.frame.origin.y - (view.bounds.height - sheetView.bounds.height)) / sheetView.bounds.height)
+            let velocity = pan.velocity(in: view).y
+            if progress < 0.25 {
+                velocity < 900 ? completeShow(velocity) : completeHide(velocity)
+            } else {
+                velocity > -900 ? completeHide(velocity) : completeShow(velocity)
+            }
+            
+        default:
+            break
+        }
+    }
+    
+    func changePosition(_ y: CGFloat) {
+        guard y >= (view.bounds.height - sheetView.bounds.height) else { return }
+        var frame = sheetView.frame
+        frame.origin.y = y
+        sheetView.frame = frame
+        let progress = ((sheetView.frame.origin.y - (view.bounds.height - sheetView.bounds.height)) / sheetView.bounds.height)
+        self.view.backgroundColor = UIColor.black.withAlphaComponent(0.5 * (1 - progress))
+    }
+    
+    func completeShow(_ velocity: CGFloat) {
+        let distance = sheetView.frame.origin.y - (view.bounds.height - sheetView.bounds.height)
+        
+        var time: TimeInterval = abs(velocity) > 0 ? TimeInterval(abs(distance)/abs(velocity)) : 0.25
+        time = time > 0.25 ? 0.25 : time
+        
+        UIView.animate(withDuration: time) {
+            self.sheetView.frame.origin.y = self.view.bounds.height - self.sheetView.bounds.height
+            self.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        }
+    }
+    
+    func completeHide(_ velocity: CGFloat) {
+        let distance = view.bounds.height - sheetView.frame.origin.y
+        
+        var time: TimeInterval = abs(velocity) > 0 ? TimeInterval(abs(distance)/abs(velocity)) : 0.25
+        time = time > 0.25 ? 0.25 : time
+        
+        UIView.animate(withDuration: time, animations: {
+            self.sheetView.frame.origin.y = self.view.bounds.height
+            self.view.backgroundColor = UIColor.black.withAlphaComponent(0)
+        }) { (completed) in
+            guard completed else { return }
+            self.navigationController?.dismiss(animated: false, completion: nil)
+        }
+    }
+}
+
+//// MARK: Root View controller
+public class YAPActionSheetRootViewController: UIViewController {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        get {
+            return UIApplication.shared.statusBarStyle
+        }
     }
 }

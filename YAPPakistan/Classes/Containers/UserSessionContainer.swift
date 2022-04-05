@@ -136,6 +136,12 @@ public final class UserSessionContainer {
                                transactionsService: transactionsService)
     }
     
+    func makeMoreRepository() -> MoreRepository {
+        let messageService = makeMessagesService()
+        let authenticationService = parent.makeAuthenticationService()
+        return MoreRepository(messagesService: messageService, authenticationService: authenticationService)
+    }
+    
     // MARK: Account Provider
     
     func makeAccountProvider() -> AccountProvider {
