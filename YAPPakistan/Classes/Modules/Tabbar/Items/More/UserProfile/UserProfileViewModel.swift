@@ -409,7 +409,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
                 self?.notificationManager.deleteNotificationPermission()
                 self?.credentialStore.setRemembersId(false)
                 self?.credentialStore.clearUsername()
-
+                
             })
             .map { _ in () }
             .bind(to: resultSubject)
