@@ -49,9 +49,9 @@ class AddTopupPCCVCellViewModel: AddTopupPCCVCellViewModelType, AddTopupPCCVCell
     
     // MARK: - Init
     init() {
-        cardAlreadyExistsSubject.subscribe(onNext: {  isCardExist in
+        cardAlreadyExistsSubject.subscribe(onNext: { [weak self] isCardExist in
             let title = isCardExist ? "screen_topup_card_selection_display_text_add_new_card".localized : "screen_topup_card_selection_display_text_add_card".localized
-            self.buttonTitleSubject.onNext(title)
+            self?.buttonTitleSubject.onNext(title)
         }).disposed(by: disposeBag)
 
     }
