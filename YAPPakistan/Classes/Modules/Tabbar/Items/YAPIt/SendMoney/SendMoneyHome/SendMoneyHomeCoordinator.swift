@@ -126,7 +126,9 @@ private extension SendMoneyHomeCoordinator {
             }
         }).disposed(by: disposeBag)
         
-        
+//        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap())
+//        let viewController = UserProfileViewController(viewModel: viewModel, themeService: container.themeService)
+//                localRoot.pushViewController(viewController, completion: nil)
     }
     
     func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
