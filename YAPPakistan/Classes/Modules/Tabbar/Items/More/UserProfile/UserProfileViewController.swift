@@ -70,6 +70,7 @@ class UserProfileViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_back",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
         
+        //navigationItem.leftBarButtonItem?.tintColor = UIColor.red
         setup()
         bind()
     }
@@ -110,9 +111,13 @@ fileprivate extension UserProfileViewController {
         //addBackButton(.closeEmpty)
         setupTheme()
         title = "Settings"
+        
     }
     
-    func setupTheme() {}
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: [(navigationItem.leftBarButtonItem?.rx.tintColor)!])
+    }
     
     func setupViews() {
         view.backgroundColor = .white
@@ -131,8 +136,6 @@ fileprivate extension UserProfileViewController {
         profilePhotoEditButtonContainer.clipsToBounds = true
         profilePhotoEditButtonContainer.layer.cornerRadius = 18
         profilePhotoEditButtonContainer.addSubview(profilePhotoEditButton)
-        
-        
     }
     
     func setupConstraints() {
