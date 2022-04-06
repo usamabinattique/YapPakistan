@@ -24,7 +24,6 @@ class MoreBankDetailsViewController: UIViewController {
     
     public lazy var holder: UIView = {
         let view = UIView()
-        view.backgroundColor = .gray
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -57,9 +56,9 @@ class MoreBankDetailsViewController: UIViewController {
         return view
     }()
     
-    private lazy var swift: MoreBankDetailsInfoView = {
+    private lazy var phone: MoreBankDetailsInfoView = {
         let view = MoreBankDetailsInfoView()
-        view.titleText = "screen_more_bank_details_display_text_swift".localized
+        view.titleText = "screen_more_bank_details_display_text_phonenot".localized
         view.detailText = "Hello From World"
         view.canCopy = true
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -166,6 +165,12 @@ class MoreBankDetailsViewController: UIViewController {
             self.view.layoutIfNeeded()
         }
         
+        let tap = UITapGestureRecognizer(target: self, action: #selector(self.closeAction(_:)))
+
+        self.sheetView.addGestureRecognizer(tap)
+
+        self.sheetView.isUserInteractionEnabled = true
+
     }
     
     override func viewDidLayoutSubviews() {
@@ -173,34 +178,36 @@ class MoreBankDetailsViewController: UIViewController {
         render()
     }
     
+    override public func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        holder.roundView()
+        sheetView.layer.cornerRadius = 18
+        sheetView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        sheetView.clipsToBounds = true
+    }
+    
     // MARK: Actions
 //    @objc func openProfile() {
 //        viewModel.inputs.settingsObserver.onNext(())
 //    }
 //
-    @objc
-    func closeAction() {
-        navigationController?.dismiss(animated: true, completion: nil)
-    }
+//    @objc
+//    func closeAction() {
+//        navigationController?.dismiss(animated: true, completion: nil)
+//    }
 }
 
 // MARK: View setup
 
 private extension MoreBankDetailsViewController {
     func setupTheme() {
-        
         themeService.rx
-            .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, swift.rx.titleColor, iban.rx.titleColor, account.rx.titleColor, address.rx.titleColor, bank.rx.titleColor])
+            .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, phone.rx.titleColor, iban.rx.titleColor, account.rx.titleColor, address.rx.titleColor, bank.rx.titleColor])
         themeService.rx
-            .bind({ UIColor($0.primaryDark) }, to: [name.rx.detailsColor, swift.rx.detailsColor, iban.rx.detailsColor, account.rx.detailsColor, address.rx.detailsColor, bank.rx.detailsColor, shareButton.rx.backgroundColor])
-        
-//        themeService.rx
-//            .bind({ UIColor($0.primaryDark)}, to: [heading.rx.textColor, allBeneficiaryLabel.rx.textColor])
-//            .bind({ UIColor($0.greyDark)}, to: [subHeading.rx.textColor])//[searchBarButtonItem.barItem.rx.tintColor])
-//            .bind({ UIColor($0.primary)}, to: [addNowButton.rx.backgroundColor, navigationItem.rightBarButtonItem!.rx.tintColor, navigationItem.leftBarButtonItem!.rx.tintColor])
-//            .bind({ UIColor($0.greyDark)}, to: [searchButton.rx.titleColor(for: .normal)])
-//            .bind({ UIColor($0.greyDark)}, to: [searchButton.rx.tintColor])
-//            .disposed(by: rx.disposeBag)
+            .bind({ UIColor($0.primaryDark) }, to: [name.rx.detailsColor, phone.rx.detailsColor, iban.rx.detailsColor, account.rx.detailsColor, address.rx.detailsColor, bank.rx.detailsColor, shareButton.rx.backgroundColor])
+        themeService.rx
+            .bind({ UIColor( $0.greyDark ) }, to: self.holder.rx.backgroundColor)
     }
     
     func setupViews() {
@@ -210,13 +217,9 @@ private extension MoreBankDetailsViewController {
         sheetView.addSubview(headerTitle)
         stackView.addArrangedSubview(name)
         stackView.addArrangedSubview(iban)
-        stackView.addArrangedSubview(account)
-        stackView.addArrangedSubview(bank)
-        stackView.addArrangedSubview(swift)
-        stackView.addArrangedSubview(address)
+        stackView.addArrangedSubview(phone)
         sheetView.addSubview(stackView)
         sheetView.addSubview(shareButton)
-//        setupSensitiveViews()
     }
     
     func setupConstraints() {
@@ -253,8 +256,6 @@ private extension MoreBankDetailsViewController {
     
     func render() {
         shareButton.roundView()
-//        profileImage.roundView(withBorderColor: .white, withBorderWidth: 3)
-//        profileImage.layer.cornerRadius = 34
     }
 }
 
@@ -262,10 +263,9 @@ private extension MoreBankDetailsViewController {
 
 private extension MoreBankDetailsViewController {
     func bindViews() {
-        //viewModel.outputs.profileImage.bind(to: profileImage.rx.loadImage()).disposed(by: disposeBag)
         viewModel.outputs.name.bind(to: name.rx.details).disposed(by: disposeBag)
         viewModel.outputs.iban.bind(to: iban.rx.details).disposed(by: disposeBag)
-        viewModel.outputs.swift.bind(to: swift.rx.details).disposed(by: disposeBag)
+        viewModel.outputs.swift.bind(to: phone.rx.details).disposed(by: disposeBag)
         viewModel.outputs.account.bind(to: account.rx.details).disposed(by: disposeBag)
         viewModel.outputs.bank.bind(to: bank.rx.details).disposed(by: disposeBag)
         viewModel.outputs.address.bind(to: address.rx.details).disposed(by: disposeBag)
@@ -287,7 +287,7 @@ private extension MoreBankDetailsViewController {
 extension MoreBankDetailsViewController {
     @objc
     func closeAction(_ tap: UITapGestureRecognizer) {
-        guard tap.location(in: view).y < sheetView.frame.origin.y else { return }
+        guard tap.location(in: view).y < sheetView.frame.origin.y + 50 else { return }
         
         completeHide(0)
     }

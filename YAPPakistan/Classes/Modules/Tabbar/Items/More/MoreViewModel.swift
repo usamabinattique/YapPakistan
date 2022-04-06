@@ -38,6 +38,7 @@ protocol MoreViewModelOutput {
     var openNotification: Observable<Void> { get }
     var accountNumber: Observable<String?> { get }
     var logout: Observable<Void> { get }
+    var settings: Observable<Void> { get }
     var showError: Observable<String> { get }
 //    var moreHelpTour: Observable<[GuidedTour]> { get }
     var presentTourGuide: Observable<Void> { get }
@@ -85,6 +86,7 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
     var bankDetailsObserver: AnyObserver<Void> { return bankDetailsSubject.asObserver() }
     var itemTappedObserver: AnyObserver<ReusableCollectionViewCellViewModelType> { return itemTappedSubject.asObserver() }
     var logoutObserver: AnyObserver<Void> { logoutSubject.asObserver() }
+    var settings: Observable<Void> { settingsSubject.asObserver() }
 //    var moreHelpTourObserver: AnyObserver<[GuidedTour]> { moreHelpTourSubject.asObserver() }
 //    var markTourGuideSkipObserver: AnyObserver<TourGuideView> { markTourGuideSkipSubject.asObserver() }
 //    var markTourGuideCompleteObserver: AnyObserver<TourGuideView> { markTourGuideCompleteSubject.asObserver() }
