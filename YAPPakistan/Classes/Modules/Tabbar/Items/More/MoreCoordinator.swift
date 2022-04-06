@@ -6,6 +6,7 @@
 //
 
 import RxSwift
+import YAPComponents
 import YAPCore
 import UIKit
 
@@ -82,7 +83,6 @@ extension MoreCoordinator {
         viewController.modalPresentationStyle = .fullScreen
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationController.modalPresentationStyle = .fullScreen
-        
         navigationRoot.present(navigationController, animated: true, completion: nil)
     }
     

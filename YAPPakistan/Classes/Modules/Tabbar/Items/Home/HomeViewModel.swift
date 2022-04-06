@@ -167,7 +167,6 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
        
         generateCellViewModels()
-        
     }
     
     func generateCellViewModels() {

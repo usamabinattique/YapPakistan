@@ -99,7 +99,7 @@ extension WelcomeView {
         
         separator
             .alignEdgesWithSuperview([.left,.right,.bottom], constants: [24,24,0])
-            .height(constant: 2)
+            .height(constant: 0.7)
     }
 }
 
