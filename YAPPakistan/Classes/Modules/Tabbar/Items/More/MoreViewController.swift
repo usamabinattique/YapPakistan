@@ -66,7 +66,7 @@ class MoreViewController: UIViewController {
         
         settingsButton.setImage(UIImage(named: "icon_settings", in: .yapPakistan)?.asTemplate, for: .normal)
         settingsButton.frame = CGRect(x: 0.0, y: 0.0, width: 26, height: 26)
-        settingsButton.addTarget(self, action: #selector(self.openSettings(_:)), for: .touchUpInside)
+        //settingsButton.addTarget(self, action: #selector(self.openSettings(_:)), for: .touchUpInside)
         let settingsBarButtonItem = UIBarButtonItem(customView: settingsButton)
         
         self.navigationItem.rightBarButtonItems = [settingsBarButtonItem, notificationBarButtonItem]
@@ -89,10 +89,10 @@ class MoreViewController: UIViewController {
         self.navigationController?.navigationBar.tintColor = UIColor(self.themeService.attrs.primary)
     }
     
-    @objc
-    private func openSettings(_ sender: UIButton) {
-        viewModel.inputs.settingsObserver.onNext(())
-    }
+//    @objc
+//    private func openSettings(_ sender: UIButton) {
+//        viewModel.inputs.settingsObserver.onNext(())
+//    }
     
     
 }
@@ -143,7 +143,7 @@ extension MoreViewController: ViewDesignable {
         viewModel.outputs.badgeValue.subscribe(onNext: {[weak self] in self?.notificationBarButtonItem.setBadge(with: $0 ?? "0") }).disposed(by: disposeBag)
         headerView.rx.bankDetailsTap.bind(to: viewModel.inputs.bankDetailsObserver).disposed(by: disposeBag)
         headerView.rx.imageTapped.bind(to: viewModel.inputs.settingsObserver).disposed(by: disposeBag)
-        
+        settingsButton.rx.tap.bind(to: viewModel.inputs.settingsObserver).disposed(by: disposeBag)
         bindCollectionView()
     }
     

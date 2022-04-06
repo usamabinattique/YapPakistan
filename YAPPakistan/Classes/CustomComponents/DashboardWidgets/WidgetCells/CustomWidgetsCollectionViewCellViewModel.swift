@@ -39,7 +39,7 @@ public class CustomWidgetsCollectionViewCellViewModel: CustomWidgetsCollectionVi
         if widgetData == nil {
             categoryNameSubject.onNext("Edit")
             removeShadowSubject.onNext(WidgetCode.init(rawValue: "Edit") ?? .edit)
-           // categoryImageSubject.onNext(("",UIImage.init(named: "icon_edit", in: yapKitBundle, compatibleWith: nil)))
+            categoryImageSubject.onNext(("",UIImage.init(named: "icon_edit", in: .yapPakistan, compatibleWith: nil)))
         }
     }
 }
