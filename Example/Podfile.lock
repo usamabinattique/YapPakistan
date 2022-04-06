@@ -1,9 +1,9 @@
 PODS:
-  - Adjust (4.29.6):
-    - Adjust/Core (= 4.29.6)
-  - Adjust/Core (4.29.6)
-  - Alamofire (5.4.4)
-  - CardScanner (1.2.7)
+  - Adjust (4.29.7):
+    - Adjust/Core (= 4.29.7)
+  - Adjust/Core (4.29.7)
+  - Alamofire (5.5.0)
+  - CardScanner (1.2.11)
   - Differentiator (5.0.0)
   - FSPagerView (0.8.3)
   - GoogleMaps (5.2.0):
@@ -47,9 +47,9 @@ PODS:
   - RxTheme (5.0.4):
     - RxCocoa (~> 6.0)
     - RxSwift (~> 6.0)
-  - SDWebImage (5.12.1):
-    - SDWebImage/Core (= 5.12.1)
-  - SDWebImage/Core (5.12.1)
+  - SDWebImage (5.12.5):
+    - SDWebImage/Core (= 5.12.5)
+  - SDWebImage/Core (5.12.5)
   - SwifterSwift (5.2.0):
     - SwifterSwift/AppKit (= 5.2.0)
     - SwifterSwift/CoreAnimation (= 5.2.0)
@@ -83,23 +83,23 @@ PODS:
   - YAPPakistan (0.1.0):
     - Adjust (~> 4.0)
     - Alamofire (~> 5.0)
-    - CardScanner (= 1.2.7)
+    - CardScanner (= 1.2.11)
     - FSPagerView (~> 0.8.3)
     - GoogleMaps
     - GooglePlaces
     - HWPanModal (~> 0)
     - MXParallaxHeader
-    - PhoneNumberKit (~> 3.0)
-    - RxCocoa (~> 6.0)
-    - RxDataSources (~> 5.0)
-    - RxGesture (~> 4.0)
-    - RxOptional (~> 5.0)
-    - RxSwift (~> 6.0)
-    - RxSwiftExt (~> 6.0)
-    - RxTheme (~> 5.0)
+    - PhoneNumberKit (= 3.3.3)
+    - RxCocoa (= 6.2.0)
+    - RxDataSources (= 5.0.0)
+    - RxGesture (= 4.0.2)
+    - RxOptional (= 5.0.2)
+    - RxSwift (= 6.2.0)
+    - RxSwiftExt (= 6.0.1)
+    - RxTheme (= 5.0.4)
     - SDWebImage (~> 5.0)
     - SwifterSwift (~> 5.0)
-    - SwiftyGif (~> 5.0)
+    - SwiftyGif (= 5.4.0)
     - SwipeCellKit
     - YAPComponents (~> 0)
     - YAPCore (~> 0)
@@ -152,9 +152,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Adjust: 94f1c99429fb2a7ebe530294fd66a88d63a54922
-  Alamofire: f3b09a368f1582ab751b3fff5460276e0d2cf5c9
-  CardScanner: d33ebc8ef394017592fe18d9522cad11214de2f3
+  Adjust: 91a06a01e4bb35b432e26b5d5bb8995b95fc381c
+  Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
+  CardScanner: 7b8cc4d5598152a87545850da188d0dfe62b99b0
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
   FSPagerView: 670405b2f18e2a87fa37f20b00de783e562c25a8
   GoogleMaps: 025272d5876d3b32604e5c080dc25eaf68764693
@@ -170,13 +170,13 @@ SPEC CHECKSUMS:
   RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
   RxSwiftExt: d61c4b9b06e0a448041b1c659e0f1b5c5a035afc
   RxTheme: ff66d4e8f8947a5b0ffc776e04f0fef85526011b
-  SDWebImage: 4dc3e42d9ec0c1028b960a33ac6b637bb432207b
+  SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
   SwifterSwift: 334181863c416882d97b7a60c05054d9e4d799e2
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7
   SwipeCellKit: 3972254a826da74609926daf59b08d6c72e619ea
   YAPComponents: 06fc14e894e5d686e147a822dec5b99a40baa58b
   YAPCore: 5a4338ac7ae434e7c5a2afb3655e414cd9cc7e8d
-  YAPPakistan: d84aa45ff4a88dfd2f85ae49c11e4b7906e9dc08
+  YAPPakistan: e953b46dd6420ae0b85b2f2d082b632395f684d4
 
 PODFILE CHECKSUM: 19473def4415e479e9d76c4cfbb566105bded114
 
