@@ -457,6 +457,12 @@
 "screen_topup_card_cvv_display_text_title" = "Top up confirmation";
 "screen_topup_card_cvv_display_text_cvv" = "Enter the CVV to top up your acccount with";
 
+// MARK: Logout popups
+"screen_profile_action_display_text_logout_popups_logout" = "Log out";
+"screen_profile_action_display_text_logout_popups_cencel" = "Cancel";
+"screen_profile_action_display_text_logout_popups_title" = "Log out";
+"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out";
+
 
 // MARK: Set Pin
 
