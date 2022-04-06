@@ -42,6 +42,8 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
            .subscribe(onNext: {  $0.0.resultSuccess() })
             .disposed(by: rx.disposeBag)
         
+        
+        
         root.present(localRoot, animated: true, completion: nil)
         return result
     }

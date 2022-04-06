@@ -389,7 +389,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     func logout(repository: LoginRepository) {
         
         
-        let logoutRequest = logoutTapSubject
+        let logoutRequest = logoutConfirmSubject
             .do(onNext: { [unowned self] _ in
                 self.biometricsManager.deleteBiometryForUser(phone: credentialStore.getUsername() ?? "")
                 YAPProgressHud.showProgressHud()
@@ -409,7 +409,8 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
                 self?.notificationManager.deleteNotificationPermission()
                 self?.credentialStore.setRemembersId(false)
                 self?.credentialStore.clearUsername()
-                
+                let name = Notification.Name.init(.logout)
+                NotificationCenter.default.post(name: name,object: nil)
             })
             .map { _ in () }
             .bind(to: resultSubject)
