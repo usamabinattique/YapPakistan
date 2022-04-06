@@ -85,7 +85,7 @@ public class DashboardWidgetsViewModel: DashboardWidgetsViewModelType, Dashboard
             viewModels.append(vm)
         }
         if viewModels.count > 0 {
-            let edit = CustomWidgetsCollectionViewCellViewModel(widgetData: widgetsData.first) //CustomWidgetsCollectionViewCellViewModel(widgetData: nil)
+            let edit =  CustomWidgetsCollectionViewCellViewModel(widgetData: nil)
             viewModels.append(edit)
             dataSourceSubject.onNext([SectionModel(model: 0, items: viewModels)])
             scrollToTopSubject.onNext(())
