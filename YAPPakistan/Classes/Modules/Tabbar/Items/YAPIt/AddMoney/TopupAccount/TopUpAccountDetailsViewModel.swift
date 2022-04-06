@@ -45,36 +45,28 @@ class TopUpAccountDetailsViewModel: TopUpAccountDetailsViewModelType, TopUpAccou
     
     // MARK: - Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { dataSourceSubject.asObservable() }
-    var shareInfo: Observable<String> { shareSubject.asObservable() }
-    var close: Observable<Void> { closeSubject.asObservable() } 
+    var shareInfo: Observable<String> {
+        
+        shareSubject.withLatestFrom(self.accountProvider.currentAccount.unwrap()).map({
+            String.init(format: "Pay to: %@\nIBAN: %@\nAccount number: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.accountNumber ?? "")
+        })
+    }
+    var close: Observable<Void> { closeSubject.asObservable() }
     
     // MARK: - Init
     init(accountProvider: AccountProvider) {
         
-        let account = accountProvider.currentAccount
+        self.accountProvider = accountProvider
         
-        let value = account.unwrap().map {
-            String.init(format: "Pay to: %@\nIBAN: %@\nAccount number: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.accountNumber ?? "") }
-        value.bind(to: shareSubject)
-            .disposed(by: disposeBag)
-        
-        let tableViewButtonCellViewModel = TableViewButtonCellViewModel(title: "Share", background: .light)
-        tableViewButtonCellViewModel.outputs.button
-            .subscribe(onNext:{ [weak self] _ in
-                guard let `self` = self else { return }
-                let value = account.unwrap().map {
-                    String.init(format: "Pay to: %@\nIBAN: %@\nAccount number: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.accountNumber ?? "") }
-                value.bind(to: self.shareSubject).disposed(by: self.disposeBag)
-            }).disposed(by: disposeBag)
+        let account = self.accountProvider.currentAccount
         account.map{ account -> [ReusableTableViewCellViewModelType] in
             [TopUpAccountDetailsUserCellViewModel(userImage: (account?.customer.imageURL?.absoluteString, (account?.customer.fullName ?? "").initialsImage(color: UIColor(hexString: "5E35B1") ?? .purple/*primary*/))),
              TopUpAccountDetailsCellViewModel(type: .accountName, details: account?.customer.fullName ?? ""),
              TopUpAccountDetailsCellViewModel(type: .iban, details: account?.iban ?? ""),
-             TopUpAccountDetailsCellViewModel(type: .accountNumber, details: account?.accountNumber ?? ""),
-             tableViewButtonCellViewModel] }
-            .map{ [SectionModel(model: 0, items: $0)] }
-            .bind(to: dataSourceSubject)
-            .disposed(by: disposeBag)
+             TopUpAccountDetailsCellViewModel(type: .accountNumber, details: account?.accountNumber ?? "")] }
+        .map{ [SectionModel(model: 0, items: $0)] }
+        .bind(to: dataSourceSubject)
+        .disposed(by: disposeBag)
         
     }
 }

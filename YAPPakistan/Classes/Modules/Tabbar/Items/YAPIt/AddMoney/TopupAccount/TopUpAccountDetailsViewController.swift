@@ -22,7 +22,10 @@ class TopUpAccountDetailsViewController: UIViewController {
         return tableView
     }()
     
-    private lazy var shareButton: AppRoundedButton = UIFactory.makeAppRoundedButton(with: .large, title: "screen_more_bank_details_button_share".localized)
+    private lazy var shareButton: UIButton = UIFactory.makeButton(with: .large, title: "screen_more_bank_details_button_share".localized)
+    private lazy var shareIcon: ImageView = UIFactory.makeImageView()
+    private lazy var shareStack: UIStackView = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 5, arrangedSubviews: [shareButton, shareIcon])
+    
     private var backButton: UIButton!
     
     // MARK: Properties
@@ -52,10 +55,11 @@ class TopUpAccountDetailsViewController: UIViewController {
         backButton = makeAndAddBackButton(of:.backEmpty)
         title = "screen_more_bank_details_display_text_for_top_up_title".localized
         
-        setupViews()
+        setupSubViews()
         setupConstraints()
-        bindViews()
+        setupBindings()
         setupTheme()
+        setupResources()
     }
     
     // MARK: Actions
@@ -68,42 +72,39 @@ class TopUpAccountDetailsViewController: UIViewController {
 
 // MARK: View setup
 
-private extension TopUpAccountDetailsViewController {
-    private func setupViews() {
+extension TopUpAccountDetailsViewController: ViewDesignable {
+    
+    func setupSubViews() {
         view.backgroundColor = .white
         view.addSubview(tableView)
+        view.addSubview(shareStack)
         
         tableView.register(TopUpAccountDetailsCell.self, forCellReuseIdentifier: TopUpAccountDetailsCell.defaultIdentifier)
         tableView.register(TopUpAccountDetailsUserCell.self, forCellReuseIdentifier: TopUpAccountDetailsUserCell.defaultIdentifier)
-        tableView.register(TableViewButtonCell.self, forCellReuseIdentifier: TableViewButtonCell.defaultIdentifier)
     }
     
-    private func setupConstraints() {
+    func setupConstraints() {
         let bottomSafeArea: CGFloat = (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0) == 0 ? 18 : 0
         tableView
             .alignEdgeWithSuperviewSafeArea(.top)
-            .alignEdgesWithSuperview([.left, .right, .bottom], constants: [0, 0, bottomSafeArea])
-//
-//        shareButton
-//            .toBottomOf(tableView)
-//            .centerHorizontallyInSuperview()
-//            .alignEdgeWithSuperviewSafeArea(.bottom, constant: 15)
-//            .height(constant: 52)
+            .alignEdgesWithSuperview([.left, .right], constants: [0, 0])
+
+        shareStack
+            .toBottomOf(tableView)
+            .centerHorizontallyInSuperview()
+            .alignEdgeWithSuperviewSafeArea(.bottom, constant: bottomSafeArea)
+            .height(constant: 52)
 //            .width(constant: 192)
     }
     
     func setupTheme() {
         self.themeService.rx
-            .bind({ UIColor($0.primary) }, to: shareButton.rx.enabledBackgroundColor)
+            .bind({ UIColor($0.primary) }, to: shareButton.rx.titleColor(for: .normal))
             .bind({ UIColor($0.primaryDark) }, to: backButton.rx.tintColor)
             .disposed(by: disposeBag)
     }
-}
-
-// MARK: Binding
-
-private extension TopUpAccountDetailsViewController {
-    func bindViews() {
+    
+    func setupBindings() {
         dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
@@ -129,7 +130,9 @@ private extension TopUpAccountDetailsViewController {
                 self?.viewModel.inputs.shareObserver.onNext("")
             })
             .disposed(by: disposeBag)
-        
-        
+    }
+    
+    func setupResources() {
+        shareIcon.image = UIImage(named: "icon_share", in: .yapPakistan)
     }
 }
