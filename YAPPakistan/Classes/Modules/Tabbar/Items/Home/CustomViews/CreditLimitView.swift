@@ -51,6 +51,7 @@ class CreditLimitView: UIView {
         guard let viewModel = viewModel as? CreditLimitCellViewModelType else { return }
         self.viewModel = viewModel
         self.themeService = theme
+        commonInit()
         bindViews()
         setupTheme()
         setupResources()
@@ -118,7 +119,6 @@ private extension CreditLimitView {
 
 private extension CreditLimitView {
     func bindViews() {
-        
         
         viewModel.outputs.credit.bind(to: limitLabel.rx.attributedText).disposed(by: disposeBag)
         infoButton.rx.tap.bind(to: viewModel.inputs.creditInfo).disposed(by: disposeBag)

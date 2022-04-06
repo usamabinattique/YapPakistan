@@ -310,8 +310,7 @@ class HomeViewController: UIViewController {
         parallaxHeaderView.addSubview(headerStackView)
         bottomContainerView.addSubview(welcomeView)
         bottomContainerView.addSubview(creditLimitView)
-        
-        
+      
         
         parallaxHeaderView
             .width(with: .width, ofView: view)
@@ -431,7 +430,7 @@ class HomeViewController: UIViewController {
         
         creditLimitView
             .alignEdgesWithSuperview([.left, .right])
-            .toBottomOf(welcomeView)
+            .toBottomOf(welcomeView,constant: 12)
             .height(constant: 42)
         
        /* headingLabel
