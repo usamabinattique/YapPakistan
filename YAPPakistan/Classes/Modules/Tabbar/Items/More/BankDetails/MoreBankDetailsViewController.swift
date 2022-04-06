@@ -24,25 +24,25 @@ class MoreBankDetailsViewController: UIViewController {
     
     public lazy var holder: UIView = {
         let view = UIView()
+        view.backgroundColor = .gray
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    private lazy var background: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor.clear
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+//    private lazy var background: UIView = {
+//        let view = UIView()
+//        view.backgroundColor = UIColor.clear
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        return view
+//    }()
     
     public lazy var headerTitle: UILabel = UIFactory.makeLabel(font: .title3, text: "Account details") //.primaryDark
+    //public lazy var headerTitle: UILabel = UILabelFactory.createUILabel(with: .primaryDark, textStyle: .title3,text: "Account details")
     
-    private lazy var stackView: UIStackView = {
+    public lazy var stackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
-        stack.distribution = .fill
-        stack.alignment = .fill
-        stack.spacing = 5
+        stack.distribution = .fillEqually
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
@@ -74,32 +74,32 @@ class MoreBankDetailsViewController: UIViewController {
         return view
     }()
     
-    private lazy var account: MoreBankDetailsInfoView = {
-        let view = MoreBankDetailsInfoView()
-        view.titleText = "screen_more_bank_details_display_text_account".localized
-        view.detailText = "screen_more_bank_details_display_text_account".localized
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.canCopy = true
-        return view
-    }()
+//    private lazy var account: MoreBankDetailsInfoView = {
+//        let view = MoreBankDetailsInfoView()
+//        view.titleText = "screen_more_bank_details_display_text_account".localized
+//        view.detailText = "screen_more_bank_details_display_text_account".localized
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        view.canCopy = true
+//        return view
+//    }()
     
-    private lazy var bank: MoreBankDetailsInfoView = {
-        let view = MoreBankDetailsInfoView()
-        view.titleText = "screen_more_bank_details_display_text_bank".localized
-        view.detailText = "Hello From World"
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.canCopy = true
-        return view
-    }()
+//    private lazy var bank: MoreBankDetailsInfoView = {
+//        let view = MoreBankDetailsInfoView()
+//        view.titleText = "screen_more_bank_details_display_text_bank".localized
+//        view.detailText = "Hello From World"
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        view.canCopy = true
+//        return view
+//    }()
     
-    private lazy var address: MoreBankDetailsInfoView = {
-        let view = MoreBankDetailsInfoView()
-        view.titleText = "screen_more_bank_details_display_text_address".localized
-        view.detailText = "Hello From World"
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.canCopy = true
-        return view
-    }()
+//    private lazy var address: MoreBankDetailsInfoView = {
+//        let view = MoreBankDetailsInfoView()
+//        view.titleText = "screen_more_bank_details_display_text_address".localized
+//        view.detailText = "Hello From World"
+//        view.translatesAutoresizingMaskIntoConstraints = false
+//        view.canCopy = true
+//        return view
+//    }()
     
     private lazy var shareButton: AppRoundedButton = {
         let button = AppRoundedButtonFactory
@@ -133,17 +133,12 @@ class MoreBankDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(closeAction))
-        
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate), style: .plain, target: self, action: #selector(openProfile))
-        
-//        navigationItem.title = "screen_more_bank_details_display_text_title".localized
-        
+
         setupViews()
         setupTheme()
         setupConstraints()
         bindViews()
+        addGestureRecognisers()
     }
     
     override public func viewDidDisappear(_ animated: Bool) {
@@ -187,6 +182,16 @@ class MoreBankDetailsViewController: UIViewController {
         sheetView.clipsToBounds = true
     }
     
+    public func addGestureRecognisers() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(closeAction(_:)))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+        
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        pan.cancelsTouchesInView = false
+        sheetView.addGestureRecognizer(pan)
+    }
+    
     // MARK: Actions
 //    @objc func openProfile() {
 //        viewModel.inputs.settingsObserver.onNext(())
@@ -203,9 +208,9 @@ class MoreBankDetailsViewController: UIViewController {
 private extension MoreBankDetailsViewController {
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, phone.rx.titleColor, iban.rx.titleColor, account.rx.titleColor, address.rx.titleColor, bank.rx.titleColor])
+            .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, phone.rx.titleColor, iban.rx.titleColor])
         themeService.rx
-            .bind({ UIColor($0.primaryDark) }, to: [name.rx.detailsColor, phone.rx.detailsColor, iban.rx.detailsColor, account.rx.detailsColor, address.rx.detailsColor, bank.rx.detailsColor, shareButton.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark) }, to: [name.rx.detailsColor, phone.rx.detailsColor, shareButton.rx.backgroundColor])
         themeService.rx
             .bind({ UIColor( $0.greyDark ) }, to: self.holder.rx.backgroundColor)
     }
@@ -266,9 +271,9 @@ private extension MoreBankDetailsViewController {
         viewModel.outputs.name.bind(to: name.rx.details).disposed(by: disposeBag)
         viewModel.outputs.iban.bind(to: iban.rx.details).disposed(by: disposeBag)
         viewModel.outputs.swift.bind(to: phone.rx.details).disposed(by: disposeBag)
-        viewModel.outputs.account.bind(to: account.rx.details).disposed(by: disposeBag)
-        viewModel.outputs.bank.bind(to: bank.rx.details).disposed(by: disposeBag)
-        viewModel.outputs.address.bind(to: address.rx.details).disposed(by: disposeBag)
+//        viewModel.outputs.account.bind(to: account.rx.details).disposed(by: disposeBag)
+//        viewModel.outputs.bank.bind(to: bank.rx.details).disposed(by: disposeBag)
+//        viewModel.outputs.address.bind(to: address.rx.details).disposed(by: disposeBag)
         viewModel.outputs.canShare.map{ !$0 }.bind(to: shareButton.rx.isHidden).disposed(by: disposeBag)
         
         shareButton.rx.tap.bind(to: viewModel.inputs.shareObserver).disposed(by: disposeBag)
