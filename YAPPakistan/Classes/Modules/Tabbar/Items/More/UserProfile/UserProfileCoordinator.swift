@@ -39,41 +39,13 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         
         viewController.viewModel.outputs.result
             .withUnretained(self)
-           .subscribe(onNext: {
-               $0.0.resultSuccess()
-           })
-            .disposed(by: rx.disposeBag)
-        
-//        viewController.viewModel.outputs.personalDetailsTap.subscribe(onNext: { _ in
-//
-//            print("Personal Details tapped")
-//
-//        }).disposed(by: disposeBag)
-        
-        
-        viewController.viewModel.outputs.personalDetailsTap
-            .withUnretained(self)
-           .subscribe(onNext: {
-               $0.0.openPersonalDetails()
-           })
+           .subscribe(onNext: {  $0.0.resultSuccess() })
             .disposed(by: rx.disposeBag)
         
         
-//        //Change passcode
-//        viewModel.outputs.changePasscodeTap.subscribe(onNext: {[weak self] account in
-//
-//            let name = Notification.Name.init(.logout)
-//            NotificationCenter.default.post(name: name,object: nil)
-//            print("Change passcode tapped")
-//            //self?.changePasscode()
-//        }).disposed(by: disposeBag)
         
         root.present(localRoot, animated: true, completion: nil)
         return result
-    }
-    
-    fileprivate func openPersonalDetails() {
-        print("Personal details tapped in coordinator")
     }
     
     fileprivate func resultSuccess() {
