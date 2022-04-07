@@ -67,8 +67,6 @@ class PersonalDetailsViewController: UIViewController {
     }()
     
     
-    
-    
 //    lazy var fullNameField = StaticAppTextField  //StaticTextFieldFactory.createField(title:  "screen_personal_details_display_text_full_name".localized, isEditable: false)
 //    lazy var phoneNumberField = StaticTextFieldFactory.createField(title:  "screen_personal_details_display_text_phone_number".localized, isEditable: true)
 //    lazy var emailField = StaticTextFieldFactory.createField(title:  "screen_personal_details_display_text_email".localized, isEditable: true)

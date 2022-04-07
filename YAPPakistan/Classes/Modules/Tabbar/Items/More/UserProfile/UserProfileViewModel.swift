@@ -229,7 +229,22 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         }).disposed(by: disposeBag)
 
         Observable.combineLatest(customer,userNotificationPreferenceSubject).subscribe(onNext: { [unowned self] (user, _) in
-            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.email), actionObservers: [self.personalDetailsTapObserver, self.privacyTapObserver, self.passcodeTapObserver, self.appNotificationsDidChangeObserver, self.faceIDDidChangeObserver, self.termsConditionsTapObserver, self.feeAndPricingPlanTapObserver, self.intagramTapObserver, self.twitterTapObserver, self.facebookTapObserver, self.logoutTapObserver]))
+            self.userProfileItemsSubject.onNext(
+                UserProfileItemFactory.makeUserProfileItems(
+                    isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired },
+                    signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.email),
+                    actionObservers: [
+                        self.personalDetailsTapObserver,
+                        self.privacyTapObserver,
+                        self.passcodeTapObserver,
+                        self.appNotificationsDidChangeObserver,
+                        self.faceIDDidChangeObserver,
+                        self.termsConditionsTapObserver,
+                        self.feeAndPricingPlanTapObserver,
+                        self.intagramTapObserver,
+                        self.twitterTapObserver,
+                        self.facebookTapObserver,
+                        self.logoutTapObserver]))
         }).disposed(by: disposeBag)
 
         self.customer.subscribe(onNext: { [unowned self] (user) in
@@ -251,7 +266,8 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         openInstagram()
         openTwitter()
         openFacebook()
-
+        self.openPersonalDetails()
+        
 //        Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
 //            switch state {
 //            case .toggleSwitch(true):
@@ -385,6 +401,14 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
             }
         }).disposed(by: disposeBag)
     }
+    
+    func openPersonalDetails() {
+        personalDetailsTap.subscribe(onNext: { _ in
+            
+            print("Personal Details tapped")
+            
+        }).disposed(by: disposeBag)
+    }
 
     func logout(repository: LoginRepository) {
         
@@ -415,29 +439,6 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
             .map { _ in () }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
-        
-        
-        
-//        let logoutRequest = logoutConfirm
-//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-//            .flatMap { _ -> Observable<Event<[String: String]?>> in
-//
-//                return repository.logout(deviceUUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
-//        }
-//        .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
-//        .share(replay: 1, scope: .whileConnected)
-//
-//        logoutRequest.errors()
-//            .subscribe(onNext: { [unowned self] in
-//                self.errorSubject.onNext($0) })
-//            .disposed(by: disposeBag)
-//
-//        logoutRequest.elements()
-////            .do(onNext: {_ in logoutYAPUser() })
-//            .map {_ in ()}
-//            .subscribe(onNext: { [weak self] in
-//                self?.resultSubject.onNext(()) })
-//            .disposed(by: disposeBag)
     }
 }
 
@@ -484,7 +485,7 @@ class UserProfileItemFactory {
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_instagram_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_instagram".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[7])),
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_twitter_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_twitter".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[8])),
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_facebook_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_facebook".localized, accessory: .button( "screen_user_profile_button_facebook".localized), actionObserver: actionObservers[9])),
-                             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_facebook_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_linkedin".localized, accessory: .button( "screen_user_profile_button_facebook".localized), actionObserver: actionObservers[9])),
+                             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_facebook_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_linkedin".localized, accessory: .button( "screen_user_profile_button_facebook".localized), actionObserver: actionObservers[10])),
                  UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: nil, title:  "screen_user_profile_button_logout".localized, type: UserProfileItemType.logout, accessory: nil, actionObserver: actionObservers[10]))
             ])
         ]

@@ -168,20 +168,20 @@ private extension UserProfileTableViewCell {
         viewModel.outputs.icon.bind(to: iconImageView.rx.image).disposed(by: disposeBag)
         viewModel.outputs.title.bind(to: titleLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.warning.not().bind(to: warningView.rx.isHidden).disposed(by: disposeBag)
-
+        
         let accessoryTypeButton = viewModel.outputs.accessory.unwrap()
             .filter { if case UserProfileTableViewAccessory.button = $0 { return true }; return false }.share(replay: 1, scope: .whileConnected)
-
+        
         accessoryTypeButton
             .map { (accessory: UserProfileTableViewAccessory) -> String? in
                 if case let UserProfileTableViewAccessory.button(title) = accessory { return title }; return nil }
             .bind(to: accessoryButton.rx.title(for: .normal)).disposed(by: disposeBag)
-
+        
         Observable.from([accessoryButton.rx.tap,
                          logoutButton.rx.tap])
             .merge()
             .map { _ in UserProfileTableViewAction.button(()) }.bind(to: viewModel.inputs.actionObserver).disposed(by: disposeBag)
-
+        
         accessorySwitch.rx
                 .controlEvent(.valueChanged)
                 .withLatestFrom(accessorySwitch.rx.value).map { value in UserProfileTableViewAction.toggleSwitch(value) }.bind(to: viewModel.inputs.actionObserver).disposed(by: disposeBag)
