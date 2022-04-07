@@ -44,7 +44,9 @@ class NewPinConfirmViewModel: NewPinConfirmViewModelType, NewPinConfirmViewModel
 
     // MARK: - Outputs - Implementation of "outputs" protocol
     var isPinValid: Observable<Bool> { isPinValidSubject.asObservable() }
-    var pinCode: Observable<String?> { pinCodeSubject.asObservable() }
+    var pinCode: Observable<String?> { pinCodeSubject
+            .map { String($0?.map{ _ in Character("\u{25CF}") } ?? []) }.asObservable()
+        }
     var error: Observable<String> { errorSubject.asObservable() }
     var terms: Observable<Void> { termsSubject.asObservable() }
     var loader: Observable<Bool> { loaderSubject.asObservable() }

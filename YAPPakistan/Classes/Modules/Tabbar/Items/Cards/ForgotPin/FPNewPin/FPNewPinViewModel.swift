@@ -114,10 +114,6 @@ class FPNewPinViewModel: FPNewPinViewModelType, FPNewPinViewModelInputs, FPNewPi
                 }
             })
             .disposed(by: disposeBag)
-        
-//        nextSubject.withLatestFrom(pinCodeSubject).unwrap()
-//            .bind(to: nextResultSubject)
-//            .disposed(by: disposeBag)
     }
 }
 
