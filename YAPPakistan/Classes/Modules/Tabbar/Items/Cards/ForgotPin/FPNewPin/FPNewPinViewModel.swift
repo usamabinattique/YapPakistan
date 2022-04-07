@@ -45,7 +45,9 @@ class FPNewPinViewModel: FPNewPinViewModelType, FPNewPinViewModelInputs, FPNewPi
 
     // MARK: - Outputs - Implementation of "outputs" protocol
     var isPinValid: Observable<Bool> { isPinValidSubject.asObservable() }
-    var pinCode: Observable<String?> { pinCodeSubject.asObservable() }
+    var pinCode: Observable<String?> { pinCodeSubject
+            .map { String($0?.map{ _ in Character("\u{25CF}") } ?? []) }.asObservable()
+        }
     var error: Observable<String> { errorSubject.asObservable() }
     var terms: Observable<Void> { termsSubject.asObservable() }
     var loader: Observable<Bool> { loaderSubject.asObservable() }
@@ -96,8 +98,26 @@ class FPNewPinViewModel: FPNewPinViewModelType, FPNewPinViewModelInputs, FPNewPi
             .disposed(by: disposeBag)
 
         nextSubject.withLatestFrom(pinCodeSubject).unwrap()
-            .bind(to: nextResultSubject)
+            .subscribe(onNext:{ [unowned self] pin in
+                do {
+                    try ValidationService.shared.validatePasscode(pin)
+                    self.nextResultSubject.onNext(pin)
+                } catch {
+                    switch error as! ValidationError {
+                    case .passcodeSequence:
+                        self.errorSubject.onNext("screen_set_card_pin_display_text_error_sequence".localized)
+                    case .passcodeSameDigits:
+                        self.errorSubject.onNext("screen_set_card_pin_display_text_error_same_digits".localized)
+                    default:
+                        break
+                    }
+                }
+            })
             .disposed(by: disposeBag)
+        
+//        nextSubject.withLatestFrom(pinCodeSubject).unwrap()
+//            .bind(to: nextResultSubject)
+//            .disposed(by: disposeBag)
     }
 }
 

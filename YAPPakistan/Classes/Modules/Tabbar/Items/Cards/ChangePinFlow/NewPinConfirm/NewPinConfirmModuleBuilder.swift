@@ -16,10 +16,10 @@ struct NewPinConfirmModuleBuilder {
     func viewController() -> NewPinConfirmViewController {
         let themeService = container.themeService
 
-        let strings = NewPinConfirmViewStrings(heading: "Enter it one more time",
+        let strings = NewPinConfirmViewStrings(heading: "screen_confirm_card_pin_display_text_title".localized,
                                                agrement: "",
                                                terms: "",
-                                               next: "Create new PIN")
+                                                        next: "screen_confirm_card_pin_button_create_pin".localized)
         let viewModel = NewPinConfirmViewModel(cardSerialNumber: cardSerialNumber, oldPin: oldPin,
                                                newPin: newPin, strings: strings,
                                                repository: container.makeCardsRepository())
