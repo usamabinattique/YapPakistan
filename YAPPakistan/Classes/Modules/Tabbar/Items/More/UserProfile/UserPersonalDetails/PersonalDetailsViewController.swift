@@ -35,33 +35,33 @@ class PersonalDetailsViewController: UIViewController {
 //    }()
     
     
-    
+    private lazy var fullNameField = UIFactory.makeStaticTextField(title: "screen_personal_details_display_text_full_name".localized, titleFont: .micro, textFont: .title3, isEditable: true)
    
     
-    private lazy var fullNameField : StaticAppTextField = {
-        let textField = StaticAppTextField()
-        textField.titleLabel.text = ""
-        textField.isEditable = true
-        return textField
-    }()
+//    private lazy var fullNameField : StaticAppTextField = {
+//        let textField = StaticAppTextField()
+//        textField.titleLabel.text = "screen_personal_details_display_text_full_name".localized
+//        textField.isEditable = true
+//        return textField
+//    }()
     
     private lazy var phoneNumberField : StaticAppTextField = {
         let field = StaticAppTextField()
-        field.titleLabel.text = ""
+        field.titleLabel.text = "screen_personal_details_display_text_phone_number".localized
         field.isEditable = true
         return field
     }()
     
     private lazy var emailField : StaticAppTextField = {
         let field = StaticAppTextField()
-        field.titleLabel.text = ""
+        field.titleLabel.text = "screen_personal_details_display_text_email".localized
         field.isEditable = true
         return field
     }()
     
     private lazy var addressField : StaticAppTextField = {
         let field = StaticAppTextField()
-        field.titleLabel.text = ""
+        field.titleLabel.text = "screen_personal_details_display_text_address".localized
         field.isEditable = true
         return field
     }()
@@ -177,8 +177,8 @@ fileprivate extension PersonalDetailsViewController {
     }
 
     func bindActivityIndicator() {
-        viewModel.outputs.isRunning.subscribe(onNext: { isRunning in
-            _ = isRunning ? YAPProgressHud.showProgressHud() : YAPProgressHud.hideProgressHud()
-        }).disposed(by: disposeBag)
+//        viewModel.outputs.isRunning.subscribe(onNext: { isRunning in
+//            _ = isRunning ? YAPProgressHud.showProgressHud() : YAPProgressHud.hideProgressHud()
+//        }).disposed(by: disposeBag)
     }
 }

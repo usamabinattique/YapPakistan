@@ -76,7 +76,7 @@ class PersonalDetailsViewModel: PersonalDetailsViewModelType, PersonalDetailsVie
 
     // MARK: - Outputs
     var viewWillAppearObserver: AnyObserver<Void> { return viewWillAppearSubject.asObserver() }
-    var title: Observable<String> { return Observable.of( "screen_personal_details_display_text_title".localized) }
+    var title: Observable<String> { return Observable.of( "screen_personal_details_display_text_personal_details_title".localized) }
     var fullName: Observable<String?> { return customer.map { $0.fullName } }
     var phone: Observable<String> { return customer.map { $0.fullMobileNo } }
     var editPhoneTap: Observable<Void> { return editPhoneTapSubject.asObservable() }
@@ -97,14 +97,14 @@ class PersonalDetailsViewModel: PersonalDetailsViewModelType, PersonalDetailsVie
     }
     var showBlockedOTPError: Observable<String>{ blockedOTPErrorMessageSubject.asObservable() }
     // MARK: - Init
-    init(_ customer: Observable<Customer>,
-         emiratesIDStatus: UserProfileViewModel.EmiratesIDStatus) {
+    init(_ customer: Observable<Customer>) {
         
         //,profileRepository: ProfileRepository = ProfileRepository()
         
         self.customer = customer
+        YAPProgressHud.hideProgressHud()
 
-        emiratesIDStatusSubject = BehaviorSubject(value: emiratesIDStatus)
+        //emiratesIDStatusSubject = BehaviorSubject(value: emiratesIDStatus)
 
 //        let request = addressUpdatedSubject.flatMap { profileRepository.getLastLocation() }.do(onNext: { _ in YAPProgressHud.hideProgressHud() }).share(replay: 1, scope: .whileConnected)
 //
