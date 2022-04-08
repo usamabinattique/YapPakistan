@@ -102,7 +102,6 @@ class PersonalDetailsViewModel: PersonalDetailsViewModelType, PersonalDetailsVie
         //,profileRepository: ProfileRepository = ProfileRepository()
         
         self.customer = customer
-        YAPProgressHud.hideProgressHud()
 
         //emiratesIDStatusSubject = BehaviorSubject(value: emiratesIDStatus)
 
