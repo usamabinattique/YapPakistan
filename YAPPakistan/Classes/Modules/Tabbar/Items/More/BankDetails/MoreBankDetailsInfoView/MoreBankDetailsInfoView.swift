@@ -99,9 +99,9 @@ private extension MoreBankDetailsInfoView {
         
         details
             .toBottomOf(title, constant: 5)
-            .alignEdgeWithSuperview(.left, constant: 5)
-            .centerVerticallyInSuperview()
-        
+            .alignEdgeWithSuperview(.left, constant: 0)
+            .alignEdgeWithSuperview(.bottom, constant: 8)
+            
         copyButton
             .alignEdgeWithSuperview(.right, constant: 5)
             .height(constant: 20)

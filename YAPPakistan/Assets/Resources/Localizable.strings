@@ -419,6 +419,15 @@
 "screen_topup_card_selection_display_topup_success_yes" = "Yes, top up now";
 "screen_topup_card_selection_display_topup_success_no" = "No, do it later";
 
+//MARK: - Set Card Pin Screen
+"screen_set_card_pin_display_text_title" = "Create your 4-digit PIN";
+"screen_set_card_pin_button_create_pin" = "Next";
+"screen_set_card_pin_display_text_error_same_digits" = "PIN cannot be of same digits";
+"screen_set_card_pin_display_text_error_sequence" = "Sequential numbers are not allowed";
+"screen_confirm_card_pin_display_text_title" = "Enter it one more time";
+"screen_confirm_card_pin_display_text_terms_and_conditions" = "By creating a PIN you agree to our\nTerms & Conditions";
+"screen_confirm_card_pin_button_create_pin" = "Create PIN";
+
 // MARK: - Top Up Card Details Screen
 "screen_topup_card_details_display_text_title" = "Card details";
 "screen_topup_card_details_display_text_placeholder_card_nickname" = "Card nickname";
