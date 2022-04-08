@@ -229,7 +229,18 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         }).disposed(by: disposeBag)
 
         Observable.combineLatest(customer,userNotificationPreferenceSubject).subscribe(onNext: { [unowned self] (user, _) in
-            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.email), actionObservers: [self.personalDetailsTapObserver, self.privacyTapObserver, self.passcodeTapObserver, self.appNotificationsDidChangeObserver, self.faceIDDidChangeObserver, self.termsConditionsTapObserver, self.feeAndPricingPlanTapObserver, self.intagramTapObserver, self.twitterTapObserver, self.facebookTapObserver, self.logoutTapObserver]))
+            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.email), actionObservers: [
+                self.personalDetailsTapObserver,
+                self.privacyTapObserver,
+                self.passcodeTapObserver,
+                self.appNotificationsDidChangeObserver,
+                self.faceIDDidChangeObserver,
+                self.termsConditionsTapObserver,
+                self.feeAndPricingPlanTapObserver,
+                self.intagramTapObserver,
+                self.twitterTapObserver,
+                self.facebookTapObserver,
+                self.logoutTapObserver]))
         }).disposed(by: disposeBag)
 
         self.customer.subscribe(onNext: { [unowned self] (user) in
@@ -251,7 +262,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         openInstagram()
         openTwitter()
         openFacebook()
-
+        openPasscodechange()
 //        Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
 //            switch state {
 //            case .toggleSwitch(true):
@@ -368,6 +379,15 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
                 let webURL = URL(string: "https://twitter.com/YAPpakistan")!
                 application.open(webURL)
             }
+        }).disposed(by: disposeBag)
+    }
+    
+    
+    func openPasscodechange() {
+        changePasscodeTap.subscribe(onNext: { _ in
+            
+            print("Passccode change burron tapped")
+            
         }).disposed(by: disposeBag)
     }
 

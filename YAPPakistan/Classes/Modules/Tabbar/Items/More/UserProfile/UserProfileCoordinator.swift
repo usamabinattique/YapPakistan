@@ -26,7 +26,6 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     
     
     public init(root: UIViewController, container: UserSessionContainer) {
-        //        self.repository = repository
         self.container = container
         self.root = root
     }
@@ -37,10 +36,28 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         
         
+        viewController.viewModel.outputs.personalDetailsTap.subscribe(onNext: { [weak self] _ in
+            
+            print("Personal Details Button tapped in Coordinator")
+            let viewModel = PersonalDetailsViewModel((self?.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap())!)
+            let viewController = PersonalDetailsViewController(viewModel: viewModel)
+            self?.localRoot.pushViewController(viewController, completion: nil)
+            
+        }).disposed(by: disposeBag)
+        
+        viewController.viewModel.outputs.changePasscodeTap.subscribe(onNext: { [weak self] _ in
+            
+            print("Change passcode button tapped in coordinator")
+            
+            
+        }).disposed(by: disposeBag)
+            
+        
         viewController.viewModel.outputs.result
             .withUnretained(self)
            .subscribe(onNext: {  $0.0.resultSuccess() })
             .disposed(by: rx.disposeBag)
+        
         
         
         
