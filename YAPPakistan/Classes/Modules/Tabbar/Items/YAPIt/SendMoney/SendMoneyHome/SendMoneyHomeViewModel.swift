@@ -120,16 +120,6 @@ class SendMoneyHomeViewModel: SendMoneyHomeViewModelType, SendMoneyHomeViewModel
         
         
         allBeneficiaryDataSourceSubject.map { $0.count > 1 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
-
-        /// firebase event logging
-        
-        
-//        sendMoneySubject.do( onNext: { _ in
-//
-//        }).subscribe(onNext: { _ in
-//
-//        }).disposed(by: disposeBag)
-        
         sendMoneySubject.subscribe(onNext: { _ in
             
             print("Beneficary tapped")
@@ -190,8 +180,8 @@ private extension SendMoneyHomeViewModel {
                 self?.allBeneficiaryDataSourceSubject.onNext( (model) )
             })
             .disposed(by: disposeBag)
-        allBeneficiaries.map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
-        searchObserverSubject.withLatestFrom(allBeneficiaries).bind(to: searchBeneficiariesSubject).disposed(by: disposeBag)
+        allIBFTBenefeciries.elements().map { $0.count > 0 }.bind(to: beneficiaryAvailableSubject).disposed(by: disposeBag)
+        searchObserverSubject.withLatestFrom(allIBFTBenefeciries.elements()).bind(to: searchBeneficiariesSubject).disposed(by: disposeBag)
     }
     
     func fetchRecentBeneficiaries() {

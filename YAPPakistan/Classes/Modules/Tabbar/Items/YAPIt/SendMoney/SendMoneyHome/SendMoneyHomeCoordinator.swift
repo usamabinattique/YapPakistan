@@ -79,14 +79,10 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.addBeneficiary.subscribe(onNext: { [weak self] in
-            //TODO: remove following line
-//            self?.sendMoney(SendMoneyBeneficiary.mocked)
-            
-            //TODO: uncomment following code
              self?.addBeneficiary()
         }).disposed(by: disposeBag)
         
-        viewModel.outputs.sendMoney.subscribe(onNext: { [weak self] in
+        viewModel.outputs.sendMoney.skip(1).subscribe(onNext: { [weak self] in
             print($0)
              self?.sendMoney($0)
         }).disposed(by: disposeBag)
@@ -125,12 +121,16 @@ private extension SendMoneyHomeCoordinator {
             if case let ResultType.success(result) = $0 {
                 self?.refreshBeneficiaries.onNext(())
                 if let beneficiary = result {
-                   // self?.sendMoney(beneficiary)
+                    self?.sendMoney(beneficiary)
                 }
             }
         }).disposed(by: disposeBag)
+        
+//        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap())
+//        let viewController = UserProfileViewController(viewModel: viewModel, themeService: container.themeService)
+//                localRoot.pushViewController(viewController, completion: nil)
     }
-     
+    
     func sendMoney(_ beneficiary: SendMoneyBeneficiary) {
         
         coordinate(to: SendMoneyFundsTransferCoordinator(root: localRoot, container: container, beneficiary: beneficiary, sendMoneyType: sendMoneyType)).subscribe(onNext:{ [weak self] in
@@ -146,19 +146,8 @@ private extension SendMoneyHomeCoordinator {
     func searchBeneficiaries(_ allBeneficiaries: [SendMoneyBeneficiary]) {
         let viewModel = SearchSendMoneyBeneficiaryViewModel(allBeneficiaries, repository: container.makeYapItRepository())
         let viewController = SearchSendMoneyBeneficiaryViewController(themeService: container.themeService, viewModel: viewModel)
-        
         localRoot.pushViewController(viewController, animated: true)
-        
-        //        viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
-        //            self?.sendMoney($0)
-        //        }).disposed(by: disposeBag)
-        
-        //        viewModel.outputs.editBeneficiary.subscribe(onNext: { [weak self] in
-        //            self?.editBeneficiary($0)
-        //        }).disposed(by: disposeBag)
-        
         refreshBeneficiaries.bind(to: viewModel.inputs.refreshObserver).disposed(by: disposeBag)
-        
         cancelFromSendMoneyFundTransfer.take(1).subscribe(onNext: {[weak self] _ in
             if self?.sendOnlyOneEvent == 0 {
                 viewModel.inputs.cancelPressFromSenedMoneyFundTransferObserver.onNext(())

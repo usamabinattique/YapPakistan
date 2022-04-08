@@ -21,7 +21,6 @@ class AddTopupPCCVCell: RxUICollectionViewCell {
         view.backgroundColor = .white
         view.layer.cornerRadius = 14
         view.layer.borderWidth = 2
-      //  view.layer.borderColor = UIColor.lightGray.cgColor //UIColor.greyLight.cgColor
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -95,7 +94,7 @@ private extension AddTopupPCCVCell {
         themeService.rx
 //            .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
             .bind({ UIColor($0.primaryDark) }, to: [addButton.titleLable.rx.textColor])
-            .bind({ UIColor($0.primaryLight).withAlphaComponent(0.50).cgColor }, to: [background.layer.rx.borderColor])
+            .bind({ UIColor($0.greyLight).cgColor }, to: [background.layer.rx.borderColor])
             .disposed(by: rx.disposeBag)
     }
     

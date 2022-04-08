@@ -140,7 +140,7 @@ class Y2YFundsTransferViewController: UIViewController {
           paragraphStyle0.alignment = .center
 
           let attributes0: [NSAttributedString.Key : Any] = [
-            .foregroundColor: UIColor(Color(hex: "#272262")),//UIColor.primaryDark,
+            .foregroundColor: UIColor(themeService.attrs.primaryDark),//UIColor(Color(hex: "#272262")),//UIColor.primaryDark,
               .font: UIFont.title3,
               .paragraphStyle: paragraphStyle0
           ]
@@ -150,7 +150,7 @@ class Y2YFundsTransferViewController: UIViewController {
           paragraphStyle2.alignment = .center
 
           let attributes2: [NSAttributedString.Key : Any] = [
-            .foregroundColor: UIColor(Color(hex: "#9391B1")),//UIColor.greyDark,
+            .foregroundColor: UIColor(themeService.attrs.greyDark),//UIColor(Color(hex: "#9391B1")),//UIColor.greyDark,
               .font: UIFont.small,
               .paragraphStyle: paragraphStyle2
           ]

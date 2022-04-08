@@ -37,11 +37,11 @@ fileprivate extension DeliveryStatus {
 
     var action: (title: String, completedSteps: Int) {
         switch self {
-        case .ordering: return ("Set PIN", 0) // ("Complete verification", 0)
-        case .ordered: return ("Set PIN", 1)
-        case .booked: return ("Set PIN", 3)
-        case .shipping: return ("Set PIN", 4)
-        case .shipped: return ("Set PIN", 5)
+        case .ordering: return ("Activate Card", 0) // ("Complete verification", 0)
+        case .ordered: return ("Activate Card", 1)
+        case .booked: return ("Activate Card", 3)
+        case .shipping: return ("Activate Card", 4)
+        case .shipped: return ("Activate Card", 5)
         }
     }
 }

@@ -10,6 +10,8 @@ import Foundation
 import RxSwift
 import YAPComponents
 import YAPCore
+import UIKit
+import RxDataSources
 
 protocol HomeViewModelInputs {
     var resultObserver: AnyObserver<Void> { get }
@@ -32,6 +34,12 @@ protocol HomeViewModelOutputs {
     var logOutButtonTitle: Observable<String> { get }
     var completeVerificationHidden: Observable<Bool> { get }
     var completeVerification: Observable<Bool> { get }
+    var profilePic: Observable<(URL?,UIImage?)> { get }
+    
+    var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
+    var showCreditLimit: Observable<Void> { get }
+    
+    func getCreditLimitViewModel() -> CreditLimitCellViewModel
 }
 
 protocol HomeViewModelType {
@@ -55,6 +63,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let completeVerificationSubject = PublishSubject<Void>()
     private let completeVerificationResultSubject = PublishSubject<Bool>()
     private let viewAppearSubject = PublishSubject<Void>()
+    private let profilePicSubject = ReplaySubject<(URL?,UIImage?)>.create(bufferSize: 1)
+    private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
+    private let showCreditLimitSubject = PublishSubject<Void>()
 
     var inputs: HomeViewModelInputs { return self }
     var outputs: HomeViewModelOutputs { return self }
@@ -81,6 +92,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var logOutButtonTitle: Observable<String> { Observable.of("screen_light_dashboard_button_logout".localized) }
     var completeVerificationHidden: Observable<Bool> { completeVerificationHiddenSubject.asObservable() }
     var completeVerification: Observable<Bool> { completeVerificationResultSubject.asObserver() }
+    var profilePic: Observable<(URL?,UIImage?)> { profilePicSubject.asObservable() }
+    var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
+    var showCreditLimit: Observable<Void> { showCreditLimitSubject.asObservable() }
 
     // MARK: Init
 
@@ -135,27 +149,37 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .map { _ in () }
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
-
+        
         accountProvider.currentAccount.unwrap()
-// <<<<<<< Updated upstream:YAPPakistan/Classes/Modules/Tabbar/Items/Home/HomeViewModel.swift
-            .map{ ($0.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue }
-// =======
-//            .map{ $0.accountStatus == .addressCaptured }
-// >>>>>>> Stashed changes:YAPPakistan/Classes/Modules/LiteDashboard/LiteDashboardViewModel.swift
-            .bind(to: completeVerificationHiddenSubject)
+            .map{ ($0.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue }            .bind(to: completeVerificationHiddenSubject)
             .disposed(by: disposeBag)
 
         completeVerificationSubject.withLatestFrom(accountProvider.currentAccount).unwrap()
-// <<<<<<< Updated upstream:YAPPakistan/Classes/Modules/Tabbar/Items/Home/HomeViewModel.swift
             .map({ ($0.accountStatus?.stepValue ?? 100) < AccountStatus.addressCaptured.stepValue })
-// =======
-//            .map({ $0.accountStatus != .addressCaptured })
-// >>>>>>> Stashed changes:YAPPakistan/Classes/Modules/LiteDashboard/LiteDashboardViewModel.swift
             .bind(to: completeVerificationResultSubject)
             .disposed(by: disposeBag)
 
         viewAppearSubject.subscribe(onNext: {
             accountProvider.refreshAccount()
         }).disposed(by: disposeBag)
+        
+        profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
+        
+       
+        generateCellViewModels()
+    }
+    
+    func generateCellViewModels() {
+        var viewModels: [ReusableTableViewCellViewModelType] = []
+        let limitVM = CreditLimitCellViewModel(12)
+        limitVM.outputs.info.bind(to: showCreditLimitSubject).disposed(by: disposeBag)
+        viewModels.append(limitVM)
+        dataSourceSubject.onNext([SectionModel(model: 0, items: viewModels)])
+    }
+    
+    func getCreditLimitViewModel() -> CreditLimitCellViewModel {
+        let limitVM = CreditLimitCellViewModel(12)
+        limitVM.outputs.info.bind(to: showCreditLimitSubject).disposed(by: disposeBag)
+        return limitVM
     }
 }

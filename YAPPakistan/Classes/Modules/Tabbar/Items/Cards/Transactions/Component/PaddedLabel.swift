@@ -5,7 +5,7 @@
 //  Created by Muhammad Hassan on 13/09/2019.
 //  Copyright © 2019 YAP. All rights reserved.
 //
-
+/*
 import Foundation
 
 class PaddedLabel: UILabel {
@@ -39,3 +39,4 @@ class PaddedLabel: UILabel {
         super.sizeThatFits(intrinsicContentSize)
     }
 }
+*/

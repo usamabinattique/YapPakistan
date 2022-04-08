@@ -31,7 +31,7 @@ class SMFTAvailableBalanceCellViewModel: SMFTAvailableBalanceCellViewModelType, 
     var inputs: SMFTAvailableBalanceCellViewModelInput { return self }
     var outputs: SMFTAvailableBalanceCellViewModelOutput { return self }
     var reusableIdentifier: String { SMFTAvailableBalanceCell.defaultIdentifier }
-    private let balanceSubject = BehaviorSubject<NSAttributedString?>(value: nil)
+    let balanceSubject = BehaviorSubject<NSAttributedString?>(value: nil)
     private let addPaddingSubject: BehaviorSubject<Bool>
     private var accountProvider: AccountProvider!
     
@@ -42,20 +42,16 @@ class SMFTAvailableBalanceCellViewModel: SMFTAvailableBalanceCellViewModelType, 
     var addPadding: Observable<Bool> { addPaddingSubject.asObservable() }
     
     // MARK: - Init
-    init(_ addPaddingToTop: Bool = false) {
+    init(_ customerBalance: CustomerBalanceResponse = CustomerBalanceResponse.mock,_ addPaddingToTop: Bool = false) {
         addPaddingSubject = BehaviorSubject(value: addPaddingToTop)
-//        self.accountProvider.currentAccount.currentBalance
-//            .map{ accountBalance -> NSAttributedString in
-//
-//                let balance = accountBalance.formattedBalance()
-//                let text = "Your available balance is \(balance)"
-//
-//                let attributed = NSMutableAttributedString(string: text)
-//                attributed.addAttributes([.foregroundColor : UIColor.primaryDark], range: NSRange(location: text.count - balance.count, length: balance.count))
-//
-//                return attributed }
-//            .bind(to: balanceSubject)
-//            .disposed(by: disposeBag)
+        
+        let balance = customerBalance.formattedBalance()
+        let text = "Your available balance is \(balance)"
+
+        let attributed = NSMutableAttributedString(string: text)
+        attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
+
+        balanceSubject.onNext(attributed)
     }
 }
 

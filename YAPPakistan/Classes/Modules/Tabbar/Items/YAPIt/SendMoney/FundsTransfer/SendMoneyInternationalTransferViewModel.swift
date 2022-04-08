@@ -56,7 +56,7 @@ class SendMoneyInternationalTransferViewModel: SendMoneyFundsTransferViewModel {
             viewModels.append(charges)
         }
         
-        viewModels.append(SMFTAvailableBalanceCellViewModel(beneficiary.currency ?? "AED" == "AED"))
+        viewModels.append(SMFTAvailableBalanceCellViewModel(CustomerBalanceResponse.mock,beneficiary.currency ?? "AED" == "AED"))
 
         let reason = SMFTReasonCellViewModel()
         viewModels.append(reason)

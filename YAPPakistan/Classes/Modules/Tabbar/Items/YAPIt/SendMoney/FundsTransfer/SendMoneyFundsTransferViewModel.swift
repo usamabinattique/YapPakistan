@@ -32,7 +32,7 @@ protocol SendMoneyFundsTransferViewModelOutput {
     var title: Observable<String?> { get }
     var showActivity: Observable<Bool> { get }
     var otp: Observable<(beneficiary: SendMoneyBeneficiary, amount: Double)> { get }
-    var result: Observable<SendMoneyTransactionResult> { get }
+    var result: Observable<SendMoneyBeneficiary> { get }
     var selectReason: Observable<[TransferReason]> { get }
     var coolingTransactionReminderAlert: Observable<String?>{ get }
 }
@@ -53,10 +53,10 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private let otpSubject = PublishSubject<(beneficiary: SendMoneyBeneficiary, amount: Double)>()
     private let otpVerifiedSubject = PublishSubject<Void>()
-    private let resultSubject = PublishSubject<SendMoneyTransactionResult>()
+    private let resultSubject = PublishSubject<SendMoneyBeneficiary>()
     private let coolingTransactionReminderAlertSubject = PublishSubject<String?>()
 
-    let doneSubject = PublishSubject<Void>()
+    private let doneSubject = PublishSubject<Void>()
     let doneEnabledSubject = BehaviorSubject<Bool>(value: false)
     private let showErrorSubject = PublishSubject<String>()
     let amountErrorSubject = PublishSubject<String?>()
@@ -96,7 +96,7 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
     var title: Observable<String?> { return titleSubject.asObservable() }
     var showActivity: Observable<Bool> { return showActivitySubject.asObservable() }
     var otp: Observable<(beneficiary: SendMoneyBeneficiary, amount: Double)> { return otpSubject.asObservable() }
-    var result: Observable<SendMoneyTransactionResult> { return resultSubject.asObservable() }
+    var result: Observable<SendMoneyBeneficiary> { return resultSubject.asObservable() }
     var amountError: Observable<String?> { amountErrorSubject.asObservable() }
     let enteredAmount = PublishSubject<Double>()
     var selectReason: Observable<[TransferReason]> { selectReasonSubject.asObservable() }
@@ -129,15 +129,9 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         reasonSelectedSubject.subscribe(onNext: { [weak self] in
             self?.selectedReason = $0
         }).disposed(by: disposeBag)
-
-        accountProvider.currentAccount.subscribe(onNext: { (balance) in
-           
-//            print(balance.amount)
-        }).disposed(by: disposeBag)
     }
 
     func generateCellViewModels() {
-      //  fatalError("'generateCellViewModels()' not implementd")
         
         titleSubject.onNext("screen_domestic_funds_transfer_display_text_heading".localized)
         var validations = [Observable<Bool>]()
@@ -145,15 +139,48 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         viewModels.append(SMFTBeneficiaryCellViewModel(beneficiary, showsIban: true))
         
         let amount = SMFTAmountInputCellViewModel(beneficiary.currency ?? "PKR")
+        
         amount.outputs.text.map{ Double(convertWithLocale: $0 ?? "0") ?? 0.0 }.bind(to: enteredAmount).disposed(by: disposeBag)
         self.amountErrorSubject.map{ $0 == nil }.bind(to: amount.inputs.isValidAmountObserver).disposed(by: disposeBag)
+        
+        feeRes.map { fee in
+            let amountFormatted = String(format: "%.2f", fee.fixedAmount ?? 0.0)
+            let amount = "PKR \(amountFormatted)"
+            let text = String.init(format: "screen_cash_pickup_funds_display_text_fee".localized, amount)
+            let attributed = NSMutableAttributedString(string: text)
+            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
+            return attributed
+        }.bind(to: amount.inputs.feeObserver).disposed(by: disposeBag)
+
+        
         viewModels.append(amount)
         validations.append(Observable.combineLatest(enteredAmount, amountErrorSubject).map{ $0.0 > 0 && $0.1 == nil })
         
-        let charges = SMFTChargesCellViewModel(chargesType: .cashPickup)
+        let charges = SMFTChargesCellViewModel() //SMFTChargesCellViewModel(chargesType: .cashPickup)
+        Observable.combineLatest(enteredAmount, feeRes).map { (amount,fee) -> NSAttributedString in
+            let amountFormatted = String(format: "%.2f", fee.fixedAmount ?? 0.0)
+            let amount = "PKR \(amountFormatted)"
+            let text = String.init(format: "screen_y2y_funds_transfer_display_text_fee".localized, amount)
+            let attributed = NSMutableAttributedString(string: text)
+            attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: (text as NSString).range(of: amount).location, length: amount.count))
+            return attributed as NSAttributedString }.bind(to: charges.chargesSubject).disposed(by: disposeBag)
+        
         viewModels.append(charges)
         
-        viewModels.append(SMFTAvailableBalanceCellViewModel())
+        //TODO: add customer balance from api here in cellviewmodel
+        let availableBalance = SMFTAvailableBalanceCellViewModel(.mock,true)
+        //TODO: uncomment following comment
+        customerBalanceRes.map{
+            customerBalance -> NSAttributedString in
+            let blnceFormatted = String(format: "%.2f", customerBalance.currentBalance)
+            let balance = "PKR \(blnceFormatted)"
+            let text = String.init(format: "screen_y2y_funds_transfer_display_text_balance".localized, balance)
+            let attributed = NSMutableAttributedString(string: text)
+            attributed.addAttributes([.foregroundColor: UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
+            return attributed as NSAttributedString
+            
+        }.bind(to: availableBalance.balanceSubject).disposed(by: disposeBag)
+        viewModels.append(availableBalance)
         
         let reason = SMFTReasonCellViewModel()
         viewModels.append(reason)
@@ -162,6 +189,7 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         
         validations.append(reasonSelectedSubject.map { _ in true })
         
+        //TODO: uncomment following line
         Observable.combineLatest(validations)
             .map { !$0.contains(false) }
             .bind(to: doneEnabledSubject)
@@ -178,19 +206,14 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
             .bind(to: note.inputs.errorObserver)
             .disposed(by: disposeBag)
         
-      
-     /*   Observable.combineLatest(tranferFee, enteredAmount.startWith(0), reasonSelectedSubject.startWith(.mock))
-            .map { [weak self] fee, amount, reason -> FeeCharges in
-                
-                guard self?.beneficiary.type ?? .domestic == .uaefts else { return fee.getFeeCharges(for: amount) }
-                guard reason.isFeeChargeable else { return (0, 0) }
-                guard reason.isCBWSIApplicable && (amount <= self?.transactionThreshold.cbwsiLimit ?? 0) && (self?.beneficiary.cbwsiCompliant ?? false) else { return fee.getFeeCharges(for: amount) }
-                return (0, 0) }
-            .map { [unowned self] in
-                self.currentCharges = $0
-                return CurrencyFormatter.formatAmountInLocalCurrency($0.fee + $0.vat) }
-            .bind(to: charges.inputs.feeObserver)
-            .disposed(by: disposeBag) */
+        let combineObj = Observable.combineLatest(enteredAmount,feeRes,customerBalanceRes,reason.outputs.selectedReason)
+        doneSubject.withLatestFrom(combineObj).subscribe(onNext: { [weak self] _arg0 in
+            guard let `self` = self else { return }
+            let (userEnteredAmount,fee,balance,selectedReason) = _arg0
+            let transferRequestInput = SendMoneyBankTransferInput(beneficiaryId: "\(self.beneficiary.id ?? 0)" ,amount: "\(userEnteredAmount)", purposeCode: selectedReason.code, purposeReason: selectedReason.transferReason, remarks: self.currentNote, feeAmount: "\(fee.fixedAmount ?? 0)")
+            self.beneficiary.bankTransferReq = transferRequestInput
+            self.resultSubject.onNext(self.beneficiary)
+        }).disposed(by: disposeBag)
     }
     
     internal func loadCells() {
@@ -222,7 +245,6 @@ private extension SendMoneyFundsTransferViewModel {
     
     func fetchRequiredData() {
         showActivitySubject.onNext(true)
-        
         Observable.zip(fetchTransactionLimit(), fetchTransactionReasons(), fetchTransactionFee(), fetchThresholdLimits(), fetchCustomerAccountBalance()).map { _ in false }.bind(to: showActivitySubject).disposed(by: disposeBag)
     }
     
@@ -236,7 +258,7 @@ private extension SendMoneyFundsTransferViewModel {
             self.transactionRange = min...max
         }).disposed(by: disposeBag)
 
-        return transactionLimitRequest.map{ _ in }//in self.fetchTransactionLimitForCountry() }
+        return transactionLimitRequest.map{ _ in }
     }
 
     func fetchTransactionFee() -> Observable<Void> {
@@ -245,7 +267,6 @@ private extension SendMoneyFundsTransferViewModel {
 
         feeRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
-        //feeRequest.elements().map{ $0 == nil ? TransferFee.mock : $0! }.bind(to: tranferFee).disposed(by: disposeBag)
         feeRequest.elements().bind(to: feeRes).disposed(by: disposeBag)
         feeRequest.elements().subscribe(onNext: { [unowned self]  in
             self.transactionFee = $0
@@ -270,6 +291,10 @@ private extension SendMoneyFundsTransferViewModel {
         request.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
         request.elements().bind(to: thresholdRes).disposed(by: disposeBag)
+        
+        request.elements().subscribe(onNext: { _ in
+            print("limits")
+        }).disposed(by: disposeBag)
         return request.map { _ in }
     }
     
@@ -280,25 +305,8 @@ private extension SendMoneyFundsTransferViewModel {
         reasonsRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
         reasonsRequest.elements()
-            //.map { $0.filter { $0.code != nil } }
             .do(onNext: { [unowned self] in self.tranferReasons = $0 })
             .map{ reasons in
-              /*  var reasonTypes = [TransferReasonType]()
-
-                var reasonsWithoutCategory = reasons.filter{ $0.category == nil }
-                let reasonsWithCategory = reasons.filter{ $0.category != nil }
-
-                let groups = Dictionary(grouping: reasonsWithCategory, by: { $0.category })
-
-                reasonsWithoutCategory.append(contentsOf: groups.filter{ $0.1.count == 1 && $0.1.first?.category == $0.1.first?.title }.flatMap{ $0.1 })
-
-                groups.filter{ $0.1.count > 1 || $0.1.first?.category != $0.1.first?.title }
-                    .forEach { (category, reasons) in
-                        reasonTypes.append(TransferReasonCategory(categoryName: category ?? "", reasons: reasons)) }
-
-                reasonTypes.append(contentsOf: reasonsWithoutCategory)
-
-                return reasonTypes.sorted(by: { $0.title < $1.title }) } */
                 return reasons.sorted(by: { $0.transferReason < $1.transferReason }) }
             .bind(to: reasonsSubject)
             .disposed(by: disposeBag)
@@ -311,11 +319,6 @@ private extension SendMoneyFundsTransferViewModel {
 
 private extension SendMoneyFundsTransferViewModel {
     func handleErrors() {
-       
-//        Observable.combineLatest(customerBalanceRes, amountSubject.map{ Double($0 ?? "") ?? 0 })
-//            .map{ [unowned self] in self.getError(forAmount: $0.1, availableBalance: $0.0.currentBalance) }
-//            .bind(to: amountErrorSubject)
-//            .disposed(by: disposeBag)
         
         Observable.combineLatest(customerBalanceRes, enteredAmount, tranferFee, reasonSelectedSubject.startWith(.mock))
             .do(onNext: { [unowned self] in self.currentAmount = $0.1 })

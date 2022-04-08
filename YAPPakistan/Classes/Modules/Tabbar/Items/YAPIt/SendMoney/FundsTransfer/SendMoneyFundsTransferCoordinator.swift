@@ -43,11 +43,11 @@ class SendMoneyFundsTransferCoordinator: Coordinator<ResultType<Void>> {
         
         self.root.present(self.localRoot, animated: true, completion: nil)
         
-//        viewController.viewModel.outputs.back.subscribe(onNext: { [weak self] in
-//            self?.localRoot.dismiss(animated: true, completion: nil)
-//            self?.result.onNext(.cancel)
-//            self?.result.onCompleted()
-//        }).disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.back.subscribe(onNext: { [weak self] in
+            self?.localRoot.dismiss(animated: true, completion: nil)
+            self?.result.onNext(.cancel)
+            self?.result.onCompleted()
+        }).disposed(by: rx.disposeBag)
 //
 //        viewController.viewModel.outputs.result.subscribe(onNext: { [weak self] status in
 //            self?.localRoot.dismiss(animated: true, completion: nil)
@@ -55,7 +55,52 @@ class SendMoneyFundsTransferCoordinator: Coordinator<ResultType<Void>> {
 //            self?.result.onCompleted()
 //        }).disposed(by: rx.disposeBag)
         
+        viewController.viewModel.outputs.selectReason.subscribe(onNext:{ [weak self] in
+            self?.selectReason($0, viewController.viewModel.inputs.reasonSelectedObserver)
+        }).disposed(by: rx.disposeBag)
+        
+        
+        viewController.viewModel.outputs.result.subscribe(onNext: { [weak self] theBene in
+            self?.confirmation(theBene)
+        }).disposed(by: rx.disposeBag)
+
+        
         return result
+    }
+    
+    func selectReason(_ reasons: [TransferReason], _ selectedReasonObserver: AnyObserver<TransferReason>) {
+        let viewModel = SMFTPOPSelectionViewModel(reasons)
+        let viewController = SMFTPOPSelectionViewController(viewModel, themeService: container.themeService)
+        viewController.show(in: localRoot)
+        
+        viewModel.outputs.popSelected
+            .subscribe(onNext: { selectedReasonObserver.onNext($0) })
+            .disposed(by: rx.disposeBag)
+    }
+    
+    func confirmation(_ result: SendMoneyBeneficiary) {
+        let viewModel = SendMoneyConfirmFundsTransferViewModel(beneficiary: result, repository: container.makeY2YRepository())
+        let viewController = SendMoneyConfirmFundsTransferViewController(themeService: container.themeService, viewModel: viewModel)
+        localRoot.pushViewController(viewController, animated: true)
+        
+        viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
+            self?.localRoot.popViewController(animated: true, nil)
+        }).disposed(by: rx.disposeBag)
+
+        viewModel.outputs.result.subscribe(onNext: { [weak self] in
+            self?.success($0.0,$0.1)
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    func success(_ beneficiary: SendMoneyBeneficiary,_ result: BankTransferResponse) {
+        let viewModel = SendMoneyFundsTransferViaBankSuccessViewModel(beneficiary,result)
+        let viewController = SendMoneyFundsTransferViaBankSuccessViewController(theme: container.themeService, viewModel: viewModel)
+        localRoot.pushViewController(viewController, animated: true)
+        
+        viewModel.outputs.confirm.subscribe(onNext: { [weak self] in
+            self?.result.onNext(.success(()))
+            self?.result.onCompleted()
+        }).disposed(by: rx.disposeBag)
     }
 }
 

@@ -25,6 +25,8 @@
 "common_button_settings" = "Settings";
 "common_button_completed" = "Completed";
 "common_button_cancel" = "Cancel";
+"common_button_view" = "View";
+"common_button_change" = "Change";
 "common_button_cancel_lowercase" = "cancel";
 "common_button_install" = "Install";
 "common_button_yes" = "Yes";
@@ -310,6 +312,49 @@
 "screen_kyc_review_details_expiry_date" = "Expiry date";
 "screen_kyc_review_details_residential_address" = "Residential Address";
 
+// MARK: More Bank Details Screen
+
+"screen_more_bank_details_display_text_name" = "Name";
+"screen_more_bank_details_display_text_swift" = "SWIFT/BIC";
+"screen_more_bank_details_display_text_phonenot" = "Phone no.";
+"screen_more_bank_details_display_text_iban" = "IBAN";
+"screen_more_bank_details_display_text_account" = "Account";
+"screen_more_bank_details_display_text_bank" = "Bank";
+"screen_more_bank_details_display_text_address" = "Address";
+"screen_more_bank_details_button_share" = "Share";
+"screen_more_bank_details_display_text_title" = "Account Details";
+"screen_more_bank_details_display_text_for_top_up_title" = "My YAP account details";
+"screen_more_bank_details_display_text_copy" = "Copy";
+
+// MARK: More Home Screen
+
+"screen_more_home_display_text_your_bank_details" = "Account details";
+"screen_more_home_display_text_bank_your_way" = "Bank your way and become a YAP pro";
+"screen_more_home_display_text_yap_for_you" = "YAP for you";
+"screen_more_home_display_text_tile_notification" = "Notifications";
+"screen_more_home_display_text_tile_locate_atm" = "Locate ATM and CDM";
+"screen_more_home_display_text_atm_cdm" = "ATM and CDM";
+"screen_more_home_display_text_tile_invite_friend" = "Invite a friend";
+"screen_more_home_display_text_tile_help" = "Help and support";
+"screen_more_home_display_text_tile_subscriptions" = "Subscriptions";
+"screen_more_home_display_text_tile_business" = "YAP Business";
+"screen_more_home_display_text_tile_terms" = "Terms & conditions";
+"screen_more_home_display_text_tile_gift" = "Gift";
+"screen_more_home_display_text_open_maps" = "Open in Maps";
+"screen_more_home_display_text_open_google_maps" = "Open in Google Maps";
+"screen_more_home_display_text_get_direction" = "Get direction";
+"screen_more_home_display_text_yap_for_you_title" = "YAP for you";
+"screen_more_home_display_text_yap_for_you_description" = "Bank your way and become a YAP pro";
+
+"screen_invite_friend_display_text_share_url" = "Connect with me on YAP! An innovative digital banking app that gives you total control of your finances. \n\n%@";
+
+// MARK: Personal Details
+"screen_personal_details_display_text_personal_details_title" = "Personal Details";
+"screen_personal_details_display_text_full_name" = "Full Name";
+"screen_personal_details_display_text_phone_number" = "Phone number";
+"screen_personal_details_display_text_email" = "Email";
+"screen_personal_details_display_text_address" = "Address";
+
 
 // MARK: KYC Questions
 
@@ -374,6 +419,15 @@
 "screen_topup_card_selection_display_topup_success_yes" = "Yes, top up now";
 "screen_topup_card_selection_display_topup_success_no" = "No, do it later";
 
+//MARK: - Set Card Pin Screen
+"screen_set_card_pin_display_text_title" = "Create your 4-digit PIN";
+"screen_set_card_pin_button_create_pin" = "Next";
+"screen_set_card_pin_display_text_error_same_digits" = "PIN cannot be of same digits";
+"screen_set_card_pin_display_text_error_sequence" = "Sequential numbers are not allowed";
+"screen_confirm_card_pin_display_text_title" = "Enter it one more time";
+"screen_confirm_card_pin_display_text_terms_and_conditions" = "By creating a PIN you agree to our\nTerms & Conditions";
+"screen_confirm_card_pin_button_create_pin" = "Create PIN";
+
 // MARK: - Top Up Card Details Screen
 "screen_topup_card_details_display_text_title" = "Card details";
 "screen_topup_card_details_display_text_placeholder_card_nickname" = "Card nickname";
@@ -419,6 +473,12 @@
 // MARK: Screend topup card cvv
 "screen_topup_card_cvv_display_text_title" = "Top up confirmation";
 "screen_topup_card_cvv_display_text_cvv" = "Enter the CVV to top up your acccount with";
+
+// MARK: Logout popups
+"screen_profile_action_display_text_logout_popups_logout" = "Log out";
+"screen_profile_action_display_text_logout_popups_cencel" = "Cancel";
+"screen_profile_action_display_text_logout_popups_title" = "Log out";
+"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out";
 
 
 // MARK: Set Pin
@@ -494,6 +554,13 @@
 "screen_add_beneficiary_detail_display_button_block_alert_yes" = "Yes, send now";
 "screen_add_beneficiary_detail_display_button_block_alert_no" = "No, send later";
 
+"screen_international_funds_transfer_display_text_reson" = "Select the reason for transfer";
+"screen_international_funds_transfer_dropdown_text_reason_hint" = "Transferring amount to a friend";
+"screen_bill_payments_details_input_text_add_note_placeholder" = "Type a note here (Optional)";
+"screen_international_funds_transfer_input_text_note_hint" = "Type a note here";
+
+"screen_send_money_otp_display_text_title" = "Confirm transfer";
+
 
 // MARK: - Home Screen
 "screen_home_display_text_nothing_to_report" = "Start using your account to see all your transactions here";
@@ -545,6 +612,40 @@
 
 
 "screen_domestic_funds_transfer_display_text_heading" = "Send money to";
+"screen_send_money_bank_transfer_success_display_text_title" = "Transfer successful!";
 
 // MARK: - CustomView AmounView
 "custom_view_display_text_amount_view" = "PKR";
+"screen_cash_pickup_funds_display_text_fee" = "Fee %@";
+
+//MARK: Dashboard
+// MARK: - CustomView AmounView
+"screen_dashboard_credit_limit_display_text" = "Credit limit: %@";
+
+
+// MARK: - Profile Screen
+"screen_user_profile_display_text_profile" = "Profile";
+"screen_user_profile_display_text_update_profile_photo" = "Update profile photo";
+"screen_user_profile_display_text_open_camera" = "Open camera";
+"screen_user_profile_display_text_choose_photo" = "Choose photo";
+"screen_user_profile_display_text_remove_photo" = "Remove photo";
+"screen_user_profile_display_text_personal_details" = "Personal details";
+"screen_user_profile_display_text_security" = "Security";
+"screen_user_profile_display_text_privacy" = "Privacy";
+"screen_user_profile_display_text_passcode" = "Passcode";
+"screen_user_profile_display_text_app_notifications" = "App notifications";
+"screen_user_profile_display_text_app_advanceSetting" = "Advance settings";
+"screen_user_profile_display_text_app_signinwithfaceID" = "Sign in FACE ID";
+"screen_user_profile_display_text_app_standardNumericFormat" = "Standard numeric format";
+"screen_user_profile_display_text_face_id" = "Sign in with Face ID";
+"screen_user_profile_display_text_touch_id" = "Sign in with Touch ID";
+"screen_user_profile_display_text_about_us" = "About us";
+"screen_user_profile_display_text_terms_conditions" = "Terms and conditions";
+"screen_user_profile_display_text_pricing_plans" = "Fees & pricing plans";
+"screen_user_profile_display_text_instagram" = "Instagram";
+"screen_user_profile_display_text_twitter" = "Twitter";
+"screen_user_profile_button_follow_us" = "Follow us";
+"screen_user_profile_display_text_facebook" = "Facebook";
+"screen_user_profile_display_text_linkedin" = "LinkedIn";
+"screen_user_profile_button_facebook" = "Like us";
+"screen_user_profile_button_logout" = "Log out";

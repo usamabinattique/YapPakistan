@@ -16,10 +16,10 @@ struct FPNewPinConfirmModuleBuilder {
     func viewController() -> FPNewPinConfirmViewController {
         let themeService = container.themeService
 
-        let strings = FPNewPinConfirmViewStrings(heading: "Enter it one more time",
+        let strings = FPNewPinConfirmViewStrings(heading: "screen_confirm_card_pin_display_text_title".localized,
                                         agrement: "",
                                         terms: "",
-                                        next: "Create PIN")
+                                                 next: "screen_confirm_card_pin_button_create_pin".localized)
         let repository = container.makeCardsRepository()
 
         let viewModel = FPNewPinConfirmViewModel(

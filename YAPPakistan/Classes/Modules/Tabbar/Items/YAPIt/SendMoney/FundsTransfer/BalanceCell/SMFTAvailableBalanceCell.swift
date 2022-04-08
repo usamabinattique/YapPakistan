@@ -16,7 +16,6 @@ class SMFTAvailableBalanceCell: RxUITableViewCell {
     // MARK: Views
     
     private lazy var balance = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
-    //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     
     // MARK: Properties
     
@@ -48,6 +47,7 @@ class SMFTAvailableBalanceCell: RxUITableViewCell {
         guard let `viewModel` = viewModel as? SMFTAvailableBalanceCellViewModelType else { return }
         self.viewModel = viewModel
         self.themeService = themeService
+        setupTheme()
         self.bindViews()
     }
 }
@@ -62,10 +62,14 @@ private extension SMFTAvailableBalanceCell {
     func setupConstraints() {
         balance
             .centerHorizontallyInSuperview()
-            .alignEdgesWithSuperview([.left, .bottom], constants: [25, 25])
-        
-        topConstraint = balance.topAnchor.constraint(equalTo: contentView.topAnchor)
-        topConstraint.isActive = true
+            .alignEdgesWithSuperview([.top,.left, .bottom], constants: [25,25, 25])
+//        topConstraint = balance.topAnchor.constraint(equalTo: contentView.topAnchor)
+//        topConstraint.isActive = true
+    }
+                  
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [ balance.rx.textColor])
     }
 }
 
@@ -74,8 +78,8 @@ private extension SMFTAvailableBalanceCell {
 private extension SMFTAvailableBalanceCell {
     func bindViews() {
         viewModel.outputs.balance.bind(to: balance.rx.attributedText).disposed(by: disposeBag)
-        viewModel.outputs.addPadding
-            .subscribe(onNext: { [weak self] in self?.topConstraint.constant = $0 ? 20 : 0 })
-            .disposed(by: disposeBag)
+//        viewModel.outputs.addPadding
+//            .subscribe(onNext: { [weak self] in self?.topConstraint.constant = $0 ? 20 : 0 })
+//            .disposed(by: disposeBag)
     }
 }
