@@ -170,7 +170,7 @@ class HomeViewController: UIViewController {
         let buttons = DashboardWidgets(theme: self.themeService)
         var res = DashboardWidgetsResponse.mock
         res.iconPlaceholder = UIImage.init(named: "icon_add_card", in: .yapPakistan)
-        buttons.viewModel.inputs.widgetsDataObserver.onNext([res,res,res,res,res,res,res])
+        buttons.viewModel.inputs.widgetsDataObserver.onNext([res,res,res])
         buttons.translatesAutoresizingMaskIntoConstraints = false
         buttons.backgroundColor = .white
         return buttons
