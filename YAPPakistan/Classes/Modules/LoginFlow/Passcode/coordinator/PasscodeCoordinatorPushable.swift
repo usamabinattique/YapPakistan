@@ -38,6 +38,7 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
         root.pushViewController(viewController, animated: true)
 
         viewController.viewModel.outputs.back.subscribe(onNext: { [weak self] in
+            self?.container?.configuration.eventCallback?(.cancel)
             self?.root.popViewController(animated: true)
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
@@ -112,7 +113,8 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
     func dashboard() {
         let window = root.view.window ?? UIWindow()
         let coordinator = TabbarCoodinator(container: sessionContainer, window: window)
-
+        container.configuration.eventCallback?(.loggedIn)
+        
         coordinate(to: coordinator).subscribe(onNext: { result in
             self.result.onNext(.logout)
             self.result.onCompleted()

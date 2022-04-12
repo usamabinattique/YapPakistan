@@ -69,7 +69,7 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
         viewModel.back.subscribe(onNext: { [weak self] in
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
-
+            
             self?.root.popViewController(animated: true)
         }).disposed(by: rx.disposeBag)
 
@@ -114,7 +114,8 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
     func dashboard() {
         let window = root.view.window ?? UIWindow()
         let coordinator = TabbarCoodinator(container: sessionContainer, window: window)
-
+        container.configuration.eventCallback?(.loggedIn)
+        
         coordinate(to: coordinator).subscribe(onNext: { _ in
             self.result.onNext(.logout)
             self.result.onCompleted()

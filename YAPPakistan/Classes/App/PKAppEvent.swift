@@ -13,12 +13,15 @@ import YAPCore
 public enum PKAppEvent: AppEventType {
     case logout
     case loggedIn
+    case cancel
     
     public func action() -> Void {
         switch(self) {
             case .logout:
                 break
             case .loggedIn:
+                break
+            case .cancel:
                 break
         }
     }

@@ -48,6 +48,7 @@ class PasscodeCoordinatorReplaceable: Coordinator<PasscodeVerificationResult>, P
         self.window.rootViewController = self.root
 
         viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] in
+            container?.configuration.eventCallback?(.cancel)
             self.result.onNext(.cancel)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
