@@ -143,6 +143,8 @@ class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, Comm
                     } else if self.webType == .topUpAddCardWeb {
                         guard let paymentCard = paymentCardObj else { return }
                         self.showCardAddedAlertSubject.onNext(paymentCard)
+                    } else if self.webType == .onBoardingAddCardWeb {
+                        self.confirmSubject.onNext(model)
                     }
                 })
                 .disposed(by: disposeBag)

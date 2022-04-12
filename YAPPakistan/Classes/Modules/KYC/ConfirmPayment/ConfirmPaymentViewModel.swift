@@ -146,6 +146,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         enteredCVVSubject.withUnretained(self).subscribe(onNext: { `self` ,cvv in
             print("user entered cvv is \(cvv)")
             //TODO: [UMAIR] - CVV Comes here
+            YAPProgressHud.showProgressHud()
             self.fetchTopupApi(securityCode: cvv)
         }).disposed(by: disposeBag)
 
@@ -201,7 +202,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         
         let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
             self.checkoutSessionObject = paymentGatewayCheckoutSession
-            return self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(paymentGatewayCheckoutSession.beneficiaryId) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
+            return self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(beneficiaryID) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
         }.share()
         
         fetchCheckoutSessionRequest.errors().subscribe(onNext: { [weak self] error in
@@ -237,6 +238,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
                 if result == "Y" {
                     print("3DS Successful -> go ahead")
                     //call topup api
+                    YAPProgressHud.hideProgressHud()
                     self.fetchCVV()
                 } else {
                     YAPProgressHud.hideProgressHud()
@@ -262,17 +264,16 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     
     func fetchTopupApi(securityCode: String?){
         
-        var sessionId = ""
-        
         guard let checkoutSessionObj = self.checkoutSessionObject else { return }
-        
-        if checkoutSessionObj.beneficiaryId.count > 0 {
-            sessionId = checkoutSessionObj.beneficiaryId
+        var sessionId = ""
+        var beneficiaryID = ""
+        if let benefId = self.paymentGatewayM.beneficiary?.id {
+            beneficiaryID = String(benefId)
         } else {
-            sessionId = checkoutSessionObj.session?.id ?? ""
+            sessionId = self.paymentGatewayM.cardDetailObject?.sessionID ?? ""
         }
         
-        let topupRequest = transactionRepository.paymentGatewayFirstCreditTopup(threeDSecureId: checkoutSessionObj.threeDSecureId, orderId: checkoutSessionObj.order?.id ?? "", currency: checkoutSessionObj.order?.currency ?? "", amount: checkoutSessionObj.order?.amount ?? "", sessionId: sessionId, securityCode: checkoutSessionObj.securityCode, beneficiaryId: "")
+        let topupRequest = transactionRepository.paymentGatewayFirstCreditTopup(threeDSecureId: checkoutSessionObj.threeDSecureId, orderId: checkoutSessionObj.order?.id ?? "", currency: checkoutSessionObj.order?.currency ?? "", amount: checkoutSessionObj.order?.amount ?? "", sessionId: sessionId, securityCode: checkoutSessionObj.securityCode, beneficiaryId: beneficiaryID)
         
         topupRequest.elements().subscribe(onNext: { [weak self] responseObj in
             self?.fetchOrderCardHolderApi()
@@ -316,7 +317,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     }
     
     func fetchCVV(){
-        if self.paymentGatewayM.beneficiaryId != nil && paymentGatewayM.cardSchemeObject?.fee != nil {
+        if self.paymentGatewayM.beneficiary?.id != nil && paymentGatewayM.cardSchemeObject?.fee != nil {
             showCVVSubject.onNext(())
         } else {
             self.fetchTopupApi(securityCode: nil)

@@ -11,7 +11,7 @@ class CommonWebViewM: Codable {
     
     let nickName: String?
     let cardNumber: String?
-    let sessionID: String?
+    var sessionID: String?
     let color: String?
     let saveCardDetails: Bool?
     let errors: String?
