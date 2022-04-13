@@ -11,6 +11,7 @@ import RxSwift
 
 protocol OTPRepositoryType {
     func generateOTP(action: OTPAction, mobileNumber: String) -> Observable<Event<String?>>
+    func generateChangeEmailOTP(action: OTPAction, mobileNumber: String) -> Observable<Event<String?>>
     func generateLoginOTP(username: String, passcode: String, deviceId: String) -> Observable<Event<String?>>
     func verifyLoginOTP(username: String, passcode: String, deviceId: String, otp: String) -> Observable<Event<String?>>
     func generateForgotOTP(username: String) -> Observable<Event<String?>>
@@ -29,7 +30,11 @@ class OTPRepository: OTPRepositoryType {
         self.messageService = messageService
         self.customerService = customerService
     }
-
+    
+    func generateChangeEmailOTP(action: OTPAction, mobileNumber: String) -> Observable<Event<String?>> {
+        return messageService.generateChangeEmailOTP(action: action.rawValue, mobilNumber: mobileNumber).materialize()
+    }
+    
     func generateOTP(action: OTPAction, mobileNumber: String) -> Observable<Event<String?>> {
         return messageService.generateOTP(action: action.rawValue, mobileNumber: mobileNumber).materialize()
     }
