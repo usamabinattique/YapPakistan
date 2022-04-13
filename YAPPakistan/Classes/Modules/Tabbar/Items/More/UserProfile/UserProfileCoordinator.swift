@@ -37,12 +37,8 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         
         
         viewController.viewModel.outputs.personalDetailsTap.subscribe(onNext: { [weak self] _ in
-            
             print("Personal Details Button tapped in Coordinator")
-            let viewModel = PersonalDetailsViewModel((self?.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap())!)
-            let viewController = PersonalDetailsViewController(viewModel: viewModel)
-            self?.localRoot.pushViewController(viewController, completion: nil)
-            
+            self?.navigateToPersonalDetails()
         }).disposed(by: disposeBag)
         
         viewController.viewModel.outputs.changePasscodeTap.subscribe(onNext: { [weak self] _ in
@@ -63,6 +59,24 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         
         root.present(localRoot, animated: true, completion: nil)
         return result
+    }
+    
+    fileprivate func navigateToPersonalDetails() {
+        let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()))
+        let viewController = PersonalDetailsViewController(viewModel: viewModel)
+        
+        viewModel.outputs.editEmailTap.subscribe(onNext: { [weak self] in
+            // open edit email
+            guard let self = self else {return}
+            self.navigateToEditEmail()
+        }).disposed(by: disposeBag)
+        
+        self.localRoot.pushViewController(viewController, completion: nil)
+    }
+    
+    fileprivate func navigateToEditEmail() {
+        
+        coordinate(to: ChangeEmailAddressCoordinator(root: self.localRoot, container: self.container))
     }
     
     fileprivate func resultSuccess() {
