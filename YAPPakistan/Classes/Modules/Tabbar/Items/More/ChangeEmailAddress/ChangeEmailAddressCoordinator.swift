@@ -34,23 +34,15 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
         
         
         viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
-            
             guard let self = self else { return }
-            print("Next button pressed")
-            
             self.otp(.changeEmail)
-            
-            
-            
         }).disposed(by: disposeBag)
         
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
-            
             guard let self = self else { return }
-            print("Back Btn Pressed")
             self.localRoot.dismiss(animated: true, completion: nil)
-            
         }).disposed(by: disposeBag)
+        
         
         root.present(localRoot, animated: true, completion: nil)
         return result

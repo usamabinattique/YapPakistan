@@ -474,6 +474,10 @@
 "screen_topup_card_cvv_display_text_title" = "Top up confirmation";
 "screen_topup_card_cvv_display_text_cvv" = "Enter the CVV to top up your acccount with";
 
+//Mark: - Change Phone Number Screen
+"screen_change_phone_number_display_text_heading" = "Change mobile number";
+"screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
+
 //Mark: - Change Email Screen
 "screen_change_email_display_text_heading" = "Change email";
 "screen_change_email_placeholder_email_address" = "Email address";

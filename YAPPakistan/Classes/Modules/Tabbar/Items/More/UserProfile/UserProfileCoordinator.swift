@@ -66,17 +66,25 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         let viewController = PersonalDetailsViewController(viewModel: viewModel)
         
         viewModel.outputs.editEmailTap.subscribe(onNext: { [weak self] in
-            // open edit email
             guard let self = self else {return}
             self.navigateToEditEmail()
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.editPhoneTap.subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            print("Edit Phone Tapped")
+            self.navigateToEditPhone()
         }).disposed(by: disposeBag)
         
         self.localRoot.pushViewController(viewController, completion: nil)
     }
     
     fileprivate func navigateToEditEmail() {
-        
         coordinate(to: ChangeEmailAddressCoordinator(root: self.localRoot, container: self.container))
+    }
+    
+    fileprivate func navigateToEditPhone() {
+        coordinate(to: ChangePhoneNumberCoordinator(root: self.localRoot, container: self.container))
     }
     
     fileprivate func resultSuccess() {
