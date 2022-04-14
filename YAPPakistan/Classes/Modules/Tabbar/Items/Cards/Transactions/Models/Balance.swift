@@ -13,8 +13,8 @@ import Foundation
 public struct Balance {
     public let balance: String
     public let currencyCode: String
-    public let currencyDecimals: String
-    public let accountNumber: String
+    public let currencyDecimals: String?
+    public let accountNumber: String?
 }
 
 extension Balance: Codable {

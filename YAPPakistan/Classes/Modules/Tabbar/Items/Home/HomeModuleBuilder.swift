@@ -12,12 +12,12 @@ struct HomeModuleBuilder {
     func viewController() -> HomeViewController {
 
         let notificationManager = container.parent.makeNotificationManager()
-
+        let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository())
         let viewModel = HomeViewModel(accountProvider: container.accountProvider,
                                                biometricsManager: container.biometricsManager,
                                                notificationManager: notificationManager,
                                                credentialStore: container.parent.credentialsStore,
-                                               repository: container.makeLoginRepository())
+                                      repository: container.makeLoginRepository(),cardsRepository: container.makeCardsRepository(),transactionDataProvider: tProvider)
         let viewController = HomeViewController(themeService: container.parent.themeService,
                                                          viewModel: viewModel)
 

@@ -18,7 +18,7 @@ protocol HomeViewModelInputs {
     var logoutObserver: AnyObserver<Void> { get }
     var biometryChangeObserver: AnyObserver<Bool> { get }
     var completeVerificationObserver: AnyObserver<Void> { get }
-    var viewAppearObserver: AnyObserver<Void> { get }
+    var viewDidAppearObserver: AnyObserver<Void> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -34,12 +34,24 @@ protocol HomeViewModelOutputs {
     var logOutButtonTitle: Observable<String> { get }
     var completeVerificationHidden: Observable<Bool> { get }
     var completeVerification: Observable<Bool> { get }
-    var profilePic: Observable<(URL?,UIImage?)> { get }
+    var profilePic: Observable<(String?,UIImage?)> { get }
     
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var showCreditLimit: Observable<Void> { get }
     
     func getCreditLimitViewModel() -> CreditLimitCellViewModel
+    
+    var shimmering: Observable<Bool> { get }
+    var transactionsViewModelObservable: TransactionsViewModel { get }
+    
+    var debitCard: Observable<PaymentCard?> { get }
+    var debitCardOnboardingStageViewModel: Observable<PaymentCardInitiatoryStageViewModel?> { get }
+    var viewDidAppear: Observable<Void> { get }
+    var setPin: Observable<PaymentCard> { get }
+    var trackCardDelivery: Observable<PaymentCard> { get }
+    var additionalRequirements: Observable<Void> { get }
+    var topUp: Observable<PaymentCard> { get }
+    var balance: Observable<NSAttributedString?> { get }
 }
 
 protocol HomeViewModelType {
@@ -62,10 +74,18 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let completeVerificationHiddenSubject = BehaviorSubject<Bool>(value: true)
     private let completeVerificationSubject = PublishSubject<Void>()
     private let completeVerificationResultSubject = PublishSubject<Bool>()
-    private let viewAppearSubject = PublishSubject<Void>()
-    private let profilePicSubject = ReplaySubject<(URL?,UIImage?)>.create(bufferSize: 1)
+    private let profilePicSubject = ReplaySubject<(String?,UIImage?)>.create(bufferSize: 1)
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private let showCreditLimitSubject = PublishSubject<Void>()
+    private let shimmeringSubject = ReplaySubject<Bool>.create(bufferSize: 1)
+    private let cardsSubject = ReplaySubject<[PaymentCard]>.create(bufferSize: 1)
+    private let debitCardOnboardingStageViewModelSubject = BehaviorSubject<PaymentCardInitiatoryStageViewModel?>(value: nil)
+    private let viewDidAppearSubject = BehaviorSubject<Void>(value: ())
+    private let setPinSubject = PublishSubject<PaymentCard>()
+    private let trackCardDeliverySubject = PublishSubject<PaymentCard>()
+    private let additionalRequirementsSubject = PublishSubject<Void>()
+    private let topUpCardSubject = PublishSubject<PaymentCard>()
+    private let balanceSubject = ReplaySubject<NSAttributedString?>.create(bufferSize: 1)
 
     var inputs: HomeViewModelInputs { return self }
     var outputs: HomeViewModelOutputs { return self }
@@ -76,7 +96,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var logoutObserver: AnyObserver<Void> { logoutSubject.asObserver() }
     var biometryChangeObserver: AnyObserver<Bool> { biometryChangeSuject.asObserver() }
     var completeVerificationObserver: AnyObserver<Void> { completeVerificationSubject.asObserver() }
-    var viewAppearObserver: AnyObserver<Void> { viewAppearSubject.asObserver() }
+    var viewDidAppearObserver: AnyObserver<Void> { return viewDidAppearSubject.asObserver() }
 
     // MARK: Outputs
 
@@ -92,9 +112,20 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var logOutButtonTitle: Observable<String> { Observable.of("screen_light_dashboard_button_logout".localized) }
     var completeVerificationHidden: Observable<Bool> { completeVerificationHiddenSubject.asObservable() }
     var completeVerification: Observable<Bool> { completeVerificationResultSubject.asObserver() }
-    var profilePic: Observable<(URL?,UIImage?)> { profilePicSubject.asObservable() }
+    var profilePic: Observable<(String?,UIImage?)> { profilePicSubject.asObservable() }
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
     var showCreditLimit: Observable<Void> { showCreditLimitSubject.asObservable() }
+    var shimmering: Observable<Bool> { shimmeringSubject.asObservable() }
+    var transactionsViewModelObservable: TransactionsViewModel { transactionsViewModel }
+    
+    var debitCard: Observable<PaymentCard?> { cardsSubject.map { $0.filter { $0.cardType == .debit }.first } }
+    var debitCardOnboardingStageViewModel: Observable<PaymentCardInitiatoryStageViewModel?> { debitCardOnboardingStageViewModelSubject.skip(1) }
+    var viewDidAppear: Observable<Void> { return viewDidAppearSubject.share(replay: 1, scope: .whileConnected) }
+    var setPin: Observable<PaymentCard> { return setPinSubject.asObservable() }
+    var trackCardDelivery: Observable<PaymentCard> { trackCardDeliverySubject }
+    var additionalRequirements: Observable<Void> { additionalRequirementsSubject.asObservable() }
+    var topUp: Observable<PaymentCard> { topUpCardSubject }
+    var balance: Observable<NSAttributedString?> { balanceSubject.asObservable() }
 
     // MARK: Init
 
@@ -103,52 +134,35 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var notificationManager: NotificationManagerType!
     var credentialStore: CredentialsStoreType!
     var repository: LoginRepository!
+    var cardsRepository: CardsRepositoryType
+    private var transactionsViewModel: TransactionsViewModel
+    private var transactionDataProvider: PaymentCardTransactionProvider
+    private var dashboardStatusActionDisposeBag: DisposeBag!
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManagerType,
          notificationManager: NotificationManagerType,
          credentialStore: CredentialsStoreType,
-         repository: LoginRepository) {
+         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: PaymentCardTransactionProvider) {
 
         self.accountProvider = accountProvider
         self.biometricsManager = biometricsManager
         self.notificationManager = notificationManager
         self.credentialStore = credentialStore
         self.repository = repository
-
+        self.cardsRepository = cardsRepository
         self.biometrySuject = BehaviorSubject(value: biometricsManager.isBiometryEnabled(for: ""))
         self.biometrySupportedSuject = BehaviorSubject(value: false)
+        self.transactionDataProvider = transactionDataProvider
+        self.transactionsViewModel = TransactionsViewModel(transactionDataProvider: transactionDataProvider)
+        
+        
+        shimmeringSubject.bind(to: transactionsViewModel.showShimmeringObserver).disposed(by: disposeBag)
         //
         // FIXME: Enable this after implementing biometrics.
         //      self.biometrySupportedSuject = BehaviorSubject(value: biometricsManager.isBiometrySupported)
         //
         self.biometryTitleSuject = BehaviorSubject(value: biometricsManager.deviceBiometryType.title)
-
-        let logoutRequest = logoutSubject
-            .do(onNext: { [unowned self] _ in
-                self.biometricsManager.deleteBiometryForUser(phone: credentialStore.getUsername() ?? "")
-                YAPProgressHud.showProgressHud()
-            })
-            .flatMap { _ -> Observable<Event<[String: String]?>> in
-                return repository.logout(deviceUUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
-            }
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-            .share()
-
-        logoutRequest.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
-
-        logoutRequest.elements()
-            .do(onNext: { _ in
-                let user = credentialStore.getUsername() ?? ""
-                self.biometricsManager.deleteBiometryForUser(phone: user)
-                self.notificationManager.deleteNotificationPermission()
-                self.credentialStore.setRemembersId(false)
-                self.credentialStore.clearUsername()
-
-            })
-            .map { _ in () }
-            .bind(to: resultSubject)
-            .disposed(by: disposeBag)
         
         accountProvider.currentAccount.unwrap()
             .map{ ($0.accountStatus?.stepValue ?? 0) >= AccountStatus.addressCaptured.stepValue }            .bind(to: completeVerificationHiddenSubject)
@@ -159,14 +173,16 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .bind(to: completeVerificationResultSubject)
             .disposed(by: disposeBag)
 
-        viewAppearSubject.subscribe(onNext: {
+        viewDidAppearSubject.subscribe(onNext: {
             accountProvider.refreshAccount()
         }).disposed(by: disposeBag)
         
-        profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
+        profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL?.absoluteString, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
         
-       
         generateCellViewModels()
+        getCardBalance()
+        getCards()
+        bindPaymentCardOnboardingStagesViewModel()
     }
     
     func generateCellViewModels() {
@@ -181,5 +197,140 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         let limitVM = CreditLimitCellViewModel(12)
         limitVM.outputs.info.bind(to: showCreditLimitSubject).disposed(by: disposeBag)
         return limitVM
+    }
+}
+
+extension HomeViewModel {
+    func getCardBalance() {
+        shimmeringSubject.onNext(true)
+       /* let cardsRequest = cardsRepository.getCardBalance()
+            .do(onNext: { [weak self] _ in self?.shimmeringSubject.onNext(false) })
+            .share()
+        
+        cardsRequest.elements().subscribe(onNext: { [weak self] balance in
+          //  self?.shimmeringSubject.onNext(false)
+            let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
+            let attributedString = NSMutableAttributedString(string: text)
+            guard let decimal = text.components(separatedBy: ".").last else { return }
+            attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
+            self?.balanceSubject.onNext(attributedString)
+        }).disposed(by: disposeBag)
+        
+        cardsRequest.errors().map{ $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag) */
+        var balance: Balance {
+            return Balance(balance: "0.0", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
+        }
+        let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
+        let attributedString = NSMutableAttributedString(string: text)
+        guard let decimal = text.components(separatedBy: ".").last else { return }
+        attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
+        self.balanceSubject.onNext(attributedString)
+    }
+    
+    func getCards() {
+        shimmeringSubject.onNext(true)
+        let cardsRequest = cardsRepository.getCards().share()
+        
+        cardsRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
+//            self?.dataSourceSubject.onNext([SectionModel(model: 0, items: [])])
+//            self?.showErrorSubject.onNext($0)
+            print("error \($0)")
+            self?.shimmeringSubject.onNext(false)
+        }).disposed(by: disposeBag)
+        
+        cardsRequest.elements().subscribe(onNext:{ [weak self] list in
+            print("success \(list)")
+            var card = PaymentCard.mock
+//            self?.bankResultsSubject.onNext(bankList)
+//            let cellVMs = bankList.map { bank -> AddBeneficiaryCellViewModel in
+//                return AddBeneficiaryCellViewModel(bank)
+//            }
+//            self?.dataSourceSubject.onNext([SectionModel(model: 0, items: cellVMs)])
+            self?.cardsSubject.onNext(list ?? [])
+          //  self?.shimmeringSubject.onNext(false)
+        }).disposed(by: disposeBag)
+    }
+    
+    func bindPaymentCardOnboardingStagesViewModel() {
+        let request = viewDidAppear//.skip(1).startWith(())
+            .flatMap { [unowned self] _ in self.transactionDataProvider.fetchTransactions()
+            }.share()
+        
+        request.elements().subscribe(onNext: { [weak self] pageAbleRes in
+            print("transactions response \(pageAbleRes)")
+            self?.shimmeringSubject.onNext(false)
+        }).disposed(by: disposeBag)
+        
+        request.errors().subscribe(onNext: { [weak self] erro in
+            print("transactions error \(erro)")
+            self?.shimmeringSubject.onNext(false)
+        }).disposed(by: disposeBag)
+        
+        let params = Observable.combineLatest(request.elements().map { $0.content },
+                                              debitCard.unwrap(),
+                                              accountProvider.currentAccount.unwrap())
+            .share(replay: 1, scope: .whileConnected)
+        
+        //TODO: remove following
+        
+        let requestError = Observable.combineLatest(request.errors(),
+                                                    debitCard.unwrap(),
+                                                    accountProvider.currentAccount.unwrap()).share()
+        requestError
+            .map { PaymentCardInitiatoryStageViewModel(paymentCard: $0.1, account: $0.2) }
+            .do(onNext: { [weak self] in self?.dashobarStatusActions(viewModel: $0) })
+            .bind(to: debitCardOnboardingStageViewModelSubject)
+            .disposed(by: disposeBag)
+        
+        // Transactions are not zero, hide debit card timeline
+//                requestError
+//            .filter { ($0.0?.count ?? 0) > 0 }
+//            .subscribe(onNext: { [weak self] _ in
+//                self?.debitCardOnboardingStageViewModelSubject.onCompleted()
+//            }).disposed(by: disposeBag)
+        
+        
+        //TODO: uncomment following
+     /*   // Transactions are zero, show debit card timeline
+        params
+            .filter { ($0.0?.count ?? 0) == 0 }
+            .map { PaymentCardInitiatoryStageViewModel(paymentCard: $0.1, account: $0.2) }
+            .do(onNext: { [weak self] in self?.dashobarStatusActions(viewModel: $0) })
+            .bind(to: debitCardOnboardingStageViewModelSubject)
+            .disposed(by: disposeBag)
+        
+        // Transactions are not zero, hide debit card timeline
+        params
+            .filter { ($0.0?.count ?? 0) > 0 }
+            .subscribe(onNext: { [weak self] _ in
+                self?.debitCardOnboardingStageViewModelSubject.onCompleted()
+            }).disposed(by: disposeBag) */
+    }
+    
+    func dashobarStatusActions(viewModel: PaymentCardInitiatoryStageViewModel) {
+        dashboardStatusActionDisposeBag = DisposeBag()
+        viewModel.actionTap
+            .filter { $0 == .setPIN }
+            .withLatestFrom(debitCard.unwrap())
+            .bind(to: setPinSubject)
+            .disposed(by: dashboardStatusActionDisposeBag)
+        
+        viewModel.actionTap
+            .filter { $0 == .shipping }
+            .withLatestFrom(debitCard.unwrap())
+            .bind(to: trackCardDeliverySubject)
+            .disposed(by: dashboardStatusActionDisposeBag)
+        
+        viewModel.actionTap
+            .filter { $0 == .additionalRequirement }
+            .map{ _ in }
+            .bind(to: additionalRequirementsSubject)
+            .disposed(by: dashboardStatusActionDisposeBag)
+        
+        viewModel.actionTap
+            .filter { $0 == .topUp }
+            .withLatestFrom(debitCard.unwrap())
+            .bind(to: topUpCardSubject)
+            .disposed(by: dashboardStatusActionDisposeBag)
     }
 }

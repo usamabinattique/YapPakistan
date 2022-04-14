@@ -78,6 +78,10 @@ public struct Account: Codable {
     public let qrCodeId: String?
     public let documentSubmissionDate: String?
 
+    public var partnerBankApprovalDate: Date? {
+        _partnerBankApprovalDate.map { DateFormatter.transactionDateFormatter.date(from: $0) } ?? nil
+    }
+    
     public var isWaiting: Bool {
         return _isWaiting ?? false
     }
@@ -282,6 +286,8 @@ public enum AccountStatus: String, Hashable, Codable {
     case addressCaptured = "ADDRESS_CAPTURED"
     case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
     case verificationSucceed = "MEETING_SUCCESS"    // FIXME is this in in use ?
+    case employmentInfoCompleted = "EMP_INFO_COMPLETED"
+    case fatcaGenerated = "FATCA_GENERATED"
 
     var stepValue: Int {
         switch self {
@@ -295,6 +301,8 @@ public enum AccountStatus: String, Hashable, Codable {
         case .addressCaptured: return 7
         case .verificationSucceed: return 8
         case .cardActivated: return 9
+        case .employmentInfoCompleted: return 10
+        case .fatcaGenerated: return 11
         }
     }
 

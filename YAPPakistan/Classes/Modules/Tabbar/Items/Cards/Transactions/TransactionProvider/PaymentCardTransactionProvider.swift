@@ -11,7 +11,7 @@ import Foundation
 /// import YAPKit
 import RxSwift
 
-protocol PaymentCardTransactionProvider: class {
+protocol PaymentCardTransactionProvider: AnyObject {
     var transactions: Observable<[TransactionResponse]> { get }
     func fetchTransactions() -> Observable<Event<PagableResponse<TransactionResponse>>>
     func resetPage(_ page: Int)

@@ -40,6 +40,7 @@ public protocol Theme {
     var icon: Color               { get }
     var iconHolder: Color         { get }
     var backgroundColor: Color    { get }
+    var statusBG: Color           { get }
 }
 
 struct LightTheme: Theme {
@@ -66,7 +67,7 @@ struct LightTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
-
+    var statusBG: Color             { Color(hex: "#FEEDDF") }
 }
 
 struct DarkTheme: Theme {
@@ -94,6 +95,8 @@ struct DarkTheme: Theme {
     var icon: Color                 { Color(hex: "#5E35B1") }
     var iconHolder: Color           { Color(hex: "#FFFFFF") }
     var backgroundColor: Color      { Color(hex: "#FFFFFF") }
+    var statusBG: Color             { Color(hex: "#FEEDDF") }
+    
 }
 
 public enum AppTheme: ThemeProvider {

@@ -42,6 +42,7 @@ protocol CardsServiceType {
                                       longitude: String) -> Observable<T>
     func getCardsScheme<T: Codable>() -> Observable<T>
     func getCardBenefits<T: Codable>(scheme type: SchemeType) -> Observable<T>
+    func getCardBalance<T: Codable>() -> Observable<T>
 }
 
 public class CardsService: BaseService, CardsServiceType {
@@ -250,6 +251,12 @@ public class CardsService: BaseService, CardsServiceType {
     
     public func getCardBenefits<T: Codable>(scheme type: SchemeType) -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.cardsURL, "/api/scheme-benefits/active/\(type.rawValue)", headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getCardBalance<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.cardsURL, "/api/cards/debit/balance", headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
