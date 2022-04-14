@@ -84,6 +84,8 @@ fileprivate extension ChangePhoneNumberViewController {
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.primaryDark)}, to: [headingLabel.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [nextButton.rx.enabledBackgroundColor])
+            .bind({ UIColor($0.greyDark) }, to: [nextButton.rx.disabledBackgroundColor])
     }
     
     func setupViews() {
@@ -131,6 +133,10 @@ fileprivate extension ChangePhoneNumberViewController {
         viewModel.outputs.phoneNumberTextFieldTitle.bind(to: phoneNumberTextfield.rx.titleText).disposed(by: disposeBag)
 
         viewModel.outputs.countryCode.bind(to: phoneNumberTextfield.rx.countryCode).disposed(by: disposeBag)
+        
+        viewModel.outputs.activateAction.subscribe(onNext: { [weak self] isActive in
+            print(isActive)
+        })
 
         viewModel.outputs.activateAction.bind(to: nextButton.rx.isEnabled).disposed(by: disposeBag)
 

@@ -59,7 +59,7 @@ class ChangePhoneNumberViewModel: ChangePhoneNumberViewModelType, ChangePhoneNum
     private let phoneNumberTextFieldTitleSubject: BehaviorSubject<String?>
     private let validationSubject = BehaviorSubject<PhoneNumberView.ValidationState>(value: .normal)
     private let textSubject = BehaviorSubject<NSAttributedString?>(value: NSAttributedString(string: ""))
-    private let countryCodeSubject = BehaviorSubject<String?>(value: "+971 ")
+    private let countryCodeSubject = BehaviorSubject<String?>(value: "+92 ")
     private let activateActionSubject = PublishSubject<Bool>()
     private let successSubject = PublishSubject<String>()
     private let otpGenerationSubject = PublishSubject<PhoneNumberVerificationDataProvider>()
