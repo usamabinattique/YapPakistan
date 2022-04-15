@@ -114,7 +114,6 @@ private extension UserProfileTableViewCell {
     
     func setupViews() {
         contentView.addSubview(contentStackView)
-        //accessorySwitch.onTintColor = .primary
         iconBackground.addSubview(iconImageView)
     }
     

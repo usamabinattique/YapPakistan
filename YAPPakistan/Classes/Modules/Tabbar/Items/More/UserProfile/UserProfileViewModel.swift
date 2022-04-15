@@ -263,6 +263,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         openTwitter()
         openFacebook()
         openPasscodechange()
+        notificationAuthorisationStatausChange()
 //        Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
 //            switch state {
 //            case .toggleSwitch(true):
@@ -390,6 +391,18 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
             
         }).disposed(by: disposeBag)
     }
+    
+    func notificationAuthorisationStatausChange() {
+        appNotificationsDidChangeSubject.subscribe(onNext: { [weak self] notifValue in
+            guard let self = self else { return }
+            if self.notificationManager.isNotificationAuthorised() {
+                self.notificationManager.setNotificationPermission(isPrompt: false)
+            }
+            else {
+                self.notificationManager.setNotificationPermission(isPrompt: true)
+            }
+        }).disposed(by: disposeBag)
+    }
 
     func openFacebook() {
         facebookTap.subscribe(onNext: { _ in
@@ -471,10 +484,8 @@ class UserProfileItemFactory {
 
         cellViewModelSecuritySection.append(contentsOf: [UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_lock_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_privacy".localized, accessory: .button( "common_button_view".localized), actionObserver: actionObservers[1])),
             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_key_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_passcode".localized, accessory: .button( "common_button_change".localized), actionObserver: actionObservers[2])),
-            UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_notification_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_notifications".localized, accessory: .toggleSwitch(NotificationManager().isNotificationAuthorised()), actionObserver: actionObservers[3])),
-                                                         
+                                                         UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_notification_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_notifications".localized, accessory: .toggleSwitch(NotificationManager().isNotificationPermissionPrompt), actionObserver: actionObservers[3])),
             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_face_id", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_signinwithfaceID".localized, accessory: .toggleSwitch(NotificationManager().isNotificationAuthorised()), actionObserver: actionObservers[3]))
-                                                         
         ])
 
         if biometricsManager.deviceBiometryType != .none {
