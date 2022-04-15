@@ -474,11 +474,32 @@
 "screen_topup_card_cvv_display_text_title" = "Top up confirmation";
 "screen_topup_card_cvv_display_text_cvv" = "Enter the CVV to top up your acccount with";
 
+//Mark: - Change Phone Number Screen
+"screen_change_phone_number_display_text_heading" = "Change mobile number";
+"screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
+
+//Mark: - Change Email Screen
+"screen_change_email_display_text_heading" = "Change email";
+"screen_change_email_placeholder_email_address" = "Email address";
+"screen_change_email_placeholder_confirm_email_address" = "Confirm email address";
+"screen_change_email_display_text_description" = "A verification email will now be sent to this address";
+"screen_change_email_display_text_email_title" = "Enter your new email address";
+"screen_change_email_display_text_confirm_email_title" = "Enter it one more time";
+"screen_change_email_display_text_confirm_email_diff_error" = "This email doesn’t match what you first entered.";
+
+//Mark: - Email Verification Screen
+"screen_email_verification_display_text_heading" = "Verify your email address";
+"screen_email_verification_display_text_sub_heading" = "We've sent a verification code to \n%@";
+
+//Mark: - Change Email Address Success Screen
+"screen_email_address_success_display_text_heading" = "Awesome!";
+"screen_email_address_success_display_text_sub_heading" = "Your email address has been updated to \n%@";
+
 // MARK: Logout popups
-"screen_profile_action_display_text_logout_popups_logout" = "Log out";
+"screen_profile_action_display_text_logout_popups_logout" = "Confirm";
 "screen_profile_action_display_text_logout_popups_cencel" = "Cancel";
 "screen_profile_action_display_text_logout_popups_title" = "Log out";
-"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out";
+"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out?";
 
 
 // MARK: Set Pin

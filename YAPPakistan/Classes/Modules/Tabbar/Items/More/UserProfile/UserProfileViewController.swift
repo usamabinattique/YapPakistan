@@ -60,9 +60,7 @@ class UserProfileViewController: UIViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: UserProfileTableViewCell.defaultIdentifier) as! UserProfileTableViewCell
             cell.configure(with: cellViewModel, themeService: self.themeService)
             return cell
-    }
-    )
-    
+    })
     
     // MARK: - View Life Cycle
     override func viewDidLoad() {

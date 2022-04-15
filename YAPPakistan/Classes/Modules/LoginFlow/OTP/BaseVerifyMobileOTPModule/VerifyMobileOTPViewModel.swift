@@ -186,7 +186,12 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .disposed(by: disposeBag)
 //        generateOneTimePasscode(mobileNo: mobileNo)
 //        verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
-        if action != .ibft {
+        
+        if action == .changeEmail {
+            generateOneTimePasscodeForChangeEmail(mobileNo: mobileNo)
+            verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
+        }
+        else if action != .ibft {
             generateOneTimePasscode(mobileNo: mobileNo)
             verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
         } else {
@@ -215,6 +220,35 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .filter{ [unowned self] in $0.count == otpLength && self.otpForRequest != $0 }
             .do(onNext: { [unowned self] in self.otpForRequest = $0 }).map{ _ in }
             .bind(to: sendObserver)
+            .disposed(by: disposeBag)
+    }
+    
+    open func generateOneTimePasscodeForChangeEmail(mobileNo: String) {
+        let generateOTPRequest = generateOTPSubject
+            .do(onNext: { YAPProgressHud.showProgressHud() })
+            .withLatestFrom(otpActionSubject).flatMap { [unowned self] otpAction -> Observable<Event<String?>> in
+                return self.repository.generateChangeEmailOTP(action: otpAction!, mobileNumber: mobileNo)
+            }
+            .do(onNext: { _ in
+                    YAPProgressHud.hideProgressHud() })
+            .share()
+
+        generateOTPRequest.errors().map {
+            $0.localizedDescription
+
+        }.bind(to: generateOTPErrorSubject).disposed(by: disposeBag)
+
+        var timerDisposable: Disposable?
+
+        generateOTPRequest.elements().do(onNext: { _ in
+            timerDisposable?.dispose()
+            timerDisposable = self.startTimer()
+        }).map { _ in true }.bind(to: editingSubject).disposed(by: disposeBag)
+
+        generateOTPRequest.elements()
+            .skip(1)
+            .map { _ in "screen_otp_genration_success".localized }
+            .bind(to: showAlertSubject)
             .disposed(by: disposeBag)
     }
 

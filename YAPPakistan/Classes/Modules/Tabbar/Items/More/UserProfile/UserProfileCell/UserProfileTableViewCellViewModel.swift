@@ -55,7 +55,7 @@ class UserProfileTableViewCellViewModel: UserProfileTableViewCellViewModelType, 
         self.userProfileTableViewItemSubject = BehaviorSubject(value: userProfileTableViewItem)
         actionObserver = userProfileTableViewItem.actionObserver
         warning = userProfileTableViewItem.warning
-        setupAppVersion()
+        //setupAppVersion()
     }
 }
 
