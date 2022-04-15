@@ -18,7 +18,7 @@ open class PhoneNumberView: UIView {
         let label = UILabel()
         label.font = .small
         label.textAlignment = .left
-        label.textColor =  UIColor.darkGray //UIColor(themeService.attrs.primaryDark) //.primaryDark
+        label.textColor =  UIColor(Color(hex: "#272262")) //UIColor.darkGray //UIColor(themeService.attrs.primaryDark) //.primaryDark
         label.backgroundColor = .clear
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -27,7 +27,7 @@ open class PhoneNumberView: UIView {
     public lazy var textField: UITextField = {
         let textField = UITextField()
         textField.textAlignment = .left
-        textField.textColor = UIColor.darkGray //UIColor(themeService.attrs.primaryDark) //.primaryDark.withAlphaComponent(0.5)
+        textField.textColor = UIColor.darkGray //UIColor.darkGray //UIColor(themeService.attrs.primaryDark) //.primaryDark.withAlphaComponent(0.5)
         textField.keyboardType = .asciiCapableNumberPad
         textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -46,7 +46,7 @@ open class PhoneNumberView: UIView {
 
     private lazy var bottomBar: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.gray //UIColor(themeService.attrs.grey) //.grey
+        view.backgroundColor = UIColor.gray //UIColor.gray //UIColor(themeService.attrs.grey) //.grey
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -55,7 +55,7 @@ open class PhoneNumberView: UIView {
         let label = UILabel()
         label.font = .micro
         label.textAlignment = .left
-        label.textColor = UIColor.gray //UIColor(themeService.attrs.grey) //.grey
+        label.textColor = UIColor.gray // UIColor.gray //UIColor(themeService.attrs.grey) //.grey
         label.isHidden = false
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -70,7 +70,6 @@ open class PhoneNumberView: UIView {
     }()
 
     //MARK: Properties
-    //private var themeService: ThemeService<AppTheme>
     private let phoneNumberKit = PhoneNumberKit()
     public var currencyCode: Int = 0
 
@@ -83,8 +82,8 @@ open class PhoneNumberView: UIView {
             guard oldValue != validationState else { return }
             stateImage.isHidden = validationState == .normal
             stateImage.image = validationState == .valid ? validInputImage : validationState == .invalid ? invalidInputImage : nil
-            stateImage.tintColor = validationState == .valid ? UIColor.orange : validationState == .invalid ? UIColor.red : .clear
-            bottomBar.backgroundColor = validationState == .invalid ? UIColor.red : UIColor.orange //.primary
+            stateImage.tintColor = validationState == .valid ? UIColor(Color(hex: "#272262")) : validationState == .invalid ? UIColor.red : .clear
+            bottomBar.backgroundColor = validationState == .invalid ? UIColor.red : UIColor(Color(hex: "#272262")) //.primary
             error.isHidden = validationState != .invalid
         }
     }
@@ -98,16 +97,6 @@ open class PhoneNumberView: UIView {
         get { return title.text }
         set (newValue) { title.text = newValue }
     }
-
-//    init(themeService: ThemeService<AppTheme>) {
-//        self.themeService = themeService
-//        commonInit()
-//    }
-//
-//    required public init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-    
     
     // MARK: Initialization
     public override init(frame: CGRect) {
@@ -172,14 +161,14 @@ private extension PhoneNumberView {
 extension PhoneNumberView: UITextFieldDelegate {
 
     public func textFieldDidBeginEditing(_ textField: UITextField) {
-        bottomBar.backgroundColor = UIColor.orange //UIColor(themeService.attrs.primary) //.primary
-        title.textColor = UIColor.darkGray //UIColor(themeService.attrs.greyDark) //.greyDark
+        bottomBar.backgroundColor = UIColor.red //UIColor(Color(hex: "#272262"))  //UIColor(themeService.attrs.primary) //.primary
+        title.textColor = UIColor.red //UIColor.darkGray //UIColor(themeService.attrs.greyDark) //.greyDark
         animateFocus()
     }
 
     public func textFieldDidEndEditing(_ textField: UITextField) {
-        bottomBar.backgroundColor = UIColor.gray //UIColor(themeService.attrs.grey) //.grey
-        title.textColor = (textField.text == nil || textField.text?.count ?? 0 == 0) ? UIColor.orange : UIColor.darkGray //.greyDark
+        bottomBar.backgroundColor = UIColor.darkGray //UIColor.gray //UIColor(themeService.attrs.grey) //.grey
+        title.textColor = (textField.text == nil || textField.text?.count ?? 0 == 0) ? UIColor(Color(hex: "#272262")) : UIColor.darkGray //.greyDark
         if textField.text?.count ?? 0 == 0 {
             deanimateFocus()
         }
