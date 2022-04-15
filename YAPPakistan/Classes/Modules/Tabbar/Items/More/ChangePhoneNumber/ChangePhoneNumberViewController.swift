@@ -35,6 +35,8 @@ class ChangePhoneNumberViewController: UIViewController {
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
     }()
+    
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
 
     // MARK: - Properties
     private var themeService: ThemeService<AppTheme>
@@ -89,6 +91,7 @@ fileprivate extension ChangePhoneNumberViewController {
     }
     
     func setupViews() {
+        navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         view.backgroundColor = .white
         view.addSubview(headingLabel)
         view.addSubview(phoneNumberTextfield)
@@ -122,7 +125,7 @@ fileprivate extension ChangePhoneNumberViewController {
 // MARK: - Bind
 fileprivate extension ChangePhoneNumberViewController {
     func bind() {
-
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
         viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.nextButtonTitle.bind(to: nextButton.rx.title(for: .normal)).disposed(by: disposeBag)
 
