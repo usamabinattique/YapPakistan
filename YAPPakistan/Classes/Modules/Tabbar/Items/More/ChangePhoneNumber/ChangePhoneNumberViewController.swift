@@ -138,7 +138,7 @@ fileprivate extension ChangePhoneNumberViewController {
         viewModel.outputs.countryCode.bind(to: phoneNumberTextfield.rx.countryCode).disposed(by: disposeBag)
         
         viewModel.outputs.activateAction.subscribe(onNext: { [weak self] isActive in
-            print(isActive)
+//            print(isActive)
         })
 
         viewModel.outputs.activateAction.bind(to: nextButton.rx.isEnabled).disposed(by: disposeBag)
