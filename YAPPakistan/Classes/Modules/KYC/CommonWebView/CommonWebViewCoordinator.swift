@@ -53,6 +53,7 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.confirm.subscribe(onNext: { [weak self] model in
             guard let paymentGatewayObject = self?.paymentGatewayM else { return }
+            paymentGatewayObject.beneficiary = nil
             paymentGatewayObject.cardDetailObject = model
             viewController.dismiss(animated: true, completion: {
                 self?.addressPending()

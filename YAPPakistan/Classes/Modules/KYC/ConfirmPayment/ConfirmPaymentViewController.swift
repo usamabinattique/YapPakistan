@@ -36,66 +36,16 @@ class ConfirmPaymentViewController: UIViewController {
     
     private lazy var addressImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     
-    private lazy var addressTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .left)
-    private lazy var addressDescLabel = UIFactory.makeLabel(font: .micro, alignment: .left)
+    private lazy var addressTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .left, numberOfLines: 0)
+    private lazy var addressDescLabel = UIFactory.makeLabel(font: .micro, alignment: .left, numberOfLines: 0)
     private lazy var addressStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .leading, distribution: .fill, spacing: 2, arrangedSubviews: [addressTitleLabel,addressDescLabel])
     private lazy var editButton = UIFactory.makeButton(with: .small, backgroundColor: .clear, title: "common_button_edit".localized)
     
     private lazy var addressContainerStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fillProportionally, spacing: 20, arrangedSubviews: [addressImage,addressStack,editButton])
     
-    private  lazy var addressView: UIView = {
-        let view = UIView() //UIView(frame: CGRect(x: 0, y: 0, width: 172, height: 40))
-        addressTitleLabel.translatesAutoresizingMaskIntoConstraints = false
-        addressDescLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(addressTitleLabel)
-        view.addSubview(addressDescLabel)
-        addressTitleLabel
-            .alignEdgesWithSuperview([.top,.left,.right])
-        addressDescLabel
-            .alignEdgesWithSuperview([.left,.right])
-            .toBottomOf(addressTitleLabel,constant: 2)
-        
-        return view
-    }()
+    private lazy var addressContainerView: UIView = UIFactory.makeView()
     
-    private  lazy var addressContainerView: UIView = {
-        let view = UIView()
-        addressImage.translatesAutoresizingMaskIntoConstraints = false
-        addressImage.clipsToBounds = true
-        editButton.translatesAutoresizingMaskIntoConstraints = false
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.clipsToBounds = true
-        
-        view.addSubview(addressImage)
-        view.addSubview(addressView)
-        view.addSubview(editButton)
-        
-        addressImage
-            .alignEdgeWithSuperviewSafeArea(.left,  constant: 20)
-            .centerVerticallyInSuperview()
-            .height(constant: 42)
-            .width(constant: 42)
-        
-        addressView
-            .toRightOf(addressImage, constant: 20)
-            .toLeftOf(editButton,.greaterThanOrEqualTo,constant: 18)
-//            .alignEdgeWithSuperview(.top,constant: 24)
-//            .alignEdgeWithSuperview(.bottom,constant: 24)
-            .centerVerticallyInSuperview()
-            .height(constant: 40)
-        
-        editButton
-            .alignEdgeWithSuperviewSafeArea(.right,  constant: 20)
-            .centerVerticallyInSuperview()
-            .height(constant: 44)
-            .width(constant: 44)
-        
-        return view
-    }()
-    
-    
-    private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "Place order for PKR 1,000")
+    private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_yap_confirm_payment_display_text_place_order_for".localized)
     
     private lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -137,15 +87,14 @@ class ConfirmPaymentViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
-       // contentView.addSubviews([cardImage, cardTypeLabel, cardFeeStack, spacer, payWithContainerStack, addressContainerStack, actionButton])
+        addressContainerView.addSubview(addressContainerStack)
         contentView.addSubviews([cardImage, cardTypeLabel, cardFeeStack, spacer, payWithContainerStack, addressContainerView, actionButton])
+        
         backButton = addBackButton(of: .closeCircled)
         editButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
         cardFeeLabel.text = "screen_yap_confirm_payment_display_text_Card_fee".localized
         payWithLabel.text = "screen_yap_confirm_payment_display_text_pay_with".localized
-       
-//        addressContainerStack.layer.borderWidth = 1
-//        addressContainerStack.layer.cornerRadius = 10
+        
         addressContainerView.layer.borderWidth = 1
         addressContainerView.layer.cornerRadius = 10
     }
@@ -166,7 +115,7 @@ class ConfirmPaymentViewController: UIViewController {
            // .bind({ UIColor($0.greyDark) }, to: [ actionButton.rx.disabledBackgroundColor ])
             .bind({ UIColor($0.primaryDark) }, to: [ cardMasksLabel.rx.textColor, cardFeeValueLabel.rx.textColor, addressDescLabel.rx.textColor ])
             .bind({ UIColor($0.greyDark) }, to: [ payWithLabel.rx.textColor, cardFeeLabel.rx.textColor, addressDescLabel.rx.textColor ])
-            .bind({ UIColor($0.greyLight) }, to: [  addressContainerView.rx.borderColor ]) //addressContainerStack.rx.borderColor ])
+            .bind({ UIColor($0.greyLight) }, to: /*[  addressContainerView.rx.borderColor ])*/ [addressContainerView.rx.borderColor ])
             .disposed(by: rx.disposeBag)
         
         guard let backButton = backButton else { return }
@@ -255,23 +204,26 @@ class ConfirmPaymentViewController: UIViewController {
             .toBottomOf(spacer, constant: 20)
             .centerHorizontallyInSuperview()
         
-//        addressContainerStack
+        addressContainerStack
+            .alignEdgesWithSuperview([.top, .bottom, .left, .right], constants: [20, 20, 20, 20])
+        
+        addressContainerView
+            .toBottomOf(payWithContainerStack, constant: 40)
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.left,.right], constant: 25)
+//            .height(constant: 86)
+        
+//        addressContainerView
 //            .toBottomOf(payWithContainerStack, constant: 40)
 //            .centerHorizontallyInSuperview()
 //            .alignEdgesWithSuperview([.left,.right], constant: 28)
 //            .height(constant: 86)
         
-        addressContainerView
-            .toBottomOf(payWithContainerStack, constant: 40)
-            .centerHorizontallyInSuperview()
-            .alignEdgesWithSuperview([.left,.right], constant: 28)
-            .height(constant: 86)
-        
         actionButton
             .alignEdgesWithSuperview([.left,.right], constant: 28)
             .height(constant: 52)
-           // .toBottomOf(addressContainerStack , constant: 40)
-            .toBottomOf(addressContainerView , constant: 40)
+            .toBottomOf(addressContainerStack , constant: 40)
+//            .toBottomOf(addressContainerView , constant: 40)
             .alignEdgeWithSuperview(.safeAreaBottom, .greaterThanOrEqualTo ,constant: 40)
     }
 }

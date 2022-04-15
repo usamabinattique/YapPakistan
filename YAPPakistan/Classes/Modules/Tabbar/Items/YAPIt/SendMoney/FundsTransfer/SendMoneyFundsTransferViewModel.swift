@@ -249,7 +249,7 @@ private extension SendMoneyFundsTransferViewModel {
     }
     
     func fetchTransactionLimit() -> Observable<Void> {
-        let transactionLimitRequest = self.repository.getTransactionProductLimit(transactionProductCode: TransactionProductCode.topUpByExternalCard.rawValue).share()
+        let transactionLimitRequest = self.repository.getTransactionProductLimit(transactionProductCode: TransactionProductCode.ibftTransaction.rawValue).share()
 
         transactionLimitRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
         transactionLimitRequest.elements().subscribe(onNext: { [unowned self] in
@@ -263,7 +263,7 @@ private extension SendMoneyFundsTransferViewModel {
 
     func fetchTransactionFee() -> Observable<Void> {
 
-        let feeRequest = repository.getFee(productCode: TransactionProductCode.topUpByExternalCard.rawValue).share()
+        let feeRequest = repository.getFee(productCode: TransactionProductCode.ibftTransaction.rawValue).share()
 
         feeRequest.errors().subscribe(onNext: { [unowned self] in self.showErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
