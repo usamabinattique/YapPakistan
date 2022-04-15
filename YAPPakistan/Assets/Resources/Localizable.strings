@@ -499,7 +499,7 @@
 "screen_profile_action_display_text_logout_popups_logout" = "Log out";
 "screen_profile_action_display_text_logout_popups_cencel" = "Cancel";
 "screen_profile_action_display_text_logout_popups_title" = "Log out";
-"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out";
+"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out?";
 
 
 // MARK: Set Pin

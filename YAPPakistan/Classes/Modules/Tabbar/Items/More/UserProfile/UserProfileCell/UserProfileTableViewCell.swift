@@ -19,7 +19,7 @@ class UserProfileTableViewCell: RxUITableViewCell {
         return view
     }()
     
-    lazy var appBuildVersion: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center)
+    //lazy var appBuildVersion: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center)
     lazy var iconImageView: UIImageView = {
         let imageView = UIImageView()
         //imageView.tintColor = UIColor.red //SessionManager.current.currentAccountType == .b2cAccount ? .primaryDark : .white
@@ -134,18 +134,18 @@ private extension UserProfileTableViewCell {
         logoutButton.titleLabel?.font = .large  // UIFont.appFont(forTextStyle: .large)
         contentStackView.removeFromSuperview()
         contentView.addSubview(logoutButton)
-        contentView.addSubview(appBuildVersion)
+        //contentView.addSubview(appBuildVersion)
         
         logoutButton
-            .alignEdgeWithSuperview(.top, constant: 20)
+            .alignEdgeWithSuperview(.top, constant: 10)
             .centerHorizontallyInSuperview()
         
-        appBuildVersion
-            .toBottomOf(logoutButton, constant: 10)
-            .horizontallyCenterWith(logoutButton)
+//        appBuildVersion
+//            .toBottomOf(logoutButton, constant: 10)
+//            .horizontallyCenterWith(logoutButton)
         
         viewModel.outputs.title.bind(to: logoutButton.rx.title(for: .normal)).disposed(by: disposeBag)
-        viewModel.outputs.versionText.bind(to: appBuildVersion.rx.text).disposed(by: disposeBag)
+        //viewModel.outputs.versionText.bind(to: appBuildVersion.rx.text).disposed(by: disposeBag)
     }
 
     
