@@ -83,3 +83,23 @@ private extension TransactionHeaderTableViewCell {
         viewModel.outputs.totalTransactionAmount.unwrap().bind(to: totalAmount.rx.text).disposed(by: disposeBag)
     }
 }
+
+extension TransactionHeaderTableViewCell {
+    
+    public func addShadow() {
+        layer.shadowRadius = 7
+        layer.shadowOpacity = 0.15
+        backgroundColor = .white
+        layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
+                                                     y: bounds.maxY - layer.shadowRadius,
+                                                     width: bounds.width,
+                                                     height: layer.shadowRadius)).cgPath
+    }
+    
+    public func removeShadow() {
+        layer.shadowRadius = 0
+        layer.shadowOpacity = 0
+        backgroundColor = .clear
+    }
+
+}

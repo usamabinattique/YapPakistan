@@ -28,7 +28,17 @@ class TransactionsViewController: UIViewController {
     }
 
     // MARK: - Views
-    var tableView: UITableView = UIFactory.makeTableView(allowsSelection: false)
+   // var tableView: UITableView = UIFactory.makeTableView(allowsSelection: false)
+    
+    public lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
     private lazy var nothingLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, text: "screen_home_display_text_nothing_to_report".localized)
     private lazy var placeholderView: UIView = {
         let view = UIView()
@@ -241,15 +251,15 @@ extension TransactionsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0 // viewModel.outputs.numberOfRows(inSection: section)
+        return  viewModel.outputs.numberOfRows(inSection: section)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cellViewModel = viewModel.outputs.cellViewModel(for: indexPath)
-//        let cell = tableView.dequeueReusableCell(withIdentifier: cellViewModel.reusableIdentifier) as! RxUITableViewCell
-//        cell.configure(with: cellViewModel)
-       // return cell
-        UITableViewCell()
+        let cellViewModel = viewModel.outputs.cellViewModel(for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellViewModel.reusableIdentifier) as! RxUITableViewCell
+        cell.configure(with: self.themeService, viewModel: cellViewModel)
+        return cell
+//        UITableViewCell()
     }
 }
 
@@ -264,7 +274,7 @@ extension TransactionsViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 46
+       return 0 // return 46
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

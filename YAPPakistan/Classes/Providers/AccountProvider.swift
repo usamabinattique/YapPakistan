@@ -30,7 +30,8 @@ public class AccountProvider {
         accountSubject.bind(to: currentAccountValue).disposed(by: disposeBag)
         refreshAccount()
     }
-
+    
+    @discardableResult
     public func refreshAccount() -> Observable<Void> {
         updatingSubject.onNext(true)
 
