@@ -47,11 +47,11 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             
             
         }).disposed(by: disposeBag)
-            
+        
         
         viewController.viewModel.outputs.result
             .withUnretained(self)
-           .subscribe(onNext: {  $0.0.resultSuccess() })
+            .subscribe(onNext: {  $0.0.resultSuccess() })
             .disposed(by: rx.disposeBag)
         
         root.present(localRoot, animated: true, completion: nil)
@@ -60,7 +60,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     
     fileprivate func navigateToPersonalDetails() {
         let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()))
-        let viewController = PersonalDetailsViewController(viewModel: viewModel)
+        let viewController = PersonalDetailsViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         viewModel.outputs.editEmailTap.subscribe(onNext: { [weak self] in
             guard let self = self else {return}
@@ -71,6 +71,12 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             guard let self = self else { return }
             print("Edit Phone Tapped")
             self.navigateToEditPhone()
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
+            print("Back Button Pressed on perosnal details Screen")
+            guard let self = self else { return }
+            self.localRoot.popViewController(animated: true, nil)
         }).disposed(by: disposeBag)
         
         self.localRoot.pushViewController(viewController, completion: nil)
@@ -85,7 +91,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     }
     
     fileprivate func resultSuccess() {
-       // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
         let name = Notification.Name.init(.logout)
         NotificationCenter.default.post(name: name,object: nil)
     }
