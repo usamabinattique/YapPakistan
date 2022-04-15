@@ -48,7 +48,7 @@ class ChangePhoneNumberViewController: UIViewController {
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Edit phone number" //SessionManager.current.currentAccountType == .b2cAccount ? nil : "Edit phone number"
+        //title = "Edit phone number" //SessionManager.current.currentAccountType == .b2cAccount ? nil : "Edit phone number"
         setup()
         bind()
     }

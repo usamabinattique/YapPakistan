@@ -66,7 +66,7 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Edit Email Address"  //SessionManager.current.currentAccountType == .b2cAccount ? nil : "Edit email address"
+        //title = "Edit Email Address"  //SessionManager.current.currentAccountType == .b2cAccount ? nil : "Edit email address"
         setup()
         bind()
     }
