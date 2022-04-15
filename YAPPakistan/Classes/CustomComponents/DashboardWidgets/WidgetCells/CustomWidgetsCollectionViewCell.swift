@@ -119,19 +119,6 @@ extension CustomWidgetsCollectionViewCell {
    
     func bindViews()  {
         viewModel.outputs.categoryImage.bind(to: cateogryImage.rx.loadImage(true,isStringPath: true)).disposed(by: disposeBag)
-        
-      /*  viewModel.outputs.categoryImage.subscribe(onNext: { [weak self] _arg0 in
-            let (imageUrl,placeholderImg) = _arg0
-//            self?.cateogryImage.startAnimating()
-            if let url = imageUrl {
-                self?.cateogryImage.stopAnimating()
-                self?.cateogryImage.sd_setImage(with: URL(string:url))
-            } else {
-                self?.cateogryImage.image = placeholderImg
-            }
-            
-        }).disposed(by: disposeBag) */
-        
         viewModel.outputs.categoryName.bind(to: categoryName.rx.text).disposed(by: disposeBag)
         viewModel.outputs.removeShadow.subscribe(onNext: {[weak self] in
             if $0 == .edit {

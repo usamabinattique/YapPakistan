@@ -203,8 +203,10 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
 //        updateGraph()
 //
 //        let viewAppeared = viewAppearedSubject.do(onNext: { SessionManager.current.refreshBalance() })
-
-        let request =  Observable.merge(fetchTransactions, viewAppearedSubject.take(1))
+        
+        
+        //Uncomment following
+      /*  let request =  Observable.merge(fetchTransactions, viewAppearedSubject.take(1))
             .do(onNext: { [weak self] _ in self?.loadingSubject.onNext(false)})
             .flatMap { _ in transactionDataProvider.fetchTransactions() }
             .share()
@@ -212,7 +214,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         request.subscribe(onNext: { response in
             print(response)
         })
-        .disposed(by: disposeBag)
+        .disposed(by: disposeBag) */
 //
 //        let saveRequest = request.elements()
 //            .map { [unowned self] pageableResponse -> Bool in
@@ -247,10 +249,10 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
 //            .subscribe(onNext: { [unowned self] _ in self.updateGraph() })
 //            .disposed(by: disposeBag)
 
-        request.errors().subscribe(onNext: { [unowned self] _ in
+      /*  request.errors().subscribe(onNext: { [unowned self] _ in
             self.loadingSubject.onNext(false)
             self.dataChanged = false
-        }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag) */
 
         filterSelectedSubject.subscribe(onNext: { [unowned self] filter in
 

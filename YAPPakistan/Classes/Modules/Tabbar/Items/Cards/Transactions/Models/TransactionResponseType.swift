@@ -74,7 +74,7 @@ struct TransactionResponse: Codable, Transaction {
     let amount: Double
     let currency: String
     let category: String
-    let paymentMode: String
+    let paymentMode: String?
     let closingBalance: Double?
     let openingBalance: Double?
     var title: String?
@@ -202,19 +202,28 @@ struct TransactionResponse: Codable, Transaction {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        _type = try container.decode(String?.self, forKey: ._type)
+        _type = try container.decodeIfPresent(String?.self, forKey: ._type) ?? ""
         title = try? container.decode(String?.self, forKey: .title)
-        amount = try container.decode(Double.self, forKey: .amount)
+        
+        if let am = try? container.decodeIfPresent(Double.self, forKey: .amount) ?? 0 {
+            amount = am
+        } else if let am = try? container.decodeIfPresent(String.self, forKey: .amount) {
+            amount = Double(am) ?? 0
+        } else {
+            amount = 0.0
+        }
+        
+       // amount = try container.decodeIfPresent(Double.self, forKey: .amount) ?? 0
         fee = try container.decodeIfPresent(Double.self, forKey: .fee) ?? 0
         vat = try container.decodeIfPresent(Double.self, forKey: .vat) ?? 0
         currency = try container.decode(String.self, forKey: .currency)
-        closingBalance = try? container.decode(Double?.self, forKey: .closingBalance)
-        openingBalance = try? container.decode(Double?.self, forKey: .openingBalance)
-        category = try container.decode(String.self, forKey: .category)
-        paymentMode = try container.decode(String.self, forKey: .paymentMode)
-        merchant = try container.decode(String?.self, forKey: .merchant)
-        transactionNote = try? container.decode(String?.self, forKey: .transactionNote)
-        let dateString = try container.decode(String.self, forKey: .date)
+        closingBalance = try? container.decodeIfPresent(Double?.self, forKey: .closingBalance) ?? 0
+        openingBalance = try? container.decodeIfPresent(Double?.self, forKey: .openingBalance) ?? 0
+        category = try container.decodeIfPresent(String.self, forKey: .category) ?? ""
+        paymentMode = try container.decodeIfPresent(String.self, forKey: .paymentMode) ?? ""
+        merchant = try container.decodeIfPresent(String?.self, forKey: .merchant) ?? ""
+        transactionNote = try? container.decodeIfPresent(String?.self, forKey: .transactionNote) ?? ""
+        let dateString = try container.decodeIfPresent(String.self, forKey: .date) ?? ""
         let updatedDateString = (try? container.decode(String?.self, forKey: .updatedDate)) ?? ""
         let creationDate = DateFormatter.transactionDateFormatter.date(from: dateString.formattedDateString)
         self.date = creationDate ?? Date()
@@ -222,10 +231,10 @@ struct TransactionResponse: Codable, Transaction {
         let transactionNoteDateString = try? container.decode(String?.self, forKey: .transactionNoteDate)
         transactionNoteDate = DateFormatter.transactionDateFormatter.date(from: transactionNoteDateString != nil ? transactionNoteDateString!.formattedDateString : "")
         transactionId = try container.decode(String.self, forKey: .transactionId)
-        id = try container.decode(Int.self, forKey: .id)
+        id = try container.decodeIfPresent(Int.self, forKey: .id) ?? 0
         card = try? container.decode(String?.self, forKey: .card)
-        productName = try? container.decode(String?.self, forKey: .productName)
-        _productCode = try container.decode(String?.self, forKey: ._productCode)
+        productName = try? container.decodeIfPresent(String?.self, forKey: .productName) ?? ""
+        _productCode = try container.decodeIfPresent(String?.self, forKey: ._productCode) ?? ""
         totalAmount = try? container.decode(Double?.self, forKey: .totalAmount)
         status = try? container.decode(String?.self, forKey: .status)
         senderName = try? container.decode(String?.self, forKey: .senderName)

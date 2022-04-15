@@ -167,14 +167,14 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var repository: LoginRepository!
     var cardsRepository: CardsRepositoryType
     private var transactionsViewModel: TransactionsViewModel
-    private var transactionDataProvider: PaymentCardTransactionProvider
+    private var transactionDataProvider: DebitCardTransactionsProvider
     private var dashboardStatusActionDisposeBag: DisposeBag!
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManagerType,
          notificationManager: NotificationManagerType,
          credentialStore: CredentialsStoreType,
-         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: PaymentCardTransactionProvider) {
+         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: DebitCardTransactionsProvider) {
 
         self.accountProvider = accountProvider
         self.biometricsManager = biometricsManager
@@ -214,7 +214,6 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         getCardBalance()
         getWidgets(repository: cardsRepository)
         getCards()
-        bindPaymentCardOnboardingStagesViewModel()
     }
     
     func generateCellViewModels() {
@@ -272,9 +271,14 @@ extension HomeViewModel {
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
             print("success \(list)")
-            var card = PaymentCard.mock
             self?.cardsSubject.onNext(list ?? [])
+            if !(list?.isEmpty ?? false), let serialNumber =  list?.first?.cardSerialNumber {
+                self?.transactionDataProvider.cardSerialNumber = serialNumber
+            }
             self?.shimmeringSubject.onNext(false)
+            if !(list?.isEmpty ?? false) {
+                self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
+            }
         }).disposed(by: disposeBag)
         
         cardsSubject.subscribe(onNext: {[weak self] in
@@ -292,26 +296,30 @@ extension HomeViewModel {
             }).disposed(by: disposeBag)
     }
     
-    func bindPaymentCardOnboardingStagesViewModel() {
+    func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
         self.shimmeringSubject.onNext(true)
         let request = viewDidAppearSubject.startWith(())
             .flatMap { [unowned self] _ in self.transactionDataProvider.fetchTransactions()
             }.share()
     
         request.elements().subscribe(onNext: { [weak self] pageAbleRes in
-            print("transactions response \(pageAbleRes)")
             self?.shimmeringSubject.onNext(false)
+            
+            if let transactions = pageAbleRes.content, !transactions.isEmpty {
+                //TODO: assign transactions
+            } else {
+                if let card = card, let account = self?.accountProvider.currentAccountValue.value {
+                    let vm = PaymentCardInitiatoryStageViewModel(paymentCard: card, account: account)
+                    self?.dashobarStatusActions(viewModel: vm)
+                    self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
+                }
+            }
+            
         }).disposed(by: disposeBag)
         
         request.errors().subscribe(onNext: { [weak self] erro in
             print("transactions error \(erro)")
             self?.shimmeringSubject.onNext(false)
-         //   self?.dashboardTimelineStatus(accountStatus: .addressCaptured)
-            var mockCard = PaymentCard.mock
-            var account = self?.accountProvider.currentAccountValue.value!
-            let vm = PaymentCardInitiatoryStageViewModel(paymentCard: mockCard, account: account!)
-            self?.dashobarStatusActions(viewModel: vm)
-            self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
         }).disposed(by: disposeBag)
         
         let params = Observable.combineLatest(request.elements().map { $0.content },

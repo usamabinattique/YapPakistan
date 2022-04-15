@@ -27,7 +27,7 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
         }
     }
     private let disposeBag = DisposeBag()
-    private let cardSerialNumber: String?
+    public var cardSerialNumber: String?
     private var isFetching: Bool = false
     private var debitSearch: Bool = false
     
@@ -61,6 +61,10 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
     
     func resetPage(_ page: Int) {
         currentPage = page
+    }
+    
+    func resetCardSerialNumber(serialNumber: String) {
+        cardSerialNumber = "?C8F92RQ6XQ34EYQ" //serialNumber
     }
     
     var pageSize: Int { return _pageSize }

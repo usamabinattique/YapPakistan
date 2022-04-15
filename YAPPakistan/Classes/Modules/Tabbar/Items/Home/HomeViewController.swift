@@ -24,11 +24,11 @@ class HomeViewController: UIViewController {
     
     private lazy var balanceValueLabel = UIFactory.makeLabel(font: .title1,
                                                         alignment: .left,
-                                                        numberOfLines: 0,
+                                                        numberOfLines: 1,
                                                         lineBreakMode: .byWordWrapping)
     private lazy var balanceLabel = UIFactory.makeLabel(font: .title1,
                                                         alignment: .left,
-                                                        numberOfLines: 0,
+                                                        numberOfLines: 1,
                                                         lineBreakMode: .byWordWrapping)
    // private lazy var amountStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .leading, distribution: .fill, spacing: 0, arrangedSubviews: [balanceLabel, balanceValueLabel])
     
@@ -402,9 +402,9 @@ fileprivate extension HomeViewController {
             .alignEdgesWithSuperview([.left, .top], constants: [24, 12])
         
         balanceValueLabel
-            .toRightOf(balanceLabel,constant: 4)
+            .toRightOf(balanceLabel ,constant: 4)
             .centerVerticallyWith(balanceLabel)
-            .alignEdgesWithSuperview([.right], constants: [24])
+            .alignEdgesWithSuperview([.right], .greaterThanOrEqualTo , constants: [12])
             
         
         showButton
