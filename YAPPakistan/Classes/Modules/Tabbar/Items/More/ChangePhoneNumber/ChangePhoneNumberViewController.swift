@@ -28,7 +28,7 @@ class ChangePhoneNumberViewController: UIViewController {
 
     // MARK: - Views
     private lazy var headingLabel: UILabel = UIFactory.makePaddingLabel(font: .title2, alignment: .center) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .title2, alignment: .center)
-    private lazy var nextButton: UIButton = AppRoundedButtonFactory.createAppRoundedButton(isEnable: false)
+    private lazy var nextButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized, isEnable: false)
 
     lazy var phoneNumberTextfield: PhoneNumberView = {
         let textfield = PhoneNumberView()
