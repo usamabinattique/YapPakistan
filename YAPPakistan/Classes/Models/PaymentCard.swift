@@ -78,7 +78,7 @@ public class PaymentCard: Codable {
     let currentBalance: Double?
     let customerId: String?
     let delivered: Bool?
-    let deliveryStatus: DeliveryStatus
+    var deliveryStatus: DeliveryStatus
     let expiryDate: String?
     let frontImage: String?
     let issuanceDate: String?
@@ -88,7 +88,7 @@ public class PaymentCard: Codable {
     let paymentAbroadAllowed: Bool?
     let physical: Bool
     let pinCreated: Bool?
-    let pinStatus: PinStatus?
+    var pinStatus: PinStatus?
     let productCode: String?
     var retailPaymentAllowed: Bool?
     let shipmentStatus: String?

@@ -141,7 +141,7 @@ private extension PaymentCardOnboardingStatusTableViewCell {
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: [titleLabel.rx.textColor])
-            .bind({ UIColor($0.primary) }, to: [completedLabel.rx.textColor, inProcessLabel.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [completedLabel.rx.textColor, inProcessLabel.rx.textColor, verticleBreadcrumbView.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [subheadingLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }

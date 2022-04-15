@@ -38,6 +38,11 @@ class HomeViewController: UIViewController {
                                                         alignment: .left,
                                                         numberOfLines: 0,
                                                         lineBreakMode: .byWordWrapping)
+    
+    private lazy var noTransFoundLabel = UIFactory.makeLabel(font: .large,
+                                                        alignment: .center,
+                                                        numberOfLines: 1,
+                                                        lineBreakMode: .byWordWrapping)
     private lazy var separtorView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -372,7 +377,7 @@ fileprivate extension HomeViewController {
             .bind({ UIColor($0.backgroundColor) }, to: view.rx.backgroundColor)
            // .bind({ UIColor($0.greyDark) }, to: headingLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: (searchBarButtonItem.button?.rx.tintColor)!)
-            .bind({ UIColor($0.greyDark) }, to: [balanceDateLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark) }, to: [balanceDateLabel.rx.textColor, noTransFoundLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [completeVerificationButton.rx.backgroundColor,showButton.rx.tintColor])
             .bind({ UIColor($0.primaryDark) }, to: [separtorView.rx.backgroundColor,balanceValueLabel.rx.textColor])
         
@@ -601,6 +606,14 @@ fileprivate extension HomeViewController {
         widgetView.viewModel.selectedWidget.subscribe(onNext: {[weak self] in
             self?.viewModel.inputs.selectedWidgetObserver.onNext($0 ?? .unknown)
         }).disposed(by: disposeBag)
+        
+        viewModel.outputs.noTransFound.withUnretained(self).subscribe(onNext:  { `self`, text in
+            self.noTransFoundLabel.text = text
+            self.transactionContainer.removeSubviews()
+            self.transactionContainer.addSubview(self.noTransFoundLabel)
+            self.noTransFoundLabel.alignCenterWith(self.transactionContainer)
+        }).disposed(by: disposeBag)
+
     }
     
     func getParallaxHeaderHeight() -> CGFloat {

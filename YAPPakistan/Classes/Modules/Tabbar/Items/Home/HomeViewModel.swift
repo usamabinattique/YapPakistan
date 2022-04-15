@@ -62,6 +62,7 @@ protocol HomeViewModelOutputs {
     var checkParalaxHeight: Observable<Void> { get }
     var showLoader: Observable<Bool> { get }
     var dashboardWidgets: Observable<[DashboardWidgetsResponse]> { get }
+    var noTransFound: Observable<String> { get }
 }
 
 protocol HomeViewModelType {
@@ -105,6 +106,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let hideWidgetsSubject = BehaviorSubject<Bool>(value: false)
     private let selectedWidgetSubject = BehaviorSubject<WidgetCode?>(value: nil)
     private let isCardActivatedSubject = BehaviorSubject<CardStatus?>(value: nil)
+    private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     
     private var numberOfShownWidgets = 0
@@ -157,6 +159,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var checkParalaxHeight: Observable<Void> { paralaxHeightSubject.asObservable() }
     var showLoader: Observable<Bool> { showLoaderSubject.asObservable() }
     var dashboardWidgets: Observable<[DashboardWidgetsResponse]> { dashboardWidgetsSubject.asObservable() }
+    var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
 
     // MARK: Init
 
@@ -279,6 +282,12 @@ extension HomeViewModel {
             if !(list?.isEmpty ?? false) {
                 self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
             }
+            
+            //TODO: remove following
+            else {
+                self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
+            }
+            
         }).disposed(by: disposeBag)
         
         cardsSubject.subscribe(onNext: {[weak self] in
@@ -297,6 +306,7 @@ extension HomeViewModel {
     }
     
     func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
+        
         self.shimmeringSubject.onNext(true)
         let request = viewDidAppearSubject.startWith(())
             .flatMap { [unowned self] _ in self.transactionDataProvider.fetchTransactions()
@@ -309,9 +319,13 @@ extension HomeViewModel {
                 //TODO: assign transactions
             } else {
                 if let card = card, let account = self?.accountProvider.currentAccountValue.value {
-                    let vm = PaymentCardInitiatoryStageViewModel(paymentCard: card, account: account)
-                    self?.dashobarStatusActions(viewModel: vm)
-                    self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
+                    if card.deliveryStatus == .shipped && (card.pinSet ?? false) {
+                        self?.noTransFoundSubject.onNext("view_payment_card_onboarding_stage_initial_in_no_trans_found_subtitle".localized)
+                    } else {
+                        let vm = PaymentCardInitiatoryStageViewModel(paymentCard: card, account: account)
+                        self?.dashobarStatusActions(viewModel: vm)
+                        self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
+                    }
                 }
             }
             
@@ -320,6 +334,13 @@ extension HomeViewModel {
         request.errors().subscribe(onNext: { [weak self] erro in
             print("transactions error \(erro)")
             self?.shimmeringSubject.onNext(false)
+            
+            //TODO: remove following
+            if let card = card, let account = self?.accountProvider.currentAccountValue.value {
+                let vm = PaymentCardInitiatoryStageViewModel(paymentCard: card, account: account)
+                self?.dashobarStatusActions(viewModel: vm)
+                self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
+            }
         }).disposed(by: disposeBag)
         
         let params = Observable.combineLatest(request.elements().map { $0.content },

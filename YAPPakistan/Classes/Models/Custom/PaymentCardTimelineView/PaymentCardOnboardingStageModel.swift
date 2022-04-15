@@ -15,6 +15,11 @@ public enum PaymentCardOnboardingStage {
     case additionalRequirement
     case setPIN
     case topUp
+    
+    //new added
+    case resumeKYC
+    case applicationInProcess
+    case noTransFound
 }
 
 public struct PaymentCardOnboardingStageModel {
@@ -37,7 +42,7 @@ public struct PaymentCardOnboardingStageModel {
                 partnerBankApprovalDate: Date?,
                 documentSubmissionDate: String?,
                 accountStatus: AccountStatus?) {
-        self.deliveryStatus = paymentCard.deliveryStatus ?? .shipping
+        self.deliveryStatus = paymentCard.deliveryStatus
         self.deliveryDate = paymentCard.deliveryDate
         self.activationDate = paymentCard.setPinDate
         self.partnerBankApprovalDate = partnerBankApprovalDate
@@ -60,6 +65,10 @@ public struct PaymentCardOnboardingStageModel {
             return "view_payment_card_onboarding_stage_three_title".localized
         case .topUp:
             return "view_payment_card_onboarding_stage_four_title".localized
+        case .applicationInProcess:
+            return "view_payment_card_onboarding_stage_account_verification_label_title".localized
+        default:
+            return ""
         }
     }
     
@@ -91,6 +100,10 @@ public struct PaymentCardOnboardingStageModel {
             return makeCardSetPINDateSubheading()
         case (_, .topUp, _, _):
             return "view_payment_card_onboarding_stage_four_subheading".localized
+        case (_, .applicationInProcess, _, _):
+            return "view_payment_card_onboarding_stage_initial_in_process_subtitle".localized
+        case (_, .noTransFound, _, _):
+            return "view_payment_card_onboarding_stage_initial_in_no_trans_found_subtitle".localized
         default:
             return nil
         }
@@ -126,8 +139,10 @@ public struct PaymentCardOnboardingStageModel {
             return UIImage.init(named: "icon_stage_delivery_in_progress", in: .yapPakistan)
         case (.additionalRequirement, false):
             return UIImage.init(named: "icon_stage_additional_info", in: .yapPakistan)?.asTemplate
+        case (.applicationInProcess, false):
+            return UIImage.init(named: "icon_stage_additional_info", in: .yapPakistan)?.asTemplate
         case (.setPIN, false):
-            return UIImage.init(named: "icon_stage_set_pin_in_progress", in: .yapPakistan)
+            return UIImage.init(named: "icon_stage_set_pin_in_progress_secondary", in: .yapPakistan)
         case (.topUp, _):
             return UIImage.init(named: "icon_stage_top_up", in: .yapPakistan)?.asTemplate
         default:
@@ -136,7 +151,7 @@ public struct PaymentCardOnboardingStageModel {
     }
     
     var showVerticleBreadcrum: Bool {
-        if stage == .topUp {
+        if stage == .topUp || stage == .noTransFound {
             return false
         }
         return true
@@ -177,6 +192,8 @@ public struct PaymentCardOnboardingStageModel {
              (.shipped, .additionalRequirement, _, .additionalRequirementsProvided),
              (.shipped, .additionalRequirement, _, .additionalRequirementsSubmitted):
             return true
+        case (_, .applicationInProcess, _, .ibanAssigned):
+            return true
         default:
             return false
         }
@@ -200,6 +217,11 @@ public struct PaymentCardOnboardingStageModel {
         case (.shipped, .additionalRequirement, _, .additionalRequirementsRequired, _),
              (.shipped, .additionalRequirement, _, .additionalRequirementsProvided, _),
              (.shipped, .additionalRequirement, _, .additionalRequirementsSubmitted, _):
+            return true
+        
+        case (_, .additionalRequirement, _, _, .addressCaptured):
+            return true
+        case (.shipped, .setPIN, _, .physicalCardSuccess, _):
             return true
         default:
             return false
