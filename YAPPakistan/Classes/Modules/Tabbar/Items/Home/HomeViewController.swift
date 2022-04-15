@@ -156,9 +156,10 @@ class HomeViewController: UIViewController {
 
     private lazy var widgetView: DashboardWidgets = {
         let buttons = DashboardWidgets(theme: self.themeService)
-        var res = DashboardWidgetsResponse.mock
-        res.iconPlaceholder = UIImage.init(named: "icon_add_card", in: .yapPakistan)
-        buttons.viewModel.inputs.widgetsDataObserver.onNext([res,res,res,res,res,res,res])
+//        var res = DashboardWidgetsResponse.mock
+//        res.iconPlaceholder = UIImage.init(named: "icon_add_card", in: .yapPakistan)
+//        buttons.viewModel.inputs.widgetsDataObserver.onNext([res,res,res,res,res,res,res])
+        
         buttons.translatesAutoresizingMaskIntoConstraints = false
         buttons.backgroundColor = .white
         return buttons
@@ -295,7 +296,11 @@ fileprivate extension HomeViewController {
         setupViews()
         setupTheme()
         setupConstraints()
+        //TODO: remove following comment
         addDebitCardTimelineIfNeeded()
+        
+        //TODO: remove this line from here after handling transactions api success
+        addTransactionsViewController()
         bindViewModel()
     }
     
@@ -550,12 +555,12 @@ fileprivate extension HomeViewController {
             self?.userBarButtonItem.button?.layer.cornerRadius = (self?.userBarButtonItem.button?.frame.size.height  ?? 30 )/2
             self?.userBarButtonItem.button?.clipsToBounds = true
             
-            self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
-           /* if let url = imageUrl {
-                self?.userBarButtonItem.button?.sd_setImage(with: url, for: .normal)
+           // self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
+            if let url = imageUrl {
+                self?.userBarButtonItem.button?.sd_setImage(with: URL(string:url), for: .normal)
             } else {
                 self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
-            } */
+            }
             
         }).disposed(by: disposeBag)
 
@@ -571,13 +576,31 @@ fileprivate extension HomeViewController {
         
         viewModel.outputs.shimmering.bind(to: showButton.rx.isShimmerOn).disposed(by: disposeBag)
         viewModel.outputs.shimmering.bind(to: hideButton.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: balanceLabel.rx.isShimmerOn).disposed(by: disposeBag)
         viewModel.outputs.shimmering.bind(to: balanceValueLabel.rx.isShimmerOn).disposed(by: disposeBag)
         viewModel.outputs.shimmering.bind(to: balanceDateLabel.rx.isShimmerOn).disposed(by: disposeBag)
         
         viewModel.outputs.balance.bind(to: balanceValueLabel.rx.attributedText).disposed(by: disposeBag)
         
-        //TODO: remove this line from here after handling transactions api success
-//        addTransactionsViewController()
+        viewModel.outputs.dashboardWidgets.bind(to: widgetView.viewModel.inputs.widgetsDataObserver).disposed(by: disposeBag)
+        
+        viewModel.outputs.hideWidgetsBar.subscribe(onNext: {[weak self] hide in
+            if (hide) {
+                self?.widgetViewHeightConstraints.constant = 0
+                self?.widgetView.isHidden = true
+            }
+            else {
+                self?.widgetViewHeightConstraints.constant = 115
+                self?.widgetView.isHidden = false
+            }
+            self?.updateParallaxHeaderProgress()
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.dashboardWidgets.bind(to: widgetView.rx.dashboardWidgets).disposed(by: disposeBag)
+        
+        widgetView.viewModel.selectedWidget.subscribe(onNext: {[weak self] in
+            self?.viewModel.inputs.selectedWidgetObserver.onNext($0 ?? .unknown)
+        }).disposed(by: disposeBag)
     }
     
     func getParallaxHeaderHeight() -> CGFloat {
@@ -642,8 +665,8 @@ fileprivate extension HomeViewController {
     }
     
     func addDebitCardTimelineIfNeeded() {
-        viewModel.outputs.debitCardOnboardingStageViewModel.subscribe(onNext: { [weak self] stagesViewModel in
-            guard let `self` = self else { return }
+        viewModel.outputs.debitCardOnboardingStageViewModel.withUnretained(self).subscribe(onNext: { `self`, stagesViewModel in
+         //   guard let `self` = self else { return }
             if let stagesViewModel = stagesViewModel {
                 self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.forEach { $0.removeFromSuperview() }
                 let stagesView = PaymentCardOnboardingStatusView(theme: self.themeService, viewModel: stagesViewModel)
@@ -653,8 +676,29 @@ fileprivate extension HomeViewController {
                 self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.first?.removeFromSuperview()
             }}, onCompleted: { [weak self] in
                 guard let `self` = self else { return }
-                self.addTransactionsViewController()
+               // self.addTransactionsViewController()
         }).disposed(by: disposeBag)
+        
+       /* viewModel.outputs.resumeKYC.subscribe(onNext: { [weak self] vms in
+            guard let `self` = self else { return }
+            
+            let view = DashboardTimelineView(theme: self.themeService, viewModel: vms.first!)
+            
+            self.transactionContainer.addSubview(view)
+            view.alignAllEdgesWithSuperview()
+            
+            self.addTransactionsViewController()
+          /*  if let stagesViewModel = stagesViewModel {
+                self.transactionContainer.subviews.filter { $0 is Dashb }.forEach { $0.removeFromSuperview() }
+                let stagesView = PaymentCardOnboardingStatusView(theme: self.themeService, viewModel: stagesViewModel)
+                self.transactionContainer.addSubview(stagesView)
+                stagesView.alignAllEdgesWithSuperview()
+            } else {
+                self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.first?.removeFromSuperview()
+            }*/ }, onCompleted: { [weak self] in
+                guard let `self` = self else { return }
+//                self.addTransactionsViewController()
+        }).disposed(by: disposeBag) */
     }
 }
 

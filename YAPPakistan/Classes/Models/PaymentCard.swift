@@ -28,7 +28,7 @@ struct CardDetails: Codable {
 
 public class PaymentCard: Codable {
     
-    internal init(accountNumber: String?, accountType: String?, active: Bool?, atmAllowed: Bool? = nil, availableBalance: Double?, backImage: String? = nil, blocked: Bool? = nil, cardBalance: Double?, cardName: String? = nil, cardScheme: String?, cardSerialNumber: String?, cardType: PaymentCardType, currentBalance: Double?, customerId: String?, delivered: Bool?, deliveryStatus: PaymentCard.DeliveryStatus, expiryDate: String?, frontImage: String?, issuanceDate: String?, maskedCardNo: String?, nameUpdated: Bool?, onlineBankingAllowed: Bool?, paymentAbroadAllowed: Bool?, physical: Bool, pinCreated: Bool?, pinStatus: PaymentCard.PinStatus?, productCode: String?, retailPaymentAllowed: Bool? = nil, shipmentStatus: String?, status: PaymentCard.Status?, uuid: String?, cardDetails: CardDetails? = nil) {
+    internal init(accountNumber: String?, accountType: String?, active: Bool?, atmAllowed: Bool? = nil, availableBalance: Double?, backImage: String? = nil, blocked: Bool? = nil, cardBalance: Double?, cardName: String? = nil, cardScheme: String?, cardSerialNumber: String?, cardType: PaymentCardType, currentBalance: Double?, customerId: String?, delivered: Bool?, deliveryStatus: PaymentCard.DeliveryStatus, expiryDate: String?, frontImage: String?, issuanceDate: String?, maskedCardNo: String?, nameUpdated: Bool?, onlineBankingAllowed: Bool?, paymentAbroadAllowed: Bool?, physical: Bool, pinCreated: Bool?, pinStatus: PaymentCard.PinStatus?, productCode: String?, retailPaymentAllowed: Bool? = nil, shipmentStatus: String?, status: CardStatus?, uuid: String?, cardDetails: CardDetails? = nil) {
         self.accountNumber = accountNumber
         self.accountType = accountType
         self.active = active
@@ -92,7 +92,7 @@ public class PaymentCard: Codable {
     let productCode: String?
     var retailPaymentAllowed: Bool?
     let shipmentStatus: String?
-    let status: Status?
+    let status: CardStatus?
     let uuid: String?
     var cardDetails: CardDetails?
     var deliveryDate: Date?
@@ -141,7 +141,7 @@ public class PaymentCard: Codable {
         productCode = try? values?.decodeIfPresent(String.self, forKey: .productCode)
         retailPaymentAllowed = try? values?.decodeIfPresent(Bool.self, forKey: .retailPaymentAllowed)
         shipmentStatus = try? values?.decodeIfPresent(String.self, forKey: .shipmentStatus)
-        status = try? values?.decodeIfPresent(Status.self, forKey: .status)
+        status = try? values?.decodeIfPresent(CardStatus.self, forKey: .status)
         uuid = try? values?.decodeIfPresent(String.self, forKey: .uuid)
         
         deliveryDate = try? (values?.decodeIfPresent(String.self, forKey: .deliveryDate).map { DateFormatter.transactionDateFormatter.date(from: $0) }) ?? nil
@@ -198,8 +198,36 @@ extension PaymentCardType: Comparable {
     }
 }
 
-extension PaymentCard {
+public enum CardStatus: String, Codable {
+    case active = "ACTIVE"
+    case blocked = "BLOCKED"
+    case inActive = "INACTIVE"
+    case hotlisted = "HOTLISTED"
+    case expired = "EXPIRED"
+    case closed = "CLOSED"
+    case cancelled = "CANCELLED"
     
+}
+
+public extension CardStatus {
+    var leaplumStatus: String {
+        switch self {
+        case .active:
+            return "active"
+        case .blocked:
+            return "frozen"
+        case .inActive:
+            return "in-active"
+        case .hotlisted:
+            return "hotlisted"
+        case .expired:
+            return "expired"
+        case .closed:
+            return "closed"
+        case .cancelled:
+            return "expired"
+        }
+    }
 }
 
 extension PaymentCard {

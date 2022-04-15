@@ -649,3 +649,27 @@
 "screen_user_profile_display_text_linkedin" = "LinkedIn";
 "screen_user_profile_button_facebook" = "Like us";
 "screen_user_profile_button_logout" = "Log out";
+
+// MARK: - Payment Card Onboarding Stage View
+"view_payment_card_onboarding_stage_card_on_the_way_title" = "Your card is on the way";
+"view_payment_card_onboarding_stage_card_on_the_way_subheading" = "Give us up to 48 hours for it to reach you";
+"view_payment_card_onboarding_stage_card_on_the_way_action_title" = "Track your delivery";
+"view_payment_card_onboarding_stage_additional_requirement_action_title" = "Submit now";
+"view_payment_card_onboarding_stage_completed_subheading" = "Your card was delieverd on %@";
+"view_payment_card_onboarding_stage_two_title" = "Your card is delivered";
+"view_payment_card_onboarding_stage_two_initial_subtitle" = "Your EID scan is required.";
+"view_payment_card_onboarding_stage_two_active_subheading" = "Your EID scan has been carried out. We are now processing your account. Please wait for activation to be completed shortly.";
+"view_payment_card_onboarding_stage_two_completed_subheading" = "Your EID scan was approved on %@";
+"view_payment_card_onboarding_stage_additional_requirement_title" = "Additional requirements";
+"view_payment_card_onboarding_stage_two_initial_subtitle" = "EID scan will be carried out by the agent";
+"view_payment_card_onboarding_stage_additional_requirement_subtitle" = "We’ll need some more additional information to proceed";
+"view_payment_card_onboarding_stage_additional_requirement_provided_subtitle" = "We are reviewing your documents submitted on %@";
+"view_payment_card_onboarding_stage_three_title" = "Set your card PIN";
+"view_payment_card_onboarding_stage_three_initial_subtitle" = "You’ll need this to begin using your card";
+"view_payment_card_onboarding_stage_three_action_title" = "Set PIN";
+"view_payment_card_onboarding_stage_three_completed_subheading" = "Your PIN was successfully set on %@";
+"view_payment_card_onboarding_stage_four_title" = "Time to top up";
+"view_payment_card_onboarding_stage_four_subheading" = "Add money to your YAP card to start spending";
+"view_payment_card_onboarding_stage_four_action_title" = "Top up now";
+"view_payment_card_onboarding_stage_in_process_label_text" = "In process";
+"view_payment_card_onboarding_stage_completed_label_text" = "Completed";

@@ -19,6 +19,9 @@ protocol HomeViewModelInputs {
     var biometryChangeObserver: AnyObserver<Bool> { get }
     var completeVerificationObserver: AnyObserver<Void> { get }
     var viewDidAppearObserver: AnyObserver<Void> { get }
+    
+    var widgetsChangeObserver: AnyObserver<Void> { get }
+    var selectedWidgetObserver: AnyObserver<WidgetCode?> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -52,6 +55,13 @@ protocol HomeViewModelOutputs {
     var additionalRequirements: Observable<Void> { get }
     var topUp: Observable<PaymentCard> { get }
     var balance: Observable<NSAttributedString?> { get }
+    var resumeKYC: Observable<[DashboardTimelineModel]> { get }
+    
+    var hideWidgetsBar: Observable<Bool> { get }
+    var canCallForWidgets: Observable<Void> { get }
+    var checkParalaxHeight: Observable<Void> { get }
+    var showLoader: Observable<Bool> { get }
+    var dashboardWidgets: Observable<[DashboardWidgetsResponse]> { get }
 }
 
 protocol HomeViewModelType {
@@ -86,6 +96,19 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let additionalRequirementsSubject = PublishSubject<Void>()
     private let topUpCardSubject = PublishSubject<PaymentCard>()
     private let balanceSubject = ReplaySubject<NSAttributedString?>.create(bufferSize: 1)
+    private let resumeKYCSubject =  ReplaySubject<[DashboardTimelineModel]>.create(bufferSize: 1)
+    private let canCallForWidgetsSubject = PublishSubject<Void>()
+    private let widgetsChangeSubject = PublishSubject<Void>()
+    private let paralaxHeightSubject = BehaviorSubject<Void>(value: ())
+    private let showLoaderSubject = BehaviorSubject<Bool>(value: false)
+    private var dashboardWidgetsSubject = ReplaySubject<[DashboardWidgetsResponse]>.create(bufferSize: 1)
+    private let hideWidgetsSubject = BehaviorSubject<Bool>(value: false)
+    private let selectedWidgetSubject = BehaviorSubject<WidgetCode?>(value: nil)
+    private let isCardActivatedSubject = BehaviorSubject<CardStatus?>(value: nil)
+    
+    
+    private var numberOfShownWidgets = 0
+    private var cardStatus: CardStatus = .inActive
 
     var inputs: HomeViewModelInputs { return self }
     var outputs: HomeViewModelOutputs { return self }
@@ -97,7 +120,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var biometryChangeObserver: AnyObserver<Bool> { biometryChangeSuject.asObserver() }
     var completeVerificationObserver: AnyObserver<Void> { completeVerificationSubject.asObserver() }
     var viewDidAppearObserver: AnyObserver<Void> { return viewDidAppearSubject.asObserver() }
-
+    var widgetsChangeObserver: AnyObserver<Void> { widgetsChangeSubject.asObserver() }
+    var selectedWidgetObserver: AnyObserver<WidgetCode?> {selectedWidgetSubject.asObserver()}
+    
     // MARK: Outputs
 
     var result: Observable<Void> { resultSubject.asObservable() }
@@ -126,6 +151,12 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var additionalRequirements: Observable<Void> { additionalRequirementsSubject.asObservable() }
     var topUp: Observable<PaymentCard> { topUpCardSubject }
     var balance: Observable<NSAttributedString?> { balanceSubject.asObservable() }
+    var resumeKYC: Observable<[DashboardTimelineModel]> { resumeKYCSubject.asObservable() }
+    var hideWidgetsBar: Observable<Bool> { hideWidgetsSubject.asObservable() }
+    var canCallForWidgets: Observable<Void> { canCallForWidgetsSubject.asObservable() }
+    var checkParalaxHeight: Observable<Void> { paralaxHeightSubject.asObservable() }
+    var showLoader: Observable<Bool> { showLoaderSubject.asObservable() }
+    var dashboardWidgets: Observable<[DashboardWidgetsResponse]> { dashboardWidgetsSubject.asObservable() }
 
     // MARK: Init
 
@@ -181,6 +212,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
         generateCellViewModels()
         getCardBalance()
+        getWidgets(repository: cardsRepository)
         getCards()
         bindPaymentCardOnboardingStagesViewModel()
     }
@@ -241,21 +273,31 @@ extension HomeViewModel {
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
             print("success \(list)")
             var card = PaymentCard.mock
-//            self?.bankResultsSubject.onNext(bankList)
-//            let cellVMs = bankList.map { bank -> AddBeneficiaryCellViewModel in
-//                return AddBeneficiaryCellViewModel(bank)
-//            }
-//            self?.dataSourceSubject.onNext([SectionModel(model: 0, items: cellVMs)])
             self?.cardsSubject.onNext(list ?? [])
-          //  self?.shimmeringSubject.onNext(false)
+            self?.shimmeringSubject.onNext(false)
         }).disposed(by: disposeBag)
+        
+        cardsSubject.subscribe(onNext: {[weak self] in
+            let status = $0.filter{ $0.cardType == .debit }.first?.status
+            self?.isCardActivatedSubject.onNext(status)
+        }).disposed(by: disposeBag)
+        
+        isCardActivatedSubject
+            .distinctUntilChanged()
+            .subscribe(onNext: {[weak self] cardStatus in
+                guard let self = self else { return }
+                if cardStatus == .active {
+                    self.canCallForWidgetsSubject.onNext(())
+                }
+            }).disposed(by: disposeBag)
     }
     
     func bindPaymentCardOnboardingStagesViewModel() {
-        let request = viewDidAppear//.skip(1).startWith(())
+        self.shimmeringSubject.onNext(true)
+        let request = viewDidAppearSubject.startWith(())
             .flatMap { [unowned self] _ in self.transactionDataProvider.fetchTransactions()
             }.share()
-        
+    
         request.elements().subscribe(onNext: { [weak self] pageAbleRes in
             print("transactions response \(pageAbleRes)")
             self?.shimmeringSubject.onNext(false)
@@ -264,6 +306,12 @@ extension HomeViewModel {
         request.errors().subscribe(onNext: { [weak self] erro in
             print("transactions error \(erro)")
             self?.shimmeringSubject.onNext(false)
+         //   self?.dashboardTimelineStatus(accountStatus: .addressCaptured)
+            var mockCard = PaymentCard.mock
+            var account = self?.accountProvider.currentAccountValue.value!
+            let vm = PaymentCardInitiatoryStageViewModel(paymentCard: mockCard, account: account!)
+            self?.dashobarStatusActions(viewModel: vm)
+            self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
         }).disposed(by: disposeBag)
         
         let params = Observable.combineLatest(request.elements().map { $0.content },
@@ -276,11 +324,15 @@ extension HomeViewModel {
         let requestError = Observable.combineLatest(request.errors(),
                                                     debitCard.unwrap(),
                                                     accountProvider.currentAccount.unwrap()).share()
-        requestError
-            .map { PaymentCardInitiatoryStageViewModel(paymentCard: $0.1, account: $0.2) }
-            .do(onNext: { [weak self] in self?.dashobarStatusActions(viewModel: $0) })
-            .bind(to: debitCardOnboardingStageViewModelSubject)
-            .disposed(by: disposeBag)
+       
+        
+//        requestError
+//            .map { _ in PaymentCardInitiatoryStageViewModel(paymentCard: mockCard, account: account) }
+//            .do(onNext: { [weak self] in self?.dashobarStatusActions(viewModel: $0) })
+//            .bind(to: debitCardOnboardingStageViewModelSubject)
+//            .disposed(by: disposeBag)
+        
+        
         
         // Transactions are not zero, hide debit card timeline
 //                requestError
@@ -332,5 +384,60 @@ extension HomeViewModel {
             .withLatestFrom(debitCard.unwrap())
             .bind(to: topUpCardSubject)
             .disposed(by: dashboardStatusActionDisposeBag)
+    }
+    
+    private func dashboardTimelineStatus(accountStatus: AccountStatus) {
+        
+        var vms = [DashboardTimelineModel]()
+        if accountStatus == .addressCaptured {
+            let vm = DashboardTimelineModel(title: "Complete your application", description: "We need some additional information", leftIcon: UIImage.init(named: "timeline_account_verification", in: .yapPakistan), isSeparator: true, isSeparatorVague: false, isProgress: false, progressStatus: "", isWholeContainerVague: false, btnTitle: "Complete your registration", isBtnHidden: false)
+            vms.append(vm)
+        }
+        self.resumeKYCSubject.onNext(vms)
+    }
+}
+
+// MARK: - Widgets
+
+extension HomeViewModel {
+    
+    func getWidgets(repository: CardsRepositoryType) {
+        
+     /*   let request = Observable.merge(canCallForWidgetsSubject, widgetsChangeSubject)
+            .do(onNext: {[weak self] in
+                    self?.paralaxHeightSubject.onNext(())
+                self?.showLoaderSubject.onNext(true) })
+            .flatMap { repository.getDashboardWidgets() }
+            .share(replay: 1, scope: .whileConnected) */
+        self.showLoaderSubject.onNext(true)
+        let request = repository.getDashboardWidgets().share()
+        
+        request.elements()
+            .subscribe(onNext: {[weak self] in
+                guard let self = self else { return }
+                self.showLoaderSubject.onNext(false)
+                self.dashboardWidgetsSubject.onNext($0)
+                let dataToBeShown = $0.filter {$0.status ?? false}
+                self.numberOfShownWidgets = dataToBeShown.count
+                self.widgetVisibility()
+        }).disposed(by: disposeBag)
+        
+        request
+            .errors()
+            .do(onNext: { [weak self] _ in
+            self?.showLoaderSubject.onNext(false) })
+            .map{$0.localizedDescription}
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+    }
+    
+    func widgetVisibility() {
+        //TODO: uncomment following
+     /*   if (cardStatus == .active) && (self.numberOfShownWidgets > 0) && !(YAPUserDefaults.isWidgetsBarHidden()) {
+            self.hideWidgetsSubject.onNext(false)
+        }
+        else {
+            self.hideWidgetsSubject.onNext(true)
+        } */
     }
 }

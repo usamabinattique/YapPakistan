@@ -42,6 +42,7 @@ protocol CardsRepositoryType: AnyObject {
     func addTopupExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
     func deletePaymentGatewayBeneficiary(id: String) -> Observable<Event<String?>>
     func getCardBalance() -> Observable<Event<Balance>>
+    func getDashboardWidgets() -> Observable<Event<[DashboardWidgetsResponse]>>
 }
 
 class CardsRepository: CardsRepositoryType {
@@ -168,6 +169,10 @@ class CardsRepository: CardsRepositoryType {
     
     public func getCardBalance() -> Observable<Event<Balance>> {
         return cardsService.getCardBalance().materialize()
+    }
+    
+    public func getDashboardWidgets() -> Observable<Event<[DashboardWidgetsResponse]>> {
+        return customerService.getDashboardWidgets().materialize()
     }
 }
 

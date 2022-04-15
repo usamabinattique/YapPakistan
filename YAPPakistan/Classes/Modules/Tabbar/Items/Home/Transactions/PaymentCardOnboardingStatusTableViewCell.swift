@@ -82,12 +82,12 @@ open class PaymentCardOnboardingStatusTableViewCell: RxUITableViewCell {
     // MARK: - Init
     override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        commonInit()
+       // commonInit()
     }
     
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
-        commonInit()
+       // commonInit()
     }
     
     private func commonInit() {
@@ -95,12 +95,15 @@ open class PaymentCardOnboardingStatusTableViewCell: RxUITableViewCell {
         
         setupViews()
         setupConstraints()
+        setupTheme()
     }
     
     // MARK: - Configurationn
     open override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
         guard let viewModel = viewModel as? PaymentCardOnboardingStageModel else { return }
         self.viewModel = viewModel
+        self.themeService = themeService
+        commonInit()
         bind()
     }
     
@@ -133,6 +136,14 @@ private extension PaymentCardOnboardingStatusTableViewCell {
             .height(constant: 30)
         iconStackView.width(constant: 30)
         topStackView.alignEdgesWithSuperview([.left, .right])
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: [titleLabel.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [completedLabel.rx.textColor, inProcessLabel.rx.textColor])
+            .bind({ UIColor($0.greyDark) }, to: [subheadingLabel.rx.textColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func bind() {

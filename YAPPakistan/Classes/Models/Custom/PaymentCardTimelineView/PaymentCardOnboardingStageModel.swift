@@ -119,17 +119,17 @@ public struct PaymentCardOnboardingStageModel {
     var icon: UIImage? {
         switch (stage, completed) {
         case (_, true):
-            return UIImage.sharedImage(named: "icon_stage_completed")
+            return UIImage.init(named: "icon_stage_completed", in: .yapPakistan)
         case (.shipping, false):
-            return UIImage.sharedImage(named: "icon_stage_shipping_in_progress")
+            return UIImage.init(named: "icon_stage_shipping_in_progress", in: .yapPakistan)
         case (.delivery, false):
-            return UIImage.sharedImage(named: "icon_stage_delivery_in_progress")
+            return UIImage.init(named: "icon_stage_delivery_in_progress", in: .yapPakistan)
         case (.additionalRequirement, false):
-            return UIImage.sharedImage(named: "icon_stage_additional_info")?.asTemplate
+            return UIImage.init(named: "icon_stage_additional_info", in: .yapPakistan)?.asTemplate
         case (.setPIN, false):
-            return UIImage.sharedImage(named: "icon_stage_set_pin_in_progress")
+            return UIImage.init(named: "icon_stage_set_pin_in_progress", in: .yapPakistan)
         case (.topUp, _):
-            return UIImage.sharedImage(named: "icon_stage_top_up")?.asTemplate
+            return UIImage.init(named: "icon_stage_top_up", in: .yapPakistan)?.asTemplate
         default:
             return nil
         }

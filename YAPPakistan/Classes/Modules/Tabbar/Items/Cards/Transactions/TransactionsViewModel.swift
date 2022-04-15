@@ -164,7 +164,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         return _numberOfRows
     }
     
-    private var _numberOfRows = 5
+    private var _numberOfRows = 10
     private var _numberOfSections = 1
 
     // let repository: TransactionsRepository
@@ -192,8 +192,8 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         
         showsNothingLabelSubject.onNext(cardSerialNumber != nil)
         
-        showShimmeringSubject.debounce(RxTimeInterval.seconds(10), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
-            self?._numberOfRows = IsLoading ? 5 : 0
+        showShimmeringSubject.debounce(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
+            self?._numberOfRows = IsLoading ? 10 : 0
             self?._numberOfSections = IsLoading ? 1 : 0
             self?.reloadDataSubject.onNext(())
         }).disposed(by: disposeBag)
