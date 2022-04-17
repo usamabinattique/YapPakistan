@@ -42,12 +42,12 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     func makeTabbar() {
         let viewController = YAPTabbarController(themeService: container.themeService)
         mainViewController = viewController
-
-        //        let menuViewModel = SideMenuViewModel()
-        //        let menuViewController = SideMenuViewController(viewModel: menuViewModel)
-        //        viewController.menuWidth = 0.85
-        //        viewController.menu = menuViewController
-
+        
+        let menuViewModel = SideMenuViewModel(repository: container.makeAccountRepository(), accountProvider: container.accountProvider)
+        let menuViewController = SideMenuViewController(themeService: container.themeService, viewModel: menuViewModel)
+        viewController.menuWidth = 0.85
+        viewController.menu = menuViewController
+        
         home(root: viewController)
         store(root: viewController)
         yapIt(root: viewController)
@@ -128,6 +128,11 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         //                DispatchQueue.main.async { self?.share(accountInfo: accountInfo, root: viewController) }
         //            }
         //        }).disposed(by: disposeBag)
+        
+        menuViewModel.outputs.result
+            .withUnretained(self)
+            .subscribe(onNext: {  $0.0.resultSuccess() })
+            .disposed(by: rx.disposeBag)
     }
 
     fileprivate func home(root: UITabBarController) {

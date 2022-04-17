@@ -99,6 +99,10 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.showCreditLimit.subscribe(onNext: { [weak self] _ in
             self?.showCreditLimit()
         }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.menuTap.subscribe(onNext: { [weak self] in
+            (self?.root as? MenuViewController)?.showMenu()
+        }).disposed(by: rx.disposeBag)
 
     }
     

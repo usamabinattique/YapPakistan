@@ -701,3 +701,27 @@
 "view_payment_card_onboarding_stage_initial_in_process_subtitle" = "Your application is under process. A YAP agent will get in touch to verifiy your account.";
 "view_payment_card_onboarding_stage_initial_in_no_trans_found_subtitle" = "No transaction found";
 "view_payment_card_onboarding_stage_completed_label_text" = "Completed";
+
+//MARK: - Menu screen
+
+"screen_menu_display_text_account" = "Account";
+"screen_menu_display_text_copy" = "Copy";
+"screen_menu_display_text_share" = "Share";
+"screen_menu_display_text_analytics" = "Analytics";
+"screen_menu_display_text_refer_friend" = "Refer a friend";
+"screen_menu_display_text_yap_young" = "Young";
+"screen_menu_display_text_household_salary" = "Household salary";
+"screen_menu_display_text_multi_currency" = "Multi currency";
+"screen_menu_display_text_alert_and_notifications" = "Alerts and notifications";
+"screen_menu_display_text_statements" = "Statements";
+"screen_menu_display_text_contact_us" = "Contact us";
+"screen_menu_display_text_help_and_support" = "Help and support";
+"screen_menu_display_text_business" = "Business";
+"screen_menu_display_text_my_profile" = "My profile";
+"screen_menu_display_text_household" = "Household";
+"screen_menu_display_text_locate_atm_cd" = "ATM and cash deposit";
+"screen_menu_display_text_household_notification" = "Notifications";
+"screen_menu_display_text_live_chat" = "Live chat";
+"screen_menu_display_text_qr_code" = "My QR code";
+"screen_menu_display_text_dashboard_widget" = "Manage widgets";
+"screen_menu_display_text_account_limits" = "Account limits";
