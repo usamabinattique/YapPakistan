@@ -221,7 +221,7 @@ public struct PaymentCardOnboardingStageModel {
         
         case (_, .additionalRequirement, _, _, .addressCaptured):
             return true
-        case (.shipped, .setPIN, _, .physicalCardSuccess, _):
+        case (.shipped, .setPIN, _, .physicalCardSuccess, _), (_, .setPIN, _, .physicalCardSuccess, _):
             return true
         default:
             return false

@@ -211,6 +211,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .map({ ($0.accountStatus?.stepValue ?? 100) < AccountStatus.addressCaptured.stepValue })
             .bind(to: completeVerificationResultSubject)
             .disposed(by: disposeBag)
+        
 
         viewDidAppearSubject.subscribe(onNext: {
             accountProvider.refreshAccount()

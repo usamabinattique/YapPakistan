@@ -99,7 +99,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.showCreditLimit.subscribe(onNext: { [weak self] _ in
             self?.showCreditLimit()
         }).disposed(by: rx.disposeBag)
-
+        
+        viewController.viewModel.outputs.setPin.withUnretained(self).subscribe(onNext: { `self`, card  in
+            self.setPinIntroScreen(cardSerial: card.cardSerialNumber ?? "")
+        }).disposed(by: rx.disposeBag)
+        
     }
     
     func showCreditLimit() {
@@ -162,5 +166,58 @@ extension HomeCoodinator {
        // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
         let name = Notification.Name.init(.logout)
         NotificationCenter.default.post(name: name,object: nil)
+    }
+}
+
+//MARK: Set Pin
+extension HomeCoodinator {
+    func setPinIntroScreen(cardSerial: String) {
+        let viewController = SetpinIntroModuleBuilder(container: self.container).viewController()
+        self.navigationRoot.pushViewController(viewController)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.setPin(cardSerial: cardSerial) })
+            .disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+    }
+
+    func setPin(cardSerial: String) {
+        let viewController = SetCardPinModuleBuilder(cardSerialNumber: cardSerial,
+                                                     container: self.container).viewController()
+        self.navigationRoot.pushViewController(viewController)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { $0.0.confirmPin(code: $0.1.pinCode, cardSerial: $0.1.cardSerial) })
+            .disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+    }
+    
+    func confirmPin(code: String, cardSerial: String) {
+        let viewController = ConfirmCardPinModuleBuilder(pinCode: code,
+                                                         cardSerialNumber: cardSerial,
+                                                         container: self.container).viewController()
+        self.navigationRoot.pushViewController(viewController)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.setPinSuccess() })
+            .disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+    }
+
+    func setPinSuccess() {
+        let viewController = SetPintSuccessModuleBuilder(container: self.container).viewController()
+        self.navigationRoot.pushViewController(viewController)
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.navigationRoot.popToRootViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
     }
 }
