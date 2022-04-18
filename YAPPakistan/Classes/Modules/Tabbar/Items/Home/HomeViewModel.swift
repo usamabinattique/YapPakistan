@@ -63,6 +63,7 @@ protocol HomeViewModelOutputs {
     var showLoader: Observable<Bool> { get }
     var dashboardWidgets: Observable<[DashboardWidgetsResponse]> { get }
     var noTransFound: Observable<String> { get }
+    var addCreditInfo: Observable<Void> { get }
 }
 
 protocol HomeViewModelType {
@@ -107,6 +108,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let selectedWidgetSubject = BehaviorSubject<WidgetCode?>(value: nil)
     private let isCardActivatedSubject = BehaviorSubject<CardStatus?>(value: nil)
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let addCreditInfoSubject = ReplaySubject<Void>.create(bufferSize: 1)
     
     
     private var numberOfShownWidgets = 0
@@ -160,6 +162,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var showLoader: Observable<Bool> { showLoaderSubject.asObservable() }
     var dashboardWidgets: Observable<[DashboardWidgetsResponse]> { dashboardWidgetsSubject.asObservable() }
     var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
+    var addCreditInfo: Observable<Void> { addCreditInfoSubject.asObservable() }
 
     // MARK: Init
 
@@ -219,6 +222,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
         profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL?.absoluteString, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
         
+        accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
+        
         generateCellViewModels()
         getCardBalance()
         getWidgets(repository: cardsRepository)
@@ -234,7 +239,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     }
     
     func getCreditLimitViewModel() -> CreditLimitCellViewModel {
-        let limitVM = CreditLimitCellViewModel(12)
+        let limitVM = CreditLimitCellViewModel(accountProvider.currentAccountValue.value?.firstCreditLimit ?? 0)
         limitVM.outputs.info.bind(to: showCreditLimitSubject).disposed(by: disposeBag)
         return limitVM
     }
@@ -287,13 +292,13 @@ extension HomeViewModel {
             }
             self?.shimmeringSubject.onNext(false)
             if !(list?.isEmpty ?? false) {
-//                self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
+                self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
             }
             
             //TODO: remove following
-            else {
-                self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
-            }
+//            else {
+//                self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
+//            }
             
         }).disposed(by: disposeBag)
         

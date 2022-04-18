@@ -237,6 +237,7 @@ class HomeViewController: UIViewController {
     private var balanceHeight: NSLayoutConstraint!
     private var balanceLabelHeight: NSLayoutConstraint!
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
+    private var isCreditInfoAdded = false
 
     // MARK: Initialization
 
@@ -613,7 +614,16 @@ fileprivate extension HomeViewController {
             self.transactionContainer.addSubview(self.noTransFoundLabel)
             self.noTransFoundLabel.alignCenterWith(self.transactionContainer)
         }).disposed(by: disposeBag)
-
+        
+        viewModel.outputs.addCreditInfo.take(1).withUnretained(self).subscribe(onNext:  { `self`, _ in
+           /* self.isCreditInfoAdded = true
+            self.transactionContainer.removeSubviews()
+            self.transactionContainer.addSubview(self.creditLimitView)
+            self.creditLimitView.alignEdgeWithSuperview(.top, constant: 12)
+            self.creditLimitView.alignEdgeWithSuperview(.left)
+            self.creditLimitView.alignEdgeWithSuperview(.right)
+            self.creditLimitView.height(constant: 42) */
+        }).disposed(by: disposeBag)
     }
     
     func getParallaxHeaderHeight() -> CGFloat {
@@ -684,7 +694,13 @@ fileprivate extension HomeViewController {
                 self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.forEach { $0.removeFromSuperview() }
                 let stagesView = PaymentCardOnboardingStatusView(theme: self.themeService, viewModel: stagesViewModel)
                 self.transactionContainer.addSubview(stagesView)
-                stagesView.alignAllEdgesWithSuperview()
+                if !self.isCreditInfoAdded {
+                    stagesView.alignAllEdgesWithSuperview()
+                } else {
+                    stagesView.alignEdgesWithSuperview([.left,.right,.bottom])
+                    stagesView.toBottomOf(self.creditLimitView)
+                }
+                
             } else {
                 self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.first?.removeFromSuperview()
             }}, onCompleted: { [weak self] in
