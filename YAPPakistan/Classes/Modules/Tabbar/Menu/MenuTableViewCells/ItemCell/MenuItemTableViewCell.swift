@@ -86,7 +86,6 @@ private extension MenuItemTableViewCell {
     
     func setupTheme() {
         self.themeService.rx
-            .bind({ UIColor($0.greyDark) }, to: icon.rx.tintColor)
             .bind({ UIColor($0.primaryDark) }, to: title.rx.textColor)
             .disposed(by: disposeBag)
     }

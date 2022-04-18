@@ -22,7 +22,7 @@ open class DropDownButton: UIButton {
     }
     
     private func commonInit() {
-        setImage(UIImage.sharedImage(named: "icon_drop_down"), for: .normal)
+        setImage(UIImage(named: "icon_drop_down", in: .yapPakistan), for: .normal)
         translatesAutoresizingMaskIntoConstraints = false
     }
     

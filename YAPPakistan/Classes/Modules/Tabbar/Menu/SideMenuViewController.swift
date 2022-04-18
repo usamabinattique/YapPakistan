@@ -136,6 +136,7 @@ extension SideMenuViewController: ViewDesignable {
         bindTableView()
         bindOutputs()
         bindUpdate()
+        bindLogoutPopup()
     }
     
     public func setupTheme() {
@@ -171,12 +172,9 @@ private extension SideMenuViewController {
     func bindOutputs() {
         menuTableView.rx.modelSelected(ReusableTableViewCellViewModelType.self).filter { $0 is MenuItemTableViewCellViewModelType}.map { ($0 as! MenuItemTableViewCellViewModel).menuItemType }.bind(to: viewModel.inputs.menuItemSelectedObserver).disposed(by: disposeBag)
         
-//        menuTableView.rx.modelSelected(ReusableTableViewCellViewModelType.self).filter { $0 is HouseholdMenuItemTableViewCellViewModelType}.map { ($0 as! HouseholdMenuItemTableViewCellViewModel).menuItemType }.bind(to: viewModel.inputs.menuItemSelectedObserver).disposed(by: disposeBag)
-        
         accountsTableView.rx.modelSelected(UserAccountTableViewCellViewModel.self).map { $0.account }.bind(to: viewModel.inputs.accountSelectedObserver).disposed(by: disposeBag)
         
         settingsButton.rx.tap.bind(to: viewModel.inputs.settingsObserver).disposed(by: disposeBag)
-        logoutButton.rx.tap.bind(to: viewModel.inputs.logoutObserver).disposed(by: disposeBag)
     }
     
     func bindUpdate() {
@@ -184,5 +182,25 @@ private extension SideMenuViewController {
             self.menuTableView.beginUpdates()
             self.menuTableView.endUpdates()
         }).disposed(by: disposeBag)
+    }
+    
+    func bindLogoutPopup() {
+        logoutButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                self?.logoutPopup()
+            }).disposed(by: disposeBag)
+    }
+    
+    func logoutPopup() {
+        showAlert(title: "screen_profile_action_display_text_logout_popups_title".localized, message: "screen_profile_action_display_text_logout_popups_message".localized, defaultButtonTitle: "screen_profile_action_display_text_logout_popups_logout".localized, secondayButtonTitle: "screen_profile_action_display_text_logout_popups_cencel".localized, defaultButtonHandler: { [weak self] _ in
+            
+            
+            
+            self?.viewModel.inputs.logoutObserver.onNext(())
+        }, secondaryButtonHandler: { [weak self] _ in
+            self?.hideAlertView()
+        }, completion: nil)
+        
+        
     }
 }

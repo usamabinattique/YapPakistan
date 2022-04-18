@@ -29,7 +29,7 @@ public protocol SideMenuViewModelOutput {
     var error: Observable<String> { get }
     var logout: Observable<Void>{ get }
     var result: Observable<Void> { get }
-    var openProfile: Observable<Void>{ get }
+    var openProfile: Observable<Account>{ get }
     var shareAccountInfo: Observable<String> { get }
 }
 
@@ -55,7 +55,6 @@ public class SideMenuViewModel: SideMenuViewModelType, SideMenuViewModelInput, S
     private let errorSubject = PublishSubject<String>()
     private let logoutSubject = PublishSubject<Void>()
     private let resultSubject = PublishSubject<Void>()
-    private let openProfileSubject = PublishSubject<Void>()
     private let shareAccountInfoSubject = PublishSubject<String>()
     private let showManageWidgetsSubject = BehaviorSubject<Bool>(value: false)
 
@@ -78,7 +77,7 @@ public class SideMenuViewModel: SideMenuViewModelType, SideMenuViewModelInput, S
     public var error: Observable<String> { errorSubject.asObservable() }
     public var logout: Observable<Void>{ return logoutSubject.asObservable() }
     public var result: Observable<Void> { return resultSubject.asObservable() }
-    public var openProfile: Observable<Void>{ return openProfileSubject.asObservable() }
+    public var openProfile: Observable<Account>{ return accountSelectedSubject.asObservable() }
     public var shareAccountInfo: Observable<String> { return shareAccountInfoSubject.asObservable() }
 
     private var menuViewModels = [ReusableTableViewCellViewModelType]()
@@ -92,6 +91,7 @@ public class SideMenuViewModel: SideMenuViewModelType, SideMenuViewModelInput, S
            self?.loadMenuCell(with: $0)
         }).disposed(by: disposeBag)
         
+        loadAcccountCells()
         logout(repository: repository)
     }
 }
@@ -99,7 +99,7 @@ public class SideMenuViewModel: SideMenuViewModelType, SideMenuViewModelInput, S
 private extension SideMenuViewModel {
     func loadMenuCell(with widgets: Bool) {
         let menuUserCellViewModel = MenuUserTableViewCellViewModel(accountProvider: self.accountProvider)
-        let accountInfoCellViewModel = MenuAccountInfoTableViewCellViewModel()
+        let accountInfoCellViewModel = MenuAccountInfoTableViewCellViewModel(accountProvider: self.accountProvider)
         accountInfoCellViewModel.outputs.shareAccountInfo.bind(to: shareAccountInfoObserver).disposed(by: disposeBag)
         menuViewModels.removeAll()
         
@@ -130,6 +130,24 @@ private extension SideMenuViewModel {
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .chat))
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .help))
         menuCellViewModelsSubject.onNext([SectionModel(model: 0, items: menuViewModels)])
+    }
+    
+    func loadAcccountCells() {
+
+        self.accountProvider.currentAccount.unwrap()
+            .map { account in
+                let cellModel = UserAccountTableViewCellViewModel(account: account, accountProvider: self.accountProvider)
+                return [SectionModel(model: 0, items: [cellModel])]
+            }
+            .bind(to: accountCellViewModelsSubject)
+            .disposed(by: disposeBag)
+//        SessionManager.current.allAccounts
+//            .map{ $0.filter{ $0.accountStatus != .invitationDeclined }}
+//            .map { $0.map { UserAccountTableViewCellViewModel(account: $0) } }
+//            .map { [SectionModel(model: 0, items: $0)] }
+//            .bind(to: accountCellViewModelsSubject)
+//            .disposed(by: disposeBag)
+
     }
 
     func logout(repository: AccountRepository) {

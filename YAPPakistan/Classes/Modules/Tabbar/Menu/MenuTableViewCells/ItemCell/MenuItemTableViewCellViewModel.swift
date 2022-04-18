@@ -50,13 +50,6 @@ class MenuItemTableViewCellViewModel: MenuItemTableViewCellViewModelType, Reusab
     init(menuItemType: MenuItemType) {
         self.menuItemType = menuItemType
         
-//        if menuItemType == .analytics {
-//            iconColorSubject.onNext(.yellow)
-//            //iconColorSubject.onNext(UIColor(hexString: "5E35B1")!)
-//        } else {
-//            iconColorSubject.onNext(.green)
-//            //iconColorSubject.onNext(UIColor(hexString: "9391B1")!)
-//        }
         iconColorSubject.onNext(menuItemType.color!)
         iconSubject.onNext(menuItemType.icon)
         titleSubject.onNext(menuItemType.title)

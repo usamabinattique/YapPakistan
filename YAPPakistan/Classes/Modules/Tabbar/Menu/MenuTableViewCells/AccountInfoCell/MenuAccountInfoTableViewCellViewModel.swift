@@ -36,6 +36,7 @@ class MenuAccountInfoTableViewCellViewModel: MenuAccountInfoTableViewCellViewMod
     let disposeBag = DisposeBag()
     var inputs: MenuAccountInfoTableViewCellViewModelInput { return self }
     var outputs: MenuAccountInfoTableViewCellViewModelOutput { return self }
+    private var accountProvider: AccountProvider!
     
     private let showInfoSubject = PublishSubject<Bool>()
     private let accountNumberSubject = BehaviorSubject<String?>(value: "")
@@ -51,24 +52,26 @@ class MenuAccountInfoTableViewCellViewModel: MenuAccountInfoTableViewCellViewMod
     var showInfo: Observable<Bool> { return showInfoSubject.asObservable() }
     var accountNumber: Observable<String?> { return accountNumberSubject.asObservable() }
     var iban: Observable<String?> { return ibanSubject.asObservable() }
-//    var showsShareButton: Observable<Bool> { return SessionManager.current.currentAccount.map{ $0?.parnterBankStatus == .activated }.asObservable() }
+    var showsShareButton: Observable<Bool> { return
+        self.accountProvider.currentAccount.map{ $0?.parnterBankStatus == .activated }.asObservable() }
     var shareAccountInfo: Observable<String> { return shareAccountInfoSubject.asObservable() }
     
     // MARK: - Init
-    init() {
-//        let account = SessionManager.current.currentAccount
-//        account.map { $0?.parnterBankStatus == .activated ? $0?.accountNumber : $0?.maskedAccountNumber }.bind(to: accountNumberSubject).disposed(by: disposeBag)
-//        account.map { account in (account?.parnterBankStatus == .activated ? account?.formattedIBAN : account?.maskedAndFormattedIBAN) }.bind(to: ibanSubject).disposed(by: disposeBag)
-//
-//        shareSubject.withLatestFrom(account).unwrap().subscribe(onNext: { [ unowned self ] account in
-//            AppAnalytics.shared.logEvent(MainMenuEvent.tapShareAccountDetails())
-//            let iban = (account.parnterBankStatus == .activated ? account.formattedIBAN : account.maskedAndFormattedIBAN) ?? ""
-//            let accountNumber = (account.parnterBankStatus == .activated ? account.accountNumber : account.maskedAccountNumber) ?? ""
-//            let accountInfo = "Account Number: " + accountNumber + "\nIBAN: " + iban
-//          //  UIPasteboard.general.string = "Account Number: " + accountNumber + "\nIBAN: " + iban
-//            //YAPToast.show("Copied to clipboard")
-//            self.shareAccountInfoSubject.onNext(accountInfo)
-//        }).disposed(by: disposeBag)
+    init(accountProvider: AccountProvider) {
+        self.accountProvider = accountProvider
+        let account = self.accountProvider.currentAccount
+        account.map { $0?.accountNumber /*$0?.parnterBankStatus == .activated ? $0?.accountNumber : $0?.maskedAccountNumber*/ }.bind(to: accountNumberSubject).disposed(by: disposeBag)
+        account.map { account in account?.formattedIBAN /*(account?.parnterBankStatus == .activated ? account?.formattedIBAN : account?.maskedAndFormattedIBAN)*/ }.bind(to: ibanSubject).disposed(by: disposeBag)
+
+        shareSubject.withLatestFrom(account).unwrap().subscribe(onNext: { [ unowned self ] account in
+            
+            let iban = account.formattedIBAN ?? ""//(account.parnterBankStatus == .activated ? account.formattedIBAN : account.maskedAndFormattedIBAN) ?? ""
+            let accountNumber = account.accountNumber ?? ""//(account.parnterBankStatus == .activated ? account.accountNumber : account.maskedAccountNumber) ?? ""
+            let accountInfo = "Account Number: " + accountNumber + "\nIBAN: " + iban
+          //  UIPasteboard.general.string = "Account Number: " + accountNumber + "\nIBAN: " + iban
+            //YAPToast.show("Copied to clipboard")
+            self.shareAccountInfoSubject.onNext(accountInfo)
+        }).disposed(by: disposeBag)
     }
     
 }

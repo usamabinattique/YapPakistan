@@ -101,9 +101,9 @@ extension MenuItemType {
     var color: UIColor? {
         switch self {
         case .analytics:
-            return .yellow
+            return UIColor(hexString: "5E35B1")
         case .referFriend, .young, .housholdSalary, .multicurrency, .notifications, .statements, .contact, .help, .locateATMCD, .hosuseholdNotifications, .chat, .qrCode, .dashboardWidget, .accountLimits:
-            return .green
+            return UIColor(hexString: "9391B1")
         }
     }
     
