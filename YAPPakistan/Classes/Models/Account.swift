@@ -53,7 +53,7 @@ public struct Account: Codable {
     public let isActive: String?
     public let documentsVerified: Bool?
     public var companyType: String?
-    public var soleProprietary: Bool
+    public var soleProprietary: Bool?
     public var accountStatus: AccountStatus? { AccountStatus(rawValue: _accountStatus ?? "") }
     private var _accountStatus: String?
     public var cnicName: String?
