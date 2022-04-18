@@ -206,6 +206,11 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .map({ ($0.accountStatus?.stepValue ?? 100) < AccountStatus.addressCaptured.stepValue })
             .bind(to: completeVerificationResultSubject)
             .disposed(by: disposeBag)
+        
+        additionalRequirementsSubject.withLatestFrom(accountProvider.currentAccount).unwrap()
+            .map({ ($0.accountStatus?.stepValue ?? 100) < AccountStatus.addressCaptured.stepValue })
+            .bind(to: completeVerificationResultSubject)
+            .disposed(by: disposeBag)
 
         viewDidAppearSubject.subscribe(onNext: {
             accountProvider.refreshAccount()
@@ -266,10 +271,11 @@ extension HomeViewModel {
         let cardsRequest = cardsRepository.getCards().share()
         
         cardsRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
-//            self?.dataSourceSubject.onNext([SectionModel(model: 0, items: [])])
-//            self?.showErrorSubject.onNext($0)
             print("error \($0)")
             self?.shimmeringSubject.onNext(false)
+            
+            //TODO: remove following
+            self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
         }).disposed(by: disposeBag)
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
@@ -280,7 +286,7 @@ extension HomeViewModel {
             }
             self?.shimmeringSubject.onNext(false)
             if !(list?.isEmpty ?? false) {
-                self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
+//                self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
             }
             
             //TODO: remove following
