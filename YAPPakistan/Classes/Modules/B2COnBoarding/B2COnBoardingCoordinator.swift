@@ -200,6 +200,7 @@ private extension B2COnBoardingCoordinator {
             var user = result.user
             user.timeTaken = self.viewModel.time
             //user.isWaiting == true ?
+            self.container.parent.configuration.eventCallback?(.onBoardSuccess(user: user.mobileNo.serverFormattedValue ?? ""))
             self.navigateToWaitingUserCongratulation(user: user, session: result.session)
             //: self.navigateToCongratulation(user: user)
                 // AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailSuccess())

@@ -14,6 +14,7 @@ public enum PKAppEvent: AppEventType {
     case logout
     case loggedIn
     case cancel
+    case onBoardSuccess(user: String)
     
     public func action() -> Void {
         switch(self) {
@@ -22,6 +23,8 @@ public enum PKAppEvent: AppEventType {
             case .loggedIn:
                 break
             case .cancel:
+                break
+            case .onBoardSuccess(user: _):
                 break
         }
     }
