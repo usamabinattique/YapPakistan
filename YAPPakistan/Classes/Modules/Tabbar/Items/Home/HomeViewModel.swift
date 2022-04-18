@@ -211,6 +211,11 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .map({ ($0.accountStatus?.stepValue ?? 100) < AccountStatus.addressCaptured.stepValue })
             .bind(to: completeVerificationResultSubject)
             .disposed(by: disposeBag)
+        
+        additionalRequirementsSubject.withLatestFrom(accountProvider.currentAccount).unwrap()
+            .map({ ($0.accountStatus?.stepValue ?? 100) < AccountStatus.addressCaptured.stepValue })
+            .bind(to: completeVerificationResultSubject)
+            .disposed(by: disposeBag)
 
         viewDidAppearSubject.subscribe(onNext: {
             accountProvider.refreshAccount()
@@ -275,6 +280,10 @@ extension HomeViewModel {
 //            self?.showErrorSubject.onNext($0)
             print("error \($0)")
             self?.shimmeringSubject.onNext(false)
+            
+            //TODO: remove following
+//            self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
+            
         }).disposed(by: disposeBag)
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
@@ -289,9 +298,9 @@ extension HomeViewModel {
             }
             
             //TODO: remove following
-            else {
-                self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
-            }
+//            else {
+//                self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
+//            }
             
         }).disposed(by: disposeBag)
         
