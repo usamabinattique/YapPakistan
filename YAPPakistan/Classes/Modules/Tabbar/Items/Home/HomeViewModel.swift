@@ -24,6 +24,7 @@ protocol HomeViewModelInputs {
     var widgetsChangeObserver: AnyObserver<Void> { get }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> { get }
     var searchTapObserver: AnyObserver<Void> { get }
+    var categoryChangedObserver: AnyObserver<Void> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -67,6 +68,7 @@ protocol HomeViewModelOutputs {
     var noTransFound: Observable<String> { get }
     var addCreditInfo: Observable<Void> { get }
     var search: Observable<Void> { get }
+    var categoryChanged: Observable<Void> { get }
 }
 
 protocol HomeViewModelType {
@@ -113,6 +115,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let addCreditInfoSubject = ReplaySubject<Void>.create(bufferSize: 1)
     private let searchSubject = PublishSubject<Void>()
+    private let categoryChangedSubject = PublishSubject<Void>()
     
     
     private var numberOfShownWidgets = 0
@@ -131,6 +134,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var widgetsChangeObserver: AnyObserver<Void> { widgetsChangeSubject.asObserver() }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> {selectedWidgetSubject.asObserver()}
     var searchTapObserver: AnyObserver<Void> { searchSubject.asObserver() }
+    var categoryChangedObserver: AnyObserver<Void> { categoryChangedSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -169,6 +173,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
     var addCreditInfo: Observable<Void> { addCreditInfoSubject.asObservable() }
     var search: Observable<Void> { searchSubject.asObservable() }
+    var categoryChanged: Observable<Void> { categoryChangedSubject.asObservable() }
 
     // MARK: Init
 

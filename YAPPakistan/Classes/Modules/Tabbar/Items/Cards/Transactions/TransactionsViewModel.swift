@@ -258,58 +258,6 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         updateContent()
 //        updateGraph()
 //        getTransactionBar()
-        
-//        let viewAppeared = viewAppearedSubject.do(onNext: { SessionManager.current.refreshBalance() })
-        
-        
-        //Uncomment following
-//        let request =  Observable.merge(fetchTransactions, viewAppearedSubject)
-//            .do(onNext: { [weak self] _ in self?.loadingSubject.onNext(false)})
-//            .flatMap { _ in transactionDataProvider.fetchTransactions() }
-//            .share()
-//
-//        request.subscribe(onNext: { response in
-//            print(response)
-//        })
-//        .disposed(by: disposeBag)
-//
-//        let saveRequest = request.elements()
-//            .map { [unowned self] pageableResponse -> Bool in
-//                let updatedCount = self.entityHandler.update(
-//                    with: pageableResponse.content?.indexed ?? [],
-//                    transcationCardType: self.transactionCardType,
-//                    cardSerialNumber: debitSearch ? cardSerialNumber : nil)
-//
-//            self.dataChanged = self.dataChanged ? self.dataChanged : updatedCount > 0
-//
-//            self.pagesEntityHandler.updatePages(for: self.transactionCardType, cardSerialNumber: self.cardSerialNumber, pagesSynced: pageableResponse.currentPage, isLast: pageableResponse.isLast)
-//
-//            let syncStatus = self.pagesEntityHandler.syncStatus(for: self.transactionCardType, cardSerialNumber: cardSerialNumber)
-//
-//            let shouldFetchMore = pageableResponse.isLast ? false : updatedCount >= transactionDataProvider.pageSize ? true : !syncStatus.syncCompleted
-//
-//            if shouldFetchMore {
-//                transactionDataProvider.resetPage(updatedCount >= transactionDataProvider.pageSize ? pageableResponse.currentPage + 1 : syncStatus.syncedPages + 1)
-//            } else {
-//                self.updateContent()
-//            }
-//
-//            return shouldFetchMore
-//        }.share()
-//
-//        saveRequest.filter { $0 }.map { _ in }.bind(to: fetchTransactionsObserver).disposed(by: disposeBag)
-//
-//        saveRequest.filter { !$0 }
-//            .do(onNext: { [weak self] _ in
-//                transactionDataProvider.resetPage(0)
-//                self?.loadingSubject.onNext(false) })
-//            .subscribe(onNext: { [unowned self] _ in self.updateGraph() })
-//            .disposed(by: disposeBag)
-
-      /*  request.errors().subscribe(onNext: { [unowned self] _ in
-            self.loadingSubject.onNext(false)
-            self.dataChanged = false
-        }).disposed(by: disposeBag) */
 
         showShimmeringSubject.onNext(true)
         
@@ -408,16 +356,17 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         self.cardSerialNumber = cardSerialNumber
         nothingLabelSubject = BehaviorSubject(value: "screen_home_display_text_nothing_to_report_search".localized)
         showsFilterSubject = BehaviorSubject(value: false)
-//        super.init()
-//        isSearching = true
-//        showsNothingLabelSubject.onNext(true)
-//
-//        updateFilter()
-//        updateContent()
-//
-//        searchTextSubject.subscribe(onNext: { [unowned self] in
-//            self.searchTransactions(text: $0)
-//        }).disposed(by: disposeBag)
+        super.init()
+        isSearching = true
+        showsNothingLabelSubject.onNext(true)
+
+        updateFilter()
+        updateContent()
+
+        searchTextSubject.subscribe(onNext: { [unowned self] in
+            self.searchTransactions(text: $0)
+        }).disposed(by: disposeBag)
+        
     }
 
 }

@@ -20,7 +20,8 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
     fileprivate lazy var biometricManager = container.parent.makeBiometricsManager()
     fileprivate lazy var notifManager = NotificationManager()
     fileprivate lazy var username: String! = container.parent.credentialsStore.getUsername() ?? ""
-
+    fileprivate let transactionCategoryResult = PublishSubject<Void>()
+    
     init(container: UserSessionContainer,
          root: UITabBarController) {
         self.container = container
@@ -104,9 +105,12 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             self.setPinIntroScreen(cardSerial: card.cardSerialNumber ?? "")
         }).disposed(by: rx.disposeBag)
         
-        viewController.viewModel.outputs.search.subscribe(onNext: { [weak self] in
-            self?.navigateToSearch()
+        viewController.viewModel.outputs.search.withLatestFrom(viewController.viewModel.outputs.debitCard).subscribe(onNext: { [weak self] card in
+            
+            self?.navigateToSearch(card: card)
         }).disposed(by: rx.disposeBag)
+        
+        transactionCategoryResult.bind(to: viewController.viewModel.inputs.categoryChangedObserver).disposed(by: rx.disposeBag)
     }
     
     func showCreditLimit() {
@@ -174,12 +178,14 @@ extension HomeCoodinator {
 
 //MARK: Search
 extension HomeCoodinator {
-    func navigateToSearch() {
-//        coordinate(to: SearchTransactionsCoordinator(card: nil, root: root)).subscribe(onNext: {[weak self] result in
-//            if !(result.isCancel) {
-//                self?.transactionCategoryResult.onNext(())
-//            }
-//        }).disposed(by: disposeBag)
+    func navigateToSearch(card: PaymentCard?) {
+        /*let coordinator = SearchTransactionsCoordinator(card: card, root: root,container: container)
+        
+        coordinate(to: coordinator).subscribe(onNext: {[weak self] result in
+            if !(result.isCancel) {
+                self?.transactionCategoryResult.onNext(())
+            }
+        }).disposed(by: rx.disposeBag) */
     }
 }
 
