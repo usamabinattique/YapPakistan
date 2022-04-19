@@ -297,7 +297,7 @@ class HomeViewController: UIViewController {
             self?.refreshControl.endRefreshing()
         }
 //        SessionManager.current.refreshAccount()
-//        viewModel.inputs.refreshObserver.onNext(())
+        viewModel.inputs.refreshObserver.onNext(())
     }
     
 //    private func render() {
@@ -666,13 +666,13 @@ fileprivate extension HomeViewController {
     
     func startUpdatingHeader(actualProgress: CGFloat) {
         if self.isTableViewReloaded && actualProgress == 0 {
-//            transactionsViewModel.inputs.showSectionData.onNext(())
-//            transactionsViewModel.inputs.canShowDynamicData.onNext(true)
+            transactionsViewModel.inputs.showSectionData.onNext(())
+            transactionsViewModel.inputs.canShowDynamicData.onNext(true)
 //            viewModel.inputs.increaseProgressViewHeightObserver.onNext(false)
         }
         if self.isTableViewReloaded && actualProgress > 0 {
-//            transactionsViewModel.inputs.showTodaysData.onNext(())
-//            transactionsViewModel.inputs.canShowDynamicData.onNext(false)
+            transactionsViewModel.inputs.showTodaysData.onNext(())
+            transactionsViewModel.inputs.canShowDynamicData.onNext(false)
             scrollView.addSubview(refreshControl)
 //            viewModel.inputs.increaseProgressViewHeightObserver.onNext(true)
         }

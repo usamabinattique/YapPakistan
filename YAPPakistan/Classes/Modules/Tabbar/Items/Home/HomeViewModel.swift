@@ -25,6 +25,7 @@ protocol HomeViewModelInputs {
     var selectedWidgetObserver: AnyObserver<WidgetCode?> { get }
     var searchTapObserver: AnyObserver<Void> { get }
     var categoryChangedObserver: AnyObserver<Void> { get }
+    var refreshObserver: AnyObserver<Void> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -69,6 +70,7 @@ protocol HomeViewModelOutputs {
     var addCreditInfo: Observable<Void> { get }
     var search: Observable<Void> { get }
     var categoryChanged: Observable<Void> { get }
+    var refresh: Observable<Void> {  get }
 }
 
 protocol HomeViewModelType {
@@ -116,6 +118,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let addCreditInfoSubject = ReplaySubject<Void>.create(bufferSize: 1)
     private let searchSubject = PublishSubject<Void>()
     private let categoryChangedSubject = PublishSubject<Void>()
+    private let refreshSubject = PublishSubject<Void>()
     
     
     private var numberOfShownWidgets = 0
@@ -135,6 +138,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var selectedWidgetObserver: AnyObserver<WidgetCode?> {selectedWidgetSubject.asObserver()}
     var searchTapObserver: AnyObserver<Void> { searchSubject.asObserver() }
     var categoryChangedObserver: AnyObserver<Void> { categoryChangedSubject.asObserver() }
+    var refreshObserver: AnyObserver<Void> { refreshSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -174,6 +178,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var addCreditInfo: Observable<Void> { addCreditInfoSubject.asObservable() }
     var search: Observable<Void> { searchSubject.asObservable() }
     var categoryChanged: Observable<Void> { categoryChangedSubject.asObservable() }
+    var refresh: Observable<Void> { refreshSubject.asObservable() }
 
     // MARK: Init
 
@@ -236,10 +241,17 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
         accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
         
-        generateCellViewModels()
+       // generateCellViewModels()
         getCardBalance()
         getWidgets(repository: cardsRepository)
         getCards()
+        
+        refreshSubject.subscribe(onNext: { [weak self] _ in
+//            self?.getCardBalance()
+//            self?.getCards()
+            self?.transactionsViewModel.inputs.refreshObserver.onNext(())
+        }).disposed(by: disposeBag)
+
     }
     
     func generateCellViewModels() {
@@ -259,7 +271,6 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
 
 extension HomeViewModel {
     func getCardBalance() {
-        shimmeringSubject.onNext(true)
        /* let cardsRequest = cardsRepository.getCardBalance()
             .do(onNext: { [weak self] _ in self?.shimmeringSubject.onNext(false) })
             .share()

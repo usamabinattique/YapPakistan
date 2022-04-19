@@ -36,6 +36,7 @@ protocol TransactionsViewModelInputs {
     
     var isDataReloaded: AnyObserver<Bool> { get }
     var sectionObserver: AnyObserver<Int> { get }
+    var refreshObserver: AnyObserver<Void> { get }
 }
 
 protocol TransactionsViewModelOutputs {
@@ -111,6 +112,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let showTodaysDataSubject = PublishSubject<Void>()
     private let dataReloadedSubject = BehaviorSubject<Bool>(value: false)
     private let sectionSubject = BehaviorSubject<Int>(value: 0)
+    private let refreshSubject = ReplaySubject<Void>.create(bufferSize: 1)
     
     // MARK: - Input
     var fetchTransactionsObserver: AnyObserver<Void> { return fetchTransactionsSubject.asObserver() }
@@ -128,6 +130,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var showTodaysData: AnyObserver<Void> { showTodaysDataSubject.asObserver() }
     var isDataReloaded: AnyObserver<Bool> {dataReloadedSubject.asObserver()}
     var sectionObserver: AnyObserver<Int> { sectionSubject.asObserver() }
+    var refreshObserver: AnyObserver<Void> { refreshSubject.asObserver() }
     
 
     // MARK: - Output
@@ -260,8 +263,9 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
 //        getTransactionBar()
 
         showShimmeringSubject.onNext(true)
+       // refreshSubject.onNext(())
         
-        let request =  Observable.merge(fetchTransactions, viewAppearedSubject)
+        let request =  Observable.merge(fetchTransactions, viewAppearedSubject,refreshSubject)
             .do(onNext: { [weak self] _ in
                 self?.loadingSubject.onNext(false)
                 self?.showShimmeringSubject.onNext(false)
