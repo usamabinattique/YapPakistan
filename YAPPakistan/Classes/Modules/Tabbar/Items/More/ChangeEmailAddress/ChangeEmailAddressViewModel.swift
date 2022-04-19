@@ -121,9 +121,11 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
     
     // -- private let profileRepository: ProfileRepository = ProfileRepository()
     fileprivate var email: String
+    private let otpRepository: OTPRepositoryType
     
-    public init(email: String = "") {
+    public init(email: String = "", otpRepository: OTPRepositoryType) {
         self.email = email
+        self.otpRepository = otpRepository
         headingSubject = BehaviorSubject(value:  "screen_change_email_display_text_heading".localized)
         nextButtonTitleSubject = BehaviorSubject(value:  "common_button_next".localized)
         descriptionHeadingSubject = BehaviorSubject(value:  "screen_change_email_display_text_description".localized)
@@ -133,6 +135,7 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
         
         emailTextFieldSubject.subscribe(onNext: { valueString in
             print(valueString)
+            
         }).disposed(by: disposeBag)
         
         isEmailValid = emailTextFieldSubject.skip(1).map { ValidationService.shared.validateEmail($0) }
@@ -151,5 +154,55 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
         isConfirmEmailValid = confirmEmailValidation.map{ $0 == .valid }
         
         Observable.combineLatest(isEmailValid, isConfirmEmailValid).map { $0.0 == true && $0.1 == true }.bind(to: activateActionSubject).disposed(by: disposeBag)
+        updateEmail()
+    }
+    
+    func updateEmail() {
+        
+//        self.showLoadingEffects()
+//        let allIBFTBenefeciries = refreshSubject
+//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+//                .flatMap{ self.repository.fetchAllIBFTBeneficiaries() }
+//            .share()
+//
+//        allIBFTBenefeciries.subscribe(onNext: { _ in
+//            YAPProgressHud.hideProgressHud()
+//
+//        }).disposed(by: disposeBag)
+//
+//        allIBFTBenefeciries.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
+        
+        
+//        let request = saveBeneficiarySubject
+//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+//                .flatMap { repository.editBeneficiary([], id: String(self.beneficiary.id ?? 0), nickname: self.beneficiary.nickName) }
+//            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+//            .share()
+//
+//        request.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
+//
+//        request.elements().map { _ in }.bind(to: resultSubject).disposed(by: disposeBag)
+        
+        
+        let req = changeEmailRequestSubject.withLatestFrom(self.emailTextFieldSubject).share()
+            
+        req.subscribe(onNext: { [unowned self] emailString in
+            
+            print("Email \(emailString)")
+            
+            let updateEmailReq = otpRepository.updateEmail(email: emailString)
+            
+            updateEmailReq.errors().subscribe(onNext: { errors in
+                print(errors)
+                self.errorSubject.onNext(errors.localizedDescription)
+            })
+            
+            updateEmailReq.elements().subscribe(onNext: { data in
+                print(data)
+            })
+            
+            //self.otpRepository.updateEmail(email: emailString)
+            
+        }).disposed(by: disposeBag)
     }
 }

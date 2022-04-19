@@ -62,7 +62,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()))
         let viewController = PersonalDetailsViewController(viewModel: viewModel, themeService: self.container.themeService)
         
-        viewModel.outputs.editEmailTap.subscribe(onNext: { [weak self] in
+        viewModel.outputs.editEmailTap.subscribe(onNext: { [weak self] email in
             guard let self = self else {return}
             self.navigateToEditEmail()
         }).disposed(by: disposeBag)
@@ -83,11 +83,33 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     }
     
     fileprivate func navigateToEditEmail() {
-        coordinate(to: ChangeEmailAddressCoordinator(root: self.localRoot, container: self.container))
+        coordinate(to: ChangeEmailAddressCoordinator(root: self.localRoot, container: self.container)).subscribe(onNext: { [weak self] result in
+            guard let _ = self else { return }
+            switch result {
+            case .success:
+                print("OTP Successfully Verified now update email")
+                
+                
+            case .cancel:
+//                    self?.navigationRoot.popToRootViewController(animated: true)
+                print("OTP not verified")
+                break
+            }
+        }).disposed(by: rx.disposeBag)
     }
     
     fileprivate func navigateToEditPhone() {
-        coordinate(to: ChangePhoneNumberCoordinator(root: self.localRoot, container: self.container))
+        coordinate(to: ChangePhoneNumberCoordinator(root: self.localRoot, container: self.container)).subscribe(onNext: { [weak self] result in
+            guard let _ = self else { return }
+            switch result {
+            case .success:
+                print("OTP Successfully Verified now uodate email")
+            case .cancel:
+//                    self?.navigationRoot.popToRootViewController(animated: true)
+                print("OTP not verified")
+                break
+            }
+        }).disposed(by: rx.disposeBag)
     }
     
     fileprivate func resultSuccess() {
