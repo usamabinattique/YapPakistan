@@ -51,7 +51,7 @@ class AddMoneyViewModel: AddMoneyViewModelInput, AddMoneyViewModelOutput, AddMon
     
     init() {
         
-        let actions: [YapItTileAction] = [.topupViaCard, .bankTransfer, .cashOrCheque, .qrCode, .requestMoeny]
+        let actions: [YapItTileAction] = [.topupViaCard, .bankTransfer, .qrCode]
         
         let res = actions.map { YapItTileCellViewModel($0) }
         cellViewModelsSubject.onNext([SectionModel(model: 0, items: res)])
