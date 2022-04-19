@@ -41,7 +41,7 @@ public struct Account: Codable {
     public let uuid: String
     public let iban: String?
     public let accountNumber: String?
-    public let accountType: AccountType
+    public let accountType: AccountType?
     public let defaultProfile: Bool?
     public let companyName: String?
     public let packageName: String?
