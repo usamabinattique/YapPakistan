@@ -18,7 +18,8 @@ class HomeViewController: UIViewController {
 
     // MARK: Views
     private lazy var menuButtonItem = barButtonItem(image: UIImage(named: "icon_menu_dashboard", in: .yapPakistan), insectBy:.zero)
-    private lazy var searchBarButtonItem = barButtonItem(image: UIImage(named: "icon_search", in: .yapPakistan)?.asTemplate, insectBy:.zero)
+   // private lazy var searchBarButtonItem = barButtonItem(image: UIImage(named: "icon_search", in: .yapPakistan)?.asTemplate, insectBy:.zero)
+    private var searchBarButtonItem: UIBarButtonItem!
     private lazy var analyticsBarButtonItem = barButtonItem(image: UIImage(named: "icon_analytics", in: .yapPakistan), insectBy:.zero)
     private lazy var userBarButtonItem = barButtonItem(image: UIImage(named: "kyc-user", in: .yapPakistan), insectBy:.zero)
     
@@ -256,8 +257,17 @@ class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        let searchButton = UIButton(type: .custom)
+        searchButton.setImage(UIImage.init(named: "icon_search", in: .yapPakistan)?.asTemplate, for: .normal)
+        searchButton.frame = CGRect(x: 0.0, y: 0.0, width: 26, height: 26)
+        searchButton.addTarget(self, action: #selector(self.searchAction(_:)), for: .touchUpInside)
+        searchButton.tintColor = UIColor(themeService.attrs.primary)
+        searchBarButtonItem = UIBarButtonItem(customView: searchButton)
+        
         navigationItem.leftBarButtonItem = userBarButtonItem.barItem
-        navigationItem.rightBarButtonItems = [menuButtonItem.barItem,searchBarButtonItem.barItem,analyticsBarButtonItem.barItem]
+        navigationItem.rightBarButtonItems = [menuButtonItem.barItem,searchBarButtonItem,analyticsBarButtonItem.barItem]
         
         setup()
       //  bindTableView()
@@ -294,6 +304,10 @@ class HomeViewController: UIViewController {
 //        self.profileImageView.layer.cornerRadius = 12
 //        self.profileImageView.clipsToBounds = true
 //    }
+    
+    @objc func searchAction(_ sender: UIButton) {
+        viewModel.inputs.searchTapObserver.onNext(())
+    }
 }
 
 // MARK: View Setup
@@ -306,7 +320,7 @@ fileprivate extension HomeViewController {
         addDebitCardTimelineIfNeeded()
         
         //TODO: remove this line from here after handling transactions api success
-        addTransactionsViewController()
+       // addTransactionsViewController()
         bindViewModel()
     }
     
@@ -367,7 +381,7 @@ fileprivate extension HomeViewController {
         hideButton.setImage(UIImage.init(named: "eye_close", in: .yapPakistan), for: .normal)
         hideButton.isHidden = true
         separtorView.alpha = 0
-        separtorView.backgroundColor = .yellow
+        
         balanceLabel.text = "PKR"
        // balanceValueLabel.text = "PKR 0.00"
         balanceDateLabel.text = "Today's balance"
@@ -377,7 +391,7 @@ fileprivate extension HomeViewController {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: view.rx.backgroundColor)
            // .bind({ UIColor($0.greyDark) }, to: headingLabel.rx.textColor)
-            .bind({ UIColor($0.primary) }, to: (searchBarButtonItem.button?.rx.tintColor)!)
+            .bind({ UIColor($0.primary) }, to: (searchBarButtonItem.rx.tintColor))
             .bind({ UIColor($0.greyDark) }, to: [balanceDateLabel.rx.textColor, noTransFoundLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [completeVerificationButton.rx.backgroundColor,showButton.rx.tintColor])
             .bind({ UIColor($0.primaryDark) }, to: [separtorView.rx.backgroundColor,balanceValueLabel.rx.textColor])
@@ -705,7 +719,7 @@ fileprivate extension HomeViewController {
                 self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.first?.removeFromSuperview()
             }}, onCompleted: { [weak self] in
                 guard let `self` = self else { return }
-               // self.addTransactionsViewController()
+                self.addTransactionsViewController()
         }).disposed(by: disposeBag)
         
        /* viewModel.outputs.resumeKYC.subscribe(onNext: { [weak self] vms in

@@ -12,6 +12,7 @@ import YAPComponents
 import YAPCore
 import UIKit
 import RxDataSources
+import RxTheme
 
 protocol HomeViewModelInputs {
     var resultObserver: AnyObserver<Void> { get }
@@ -22,6 +23,7 @@ protocol HomeViewModelInputs {
     
     var widgetsChangeObserver: AnyObserver<Void> { get }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> { get }
+    var searchTapObserver: AnyObserver<Void> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -64,6 +66,7 @@ protocol HomeViewModelOutputs {
     var dashboardWidgets: Observable<[DashboardWidgetsResponse]> { get }
     var noTransFound: Observable<String> { get }
     var addCreditInfo: Observable<Void> { get }
+    var search: Observable<Void> { get }
 }
 
 protocol HomeViewModelType {
@@ -109,6 +112,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let isCardActivatedSubject = BehaviorSubject<CardStatus?>(value: nil)
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let addCreditInfoSubject = ReplaySubject<Void>.create(bufferSize: 1)
+    private let searchSubject = PublishSubject<Void>()
     
     
     private var numberOfShownWidgets = 0
@@ -126,6 +130,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var viewDidAppearObserver: AnyObserver<Void> { return viewDidAppearSubject.asObserver() }
     var widgetsChangeObserver: AnyObserver<Void> { widgetsChangeSubject.asObserver() }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> {selectedWidgetSubject.asObserver()}
+    var searchTapObserver: AnyObserver<Void> { searchSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -163,6 +168,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var dashboardWidgets: Observable<[DashboardWidgetsResponse]> { dashboardWidgetsSubject.asObservable() }
     var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
     var addCreditInfo: Observable<Void> { addCreditInfoSubject.asObservable() }
+    var search: Observable<Void> { searchSubject.asObservable() }
 
     // MARK: Init
 
@@ -175,13 +181,14 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private var transactionsViewModel: TransactionsViewModel
     private var transactionDataProvider: DebitCardTransactionsProvider
     private var dashboardStatusActionDisposeBag: DisposeBag!
+    private var themeService: ThemeService<AppTheme>!
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManagerType,
          notificationManager: NotificationManagerType,
          credentialStore: CredentialsStoreType,
-         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: DebitCardTransactionsProvider) {
-
+         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: DebitCardTransactionsProvider, themeService: ThemeService<AppTheme>) {
+        self.themeService = themeService
         self.accountProvider = accountProvider
         self.biometricsManager = biometricsManager
         self.notificationManager = notificationManager
@@ -191,7 +198,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         self.biometrySuject = BehaviorSubject(value: biometricsManager.isBiometryEnabled(for: ""))
         self.biometrySupportedSuject = BehaviorSubject(value: false)
         self.transactionDataProvider = transactionDataProvider
-        self.transactionsViewModel = TransactionsViewModel(transactionDataProvider: transactionDataProvider)
+        self.transactionsViewModel = TransactionsViewModel(transactionDataProvider: transactionDataProvider, themService: themeService)
         
         
         shimmeringSubject.bind(to: transactionsViewModel.showShimmeringObserver).disposed(by: disposeBag)
@@ -279,27 +286,16 @@ extension HomeViewModel {
         cardsRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
             print("error \($0)")
             self?.shimmeringSubject.onNext(false)
-            
-            //TODO: remove following
-            self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
         }).disposed(by: disposeBag)
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
             print("success \(list)")
+            self?.shimmeringSubject.onNext(false)
             self?.cardsSubject.onNext(list ?? [])
             if !(list?.isEmpty ?? false), let serialNumber =  list?.first?.cardSerialNumber {
                 self?.transactionDataProvider.cardSerialNumber = serialNumber
-            }
-            self?.shimmeringSubject.onNext(false)
-            if !(list?.isEmpty ?? false) {
                 self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
             }
-            
-            //TODO: remove following
-//            else {
-//                self?.bindPaymentCardOnboardingStagesViewModel(card: .mock)
-//            }
-            
         }).disposed(by: disposeBag)
         
         cardsSubject.subscribe(onNext: {[weak self] in
@@ -319,16 +315,17 @@ extension HomeViewModel {
     
     func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
         
-        self.shimmeringSubject.onNext(true)
+       // self.shimmeringSubject.onNext(true)
         let request = viewDidAppearSubject.startWith(())
             .flatMap { [unowned self] _ in self.transactionDataProvider.fetchTransactions()
             }.share()
     
-        request.elements().subscribe(onNext: { [weak self] pageAbleRes in
+      /*  request.elements().subscribe(onNext: { [weak self] pageAbleRes in
             self?.shimmeringSubject.onNext(false)
             
             if let transactions = pageAbleRes.content, !transactions.isEmpty {
                 //TODO: assign transactions
+                self?.transactionsViewModel.transactionsObj = transactions
             } else {
                 if let card = card, let account = self?.accountProvider.currentAccountValue.value {
                     if card.deliveryStatus == .shipped && (card.pinSet ?? false) {
@@ -353,38 +350,14 @@ extension HomeViewModel {
                 self?.dashobarStatusActions(viewModel: vm)
                 self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
             }
-        }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag) */
         
         let params = Observable.combineLatest(request.elements().map { $0.content },
                                               debitCard.unwrap(),
                                               accountProvider.currentAccount.unwrap())
             .share(replay: 1, scope: .whileConnected)
         
-        //TODO: remove following
-        
-        let requestError = Observable.combineLatest(request.errors(),
-                                                    debitCard.unwrap(),
-                                                    accountProvider.currentAccount.unwrap()).share()
-       
-        
-//        requestError
-//            .map { _ in PaymentCardInitiatoryStageViewModel(paymentCard: mockCard, account: account) }
-//            .do(onNext: { [weak self] in self?.dashobarStatusActions(viewModel: $0) })
-//            .bind(to: debitCardOnboardingStageViewModelSubject)
-//            .disposed(by: disposeBag)
-        
-        
-        
-        // Transactions are not zero, hide debit card timeline
-//                requestError
-//            .filter { ($0.0?.count ?? 0) > 0 }
-//            .subscribe(onNext: { [weak self] _ in
-//                self?.debitCardOnboardingStageViewModelSubject.onCompleted()
-//            }).disposed(by: disposeBag)
-        
-        
-        //TODO: uncomment following
-     /*   // Transactions are zero, show debit card timeline
+        // Transactions are zero, show debit card timeline
         params
             .filter { ($0.0?.count ?? 0) == 0 }
             .map { PaymentCardInitiatoryStageViewModel(paymentCard: $0.1, account: $0.2) }
@@ -397,7 +370,7 @@ extension HomeViewModel {
             .filter { ($0.0?.count ?? 0) > 0 }
             .subscribe(onNext: { [weak self] _ in
                 self?.debitCardOnboardingStageViewModelSubject.onCompleted()
-            }).disposed(by: disposeBag) */
+            }).disposed(by: disposeBag)
     }
     
     func dashobarStatusActions(viewModel: PaymentCardInitiatoryStageViewModel) {

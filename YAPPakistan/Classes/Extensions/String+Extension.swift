@@ -16,3 +16,15 @@ public extension String {
         #endif
     }
 }
+
+public extension String {
+    func getSuperScript(superScript: String)-> NSMutableAttributedString {
+        let font:UIFont? =  .small //UIFont.appFont(forTextStyle: .small)
+        let fontSuper:UIFont? = .nano //UIFont.appFont(forTextStyle: .nano)
+        let date = self
+        let attString:NSMutableAttributedString = NSMutableAttributedString(string: "\(date)\(superScript)", attributes: [.font:font!])
+        attString.setAttributes([.font:fontSuper!,.baselineOffset:7], range: NSRange(location:date.count,length:superScript.count))
+        
+        return attString
+    }
+}

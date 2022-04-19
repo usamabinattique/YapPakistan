@@ -104,6 +104,9 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             self.setPinIntroScreen(cardSerial: card.cardSerialNumber ?? "")
         }).disposed(by: rx.disposeBag)
         
+        viewController.viewModel.outputs.search.subscribe(onNext: { [weak self] in
+            self?.navigateToSearch()
+        }).disposed(by: rx.disposeBag)
     }
     
     func showCreditLimit() {
@@ -166,6 +169,17 @@ extension HomeCoodinator {
        // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
         let name = Notification.Name.init(.logout)
         NotificationCenter.default.post(name: name,object: nil)
+    }
+}
+
+//MARK: Search
+extension HomeCoodinator {
+    func navigateToSearch() {
+//        coordinate(to: SearchTransactionsCoordinator(card: nil, root: root)).subscribe(onNext: {[weak self] result in
+//            if !(result.isCancel) {
+//                self?.transactionCategoryResult.onNext(())
+//            }
+//        }).disposed(by: disposeBag)
     }
 }
 
