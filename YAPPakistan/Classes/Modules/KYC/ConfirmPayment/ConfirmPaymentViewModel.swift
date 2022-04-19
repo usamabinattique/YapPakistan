@@ -277,7 +277,6 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         
         topupRequest.elements().subscribe(onNext: { [weak self] responseObj in
             self?.fetchOrderCardHolderApi()
-            YAPProgressHud.hideProgressHud()
         }).disposed(by: disposeBag)
         
         topupRequest.errors()
