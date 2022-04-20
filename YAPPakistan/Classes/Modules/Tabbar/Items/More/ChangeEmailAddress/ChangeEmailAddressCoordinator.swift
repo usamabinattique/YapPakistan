@@ -86,7 +86,7 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
         
         let countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
         let mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
-        let formattedPhoneNumber: String = "0092" + mobileNumber
+        let formattedPhoneNumber: String = countryCode + mobileNumber
        
        
         let subHeadingText = String(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, formattedPhoneNumber)

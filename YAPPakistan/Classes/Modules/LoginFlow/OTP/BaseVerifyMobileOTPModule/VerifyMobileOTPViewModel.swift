@@ -190,7 +190,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
 //        generateOneTimePasscode(mobileNo: mobileNo)
 //        verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
         
-        if action == .changeEmail {
+        if action == .changeEmail || action == .changeMobileNumber {
             generateOneTimePasscodeForChangeEmail(mobileNo: mobileNo)
             verifyChangeEmailOTP()
             //verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
