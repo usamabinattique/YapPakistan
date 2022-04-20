@@ -27,8 +27,11 @@ struct NameSequence {
     var nameSequenceArray: [String] {
         let firstOption = name
         switch name.splits {
-        case 0,1:
+        case 0:
             return [name]
+        case 1:
+            let secondOption = (name.allLettersSepartedBySpaces[0])[0] + " " + name.allLettersSepartedBySpaces[1]
+            return [firstOption,secondOption]
         case 2:
             let secondOption = name.allLettersSepartedBySpaces[0] + " " + name.allLettersSepartedBySpaces[1]
             let thirdOption = name.allLettersSepartedBySpaces[0] + " " + name.allLettersSepartedBySpaces[2]
