@@ -159,8 +159,8 @@ extension KYCFeatureContainer {
         ReviewSelfieModuleBuilder(container: self, image: image).viewController()
     }
 
-    func makeCardNameViewController() -> CardNameViewController {
-        CardNameModuleBuilder(container: self).viewController()
+    func makeCardNameViewController(paymentGatewayM: PaymentGatewayLocalModel) -> CardNameViewController {
+        CardNameModuleBuilder(container: self, paymentGatewayM: paymentGatewayM).viewController()
     }
 
     func makeEditCardNameViewController(name: String) -> EditCardNameViewController {

@@ -17,6 +17,7 @@ protocol CardNameViewModelInput {
 
 protocol CardNameViewModelOutput {
     var name: Observable<String> { get }
+    var cardImage: Observable<String> { get }
     var next: Observable<Void> { get }
     var edit: Observable<Void> { get }
     var back: Observable<Void> { get }
@@ -44,6 +45,7 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
 
     // MARK: Outputs
     var name: Observable<String> { return nameSubject.asObservable() }
+    var cardImage: Observable<String> { cardImageSubject.asObservable() }
     var languageStrings: Observable<LanguageStrings> { return languageStringsSubject.asObservable() }
     var next: Observable<Void> { nextSuccessSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
@@ -55,6 +57,7 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
     // MARK: Subjects
     var languageStringsSubject: BehaviorSubject<LanguageStrings>!
     private var nameSubject = BehaviorSubject<String>(value: "")
+    private var cardImageSubject = BehaviorSubject<String>(value: "")
     private var nextSubject = PublishSubject<Void>()
     private var nextSuccessSubject = PublishSubject<Void>()
     private var backSubject = PublishSubject<Void>()
@@ -68,10 +71,15 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
     private let kycRepository: KYCRepositoryType
     private let accountProvider: AccountProvider
 
-    init(kycRepository: KYCRepositoryType, accountProvider: AccountProvider ) {
+    init(kycRepository: KYCRepositoryType, accountProvider: AccountProvider, paymentGatewayM: PaymentGatewayLocalModel) {
 
         self.kycRepository = kycRepository
         self.accountProvider = accountProvider
+        if paymentGatewayM.cardSchemeObject?.scheme == .Mastercard {
+            cardImageSubject.onNext("image_payment_card_white")
+        } else {
+            cardImageSubject.onNext("image_payment_card_white_paypak")
+        }
 
         languageSetup()
 
