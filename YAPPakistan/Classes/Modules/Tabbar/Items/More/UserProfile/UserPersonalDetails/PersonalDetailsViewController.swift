@@ -8,13 +8,14 @@
 import UIKit
 import YAPComponents
 import RxSwift
-
+import RxTheme
 
 class PersonalDetailsViewController: UIViewController {
 
     // MARK: - Init
-    init(viewModel: PersonalDetailsViewModelType) {
+    init(viewModel: PersonalDetailsViewModelType, themeService: ThemeService<AppTheme>) {
         self.viewModel = viewModel
+        self.themeService = themeService
         disposeBag = DisposeBag()
         super.init(nibName: nil, bundle: nil)
     }
@@ -35,7 +36,7 @@ class PersonalDetailsViewController: UIViewController {
 //    }()
     
     
-    private lazy var fullNameField = UIFactory.makeStaticTextField(title: "screen_personal_details_display_text_full_name".localized, titleFont: .micro, textFont: .title3, isEditable: true)
+    private lazy var fullNameField = UIFactory.makeStaticTextField(title: "screen_personal_details_display_text_full_name".localized, titleColor: UIColor(themeService.attrs.greyDark), titleFont: .micro, textColor: UIColor(themeService.attrs.primaryDark), textFont: .regular, isEditable: true)
    
     
 //    private lazy var fullNameField : StaticAppTextField = {
@@ -49,6 +50,8 @@ class PersonalDetailsViewController: UIViewController {
         let field = StaticAppTextField()
         field.titleLabel.text = "screen_personal_details_display_text_phone_number".localized
         field.isEditable = true
+        field.titleColor = UIColor(themeService.attrs.greyDark)
+        field.textColor = UIColor(themeService.attrs.primaryDark)
         return field
     }()
     
@@ -56,6 +59,8 @@ class PersonalDetailsViewController: UIViewController {
         let field = StaticAppTextField()
         field.titleLabel.text = "screen_personal_details_display_text_email".localized
         field.isEditable = true
+        field.titleColor = UIColor(themeService.attrs.greyDark)
+        field.textColor = UIColor(themeService.attrs.primaryDark)
         return field
     }()
     
@@ -63,24 +68,20 @@ class PersonalDetailsViewController: UIViewController {
         let field = StaticAppTextField()
         field.titleLabel.text = "screen_personal_details_display_text_address".localized
         field.isEditable = true
+        field.titleColor = UIColor(themeService.attrs.greyDark)
+        field.textColor = UIColor(themeService.attrs.primaryDark)
         return field
     }()
     
-    
-    
-    
-//    lazy var fullNameField = StaticAppTextField  //StaticTextFieldFactory.createField(title:  "screen_personal_details_display_text_full_name".localized, isEditable: false)
-//    lazy var phoneNumberField = StaticTextFieldFactory.createField(title:  "screen_personal_details_display_text_phone_number".localized, isEditable: true)
-//    lazy var emailField = StaticTextFieldFactory.createField(title:  "screen_personal_details_display_text_email".localized, isEditable: true)
-//    lazy var addressField = StaticTextFieldFactory.createField(title:  "screen_personal_details_display_text_address".localized, isEditable: true)
-    
-    
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
+  
     lazy var eidView = KYCDocumentView()
     lazy var fieldsStackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .fill, distribution: .fill, spacing: 10, arrangedSubviews: [fullNameField, phoneNumberField, emailField, addressField])
     lazy var contentStackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .fill, distribution: .fill, spacing: 40, arrangedSubviews: [fieldsStackView, eidView, UIView()])
 
     // MARK: - Properties
     let viewModel: PersonalDetailsViewModelType
+    private var themeService: ThemeService<AppTheme>
     let disposeBag: DisposeBag
 
     // MARK: - View Life Cycle
@@ -108,10 +109,16 @@ fileprivate extension PersonalDetailsViewController {
     func setup() {
         setupViews()
         setupConstraints()
+        setupTheme()
         //addBackButton(.backEmpty)
+    }
+    
+    func setupTheme() {
+        
     }
 
     func setupViews() {
+        navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         view.backgroundColor = .white
         view.addSubview(contentStackView)
     }
@@ -124,6 +131,7 @@ fileprivate extension PersonalDetailsViewController {
 // MARK: - Bind
 fileprivate extension PersonalDetailsViewController {
     func bind() {
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
         viewModel.outputs.title.bind(to: rx.title).disposed(by: disposeBag)
 
         viewModel.outputs.fullName.bind(to: fullNameField.rx.text).disposed(by: disposeBag)

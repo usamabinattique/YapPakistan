@@ -35,11 +35,10 @@ class MoreHeaderView: UIView {
     fileprivate lazy var nameLabel: UILabel = UIFactory.makeLabel(font: .large, alignment: .center) //.primaryDark
     
     fileprivate lazy var ibanLabel: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center) //.greyDark
-    fileprivate lazy var bicLabel: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center) //.greyDark
     
     fileprivate lazy var accountNumberLabel = UIFactory.makeLabel(font: .micro, alignment: .center) //.white
     
-    private lazy var accountStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 3, arrangedSubviews: [ibanLabel, bicLabel, accountNumberLabel])
+    private lazy var accountStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 3, arrangedSubviews: [ibanLabel, accountNumberLabel])
     
     
     public lazy var bankDetailsButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_more_home_display_text_your_bank_details".localized)
@@ -86,7 +85,7 @@ class MoreHeaderView: UIView {
     }
     
     func setupSensitiveViews() {
-//        UIView.markSensitiveViews([nameLabel, ibanLabel, accountNumberLabel, profileImageView, bicLabel])
+//        UIView.markSensitiveViews([nameLabel, ibanLabel, accountNumberLabel, profileImageView])
     }
     
     // MARK: Actions
@@ -112,7 +111,6 @@ extension MoreHeaderView: ViewDesignable {
         self.themeService.rx
             .bind( { UIColor($0.primary) }, to: nameLabel.rx.textColor)
             .bind( { UIColor($0.greyDark) }, to: ibanLabel.rx.textColor)
-            .bind( { UIColor($0.greyDark) }, to: bicLabel.rx.textColor)
             .bind( { UIColor($0.backgroundColor) }, to: accountNumberLabel.rx.textColor)
             .bind( { UIColor($0.primary) }, to: bankDetailsButton.rx.enabledBackgroundColor)
             .disposed(by: rx.disposeBag)
@@ -166,10 +164,6 @@ extension Reactive where Base: MoreHeaderView {
     
     var iban: Binder<NSAttributedString?> {
         return self.base.ibanLabel.rx.attributedText
-    }
-    
-    var bic: Binder<NSAttributedString?> {
-        return self.base.bicLabel.rx.attributedText
     }
     
     var accountNumber: Binder<String?> {

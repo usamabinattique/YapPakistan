@@ -7,6 +7,96 @@
 
 import Foundation
 
+public enum PaymentCardFeature {
+    case everyNeed
+    case virtualOrPhysical
+    case nickname
+    case freezeOrUnfreeze
+    case sendSalaries
+    case allocateBudget
+    case setUpPayments
+    case trackExpenses
+    case addInstantly
+    case onlinePayments
+    case funds
+    case realTimeExchangeRate
+    case freeATMWithdrawls
+    case travelInsurance
+    case priorityCustomerSupport
+    case airportLoungeAccess
+    case freePackageSubscription
+    case exclusivePartnerOffers
+}
+
+public extension PaymentCardFeature {
+    var title: String {
+        switch self {
+        case .everyNeed:
+            return "screen_add_card_display_text_feature_spare_card_every_need_title".localized
+        case .virtualOrPhysical:
+            return "screen_add_card_display_text_feature_spare_card_virtual_or_physical_title".localized
+        case .nickname:
+            return "screen_add_card_display_text_feature_spare_card_nick_name_title".localized
+        case .freezeOrUnfreeze:
+            return "screen_add_card_display_text_feature_spare_card_freeze_or_unfreeze_title".localized
+        case .sendSalaries:
+            return "screen_yap_house_hold_subscription_selection_display_text_benefit_send_salaries".localized
+        case .allocateBudget:
+            return "screen_yap_house_hold_subscription_selection_display_text_benefit_allocate_budget".localized
+        case .setUpPayments:
+            return "screen_yap_house_hold_subscription_selection_display_text_benefit_setup_payments".localized
+        case .trackExpenses:
+            return "screen_yap_house_hold_subscription_selection_display_text_benefit_track_expense".localized
+        case .addInstantly:
+            return "screen_add_card_display_text_feature_spare_card_add_instantly".localized
+        case .onlinePayments:
+            return "screen_add_card_display_text_feature_spare_card_online_payments".localized
+        case .funds:
+            return "screen_add_card_display_text_feature_spare_card_funds".localized
+        case .exclusivePartnerOffers:
+            return "screen_add_card_display_text_feature_exclusive_partner_offers".localized
+        case .realTimeExchangeRate:
+            return "screen_add_card_display_text_feature_realtime_exchange_rate".localized
+        case.airportLoungeAccess:
+            return "screen_add_card_display_text_feature_premier_airport_lounge_access".localized
+        case .freeATMWithdrawls:
+            return "screen_add_card_display_text_feature_free_atm_withdrawals".localized
+        case .priorityCustomerSupport:
+            return "screen_add_card_display_text_feature_priority_customer_support".localized
+        case .freePackageSubscription:
+            return "screen_add_card_display_text_feature_free_package_subscription".localized
+        case .travelInsurance:
+            return "screen_add_card_display_text_feature_travel_insurance".localized
+            
+        }
+        
+    }
+    
+    var description: String {
+        switch self {
+        case .everyNeed:
+            return "screen_add_card_display_text_feature_spare_card_every_need_details".localized
+        case .virtualOrPhysical:
+            return "screen_add_card_display_text_feature_spare_card_virtual_or_physical_details".localized
+        case .nickname:
+            return "screen_add_card_display_text_feature_spare_card_nick_name_details".localized
+        case .freezeOrUnfreeze:
+            return "screen_add_card_display_text_feature_spare_card_freeze_or_unfreeze_details".localized
+        case .sendSalaries:
+            return "screen_add_card_display_text_feature_spare_card_every_need_details".localized
+        case .allocateBudget:
+            return "screen_add_card_display_text_feature_spare_card_virtual_or_physical_details".localized
+        case .setUpPayments:
+            return "screen_add_card_display_text_feature_spare_card_nick_name_details".localized
+        case .trackExpenses:
+            return "screen_add_card_display_text_feature_spare_card_freeze_or_unfreeze_details".localized
+        case .addInstantly, .funds, .onlinePayments, .exclusivePartnerOffers, .freePackageSubscription, .priorityCustomerSupport, .realTimeExchangeRate, .airportLoungeAccess, .freeATMWithdrawls, .travelInsurance:
+            return ""
+            
+        }
+    }
+}
+
 struct CardDetails: Codable {
     let cvv2: String?
     let cardToken: String?
@@ -171,6 +261,63 @@ extension PaymentCard {
         case blocked = "BLOCKED"
         case active = "ACTIVE"
     }
+}
+
+public enum PaymentCardPlan: String, Codable {
+    case spare = "SPARE"
+    case premium = "PREMIUM"
+    case metal = "METAL"
+    
+    public var toString: String {
+        get {
+            return rawValue.prefix(1).uppercased() + rawValue.dropFirst().lowercased() + " card"
+        }
+    }
+    
+    public var toLowerCase: String {
+        get {
+            return rawValue.prefix(1).uppercased() + rawValue.dropFirst().lowercased()
+        }
+    }
+    
+//    public var colors: [YAPCard] {
+//        get {
+//            switch self {
+//            case .premium:
+//                return [.premiumRoseGold, .premiumGold, .premiumGrey, .premiumBlack ]
+//            case .metal:
+//                return [.metalRoseGold, .metalGrey, .metalBlack]
+//            case .spare:
+//                return [.virtualDarkBlue, .virtualGreen, .virtualMulti, .virtualLightBlue, .virtualPurple]
+//                
+//            }
+//        }
+//    }
+    
+    public var features : [PaymentCardFeature] {
+        get {
+            switch self {
+            case .premium:
+                return [.realTimeExchangeRate, .freeATMWithdrawls, .travelInsurance, .priorityCustomerSupport, .airportLoungeAccess, .freePackageSubscription ]
+            case .metal:
+                return [.exclusivePartnerOffers, .realTimeExchangeRate, .freeATMWithdrawls, .travelInsurance, .priorityCustomerSupport, .airportLoungeAccess, .freePackageSubscription ]
+            case .spare:
+                return [.addInstantly, .onlinePayments, .funds, .nickname, .freezeOrUnfreeze]
+            }
+        }
+    }
+    
+    public var badge: UIImage? {
+         switch self {
+         case .premium:
+             return UIImage(named: "icon_gold_badge", in: .yapPakistan)
+         case .metal:
+             return UIImage(named: "icon_black_badge", in: .yapPakistan)
+         case .spare:
+             return UIImage(named: "icon_primary_badge", in: .yapPakistan)
+         }
+     }
+    
 }
 
 public enum PaymentCardBlockOption: String, Codable {

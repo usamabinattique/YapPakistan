@@ -20,8 +20,8 @@ public struct Customer: Codable {
     public let firstName: String
     public let lastName: String
     public let companyName: String?
-    public let emailVerified: Bool
-    public let mobileNoVerified: Bool
+    public let emailVerified: Bool?
+    public let mobileNoVerified: Bool?
     public let status: String
     public let gender: String?
     public let nationalityId: String?

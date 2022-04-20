@@ -1,10 +1,10 @@
 /* 
-  File.strings
-  Pods
-
-  Created by Sarmad on 03/09/2021.
-  
-*/
+ File.strings
+ Pods
+ 
+ Created by Sarmad on 03/09/2021.
+ 
+ */
 
 // MARK: Common
 "common_display_text_y2y_share" = "Hi %@ would like to send you some money via YAP. Download the app now and join YAP’s fast growing community!\n\nDownload YAP here:\n\n%@";
@@ -468,17 +468,46 @@
 "screen_yap_confirm_payment_display_text_toolbar_subtitle" = "PayPak Card";
 "screen_yap_confirm_payment_display_text_Card_fee" = "Card fees";
 "screen_yap_confirm_payment_display_text_pay_with" = "Pay with";
-"screen_yap_confirm_payment_display_text_place_order_for" = "Place order for %@";
+"screen_yap_confirm_payment_display_text_place_order_for" = "Place order";
 
 // MARK: Screend topup card cvv
 "screen_topup_card_cvv_display_text_title" = "Top up confirmation";
 "screen_topup_card_cvv_display_text_cvv" = "Enter the CVV to top up your acccount with";
 
+//Mark: - Change Phone Number Screen
+"screen_change_phone_number_display_text_heading" = "Change mobile number";
+"screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
+
+// MARK: Change Email Address success Screen
+"screen_unverified_success_display_text_heading" = "Success!";
+"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed to\n%@";
+"screen_unverified_success_display_text_description" = "Please log in to your email address to validate your email and continue with\naccess to YAP!";
+"screen_unverified_display_button_mail" = "Open mail app";
+"screen_unverified_display_button_back_to_dashboard" = "Back to dashboard";
+
+//Mark: - Change Email Screen
+"screen_change_email_display_text_heading" = "Change email";
+"screen_change_email_placeholder_email_address" = "Email address";
+"screen_change_email_placeholder_confirm_email_address" = "Confirm email address";
+"screen_change_email_display_text_description" = "A verification email will now be sent to this address";
+"screen_change_email_display_text_email_title" = "Enter your new email address";
+"screen_change_email_display_text_confirm_email_title" = "Enter it one more time";
+"screen_change_email_display_text_confirm_email_diff_error" = "This email doesn’t match what you first entered.";
+"screen_change_email_otp_display_text_heading" = "Verify your email address";
+
+//Mark: - Email Verification Screen
+"screen_email_verification_display_text_heading" = "Verify your email address";
+"screen_email_verification_display_text_sub_heading" = "We've sent a verification code to \n%@";
+
+//Mark: - Change Email Address Success Screen
+"screen_email_address_success_display_text_heading" = "Awesome!";
+"screen_email_address_success_display_text_sub_heading" = "Your email address has been updated to \n%@";
+
 // MARK: Logout popups
-"screen_profile_action_display_text_logout_popups_logout" = "Log out";
+"screen_profile_action_display_text_logout_popups_logout" = "Confirm";
 "screen_profile_action_display_text_logout_popups_cencel" = "Cancel";
 "screen_profile_action_display_text_logout_popups_title" = "Log out";
-"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out";
+"screen_profile_action_display_text_logout_popups_message" = "Are you sure you want to log out?";
 
 
 // MARK: Set Pin
@@ -680,3 +709,27 @@
 "view_payment_card_onboarding_stage_initial_in_process_subtitle" = "Your application is under process. A YAP agent will get in touch to verifiy your account.";
 "view_payment_card_onboarding_stage_initial_in_no_trans_found_subtitle" = "No transaction found";
 "view_payment_card_onboarding_stage_completed_label_text" = "Completed";
+
+//MARK: - Menu screen
+
+"screen_menu_display_text_account" = "Account";
+"screen_menu_display_text_copy" = "Copy";
+"screen_menu_display_text_share" = "Share";
+"screen_menu_display_text_analytics" = "Analytics";
+"screen_menu_display_text_refer_friend" = "Refer a friend";
+"screen_menu_display_text_yap_young" = "Young";
+"screen_menu_display_text_household_salary" = "Household salary";
+"screen_menu_display_text_multi_currency" = "Multi currency";
+"screen_menu_display_text_alert_and_notifications" = "Alerts and notifications";
+"screen_menu_display_text_statements" = "Statements";
+"screen_menu_display_text_contact_us" = "Contact us";
+"screen_menu_display_text_help_and_support" = "Help and support";
+"screen_menu_display_text_business" = "Business";
+"screen_menu_display_text_my_profile" = "My profile";
+"screen_menu_display_text_household" = "Household";
+"screen_menu_display_text_locate_atm_cd" = "ATM and cash deposit";
+"screen_menu_display_text_household_notification" = "Notifications";
+"screen_menu_display_text_live_chat" = "Live chat";
+"screen_menu_display_text_qr_code" = "My QR code";
+"screen_menu_display_text_dashboard_widget" = "Manage widgets";
+"screen_menu_display_text_account_limits" = "Account limits";

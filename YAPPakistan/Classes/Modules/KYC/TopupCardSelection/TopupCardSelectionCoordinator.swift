@@ -64,6 +64,7 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.beneficiarySelected.withUnretained(self).subscribe(onNext: { `self` ,externalPaymentCard in
             print("in topupcard selectionCoordinator")
+            self.paymentGatewayM.cardDetailObject = nil
             self.paymentGatewayM.beneficiary = externalPaymentCard
             self.addressPending()
         }).disposed(by: rx.disposeBag)
@@ -84,6 +85,7 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.confirm.subscribe(onNext: { [weak self] model in
+            self?.paymentGatewayM.beneficiary = nil
             self?.paymentGatewayM.cardDetailObject = model
             viewController.dismiss(animated: true, completion: {
                 self?.addressPending()

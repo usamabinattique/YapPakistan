@@ -33,7 +33,7 @@ protocol TransactionsRepositoryType {
     func fetchCheckoutSession(beneficiaryId: String, amount: String, currency: String, sessionId: String) -> Observable<Event<PaymentGatewayCheckoutSession>>
     func fetch3DSEnrollment(orderId: String, beneficiaryID: Int, amount: String, currency: String, sessionID: String) -> Observable<Event<PaymentGateway3DSEnrollmentResult>>
     func retrieveACSResults(threeDSecureID: String) -> Observable<Event<String?>>
-    func paymentGatewayFirstCreditTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<String?>>
+    func paymentGatewayFirstCreditTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<Account?>>
     func paymentGatewayTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<String?>>
     func createCardHolder(cardScheme: String, fee: String) -> Observable<Event<String?>>
     func fetchCustomerAccountBalance() -> Observable<Event<CustomerBalanceResponse>>
@@ -98,7 +98,7 @@ class TransactionsRepository: TransactionsRepositoryType {
         return transactionService.retrieveACSResults(threeDSecureID: threeDSecureID).materialize()
     }
     
-    public func paymentGatewayFirstCreditTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<String?>> {
+    public func paymentGatewayFirstCreditTopup(threeDSecureId: String, orderId: String, currency: String, amount: String, sessionId: String, securityCode: String, beneficiaryId: String) -> Observable<Event<Account?>> {
         return transactionService.paymentGatewayFirstCreditTopup(threeDSecureId: threeDSecureId, orderId: orderId, currency: currency, amount: amount, sessionId: sessionId, securityCode: securityCode, beneficiaryId: beneficiaryId).materialize()
     }
     

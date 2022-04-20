@@ -111,6 +111,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         transactionCategoryResult.bind(to: viewController.viewModel.inputs.categoryChangedObserver).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.menuTap.subscribe(onNext: { [weak self] in
+            (self?.root as? MenuViewController)?.showMenu()
+        }).disposed(by: rx.disposeBag)
+
     }
     
     func showCreditLimit() {
