@@ -21,6 +21,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
     fileprivate lazy var notifManager = NotificationManager()
     fileprivate lazy var username: String! = container.parent.credentialsStore.getUsername() ?? ""
     fileprivate let transactionCategoryResult = PublishSubject<Void>()
+    let widgetsEditCompleted = PublishSubject<Void>()
     
     init(container: UserSessionContainer,
          root: UITabBarController) {
@@ -111,6 +112,12 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         transactionCategoryResult.bind(to: viewController.viewModel.inputs.categoryChangedObserver).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.selectedWidget.subscribe(onNext: {[weak self] in
+           // self?.navigateFromWidgets(selectedWidget: $0 ?? .unknown)
+        }).disposed(by: rx.disposeBag)
+        
+        self.widgetsEditCompleted.bind(to: viewController.viewModel.inputs.widgetsChangeObserver).disposed(by: rx.disposeBag)
     }
     
     func showCreditLimit() {
@@ -239,5 +246,212 @@ extension HomeCoodinator {
                 self.navigationRoot.popToRootViewController(animated: true)
             })
             .disposed(by: rx.disposeBag)
+    }
+}
+
+extension HomeCoodinator {
+    
+    func navigateFromWidgets(selectedWidget: WidgetCode) {
+        switch selectedWidget {
+        case .addMoney:
+           // self.coordinate(to: AddMoneyCoordinator(root: root)).subscribe().disposed(by: rx.disposeBag)
+            print("add money")
+        case .sendMoney:
+            navigateToSendMoney(root: root)
+        case .qrCode:
+            self.myQrCode()
+        case .bills:
+            payBills(root)
+        case .offers:
+            YAPToast.show("coming soon")
+        case .coins:
+            YAPToast.show("coming soon")
+        case .young:
+            YAPToast.show("coming soon")
+        case .houseHold:
+            YAPToast.show("coming soon")
+        case .statements:
+            YAPToast.show("coming soon")
+        case .edit:
+            self.openWidgets()
+        case .unknown:
+            break
+        }
+    }
+
+    func openWelcome() {
+//        DispatchQueue.main.async {
+//            self.coordinate(to: YAPForYouCoordinator(root: self.navigationRoot, repository: self.moreRepository)).subscribe().disposed(by: self.disposeBag)
+//        }
+    }
+    
+    func openWidgets()  {
+        coordinate(to: EditWidgetsCoordinator(root: self.root)).subscribe(onNext: {[weak self] in
+            if !($0.isCancel) {
+                self?.widgetsEditCompleted.onNext(())
+            }
+        }).disposed(by: disposeBag)
+    }
+    
+    func openPopup() {
+      /*  let viewModel = HideWidgetPopupViewModel()
+        let viewController = HideWidgetPopupViewController(viewModel: viewModel)
+        
+        let alertWindow = UIWindow(frame: UIScreen.main.bounds)
+        alertWindow.rootViewController = YAPActionSheetRootViewController()
+        alertWindow.backgroundColor = .clear
+        alertWindow.windowLevel = .alert + 1
+        alertWindow.makeKeyAndVisible()
+        let nav = UINavigationController(rootViewController: viewController)
+        nav.navigationBar.isHidden = true
+        nav.modalPresentationStyle = .overCurrentContext
+        alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
+        viewController.window = alertWindow
+        
+        viewModel.cancel.subscribe(onNext: {
+            nav.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
+        
+        viewModel.hideWidget.subscribe(onNext: {
+            nav.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
+        
+        viewModel.hideWidget.bind(to: hideWidgetsResult).disposed(by: disposeBag)
+        
+        viewModel.cancel.bind(to: widgetSelectionSwitchResult).disposed(by: disposeBag) */
+    }
+    
+    func openChat() {
+//        ChatManager.shared.openChat()
+    }
+
+  
+
+    func navigateToChnageUnvarifiedEmailAddress() {
+//        coordinate(to: ChangeUnverifiedEmailAddressCoordinator(root: navigationRoot)).subscribe(onNext: { [weak self] result in
+//            if case ResultType.success = result {
+//                self?.root.dismiss(animated: true, completion: nil)
+//            }
+//        }).disposed(by: disposeBag)
+    }
+
+    func navigateToTransactionDetails(cdTransaction: CDTransaction) {
+//        self.coordinate(to: TransactionDetailsCoordinator(cdTransaction: cdTransaction, root: root))
+//            .subscribe(onNext: {[weak self] result in
+//                if !(result.isCancel) {
+//                    self?.transactionCategoryResult.onNext(())
+//                }
+//            }).disposed(by: disposeBag)
+    }
+
+    func navigateToFilterSelection(selectedFilter: TransactionFilter?, resultObserver: AnyObserver<TransactionFilter?>) {
+//        let viewModel = TransactionFilterViewModel(selectedFilter)
+//        let viewController = TransactionFilterViewController(viewModel: viewModel)
+//        let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+//
+//        root.present(nav, animated: true, completion: nil)
+//
+//        viewModel.outputs.result.subscribe(onNext: { resultObserver.onNext($0) }).disposed(by: disposeBag)
+    }
+
+    func analytics(_ paymentCard: PaymentCard, date: Date? = nil) {
+//        coordinate(to: CardAnalyticsCoordinator(root: self.root, card: paymentCard, date: date)).subscribe().disposed(by: self.disposeBag)
+    }
+
+    func topUp() {
+//        self.coordinate(to: AddMoneyCoordinator(root: root)).subscribe().disposed(by: rx.disposeBag)
+    }
+    
+    func myQrCode() {
+//      coordinate(to: AddMoneyQRCodeCoordinator(root: navigationRoot, scanAllowed: true, tabBarRoot: self.root
+//                                                )).subscribe().disposed(by: rx.disposeBag)
+    }
+
+    func navigateToEIDScan() {
+//        coordinate(to: EIDScanCoordinator(root: navigationRoot, eidScanType: .update)).subscribe(onNext: { [weak self] in
+//            if case let ResultType.success(result) = $0 {
+//                self?.navigateToInformationReview(result)
+//            }
+//        }).disposed(by: disposeBag)
+    }
+
+   /* func navigateToInformationReview(_ info: IdentityScannerResult) {
+        coordinate(to: EIDInformationReviewCoordinatorPresentable(root: navigationRoot, identityInfo: info, canRescan: true))
+            .subscribe(onNext: { [weak self] in
+                if case let ResultType.success(result) = $0 {
+                    if result == .rescan {
+                        self?.navigateToEIDScan()
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+
+    func navigateToGuidedTour(tourGuide: [GuidedTour],
+                              skipObserver: AnyObserver<TourGuideView>,
+                              completionObserver: AnyObserver<TourGuideView>) {
+        self.coordinate(to: GuidedTourCoordinator(root: root, tours: tourGuide))
+            .subscribe(onNext: { [weak self] result in
+                guard let `self` = self else { return }
+                self.checkIsGraphAvailable.onNext(())
+                let view = tourGuide.count > 1 ? TourGuideView.dashboard : .dashboardGraph
+                if case ResultType.cancel = result {
+                    skipObserver.onNext(view)
+                } else {
+                    completionObserver.onNext(view)
+                }
+            })
+            .disposed(by: disposeBag)
+    } */
+
+    func navigateToHelpAndSupport() {
+//        coordinate(to: HelpAndSupportCoordinator(root: root)).subscribe().disposed(by: disposeBag)
+    }
+    
+    func navigateToSendMoney(root: UITabBarController) {
+      /*  coordinate(to: SendMoneyDashboardCoordinator(root: root, contactsManager: self.contactsManager)).subscribe(onNext: { result in
+            if case ResultType.success = result {
+                root.dismiss(animated: true, completion: nil)
+                (root as UITabBarController).selectedIndex = 0
+            }
+        }).disposed(by: rx.disposeBag) */
+    }
+
+    func navigateToDeliveryStatus(_ card: PaymentCard) {
+       /* let viewModel = CardDeliveryStatusViewModel(paymentCard: card)
+        let viewController = CardDeliveryStatusViewController(viewModel: viewModel)
+        let navigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+
+        viewModel.outputs.action.subscribe(onNext: {[weak self] _ in
+            guard let `self` = self else { return }
+            navigationController.dismiss(animated: true) { [unowned self] in
+                self.navigateToSetPin(card: card)
+            }
+        }).disposed(by: disposeBag)
+
+        navigationRoot.present(navigationController, animated: true, completion: nil) */
+    }
+
+    private func additionalInformation() {
+//        coordinate(to: AdditionalInformationCoordinator(root: root.navigationController!)).subscribe().disposed(by: disposeBag)
+    }
+    
+    func payBills(_ root: UIViewController){
+//        AppAnalytics.shared.pauseSessionRecording()
+//        coordinate(to: BillPaymentsHomeCoordinator(root: root)).subscribe(onNext: { _ in
+//            AppAnalytics.shared.resumeSessionRecording()
+//        }).disposed(by: disposeBag)
+    }
+    
+    func navigateToAmendment() {
+//        coordinate(to: B2CKYCAmendmentCoordinator(root: navigationRoot)).subscribe(onNext: { [weak self] _ in
+//            self?.root.dismiss(animated: true, completion: nil)
+//        }).disposed(by: disposeBag)
+    }
+    
+    func navigateToProfile() {
+//        coordinate(to: UserProfileCoordinator(navigationController: root, customer: SessionManager.current.currentAccount.map{ $0?.customer }.unwrap()))
+//            .subscribe().disposed(by: disposeBag)
+
     }
 }

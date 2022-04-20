@@ -71,6 +71,7 @@ protocol HomeViewModelOutputs {
     var search: Observable<Void> { get }
     var categoryChanged: Observable<Void> { get }
     var refresh: Observable<Void> {  get }
+    var selectedWidget: Observable<WidgetCode?> { get }
 }
 
 protocol HomeViewModelType {
@@ -179,6 +180,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var search: Observable<Void> { searchSubject.asObservable() }
     var categoryChanged: Observable<Void> { categoryChangedSubject.asObservable() }
     var refresh: Observable<Void> { refreshSubject.asObservable() }
+    var selectedWidget: Observable<WidgetCode?> { selectedWidgetSubject.asObservable() }
 
     // MARK: Init
 
