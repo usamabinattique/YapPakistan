@@ -110,10 +110,6 @@ class KYCRepository: KYCRepositoryType {
                          latitude: String,
                          longitude: String ) -> Observable<Event<Account>> {
         
-        //TODO: [YASIR] remove following line
-//        return Observable.just("Card is saved").materialize()
-       
-        //TODO: ucomment following line
        return cardsService.saveUserAddress(addressOne: addressOne,
                                            addressTwo: addressTwo,
                                             city: city,

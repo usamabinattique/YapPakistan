@@ -7,6 +7,96 @@
 
 import Foundation
 
+public enum PaymentCardFeature {
+    case everyNeed
+    case virtualOrPhysical
+    case nickname
+    case freezeOrUnfreeze
+    case sendSalaries
+    case allocateBudget
+    case setUpPayments
+    case trackExpenses
+    case addInstantly
+    case onlinePayments
+    case funds
+    case realTimeExchangeRate
+    case freeATMWithdrawls
+    case travelInsurance
+    case priorityCustomerSupport
+    case airportLoungeAccess
+    case freePackageSubscription
+    case exclusivePartnerOffers
+}
+
+public extension PaymentCardFeature {
+    var title: String {
+        switch self {
+        case .everyNeed:
+            return "screen_add_card_display_text_feature_spare_card_every_need_title".localized
+        case .virtualOrPhysical:
+            return "screen_add_card_display_text_feature_spare_card_virtual_or_physical_title".localized
+        case .nickname:
+            return "screen_add_card_display_text_feature_spare_card_nick_name_title".localized
+        case .freezeOrUnfreeze:
+            return "screen_add_card_display_text_feature_spare_card_freeze_or_unfreeze_title".localized
+        case .sendSalaries:
+            return "screen_yap_house_hold_subscription_selection_display_text_benefit_send_salaries".localized
+        case .allocateBudget:
+            return "screen_yap_house_hold_subscription_selection_display_text_benefit_allocate_budget".localized
+        case .setUpPayments:
+            return "screen_yap_house_hold_subscription_selection_display_text_benefit_setup_payments".localized
+        case .trackExpenses:
+            return "screen_yap_house_hold_subscription_selection_display_text_benefit_track_expense".localized
+        case .addInstantly:
+            return "screen_add_card_display_text_feature_spare_card_add_instantly".localized
+        case .onlinePayments:
+            return "screen_add_card_display_text_feature_spare_card_online_payments".localized
+        case .funds:
+            return "screen_add_card_display_text_feature_spare_card_funds".localized
+        case .exclusivePartnerOffers:
+            return "screen_add_card_display_text_feature_exclusive_partner_offers".localized
+        case .realTimeExchangeRate:
+            return "screen_add_card_display_text_feature_realtime_exchange_rate".localized
+        case.airportLoungeAccess:
+            return "screen_add_card_display_text_feature_premier_airport_lounge_access".localized
+        case .freeATMWithdrawls:
+            return "screen_add_card_display_text_feature_free_atm_withdrawals".localized
+        case .priorityCustomerSupport:
+            return "screen_add_card_display_text_feature_priority_customer_support".localized
+        case .freePackageSubscription:
+            return "screen_add_card_display_text_feature_free_package_subscription".localized
+        case .travelInsurance:
+            return "screen_add_card_display_text_feature_travel_insurance".localized
+            
+        }
+        
+    }
+    
+    var description: String {
+        switch self {
+        case .everyNeed:
+            return "screen_add_card_display_text_feature_spare_card_every_need_details".localized
+        case .virtualOrPhysical:
+            return "screen_add_card_display_text_feature_spare_card_virtual_or_physical_details".localized
+        case .nickname:
+            return "screen_add_card_display_text_feature_spare_card_nick_name_details".localized
+        case .freezeOrUnfreeze:
+            return "screen_add_card_display_text_feature_spare_card_freeze_or_unfreeze_details".localized
+        case .sendSalaries:
+            return "screen_add_card_display_text_feature_spare_card_every_need_details".localized
+        case .allocateBudget:
+            return "screen_add_card_display_text_feature_spare_card_virtual_or_physical_details".localized
+        case .setUpPayments:
+            return "screen_add_card_display_text_feature_spare_card_nick_name_details".localized
+        case .trackExpenses:
+            return "screen_add_card_display_text_feature_spare_card_freeze_or_unfreeze_details".localized
+        case .addInstantly, .funds, .onlinePayments, .exclusivePartnerOffers, .freePackageSubscription, .priorityCustomerSupport, .realTimeExchangeRate, .airportLoungeAccess, .freeATMWithdrawls, .travelInsurance:
+            return ""
+            
+        }
+    }
+}
+
 struct CardDetails: Codable {
     let cvv2: String?
     let cardToken: String?
@@ -26,7 +116,43 @@ struct CardDetails: Codable {
     }
 }
 
-class PaymentCard: Codable {
+public class PaymentCard: Codable {
+    
+    internal init(accountNumber: String?, accountType: String?, active: Bool?, atmAllowed: Bool? = nil, availableBalance: Double?, backImage: String? = nil, blocked: Bool? = nil, cardBalance: Double?, cardName: String? = nil, cardScheme: String?, cardSerialNumber: String?, cardType: PaymentCardType, currentBalance: Double?, customerId: String?, delivered: Bool?, deliveryStatus: PaymentCard.DeliveryStatus, expiryDate: String?, frontImage: String?, issuanceDate: String?, maskedCardNo: String?, nameUpdated: Bool?, onlineBankingAllowed: Bool?, paymentAbroadAllowed: Bool?, physical: Bool, pinCreated: Bool?, pinStatus: PaymentCard.PinStatus?, productCode: String?, retailPaymentAllowed: Bool? = nil, shipmentStatus: String?, status: CardStatus?, uuid: String?, cardDetails: CardDetails? = nil) {
+        self.accountNumber = accountNumber
+        self.accountType = accountType
+        self.active = active
+        self.atmAllowed = atmAllowed
+        self.availableBalance = availableBalance
+        self.backImage = backImage
+        self.blocked = blocked
+        self.cardBalance = cardBalance
+        self.cardName = cardName
+        self.cardScheme = cardScheme
+        self.cardSerialNumber = cardSerialNumber
+        self.cardType = cardType
+        self.currentBalance = currentBalance
+        self.customerId = customerId
+        self.delivered = delivered
+        self.deliveryStatus = deliveryStatus
+        self.expiryDate = expiryDate
+        self.frontImage = frontImage
+        self.issuanceDate = issuanceDate
+        self.maskedCardNo = maskedCardNo
+        self.nameUpdated = nameUpdated
+        self.onlineBankingAllowed = onlineBankingAllowed
+        self.paymentAbroadAllowed = paymentAbroadAllowed
+        self.physical = physical
+        self.pinCreated = pinCreated
+        self.pinStatus = pinStatus
+        self.productCode = productCode
+        self.retailPaymentAllowed = retailPaymentAllowed
+        self.shipmentStatus = shipmentStatus
+        self.status = status
+        self.uuid = uuid
+        self.cardDetails = cardDetails
+    }
+    
     let accountNumber: String?
     let accountType: String?
     let active: Bool?
@@ -42,7 +168,7 @@ class PaymentCard: Codable {
     let currentBalance: Double?
     let customerId: String?
     let delivered: Bool?
-    let deliveryStatus: DeliveryStatus
+    var deliveryStatus: DeliveryStatus
     let expiryDate: String?
     let frontImage: String?
     let issuanceDate: String?
@@ -52,23 +178,28 @@ class PaymentCard: Codable {
     let paymentAbroadAllowed: Bool?
     let physical: Bool
     let pinCreated: Bool?
-    let pinStatus: PinStatus?
+    var pinStatus: PinStatus?
     let productCode: String?
     var retailPaymentAllowed: Bool?
     let shipmentStatus: String?
-    let status: Status?
+    let status: CardStatus?
     let uuid: String?
     var cardDetails: CardDetails?
+    var deliveryDate: Date?
+    var setPinDate: Date?
+    var pinSet: Bool?
+   
 
     enum CodingKeys: String, CodingKey {
         case accountNumber, accountType, active, atmAllowed, availableBalance, backImage, blocked, cardBalance,
              cardName, cardScheme, cardSerialNumber, cardType, currentBalance, customerId, delivered, deliveryStatus,
              expiryDate, frontImage, issuanceDate, maskedCardNo, nameUpdated, onlineBankingAllowed,
              paymentAbroadAllowed, physical, pinCreated, pinStatus, productCode, retailPaymentAllowed,
-             shipmentStatus, status, uuid
+             shipmentStatus, status, uuid, setPinDate, pinSet
+        case deliveryDate = "shipmentDate"
     }
 
-    required init(from decoder: Decoder) throws {
+    required public init(from decoder: Decoder) throws {
         let values = try? decoder.container(keyedBy: CodingKeys.self)
         accountNumber = try? values?.decodeIfPresent(String.self, forKey: .accountNumber)
         accountType = try? values?.decodeIfPresent(String.self, forKey: .accountType)
@@ -95,12 +226,16 @@ class PaymentCard: Codable {
         paymentAbroadAllowed = try? values?.decodeIfPresent(Bool.self, forKey: .paymentAbroadAllowed)
         physical = ((try? values?.decodeIfPresent(Bool.self, forKey: .physical)) != nil)
         pinCreated = try? values?.decodeIfPresent(Bool.self, forKey: .pinCreated)
+        pinSet = try? values?.decodeIfPresent(Bool.self, forKey: .pinSet)
         pinStatus = try? values?.decodeIfPresent(PinStatus.self, forKey: .pinStatus)
         productCode = try? values?.decodeIfPresent(String.self, forKey: .productCode)
         retailPaymentAllowed = try? values?.decodeIfPresent(Bool.self, forKey: .retailPaymentAllowed)
         shipmentStatus = try? values?.decodeIfPresent(String.self, forKey: .shipmentStatus)
-        status = try? values?.decodeIfPresent(Status.self, forKey: .status)
+        status = try? values?.decodeIfPresent(CardStatus.self, forKey: .status)
         uuid = try? values?.decodeIfPresent(String.self, forKey: .uuid)
+        
+        deliveryDate = try? (values?.decodeIfPresent(String.self, forKey: .deliveryDate).map { DateFormatter.transactionDateFormatter.date(from: $0) }) ?? nil
+        setPinDate = try? (values?.decodeIfPresent(String.self, forKey: .setPinDate).map { DateFormatter.transactionDateFormatter.date(from: $0) }) ?? nil
     }
 }
 
@@ -128,6 +263,63 @@ extension PaymentCard {
     }
 }
 
+public enum PaymentCardPlan: String, Codable {
+    case spare = "SPARE"
+    case premium = "PREMIUM"
+    case metal = "METAL"
+    
+    public var toString: String {
+        get {
+            return rawValue.prefix(1).uppercased() + rawValue.dropFirst().lowercased() + " card"
+        }
+    }
+    
+    public var toLowerCase: String {
+        get {
+            return rawValue.prefix(1).uppercased() + rawValue.dropFirst().lowercased()
+        }
+    }
+    
+//    public var colors: [YAPCard] {
+//        get {
+//            switch self {
+//            case .premium:
+//                return [.premiumRoseGold, .premiumGold, .premiumGrey, .premiumBlack ]
+//            case .metal:
+//                return [.metalRoseGold, .metalGrey, .metalBlack]
+//            case .spare:
+//                return [.virtualDarkBlue, .virtualGreen, .virtualMulti, .virtualLightBlue, .virtualPurple]
+//                
+//            }
+//        }
+//    }
+    
+    public var features : [PaymentCardFeature] {
+        get {
+            switch self {
+            case .premium:
+                return [.realTimeExchangeRate, .freeATMWithdrawls, .travelInsurance, .priorityCustomerSupport, .airportLoungeAccess, .freePackageSubscription ]
+            case .metal:
+                return [.exclusivePartnerOffers, .realTimeExchangeRate, .freeATMWithdrawls, .travelInsurance, .priorityCustomerSupport, .airportLoungeAccess, .freePackageSubscription ]
+            case .spare:
+                return [.addInstantly, .onlinePayments, .funds, .nickname, .freezeOrUnfreeze]
+            }
+        }
+    }
+    
+    public var badge: UIImage? {
+         switch self {
+         case .premium:
+             return UIImage(named: "icon_gold_badge", in: .yapPakistan)
+         case .metal:
+             return UIImage(named: "icon_black_badge", in: .yapPakistan)
+         case .spare:
+             return UIImage(named: "icon_primary_badge", in: .yapPakistan)
+         }
+     }
+    
+}
+
 public enum PaymentCardBlockOption: String, Codable {
     case damage = "4"
     case lostOrStolen = "2"
@@ -151,4 +343,43 @@ extension PaymentCardType: Comparable {
             return "Virtual"
         }
     }
+}
+
+public enum CardStatus: String, Codable {
+    case active = "ACTIVE"
+    case blocked = "BLOCKED"
+    case inActive = "INACTIVE"
+    case hotlisted = "HOTLISTED"
+    case expired = "EXPIRED"
+    case closed = "CLOSED"
+    case cancelled = "CANCELLED"
+    
+}
+
+public extension CardStatus {
+    var leaplumStatus: String {
+        switch self {
+        case .active:
+            return "active"
+        case .blocked:
+            return "frozen"
+        case .inActive:
+            return "in-active"
+        case .hotlisted:
+            return "hotlisted"
+        case .expired:
+            return "expired"
+        case .closed:
+            return "closed"
+        case .cancelled:
+            return "expired"
+        }
+    }
+}
+
+extension PaymentCard {
+    public static var mock: PaymentCard {
+        PaymentCard(accountNumber: nil, accountType: nil, active: nil, atmAllowed: nil, availableBalance: nil, backImage: nil, blocked: nil, cardBalance: nil, cardName: nil, cardScheme: nil, cardSerialNumber: nil, cardType: PaymentCardType.debit, currentBalance: nil, customerId: nil, delivered: nil, deliveryStatus: .ordered, expiryDate: nil, frontImage: nil, issuanceDate: nil, maskedCardNo: nil, nameUpdated: nil, onlineBankingAllowed: nil, paymentAbroadAllowed: nil, physical: false, pinCreated: nil, pinStatus: nil, productCode: nil, retailPaymentAllowed: nil, shipmentStatus: nil, status: nil, uuid: nil, cardDetails: nil)
+    }
+    
 }

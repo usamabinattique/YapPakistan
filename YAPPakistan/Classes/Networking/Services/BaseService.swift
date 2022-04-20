@@ -63,9 +63,25 @@ public class BaseService: Service {
                 do {
                     let object: Response<T> = try self.decode(data: apiResponse.data)
                     return object.result
-                } catch let error {
-                    throw error
-                }
+                } catch {
+                   print("error: ", error)
+                   throw error
+               }
+//                catch let DecodingError.dataCorrupted(context){
+//                    print(context)
+//                } catch let DecodingError.keyNotFound(key, context) {
+//                    print("Key '\(key)' not found:", context.debugDescription)
+//                    print("codingPath:", context.codingPath)
+//                } catch let DecodingError.valueNotFound(value, context) {
+//                    print("Value '\(value)' not found:", context.debugDescription)
+//                    print("codingPath:", context.codingPath)
+//                } catch let DecodingError.typeMismatch(type, context)  {
+//                    print("Type '\(type)' mismatch:", context.debugDescription)
+//                    print("codingPath:", context.codingPath)
+//                } catch {
+//                    print("error: ", error)
+//                    throw error
+//                }
             }
     }
 

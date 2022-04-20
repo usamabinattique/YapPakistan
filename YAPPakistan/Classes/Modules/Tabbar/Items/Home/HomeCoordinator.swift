@@ -99,6 +99,10 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.showCreditLimit.subscribe(onNext: { [weak self] _ in
             self?.showCreditLimit()
         }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.menuTap.subscribe(onNext: { [weak self] in
+            (self?.root as? MenuViewController)?.showMenu()
+        }).disposed(by: rx.disposeBag)
 
     }
     
@@ -117,13 +121,10 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         let kycContainer = KYCFeatureContainer(parent: container)
 
         if isTrue {
-
-// <<<<<<< Updated upstream:YAPPakistan/Classes/Modules/Tabbar/Items/Home/HomeCoordinator.swift
+            self.navigationRoot.setNavigationBarHidden(true, animated: true)
         coordinate(to: KYCCoordinator(container: kycContainer, root: self.navigationRoot))
-// =======
-//        coordinate(to: KYCCoordinator(container: kycContainer, root: self.root))
-// >>>>>>> Stashed changes:YAPPakistan/Classes/Modules/LiteDashboard/LiteDashboardCoordinator.swift
-            .subscribe(onNext: { result in
+            .subscribe(onNext: { [unowned self] result in
+                self.navigationRoot.setNavigationBarHidden(false, animated: true)
                 switch result {
                 case .success:
                     self.navigationRoot.popToRootViewController(animated: true)
@@ -136,21 +137,12 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 
             viewController.viewModel.outputs.back.withUnretained(self)
                 .subscribe(onNext: { `self`, _ in
-// <<<<<<< Updated upstream:YAPPakistan/Classes/Modules/Tabbar/Items/Home/HomeCoordinator.swift
                     self.root.setViewControllers([self.navigationRoot.viewControllers[0]], animated: true)
                 })
                 .disposed(by: rx.disposeBag)
 
             self.navigationRoot.pushViewController(viewController, animated: true)
             self.navigationRoot.setNavigationBarHidden(true, animated: true)
-//=======
-//                    self.root.setViewControllers([self.root.viewControllers[0]], animated: true)
-//                })
-//                .disposed(by: rx.disposeBag)
-//
-//            root.pushViewController(viewController, animated: true)
-//            root.setNavigationBarHidden(true, animated: true)
-//>>>>>>> Stashed changes:YAPPakistan/Classes/Modules/LiteDashboard/LiteDashboardCoordinator.swift
         }
     }
 }

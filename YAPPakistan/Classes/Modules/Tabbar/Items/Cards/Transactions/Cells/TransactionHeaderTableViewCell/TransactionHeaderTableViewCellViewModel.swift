@@ -10,16 +10,16 @@ import Foundation
 import RxSwift
 import YAPComponents
 
-protocol TransactionHeaderTableViewCellViewModelInputs {
+public protocol TransactionHeaderTableViewCellViewModelInputs {
     
 }
 
-protocol TransactionHeaderTableViewCellViewModelOutputs {
+public protocol TransactionHeaderTableViewCellViewModelOutputs {
     var date: Observable<String?> { get }
     var totalTransactionAmount: Observable<String?> { get }
 }
 
-protocol TransactionHeaderTableViewCellViewModelType {
+public protocol TransactionHeaderTableViewCellViewModelType {
     var inputs: TransactionHeaderTableViewCellViewModelInputs { get }
     var outputs: TransactionHeaderTableViewCellViewModelOutputs { get }
 }

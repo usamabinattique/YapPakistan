@@ -22,4 +22,17 @@ public class YAPUserDefaults {
     public static func isKeyPresentInUserDefaults(key: String) -> Bool {
         return UserDefaults.standard.object(forKey: key) != nil
     }
+    
+    public static func hideWidgetsBar(for value: Bool) {
+        let defaults = UserDefaults.standard
+        defaults.setValue(value, forKey: "hideWidgetsBar")
+    }
+    
+    public static func isWidgetsBarHidden() -> Bool{
+        if !isKeyPresentInUserDefaults(key: "hideWidgetsBar") {
+            return false
+        }
+        let defaults = UserDefaults.standard
+        return defaults.bool(forKey: "hideWidgetsBar")
+    }
 }

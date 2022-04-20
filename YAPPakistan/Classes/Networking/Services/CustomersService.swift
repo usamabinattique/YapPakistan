@@ -87,6 +87,7 @@ public protocol CustomerServiceType {
     func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T>
     func updateEmail<T: Codable>(input email : String) -> Observable<T>
     func fetchCustomerPersonalDetails<T: Codable>() -> Observable<T>
+    func getDashboardWidgets<T: Codable> () -> Observable<T>
 }
 
     
@@ -493,13 +494,16 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T> {
-        
-       // let body = AddBankBeneficiaryRequest(title: title, accountNo: accountNo, bankName: bankName, nickName: nickName, beneficiaryType: beneficiaryType)
-        
         let route = APIEndpoint(.post, apiConfig.customersURL, "/api/beneficiaries/bank-transfer", body: body, headers: authorizationProvider.authorizationHeaders)
-
         return self.request(apiClient: self.apiClient, route: route)
     }
+    
+    public func getDashboardWidgets<T: Codable> () -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/getWidgets",  headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    
 }
 
 // MARK: Helpers

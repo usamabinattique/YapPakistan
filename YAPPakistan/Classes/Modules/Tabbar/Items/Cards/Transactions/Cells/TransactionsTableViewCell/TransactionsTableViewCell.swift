@@ -246,10 +246,10 @@ private extension TransactionsTableViewCell {
             }
         }).disposed(by: disposeBag)
         bindImageGrandientBackground()
-//        viewModel.outputs.shimmering.bind(to: transactionTitle.rx.isShimmerOn).disposed(by: disposeBag)
-//        viewModel.outputs.shimmering.bind(to: transactionAmount.rx.isShimmerOn).disposed(by: disposeBag)
-//        viewModel.outputs.shimmering.bind(to: transactionMerchantIconImageView.rx.isShimmerOn).disposed(by: disposeBag)
-//        viewModel.outputs.shimmering.bind(to: transactionTimeCategory.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: transactionTitle.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: transactionAmount.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: transactionMerchantIconImageView.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: transactionTimeCategory.rx.isShimmerOn).disposed(by: disposeBag)
     }
     
     func bindImageGrandientBackground() {

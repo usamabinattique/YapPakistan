@@ -13,6 +13,7 @@ import YAPComponents
 import RxSwift
 import RxCocoa
 import RxDataSources
+import GLKit
 // import Networking
 // import CoreData
 // import AppDatabase
@@ -25,6 +26,7 @@ protocol TransactionsViewModelInputs {
     var filterSelected: AnyObserver<TransactionFilter?> { get }
     var openWelcomeTutorialObserver: AnyObserver<Void> { get }
     var searchTextObserver: AnyObserver<String?> { get }
+    var showShimmeringObserver: AnyObserver<Bool> { get }
 }
 
 protocol TransactionsViewModelOutputs {
@@ -40,14 +42,15 @@ protocol TransactionsViewModelOutputs {
     var openWelcomTutorial: Observable<Void> { get }
     
     var reloadData: Observable<Void> { get }
-    /// func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType
-    /// func cellViewModel(for indexPath: IndexPath) -> ReusableTableViewCellViewModelType
+    func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType
+    func cellViewModel(for indexPath: IndexPath) -> ReusableTableViewCellViewModelType
     var numberOfSections: Int { get }
-    /// func numberOfRows(inSection section: Int) -> Int
+    func numberOfRows(inSection section: Int) -> Int
     var showsGraph: Observable<Bool> { get }
     var loading: Observable<Bool> { get }
     var nothingLabelText: Observable<String?> { get }
     var showsFilter: Observable<Bool> { get }
+    var showShimmering: Observable<Bool> { get }
 }
 
 protocol TransactionsViewModelType {
@@ -56,7 +59,6 @@ protocol TransactionsViewModelType {
 }
 
 class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsViewModelInputs, TransactionsViewModelOutputs {
-
     // MARK: - Properties
     let disposeBag = DisposeBag()
     var inputs: TransactionsViewModelInputs { return self }
@@ -84,6 +86,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let searchTextSubject = PublishSubject<String?>()
     private let nothingLabelSubject: BehaviorSubject<String?>
     private let showsFilterSubject: BehaviorSubject<Bool>
+    private let showShimmeringSubject = ReplaySubject<Bool>.create(bufferSize: 1)
 
     // MARK: - Input
     var fetchTransactionsObserver: AnyObserver<Void> { return fetchTransactionsSubject.asObserver() }
@@ -94,6 +97,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var openFilterObserver: AnyObserver<Void> { return openFilterSubject.asObserver() }
     var filterSelected: AnyObserver<TransactionFilter?> { return filterSelectedSubject.asObserver() }
     var searchTextObserver: AnyObserver<String?> { searchTextSubject.asObserver() }
+    var showShimmeringObserver: AnyObserver<Bool> { showShimmeringSubject.asObserver() }
 
     // MARK: - Output
     var fetchTransactions: Observable<Void> { return fetchTransactionsSubject.asObservable() }
@@ -111,41 +115,57 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var loading: Observable<Bool> { loadingSubject.asObservable() }
     var nothingLabelText: Observable<String?> { nothingLabelSubject.asObservable() }
     var showsFilter: Observable<Bool> { showsFilterSubject.asObservable() }
+    var showShimmering: Observable<Bool> { showShimmeringSubject.asObservable() }
     
-//    func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
-//
-//        let transactions = entityHandler.transactions(for: section)
-//        let amount = transactions.reduce(0, { $1.transactionType == .debit ? $0 - $1.calculatedTotalAmount : $0 + $1.calculatedTotalAmount })
-//        let date = transactions.first?.transactionDay ?? Date().startOfDay
-//
-//        return TransactionHeaderTableViewCellViewModel(date: date.transactionSectionReadableDate, totalTransactionsAmount: (amount < 0 ? "- " : "+ ") +  CurrencyFormatter.formatAmountInLocalCurrency(abs(amount)))
-//    }
-//
-//    func cellViewModel(for indexPath: IndexPath) -> ReusableTableViewCellViewModelType {
-//
-//        if let transaction = entityHandler.transaction(for: indexPath) {
-//            return TransactionsTableViewCellViewModel(transaction: transaction)
-//        }
-//
-//        return TransactionsTableViewCellViewModel()
-//    }
-//
-    var numberOfSections: Int { 0
+    func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
 
+        let transactions =  [CDTransaction]() //entityHandler.transactions(for: section)
+        let amount = 0.0 //transactions.reduce(0, { $1.transactionType == .debit ? $0 - $1.calculatedTotalAmount : $0 + $1.calculatedTotalAmount })
+        let date = transactions.first?.transactionDay ?? Date().startOfDay
+
+        return TransactionHeaderTableViewCellViewModel(date: date.transactionSectionReadableDate, totalTransactionsAmount: (amount < 0 ? "- " : "+ ") +  CurrencyFormatter.formatAmountInLocalCurrency(abs(amount)))
+    }
+
+    func cellViewModel(for indexPath: IndexPath) -> ReusableTableViewCellViewModelType {
+
+      /*  if let transaction = entityHandler.transaction(for: indexPath) {
+            return TransactionsTableViewCellViewModel(transaction: transaction)
+        }
+
+        return TransactionsTableViewCellViewModel() */
+        
+//        var transactionCellViewModels = [TransactionsTableViewCellViewModel]()
+//        transactionCellViewModels.append(TransactionsTableViewCellViewModel())
+//        transactionCellViewModels.append(TransactionsTableViewCellViewModel())
+//        transactionCellViewModels.append(TransactionsTableViewCellViewModel())
+//        transactionCellViewModels.append(TransactionsTableViewCellViewModel())
+//        transactionCellViewModels.append(TransactionsTableViewCellViewModel())
+//        return transactionCellViewModels
+        
+        return TransactionsTableViewCellViewModel()
+    }
+//
+    var numberOfSections: Int {
+        //TODO: handle sections here
 //        let numberOfSections = entityHandler.numberOfSection()
 //        guard numberOfSections <= 0 && isAccountTransaction && filter == nil else { return numberOfSections }
 //
 //        return isSearching ? 0 : 1
-
+        
+        return _numberOfSections
     }
 //
-//    func numberOfRows(inSection section: Int) -> Int {
-//
+    func numberOfRows(inSection section: Int) -> Int {
+        //TODO: handle rows here
 //        let numberOfSections = entityHandler.numberOfSection()
 //        if numberOfSections == 0 && !isSearching {  return  10 }
 //
 //        return entityHandler.numberOfTransaction(in: section)
-//    }
+        return _numberOfRows
+    }
+    
+    private var _numberOfRows = 10
+    private var _numberOfSections = 1
 
     // let repository: TransactionsRepository
     
@@ -171,14 +191,22 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         super.init()
         
         showsNothingLabelSubject.onNext(cardSerialNumber != nil)
+        
+        showShimmeringSubject.debounce(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
+            self?._numberOfRows = IsLoading ? 10 : 0
+            self?._numberOfSections = IsLoading ? 1 : 0
+            self?.reloadDataSubject.onNext(())
+        }).disposed(by: disposeBag)
                 
         updateFilter()
 //        updateContent()
 //        updateGraph()
 //
 //        let viewAppeared = viewAppearedSubject.do(onNext: { SessionManager.current.refreshBalance() })
-
-        let request =  Observable.merge(fetchTransactions, viewAppearedSubject.take(1))
+        
+        
+        //Uncomment following
+      /*  let request =  Observable.merge(fetchTransactions, viewAppearedSubject.take(1))
             .do(onNext: { [weak self] _ in self?.loadingSubject.onNext(false)})
             .flatMap { _ in transactionDataProvider.fetchTransactions() }
             .share()
@@ -186,7 +214,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         request.subscribe(onNext: { response in
             print(response)
         })
-        .disposed(by: disposeBag)
+        .disposed(by: disposeBag) */
 //
 //        let saveRequest = request.elements()
 //            .map { [unowned self] pageableResponse -> Bool in
@@ -221,10 +249,10 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
 //            .subscribe(onNext: { [unowned self] _ in self.updateGraph() })
 //            .disposed(by: disposeBag)
 
-        request.errors().subscribe(onNext: { [unowned self] _ in
+      /*  request.errors().subscribe(onNext: { [unowned self] _ in
             self.loadingSubject.onNext(false)
             self.dataChanged = false
-        }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag) */
 
         filterSelectedSubject.subscribe(onNext: { [unowned self] filter in
 

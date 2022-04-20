@@ -114,4 +114,11 @@ public extension Reactive where Base: UIImageView {
             imageView.loadImage(with: URL(addingPercentEncodingInString: params.0 ?? ""), placeholder: params.1, showsIndicator: showsIndicator, refreshCachedImage: refreshCachedImage, completion: completion)
         }
     }
+    
+    func loadImage(_ showsIndicator: Bool = false, isStringPath: Bool) -> Binder<ImageWithURL> {
+        return Binder(self.base) { imageView, params -> Void in
+            imageView.loadImage(with: URL(string: params.0 ?? ""), placeholder: params.1, showsIndicator: showsIndicator, loop: 1, refreshCachedImage: false)
+        }
+    }
+    
 }

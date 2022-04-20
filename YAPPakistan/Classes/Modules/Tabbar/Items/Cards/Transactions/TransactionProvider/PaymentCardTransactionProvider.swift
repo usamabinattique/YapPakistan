@@ -11,14 +11,16 @@ import Foundation
 /// import YAPKit
 import RxSwift
 
-protocol PaymentCardTransactionProvider: class {
+protocol PaymentCardTransactionProvider: AnyObject {
     var transactions: Observable<[TransactionResponse]> { get }
     func fetchTransactions() -> Observable<Event<PagableResponse<TransactionResponse>>>
     func resetPage(_ page: Int)
     var pageSize: Int { get }
+    func resetCardSerialNumber(_ serialNumber: String)
 }
 
 extension PaymentCardTransactionProvider {
     func resetPage(_ page: Int) {}
     var pageSize: Int { return 0 }
+    func resetCardSerialNumber(_ serialNumber: String) {}
 }
