@@ -300,6 +300,10 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .share()
                 
                 
+        verifyRequest.errors().map{ $0.localizedDescription }
+                .bind(to: errorSuject)
+                .disposed(by: disposeBag)
+                
 
         let isOtpBlocked = verifyRequest.errors().map{ error -> Bool in
             guard case let NetworkErrors.internalServerError(serverError) = error else { return false }
@@ -309,15 +313,18 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
 
         isOtpBlocked.bind(to: otpBlocked).disposed(by: disposeBag)
 
-//        Observable.merge(isOtpBlocked.filter{ !$0 }.map{ _ in })
-//            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-//            .withLatestFrom(verifyRequest.errors()).map{ $0.localizedDescription }
-//            .bind(to: errorSuject)
-//            .disposed(by: disposeBag)
+        Observable.merge(isOtpBlocked.filter{ !$0 }.map{ _ in })
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .withLatestFrom(verifyRequest.errors()).map{ $0.localizedDescription }
+            .bind(to: errorSuject)
+            .disposed(by: disposeBag)
 
         verifyRequest.errors().map { _ in nil }
             .do(onNext: { [unowned self] in self.otpForRequest = $0 })
             .bind(to: textSubject).disposed(by: disposeBag)
+                
+            
+                
                 
         verifyRequest.elements().subscribe(onNext: { [unowned self] elems in
             print(elems)

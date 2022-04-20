@@ -199,6 +199,7 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
             
             updateEmailReq.elements().subscribe(onNext: { data in
                 print(data)
+                self.successSubject.onNext(emailString)
             })
             
             //self.otpRepository.updateEmail(email: emailString)
