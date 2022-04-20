@@ -14,17 +14,15 @@ import RxTheme
 
 class HiddenWidgetsTableViewCell: RxUITableViewCell {
 
-    private var categoryNameText: UILabel = UIFactory.makeLabel(font: .small) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small)
-    
+    private var categoryNameText: UILabel = UIFactory.makeLabel(font: .small)
     private var trailingButton = UIButtonFactory.createButton( backgroundColor: .clear)
     
     private lazy var iconBackgroundView: UIView = {
         let view = UIView()
-//        view.backgroundColor = UIColor.appColor(ofType: .paleLilac)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    private var leadingIcon = UIFactory.makeImageView() //UIImageViewFactory.createImageView()
+    private var leadingIcon = UIFactory.makeImageView()
     
     private var viewModel: HiddenWidgetsCellViewModelType!
     private var themeService: ThemeService<AppTheme>!
@@ -53,6 +51,7 @@ class HiddenWidgetsTableViewCell: RxUITableViewCell {
         guard let viewModel = viewModel as? HiddenWidgetsCellViewModelType else { return }
         self.viewModel = viewModel
         self.themeService = themeService
+        setupTheme()
         bind()
     }
 }
@@ -91,9 +90,17 @@ extension HiddenWidgetsTableViewCell {
         
     }
     
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: [categoryNameText.rx.tintColor])
+            .bind({ UIColor($0.paleLilac) }, to: [iconBackgroundView.rx.backgroundColor])
+        
+            .disposed(by: disposeBag)
+    }
+    
     func bind() {
         viewModel.outputs.labelText.bind(to: categoryNameText.rx.text).disposed(by: disposeBag)
-        viewModel.outputs.leadingIcon.unwrap().bind(to: leadingIcon.rx.loadImage()).disposed(by: disposeBag)
+        viewModel.outputs.leadingIcon.unwrap().bind(to: leadingIcon.rx.loadImage(true,isStringPath: true)).disposed(by: disposeBag)
         trailingButton.rx.tap.subscribe(onNext: {[weak self] in
             self?.viewModel.inputs.addButtonObserver.onNext(self?.categoryNameText.text)
         }).disposed(by: disposeBag)

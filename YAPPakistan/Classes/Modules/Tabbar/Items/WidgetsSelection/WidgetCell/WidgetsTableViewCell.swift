@@ -18,7 +18,7 @@ class WidgetsTableViewCell: RxUITableViewCell {
     
     private lazy var iconBackgroundView: UIView = {
         let view = UIView()
-       // view.backgroundColor = UIColor.appColor(ofType: .paleLilac)
+      //  view.backgroundColor = UIColor.appColor(ofType: .paleLilac)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -49,6 +49,7 @@ class WidgetsTableViewCell: RxUITableViewCell {
         guard let viewModel = viewModel as? WidgetsCellViewModelType else { return }
         self.viewModel = viewModel
         self.themeService = themeService
+        setupTheme()
         bind()
     }
 }
@@ -79,8 +80,16 @@ extension WidgetsTableViewCell {
         
     }
     
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: [categoryNameText.rx.textColor])
+            .bind({ UIColor($0.paleLilac) }, to: [iconBackgroundView.rx.backgroundColor])
+        
+            .disposed(by: disposeBag)
+    }
+    
     func bind() {
         viewModel.outputs.labelText.bind(to: categoryNameText.rx.text).disposed(by: disposeBag)
-        viewModel.outputs.leadingIcon.unwrap().bind(to: leadingIcon.rx.loadImage()).disposed(by: disposeBag)
+        viewModel.outputs.leadingIcon.unwrap().bind(to: leadingIcon.rx.loadImage(true,isStringPath: true)).disposed(by: disposeBag)
     }
 }

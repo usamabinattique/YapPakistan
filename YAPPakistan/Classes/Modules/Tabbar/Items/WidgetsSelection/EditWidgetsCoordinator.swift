@@ -19,14 +19,16 @@ import YAPCardScanner
 
 public class EditWidgetsCoordinator: Coordinator<ResultType<Void>> {
     
-    private let root: UITabBarController
+//    private let root: UITabBarController
     private let hideWidgetsResult = PublishSubject<Void>()
     private let widgetSelectionSwitchResult = PublishSubject<Void>()
     private let result = PublishSubject<ResultType<Void>>()
     private let disposeBag = DisposeBag()
     private let container: UserSessionContainer
+    private var nav: UINavigationController!
+    private let root: UINavigationController
     
-    public init(root: UITabBarController, container: UserSessionContainer) {
+    public init(root: UINavigationController, container: UserSessionContainer) {
         self.root = root
         self.container = container
     }
@@ -40,6 +42,7 @@ public class EditWidgetsCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = WidgetSelectionViewModel(accountProvider: container.accountProvider,cardsRepository: container.makeCardsRepository(), themeService: container.themeService)
         let viewController = WidgetSelectionViewController(themeService: container.themeService, viewModel: viewModel)
         let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+        self.nav = nav
         root.present(nav, animated: true, completion: nil)
         
         viewModel.isSwitchOn.subscribe(onNext: {[weak self]  value in
@@ -61,6 +64,7 @@ public class EditWidgetsCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: disposeBag)
         
         hideWidgetsResult.subscribe(onNext: {[weak self] in
+            YAPUserDefaults.hideWidgetsBar(for: true)
             self?.root.dismiss(animated: true, completion: nil)
         }).disposed(by: disposeBag)
         
@@ -68,10 +72,10 @@ public class EditWidgetsCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func openPopup() {
-       /* let viewModel = HideWidgetPopupViewModel()
-        let viewController = HideWidgetPopupViewController(viewModel: viewModel)
+//        let viewModel = HideWidgetPopupViewModel()
+//        let viewController = HideWidgetPopupViewController(viewModel: viewModel,themeService: container.themeService)
         
-        let alertWindow = UIWindow(frame: UIScreen.main.bounds)
+     /*   let alertWindow = UIWindow(frame: UIScreen.main.bounds)
         alertWindow.rootViewController = YAPActionSheetRootViewController()
         alertWindow.backgroundColor = .clear
         alertWindow.windowLevel = .alert + 1
@@ -89,5 +93,34 @@ public class EditWidgetsCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: disposeBag)
         viewModel.hideWidget.bind(to: hideWidgetsResult).disposed(by: disposeBag)
         viewModel.cancel.bind(to: widgetSelectionSwitchResult).disposed(by: disposeBag) */
+        
+        let viewModel = HideWidgetPopupViewModel()
+        let viewController = HideWidgetPopupViewController(viewModel, themeService: container.themeService)
+        
+//        viewModel.cancel.subscribe(onNext: { [weak self] _ in
+//            self?.root.dismiss(animated: true, completion: nil)
+//        }).disposed(by: disposeBag)
+//        viewModel.hideWidget.subscribe(onNext: { [weak self] _ in
+//            self?.root.dismiss(animated: true, completion: nil)
+//        }).disposed(by: disposeBag)
+//        viewModel.hideWidget.bind(to: hideWidgetsResult).disposed(by: disposeBag)
+//        viewModel.cancel.bind(to: widgetSelectionSwitchResult).disposed(by: disposeBag)
+        
+//        let nav = UINavigationController(rootViewController: viewController)
+//        nav.navigationBar.isHidden = true
+//        nav.modalPresentationStyle = .overCurrentContext
+////        alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
+////        viewController.window = alertWindow
+        viewModel.cancel.subscribe(onNext: { [weak self] _ in
+            self?.nav.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
+        viewModel.hideWidget.subscribe(onNext: { [weak self] _ in
+            self?.nav.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
+        viewModel.hideWidget.bind(to: hideWidgetsResult).disposed(by: disposeBag)
+        viewModel.cancel.bind(to: widgetSelectionSwitchResult).disposed(by: disposeBag)
+        
+        viewController.show(in: nav)
+        //root.present(viewController, animated: true)
     }
 }

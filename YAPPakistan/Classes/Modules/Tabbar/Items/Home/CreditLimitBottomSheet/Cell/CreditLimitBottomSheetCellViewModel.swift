@@ -50,3 +50,56 @@ class CreditLimitBottomSheetCellViewModel: CreditLimitBottomSheetCellViewModelTy
 
     }
 }
+
+
+
+import Foundation
+import YAPComponents
+import RxSwift
+
+protocol HideWidgetBottomSheetCellViewModelInput {
+    var gotItObserver: AnyObserver<Void> { get }
+    var cancelObserver: AnyObserver<Void> { get }
+}
+
+protocol HideWidgetBottomSheetCellViewModelOutput {
+    var description: Observable<String> { get }
+    var gotIt: Observable<Void> { get }
+    var cancel: Observable<Void> { get }
+}
+
+protocol HideWidgetBottomSheetCellViewModelType {
+    var inputs: HideWidgetBottomSheetCellViewModelInput { get }
+    var outputs: HideWidgetBottomSheetCellViewModelOutput { get }
+}
+
+class HideWidgetBottomSheetCellViewModel: HideWidgetBottomSheetCellViewModelType, HideWidgetBottomSheetCellViewModelInput, HideWidgetBottomSheetCellViewModelOutput, ReusableTableViewCellViewModelType {
+    var reusableIdentifier: String  { HideWidgetBottomSheetCell.defaultIdentifier }
+    
+    
+    // MARK: - Propertiesfileprivate var limitSubject = ReplaySubject<NSAttributedString?>.create(bufferSize: 1)
+    fileprivate let descriptionSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let gotItSubject = PublishSubject<Void>()
+    private let cancelSubject = PublishSubject<Void>()
+    
+    // Inputs
+    var gotItObserver: AnyObserver<Void> { gotItSubject.asObserver() }
+    var cancelObserver: AnyObserver<Void> { cancelSubject.asObserver() }
+
+    // Outputs
+    var description: Observable<String> { descriptionSubject.asObservable() }
+    var gotIt: Observable<Void> { gotItSubject.asObservable() }
+    var cancel: Observable<Void> { cancelSubject.asObservable() }
+
+    var inputs: HideWidgetBottomSheetCellViewModelInput { self }
+    var outputs: HideWidgetBottomSheetCellViewModelOutput { self }
+
+    // Properties
+    private let disposeBag = DisposeBag()
+
+    init() {
+       let description = "screen_hide_widget_popup_description".localized
+        descriptionSubject.onNext(description)
+
+    }
+}

@@ -22,6 +22,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
     fileprivate lazy var username: String! = container.parent.credentialsStore.getUsername() ?? ""
     fileprivate let transactionCategoryResult = PublishSubject<Void>()
     let widgetsEditCompleted = PublishSubject<Void>()
+    private var contactsManager: ContactsManager!
     
     init(container: UserSessionContainer,
          root: UITabBarController) {
@@ -29,6 +30,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         self.root = root
         super.init()
         self.initializeRootNavigation()
+        self.contactsManager = ContactsManager(repository: container.makeY2YRepository())
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
@@ -260,12 +262,16 @@ extension HomeCoodinator {
         case .addMoney:
            // self.coordinate(to: AddMoneyCoordinator(root: root)).subscribe().disposed(by: rx.disposeBag)
             print("add money")
+            topup(root)
         case .sendMoney:
-            navigateToSendMoney(root: root)
+            print("add money")
+            //navigateToSendMoney(root: root)
+            sendMoney(root)
         case .qrCode:
-            self.myQrCode()
+            navigateToAddMoneyQRCode()
         case .bills:
-            payBills(root)
+            //payBills(root)
+            YAPToast.show("coming soon")
         case .offers:
             YAPToast.show("coming soon")
         case .coins:
@@ -279,6 +285,7 @@ extension HomeCoodinator {
         case .edit:
             self.openWidgets()
         case .unknown:
+            YAPToast.show("coming soon")
             break
         }
     }
@@ -291,7 +298,7 @@ extension HomeCoodinator {
     
     func openWidgets()  {
         
-        coordinate(to: EditWidgetsCoordinator(root: self.root, container: container)).subscribe(onNext: {[weak self] in
+        coordinate(to: EditWidgetsCoordinator(root: self.navigationRoot, container: container)).subscribe(onNext: {[weak self] in
             if !($0.isCancel) {
                 self?.widgetsEditCompleted.onNext(())
             }
@@ -459,4 +466,31 @@ extension HomeCoodinator {
 //            .subscribe().disposed(by: disposeBag)
 
     }
+    
+    fileprivate func sendMoney(_ root: UIViewController) {
+        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+            if case ResultType.success = result {
+                root.dismiss(animated: true, completion: nil)
+                (root as? UITabBarController)?.selectedIndex = 0
+            }
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    private func topup(_ root: UIViewController, returnsToDashboard: Bool = true, successButtonTitle: String? = nil) {
+        let rootNav = returnsToDashboard ? root : root.lastPresentedViewController ?? root
+        coordinate(to: AddMoneyCoordinator(root: rootNav, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+            if case ResultType.success = result, returnsToDashboard {
+                (root as? UITabBarController)?.selectedIndex = 0
+            }
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    func navigateToAddMoneyQRCode() {
+//        self.root.tabBar.isHidden = true
+        coordinate(to: AddMoneyQRCodeCoordinator(root: navigationRoot, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
+//            self?.root.tabBar.isHidden = false
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    
 }

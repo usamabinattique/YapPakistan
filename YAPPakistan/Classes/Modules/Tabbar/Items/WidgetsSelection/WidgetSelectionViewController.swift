@@ -67,6 +67,7 @@ class WidgetSelectionViewController: UIViewController {
     func setupViews()  {
         view.addSubview(tableView)
         addConstraints()
+        setupTheme()
         bind()
     }
 
@@ -78,6 +79,12 @@ extension WidgetSelectionViewController {
         tableView.alignEdgesWithSuperview([.left, .right, .top,.bottom], constant: 0)
     }
     
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: [backButton.rx.tintColor])
+            .disposed(by: disposeBag)
+    }
+    
     func bind(){
         viewModel.topHeading.bind(to: navigationItem.rx.title).disposed(by: disposeBag)
         viewModel.reload.subscribe(onNext: { [weak self] in
@@ -87,6 +94,8 @@ extension WidgetSelectionViewController {
         viewModel.showLoader.subscribe(onNext: {
             ($0 ?? true) ? YAPProgressHud.showProgressHud() : YAPProgressHud.hideProgressHud()
         }).disposed(by: disposeBag)
+        
+        backButton.rx.tap.bind(to: viewModel.backObserver).disposed(by: disposeBag)
     }
 }
 

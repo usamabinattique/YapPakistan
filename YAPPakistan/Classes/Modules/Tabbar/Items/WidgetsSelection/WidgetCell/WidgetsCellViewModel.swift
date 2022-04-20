@@ -42,7 +42,7 @@ class WidgetsCellViewModel: ReusableTableViewCellViewModelType, WidgetsCellViewM
     var iconConstraint: Observable<CGFloat?> {iconConstraintSubject}
     var labelText: Observable<String> {labelTextSubject}
     var trailingIcon: Observable<UIImage?> {trailingIconSubject}
-    var leadingIcon: Observable<ImageWithURL?> {leadingIconSubject}
+    var leadingIcon: Observable<ImageWithURL?> {leadingIconSubject.asObservable()}
     var addButtonClicked: Observable<String?> { addButtonClickedSubject }
    
     
@@ -56,7 +56,7 @@ class WidgetsCellViewModel: ReusableTableViewCellViewModelType, WidgetsCellViewM
     init(for hidden: Bool? = false, data: DashboardWidgetsResponse? = nil) {
         
         trailingIconSubject.onNext(((hidden ?? false ? nil : UIImage(named: "icon_add", in: .yapPakistan, compatibleWith: .none))))
-        leadingIconSubject.onNext((data?.icon, nil))
+        leadingIconSubject.onNext((data?.icon, data?.iconPlaceholder))
         iconConstraintSubject.onNext(hidden ?? false ? 55 : 22)
         labelTextSubject.onNext(data?.name ?? "unknown")
     }

@@ -240,8 +240,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .disposed(by: disposeBag)
         
 
-        viewDidAppearSubject.subscribe(onNext: {
+        viewDidAppearSubject.subscribe(onNext: { [weak self] _ in
             accountProvider.refreshAccount()
+            self?.getWidgets(repository: cardsRepository)
         }).disposed(by: disposeBag)
         
         profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL?.absoluteString, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
@@ -258,7 +259,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
 //            self?.getCards()
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
         }).disposed(by: disposeBag)
-
+        
     }
     
     func generateCellViewModels() {

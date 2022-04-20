@@ -91,7 +91,7 @@ class WidgetSelectionViewModel {
     }
     
     func bindCateogryWithFeatureFlag(widgetsData: [DashboardWidgetsResponse]) {
-        var widgetCellsData = widgetsData
+//        var widgetCellsData = widgetsData
         /*featureFlagClient.getFeatureFlag
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: {[unowned self] flag in
@@ -101,6 +101,7 @@ class WidgetSelectionViewModel {
                 self.manageData(widgets: widgetCellsData)
             }).disposed(by: disposeBag)
         featureFlagClient.requestFeatureFlag.onNext(.billPayments) */
+        manageData(widgets: widgetsData)
     }
     
     func manageData(widgets: [DashboardWidgetsResponse]) {

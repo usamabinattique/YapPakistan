@@ -17,7 +17,7 @@ class WidgetSelectionSectionTableViewCell: RxUITableViewCell {
     private var headerText: UILabel = UIFactory.makeLabel(font: .small) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, text: "")
     private var activeText: UILabel = UIFactory.makeLabel(font: .small, text: "Active") //UILabelFactory.createUILabel(with: .primary, textStyle: .small, text: "Active")
     private var swipeText: UILabel = UIFactory.makeLabel(font: .small, text: "Swipe to hide") //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, text: "Swipe to hide")
-    private var appSwitch = UIFactory.makeAppSwitch() // UIAppSwitchFactory.createUIAppSwitch()
+    private var appSwitch = UIFactory.makeAppSwitch(isOn: false) // UIAppSwitchFactory.createUIAppSwitch()
     private var viewModel: WidgetSelectionSectionCellViewModelType!
     private var themeService: ThemeService<AppTheme>!
     
@@ -41,6 +41,7 @@ class WidgetSelectionSectionTableViewCell: RxUITableViewCell {
         guard let viewModel = viewModel as? WidgetSelectionSectionCellViewModelType else { return }
         self.viewModel = viewModel
         self.themeService = themeService
+        setupTheme()
         bind()
     }
 }
@@ -53,6 +54,8 @@ extension WidgetSelectionSectionTableViewCell {
         addSubview(appSwitch)
         addSubview(activeText)
         addSubview(swipeText)
+        
+        appSwitch.onImage = UIImage(named: "icon_check", in: .yapPakistan)?.asTemplate
     }
     
     func setupConstraints() {
@@ -75,6 +78,16 @@ extension WidgetSelectionSectionTableViewCell {
             .toRightOf(activeText)
             .alignCenterWith(activeText)
             .alignEdgeWithSuperview(.right, constant: 25)
+    }
+    
+    func setupTheme() {
+        themeService.rx
+        
+            .bind({ UIColor($0.primaryDark) }, to: [headerText.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [appSwitch.rx.onTintColor,activeText.rx.textColor])
+            .bind({ UIColor($0.greyLight      ) }, to: [appSwitch.rx.offTintColor])
+            .bind({ UIColor($0.greyDark) }, to: [swipeText.rx.textColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func bind() {

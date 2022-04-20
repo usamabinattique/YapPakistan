@@ -734,3 +734,9 @@
 "screen_menu_display_text_qr_code" = "My QR code";
 "screen_menu_display_text_dashboard_widget" = "Manage widgets";
 "screen_menu_display_text_account_limits" = "Account limits";
+
+//MARK: Hide Widget popup
+
+"screen_hide_widget_popup_description" = "You have chosen to hide the quick link widgets from your dashboard. To turn these back on,
+go to the dashboard menu in the top right
+and click on Quick Access Widgets.";

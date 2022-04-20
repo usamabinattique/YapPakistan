@@ -55,7 +55,7 @@ class HiddenWidgetsCellViewModel: ReusableTableViewCellViewModelType, HiddenWidg
     init(for hidden: Bool? = false, data: DashboardWidgetsResponse? = nil) {
         
         trailingIconSubject.onNext(UIImage(named: "icon_add", in: .yapPakistan, compatibleWith: .none))
-        leadingIconSubject.onNext((data?.icon, nil))
+        leadingIconSubject.onNext((data?.icon, data?.iconPlaceholder))
         labelTextSubject.onNext(data?.name ?? "unknown")
     }
 }
