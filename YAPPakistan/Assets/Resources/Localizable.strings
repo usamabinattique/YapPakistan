@@ -1,10 +1,10 @@
 /* 
-  File.strings
-  Pods
-
-  Created by Sarmad on 03/09/2021.
-  
-*/
+ File.strings
+ Pods
+ 
+ Created by Sarmad on 03/09/2021.
+ 
+ */
 
 // MARK: Common
 "common_display_text_y2y_share" = "Hi %@ would like to send you some money via YAP. Download the app now and join YAP’s fast growing community!\n\nDownload YAP here:\n\n%@";
@@ -478,6 +478,13 @@
 "screen_change_phone_number_display_text_heading" = "Change mobile number";
 "screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
 
+// MARK: Change Email Address success Screen
+"screen_unverified_success_display_text_heading" = "Success!";
+"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed to\n%@";
+"screen_unverified_success_display_text_description" = "Please log in to your email address to validate your email and continue with\naccess to YAP!";
+"screen_unverified_display_button_mail" = "Open mail app";
+"screen_unverified_display_button_back_to_dashboard" = "Back to dashboard";
+
 //Mark: - Change Email Screen
 "screen_change_email_display_text_heading" = "Change email";
 "screen_change_email_placeholder_email_address" = "Email address";
@@ -486,6 +493,7 @@
 "screen_change_email_display_text_email_title" = "Enter your new email address";
 "screen_change_email_display_text_confirm_email_title" = "Enter it one more time";
 "screen_change_email_display_text_confirm_email_diff_error" = "This email doesn’t match what you first entered.";
+"screen_change_email_otp_display_text_heading" = "Verify your email address";
 
 //Mark: - Email Verification Screen
 "screen_email_verification_display_text_heading" = "Verify your email address";

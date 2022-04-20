@@ -16,7 +16,7 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
     private let root: UIViewController
     private let result = PublishSubject<ResultType<Void>>()
     private var localRoot: UINavigationController!
-    
+    private let otpResult = PublishSubject<ResultType<Void>>()
     private var container: UserSessionContainer!
     private let disposeBag = DisposeBag()
     
@@ -27,7 +27,7 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
     
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = ChangeEmailAddressViewModel(email: "awaisiqbaldev@gmail.com")
+        let viewModel = ChangeEmailAddressViewModel( otpRepository: self.container.makeOTPRepository(), accountRepository: self.container.makeAccountRepository())
         let viewController = ChangeEmailAddressViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
@@ -38,14 +38,47 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
             self.otp(.changeEmail)
         }).disposed(by: disposeBag)
         
+        // OTP Success result
+        self.otpResult.subscribe(onNext: { result in
+            if case ResultType.success(()) = result {
+                viewModel.inputs.changeEmailRequestObserver.onNext(())
+            }
+        }).disposed(by: disposeBag)
+        
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
+            print("Back btn Pressed On Change Email Coordinator")
             self.localRoot.dismiss(animated: true, completion: nil)
         }).disposed(by: disposeBag)
         
         
+        viewModel.outputs.success.subscribe(onNext: { [unowned self] emailString in
+            
+            print("jjj")
+            
+        }).disposed(by: disposeBag)
+        
+        self.otpResult.subscribe(onNext: { [unowned self] _ in
+           
+            print("OPT Success")
+            self.navigateToChangeEmailSuccess()
+            //self.localRoot.dismiss(animated: true, completion: nil)
+        })
+        
         root.present(localRoot, animated: true, completion: nil)
         return result
+    }
+    
+    func navigateToChangeEmailSuccess() {
+        let viewModel = UnvarifiedEmailSuccessViewModel(email: "awais@gmail.com")
+        let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
+        
+        
+        viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
+            self.localRoot.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
+        
+        localRoot.pushViewController(viewController, completion: nil)
     }
     
     func otp(_ action: OTPAction) {
@@ -53,21 +86,32 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
         
         let countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
         let mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
-        let formattedPhoneNumber: String = "0092" + mobileNumber
+        let formattedPhoneNumber: String = countryCode + mobileNumber
        
        
         let subHeadingText = String(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, formattedPhoneNumber)
-        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , repository: container.parent.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty)
+        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText, otpTime: 300 , repository: container.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty)
         let viewController = VerifyMobileOTPViewController(themeService: self.container.themeService, viewModel: viewModel)
         
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
             print("OPT: Back Button Pressed")
-            
             self.localRoot.popViewController(animated: true)
             
         }).disposed(by: disposeBag)
         
+        viewModel.outputs.validOTPSuccess.subscribe(onNext: { [weak self] isValid in
+            guard let self = self else { return }
+            print("OTP Validated: \(isValid)")
+            if isValid {
+                //self.result.onNext(.success(()))
+                self.localRoot.popViewController(animated: true, nil)
+                self.otpResult.onNext(ResultType.success(()))
+            }
+            else {
+                
+            }
+        }).disposed(by: disposeBag)
         
         localRoot.pushViewController(viewController, completion: nil)
         

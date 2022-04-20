@@ -85,11 +85,27 @@ public protocol CustomerServiceType {
     func getBankDetail<T: Codable>() -> Observable<T>
     func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T>
     func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T>
+    func updateEmail<T: Codable>(input email : String) -> Observable<T>
+    func fetchCustomerPersonalDetails<T: Codable>() -> Observable<T>
     func getDashboardWidgets<T: Codable> () -> Observable<T>
 }
 
     
 public class CustomersService: BaseService, CustomerServiceType {
+    
+    public func updateEmail<T: Codable>(input email: String) -> Observable<T> {
+        let pathVariables = [email]
+        //let route = APIEndpoint(.put, apiConfig.customersURL, "/api/change-email", pathVariables: pathVariables, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.put, apiConfig.customersURL, "/api/change-email", pathVariables: pathVariables, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchCustomerPersonalDetails<T>() -> Observable<T> where T : Decodable, T : Encodable {
+        //let pathVariables = ["personalAddress=true"]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/customer/personal-details", query: ["personalAddress" : "true"], headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
     public func signUpEmail<T: Codable>(email: String, otpToken: String,
                                         accountType: String = "B2C_ACCOUNT") -> Observable<T> {
         let body = SignUpEmailRequest(email: email, accountType: accountType, token: otpToken)

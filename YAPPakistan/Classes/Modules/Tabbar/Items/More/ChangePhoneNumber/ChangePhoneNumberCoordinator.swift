@@ -35,7 +35,7 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
 
         viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
-            self.otp(.changeEmail)
+            self.otp(.changeMobileNumber)
         }).disposed(by: disposeBag)
 
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
@@ -57,7 +57,7 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
        
        
         let subHeadingText = String(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, formattedPhoneNumber)
-        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , repository: container.parent.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty)
+        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , repository: container.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty)
         let viewController = VerifyMobileOTPViewController(themeService: self.container.themeService, viewModel: viewModel)
         
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
