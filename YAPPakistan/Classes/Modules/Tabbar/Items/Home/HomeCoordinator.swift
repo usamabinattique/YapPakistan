@@ -113,11 +113,10 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         
         transactionCategoryResult.bind(to: viewController.viewModel.inputs.categoryChangedObserver).disposed(by: rx.disposeBag)
         
-        viewController.viewModel.outputs.selectedWidget.subscribe(onNext: {[weak self] in
-           // self?.navigateFromWidgets(selectedWidget: $0 ?? .unknown)
+        viewController.viewModel.outputs.menuTap.subscribe(onNext: { [weak self] in
+            (self?.root as? MenuViewController)?.showMenu()
         }).disposed(by: rx.disposeBag)
-        
-        self.widgetsEditCompleted.bind(to: viewController.viewModel.inputs.widgetsChangeObserver).disposed(by: rx.disposeBag)
+
     }
     
     func showCreditLimit() {

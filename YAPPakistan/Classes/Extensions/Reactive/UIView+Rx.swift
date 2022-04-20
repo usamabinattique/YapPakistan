@@ -47,6 +47,7 @@ extension Reactive where Base: UIView {
 public extension Reactive where Base: UIView {
     func showAlert(ofType type: YAPAlert.AlertType, from direction: YAPAlert.AlertDirection = .top, autoHide: Bool = true, autoHideDuration: TimeInterval = 5) -> Binder<String> {
         return Binder(self.base) { view, text -> Void in
+            if text == "" { return }
             view.showAlert(type: type, text: text, from: direction, autoHide: autoHide, autoHideDuration: autoHideDuration)
         }
     }

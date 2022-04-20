@@ -64,8 +64,6 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
             }
         }
         else {
-            //TODO: remove following
-//            stages.append(.init(paymentCard: paymentCard, stage: .setPIN, partnerBankStatus: .physicalCardSuccess, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
         }
         
         return stages

@@ -150,7 +150,7 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
         }.bind(to: ibanSubject).disposed(by: disposeBag)
         
         accountProvider.currentAccount.map { account -> NSAttributedString? in
-            guard let bic = account?.bank.swiftCode else { return nil }
+            guard let bic = account?.bank?.swiftCode else { return nil }
             let attributed = NSMutableAttributedString(string: "BIC " + bic)
             attributed.addAttribute(.foregroundColor, value: UIColor(self.theme.attrs.primaryDark), range: NSRange(location: 0, length: 3))
             if account?.accountType != .b2cAccount {

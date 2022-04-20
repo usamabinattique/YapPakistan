@@ -79,14 +79,14 @@ class MoreBankDetailsViewModel: MoreBankDetailsViewModelType, MoreBankDetailsVie
         account.map { $0?.customer.fullName }.bind(to: nameSubject).disposed(by: disposeBag)
         account.map { account in account?.parnterBankStatus == .activated ? account?.formattedIBAN : account?.formattedIBAN }.bind(to: ibanSubject).disposed(by: disposeBag)
         account.map { $0?.customer.fullMobileNo }.bind(to: swiftSubject).disposed(by: disposeBag)
-        account.map { $0?.bank.name }.bind(to: bankSubject).disposed(by: disposeBag)
-        account.map { $0?.bank.address }.bind(to: addressSubject).disposed(by: disposeBag)
+        account.map { $0?.bank?.name ?? "" }.bind(to: bankSubject).disposed(by: disposeBag)
+        account.map { $0?.bank?.address ?? "" }.bind(to: addressSubject).disposed(by: disposeBag)
         account.map { account in account?.parnterBankStatus == .activated ? account?.accountNumber : account?.maskedAccountNumber }.bind(to: accountSubject).disposed(by: disposeBag)
 
         shareObserverSubject.withLatestFrom(account).unwrap().map {
             let iban = ($0.parnterBankStatus == .activated ? $0.formattedIBAN : $0.maskedAndFormattedIBAN) ?? ""
             let accountNumber = ($0.parnterBankStatus == .activated ? $0.accountNumber : $0.maskedAccountNumber) ?? ""
-            return String.init(format: "Name: %@\nSWIFT/BIC: %@\nIBAN: %@\nAccount: %@\nBank: %@\nAddress: %@", $0.customer.fullName ?? "", $0.bank.swiftCode, iban, accountNumber, $0.bank.name, $0.bank.address)
+            return String.init(format: "Name: %@\nSWIFT/BIC: %@\nIBAN: %@\nAccount: %@\nBank: %@\nAddress: %@", $0.customer.fullName ?? "", $0.bank?.swiftCode ?? "", iban, accountNumber, $0.bank?.name ?? "", $0.bank?.address ?? "")
         }.bind(to: shareInfoSubject).disposed(by: disposeBag)
         
     }

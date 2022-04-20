@@ -137,10 +137,10 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .bind(to: showErrorSubject)
             .disposed(by: disposeBag)
 
-        request.errors()
-            .map { _ in .notDetermined }
-            .bind(to: eidValidationSubject)
-            .disposed(by: disposeBag)
+//        request.errors()
+//            .map { _ in .notDetermined }
+//            .bind(to: eidValidationSubject)
+//            .disposed(by: disposeBag)
 
         request.elements()
             .map {
@@ -162,12 +162,20 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
         let ocrRequest = detectOCRSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
             .flatMap { identityDocument -> Observable<Event<CNICOCR?>> in
+                
                 let frontImage = identityDocument.frontSide?.cropedImage
-                guard let imageData = frontImage?.jpegData(compressionQuality: 0.5) else {
+                guard let frontImageData = frontImage?.jpegData(compressionQuality: 0.5) else {
                     return .empty()
                 }
+                let backImage = identityDocument.backSide?.cropedImage
+                guard let backImageData = backImage?.jpegData(compressionQuality: 0.5) else {
+                    return .empty()
+                }
+                var documents = [(fileName: String, data: Data, format: String)]()
+                documents.append((fileName: "files_f", data: frontImageData, format: "image/jpg"))
+                documents.append((fileName: "files_b", data: backImageData, format: "image/jpg"))
 
-                return kycRepository.detectCNICInfo([(imageData, "image/jpg")])
+                return kycRepository.detectCNICInfo(documents)
             }
             .do(onNext: { [weak self] _ in
                 YAPProgressHud.hideProgressHud()
@@ -176,8 +184,12 @@ class KYCHomeViewModel: KYCHomeViewModelType, KYCHomeViewModelInput, KYCHomeView
             .share()
 
         ocrRequest.elements()
-            .unwrap()
-            .bind(to: cnicOCRSubject)
+                .unwrap()
+                .subscribe(onNext:{ [weak self] ocrObj in
+                    self?.cnicOCRSubject.onNext(ocrObj)
+                })
+//            .unwrap()
+//            .bind(to: cnicOCRSubject)
             .disposed(by: disposeBag)
 
         ocrRequest.errors()

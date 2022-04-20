@@ -278,6 +278,7 @@ class HomeViewController: UIViewController {
         viewModel.inputs.viewDidAppearObserver.onNext(())
        // viewModel.inputs.viewAppearObserver.onNext(())
         updateParallaxHeaderProgress()
+        self.menuButtonItem.button?.addTarget(self, action: #selector(self.menuAction(_:)), for: .touchUpInside)
     }
 
     override func viewDidLayoutSubviews() {
@@ -298,6 +299,10 @@ class HomeViewController: UIViewController {
         }
 //        SessionManager.current.refreshAccount()
         viewModel.inputs.refreshObserver.onNext(())
+    }
+    
+    @objc func menuAction(_ sender: UIButton) {
+        viewModel.inputs.menuTapObserver.onNext(())
     }
     
 //    private func render() {

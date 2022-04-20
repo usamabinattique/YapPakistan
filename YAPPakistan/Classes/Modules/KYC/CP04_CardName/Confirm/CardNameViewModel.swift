@@ -76,12 +76,12 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
         languageSetup()
 
         self.accountProvider.currentAccount.unwrap()
-            .map({ $0.customer.firstName + " " + $0.customer.lastName })
+            .map({ $0.cnicName ?? $0.customer.firstName + " " + $0.customer.lastName })
             .bind(to: nameSubject)
             .disposed(by: disposeBag)
         
         self.accountProvider.currentAccount.unwrap()
-            .map({ $0.customer.firstName + " " + $0.customer.lastName })
+            .map({ $0.cnicName ?? $0.customer.firstName + " " + $0.customer.lastName })
             .bind(to: editNameForEditNameScreenSubject)
             .disposed(by: disposeBag)
 

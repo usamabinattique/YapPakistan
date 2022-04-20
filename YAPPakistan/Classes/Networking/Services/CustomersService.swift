@@ -65,7 +65,7 @@ public protocol CustomerServiceType {
     func fetchDocument<T: Codable>(byType documentType: String) -> Observable<T>
 
     func newPassword<T: Codable>(username: String, token: String, password: String) -> Observable<T>
-    func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
+    func detectCNICInfo<T: Codable>(_ documents: [(fileName: String, data: Data, format: String)],
                                     progressObserver: AnyObserver<Progress>?) -> Observable<T>
     func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T>
     func uploadSelfie<T: Codable>(_ selfie: (data: Data, format: String)) -> Observable<T>
@@ -85,11 +85,27 @@ public protocol CustomerServiceType {
     func getBankDetail<T: Codable>() -> Observable<T>
     func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T>
     func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T>
+    func updateEmail<T: Codable>(input email : String) -> Observable<T>
+    func fetchCustomerPersonalDetails<T: Codable>() -> Observable<T>
     func getDashboardWidgets<T: Codable> () -> Observable<T>
 }
 
     
 public class CustomersService: BaseService, CustomerServiceType {
+    
+    public func updateEmail<T: Codable>(input email: String) -> Observable<T> {
+        let pathVariables = [email]
+        //let route = APIEndpoint(.put, apiConfig.customersURL, "/api/change-email", pathVariables: pathVariables, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.put, apiConfig.customersURL, "/api/change-email", pathVariables: pathVariables, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchCustomerPersonalDetails<T>() -> Observable<T> where T : Decodable, T : Encodable {
+        //let pathVariables = ["personalAddress=true"]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/customer/personal-details", query: ["personalAddress" : "true"], headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
     public func signUpEmail<T: Codable>(email: String, otpToken: String,
                                         accountType: String = "B2C_ACCOUNT") -> Observable<T> {
         let body = SignUpEmailRequest(email: email, accountType: accountType, token: otpToken)
@@ -243,11 +259,11 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
 
-    public func detectCNICInfo<T: Codable>(_ documents: [(data: Data, format: String)],
+    public func detectCNICInfo<T: Codable>(_ documents: [(fileName: String, data: Data, format: String)],
                                            progressObserver: AnyObserver<Progress>? = nil) -> Observable<T> {
         var docs: [DocumentUploadRequest] = []
         for document in documents {
-            let info = fileInfo(from: document.format)
+            let info = fileInfo(from: document.fileName, format: document.format)
             docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
         }
 
@@ -278,7 +294,7 @@ public class CustomersService: BaseService, CustomerServiceType {
                                           dob: String, dateIssue: String, dateExpiry: String) -> Observable<T> {
         var docs: [DocumentUploadRequest] = []
         for document in documents {
-            let info = fileInfo(from: document.format)
+            let info = fileInfo(format: document.format)
             docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
         }
 
@@ -327,7 +343,7 @@ public class CustomersService: BaseService, CustomerServiceType {
 
     public func uploadSelfie<T: Codable>(_ selfie: (data: Data, format: String)) -> Observable<T> {
         var docs: [DocumentUploadRequest] = []
-        let info = fileInfo(from: selfie.format)
+        let info = fileInfo(format: selfie.format)
         docs.append(DocumentUploadRequest(data: selfie.data,
                                           name: "selfie-picture",
                                           fileName: info.1,
@@ -391,7 +407,7 @@ public class CustomersService: BaseService, CustomerServiceType {
                                             nickname: String?) -> Observable<T> {
         var docs: [DocumentUploadRequest] = []
         for document in documents {
-            let info = fileInfo(from: document.format)
+            let info = fileInfo(format: document.format)
             docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
         }
 
@@ -493,18 +509,18 @@ public class CustomersService: BaseService, CustomerServiceType {
 // MARK: Helpers
 
 fileprivate extension CustomersService {
-    func fileInfo(from format: String) -> (String, String, String) {
+    func fileInfo(from fileName: String = "files", format: String) -> (String, String, String) {
         switch format {
         case "image/jpg":
-            return ("files", "image.jpg", format)
+            return (fileName, "image.jpg", format)
         case "image/png":
-            return ("files", "image.png", format)
+            return (fileName, "image.png", format)
         case "image/tiff":
-            return ("files", "file.tiff", format)
+            return (fileName, "file.tiff", format)
         case "video/mp4":
-            return ("files", "video.mp4", format)
+            return (fileName, "video.mp4", format)
         case "application/pdf":
-            return ("files", "file.pdf", format)
+            return (fileName, "file.pdf", format)
         default:
             let formatData = format.split(separator: "/").map({ String($0) })
             let file = formatData.first ?? ""

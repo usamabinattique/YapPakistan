@@ -138,7 +138,6 @@ extension MoreViewController: ViewDesignable {
         viewModel.outputs.profileImage.bind(to: headerView.rx.profileImage).disposed(by: disposeBag)
         viewModel.outputs.name.bind(to: headerView.rx.name).disposed(by: disposeBag)
         viewModel.outputs.iban.bind(to: headerView.rx.iban).disposed(by: disposeBag)
-        viewModel.outputs.bic.bind(to: headerView.rx.bic).disposed(by: disposeBag)
         viewModel.outputs.accountNumber.bind(to: headerView.rx.accountNumber).disposed(by: disposeBag)
         viewModel.outputs.badgeValue.subscribe(onNext: {[weak self] in self?.notificationBarButtonItem.setBadge(with: $0 ?? "0") }).disposed(by: disposeBag)
         headerView.rx.bankDetailsTap.bind(to: viewModel.inputs.bankDetailsObserver).disposed(by: disposeBag)
