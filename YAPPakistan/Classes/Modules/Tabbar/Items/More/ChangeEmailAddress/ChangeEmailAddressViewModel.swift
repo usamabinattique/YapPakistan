@@ -192,11 +192,10 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
             
             let updateEmailReq = otpRepository.updateEmail(email: emailString)
             
-            updateEmailReq.errors().subscribe(onNext: { errors in
-                print(errors)
-                self.errorSubject.onNext(errors.localizedDescription)
-            })
-            
+            let error = updateEmailReq.errors().map{ $0.localizedDescription }
+            error
+                .bind(to: errorSubject).disposed(by: disposeBag)
+                
             updateEmailReq.elements().subscribe(onNext: { data in
                 print(data)
                 self.successSubject.onNext(emailString)

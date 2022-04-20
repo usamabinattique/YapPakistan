@@ -47,18 +47,38 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
+            print("Back btn Pressed On Change Email Coordinator")
             self.localRoot.dismiss(animated: true, completion: nil)
         }).disposed(by: disposeBag)
         
         
         viewModel.outputs.success.subscribe(onNext: { [unowned self] emailString in
             
-            self.localRoot.dismiss(animated: true, completion: nil)
+            print("jjj")
             
         }).disposed(by: disposeBag)
         
+        self.otpResult.subscribe(onNext: { [unowned self] _ in
+           
+            print("OPT Success")
+            self.navigateToChangeEmailSuccess()
+            //self.localRoot.dismiss(animated: true, completion: nil)
+        })
+        
         root.present(localRoot, animated: true, completion: nil)
         return result
+    }
+    
+    func navigateToChangeEmailSuccess() {
+        let viewModel = UnvarifiedEmailSuccessViewModel(email: "awais@gmail.com")
+        let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
+        
+        
+        viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
+            self.localRoot.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
+        
+        localRoot.pushViewController(viewController, completion: nil)
     }
     
     func otp(_ action: OTPAction) {
@@ -76,7 +96,6 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
             print("OPT: Back Button Pressed")
-            
             self.localRoot.popViewController(animated: true)
             
         }).disposed(by: disposeBag)
@@ -85,7 +104,7 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
             guard let self = self else { return }
             print("OTP Validated: \(isValid)")
             if isValid {
-                self.result.onNext(.success(()))
+                //self.result.onNext(.success(()))
                 self.localRoot.popViewController(animated: true, nil)
                 self.otpResult.onNext(ResultType.success(()))
             }

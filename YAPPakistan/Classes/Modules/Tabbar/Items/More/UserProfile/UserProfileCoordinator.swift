@@ -88,8 +88,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             switch result {
             case .success:
                 print("OTP Successfully Verified now update email")
-                
-                
+            
             case .cancel:
 //                    self?.navigationRoot.popToRootViewController(animated: true)
                 print("OTP not verified")
