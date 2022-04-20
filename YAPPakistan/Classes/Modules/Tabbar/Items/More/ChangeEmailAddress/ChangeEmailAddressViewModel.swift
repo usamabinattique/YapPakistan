@@ -203,9 +203,8 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
                 .bind(to: errorSubject).disposed(by: disposeBag)
                 
             updateEmailReq.elements().subscribe(onNext: { data in
-                print(data)
                 self.successSubject.onNext(emailString)
-            })
+            }).disposed(by: disposeBag)
             
             //self.otpRepository.updateEmail(email: emailString)
             

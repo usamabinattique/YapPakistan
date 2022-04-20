@@ -86,6 +86,7 @@ public protocol CustomerServiceType {
     func fetchBeneficiaryAccountTitle<T: Codable>(accountNo: String, consumerId: String) -> Observable<T>
     func addBankBenefiiary<T: Codable>(input body: AddBankBeneficiaryRequest) -> Observable<T>
     func updateEmail<T: Codable>(input email : String) -> Observable<T>
+    func updateMobileNumber<T: Codable>(countryCode: String, mobileNumber: String) -> Observable<T>
     func fetchCustomerPersonalDetails<T: Codable>() -> Observable<T>
     func getDashboardWidgets<T: Codable> () -> Observable<T>
 }
@@ -97,6 +98,13 @@ public class CustomersService: BaseService, CustomerServiceType {
         let pathVariables = [email]
         //let route = APIEndpoint(.put, apiConfig.customersURL, "/api/change-email", pathVariables: pathVariables, headers: authorizationProvider.authorizationHeaders)
         let route = APIEndpoint<String>(.put, apiConfig.customersURL, "/api/change-email", pathVariables: pathVariables, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func updateMobileNumber<T: Codable>(countryCode: String, mobileNumber: String) -> Observable<T> {
+        let pathVariables = [countryCode, mobileNumber]
+        //let route = APIEndpoint(.put, apiConfig.customersURL, "/api/change-email", pathVariables: pathVariables, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.put, apiConfig.customersURL, "/api/change-mobile-number", pathVariables: pathVariables, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

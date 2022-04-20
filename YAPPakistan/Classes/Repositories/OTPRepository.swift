@@ -20,6 +20,7 @@ protocol OTPRepositoryType {
     func verifyOTP(action: String, otp: String) -> Observable<Event<String?>>
     func generate(action: String) -> Observable<Event<String?>>
     func updateEmail(email: String) -> Observable<Event<String?>>
+    func updateMobileNumber(countryCode: String, mobileNumber: String) -> Observable<Event<String?>>
     func addBankBenefiiary(input: AddBankBeneficiaryRequest) -> Observable<Event<AddBankBeneficiaryResponse>>
 }
 
@@ -57,8 +58,6 @@ class OTPRepository: OTPRepositoryType {
         messageService.verifyForgotOTP(username: username, otp: otp).materialize()
     }
 
-    
-    
     func verifyChangeEmailOTP(action: String, otp: String) -> Observable<Event<String?>> {
         messageService.verifyOTP(action: action, otp: otp).materialize()
     }
@@ -73,6 +72,10 @@ class OTPRepository: OTPRepositoryType {
     
     func updateEmail(email: String) -> Observable<Event<String?>> {
         customerService.updateEmail(input: email).materialize()
+    }
+    
+    func updateMobileNumber(countryCode: String, mobileNumber: String) -> Observable<Event<String?>> {
+        customerService.updateMobileNumber(countryCode: countryCode, mobileNumber: mobileNumber).materialize()
     }
     
     func addBankBenefiiary(input: AddBankBeneficiaryRequest) -> Observable<Event<AddBankBeneficiaryResponse>> {
