@@ -28,6 +28,7 @@ class WidgetSelectionViewController: UIViewController {
     let viewModel: WidgetSelectionViewModel!
     private let disposeBag = DisposeBag()
     private let themeService: ThemeService<AppTheme>
+    private var backButton: UIButton!
     
 //    init(viewModel: WidgetSelectionViewModel) {
 //        self.viewModel = viewModel
@@ -39,22 +40,19 @@ class WidgetSelectionViewController: UIViewController {
     }
     
     init(themeService: ThemeService<AppTheme>, viewModel: WidgetSelectionViewModel) {
-        super.init(nibName: nil, bundle: nil)
-
         self.themeService = themeService
         self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
-        tableView.register(WidgetSelectionSectionTableViewCell.self, forCellReuseIdentifier: WidgetSelectionSectionTableViewCell.reuseIdentifier)
+        tableView.register(WidgetSelectionSectionTableViewCell.self, forCellReuseIdentifier: WidgetSelectionSectionTableViewCell.defaultIdentifier)
+        tableView.register(WidgetsTableViewCell.self, forCellReuseIdentifier: WidgetsTableViewCell.defaultIdentifier)
+        tableView.register(HiddenWidgetsTableViewCell.self, forCellReuseIdentifier: HiddenWidgetsTableViewCell.defaultIdentifier)
         
-        tableView.register(WidgetsTableViewCell.self, forCellReuseIdentifier: WidgetsTableViewCell.reuseIdentifier)
-        
-        tableView.register(HiddenWidgetsTableViewCell.self, forCellReuseIdentifier: HiddenWidgetsTableViewCell.reuseIdentifier)
-        
-        addBackButton(of: .backEmpty)
+        backButton = addBackButton(of: .backEmpty)
         setupViews()
     }
     
@@ -96,8 +94,8 @@ extension WidgetSelectionViewController {
 extension WidgetSelectionViewController: UITableViewDelegate, UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let cell = tableView.dequeueReusableCell(withIdentifier: WidgetSelectionSectionTableViewCell.reuseIdentifier) as! WidgetSelectionSectionTableViewCell
-        cell.configure(with: viewModel.sectionViewModel(for: section))
+        let cell = tableView.dequeueReusableCell(withIdentifier: WidgetSelectionSectionTableViewCell.defaultIdentifier) as! WidgetSelectionSectionTableViewCell
+        cell.configure(with: themeService, viewModel: viewModel.sectionViewModel(for: section))
         return cell
     }
     
@@ -112,7 +110,7 @@ extension WidgetSelectionViewController: UITableViewDelegate, UITableViewDataSou
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellViewModel = viewModel.cellViewModel(for: indexPath)
         let cell = tableView.dequeueReusableCell(withIdentifier: cellViewModel.reusableIdentifier) as! RxUITableViewCell
-        cell.configure(with: cellViewModel)
+        cell.configure(with: themeService, viewModel: cellViewModel)
         return cell
     }
     
@@ -142,9 +140,9 @@ extension WidgetSelectionViewController: UITableViewDelegate, UITableViewDataSou
             completion(true)
         }
         if #available(iOS 13.0, *) {
-            deleteAction.image = UIImage.init(named: "icon_hide", in: yapBundle, with: nil)
+            deleteAction.image = UIImage.init(named: "icon_hide", in: .yapPakistan)
         }
-        deleteAction.backgroundColor = UIColor.appColor(ofType: .primary)
+        deleteAction.backgroundColor = UIColor(themeService.attrs.primary)
         return UISwipeActionsConfiguration(actions: [deleteAction])
     }
 }

@@ -24,15 +24,21 @@ public class EditWidgetsCoordinator: Coordinator<ResultType<Void>> {
     private let widgetSelectionSwitchResult = PublishSubject<Void>()
     private let result = PublishSubject<ResultType<Void>>()
     private let disposeBag = DisposeBag()
+    private let container: UserSessionContainer
     
-    public init(root: UITabBarController) {
+    public init(root: UITabBarController, container: UserSessionContainer) {
         self.root = root
+        self.container = container
     }
-    
+//    public init(root: UINavigationController, container: UserSessionContainer) {
+//        self.root = root
+//        self.container = container
+//    }
+//
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = WidgetSelectionViewModel(cardsRepository: <#CardsRepositoryType#>)
-        let viewController = WidgetSelectionViewController(viewModel: viewModel)
+        let viewModel = WidgetSelectionViewModel(accountProvider: container.accountProvider,cardsRepository: container.makeCardsRepository(), themeService: container.themeService)
+        let viewController = WidgetSelectionViewController(themeService: container.themeService, viewModel: viewModel)
         let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
         root.present(nav, animated: true, completion: nil)
         

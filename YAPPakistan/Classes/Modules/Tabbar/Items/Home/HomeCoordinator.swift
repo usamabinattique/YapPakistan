@@ -116,6 +116,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.menuTap.subscribe(onNext: { [weak self] in
             (self?.root as? MenuViewController)?.showMenu()
         }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.selectedWidget.subscribe(onNext: { [weak self] in
+            guard let widget = $0 else { return }
+            self?.navigateFromWidgets(selectedWidget: widget)
+        }).disposed(by: rx.disposeBag)
 
     }
     
@@ -285,11 +290,12 @@ extension HomeCoodinator {
     }
     
     func openWidgets()  {
-        coordinate(to: EditWidgetsCoordinator(root: self.root)).subscribe(onNext: {[weak self] in
+        
+        coordinate(to: EditWidgetsCoordinator(root: self.root, container: container)).subscribe(onNext: {[weak self] in
             if !($0.isCancel) {
                 self?.widgetsEditCompleted.onNext(())
             }
-        }).disposed(by: disposeBag)
+        }).disposed(by: rx.disposeBag)
     }
     
     func openPopup() {

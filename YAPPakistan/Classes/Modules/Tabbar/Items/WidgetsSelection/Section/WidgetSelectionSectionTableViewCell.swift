@@ -16,9 +16,10 @@ class WidgetSelectionSectionTableViewCell: RxUITableViewCell {
 
     private var headerText: UILabel = UIFactory.makeLabel(font: .small) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, text: "")
     private var activeText: UILabel = UIFactory.makeLabel(font: .small, text: "Active") //UILabelFactory.createUILabel(with: .primary, textStyle: .small, text: "Active")
-    private var swipeText: UILabel = //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, text: "Swipe to hide")
-    private var appSwitch = UIAppSwitchFactory.createUIAppSwitch()
-    private var viewModel: WidgetSelectionSectionCellViewModel!
+    private var swipeText: UILabel = UIFactory.makeLabel(font: .small, text: "Swipe to hide") //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, text: "Swipe to hide")
+    private var appSwitch = UIFactory.makeAppSwitch() // UIAppSwitchFactory.createUIAppSwitch()
+    private var viewModel: WidgetSelectionSectionCellViewModelType!
+    private var themeService: ThemeService<AppTheme>!
     
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -27,15 +28,19 @@ class WidgetSelectionSectionTableViewCell: RxUITableViewCell {
         setupViews()
         setupConstraints()
     }
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupViews()
+        setupConstraints()
     }
+  
     
-    
-    // MARK: Configuration
-    override public func configure(with viewModel: Any) {
-        guard let viewModel = viewModel as? WidgetSelectionSectionCellViewModel else { return }
+    // MARK: Configuration 
+    override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
+        guard let viewModel = viewModel as? WidgetSelectionSectionCellViewModelType else { return }
         self.viewModel = viewModel
+        self.themeService = themeService
         bind()
     }
 }

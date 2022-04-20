@@ -165,7 +165,7 @@ class HomeViewController: UIViewController {
 //        var res = DashboardWidgetsResponse.mock
 //        res.iconPlaceholder = UIImage.init(named: "icon_add_card", in: .yapPakistan)
 //        buttons.viewModel.inputs.widgetsDataObserver.onNext([res,res,res,res,res,res,res])
-        
+        buttons.viewModel.outputs.selectedWidget.bind(to: viewModel.inputs.selectedWidgetObserver).disposed(by: disposeBag)
         buttons.translatesAutoresizingMaskIntoConstraints = false
         buttons.backgroundColor = .white
         return buttons

@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import YAPCore
 import YAPComponents
+import RxTheme
 //import Networking
 
 class WidgetSelectionViewModel {
@@ -45,10 +46,12 @@ class WidgetSelectionViewModel {
     var viewModels: [[ReusableTableViewCellViewModelType]] = [[],[]]
     var widgetsData: [DashboardWidgetsResponse] = []
     var initialState: [DashboardWidgetsResponse] = []
-    private let featureFlagClient = FeatureFlagClient()
+   //private let featureFlagClient = FeatureFlagClient()
     private var repository: CardsRepositoryType
+    private let themeService: ThemeService<AppTheme>
 
-    init(cardsRepository: CardsRepositoryType) {
+    init(accountProvider: AccountProvider,cardsRepository: CardsRepositoryType, themeService: ThemeService<AppTheme>) {
+        self.themeService = themeService
         self.repository = cardsRepository
         topHeadingSubject.onNext("Edit dashboard widgets")
         hideCellSubject.subscribe(onNext: {[weak self] in
@@ -67,7 +70,8 @@ class WidgetSelectionViewModel {
         }).disposed(by: disposeBag)
         
         getWidgetsItems()
-        createRequestModel()
+        let customer_uuid = accountProvider.currentAccountValue.value?.customer.uuid ?? ""
+        createRequestModel(uuid: UUID().uuidString, customer_uuid: customer_uuid)
         
     }
     
@@ -88,7 +92,7 @@ class WidgetSelectionViewModel {
     
     func bindCateogryWithFeatureFlag(widgetsData: [DashboardWidgetsResponse]) {
         var widgetCellsData = widgetsData
-        featureFlagClient.getFeatureFlag
+        /*featureFlagClient.getFeatureFlag
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: {[unowned self] flag in
                 if !flag {
@@ -96,7 +100,7 @@ class WidgetSelectionViewModel {
                 }
                 self.manageData(widgets: widgetCellsData)
             }).disposed(by: disposeBag)
-        featureFlagClient.requestFeatureFlag.onNext(.billPayments)
+        featureFlagClient.requestFeatureFlag.onNext(.billPayments) */
     }
     
     func manageData(widgets: [DashboardWidgetsResponse]) {
@@ -186,12 +190,12 @@ class WidgetSelectionViewModel {
         return request
     }
     
-    func createRequestModel(){
+    func createRequestModel(uuid: String, customer_uuid: String){
         
         let request = backButtonSubject
             .do(onNext: {[weak self] _ in self?.showLoaderSubject.onNext(true) })
-            .flatMap {
-                self.repository.updateDashboardWidgets(widgets: self.createWigetRequest())
+            .flatMap { [unowned self] _ in
+                self.repository.updateDashboardWidgets(widgets: self.createWigetRequest(), uuid: uuid, customer_uuid: customer_uuid)
             }
             .share(replay: 1, scope: .whileConnected)
         
@@ -221,8 +225,7 @@ class WidgetSelectionViewModel {
         request.elements()
             .subscribe(onNext: {[weak self] widgets in
                 self?.showLoaderSubject.onNext(false)
-                guard let data = widgets else {return}
-                self?.bindCateogryWithFeatureFlag(widgetsData: data)
+                self?.bindCateogryWithFeatureFlag(widgetsData: widgets)
         }).disposed(by: disposeBag)
         
         request
@@ -239,7 +242,7 @@ extension WidgetSelectionViewModel {
     // return custom viewModel for
     public func sectionViewModel(for section: Int) -> ReusableTableViewCellViewModelType {
         if section == 0 {
-            let section = WidgetSelectionSectionCellViewModel(for: false)
+            let section = WidgetSelectionSectionCellViewModel(for: false, themeService: themeService)
             
             section.outputs.switchValueChanged.subscribe(onNext: {[weak self] in
                 self?.switchSubject.onNext($0)
@@ -251,7 +254,7 @@ extension WidgetSelectionViewModel {
             return section
         }
         else {
-            return WidgetSelectionSectionCellViewModel(for: true)
+            return WidgetSelectionSectionCellViewModel(for: true, themeService: themeService)
         }
     }
     
