@@ -43,6 +43,7 @@ protocol CardsRepositoryType: AnyObject {
     func deletePaymentGatewayBeneficiary(id: String) -> Observable<Event<String?>>
     func getCardBalance() -> Observable<Event<Balance>>
     func getDashboardWidgets() -> Observable<Event<[DashboardWidgetsResponse]>>
+    func updateDashboardWidgets(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String) -> Observable<Event<UpdateDashboardWidgetsResponse?>>
 }
 
 class CardsRepository: CardsRepositoryType {
@@ -173,6 +174,10 @@ class CardsRepository: CardsRepositoryType {
     
     public func getDashboardWidgets() -> Observable<Event<[DashboardWidgetsResponse]>> {
         return customerService.getDashboardWidgets().materialize()
+    }
+    
+    public func updateDashboardWidgets(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String) -> Observable<Event<UpdateDashboardWidgetsResponse?>> {
+        return customerService.updateDashboardWidgets(widgets: widgets, uuid: uuid, customer_uuid: customer_uuid).materialize()
     }
 }
 

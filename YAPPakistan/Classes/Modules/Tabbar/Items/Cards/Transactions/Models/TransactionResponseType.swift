@@ -141,6 +141,19 @@ struct TransactionResponse: Codable, Transaction {
         timeFormatter.dateFormat = "HH:mm"
         return timeFormatter.string(from: date)
     }
+    
+    public var calculatedTotalAmount: Double {
+//        guard !(productCode == .rmt || productCode == .swift || isNonAEDTransaction || productCode == .masterCardRefund ) else {
+        guard !(productCode == .rmt || productCode == .swift || productCode == .masterCardRefund ) else {
+        
+            if productCode == .eCom || productCode == .posPurchase || productCode == .masterCardRefund {
+                return cardHolderBillingTotalAmount
+            }
+            return settlementAmount + vat + fee
+        }
+        guard type == .credit else { return totalAmount ?? 0 }
+        return amount
+    }
 
     enum CodingKeys: String, CodingKey {
         case date = "creationDate"
@@ -349,139 +362,205 @@ extension TransactionResponse {
         return formatter }()
 }
 
+extension TransactionResponse {
+    
+    
+}
+
 extension TransactionResponse: Equatable {
     static func == (lhs: TransactionResponse, rhs: TransactionResponse) -> Bool {
         return lhs.date == rhs.date && lhs.amount == rhs.amount && lhs.cancelReason == rhs.cancelReason && lhs.card == rhs.card && lhs.cardType == rhs.cardType && lhs.category == rhs.category && lhs.closingBalance == rhs.closingBalance && lhs.currency == rhs.currency && lhs.fee == rhs.fee && lhs.fxRate == rhs.fxRate && lhs.id == rhs.id && lhs.location == rhs.location && lhs.maskedCardNumber == rhs.maskedCardNumber && lhs.merchant == rhs.merchant && lhs.merchantCategory == rhs.merchantCategory && lhs.merchantLogoUrl == rhs.merchantLogoUrl && lhs.openingBalance == rhs.openingBalance && lhs.otherBankBIC == rhs.otherBankBIC && lhs.otherBankBranch == rhs.otherBankBranch && lhs.otherBankCountry == rhs.otherBankCountry && lhs.otherBankName == rhs.otherBankName && lhs.paymentMode == rhs.paymentMode && lhs._productCode == rhs._productCode && lhs.productName == rhs.productName && lhs.receiverName == rhs.receiverName && lhs.receiverUrl == rhs.receiverUrl && lhs.sectionDate == rhs.sectionDate && lhs.senderName == rhs.senderName && lhs.senderUrl == rhs.senderUrl && lhs.settlementAmount == rhs.settlementAmount && lhs.status == rhs.status && lhs.time == rhs.time && lhs.title == rhs.title && lhs.totalAmount == rhs.totalAmount && lhs.transactionId == rhs.transactionId && lhs.transactionNote == rhs.transactionNote && lhs._type == rhs._type && lhs.updatedDate == rhs.updatedDate && lhs.vat == rhs.vat && lhs.index == rhs.index && lhs.receiverTransactionNote == rhs.receiverTransactionNote && lhs.cardHolderBillingCurrency == rhs.cardHolderBillingCurrency && lhs.cardHolderBillingTotalAmount == rhs.cardHolderBillingTotalAmount
     }
 }
 
-//// Mock Transaction Init
-//extension TransactionResponse {
-//    init() {
-//        transactionId = "T0\(Int.random(in: 9...99999))"
-//        _type = Int.random(in: 0...1) == 0 ? TransactionType.credit.rawValue : TransactionType.debit.rawValue
-//        amount = Double.random(in: 10...10000)
-//        title = ["Carrefour", "ATM", "Starbucks", "McDonald's", "YAP"][Int.random(in: 0...2)]
-//        currency = "د.إ"
-//        closingBalance = Double.random(in: 10...10000)
-//        category = "Retail"
-//        paymentMode = "Debit Card"
-//        merchant = "POS"
-//        transactionNote = ""
-//        transactionNoteDate = nil
-//        self.id = Int.random(in: 9...99999)
-//        date = Date()
-//        updatedDate = Date()
-//        card = "125245"
-//        productName = nil
-//        totalAmount = Double.random(in: 10...1000)
-//        status = nil
-//        openingBalance = Double.random(in: 10...10000)
-//        _productCode = TransactionProductCode.topUpByExternalCard.rawValue
-//        senderName = nil
-//        receiverName = nil
-//        fee = 0
-//        vat = 0
-//        merchantLogoUrl = nil
-//        merchantName = nil
-//        merchantCategory = nil
-//        location = nil
-//        senderUrl = nil
-//        receiverUrl = nil
-//        maskedCardNumber = "12345"
-//        cancelReason = nil
-//        cardType = "Prepaid"
-//        otherBankName = nil
-//        otherBankBIC = nil
-//        otherBankBranch = nil
-//        otherBankCountry = nil
-//        otherBankCurrency = nil
-//        fxRate = nil
-//        settlementAmount = 0
-//        receiverTransactionNote = nil
-//        receiverTransactionNoteDate = nil
-//        cardName1 = nil
-//        cardName2 = nil
-//        markupFee = nil
-//        cardHolderBillingAmount = 0
-//        virtualCardDesignCode = nil
-//        beneficiaryId = nil
-//        senderCustomerId = nil
-//        _txnState = nil
-//        cardHolderBillingCurrency = "AED"
-//        cardHolderBillingTotalAmount = Double.random(in: 10...1000)
-//        tapixCategory = nil
-//        latitude = 0.0
-//        longitude = 0.0
+// Mock Transaction Init
+extension TransactionResponse {
+    init() {
+        transactionId = "T0\(Int.random(in: 9...99999))"
+        _type = Int.random(in: 0...1) == 0 ? TransactionType.credit.rawValue : TransactionType.debit.rawValue
+        amount = Double.random(in: 10...10000)
+        title = ["Carrefour", "ATM", "Starbucks", "McDonald's", "YAP"][Int.random(in: 0...2)]
+        currency = "د.إ"
+        closingBalance = Double.random(in: 10...10000)
+        category = "Retail"
+        paymentMode = "Debit Card"
+        merchant = "POS"
+        transactionNote = ""
+        transactionNoteDate = nil
+        self.id = Int.random(in: 9...99999)
+        date = Date()
+        updatedDate = Date()
+        card = "125245"
+        productName = nil
+        totalAmount = Double.random(in: 10...1000)
+        status = nil
+        openingBalance = Double.random(in: 10...10000)
+        _productCode = TransactionProductCode.topUpByExternalCard.rawValue
+        senderName = nil
+        receiverName = nil
+        fee = 0
+        vat = 0
+        merchantLogoUrl = nil
+        merchantName = nil
+        merchantCategory = nil
+        location = nil
+        senderUrl = nil
+        receiverUrl = nil
+        maskedCardNumber = "12345"
+        cancelReason = nil
+        cardType = "Prepaid"
+        otherBankName = nil
+        otherBankBIC = nil
+        otherBankBranch = nil
+        otherBankCountry = nil
+        otherBankCurrency = nil
+        fxRate = nil
+        settlementAmount = 0
+        receiverTransactionNote = nil
+        receiverTransactionNoteDate = nil
+        cardName1 = nil
+        cardName2 = nil
+        markupFee = nil
+        cardHolderBillingAmount = 0
+        virtualCardDesignCode = nil
+        beneficiaryId = nil
+        senderCustomerId = nil
+        _txnState = nil
+        cardHolderBillingCurrency = "AED"
+        cardHolderBillingTotalAmount = Double.random(in: 10...1000)
+        tapixCategory = nil
+        latitude = 0.0
+        longitude = 0.0
+    }
+}
+
+extension TransactionResponse {
+    init(_ transaction: TransactionResponse, index: Int) {
+        transactionId = transaction.transactionId
+        _type = transaction._type
+        amount = transaction.amount
+        title = transaction.title
+        currency = transaction.currency
+        closingBalance = transaction.closingBalance
+        category = transaction.category
+        paymentMode = transaction.paymentMode
+        merchant = transaction.merchant
+        transactionNote = transaction.transactionNote
+        transactionNoteDate = transaction.transactionNoteDate
+        id = transaction.id
+        date = transaction.date
+        updatedDate = transaction.updatedDate
+        card = transaction.card
+        productName = transaction.productName
+        totalAmount = transaction.totalAmount
+        status = transaction.status
+        openingBalance = transaction.openingBalance
+        _productCode = transaction._productCode
+        senderName = transaction.senderName
+        receiverName = transaction.receiverName
+        fee = transaction.fee
+        vat = transaction.vat
+        merchantLogoUrl = transaction.merchantLogoUrl
+        merchantName = transaction.merchantName
+        merchantCategory = transaction.merchantCategory
+        location = transaction.location
+        senderUrl = transaction.senderUrl
+        receiverUrl = transaction.receiverUrl
+        maskedCardNumber = transaction.maskedCardNumber
+        cancelReason = transaction.cancelReason
+        cardType = transaction.cardType
+        otherBankName = transaction.otherBankName
+        otherBankBIC = transaction.otherBankBIC
+        otherBankBranch = transaction.otherBankBranch
+        otherBankCountry = transaction.otherBankCountry
+        otherBankCurrency = transaction.otherBankCurrency
+        fxRate = transaction.fxRate
+        settlementAmount = transaction.settlementAmount
+        remarks = transaction.remarks
+        customerId = transaction.customerId
+        self.index = index
+        receiverTransactionNote = transaction.receiverTransactionNote
+        receiverTransactionNoteDate = transaction.receiverTransactionNoteDate
+        cardName1 = transaction.cardName1
+        cardName2 = transaction.cardName2
+        markupFee = transaction.markupFee
+        cardHolderBillingAmount = transaction.cardHolderBillingAmount
+        virtualCardDesignCode = transaction.virtualCardDesignCode
+        beneficiaryId = transaction.beneficiaryId
+        senderCustomerId = transaction.senderCustomerId
+        _txnState = transaction._txnState
+        cardHolderBillingCurrency = transaction.cardHolderBillingCurrency
+        cardHolderBillingTotalAmount = transaction.cardHolderBillingTotalAmount
+        tapixCategory = transaction.tapixCategory
+        latitude = transaction.latitude
+        longitude = transaction.longitude
+    }
+}
+
+extension Array where Element == TransactionResponse {
+    var indexed: [Element] {
+        return filter { $0.receiverUrl == nil || $0.senderUrl == nil || $0.merchantLogoUrl == nil }
+            .enumerated().map{ TransactionResponse($0.1, index: $0.0) }
+    }
+}
+
+extension Array where Element == TransactionResponse {
+    var startDates: [Date] {
+        return map{  $0.sectionDate }
+    }
+}
+
+extension TransactionResponse {
+//    var numberOfSections: [Int] {
+//        var differences = [Int]()
+//        for i in 0..<startDates.count - 1 {
+//            let dayComponent = Calendar.current.dateComponents([.day], from: startDates[i], to: startDates[i+1])
+//            differences.append(dayComponent.day!)
+//        }
+//        print("differences \(differences)")
+//        return differences
 //    }
-//}
 //
-//extension TransactionResponse {
-//    init(_ transaction: TransactionResponse, index: Int) {
-//        transactionId = transaction.transactionId
-//        _type = transaction._type
-//        amount = transaction.amount
-//        title = transaction.title
-//        currency = transaction.currency
-//        closingBalance = transaction.closingBalance
-//        category = transaction.category
-//        paymentMode = transaction.paymentMode
-//        merchant = transaction.merchant
-//        transactionNote = transaction.transactionNote
-//        transactionNoteDate = transaction.transactionNoteDate
-//        id = transaction.id
-//        date = transaction.date
-//        updatedDate = transaction.updatedDate
-//        card = transaction.card
-//        productName = transaction.productName
-//        totalAmount = transaction.totalAmount
-//        status = transaction.status
-//        openingBalance = transaction.openingBalance
-//        _productCode = transaction._productCode
-//        senderName = transaction.senderName
-//        receiverName = transaction.receiverName
-//        fee = transaction.fee
-//        vat = transaction.vat
-//        merchantLogoUrl = transaction.merchantLogoUrl
-//        merchantName = transaction.merchantName
-//        merchantCategory = transaction.merchantCategory
-//        location = transaction.location
-//        senderUrl = transaction.senderUrl
-//        receiverUrl = transaction.receiverUrl
-//        maskedCardNumber = transaction.maskedCardNumber
-//        cancelReason = transaction.cancelReason
-//        cardType = transaction.cardType
-//        otherBankName = transaction.otherBankName
-//        otherBankBIC = transaction.otherBankBIC
-//        otherBankBranch = transaction.otherBankBranch
-//        otherBankCountry = transaction.otherBankCountry
-//        otherBankCurrency = transaction.otherBankCurrency
-//        fxRate = transaction.fxRate
-//        settlementAmount = transaction.settlementAmount
-//        remarks = transaction.remarks
-//        customerId = transaction.customerId
-//        self.index = index
-//        receiverTransactionNote = transaction.receiverTransactionNote
-//        receiverTransactionNoteDate = transaction.receiverTransactionNoteDate
-//        cardName1 = transaction.cardName1
-//        cardName2 = transaction.cardName2
-//        markupFee = transaction.markupFee
-//        cardHolderBillingAmount = transaction.cardHolderBillingAmount
-//        virtualCardDesignCode = transaction.virtualCardDesignCode
-//        beneficiaryId = transaction.beneficiaryId
-//        senderCustomerId = transaction.senderCustomerId
-//        _txnState = transaction._txnState
-//        cardHolderBillingCurrency = transaction.cardHolderBillingCurrency
-//        cardHolderBillingTotalAmount = transaction.cardHolderBillingTotalAmount
-//        tapixCategory = transaction.tapixCategory
-//        latitude = transaction.latitude
-//        longitude = transaction.longitude
-//    }
-//}
-//
-//extension Array where Element == TransactionResponse {
-//    var indexed: [Element] {
-//        return filter { $0.receiverUrl == nil || $0.senderUrl == nil || $0.merchantLogoUrl == nil }
-//            .enumerated().map{ TransactionResponse($0.1, index: $0.0) }
-//    }
-//}
+    public static func getNumberOfSections(transactions: [TransactionResponse]) -> [TransactionResponse] {
+        var unique = Set<DateComponents>()
+        let result = transactions.filter {
+            let comps = Calendar.current.dateComponents([.day, .month, .year], from: $0.date)
+            if unique.contains(comps) {
+                return false
+            }
+            unique.insert(comps)
+            return true
+        }
+        return result
+    }
+    
+    public static func transactions(for section: Int, transactions: [TransactionResponse]) -> [TransactionResponse] {
+        let sections = TransactionResponse.getNumberOfSections(transactions: transactions).count
+        guard sections > 0 && section < sections else { return [] }
+        let transactionSections = TransactionResponse.getNumberOfSections(transactions: transactions)
+        let requiredTransaction = transactionSections[section]
+        var requiredTransactions = [TransactionResponse]()
+        let result = transactions.filter {
+            let comps = $0.sectionDate
+            if requiredTransaction.sectionDate == comps {
+                requiredTransactions.append($0)
+                return true
+            }
+            return false
+        }
+        return result
+    }
+    
+    static func numberOfTransaction(in section: Int, transactions: [TransactionResponse]) -> Int {
+        return TransactionResponse.transactions(for: section, transactions: transactions).count
+    }
+    
+    static func transaction(for indexPath: IndexPath, transactions: [TransactionResponse]) -> TransactionResponse? {
+        guard indexPath.section < TransactionResponse.getNumberOfSections(transactions: transactions).count, indexPath.row < TransactionResponse.transactions(for: indexPath.section, transactions: transactions).count else { return nil }
+        
+        
+        return transactions[indexPath.row]//transactions.object(at: indexPath)
+    }
+   
+}
+

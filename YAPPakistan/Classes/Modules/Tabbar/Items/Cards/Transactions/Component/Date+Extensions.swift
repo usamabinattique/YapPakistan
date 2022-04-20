@@ -59,6 +59,53 @@ extension Date {
         
         dateFormatter.dateFormat = dayName + "MMMM dd"
         return day + dateFormatter.string(from: self)
+        
+       /* let dateFormatter = DateFormatter()
+        let day: String
+        let dayName: String
+        if Date().startOfDay == self.startOfDay {
+            day = "Today, "
+            dayName = ""
+        } else if Date().startOfDay.addingTimeInterval(-1 * 24 * 60 * 60) == self.startOfDay {
+            day = "Yesterday, "
+            dayName = ""
+        } else {
+            day = ""
+            dayName = "EEEE, "
+        }
+        
+        dateFormatter.dateFormat = dayName + "MMMM "
+        let superScripterDate = self.day().getSuperScript(superScript: self.daySuffix())
+        let dayAndMonth = NSMutableAttributedString(string:day + dateFormatter.string(from: self))
+        let year = NSMutableAttributedString(string: self.year())
+        let combination = NSMutableAttributedString()
+        combination.append(dayAndMonth)
+        combination.append(superScripterDate)
+        combination.append(year)
+        return combination */
+    }
+    
+    public func day() -> String {
+        let calendar = Calendar.current
+        let dayOfMonth = calendar.component(.day, from: self)
+        return "\(dayOfMonth)"
+    }
+    
+    func daySuffix() -> String {
+        let calendar = Calendar.current
+        let dayOfMonth = calendar.component(.day, from: self)
+        switch dayOfMonth {
+        case 1, 21, 31: return "st"
+        case 2, 22: return "nd"
+        case 3, 23: return "rd"
+        default: return "th"
+        }
+    }
+    
+    public func year() -> String {
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: self)
+        return ", \(year)"
     }
  
     var transactionDetailsReadableDate: String {
@@ -67,6 +114,12 @@ extension Date {
         dateFormatter.amSymbol = "AM"
         dateFormatter.pmSymbol = "PM"
         return dateFormatter.string(from: self)
+    }
+    
+    public var dashboardSectionBarDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM"
+        return formatter.string(from: self)
     }
     
     var transactonNoteUserReadableDateString: String {

@@ -269,12 +269,12 @@ extension TransactionsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: TransactionHeaderTableViewCell.defaultIdentifier) as! TransactionHeaderTableViewCell
-        // cell.configure(with: viewModel.outputs.sectionViewModel(for: section))
+        cell.configure(with: self.themeService, viewModel: viewModel.outputs.sectionViewModel(for: section))
         return cell
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-       return 0 // return 46
+        return 46 //0 // return 46
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {

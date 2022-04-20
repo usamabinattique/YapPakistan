@@ -90,7 +90,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     
         let tviewModel = TransactionsViewModel.init(transactionDataProvider: tProvider,
                                                cardSerialNumber: paymentCard?.cardSerialNumber ?? "",
-                                               debitSearch: true)
+                                                    debitSearch: true, themService: container.themeService)
         // let tviewModel = TransactionsViewModel(cardSerialNumber: paymentCard?.cardSerialNumber)
         let tviewController = TransactionsViewController(
             viewModel: tviewModel, themeService: container.themeService)
