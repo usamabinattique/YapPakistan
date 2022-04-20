@@ -27,7 +27,7 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
     
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = ChangeEmailAddressViewModel( otpRepository: self.container.makeOTPRepository())
+        let viewModel = ChangeEmailAddressViewModel( otpRepository: self.container.makeOTPRepository(), accountRepository: self.container.makeAccountRepository())
         let viewController = ChangeEmailAddressViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)

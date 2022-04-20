@@ -122,9 +122,11 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
     // -- private let profileRepository: ProfileRepository = ProfileRepository()
     fileprivate var email: String
     private let otpRepository: OTPRepositoryType
+    private let accountRepository: AccountRepositoryType
     
-    public init(email: String = "", otpRepository: OTPRepositoryType) {
+    public init(email: String = "", otpRepository: OTPRepositoryType, accountRepository: AccountRepositoryType) {
         self.email = email
+        self.accountRepository = accountRepository
         self.otpRepository = otpRepository
         headingSubject = BehaviorSubject(value:  "screen_change_email_display_text_heading".localized)
         nextButtonTitleSubject = BehaviorSubject(value:  "common_button_next".localized)
@@ -155,6 +157,10 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
         
         Observable.combineLatest(isEmailValid, isConfirmEmailValid).map { $0.0 == true && $0.1 == true }.bind(to: activateActionSubject).disposed(by: disposeBag)
         updateEmail()
+    }
+    
+    func fetchCustomerPersonalDetails() {
+        
     }
     
     func updateEmail() {

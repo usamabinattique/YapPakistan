@@ -29,8 +29,6 @@ class UnvarifiedEmailSuccessViewController: UIViewController {
     private lazy var headingLabel: UILabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping ) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .title2, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     private lazy var subHeadingLabel: UILabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
     
-    
-    
     //UILabelFactory.createUILabel(with: .greyDark, textStyle: .regular, alignment: .center, numberOfLines: 0)
     //private lazy var descriptionLabel: UILabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .regular, alignment: .center, numberOfLines: 0)
     
@@ -83,7 +81,6 @@ fileprivate extension UnvarifiedEmailSuccessViewController {
         themeService.rx
             .bind({ UIColor($0.primaryDark        ) }, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.primary        ) }, to: [back.rx.enabledBackgroundColor])
-            //.bind({ UIColor($0.greyDark       ) }, to: [descriptionLabel.rx.textColor])
     }
     
     func setupViews() {
@@ -141,10 +138,4 @@ fileprivate extension UnvarifiedEmailSuccessViewController {
         back.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
         //viewModel.outputs.description.bind(to: descriptionLabel.rx.text).disposed(by: disposeBag)
     }
-    
-//    func bindMailAppOption() {
-//        viewModel.outputs.suggestMailAppOptions.unwrap().subscribe(onNext: { options in
-//            self.showMailOptions(options: options)
-//        }).disposed(by: disposeBag)
-//    }
 }
