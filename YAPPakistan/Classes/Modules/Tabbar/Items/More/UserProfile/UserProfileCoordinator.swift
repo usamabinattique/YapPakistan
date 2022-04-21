@@ -113,6 +113,8 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     
     fileprivate func resultSuccess() {
         // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        self.container.biometricsManager.deleteBiometryForUser(phone: self.container.parent.credentialsStore.getUsername() ?? "")
+        self.container.parent.credentialsStore.clearCredentials()
         let name = Notification.Name.init(.logout)
         NotificationCenter.default.post(name: name,object: nil)
     }

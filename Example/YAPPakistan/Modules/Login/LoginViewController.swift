@@ -19,7 +19,7 @@ class LoginViewController: UIViewController {
     private lazy var logo = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var headingLabel = UIFactory.makeLabel(font: .large, alignment: .center)
     private lazy var rememberIDLabel = UIFactory.makeLabel(font: .small)
-    private lazy var rememberIDSwitch = UIFactory.makeAppSwitch(isOn: true)
+    private lazy var rememberIDSwitch = UIFactory.makeAppSwitch(isOn: false)
     private lazy var signInButton = UIFactory.makeAppRoundedButton(with: .regular)
     private lazy var signUpContainer = UIFactory.makeView()
     private lazy var signUpLabel = UIFactory.makeLabel( font: .regular )
