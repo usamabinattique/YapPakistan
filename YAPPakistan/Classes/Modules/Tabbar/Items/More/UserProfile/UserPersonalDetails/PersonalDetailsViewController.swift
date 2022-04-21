@@ -37,15 +37,7 @@ class PersonalDetailsViewController: UIViewController {
     
     
     private lazy var fullNameField = UIFactory.makeStaticTextField(title: "screen_personal_details_display_text_full_name".localized, titleColor: UIColor(themeService.attrs.greyDark), titleFont: .micro, textColor: UIColor(themeService.attrs.primaryDark), textFont: .regular, isEditable: false)
-   
-    
-//    private lazy var fullNameField : StaticAppTextField = {
-//        let textField = StaticAppTextField()
-//        textField.titleLabel.text = "screen_personal_details_display_text_full_name".localized
-//        textField.isEditable = true
-//        return textField
-//    }()
-    
+
     private lazy var phoneNumberField : StaticAppTextField = {
         let field = StaticAppTextField()
         field.titleLabel.text = "screen_personal_details_display_text_phone_number".localized

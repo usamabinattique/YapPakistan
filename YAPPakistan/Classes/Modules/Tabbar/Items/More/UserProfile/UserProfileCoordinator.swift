@@ -59,7 +59,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     }
     
     fileprivate func navigateToPersonalDetails() {
-        let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()))
+        let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()), accountRepository: self.container.makeAccountRepository())
         let viewController = PersonalDetailsViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         viewModel.outputs.editEmailTap.subscribe(onNext: { [weak self] email in
