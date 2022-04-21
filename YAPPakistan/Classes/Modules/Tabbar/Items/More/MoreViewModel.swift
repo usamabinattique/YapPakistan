@@ -143,7 +143,7 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
         
         accountProvider.currentAccount.map { account -> NSAttributedString? in
             
-            guard let iban = (account?.parnterBankStatus == .activated ? account?.formattedIBAN : account?.maskedAndFormattedIBAN) else { return nil }
+            guard let iban = account?.formattedIBAN else { return nil } 
             let attributed = NSMutableAttributedString(string: "IBAN " + iban)
             attributed.addAttribute(.foregroundColor, value: UIColor(self.theme.attrs.primaryDark), range: NSRange(location: 0, length: 4))
             return attributed
