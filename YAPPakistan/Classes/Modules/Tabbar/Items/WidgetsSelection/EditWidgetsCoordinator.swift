@@ -60,7 +60,7 @@ public class EditWidgetsCoordinator: Coordinator<ResultType<Void>> {
             else {
                 self?.result.onNext(.cancel)
             }
-            self?.root.dismiss(animated: true, completion: nil)
+            nav.dismiss(animated: true, completion: nil)
         }).disposed(by: disposeBag)
         
         hideWidgetsResult.subscribe(onNext: {[weak self] in
