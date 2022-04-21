@@ -535,7 +535,7 @@
 "screen_kyc_card_scheme_button_buy_now" = "Buy now";
 "screen_kyc_card_scheme_button_free" = "Get it for free";
 "screen_kyc_card_scheme_description_free" = "Card description here";//"Get YAP free card and enjoy mastercard benefits";
-"screen_kyc_card_scheme_description_with_fee" = "Get the local PayPak YAP card for PKR %@";
+"screen_kyc_card_scheme_description_with_fee" = "Card description here.\nBuy this card now for PKR %@ and enjoy all bebefits";
 
 // MARK: KYC Card Benefits
 "screen_kyc_card_benefits_screen_coming_soon_next_button_title" = "Coming soon";
