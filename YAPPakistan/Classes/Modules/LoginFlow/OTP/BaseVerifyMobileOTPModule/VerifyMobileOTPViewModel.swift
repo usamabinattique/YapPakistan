@@ -192,7 +192,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
         
         if action == .changeEmail || action == .changeMobileNumber {
             generateOneTimePasscodeForChangeEmail(mobileNo: mobileNo)
-            verifyChangeEmailOTP()
+            verifyChangeEmailOTP(mobileNumber : mobileNo)
             //verifyOneTimePasscode(mobileNo: mobileNo, passcode: passcode)
         }
         else if action != .ibft {
@@ -285,7 +285,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .disposed(by: disposeBag)
     }
     
-    open func verifyChangeEmailOTP() {
+    open func verifyChangeEmailOTP(mobileNumber : String) {
         let verifyRequest = sendSubject
             .withLatestFrom(Observable.combineLatest(textSubject.unwrap(), otpActionSubject))
             .do(onNext: { [unowned self] _ in
@@ -293,7 +293,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
                 YAPProgressHud.showProgressHud()
             })
             .flatMap { [unowned self] (otp,action) -> Observable<Event<String?>> in
-                return self.repository.verifyChangeEmailOTP(action: action?.rawValue ?? OTPAction.changeEmail.rawValue, otp: otp)
+                return self.repository.verifyChangeEmailOTP(action: action?.rawValue ?? OTPAction.changeEmail.rawValue, otp: otp, mobileNumber: mobileNumber)
                    
             }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })

@@ -478,6 +478,10 @@
 "screen_change_phone_number_display_text_heading" = "Change mobile number";
 "screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
 
+
+// MARK: Change Phone Number Success Screen
+"screen_unverified_success_phone_number_display_text_sub_heading" = "Your phone number has been changed to\n%@";
+
 // MARK: Change Email Address success Screen
 "screen_unverified_success_display_text_heading" = "Success!";
 "screen_unverified_success_display_text_sub_heading" = "Your email address has been changed to\n%@";

@@ -59,19 +59,12 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
             
         }).disposed(by: disposeBag)
         
-        self.otpResult.subscribe(onNext: { [unowned self] _ in
-           
-            print("OPT Success")
-            //self.navigateToChangeEmailSuccess()
-            //self.localRoot.dismiss(animated: true, completion: nil)
-        })
-        
         root.present(localRoot, animated: true, completion: nil)
         return result
     }
     
     func navigateToChangeEmailSuccess(email: String) {
-        let viewModel = UnvarifiedEmailSuccessViewModel(email: email)
+        let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: email, descriptionText: "")
         let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         

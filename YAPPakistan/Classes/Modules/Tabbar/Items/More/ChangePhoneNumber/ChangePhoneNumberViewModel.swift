@@ -166,11 +166,12 @@ extension ChangePhoneNumberViewModel {
                 
             updateMobileNumberReq.elements().subscribe(onNext: { data in
                 
-                //self.successSubject.onNext(emailString)
+                self.successSubject.onNext(String(formattedPhoneNumber))
                 print(data)
                 
             }).disposed(by: disposeBag)
         })
+        
         
 //        request.map { _ in true }.bind(to: loadingSubject).disposed(by: disposeBag)
 //
