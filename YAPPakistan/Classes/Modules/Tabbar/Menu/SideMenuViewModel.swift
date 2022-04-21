@@ -109,7 +109,6 @@ private extension SideMenuViewModel {
         menuViewModels.append(MenuSeparatorTableViewCellViewModel())
         
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .young))
-        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .housholdSalary))
         menuViewModels.append(MenuSeparatorTableViewCellViewModel())
         
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .referFriend))
