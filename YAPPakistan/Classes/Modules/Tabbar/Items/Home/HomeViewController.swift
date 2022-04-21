@@ -161,9 +161,6 @@ class HomeViewController: UIViewController {
 
     private lazy var widgetView: DashboardWidgets = {
         let buttons = DashboardWidgets(theme: self.themeService)
-//        var res = DashboardWidgetsResponse.mock
-//        res.iconPlaceholder = UIImage.init(named: "icon_add_card", in: .yapPakistan)
-//        buttons.viewModel.inputs.widgetsDataObserver.onNext([res,res,res,res,res,res,res])
         buttons.viewModel.outputs.selectedWidget.bind(to: viewModel.inputs.selectedWidgetObserver).disposed(by: disposeBag)
         buttons.translatesAutoresizingMaskIntoConstraints = false
         buttons.backgroundColor = .white
@@ -610,11 +607,11 @@ fileprivate extension HomeViewController {
         
         viewModel.outputs.hideWidgetsBar.subscribe(onNext: {[weak self] hide in
             if (hide) {
-                self?.widgetViewHeightConstraints.constant = 0
+//                self?.widgetViewHeightConstraints.constant = 0
                 self?.widgetView.isHidden = true
             }
             else {
-                self?.widgetViewHeightConstraints.constant = 115
+//                self?.widgetViewHeightConstraints.constant = 115
                 self?.widgetView.isHidden = false
             }
             self?.updateParallaxHeaderProgress()
