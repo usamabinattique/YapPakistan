@@ -16,7 +16,6 @@ public protocol SideMenuViewModelInput {
     var settingsObserver: AnyObserver<Void> { get }
     var logoutObserver: AnyObserver<Void>{ get }
     var shareAccountInfoObserver: AnyObserver <String> { get }
-    var showManageWidghetsCellObserver: AnyObserver<Bool> {get}
 }
 
 public protocol SideMenuViewModelOutput {
@@ -56,7 +55,6 @@ public class SideMenuViewModel: SideMenuViewModelType, SideMenuViewModelInput, S
     private let logoutSubject = PublishSubject<Void>()
     private let resultSubject = PublishSubject<Void>()
     private let shareAccountInfoSubject = PublishSubject<String>()
-    private let showManageWidgetsSubject = BehaviorSubject<Bool>(value: false)
 
     // MARK: - Inputs
     public var menuItemSelectedObserver: AnyObserver<MenuItemType> { return menuItemSelectedSubject.asObserver() }
@@ -64,7 +62,6 @@ public class SideMenuViewModel: SideMenuViewModelType, SideMenuViewModelInput, S
     public var settingsObserver: AnyObserver<Void> { return settingsSubject.asObserver() }
     public var logoutObserver: AnyObserver<Void>{ return logoutSubject.asObserver() }
     public var shareAccountInfoObserver: AnyObserver<String> { return shareAccountInfoSubject.asObserver() }
-    public var showManageWidghetsCellObserver: AnyObserver<Bool>{ showManageWidgetsSubject.asObserver() }
     
 
     // MARK: - Outputs
@@ -87,9 +84,7 @@ public class SideMenuViewModel: SideMenuViewModelType, SideMenuViewModelInput, S
     public init(repository: AccountRepository, accountProvider: AccountProvider) {
 
         self.accountProvider = accountProvider
-        showManageWidgetsSubject.subscribe(onNext: {[weak self] in
-           self?.loadMenuCell(with: $0)
-        }).disposed(by: disposeBag)
+        self.loadMenuCell()
         
         loadAcccountCells()
         logout(repository: repository)
@@ -97,7 +92,7 @@ public class SideMenuViewModel: SideMenuViewModelType, SideMenuViewModelInput, S
 }
 
 private extension SideMenuViewModel {
-    func loadMenuCell(with widgets: Bool) {
+    func loadMenuCell() {
         let menuUserCellViewModel = MenuUserTableViewCellViewModel(accountProvider: self.accountProvider)
         let accountInfoCellViewModel = MenuAccountInfoTableViewCellViewModel(accountProvider: self.accountProvider)
         accountInfoCellViewModel.outputs.shareAccountInfo.bind(to: shareAccountInfoObserver).disposed(by: disposeBag)
@@ -114,16 +109,14 @@ private extension SideMenuViewModel {
         menuViewModels.append(MenuSeparatorTableViewCellViewModel())
         
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .young))
-        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .housholdSalary))
         menuViewModels.append(MenuSeparatorTableViewCellViewModel())
         
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .referFriend))
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .notifications))
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .statements))
-        if widgets {
-            menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .dashboardWidget))
-        }
+        
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .qrCode))
+        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .dashboardWidget))
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .accountLimits))
         menuViewModels.append(MenuSeparatorTableViewCellViewModel())
         

@@ -19,6 +19,8 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
 //    private let moreCoordination = PublishSubject<MoreExternalCoordinationType>()
 
     private let disposeBag = DisposeBag()
+    
+    private let widgetsEditedSubject = PublishSubject<Void>()
 
     fileprivate lazy var biometricManager = container.parent.makeBiometricsManager()
     fileprivate lazy var notifManager = NotificationManager()
@@ -89,8 +91,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                         print("qrcode")
                         //self.myQrCode(self.rootNavigationController)
                     case .dashboardWidget:
-                        print("dashboard")
-                        //self.coordinateToEditWidgets()
+                        self.coordinateToEditWidgets()
                     default:
                         break
                     }
@@ -121,7 +122,9 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
 
     fileprivate func home(root: UITabBarController) {
-        self.coordinate(to: HomeCoodinator(container: container, root: root)).subscribe(onNext: { [weak self] in
+        let homeCoordinator = HomeCoodinator(container: container, root: root)
+        self.widgetsEditedSubject.bind(to: homeCoordinator.widgetsEditCompleted).disposed(by: disposeBag)
+        self.coordinate(to: homeCoordinator).subscribe(onNext: { [weak self] in
             if case ResultType.success = $0 {
                 // self?.result.onNext(.success(.switchAccount))
                 // self?.result.onCompleted()
@@ -160,20 +163,6 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
             .subscribe()
             .disposed(by: disposeBag)
     }
-    
-//    fileprivate func more(root: UITabBarController, notificationManager: InAppNotificationManager) {
-//        self.coordinate(to: MoreCoordinator(root: root, tourGuideRepository: tourGuideRepository, repository: moreRepository, externalCoordination: moreCoordination.asObserver(), notificationManager: notificationManager)).subscribe(onNext: { [weak self] result in
-//            guard let `self` = self else { return }
-//            if case ResultType.success(UserProfileResult.logout) = result {
-//                self.result.onNext(.success(.logout))
-//                self.result.onCompleted()
-//            }
-//        }).disposed(by: disposeBag)
-//
-//        moreCoordination.subscribe(onNext: { [weak self] in
-//            self?.moreExternalCoordination($0)
-//        }).disposed(by: disposeBag)
-//    }
 
     fileprivate func more(root: UITabBarController) {
         self.coordinate(to: MoreCoordinator(root: root, container: container))
@@ -223,6 +212,14 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         activityViewController.completionWithItemsHandler = { _, _, _, _ in
             
         }
+    }
+    
+    private func coordinateToEditWidgets() {
+        coordinate(to: EditWidgetsCoordinator(root: self.rootNavigationController, container: self.container)).subscribe(onNext: {[weak self] in
+            if !($0.isCancel) {
+                self?.widgetsEditedSubject.onNext(())
+            }
+        }).disposed(by: disposeBag)
     }
 
 }
