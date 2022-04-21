@@ -149,26 +149,18 @@ extension ChangePhoneNumberViewModel {
     fileprivate func changeMobileNo() {
 
         let request =  changePhoneNumberRequest.withLatestFrom(Observable.combineLatest(phoneNumberTextFieldSubject, countryCodeSubject.unwrap())).share()
-        
-        
         request.subscribe(onNext: { [unowned self] phoneValue in
-            print(phoneValue)
-            
             let formattedCountryCode: String = phoneValue.1.replacePrefix("+", with: "00").removeWhitespace()
             let formattedMobileNumberArray = phoneValue.0.split(separator: " ")
             let formattedPhoneNumber = formattedMobileNumberArray[1] + formattedMobileNumberArray[2]
             let updateMobileNumberReq = self.otpRepository.updateMobileNumber(countryCode: formattedCountryCode, mobileNumber: String(formattedPhoneNumber))
             
-            
             let error = updateMobileNumberReq.errors().map{ $0.localizedDescription }
             error
                 .bind(to: errorSubject).disposed(by: disposeBag)
-                
             updateMobileNumberReq.elements().subscribe(onNext: { data in
-                
-                self.successSubject.onNext(String(formattedPhoneNumber))
+                self.successSubject.onNext(String(formattedCountryCode + formattedPhoneNumber))
                 print(data)
-                
             }).disposed(by: disposeBag)
         })
         
