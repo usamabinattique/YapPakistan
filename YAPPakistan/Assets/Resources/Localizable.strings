@@ -478,6 +478,10 @@
 "screen_change_phone_number_display_text_heading" = "Change mobile number";
 "screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
 
+
+// MARK: Change Phone Number Success Screen
+"screen_unverified_success_phone_number_display_text_sub_heading" = "Your phone number has been changed to\n%@";
+
 // MARK: Change Email Address success Screen
 "screen_unverified_success_display_text_heading" = "Success!";
 "screen_unverified_success_display_text_sub_heading" = "Your email address has been changed to\n%@";
@@ -488,10 +492,10 @@
 //Mark: - Change Email Screen
 "screen_change_email_display_text_heading" = "Change email";
 "screen_change_email_placeholder_email_address" = "Email address";
-"screen_change_email_placeholder_confirm_email_address" = "Confirm email address";
+"screen_change_email_placeholder_confirm_email_address" = "Email address";
 "screen_change_email_display_text_description" = "A verification email will now be sent to this address";
 "screen_change_email_display_text_email_title" = "Enter your new email address";
-"screen_change_email_display_text_confirm_email_title" = "Enter it one more time";
+"screen_change_email_display_text_confirm_email_title" = "Re-enter your new email address";
 "screen_change_email_display_text_confirm_email_diff_error" = "This email doesn’t match what you first entered.";
 "screen_change_email_otp_display_text_heading" = "Verify your email address";
 

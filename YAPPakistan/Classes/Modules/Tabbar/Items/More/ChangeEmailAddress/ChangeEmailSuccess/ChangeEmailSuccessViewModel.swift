@@ -88,7 +88,7 @@ class UnvarifiedEmailSuccessViewModel: UnvarifiedEmailSuccessViewModelType, Unva
     let gmailURL = URL(string: "googlegmail:///")!
     let mailURL = URL(string: "message://")!
 
-    public init(email: String) {
+    public init(changedEmailOrPhoneString : String, descriptionText: String) {
         
 //        // MARK: Unverified success Screen
 //        "screen_unverified_success_display_text_heading" = "Success!";
@@ -102,7 +102,7 @@ class UnvarifiedEmailSuccessViewModel: UnvarifiedEmailSuccessViewModelType, Unva
         descriptionSubject = BehaviorSubject(value:  "screen_unverified_success_display_text_description".localized)
         mailButtonTitleSubject = BehaviorSubject(value:  "screen_unverified_display_button_mail".localized)
         backTitleSubject = BehaviorSubject(value:  "common_button_Done".localized)
-        subHeadingSubject.onNext(self.makeAttributesEmailAddress(email: email))
+        subHeadingSubject.onNext(self.makeAttributesEmailAddress(email: changedEmailOrPhoneString, descriptionText: "screen_unverified_success_display_text_sub_heading"))
 
 //        mailAction.subscribe(onNext: {[unowned self] _ in
 //            self.checkMailAppOptionsAvailablitySubject.onNext(())
@@ -119,8 +119,8 @@ class UnvarifiedEmailSuccessViewModel: UnvarifiedEmailSuccessViewModelType, Unva
 
 extension UnvarifiedEmailSuccessViewModel {
 
-    func makeAttributesEmailAddress(email: String) -> NSAttributedString {
-        let attributedString = NSMutableAttributedString(string: String(format:  "screen_unverified_success_display_text_sub_heading".localized, email), attributes: [
+    func makeAttributesEmailAddress(email: String, descriptionText: String) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(string: String(format:  descriptionText.localized, email), attributes: [
             .font: UIFont.systemFont(ofSize: 16.0, weight: .regular),
             .foregroundColor: UIColor(red: 147.0 / 255.0, green: 145.0 / 255.0, blue: 177.0 / 255.0, alpha: 1.0)
         ])

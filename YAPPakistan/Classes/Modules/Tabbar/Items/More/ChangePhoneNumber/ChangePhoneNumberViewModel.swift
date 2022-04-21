@@ -91,10 +91,12 @@ class ChangePhoneNumberViewModel: ChangePhoneNumberViewModelType, ChangePhoneNum
     // MARK:- Properties
     private let phoneNumberKit = PhoneNumberKit()
     private let disposeBag = DisposeBag()
+    private let otpRepository: OTPRepositoryType
 //    private let profileRepository: ProfileRepository = ProfileRepository()
 //    private let credentialsManager: CredentialsManager = CredentialsManager()
 
-    public init() {
+    public init(otpRepository: OTPRepositoryType) {
+        self.otpRepository = otpRepository
         headingSubject = BehaviorSubject(value:  "screen_change_phone_number_display_text_heading".localized)
         nextButtonTitleSubject = BehaviorSubject(value:  "common_button_next".localized)
         phoneNumberTextFieldTitleSubject = BehaviorSubject(value:  "screen_change_phone_number_display_text_text_field_title".localized)
@@ -106,9 +108,7 @@ class ChangePhoneNumberViewModel: ChangePhoneNumberViewModelType, ChangePhoneNum
 
         changeMobileNo()
         checkPhoneNumberUniqueness()
-
     }
-
 }
 
 extension ChangePhoneNumberViewModel {
@@ -148,7 +148,31 @@ extension ChangePhoneNumberViewModel {
 
     fileprivate func changeMobileNo() {
 
-//        let request =  changePhoneNumberRequest.withLatestFrom(Observable.combineLatest(phoneNumberTextFieldSubject, countryCodeSubject.unwrap())).share()
+        let request =  changePhoneNumberRequest.withLatestFrom(Observable.combineLatest(phoneNumberTextFieldSubject, countryCodeSubject.unwrap())).share()
+        
+        
+        request.subscribe(onNext: { [unowned self] phoneValue in
+            print(phoneValue)
+            
+            let formattedCountryCode: String = phoneValue.1.replacePrefix("+", with: "00").removeWhitespace()
+            let formattedMobileNumberArray = phoneValue.0.split(separator: " ")
+            let formattedPhoneNumber = formattedMobileNumberArray[1] + formattedMobileNumberArray[2]
+            let updateMobileNumberReq = self.otpRepository.updateMobileNumber(countryCode: formattedCountryCode, mobileNumber: String(formattedPhoneNumber))
+            
+            
+            let error = updateMobileNumberReq.errors().map{ $0.localizedDescription }
+            error
+                .bind(to: errorSubject).disposed(by: disposeBag)
+                
+            updateMobileNumberReq.elements().subscribe(onNext: { data in
+                
+                self.successSubject.onNext(String(formattedPhoneNumber))
+                print(data)
+                
+            }).disposed(by: disposeBag)
+        })
+        
+        
 //        request.map { _ in true }.bind(to: loadingSubject).disposed(by: disposeBag)
 //
 //        let result = request.flatMap { [unowned self] argv -> Observable<Event<Int?>> in
