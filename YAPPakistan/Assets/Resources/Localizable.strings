@@ -488,10 +488,10 @@
 //Mark: - Change Email Screen
 "screen_change_email_display_text_heading" = "Change email";
 "screen_change_email_placeholder_email_address" = "Email address";
-"screen_change_email_placeholder_confirm_email_address" = "Confirm email address";
+"screen_change_email_placeholder_confirm_email_address" = "Email address";
 "screen_change_email_display_text_description" = "A verification email will now be sent to this address";
 "screen_change_email_display_text_email_title" = "Enter your new email address";
-"screen_change_email_display_text_confirm_email_title" = "Enter it one more time";
+"screen_change_email_display_text_confirm_email_title" = "Re-enter your new email address";
 "screen_change_email_display_text_confirm_email_diff_error" = "This email doesn’t match what you first entered.";
 "screen_change_email_otp_display_text_heading" = "Verify your email address";
 
