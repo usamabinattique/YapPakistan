@@ -81,8 +81,8 @@
 "screen_sign_in_display_text_heading_text" = "Sign in to your YAP account";
 "screen_sign_in_input_text_email_hint" = "Email address or phone number";
 "screen_sign_in_display_text_remember_id_text" = "Remember ID";
-"screen_sign_in_display_text_create_account" = "Create an account?";
-"screen_sign_in_button_sign_up" = "Sign Up";
+"screen_sign_in_display_text_create_account" = "New to Yap?";
+"screen_sign_in_button_sign_up" = "Sign up now";
 "screen_sign_in_button_sign_in" = "Sign in";
 "screen_sign_in_button_verify" = "Verify";
 "screen_sign_in_button_sign_in_touch_id" = "Sign in with Touch ID";
