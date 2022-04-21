@@ -505,8 +505,9 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func updateDashboardWidgets<T:Codable>(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String)-> Observable<T>  {
-        let pathVariables = [uuid,customer_uuid]
-        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/updateWidgets/", pathVariables: pathVariables ,body: widgets, headers: authorizationProvider.authorizationHeaders)
+        let pathVariables = [customer_uuid]
+//        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/updateWidgets/uuid/\(customer_uuid)" ,body: widgets, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/updateWidgets/uuid/" , pathVariables: pathVariables, body: widgets, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

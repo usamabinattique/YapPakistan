@@ -207,7 +207,7 @@ class WidgetSelectionViewModel {
         
         request
             .errors()
-            .do(onNext: {[weak self] _ in
+            .do(onNext: {[weak self] err in
                 self?.showLoaderSubject.onNext(false)
             })
             .map{$0.localizedDescription}

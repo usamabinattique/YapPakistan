@@ -470,12 +470,11 @@ extension HomeViewModel {
     }
     
     func widgetVisibility() {
-        //TODO: uncomment following
-     /*   if (cardStatus == .active) && (self.numberOfShownWidgets > 0) && !(YAPUserDefaults.isWidgetsBarHidden()) {
+        if (cardStatus == .active) && (self.numberOfShownWidgets > 0) && !(YAPUserDefaults.isWidgetsBarHidden()) {
             self.hideWidgetsSubject.onNext(false)
         }
         else {
             self.hideWidgetsSubject.onNext(true)
-        } */
+        } 
     }
 }
