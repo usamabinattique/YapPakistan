@@ -41,7 +41,6 @@ class CardNameViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupTheme()
-        setupResources()
         setupLanguageStrings()
         setupBindings()
         setupConstraints()
@@ -76,16 +75,12 @@ class CardNameViewController: UIViewController {
             .bind({ UIColor($0.greyDark) }, to: [tipsLabel.rx.textColor,nameLabel.rx.textColor])
             //.bind({ UIColor($0.primaryExtraLight) }, to: nameContainer.rx.backgroundColor)
             .bind({ UIColor($0.greyLight).withAlphaComponent(0.50) }, to: nameContainer.rx.backgroundColor)
-           // .bind({ UIColor($0.primary) }, to: nameLabel.rx.textColor)
+            .bind({ UIColor($0.primary) }, to: nameLabel.rx.textColor)
             .bind({ UIColor($0.greyDark) }, to: isThisLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: thisIsFineButton.rx.enabledBackgroundColor)
             .bind({ UIColor($0.primary) }, to: editNameButton.rx.titleColor(for: .normal))
             .bind({ UIColor($0.primary) }, to: backButton.rx.tintColor)
             .disposed(by: rx.disposeBag)
-    }
-
-    func setupResources() {
-        cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
     }
 
     func setupLanguageStrings() {
@@ -112,15 +107,13 @@ class CardNameViewController: UIViewController {
         thisIsFineButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         editNameButton.rx.tap.bind(to: viewModel.inputs.editObserver).disposed(by: rx.disposeBag)
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
-//        backButton.rx.tap.subscribe(onNext: { [weak self] _ in
-//            self?.navigationController?.popViewController()
-//            self?.viewModel.inputs.backObserver.onNext(())
-////            self?.navigationController?.dismiss(animated: true
-////                                                , completion: {
-////                self?.viewModel.inputs.backObserver.onNext(())
-////            })
-//        }).disposed(by: rx.disposeBag)
-
+        
+        viewModel.outputs.cardImage
+            .subscribe(onNext: { [weak self] in
+                self?.cardImage.image = UIImage(named: $0, in: .yapPakistan)
+            })
+            .disposed(by: rx.disposeBag)
+        
     }
 
     func setupConstraints() {

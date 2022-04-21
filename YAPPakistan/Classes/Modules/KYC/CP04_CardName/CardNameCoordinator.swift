@@ -32,7 +32,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func cardName() {
-        let viewController = container.makeCardNameViewController()
+        let viewController = container.makeCardNameViewController(paymentGatewayM: paymentGatewayM)
         self.navigation.childNavigation.pushViewController(viewController, animated: false)
 
         viewController.viewModel.outputs.back.withUnretained(self)

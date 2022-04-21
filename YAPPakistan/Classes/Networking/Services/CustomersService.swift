@@ -89,6 +89,7 @@ public protocol CustomerServiceType {
     func updateMobileNumber<T: Codable>(countryCode: String, mobileNumber: String) -> Observable<T>
     func fetchCustomerPersonalDetails<T: Codable>() -> Observable<T>
     func getDashboardWidgets<T: Codable> () -> Observable<T>
+    func updateDashboardWidgets<T:Codable>(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String)-> Observable<T>
 }
 
     
@@ -511,6 +512,11 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
+    public func updateDashboardWidgets<T:Codable>(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String)-> Observable<T>  {
+        let pathVariables = [uuid,customer_uuid]
+        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/updateWidgets/", pathVariables: pathVariables ,body: widgets, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
     
 }
 

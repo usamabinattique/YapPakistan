@@ -31,6 +31,7 @@ public extension UIFont {
     static func regular( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.regular(weight).font }
     static func small  ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.small(weight).font }
     static func micro  ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.micro(weight).font }
+    static func nano  ( _ weight: AppFontWeight) -> UIFont { return AppTextStyle.nano(weight).font }
 
     static var title1: UIFont { return .title1( .regular) }
     /// Font size = 24
@@ -45,6 +46,8 @@ public extension UIFont {
     static var small: UIFont { return .small(  .regular) }
     /// Font size = 12
     static var micro: UIFont { return .micro(  .regular) }
+    /// Font size = 10
+    static var nano: UIFont { return .nano(  .regular) }
 }
 
 fileprivate extension AppTextStyle {

@@ -67,4 +67,8 @@ extension Double {
         let number = localeNumberFormatter.number(from: string.removingGroupingSeparator()) ?? 0
         self.init(exactly: number)
     }
+    
+    func twoDecimal()-> String {
+        return String(format: "%.2f", self)
+    }
 }

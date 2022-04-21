@@ -29,7 +29,7 @@ class CardBenefitsViewController: UIViewController {
         tableView.isUserInteractionEnabled = true
         return tableView
     }()
-    private lazy var nextButton = UIFactory.makeAppRoundedButton(with: .large, title: "screen_kyc_card_benefits_screen_next_button_title".localized)
+    private lazy var nextButton = UIFactory.makeAppRoundedButton(with: .large)
     
     //MARK: Properties
     private let themeService: ThemeService<AppTheme>
@@ -138,6 +138,10 @@ extension CardBenefitsViewController: ViewDesignable {
             })
         }).disposed(by: rx.disposeBag)
         
+        viewModel.outputs.buttonTitle.bind(to: nextButton.rx.title(for: .normal)).disposed(by: rx.disposeBag)
+#warning("[UMAIR] - Todo: disable button for master card")
+//        viewModel.outputs.isNextButtonEnabled.bind(to: nextButton.rx.isEnabled).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.coverImage.subscribe(onNext:{ [weak self] imageName in
             self?.coverImage.image = UIImage(named: imageName ?? "", in: .yapPakistan)
         }).disposed(by: rx.disposeBag)
@@ -149,6 +153,7 @@ extension CardBenefitsViewController: ViewDesignable {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
             .bind({ UIColor($0.primary) }, to: [nextButton.rx.enabledBackgroundColor])
+            .bind({ UIColor($0.greyDark) }, to: [nextButton.rx.disabledBackgroundColor])
             .disposed(by: rx.disposeBag)
     }
     

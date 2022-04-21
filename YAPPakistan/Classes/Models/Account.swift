@@ -61,6 +61,7 @@ public struct Account: Codable {
     public let bank: Bank?
     public var parnterBankStatus: PartnerBankStatus? { PartnerBankStatus(rawValue: _parnterBankStatus ?? "") }
     public let isFirstCredit: Bool
+    public let firstCreditLimit: Double?
     private let _parnterBankStatus: String?
     public let createdDate: String?
     public let parentAccount: ParentAccount?
@@ -104,7 +105,7 @@ public struct Account: Codable {
     private enum CodingKeys: String, CodingKey {
         case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active,
              documentsVerified, companyType, soleProprietary, customer, bank, parentAccount,
-             otpBlocked, isSecretQuestionVerified, isFirstCredit
+             otpBlocked, isSecretQuestionVerified, isFirstCredit, firstCreditLimit
         case cardName
         case cnicName
         case isDocumentsVerified
@@ -163,6 +164,7 @@ public extension Account {
         self.currency = account.currency
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
+        self.firstCreditLimit = account.firstCreditLimit
     }
 
     init(account: Account, updatedEmail: String) {
@@ -199,6 +201,7 @@ public extension Account {
         self.currency = account.currency
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
+        self.firstCreditLimit = account.firstCreditLimit
     }
 
     init(account: Account, soleProprietary: Bool) {
@@ -235,6 +238,7 @@ public extension Account {
         self.currency = account.currency
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
+        self.firstCreditLimit = account.firstCreditLimit
     }
 
     init(account: Account, accountStatus: AccountStatus) {
@@ -271,6 +275,7 @@ public extension Account {
         self.currency = account.currency
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
+        self.firstCreditLimit = account.firstCreditLimit
     }
 }
 

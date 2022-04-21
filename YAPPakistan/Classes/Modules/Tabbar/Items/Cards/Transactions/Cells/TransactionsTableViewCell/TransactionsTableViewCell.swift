@@ -12,12 +12,12 @@ import RxCocoa
 import SDWebImage
 import YAPComponents
 import RxTheme
+import UIKit
 
 class TransactionsTableViewCell: RxUITableViewCell {
     
     private lazy var separatorView: UIView = {
         let view = UIView()
-        // view.backgroundColor = UIColor.appColor(ofType: .separatorGrey).withAlphaComponent(0.11)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -33,15 +33,15 @@ class TransactionsTableViewCell: RxUITableViewCell {
     }()
     
     private lazy var iconContainerView: UIView = {
-        let view = UIView()
+        let view = UIView() //UIView(frame: CGRect(x: 0, y: 0, width: 45, height: 45))
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .clear
+        view.clipsToBounds = true
         return view
     }()
     
     private lazy var transactionMerchantIconImageView: UIImageView = {
         let imageView = UIImageView()
-        /// imageView.tintColor = .primary
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = nil
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -49,7 +49,14 @@ class TransactionsTableViewCell: RxUITableViewCell {
     }()
 
     // tintColor: .white
-    private lazy var transactionTypeIcon = UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private lazy var transactionTypeIcon: UIImageView = {
+        let imageView = UIImageView() //UIImageView(frame: CGRect(x: 0, y: 0, width: 17, height: 17))
+        imageView.contentMode = .scaleAspectFit
+        imageView.backgroundColor = nil
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.clipsToBounds = true
+        return imageView
+    }() //= UIFactory.makeImageView(contentMode: .scaleAspectFit)
     
     private lazy var innerStackView: UIStackView = {
         let stack = UIStackView()
@@ -88,13 +95,15 @@ class TransactionsTableViewCell: RxUITableViewCell {
     private lazy var transactionStatusLabel: UILabel = UIFactory.makeLabel(/*with: .greyDark, */ font: .micro)
     
     var viewModel: TransactionsTableViewCellViewModelType!
+    private var themeService: ThemeService<AppTheme>!
     
     // MARK: Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
-        setupViews()
-        setupConstraints()
+//        setupViews()
+//        setupConstraints()
+//        setupSensitiveViews()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -105,6 +114,11 @@ class TransactionsTableViewCell: RxUITableViewCell {
     override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
         guard let viewModel = viewModel as? TransactionsTableViewCellViewModelType else { return }
         self.viewModel = viewModel
+        self.themeService = themeService
+        setupViews()
+        setupConstraints()
+        setupSensitiveViews()
+        setupTheme()
         bind()
     }
     
@@ -112,6 +126,12 @@ class TransactionsTableViewCell: RxUITableViewCell {
         super.prepareForReuse()
         iconContainerView.removeGradientBackground()
         iconContainerView.backgroundColor = nil
+    }
+    
+    override func layoutIfNeeded() {
+        super.layoutIfNeeded()
+        
+        render()
     }
 }
 
@@ -140,7 +160,7 @@ private extension TransactionsTableViewCell {
         
         iconContainerView.layer.cornerRadius = 22.5
         iconContainerView.clipsToBounds = true
-        
+
         transactionTypeIcon.layer.cornerRadius = 8.5
         transactionTypeIcon.clipsToBounds = true
         
@@ -164,6 +184,8 @@ private extension TransactionsTableViewCell {
             .height(constant: 45)
         
         transactionMerchantIconImageView
+//            .width(constant: 40)
+//            .height(constant: 40)
             .alignAllEdgesWithSuperview()
         
         transactionTypeIcon
@@ -183,6 +205,28 @@ private extension TransactionsTableViewCell {
             .alignEdges([.left, .right], withView: parentStackView)
             .alignEdgeWithSuperview(.bottom)
             .height(constant: 1)
+        
+        
+    }
+    
+    func render() {
+//        transactionMerchantIconImageView.roundView()
+//        iconContainerView.roundView()
+//        transactionTypeIcon.roundView()
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.separatorColor).withAlphaComponent(0.11) }, to: [separatorView.rx.backgroundColor])
+            .bind({ UIColor($0.primary) }, to: [transactionMerchantIconImageView.rx.tintColor])
+            .bind({ UIColor($0.greyDark) }, to: [transactionTitle.rx.textColor,internationalTransactionAmount.rx.textColor,transactionTimeCategory.rx.textColor,currency.rx.textColor,noteLabel.rx.textColor,transactionStatusLabel.rx.textColor])
+            .bind({ UIColor($0.secondaryGreen) }, to: [transactionAmount.rx.textColor])
+            .disposed(by: rx.disposeBag)
+    }
+    
+    func setupSensitiveViews() {
+       /* UIView.markSensitiveViews([transactionMerchantIconImageView, transactionTitle, internationalTransactionAmount,
+                                   transactionAmount, currency]) */
     }
 }
 
@@ -194,7 +238,7 @@ private extension TransactionsTableViewCell {
         viewModel.outputs.transactionTimeCategory.bind(to: transactionTimeCategory.rx.text).disposed(by: disposeBag)
         viewModel.outputs.currency.bind(to: currency.rx.text).disposed(by: disposeBag)
         viewModel.outputs.transactionAmount.bind(to: transactionAmount.rx.attributedText).disposed(by: disposeBag)
-        // viewModel.outputs.transactionImageUrl.bind(to: transactionMerchantIconImageView.rx.loadImage()).disposed(by: disposeBag)
+         viewModel.outputs.transactionImageUrl.bind(to: transactionMerchantIconImageView.rx.loadImage()).disposed(by: disposeBag)
         viewModel.outputs.internationalAmount.bind(to: internationalTransactionAmount.rx.text).disposed(by: disposeBag)
         viewModel.outputs.transactionAmountTextColor.subscribe(onNext: {[weak self] in
             self?.transactionAmount.textColor  = $0
@@ -223,16 +267,17 @@ private extension TransactionsTableViewCell {
         
         viewModel.outputs.cancelled
             .subscribe(onNext: { [weak self] in
+                guard let `self` = self else { return }
                 if $0 {
-//                    self?.transactionTitle.textColor = .grey
-//                    self?.transactionTimeCategory.textColor = .grey
-//                    self?.currency.textColor = .grey
-//                    self?.noteLabel.textColor = .grey
+                    self.transactionTitle.textColor = UIColor(self.themeService.attrs.grey)// .grey
+                    self.transactionTimeCategory.textColor = UIColor(self.themeService.attrs.grey) //.grey
+                    self.currency.textColor = UIColor(self.themeService.attrs.grey) //.grey
+                    self.noteLabel.textColor = UIColor(self.themeService.attrs.grey) //.grey
                 } else {
-//                    self?.transactionTitle.textColor = .primaryDark
-//                    self?.transactionTimeCategory.textColor = .greyDark
-//                    self?.currency.textColor = .greyDark
-//                    self?.noteLabel.textColor = .greyDark
+                    self.transactionTitle.textColor = UIColor(self.themeService.attrs.primaryDark) //.primaryDark
+                    self.transactionTimeCategory.textColor = UIColor(self.themeService.attrs.greyDark) //.greyDark
+                    self.currency.textColor = UIColor(self.themeService.attrs.greyDark) //.greyDark
+                    self.noteLabel.textColor = UIColor(self.themeService.attrs.greyDark) //.greyDark
                 } })
             .disposed(by: disposeBag)
         
@@ -250,6 +295,7 @@ private extension TransactionsTableViewCell {
         viewModel.outputs.shimmering.bind(to: transactionAmount.rx.isShimmerOn).disposed(by: disposeBag)
         viewModel.outputs.shimmering.bind(to: transactionMerchantIconImageView.rx.isShimmerOn).disposed(by: disposeBag)
         viewModel.outputs.shimmering.bind(to: transactionTimeCategory.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: separatorView.rx.isShimmerOn).disposed(by: disposeBag)
     }
     
     func bindImageGrandientBackground() {

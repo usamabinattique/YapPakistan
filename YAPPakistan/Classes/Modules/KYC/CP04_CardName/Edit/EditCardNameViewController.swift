@@ -21,7 +21,7 @@ class EditCardNameViewController: UIViewController {
     
     private let cardImageView = UIFactory.makeImageView()
     private let nameLabel = UIFactory.makeLabel(font: .small)
-    private let latterCountLabel = UIFactory.makeLabel(font: .micro, alignment: .right)
+    private let letterCountLabel = UIFactory.makeLabel(font: .micro, alignment: .right)
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -77,7 +77,7 @@ class EditCardNameViewController: UIViewController {
 
         cardImageView
             .addSub(view: nameLabel)
-            .addSub(view: latterCountLabel)
+            .addSub(view: letterCountLabel)
 
         backButton = addBackButton(of: .backEmpty)
         
@@ -95,7 +95,7 @@ class EditCardNameViewController: UIViewController {
             .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
 //            .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
             .bind({ UIColor($0.primaryDark) }, to: nameLabel.rx.textColor)
-            .bind({ UIColor($0.greyDark) }, to: latterCountLabel.rx.textColor)
+            .bind({ UIColor($0.greyDark) }, to: letterCountLabel.rx.textColor)
 //            .bind({ UIColor($0.primaryDark) }, to: textField.placeholderLabel.rx.textColor)
 //            .bind({ UIColor($0.primaryDark) }, to: textField.rx.textColor)
 //            .bind({ UIColor($0.greyLight) }, to: textField.rx.bottomLineColorNormal)
@@ -133,7 +133,7 @@ class EditCardNameViewController: UIViewController {
 //        sharedName.bind(to: textField.rx.text).disposed(by: rx.disposeBag)
         sharedName.map({ $0.count > 0 }).bind(to: nextButton.rx.isEnabled).disposed(by: rx.disposeBag)
         viewModel.outputs.cardName.bind(to: nameLabel.rx.text).disposed(by: rx.disposeBag)
-        viewModel.outputs.charCount.bind(to: latterCountLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.charCount.bind(to: letterCountLabel.rx.text).disposed(by: rx.disposeBag)
 
         nextButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
 //        textField.rx.text.unwrap().bind(to: viewModel.inputs.nameObserver).disposed(by: rx.disposeBag)
@@ -199,7 +199,7 @@ class EditCardNameViewController: UIViewController {
             .alignEdgesWithSuperview([.bottom], constants: [24])
             .alignEdges([.left], withView: cardImageView, constants: [16])
             .width(constant: 200)
-        latterCountLabel
+        letterCountLabel
            // .alignEdgesWithSuperview([.right], constants: [22])
             .alignEdges([.right], withView: cardImageView, constants: [32])
             .centerVerticallyWith(nameLabel)
