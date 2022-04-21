@@ -41,7 +41,7 @@ class PersonalDetailsViewController: UIViewController {
     private lazy var phoneNumberField : StaticAppTextField = {
         let field = StaticAppTextField()
         field.titleLabel.text = "screen_personal_details_display_text_phone_number".localized
-        field.isEditable = false
+        field.isEditable = true
         field.titleColor = UIColor(themeService.attrs.greyDark)
         field.textColor = UIColor(themeService.attrs.primaryDark)
         return field

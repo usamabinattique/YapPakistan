@@ -46,7 +46,7 @@ open class PhoneNumberView: UIView {
 
     private lazy var bottomBar: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.gray //UIColor.gray //UIColor(themeService.attrs.grey) //.grey
+        view.backgroundColor = UIColor(Color(hex: "#272262")) //UIColor.gray //UIColor(themeService.attrs.grey) //.grey
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -84,6 +84,8 @@ open class PhoneNumberView: UIView {
             stateImage.image = validationState == .valid ? validInputImage : validationState == .invalid ? invalidInputImage : nil
             stateImage.tintColor = validationState == .valid ? UIColor(Color(hex: "#272262")) : validationState == .invalid ? UIColor.red : .clear
             bottomBar.backgroundColor = validationState == .invalid ? UIColor.red : UIColor(Color(hex: "#272262")) //.primary
+            bottomBar.backgroundColor = validationState == .normal ? UIColor.red : UIColor(Color(hex: "#272262")) //.primary
+            
             error.isHidden = validationState != .invalid
         }
     }
@@ -167,7 +169,7 @@ extension PhoneNumberView: UITextFieldDelegate {
     }
 
     public func textFieldDidEndEditing(_ textField: UITextField) {
-        bottomBar.backgroundColor = UIColor.darkGray //UIColor.gray //UIColor(themeService.attrs.grey) //.grey
+        bottomBar.backgroundColor = UIColor.lightGray //UIColor(Color(hex: "#272262")) //UIColor.darkGray //UIColor.gray //UIColor(themeService.attrs.grey) //.grey
         title.textColor = (textField.text == nil || textField.text?.count ?? 0 == 0) ? UIColor(Color(hex: "#272262")) : UIColor.darkGray //.greyDark
         if textField.text?.count ?? 0 == 0 {
             deanimateFocus()
@@ -207,7 +209,7 @@ private extension PhoneNumberView {
 
     func deanimateFocus() {
         UIView.animate(withDuration: 0.3, animations: { [unowned self] in
-            self.title.textColor = UIColor.gray //UIColor(themeService.attrs.primaryDark) //.primaryDark
+            self.title.textColor = UIColor(Color(hex: "#272262")) // UIColor.gray //UIColor(themeService.attrs.primaryDark) //.primaryDark
         })
     }
 }

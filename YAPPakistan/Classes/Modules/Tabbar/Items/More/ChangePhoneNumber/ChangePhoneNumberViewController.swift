@@ -33,6 +33,7 @@ class ChangePhoneNumberViewController: UIViewController {
     lazy var phoneNumberTextfield: PhoneNumberView = {
         let textfield = PhoneNumberView()
         textfield.translatesAutoresizingMaskIntoConstraints = false
+        
         return textfield
     }()
     
