@@ -10,7 +10,6 @@ import YAPComponents
 import RxSwift
 import YAPCore
 
-
 public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
     
     private let root: UIViewController
@@ -30,13 +29,10 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
         
         let viewModel = ChangePhoneNumberViewModel(otpRepository: self.container.makeOTPRepository())
         let viewController = ChangePhoneNumberViewController(viewModel: viewModel, themeService: self.container.themeService)
-        
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
-
 
         viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
-            
             
             viewModel.outputs.phoneNumberTextfield.subscribe(onNext: { [unowned self] newPhone in
                 let newPhoneNumber = newPhone
@@ -45,7 +41,6 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
                     self.otp(.changeMobileNumber, mobileNo: newPhoneNumber)
                 }
             })
-        
         }).disposed(by: disposeBag)
 
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
@@ -55,15 +50,11 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: disposeBag)
 
         viewModel.outputs.success.subscribe(onNext: { [unowned self] mobileNumber in
-            
             self.navigateToChangeEmailSuccess(phoneNumber: mobileNumber)
-            
         }).disposed(by: disposeBag)
         
         self.otpResult.subscribe(onNext: { [unowned self] _ in
-            
             viewModel.inputs.changePhoneNumberRequestObserver.onNext(())
-            
         }).disposed(by: disposeBag)
 
         root.present(localRoot, animated: true, completion: nil)
@@ -74,7 +65,6 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: phoneNumber, descriptionText: "screen_unverified_success_phone_number_display_text_sub_heading")
         let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
         
-        
         viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
             self.localRoot.dismiss(animated: true, completion: nil)
         }).disposed(by: disposeBag)
@@ -83,28 +73,7 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func otp(_ action: OTPAction, mobileNo : String) {
-        
-//        let countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
-//        let mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
-        
-        
-//        var formattedPhoneNumber : String
-//        if mobileNo != "" {
-////            let formattedCountryCode: String = phoneValue.1.replacePrefix("+", with: "00").removeWhitespace()
-////            let formattedMobileNumberArray = phoneValue.0.split(separator: " ")
-////            let formattedPhoneNumber = formattedMobileNumberArray[1] + formattedMobileNumberArray[2]
-//
-//            formattedPhoneNumber = mobileNo.replacePrefix("+", with: "00").removeWhitespace()
-//            formattedPhoneNumber = formattedPhoneNumber.removeWhitespace()
-//            formattedPhoneNumber = mobileNo
-//        }
-//        else {
-//            formattedPhoneNumber = countryCode + mobileNumber
-//        }
-        
         let formattedPhoneNumber = mobileNo.replacePrefix("+", with: "00").removeWhitespace()
-        
-       
         let subHeadingText = String(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, formattedPhoneNumber)
         let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , repository: container.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty)
         let viewController = VerifyMobileOTPViewController(themeService: self.container.themeService, viewModel: viewModel)

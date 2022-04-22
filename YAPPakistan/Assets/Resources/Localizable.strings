@@ -98,7 +98,7 @@
 "screen_phone_number_display_text_title" = "What's your mobile number?";
 
 // MARK: Phone number verification screen
-"screen_verify_phone_number_display_text_title" = "Verify your mobile number";
+"screen_verify_phone_number_display_text_title" = "Verify your phone number";
 "screen_verify_phone_number_display_text_sub_title" = "We've sent a verification code to";
 "screen_verify_phone_number_button_resend_otp" = "Resend code";
 "screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
@@ -253,7 +253,7 @@
 //MARK: Generic OTP
 "screen_device_registration_otp_button_resend_otp" = "Resend code";
 "screen_device_registration_otp_button_send" = "Send";
-"screen_device_registration_otp_display_header_message" = "Verify your mobile number";
+"screen_device_registration_otp_display_header_message" = "Verify your phone number";
 "screen_device_registration_otp_display_text_message" = "Enter the OTP sent to your registered mobile number to complete login";
 "screen_device_registration_otp_display_givn_text_message" = "We've sent a verification code to \n%@";
 "screen_otp_genration_success" = "New OTP has been generated successfully";
@@ -475,7 +475,7 @@
 "screen_topup_card_cvv_display_text_cvv" = "Enter the CVV to top up your acccount with";
 
 //Mark: - Change Phone Number Screen
-"screen_change_phone_number_display_text_heading" = "Change mobile number";
+"screen_change_phone_number_display_text_heading" = "Change phone number";
 "screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
 
 
@@ -641,7 +641,7 @@
 
 // MARK: Screen add beneficiary OTP
 
-"screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
+"screen_add_beneificiary_otp_display_text_heading" = "Verify your phone number";
 "screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
 
 
