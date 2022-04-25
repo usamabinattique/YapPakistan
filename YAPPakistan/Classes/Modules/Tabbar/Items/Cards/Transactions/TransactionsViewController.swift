@@ -28,7 +28,17 @@ class TransactionsViewController: UIViewController {
     }
 
     // MARK: - Views
-    var tableView: UITableView = UIFactory.makeTableView(allowsSelection: false)
+   // var tableView: UITableView = UIFactory.makeTableView(allowsSelection: false)
+    
+    public lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
     private lazy var nothingLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, text: "screen_home_display_text_nothing_to_report".localized)
     private lazy var placeholderView: UIView = {
         let view = UIView()
@@ -241,15 +251,15 @@ extension TransactionsViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0 // viewModel.outputs.numberOfRows(inSection: section)
+        return  viewModel.outputs.numberOfRows(inSection: section)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        let cellViewModel = viewModel.outputs.cellViewModel(for: indexPath)
-//        let cell = tableView.dequeueReusableCell(withIdentifier: cellViewModel.reusableIdentifier) as! RxUITableViewCell
-//        cell.configure(with: cellViewModel)
-       // return cell
-        UITableViewCell()
+        let cellViewModel = viewModel.outputs.cellViewModel(for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellViewModel.reusableIdentifier) as! RxUITableViewCell
+        cell.configure(with: self.themeService, viewModel: cellViewModel)
+        return cell
+//        UITableViewCell()
     }
 }
 
@@ -259,12 +269,12 @@ extension TransactionsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: TransactionHeaderTableViewCell.defaultIdentifier) as! TransactionHeaderTableViewCell
-        // cell.configure(with: viewModel.outputs.sectionViewModel(for: section))
+        cell.configure(with: self.themeService, viewModel: viewModel.outputs.sectionViewModel(for: section))
         return cell
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 46
+        return 46 //0 // return 46
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -274,6 +284,14 @@ extension TransactionsViewController: UITableViewDelegate {
             currentVelocityYSign != 0 {
             lastVelocityYSign = currentVelocityYSign
         }
+        
+        Observable.just("").withLatestFrom(viewModel.outputs.enableLoadMore).subscribe(onNext: { [weak self] (enableLoadMore) in
+            guard let `self` = self else {return}
+//            print("scrollPercentage:\(self.tableView.scrollPercentage)")
+            guard self.tableView.scrollPercentage > 0.6 ,
+                  enableLoadMore else {return}
+            self.viewModel.inputs.loadMore.onNext(())
+        }).disposed(by: disposeBag)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -286,5 +304,37 @@ extension TransactionsViewController: UITableViewDelegate {
         guard let transaction = ((cell as? TransactionsTableViewCell)?.viewModel as? TransactionsTableViewCellViewModel)?.cdTransaction else { return }
 
         viewModel.inputs.transactionDetailsObserver.onNext(transaction)
+    }
+    
+//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        guard tableView.scrollPercentage > 0.6 else {return}
+//        viewModel.inputs.loadMore.onNext(())
+//    }
+}
+
+class FooterLoadingView: UIView {
+
+    let indicator = UIActivityIndicatorView(frame: .zero)
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        customizeUI(frame: frame)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func customizeUI(frame: CGRect) {
+        indicator.frame = CGRect(x: (frame.size.width/2) - 12, y: 10, width: 24, height: 24)
+        self.addSubview(indicator)
+    }
+}
+
+public extension UITableView {
+    var scrollPercentage: CGFloat {
+        let height = self.contentSize.height - self.frame.size.height
+            let scrolledPercentage = self.contentOffset.y / height
+            return scrolledPercentage
     }
 }

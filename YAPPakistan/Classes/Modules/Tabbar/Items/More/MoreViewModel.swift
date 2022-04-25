@@ -143,14 +143,14 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
         
         accountProvider.currentAccount.map { account -> NSAttributedString? in
             
-            guard let iban = (account?.parnterBankStatus == .activated ? account?.formattedIBAN : account?.maskedAndFormattedIBAN) else { return nil }
+            guard let iban = account?.formattedIBAN else { return nil } 
             let attributed = NSMutableAttributedString(string: "IBAN " + iban)
             attributed.addAttribute(.foregroundColor, value: UIColor(self.theme.attrs.primaryDark), range: NSRange(location: 0, length: 4))
             return attributed
         }.bind(to: ibanSubject).disposed(by: disposeBag)
         
         accountProvider.currentAccount.map { account -> NSAttributedString? in
-            guard let bic = account?.bank.swiftCode else { return nil }
+            guard let bic = account?.bank?.swiftCode else { return nil }
             let attributed = NSMutableAttributedString(string: "BIC " + bic)
             attributed.addAttribute(.foregroundColor, value: UIColor(self.theme.attrs.primaryDark), range: NSRange(location: 0, length: 3))
             if account?.accountType != .b2cAccount {

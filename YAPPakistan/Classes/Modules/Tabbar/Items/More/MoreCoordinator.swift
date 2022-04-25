@@ -78,16 +78,11 @@ extension MoreCoordinator {
     }
     
     func openUserProfileSettings() {
-//        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap(), biometricsManager: container.biometricsManager, credentialStore: container.parent.credentialsStore, repository: container.makeLoginRepository(), notificationManager: container.parent.makeNotificationManager())
-//        let viewController = UserProfileViewController(viewModel: viewModel, themeService: container.themeService)
-//        viewController.modalPresentationStyle = .fullScreen
-//        let navigationController = UINavigationController(rootViewController: viewController)
-//        navigationController.modalPresentationStyle = .fullScreen
-//        navigationRoot.present(navigationController, animated: true, completion: nil)
-        
-        
-        
         coordinate(to: UserProfileCoordinator(root: root, container: self.container))
+            .subscribe(onNext:{ _ in
+            })
+            .disposed(by: rx.disposeBag)
+
         
     }
     

@@ -68,13 +68,16 @@ public extension TransactionType {
 }
 
 struct TransactionResponse: Codable, Transaction {
+    
+    
+    
     let date: Date
     let updatedDate: Date?
     private let _type: String?
     let amount: Double
     let currency: String
     let category: String
-    let paymentMode: String
+    let paymentMode: String?
     let closingBalance: Double?
     let openingBalance: Double?
     var title: String?
@@ -127,6 +130,8 @@ struct TransactionResponse: Codable, Transaction {
     var latitude: Double
     var longitude: Double
     let tapixCategory: TapixTransactionCategory?
+//    let senderProfilePictureUrl: String?
+//    let receiverProfilePictureUrl: String?
     
     var sectionDate: Date {
         return date.startOfDay
@@ -140,6 +145,19 @@ struct TransactionResponse: Codable, Transaction {
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "HH:mm"
         return timeFormatter.string(from: date)
+    }
+    
+    public var calculatedTotalAmount: Double {
+//        guard !(productCode == .rmt || productCode == .swift || isNonAEDTransaction || productCode == .masterCardRefund ) else {
+        guard !(productCode == .rmt || productCode == .swift || productCode == .masterCardRefund ) else {
+        
+            if productCode == .eCom || productCode == .posPurchase || productCode == .masterCardRefund {
+                return cardHolderBillingTotalAmount
+            }
+            return settlementAmount + vat + fee
+        }
+        guard type == .credit else { return totalAmount ?? 0 }
+        return amount
     }
 
     enum CodingKeys: String, CodingKey {
@@ -198,23 +216,103 @@ struct TransactionResponse: Codable, Transaction {
         case latitude = "latitude"
         case longitude = "longitude"
         case tapixCategory = "yapCategoryDTO"
+//        case receiverProfilePictureUrl = "receiverProfilePictureUrl"
+//        case senderProfilePictureUrl = "senderProfilePictureUrl"
     }
+    
+   /* "creationDate": "2022-04-12T06:27:41",
+    "createdBy": "00aac051-2fb4-4bce-a3f6-713c6ae77df8",
+    "updatedDate": "2022-04-12T06:27:41",
+    "updatedBy": "00aac051-2fb4-4bce-a3f6-713c6ae77df8",
+    "id": 164,
+    "card1": "?C8F92RQ6XQ34EYQ",
+    "card2": "?C8FF7LRAJ0T88D7",
+    "iban1": "PK99YAPK0000003004718047",
+    "iban2": "PK99YAPK0000003001515953",
+    "txnCode": "497",
+    "productName": "Y2Y_TRANSFER",
+    "category": "TRANSACTION",
+    "txnType": "DEBIT",
+    "amount": 350.0000,
+    "totalAmount": 350.0000,
+    "currency": "PKR",
+    "txnState": "FAILURE",
+    "status": "FAILED",
+    "balanceBefore": 2689.00,
+    "balanceAfter": 2689.00,
+    "paymentMode": "CARD",
+    "productCode": "P003",
+    "accountUuid1": "bb533300-fd63-44b8-acdd-f80011280e89",
+    "accountUuid2": "b7351708-8bfd-4f7c-a748-d83740d4fcc8",
+    "initiator": "YAP",
+    "processorRefNumber": "ResponseData is null",
+    "transactionId": "387170346585",
+    "customerId1": "10000060",
+    "customerId2": "10000100",
+    "senderMobileNo": "3004718047",
+    "senderEmail": "awaisyousaf103487@gmail.com",
+    "receiverMobileNo": "3001515953",
+    "receiverEmail": "and@unverified.com",
+    "senderName": "Awais Yousaf",
+    "receiverName": "Android",
+    "maskedCardNo": "220593******4204",
+    "cardHolderBillingCurrency": "PKR",
+    "cardHolderBillingAmount": 350.00,
+    "cardHolderBillingTotalAmount": 350.00,
+    "processorErrorCode": "PROCESSOR_FAIL",
+    "processorErrorDescription": "Transaction processing failed at Processor: Error Occurred",
+    "userType2": "B2C_ACCOUNT",
+    "userType1": "B2C_ACCOUNT",
+    "title": "To Android",
+    "markupFees": 0.00,
+    "postedFees": 0.00,
+    "vatAmount": 0.00,
+    "cardType": "DEBIT",
+    "senderProfilePictureUrl": "dummy/dummy/profile_image/customer_data/10000060/documents/PROFILE_PICTURE.jpeg",
+    "receiverProfilePictureUrl": "dummy/dummy/profile_image/customer_data/10000100/documents/PROFILE_PICTURE.jpeg",
+    "currencyDecimalScale": 2,
+    "msgId": "53676675-0b7d-48c6-a318-70a3c659c47a",
+    "bankCBWISCompliant": false,
+    "cbwsi": false,
+    "feeTransactionsDetailDTO": [],
+    "txnTransactionsDetailDTO": [],
+    "tapixCall": false,
+    "approved": false,
+    "reversal": true,
+    "dispute": false,
+    "createdOn": [
+        2022,
+        4,
+        12,
+        6,
+        27,
+        41
+    ] */
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        _type = try container.decode(String?.self, forKey: ._type)
+        _type = try container.decodeIfPresent(String?.self, forKey: ._type) ?? ""
         title = try? container.decode(String?.self, forKey: .title)
-        amount = try container.decode(Double.self, forKey: .amount)
+        
+        if let am = try? container.decodeIfPresent(Double.self, forKey: .amount) ?? 0 {
+            amount = am
+        } else if let am = try? container.decodeIfPresent(String.self, forKey: .amount) {
+            amount = Double(am) ?? 0
+        } else {
+            amount = 0.0
+        }
+        
+       // amount = try container.decodeIfPresent(Double.self, forKey: .amount) ?? 0
         fee = try container.decodeIfPresent(Double.self, forKey: .fee) ?? 0
         vat = try container.decodeIfPresent(Double.self, forKey: .vat) ?? 0
         currency = try container.decode(String.self, forKey: .currency)
-        closingBalance = try? container.decode(Double?.self, forKey: .closingBalance)
-        openingBalance = try? container.decode(Double?.self, forKey: .openingBalance)
-        category = try container.decode(String.self, forKey: .category)
-        paymentMode = try container.decode(String.self, forKey: .paymentMode)
-        merchant = try container.decode(String?.self, forKey: .merchant)
-        transactionNote = try? container.decode(String?.self, forKey: .transactionNote)
-        let dateString = try container.decode(String.self, forKey: .date)
+        closingBalance = try? container.decodeIfPresent(Double?.self, forKey: .closingBalance) ?? 0
+        openingBalance = try? container.decodeIfPresent(Double?.self, forKey: .openingBalance) ?? 0
+        category = try container.decodeIfPresent(String.self, forKey: .category) ?? ""
+        paymentMode = try container.decodeIfPresent(String.self, forKey: .paymentMode) ?? ""
+        merchant = try container.decodeIfPresent(String?.self, forKey: .merchant) ?? ""
+        transactionNote = try? container.decodeIfPresent(String?.self, forKey: .transactionNote) ?? ""
+        let dateString = try container.decodeIfPresent(String.self, forKey: .date) ?? ""
         let updatedDateString = (try? container.decode(String?.self, forKey: .updatedDate)) ?? ""
         let creationDate = DateFormatter.transactionDateFormatter.date(from: dateString.formattedDateString)
         self.date = creationDate ?? Date()
@@ -222,10 +320,10 @@ struct TransactionResponse: Codable, Transaction {
         let transactionNoteDateString = try? container.decode(String?.self, forKey: .transactionNoteDate)
         transactionNoteDate = DateFormatter.transactionDateFormatter.date(from: transactionNoteDateString != nil ? transactionNoteDateString!.formattedDateString : "")
         transactionId = try container.decode(String.self, forKey: .transactionId)
-        id = try container.decode(Int.self, forKey: .id)
+        id = try container.decodeIfPresent(Int.self, forKey: .id) ?? 0
         card = try? container.decode(String?.self, forKey: .card)
-        productName = try? container.decode(String?.self, forKey: .productName)
-        _productCode = try container.decode(String?.self, forKey: ._productCode)
+        productName = try? container.decodeIfPresent(String?.self, forKey: .productName) ?? ""
+        _productCode = try container.decodeIfPresent(String?.self, forKey: ._productCode) ?? ""
         totalAmount = try? container.decode(Double?.self, forKey: .totalAmount)
         status = try? container.decode(String?.self, forKey: .status)
         senderName = try? container.decode(String?.self, forKey: .senderName)
@@ -340,139 +438,205 @@ extension TransactionResponse {
         return formatter }()
 }
 
+extension TransactionResponse {
+    
+    
+}
+
 extension TransactionResponse: Equatable {
     static func == (lhs: TransactionResponse, rhs: TransactionResponse) -> Bool {
         return lhs.date == rhs.date && lhs.amount == rhs.amount && lhs.cancelReason == rhs.cancelReason && lhs.card == rhs.card && lhs.cardType == rhs.cardType && lhs.category == rhs.category && lhs.closingBalance == rhs.closingBalance && lhs.currency == rhs.currency && lhs.fee == rhs.fee && lhs.fxRate == rhs.fxRate && lhs.id == rhs.id && lhs.location == rhs.location && lhs.maskedCardNumber == rhs.maskedCardNumber && lhs.merchant == rhs.merchant && lhs.merchantCategory == rhs.merchantCategory && lhs.merchantLogoUrl == rhs.merchantLogoUrl && lhs.openingBalance == rhs.openingBalance && lhs.otherBankBIC == rhs.otherBankBIC && lhs.otherBankBranch == rhs.otherBankBranch && lhs.otherBankCountry == rhs.otherBankCountry && lhs.otherBankName == rhs.otherBankName && lhs.paymentMode == rhs.paymentMode && lhs._productCode == rhs._productCode && lhs.productName == rhs.productName && lhs.receiverName == rhs.receiverName && lhs.receiverUrl == rhs.receiverUrl && lhs.sectionDate == rhs.sectionDate && lhs.senderName == rhs.senderName && lhs.senderUrl == rhs.senderUrl && lhs.settlementAmount == rhs.settlementAmount && lhs.status == rhs.status && lhs.time == rhs.time && lhs.title == rhs.title && lhs.totalAmount == rhs.totalAmount && lhs.transactionId == rhs.transactionId && lhs.transactionNote == rhs.transactionNote && lhs._type == rhs._type && lhs.updatedDate == rhs.updatedDate && lhs.vat == rhs.vat && lhs.index == rhs.index && lhs.receiverTransactionNote == rhs.receiverTransactionNote && lhs.cardHolderBillingCurrency == rhs.cardHolderBillingCurrency && lhs.cardHolderBillingTotalAmount == rhs.cardHolderBillingTotalAmount
     }
 }
 
-//// Mock Transaction Init
-//extension TransactionResponse {
-//    init() {
-//        transactionId = "T0\(Int.random(in: 9...99999))"
-//        _type = Int.random(in: 0...1) == 0 ? TransactionType.credit.rawValue : TransactionType.debit.rawValue
-//        amount = Double.random(in: 10...10000)
-//        title = ["Carrefour", "ATM", "Starbucks", "McDonald's", "YAP"][Int.random(in: 0...2)]
-//        currency = "د.إ"
-//        closingBalance = Double.random(in: 10...10000)
-//        category = "Retail"
-//        paymentMode = "Debit Card"
-//        merchant = "POS"
-//        transactionNote = ""
-//        transactionNoteDate = nil
-//        self.id = Int.random(in: 9...99999)
-//        date = Date()
-//        updatedDate = Date()
-//        card = "125245"
-//        productName = nil
-//        totalAmount = Double.random(in: 10...1000)
-//        status = nil
-//        openingBalance = Double.random(in: 10...10000)
-//        _productCode = TransactionProductCode.topUpByExternalCard.rawValue
-//        senderName = nil
-//        receiverName = nil
-//        fee = 0
-//        vat = 0
-//        merchantLogoUrl = nil
-//        merchantName = nil
-//        merchantCategory = nil
-//        location = nil
-//        senderUrl = nil
-//        receiverUrl = nil
-//        maskedCardNumber = "12345"
-//        cancelReason = nil
-//        cardType = "Prepaid"
-//        otherBankName = nil
-//        otherBankBIC = nil
-//        otherBankBranch = nil
-//        otherBankCountry = nil
-//        otherBankCurrency = nil
-//        fxRate = nil
-//        settlementAmount = 0
-//        receiverTransactionNote = nil
-//        receiverTransactionNoteDate = nil
-//        cardName1 = nil
-//        cardName2 = nil
-//        markupFee = nil
-//        cardHolderBillingAmount = 0
-//        virtualCardDesignCode = nil
-//        beneficiaryId = nil
-//        senderCustomerId = nil
-//        _txnState = nil
-//        cardHolderBillingCurrency = "AED"
-//        cardHolderBillingTotalAmount = Double.random(in: 10...1000)
-//        tapixCategory = nil
-//        latitude = 0.0
-//        longitude = 0.0
+// Mock Transaction Init
+extension TransactionResponse {
+    init() {
+        transactionId = "T0\(Int.random(in: 9...99999))"
+        _type = Int.random(in: 0...1) == 0 ? TransactionType.credit.rawValue : TransactionType.debit.rawValue
+        amount = Double.random(in: 10...10000)
+        title = ["Carrefour", "ATM", "Starbucks", "McDonald's", "YAP"][Int.random(in: 0...2)]
+        currency = "د.إ"
+        closingBalance = Double.random(in: 10...10000)
+        category = "Retail"
+        paymentMode = "Debit Card"
+        merchant = "POS"
+        transactionNote = ""
+        transactionNoteDate = nil
+        self.id = Int.random(in: 9...99999)
+        date = Date()
+        updatedDate = Date()
+        card = "125245"
+        productName = nil
+        totalAmount = Double.random(in: 10...1000)
+        status = nil
+        openingBalance = Double.random(in: 10...10000)
+        _productCode = TransactionProductCode.topUpByExternalCard.rawValue
+        senderName = nil
+        receiverName = nil
+        fee = 0
+        vat = 0
+        merchantLogoUrl = nil
+        merchantName = nil
+        merchantCategory = nil
+        location = nil
+        senderUrl = nil
+        receiverUrl = nil
+        maskedCardNumber = "12345"
+        cancelReason = nil
+        cardType = "Prepaid"
+        otherBankName = nil
+        otherBankBIC = nil
+        otherBankBranch = nil
+        otherBankCountry = nil
+        otherBankCurrency = nil
+        fxRate = nil
+        settlementAmount = 0
+        receiverTransactionNote = nil
+        receiverTransactionNoteDate = nil
+        cardName1 = nil
+        cardName2 = nil
+        markupFee = nil
+        cardHolderBillingAmount = 0
+        virtualCardDesignCode = nil
+        beneficiaryId = nil
+        senderCustomerId = nil
+        _txnState = nil
+        cardHolderBillingCurrency = "AED"
+        cardHolderBillingTotalAmount = Double.random(in: 10...1000)
+        tapixCategory = nil
+        latitude = 0.0
+        longitude = 0.0
+    }
+}
+
+extension TransactionResponse {
+    init(_ transaction: TransactionResponse, index: Int) {
+        transactionId = transaction.transactionId
+        _type = transaction._type
+        amount = transaction.amount
+        title = transaction.title
+        currency = transaction.currency
+        closingBalance = transaction.closingBalance
+        category = transaction.category
+        paymentMode = transaction.paymentMode
+        merchant = transaction.merchant
+        transactionNote = transaction.transactionNote
+        transactionNoteDate = transaction.transactionNoteDate
+        id = transaction.id
+        date = transaction.date
+        updatedDate = transaction.updatedDate
+        card = transaction.card
+        productName = transaction.productName
+        totalAmount = transaction.totalAmount
+        status = transaction.status
+        openingBalance = transaction.openingBalance
+        _productCode = transaction._productCode
+        senderName = transaction.senderName
+        receiverName = transaction.receiverName
+        fee = transaction.fee
+        vat = transaction.vat
+        merchantLogoUrl = transaction.merchantLogoUrl
+        merchantName = transaction.merchantName
+        merchantCategory = transaction.merchantCategory
+        location = transaction.location
+        senderUrl = transaction.senderUrl
+        receiverUrl = transaction.receiverUrl
+        maskedCardNumber = transaction.maskedCardNumber
+        cancelReason = transaction.cancelReason
+        cardType = transaction.cardType
+        otherBankName = transaction.otherBankName
+        otherBankBIC = transaction.otherBankBIC
+        otherBankBranch = transaction.otherBankBranch
+        otherBankCountry = transaction.otherBankCountry
+        otherBankCurrency = transaction.otherBankCurrency
+        fxRate = transaction.fxRate
+        settlementAmount = transaction.settlementAmount
+        remarks = transaction.remarks
+        customerId = transaction.customerId
+        self.index = index
+        receiverTransactionNote = transaction.receiverTransactionNote
+        receiverTransactionNoteDate = transaction.receiverTransactionNoteDate
+        cardName1 = transaction.cardName1
+        cardName2 = transaction.cardName2
+        markupFee = transaction.markupFee
+        cardHolderBillingAmount = transaction.cardHolderBillingAmount
+        virtualCardDesignCode = transaction.virtualCardDesignCode
+        beneficiaryId = transaction.beneficiaryId
+        senderCustomerId = transaction.senderCustomerId
+        _txnState = transaction._txnState
+        cardHolderBillingCurrency = transaction.cardHolderBillingCurrency
+        cardHolderBillingTotalAmount = transaction.cardHolderBillingTotalAmount
+        tapixCategory = transaction.tapixCategory
+        latitude = transaction.latitude
+        longitude = transaction.longitude
+    }
+}
+
+extension Array where Element == TransactionResponse {
+    var indexed: [Element] {
+        return filter { $0.receiverUrl == nil || $0.senderUrl == nil || $0.merchantLogoUrl == nil }
+            .enumerated().map{ TransactionResponse($0.1, index: $0.0) }
+    }
+}
+
+extension Array where Element == TransactionResponse {
+    var startDates: [Date] {
+        return map{  $0.sectionDate }
+    }
+}
+
+extension TransactionResponse {
+//    var numberOfSections: [Int] {
+//        var differences = [Int]()
+//        for i in 0..<startDates.count - 1 {
+//            let dayComponent = Calendar.current.dateComponents([.day], from: startDates[i], to: startDates[i+1])
+//            differences.append(dayComponent.day!)
+//        }
+//        print("differences \(differences)")
+//        return differences
 //    }
-//}
 //
-//extension TransactionResponse {
-//    init(_ transaction: TransactionResponse, index: Int) {
-//        transactionId = transaction.transactionId
-//        _type = transaction._type
-//        amount = transaction.amount
-//        title = transaction.title
-//        currency = transaction.currency
-//        closingBalance = transaction.closingBalance
-//        category = transaction.category
-//        paymentMode = transaction.paymentMode
-//        merchant = transaction.merchant
-//        transactionNote = transaction.transactionNote
-//        transactionNoteDate = transaction.transactionNoteDate
-//        id = transaction.id
-//        date = transaction.date
-//        updatedDate = transaction.updatedDate
-//        card = transaction.card
-//        productName = transaction.productName
-//        totalAmount = transaction.totalAmount
-//        status = transaction.status
-//        openingBalance = transaction.openingBalance
-//        _productCode = transaction._productCode
-//        senderName = transaction.senderName
-//        receiverName = transaction.receiverName
-//        fee = transaction.fee
-//        vat = transaction.vat
-//        merchantLogoUrl = transaction.merchantLogoUrl
-//        merchantName = transaction.merchantName
-//        merchantCategory = transaction.merchantCategory
-//        location = transaction.location
-//        senderUrl = transaction.senderUrl
-//        receiverUrl = transaction.receiverUrl
-//        maskedCardNumber = transaction.maskedCardNumber
-//        cancelReason = transaction.cancelReason
-//        cardType = transaction.cardType
-//        otherBankName = transaction.otherBankName
-//        otherBankBIC = transaction.otherBankBIC
-//        otherBankBranch = transaction.otherBankBranch
-//        otherBankCountry = transaction.otherBankCountry
-//        otherBankCurrency = transaction.otherBankCurrency
-//        fxRate = transaction.fxRate
-//        settlementAmount = transaction.settlementAmount
-//        remarks = transaction.remarks
-//        customerId = transaction.customerId
-//        self.index = index
-//        receiverTransactionNote = transaction.receiverTransactionNote
-//        receiverTransactionNoteDate = transaction.receiverTransactionNoteDate
-//        cardName1 = transaction.cardName1
-//        cardName2 = transaction.cardName2
-//        markupFee = transaction.markupFee
-//        cardHolderBillingAmount = transaction.cardHolderBillingAmount
-//        virtualCardDesignCode = transaction.virtualCardDesignCode
-//        beneficiaryId = transaction.beneficiaryId
-//        senderCustomerId = transaction.senderCustomerId
-//        _txnState = transaction._txnState
-//        cardHolderBillingCurrency = transaction.cardHolderBillingCurrency
-//        cardHolderBillingTotalAmount = transaction.cardHolderBillingTotalAmount
-//        tapixCategory = transaction.tapixCategory
-//        latitude = transaction.latitude
-//        longitude = transaction.longitude
-//    }
-//}
-//
-//extension Array where Element == TransactionResponse {
-//    var indexed: [Element] {
-//        return filter { $0.receiverUrl == nil || $0.senderUrl == nil || $0.merchantLogoUrl == nil }
-//            .enumerated().map{ TransactionResponse($0.1, index: $0.0) }
-//    }
-//}
+    public static func getNumberOfSections(transactions: [TransactionResponse]) -> [TransactionResponse] {
+        var unique = Set<DateComponents>()
+        let result = transactions.filter {
+            let comps = Calendar.current.dateComponents([.day, .month, .year], from: $0.date)
+            if unique.contains(comps) {
+                return false
+            }
+            unique.insert(comps)
+            return true
+        }
+        return result
+    }
+    
+    public static func transactions(for section: Int, transactions: [TransactionResponse]) -> [TransactionResponse] {
+        let sections = TransactionResponse.getNumberOfSections(transactions: transactions).count
+        guard sections > 0 && section < sections else { return [] }
+        let transactionSections = TransactionResponse.getNumberOfSections(transactions: transactions)
+        let requiredTransaction = transactionSections[section]
+        var requiredTransactions = [TransactionResponse]()
+        let result = transactions.filter {
+            let comps = $0.sectionDate
+            if requiredTransaction.sectionDate == comps {
+                requiredTransactions.append($0)
+                return true
+            }
+            return false
+        }
+        return result
+    }
+    
+    static func numberOfTransaction(in section: Int, transactions: [TransactionResponse]) -> Int {
+        return TransactionResponse.transactions(for: section, transactions: transactions).count
+    }
+    
+    static func transaction(for indexPath: IndexPath, transactions: [TransactionResponse]) -> TransactionResponse? {
+        guard indexPath.section < TransactionResponse.getNumberOfSections(transactions: transactions).count, indexPath.row < TransactionResponse.transactions(for: indexPath.section, transactions: transactions).count else { return nil }
+        
+        
+        return transactions[indexPath.row]//transactions.object(at: indexPath)
+    }
+   
+}
+

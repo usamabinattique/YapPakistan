@@ -19,6 +19,8 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
 //    private let moreCoordination = PublishSubject<MoreExternalCoordinationType>()
 
     private let disposeBag = DisposeBag()
+    
+    private let widgetsEditedSubject = PublishSubject<Void>()
 
     fileprivate lazy var biometricManager = container.parent.makeBiometricsManager()
     fileprivate lazy var notifManager = NotificationManager()
@@ -42,12 +44,12 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     func makeTabbar() {
         let viewController = YAPTabbarController(themeService: container.themeService)
         mainViewController = viewController
-
-        //        let menuViewModel = SideMenuViewModel()
-        //        let menuViewController = SideMenuViewController(viewModel: menuViewModel)
-        //        viewController.menuWidth = 0.85
-        //        viewController.menu = menuViewController
-
+        
+        let menuViewModel = SideMenuViewModel(repository: container.makeAccountRepository(), accountProvider: container.accountProvider)
+        let menuViewController = SideMenuViewController(themeService: container.themeService, viewModel: menuViewModel)
+        viewController.menuWidth = 0.85
+        viewController.menu = menuViewController
+        
         home(root: viewController)
         store(root: viewController)
         yapIt(root: viewController)
@@ -59,79 +61,70 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         navController.setNavigationBarHidden(true, animated: false)
         window.rootViewController = navController
         window.makeKeyAndVisible()
-
+        
+        menuViewModel.outputs.menuItemSelected
+            .subscribe(onNext: { [weak self] menuItem in
+                guard let self = self else { return }
+                viewController.hideMenu()
+                        DispatchQueue.main.async { [self] in
+                    switch menuItem {
+                    case .analytics:
+                        print("analytics")
+                        //self.analytics(viewController, paymentCard: paymentCard)
+                    case .help, .contact:
+                        print("help")
+                        //self.helpAndSupport(viewController)
+                    case .statements:
+                        print("statements")
+                        //self.statements(viewController)
+                    case .referFriend:
+                        self.inviteFriend(viewController)
+                    case .housholdSalary:
+                        print("housholdSalary")
+                        //self.householdSalary(viewController)
+                    case .chat:
+                        print("chat")
+                        //ChatManager.shared.openChat()
+                    case .notifications:
+                        print("notifications")
+                    case .qrCode:
+                        print("qrcode")
+                        //self.myQrCode(self.rootNavigationController)
+                    case .dashboardWidget:
+                        self.coordinateToEditWidgets()
+                    default:
+                        break
+                    }
+                }}).disposed(by: disposeBag)
+        
         viewController.button.rx.tap.subscribe(onNext: { [unowned self] in self.yapIt(root: viewController, height: viewController.tabBar.bounds.height)}).disposed(by: disposeBag)
+        
+        menuViewModel.outputs.settings.subscribe(onNext: { [weak self] _ in
+            self?.settings(viewController)
+        }).disposed(by: disposeBag)
+        
+        menuViewModel.outputs.openProfile.subscribe(onNext: {[weak self] _ in
+            self?.settings(viewController)
+        }).disposed(by: disposeBag)
 
-        //        SessionManager.current.currentAccount.subscribe(onNext: { [weak self] in self?.partnerBankStatus = $0?.parnterBankStatus }).disposed(by: disposeBag)
-
-        //        NotificationCenter.default.addObserver(self, selector: #selector(backToDashbaordObsever), name: .goToDashbaord, object: nil)
-        //
-        //        menuViewModel.outputs.menuItemSelected
-        //            .withLatestFrom(Observable.combineLatest(CardsManager.shared.cards.map{ $0.filter{ $0.cardType == .debit }.first }.unwrap(), menuViewModel.outputs.menuItemSelected))
-        //            .subscribe(onNext: { [weak self] paymentCard, menuItem in
-        //                        guard let self = self else { return }
-        //                        viewController.hideMenu()
-        //                        DispatchQueue.main.async {
-        //                            switch menuItem {
-        //                            case .analytics:
-        //                                AppAnalytics.shared.logEvent(MainMenuEvent.tapAnalytics())
-        //                                self.analytics(viewController, paymentCard: paymentCard)
-        //                            case .help, .contact:
-        //                                AppAnalytics.shared.logEvent(MainMenuEvent.tapHelp())
-        //                                self.helpAndSupport(viewController)
-        //                            case .statements:
-        //                                AppAnalytics.shared.logEvent(MainMenuEvent.tapStatements())
-        //                                self.statements(viewController)
-        //                            case .referFriend:
-        //                                AppAnalytics.shared.logEvent(MainMenuEvent.tapReferFriend())
-        //                                self.inviteFriend(viewController)
-        //                            case .housholdSalary:
-        //                                self.householdSalary(viewController)
-        //                            case .chat:
-        //                                AppAnalytics.shared.logEvent(MainMenuEvent.tapLivechat())
-        //                                ChatManager.shared.openChat()
-        //                            case .notifications:
-        //                                AppAnalytics.shared.logEvent(MainMenuEvent.tapAlerts())
-        //                            case .qrCode:
-        //                                self.myQrCode(self.rootNavigationController)
-        //                            default:
-        //                                break
-        //                            }
-        //                        }}).disposed(by: disposeBag)
-        //
-        //        menuViewModel.outputs.settings.subscribe(onNext: { [weak self] _ in
-        //            self?.settings(viewController)
-        //        }).disposed(by: disposeBag)
-        //
-        //        menuViewModel.outputs.switchAccount.subscribe(onNext: { [weak self] in
-        //            self?.result.onNext(.success(.switchAccount))
-        //            self?.result.onCompleted()
-        //        }).disposed(by: disposeBag)
-        //
-        //        topupInitiationSubject.subscribe(onNext: { [unowned self] in
-        //            self.topup(viewController, returnsToDashboard: false, successButtonTitle: $0)
-        //        }).disposed(by: disposeBag)
-        //
-        //        menuViewModel.outputs.result.subscribe(onNext: {[weak self] in
-        //            logoutYAPUser()
-        //            self?.result.onNext(.success(.logout))
-        //            self?.result.onCompleted()
-        //        }).disposed(by: disposeBag)
-        //
-        //        menuViewModel.outputs.openProfile.subscribe(onNext: {[weak self] _ in
-        //            AppAnalytics.shared.logEvent(MainMenuEvent.tapProfile())
-        //            self?.settings(viewController)
-        //        }).disposed(by: disposeBag)
-        //
-        //        menuViewModel.outputs.shareAccountInfo.subscribe(onNext: { [weak self] accountInfo in
-        //            viewController.hideMenuWithCompletion { [weak self] in
-        //                DispatchQueue.main.async { self?.share(accountInfo: accountInfo, root: viewController) }
-        //            }
-        //        }).disposed(by: disposeBag)
+        
+        menuViewModel.outputs.shareAccountInfo
+            .subscribe(onNext: { [weak self] accountInfo in
+                viewController.hideMenuWithCompletion { [weak self] in
+                    DispatchQueue.main.async { self?.share(accountInfo: accountInfo, root: viewController) }
+                }
+            }).disposed(by: disposeBag)
+        
+        menuViewModel.outputs.result
+            .withUnretained(self)
+            .subscribe(onNext: {  $0.0.resultSuccess() })
+            .disposed(by: rx.disposeBag)
     }
 
     fileprivate func home(root: UITabBarController) {
-        self.coordinate(to: HomeCoodinator(container: container, root: root)).subscribe(onNext: { [weak self] in
+        let homeCoordinator = HomeCoodinator(container: container, root: root)
+        self.widgetsEditedSubject.bind(to: homeCoordinator.widgetsEditCompleted).disposed(by: disposeBag)
+        self.coordinate(to: homeCoordinator).subscribe(onNext: { [weak self] in
             if case ResultType.success = $0 {
                 // self?.result.onNext(.success(.switchAccount))
                 // self?.result.onCompleted()
@@ -170,20 +163,6 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
             .subscribe()
             .disposed(by: disposeBag)
     }
-    
-//    fileprivate func more(root: UITabBarController, notificationManager: InAppNotificationManager) {
-//        self.coordinate(to: MoreCoordinator(root: root, tourGuideRepository: tourGuideRepository, repository: moreRepository, externalCoordination: moreCoordination.asObserver(), notificationManager: notificationManager)).subscribe(onNext: { [weak self] result in
-//            guard let `self` = self else { return }
-//            if case ResultType.success(UserProfileResult.logout) = result {
-//                self.result.onNext(.success(.logout))
-//                self.result.onCompleted()
-//            }
-//        }).disposed(by: disposeBag)
-//
-//        moreCoordination.subscribe(onNext: { [weak self] in
-//            self?.moreExternalCoordination($0)
-//        }).disposed(by: disposeBag)
-//    }
 
     fileprivate func more(root: UITabBarController) {
         self.coordinate(to: MoreCoordinator(root: root, container: container))
@@ -204,6 +183,41 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         coordinate(to: AddMoneyCoordinator(root: rootNav, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
             if case ResultType.success = result, returnsToDashboard {
                 (root as? UITabBarController)?.selectedIndex = 0
+            }
+        }).disposed(by: disposeBag)
+    }
+    
+    private func share(accountInfo: String, root: UIViewController) {
+        let items = [accountInfo]
+        let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        root.present(activityVC, animated: true)
+        activityVC.completionWithItemsHandler = { _, _, _, _ in
+        }
+    }
+    
+    private func settings(_ root: UIViewController) {
+        coordinate(to: UserProfileCoordinator(root: root, container: self.container))
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
+    
+    private func inviteFriend(_ viewController: UIViewController) {
+        let customerId = container.accountProvider.currentAccountValue.value?.customer.customerId
+        let shareText = appShareMessageForMore(container.parent.referralManager.pkReferralURL(forInviter: customerId ?? ""))
+        
+        let activityViewController = UIActivityViewController(activityItems: [shareText], applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = root.view
+        
+        viewController.present(activityViewController, animated: true, completion: nil)
+        activityViewController.completionWithItemsHandler = { _, _, _, _ in
+            
+        }
+    }
+    
+    private func coordinateToEditWidgets() {
+        coordinate(to: EditWidgetsCoordinator(root: self.rootNavigationController, container: self.container)).subscribe(onNext: {[weak self] in
+            if !($0.isCancel) {
+                self?.widgetsEditedSubject.onNext(())
             }
         }).disposed(by: disposeBag)
     }
@@ -230,6 +244,8 @@ extension TabbarCoodinator {
 
     fileprivate func resultSuccess() {
       //  NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        self.container.biometricsManager.deleteBiometryForUser(phone: self.container.parent.credentialsStore.getUsername() ?? "")
+        self.container.parent.credentialsStore.clearCredentials()
         let name = Notification.Name.init(.logout)
         NotificationCenter.default.post(name: name,object: nil)
         // self.result.onNext( ResultType.success(()) )

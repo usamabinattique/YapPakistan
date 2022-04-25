@@ -50,6 +50,7 @@ public enum TransactionProductCode: String, Codable {
     case accountStatusInquiry = "P040"
     case paymentTransaction = "P041"
     case fssFeeNotification = "P042"
+    case ibftTransaction = "P044-out"
     case unknown
 }
 
@@ -189,6 +190,8 @@ public extension TransactionProductCode {
             return "PAYMENT_TRANSACTION"
         case .fssFeeNotification:
             return "FSS_FEE_NOTIFICATION"
+        case .ibftTransaction:
+            return "P044-out"
         case .unknown:
             return ""
         }
@@ -220,7 +223,7 @@ public extension TransactionProductCode {
             return UIImage.init(named: "icon_y2y_transfer", in: .yapPakistan, compatibleWith: nil)?.asTemplate
             
         case .addFundsSupplementaryCard, .removeFundsSuplementaryCard:
-            return UIImage.sharedImage(named: "icon_add_remove_funds_purple")
+            return UIImage.init(named: "icon_add_remove_funds_purple", in: .yapPakistan)
             
         default:
             return nil

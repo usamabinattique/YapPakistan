@@ -11,6 +11,17 @@ import PhoneNumberKit
 
 // swiftlint:disable identifier_name
 public struct Customer: Codable {
+    
+//    "fullName" : "Ios Zero One",
+//    "phoneNumber" : "00923000000001",
+//    "email" : "01@ios.com",
+//    "address" : "13B, Block B Architects Engineers Housing Society, Lahore Pakistan",
+//    "cnicNumber" : "3520233331491",
+//    "cnicExpiry" : "2023-01-01",
+//    "cnicExpired" : false,
+//    "emailVerified" : false
+    
+    
     public var email: String { _email ?? "" }
 
     public let uuid: String
@@ -20,8 +31,8 @@ public struct Customer: Codable {
     public let firstName: String
     public let lastName: String
     public let companyName: String?
-    public let emailVerified: Bool
-    public let mobileNoVerified: Bool
+    public let emailVerified: Bool?
+    public let mobileNoVerified: Bool?
     public let status: String
     public let gender: String?
     public let nationalityId: String?
@@ -30,6 +41,7 @@ public struct Customer: Codable {
     public let dob: String?
     public let passportNo: String?
     public let nationality: String?
+    public let address: String?
     public let imageURL: URL?
     public let customerId: String?
     public let homeCountry: String?
@@ -41,7 +53,7 @@ public struct Customer: Codable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case uuid, countryCode, mobileNo, firstName, lastName, companyName, emailVerified, mobileNoVerified, status, dob, passportNo, nationality, customerId, homeCountry, customerColor
+        case uuid, countryCode, mobileNo, firstName, lastName, companyName, emailVerified, mobileNoVerified, status, dob, passportNo, nationality, customerId, homeCountry, customerColor, address
         case gender, nationalityId
         case isMobileNoVerified, isEmailVerified
         case _email = "email"
@@ -74,7 +86,7 @@ public extension Customer {
         self.isMobileNoVerified = customer.isMobileNoVerified
         self.gender = customer.gender
         self.nationalityId = customer.nationalityId
-        
+        self.address = customer.address
     }
 
     init(customer: Customer, updatedEmail: String) {
@@ -100,7 +112,7 @@ public extension Customer {
         self.isMobileNoVerified = customer.isMobileNoVerified
         self.gender = customer.gender
         self.nationalityId = customer.nationalityId
-        
+        self.address = customer.address
     }
 }
 

@@ -28,7 +28,7 @@ public struct ParentAccount: Codable {
     public var accountType: AccountType { AccountType(rawValue: _accountType) ?? .b2cAccount }
     public let customer: Customer
     public let status: String
-    public let active: Bool
+    public let active: Bool?
 
     enum CodingKeys: String, CodingKey {
         case uuid, customer, status, active
@@ -41,31 +41,33 @@ public struct Account: Codable {
     public let uuid: String
     public let iban: String?
     public let accountNumber: String?
-    public let accountType: AccountType
+    public let accountType: AccountType?
     public let defaultProfile: Bool?
     public let companyName: String?
     public let packageName: String?
     public let status: String
-    public let active: Bool
+    public let active: Bool?
     public let cardName: String?
     private let currency: Currency?
     public let isDocumentsVerified: String?
     public let isActive: String?
-    public let documentsVerified: Bool
+    public let documentsVerified: Bool?
     public var companyType: String?
-    public var soleProprietary: Bool
+    public var soleProprietary: Bool?
     public var accountStatus: AccountStatus? { AccountStatus(rawValue: _accountStatus ?? "") }
     private var _accountStatus: String?
+    public var cnicName: String?
     public let customer: Customer
-    public let bank: Bank
+    public let bank: Bank?
     public var parnterBankStatus: PartnerBankStatus? { PartnerBankStatus(rawValue: _parnterBankStatus ?? "") }
     public let isFirstCredit: Bool
+    public let firstCreditLimit: Double?
     private let _parnterBankStatus: String?
-    public let createdDate: String
+    public let createdDate: String?
     public let parentAccount: ParentAccount?
     public let otpBlocked: Bool?
     private let _eidExpiryStatus: String?
-    public var eidExpiryStatus: EmiratesIdStatus { EmiratesIdStatus(rawValue: _eidExpiryStatus ?? "") ?? .updated }
+    public var eidExpiryStatus: EmiratesIdStatus? { EmiratesIdStatus(rawValue: _eidExpiryStatus ?? "") ?? .updated }
     public let eidNotificationContent: String?
     private let _freezeCode: String?
     private let _freezeInitiator: String?
@@ -73,11 +75,15 @@ public struct Account: Codable {
     public var _isWaiting: Bool?
     public let isSecretQuestionVerified: Bool?
 
-    public var freezeCode: AccountFreezeCode { AccountFreezeCode(rawValue: _freezeCode ?? "") ?? .none }
-    public var freezeInitiator: AccountFreezeInitiator { AccountFreezeInitiator(rawValue: _freezeInitiator ?? "") ?? .none }
+    public var freezeCode: AccountFreezeCode? { AccountFreezeCode(rawValue: _freezeCode ?? "") ?? AccountFreezeCode.none }
+    public var freezeInitiator: AccountFreezeInitiator? { AccountFreezeInitiator(rawValue: _freezeInitiator ?? "") ?? AccountFreezeInitiator.none }
     public let qrCodeId: String?
     public let documentSubmissionDate: String?
 
+    public var partnerBankApprovalDate: Date? {
+        _partnerBankApprovalDate.map { DateFormatter.transactionDateFormatter.date(from: $0) } ?? nil
+    }
+    
     public var isWaiting: Bool {
         return _isWaiting ?? false
     }
@@ -91,16 +97,17 @@ public struct Account: Codable {
     }
 
     public var securedBIC: String {
-        return (accountStatus == .verificationSucceed || accountStatus == .cardActivated) ? bank.swiftCode : String(repeating: "*", count: bank.swiftCode.count)
+        return (accountStatus == .verificationSucceed || accountStatus == .cardActivated) ? bank?.swiftCode ?? "" : String(repeating: "*", count: (bank?.swiftCode ?? "").count)
     }
 
-    public var creationDate: Date? { DateFormatter.transactionDateFormatter.date(from: createdDate) }
+    public var creationDate: Date? { DateFormatter.transactionDateFormatter.date(from: createdDate ?? "") }
 
     private enum CodingKeys: String, CodingKey {
         case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active,
              documentsVerified, companyType, soleProprietary, customer, bank, parentAccount,
-             otpBlocked, isSecretQuestionVerified, isFirstCredit
+             otpBlocked, isSecretQuestionVerified, isFirstCredit, firstCreditLimit
         case cardName
+        case cnicName
         case isDocumentsVerified
         case isActive
         case currency
@@ -153,9 +160,11 @@ public extension Account {
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
         self.cardName = account.cardName
+        self.cnicName = account.cnicName
         self.currency = account.currency
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
+        self.firstCreditLimit = account.firstCreditLimit
     }
 
     init(account: Account, updatedEmail: String) {
@@ -188,9 +197,11 @@ public extension Account {
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
         self.cardName = account.cardName
+        self.cnicName = account.cnicName
         self.currency = account.currency
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
+        self.firstCreditLimit = account.firstCreditLimit
     }
 
     init(account: Account, soleProprietary: Bool) {
@@ -223,9 +234,11 @@ public extension Account {
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
         self.cardName = account.cardName
+        self.cnicName = account.cnicName
         self.currency = account.currency
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
+        self.firstCreditLimit = account.firstCreditLimit
     }
 
     init(account: Account, accountStatus: AccountStatus) {
@@ -258,9 +271,11 @@ public extension Account {
         self.documentSubmissionDate = account.documentSubmissionDate
         self.isSecretQuestionVerified = account.isSecretQuestionVerified
         self.cardName = account.cardName
+        self.cnicName = account.cnicName
         self.currency = account.currency
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
+        self.firstCreditLimit = account.firstCreditLimit
     }
 }
 
@@ -282,6 +297,8 @@ public enum AccountStatus: String, Hashable, Codable {
     case addressCaptured = "ADDRESS_CAPTURED"
     case cardActivated = "CARD_ACTIVATED"           // FIXME verify is this in use?
     case verificationSucceed = "MEETING_SUCCESS"    // FIXME is this in in use ?
+    case employmentInfoCompleted = "EMP_INFO_COMPLETED"
+    case fatcaGenerated = "FATCA_GENERATED"
 
     var stepValue: Int {
         switch self {
@@ -295,6 +312,8 @@ public enum AccountStatus: String, Hashable, Codable {
         case .addressCaptured: return 7
         case .verificationSucceed: return 8
         case .cardActivated: return 9
+        case .employmentInfoCompleted: return 10
+        case .fatcaGenerated: return 11
         }
     }
 

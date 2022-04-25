@@ -10,16 +10,17 @@ import Foundation
 import RxSwift
 import YAPComponents
 
-protocol TransactionHeaderTableViewCellViewModelInputs {
+public protocol TransactionHeaderTableViewCellViewModelInputs {
     
 }
 
-protocol TransactionHeaderTableViewCellViewModelOutputs {
+public protocol TransactionHeaderTableViewCellViewModelOutputs {
     var date: Observable<String?> { get }
     var totalTransactionAmount: Observable<String?> { get }
+    var shimmering: Observable<Bool> { get }
 }
 
-protocol TransactionHeaderTableViewCellViewModelType {
+public protocol TransactionHeaderTableViewCellViewModelType {
     var inputs: TransactionHeaderTableViewCellViewModelInputs { get }
     var outputs: TransactionHeaderTableViewCellViewModelOutputs { get }
 }
@@ -42,10 +43,24 @@ class TransactionHeaderTableViewCellViewModel: TransactionHeaderTableViewCellVie
     // MARK: - output
     var date: Observable<String?> { return dateSubject.asObservable() }
     var totalTransactionAmount: Observable<String?> { return totalTransactionAmountSubject.asObservable() }
+    var shimmering: Observable<Bool> { shimmeringSubject.asObservable() }
+    
+    private let shimmeringSubject: BehaviorSubject<Bool>
+    let isShimmering: Bool
+    
     
     init(date: String, totalTransactionsAmount: String) {
         dateSubject = BehaviorSubject(value: date)
         totalTransactionAmountSubject = BehaviorSubject(value: totalTransactionsAmount)
+        shimmeringSubject = BehaviorSubject(value: false)
+        self.isShimmering = false
+    }
+    
+    init() {
+        dateSubject = BehaviorSubject(value: "ajfdkfkdjfdkfdk")
+        totalTransactionAmountSubject = BehaviorSubject(value: "asdfdfdffdfdf")
+        shimmeringSubject = BehaviorSubject(value: true)
+        isShimmering = true
     }
     
 }

@@ -22,6 +22,8 @@ protocol CardBenefitsViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var heading: Observable<String?> { get }
     var coverImage: Observable<String?> { get }
+    var buttonTitle: Observable<String?> { get }
+    var isNextButtonEnabled: Observable<Bool> { get }
     var next: Observable<Void> { get }
     var back: Observable<Void> { get }
     var error: Observable<String> { get }
@@ -43,6 +45,8 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     private var errorSubject = PublishSubject<String>()
     private var cardSchemeSubject = PublishSubject<KYCCardsSchemeM>()
     private var coverImageSubject = BehaviorSubject<String?>(value: "")
+    private var nextButtonTitleSubject = BehaviorSubject<String?>(value: "")
+    private var isNextButtonEnabledSubject = BehaviorSubject<Bool>(value: false)
     private var viewModels = [ReusableTableViewCellViewModelType]()
     
     var inputs: CardBenefitsViewModelInput { self }
@@ -61,6 +65,8 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     var back: Observable<Void> { backSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
     var coverImage: Observable<String?> { coverImageSubject.asObservable() }
+    var buttonTitle: Observable<String?> { nextButtonTitleSubject.asObservable() }
+    var isNextButtonEnabled: Observable<Bool> { isNextButtonEnabledSubject.asObservable() }
     
     let disposeBag = DisposeBag()
     
@@ -70,8 +76,14 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
             .subscribe(onNext:{ [weak self] obj in
                 if obj.scheme == .Mastercard {
                     self?.coverImageSubject.onNext("benefits_mastercard_cover_image")
+                    #warning("[UMAIR] - Todo: change next button title to coming soon for master card")
+                    //self?.nextButtonTitleSubject.onNext("screen_kyc_card_benefits_screen_coming_soon_next_button_title".localized)
+                    self?.nextButtonTitleSubject.onNext("screen_kyc_card_benefits_screen_next_button_title".localized)
+                    self?.isNextButtonEnabledSubject.onNext(false)
                 } else if obj.scheme == .PayPak {
                     self?.coverImageSubject.onNext("benefits_paypak_cover_image")
+                    self?.nextButtonTitleSubject.onNext("screen_kyc_card_benefits_screen_next_button_title".localized)
+                    self?.isNextButtonEnabledSubject.onNext(true)
                 }
                 self?.fetchCardsBenefits(repository, cardObj: obj)
             })

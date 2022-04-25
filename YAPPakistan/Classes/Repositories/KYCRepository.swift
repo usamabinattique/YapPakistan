@@ -10,7 +10,7 @@ import RxSwift
 
 protocol KYCRepositoryType {
     func fetchDocument(byType documentType: String) -> Observable<Event<Document?>>
-    func detectCNICInfo(_ documents: [(data: Data, format: String)],
+    func detectCNICInfo(_ documents: [(fileName: String, data: Data, format: String)],
                         progressObserver: AnyObserver<Progress>?) -> Observable<Event<CNICOCR?>>
     func performNadraVerification(cnic: String, dateOfIssuance: String) -> Observable<Event<CNICInfo?>>
     func saveDocuments(_ documents: [(data: Data, format: String)],
@@ -52,7 +52,7 @@ class KYCRepository: KYCRepositoryType {
         return customersService.fetchDocument(byType: documentType).materialize()
     }
 
-    func detectCNICInfo(_ documents: [(data: Data, format: String)],
+    func detectCNICInfo(_ documents: [(fileName: String, data: Data, format: String)],
                         progressObserver: AnyObserver<Progress>? = nil) -> Observable<Event<CNICOCR?>> {
         return customersService.detectCNICInfo(documents, progressObserver: progressObserver).materialize()
     }
@@ -110,10 +110,6 @@ class KYCRepository: KYCRepositoryType {
                          latitude: String,
                          longitude: String ) -> Observable<Event<Account>> {
         
-        //TODO: [YASIR] remove following line
-//        return Observable.just("Card is saved").materialize()
-       
-        //TODO: ucomment following line
        return cardsService.saveUserAddress(addressOne: addressOne,
                                            addressTwo: addressTwo,
                                             city: city,

@@ -18,19 +18,30 @@ class HomeViewController: UIViewController {
 
     // MARK: Views
     private lazy var menuButtonItem = barButtonItem(image: UIImage(named: "icon_menu_dashboard", in: .yapPakistan), insectBy:.zero)
-    private lazy var searchBarButtonItem = barButtonItem(image: UIImage(named: "icon_search", in: .yapPakistan)?.asTemplate, insectBy:.zero)
+    private var searchBarButtonItem: UIBarButtonItem!
     private lazy var analyticsBarButtonItem = barButtonItem(image: UIImage(named: "icon_analytics", in: .yapPakistan), insectBy:.zero)
     private lazy var userBarButtonItem = barButtonItem(image: UIImage(named: "kyc-user", in: .yapPakistan), insectBy:.zero)
     
     private lazy var balanceValueLabel = UIFactory.makeLabel(font: .title1,
                                                         alignment: .left,
-                                                        numberOfLines: 0,
+                                                        numberOfLines: 1,
                                                         lineBreakMode: .byWordWrapping)
+    private lazy var balanceLabel = UIFactory.makeLabel(font: .title1,
+                                                        alignment: .left,
+                                                        numberOfLines: 1,
+                                                        lineBreakMode: .byWordWrapping)
+   // private lazy var amountStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .leading, distribution: .fill, spacing: 0, arrangedSubviews: [balanceLabel, balanceValueLabel])
+    
     private lazy var showButton = UIFactory.makeButton(with: .regular)
     private lazy var hideButton = UIFactory.makeButton(with: .regular)
     private lazy var balanceDateLabel = UIFactory.makeLabel(font: .micro,
                                                         alignment: .left,
                                                         numberOfLines: 0,
+                                                        lineBreakMode: .byWordWrapping)
+    
+    private lazy var noTransFoundLabel = UIFactory.makeLabel(font: .large,
+                                                        alignment: .center,
+                                                        numberOfLines: 1,
                                                         lineBreakMode: .byWordWrapping)
     private lazy var separtorView: UIView = {
         let view = UIView()
@@ -50,38 +61,15 @@ class HomeViewController: UIViewController {
         return view
     }()
     
-    private lazy var tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.separatorStyle = .none
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        return tableView
-    }()
+//    private lazy var tableView: UITableView = {
+//        let tableView = UITableView()
+//        tableView.separatorStyle = .none
+//        tableView.rowHeight = UITableView.automaticDimension
+//        tableView.translatesAutoresizingMaskIntoConstraints = false
+//        return tableView
+//    }()
     
     private lazy var stack = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fill, spacing: 20)
-    
-    private lazy var logo = UIFactory.makeImageView(image: UIImage(named: "icon_app_logo", in: .yapPakistan),
-                                                    contentMode: .scaleAspectFit)
-    private lazy var headingLabel = UIFactory.makeLabel(font: .title1,
-                                                        alignment: .center,
-                                                        numberOfLines: 0,
-                                                        lineBreakMode: .byWordWrapping)
-
-    private lazy var logoutButton = UIFactory.makeAppRoundedButton(with: .large)
-
-    private lazy var biometryLabel = UIFactory.makeLabel(font: .regular)
-
-    private lazy var biometrySwitch = UIFactory.makeAppSwitch()
-
-    private lazy var biometryStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [biometryLabel, biometrySwitch])
-        stackView.axis = .horizontal
-        stackView.distribution = .fill
-        stackView.alignment = .fill
-        stackView.spacing = 10
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        return stackView
-    }()
     
     
     private lazy var completeVerificationButton = UIFactory.makeAppRoundedButton(with: .large, title: "Complete verification")
@@ -127,7 +115,6 @@ class HomeViewController: UIViewController {
     
     private lazy var bottomContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -140,18 +127,24 @@ class HomeViewController: UIViewController {
 //        return toolBar
 //    }()
 
-    private lazy var notificationsView: NotificationsView = {
-        let view = NotificationsView(theme: self.themeService)
-        view.backgroundColor = .white
-        view.clipsToBounds = true
-        view.isHidden = true
-        return view
-    }()
+//    private lazy var notificationsView: NotificationsView = {
+//        let view = NotificationsView(theme: self.themeService)
+//        view.backgroundColor = .white
+//        view.clipsToBounds = true
+//        view.isHidden = true
+//        return view
+//    }()
     
     private lazy var welcomeView: WelcomeView = {
         let view = WelcomeView(theme: self.themeService)
         view.backgroundColor = .white
         view.clipsToBounds = true
+        return view
+    }()
+    
+    private lazy var timelineView: DashboardTimelineView = {
+        let view = DashboardTimelineView(theme: self.themeService, viewModel: DashboardTimelineViewModel(DashboardTimelineModel(title: "Account verification", description: "We noticed a mistake in your application. Please re-take a new a selfie.", isSeparator: true, isSeparatorVague: false, isProgress: true, progressStatus: "in process", isWholeContainerVague: false, btnTitle: "Re-upload now", isBtnHidden: false)))
+        view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
@@ -168,9 +161,7 @@ class HomeViewController: UIViewController {
 
     private lazy var widgetView: DashboardWidgets = {
         let buttons = DashboardWidgets(theme: self.themeService)
-        var res = DashboardWidgetsResponse.mock
-        res.iconPlaceholder = UIImage.init(named: "icon_add_card", in: .yapPakistan)
-        buttons.viewModel.inputs.widgetsDataObserver.onNext([res,res,res,res,res,res,res])
+        buttons.viewModel.outputs.selectedWidget.bind(to: viewModel.inputs.selectedWidgetObserver).disposed(by: disposeBag)
         buttons.translatesAutoresizingMaskIntoConstraints = false
         buttons.backgroundColor = .white
         return buttons
@@ -187,14 +178,14 @@ class HomeViewController: UIViewController {
                          alignment: .fill,
                          distribution: .fill,
                          spacing: 0,
-                         arrangedSubviews: [notificationsView, widgetView])
+                         arrangedSubviews: [widgetView]) //[notificationsView,widgetView])
     
     var showsNotification = false {
         didSet {
             if showsGraph {
                 self.showsGraph = !self.showsNotification
             }
-            self.notificationsView.isHidden = !self.showsNotification
+//            self.notificationsView.isHidden = !self.showsNotification
             self.updateParallaxHeaderProgress()
         }
     }
@@ -214,15 +205,15 @@ class HomeViewController: UIViewController {
         return view
     }()
 
-//    lazy var transactionsViewModel: TransactionsViewModelType = {
-//        let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(transactionDataProvider: DebitCardTransactionsProvider())
-//        return transactionViewModel
-//    }()
-//
-//    lazy var transactionViewController: TransactionsViewController = {
-//        let viewController = TransactionsViewController(viewModel: transactionsViewModel)
-//        return viewController
-//    }()
+    lazy var transactionsViewModel: TransactionsViewModelType = {
+        let transactionViewModel: TransactionsViewModelType = viewModel.outputs.transactionsViewModelObservable
+        return transactionViewModel
+    }()
+
+    lazy var transactionViewController: TransactionsViewController = {
+        let viewController = TransactionsViewController(viewModel: transactionsViewModel, themeService: themeService)
+        return viewController
+    }()
 
     private lazy var refreshControl: UIRefreshControl = {
         let control = UIRefreshControl()
@@ -241,7 +232,9 @@ class HomeViewController: UIViewController {
     private let disposeBag = DisposeBag()
     var viewModel: HomeViewModelType!
     private var balanceHeight: NSLayoutConstraint!
+    private var balanceLabelHeight: NSLayoutConstraint!
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
+    private var isCreditInfoAdded = false
 
     // MARK: Initialization
 
@@ -260,25 +253,39 @@ class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        let searchButton = UIButton(type: .custom)
+        searchButton.setImage(UIImage.init(named: "icon_search", in: .yapPakistan)?.asTemplate, for: .normal)
+        searchButton.frame = CGRect(x: 0.0, y: 0.0, width: 26, height: 26)
+        searchButton.addTarget(self, action: #selector(self.searchAction(_:)), for: .touchUpInside)
+        searchButton.tintColor = UIColor(themeService.attrs.primary)
+        searchBarButtonItem = UIBarButtonItem(customView: searchButton)
+        
         navigationItem.leftBarButtonItem = userBarButtonItem.barItem
-        navigationItem.rightBarButtonItems = [menuButtonItem.barItem,searchBarButtonItem.barItem,analyticsBarButtonItem.barItem]
-        setupViews()
-        setupTheme()
-        setupConstraints()
-        bindViewModel()
-        bindTableView()
+        navigationItem.rightBarButtonItems = [menuButtonItem.barItem,searchBarButtonItem,analyticsBarButtonItem.barItem]
+        
+        setup()
+      //  bindTableView()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            
-            print(self)
-        }
+        viewModel.inputs.viewDidAppearObserver.onNext(())
+       // viewModel.inputs.viewAppearObserver.onNext(())
+        updateParallaxHeaderProgress()
+        self.menuButtonItem.button?.addTarget(self, action: #selector(self.menuAction(_:)), for: .touchUpInside)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        scrollView.contentSize = CGSize(width: scrollView.bounds.width, height: scrollView.bounds.height)
+
+        transactionViewController.view.frame = transactionContainer.bounds
+
+        let diff = getParallaxHeaderHeight() - getMinimumParallaxHeaderHeight()
+        _ = (scrollView.parallaxHeader.contentView.bounds.height - getMinimumParallaxHeaderHeight()) / diff
+//        render()
     }
     
     @objc
@@ -287,42 +294,68 @@ class HomeViewController: UIViewController {
             self?.refreshControl.endRefreshing()
         }
 //        SessionManager.current.refreshAccount()
-//        viewModel.inputs.refreshObserver.onNext(())
+        viewModel.inputs.refreshObserver.onNext(())
     }
     
-    // MARK: View Setup
+    @objc func menuAction(_ sender: UIButton) {
+        viewModel.inputs.menuTapObserver.onNext(())
+    }
+    
+//    private func render() {
+//        self.profileImageView.layer.cornerRadius = 12
+//        self.profileImageView.clipsToBounds = true
+//    }
+    
+    @objc func searchAction(_ sender: UIButton) {
+        viewModel.inputs.searchTapObserver.onNext(())
+    }
+}
 
+// MARK: View Setup
+fileprivate extension HomeViewController {
+    func setup() {
+        setupViews()
+        setupTheme()
+        setupConstraints()
+        //TODO: remove following comment
+        addDebitCardTimelineIfNeeded()
+        
+        //TODO: remove this line from here after handling transactions api success
+       // addTransactionsViewController()
+        bindViewModel()
+    }
+    
     private func setupViews() {
         
-        balanceView.addSubviews([balanceValueLabel,showButton,hideButton,balanceDateLabel,separtorView])
+        balanceView.addSubviews([balanceLabel,balanceValueLabel,showButton,hideButton,balanceDateLabel,separtorView])
       //  containerView.addSubview(balanceView)
-        containerView.addSubview(tableView)
+      /*  containerView.addSubview(tableView)
         view.addSubview(containerView)
         
         containerView.isHidden = true
-        tableView.isHidden = true
+        tableView.isHidden = true */
         
         view.addSubview(balanceView)
         view.addSubview(scrollView)
 
-       // scrollView.addSubview(transactionContainer)
-        scrollView.addSubview(bottomContainerView)
+        scrollView.addSubview(transactionContainer)
+     //   scrollView.addSubview(bottomContainerView)
         parallaxHeaderView.addSubview(headerStackView)
-        bottomContainerView.addSubview(welcomeView)
-        bottomContainerView.addSubview(creditLimitView)
+//        bottomContainerView.addSubview(timelineView)
+//        bottomContainerView.addSubview(creditLimitView)
       
         
         parallaxHeaderView
             .width(with: .width, ofView: view)
+            //.height(constant: scrollView.parallaxHeader.height)
 
         headerStackView
-            .alignEdgesWithSuperview([.left, .right])
+            .alignEdgesWithSuperview([.left, .right,.top])
         
         scrollView
             .alignEdgesWithSuperview([.left, .right, .safeAreaBottom])
             .toBottomOf(balanceView)
-        notificationsView
-            .alignEdgesWithSuperview([.left, .right])
+        
 
 //        barGraphView
 //            .alignEdgesWithSuperview([.left, .right])
@@ -332,16 +365,16 @@ class HomeViewController: UIViewController {
         widgetViewHeightConstraints = widgetView.heightAnchor.constraint(equalToConstant: 115)
         widgetViewHeightConstraints.isActive = true
         
-//        containerViewHeightConstraint = transactionContainer.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
-//        containerViewHeightConstraint.isActive = true
-        containerViewHeightConstraint = bottomContainerView.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
+        containerViewHeightConstraint = transactionContainer.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
         containerViewHeightConstraint.isActive = true
+//        containerViewHeightConstraint = bottomContainerView.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
+//        containerViewHeightConstraint.isActive = true
         
         separtorView.alpha = 0
         
-        tableView.register(CreditLimitCell.self, forCellReuseIdentifier: CreditLimitCell.defaultIdentifier)
+    /*    tableView.register(CreditLimitCell.self, forCellReuseIdentifier: CreditLimitCell.defaultIdentifier)
         
-        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 15, right: 0)
+        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 15, right: 0) */
         
       //  stack.addArrangedSubviews([balanceView, tableView])
         showButton.imageView?.contentMode = .scaleAspectFit
@@ -349,23 +382,18 @@ class HomeViewController: UIViewController {
         hideButton.setImage(UIImage.init(named: "eye_close", in: .yapPakistan), for: .normal)
         hideButton.isHidden = true
         separtorView.alpha = 0
-        separtorView.backgroundColor = .yellow
         
-        balanceValueLabel.text = "PKR 50,174.78"
+        balanceLabel.text = "PKR"
+       // balanceValueLabel.text = "PKR 0.00"
         balanceDateLabel.text = "Today's balance"
-//        view.addSubview(logo)
-//        view.addSubview(headingLabel)
-//        view.addSubview(logoutButton)
-//        view.addSubview(biometryStackView)
-//        view.addSubview(completeVerificationButton)
     }
 
     private func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: view.rx.backgroundColor)
-            .bind({ UIColor($0.greyDark) }, to: headingLabel.rx.textColor)
-            .bind({ UIColor($0.primary) }, to: logoutButton.rx.backgroundColor,(searchBarButtonItem.button?.rx.tintColor)!)
-            .bind({ UIColor($0.greyDark) }, to: [biometryLabel.rx.textColor,balanceDateLabel.rx.textColor])
+           // .bind({ UIColor($0.greyDark) }, to: headingLabel.rx.textColor)
+            .bind({ UIColor($0.primary) }, to: (searchBarButtonItem.rx.tintColor))
+            .bind({ UIColor($0.greyDark) }, to: [balanceDateLabel.rx.textColor, noTransFoundLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [completeVerificationButton.rx.backgroundColor,showButton.rx.tintColor])
             .bind({ UIColor($0.primaryDark) }, to: [separtorView.rx.backgroundColor,balanceValueLabel.rx.textColor])
         
@@ -374,20 +402,31 @@ class HomeViewController: UIViewController {
 
     private func setupConstraints() {
         
-        containerView
-            .alignAllEdgesWithSuperview()
-            //.alignEdgesWithSuperview([.left, .right, .bottom,.top])
+//        containerView
+//            .alignAllEdgesWithSuperview()
+        transactionContainer
+            .alignEdgesWithSuperview([.left, .top, .bottom])
+            .width(with: .width, ofView: scrollView)
         
         balanceView
             .height(constant: 70)
             .alignEdgesWithSuperview([.left, .top, .right], constants: [0, 0, 0])
         
-        tableView
-            .toBottomOf(balanceView)
-            .alignEdgesWithSuperview([.left, .right,.bottom], constants: [0, 0,0])
+//        tableView
+//            .toBottomOf(balanceView)
+//            .alignEdgesWithSuperview([.left, .right,.bottom], constants: [0, 0,0])
+        
+//        balanceValueLabel
+//            .alignEdgesWithSuperview([.left, .top, .right], constants: [24, 12, 24])
+        
+        balanceLabel
+            .alignEdgesWithSuperview([.left, .top], constants: [24, 12])
         
         balanceValueLabel
-            .alignEdgesWithSuperview([.left, .top, .right], constants: [24, 12, 24])
+            .toRightOf(balanceLabel ,constant: 4)
+            .centerVerticallyWith(balanceLabel)
+            .alignEdgesWithSuperview([.right], .greaterThanOrEqualTo , constants: [12])
+            
         
         showButton
             .height(constant: 18)
@@ -412,26 +451,32 @@ class HomeViewController: UIViewController {
             .toRightOf(showButton,constant: 8)
             .toBottomOf(balanceValueLabel,constant: 12)
         
-        balanceHeight = balanceValueLabel.heightAnchor.constraint(equalToConstant: 24)
+        balanceHeight = balanceValueLabel.heightAnchor.constraint(equalToConstant: 24) //balanceValueLabel.heightAnchor.constraint(equalToConstant: 24)
         balanceHeight.priority = .required
         balanceHeight.isActive = true
         
+        
+        balanceLabelHeight = balanceLabel.heightAnchor.constraint(equalToConstant: 24)
+        balanceLabelHeight.priority = .required
+        balanceLabelHeight.isActive = true
 //        transactionContainer
 //            .alignEdgesWithSuperview([.left, .top, .bottom])
 //            .width(with: .width, ofView: scrollView)
         
-        bottomContainerView
+      /*  bottomContainerView
             .alignEdgesWithSuperview([.left, .top, .bottom])
             .width(with: .width, ofView: scrollView)
         
-        welcomeView
-            .alignEdgesWithSuperview([.left, .top, .right])
-            .height(constant: 94)
-        
         creditLimitView
+            .alignEdgesWithSuperview([.left, .top,.right])
+          //  .toBottomOf(timelineView,constant: 12)
+          //  .height(constant: 42)
+            .height(constant: 0)
+        
+        timelineView
             .alignEdgesWithSuperview([.left, .right])
-            .toBottomOf(welcomeView,constant: 12)
-            .height(constant: 42)
+            .toBottomOf(creditLimitView,constant: 12)
+            .height(constant: 140) */
         
        /* headingLabel
             .alignEdgeWithSuperviewSafeArea(.top, constant: 30)
@@ -531,29 +576,75 @@ class HomeViewController: UIViewController {
             self?.userBarButtonItem.button?.layer.cornerRadius = (self?.userBarButtonItem.button?.frame.size.height  ?? 30 )/2
             self?.userBarButtonItem.button?.clipsToBounds = true
             
-            self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
-           /* if let url = imageUrl {
-                self?.userBarButtonItem.button?.sd_setImage(with: url, for: .normal)
+           // self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
+            if let url = imageUrl {
+                self?.userBarButtonItem.button?.sd_setImage(with: URL(string:url), for: .normal)
             } else {
                 self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
-            } */
+            }
             
         }).disposed(by: disposeBag)
 
-        showButton.rx.tap.withUnretained(self).subscribe(onNext: { `self`, _ in
+        showButton.rx.tap.withLatestFrom(viewModel.outputs.shimmering).withUnretained(self).subscribe(onNext: { `self`, isShimmering in
+            guard !isShimmering else { return }
             self.animateView(balanceShown: false)
         }).disposed(by: disposeBag)
         
-        hideButton.rx.tap.withUnretained(self).subscribe(onNext: { `self`, _ in
+        hideButton.rx.tap.withLatestFrom(viewModel.outputs.shimmering).withUnretained(self).subscribe(onNext: { `self`, isShimmering in
+            guard !isShimmering else { return }
             self.animateView(balanceShown: true)
         }).disposed(by: disposeBag)
-
+        
+        viewModel.outputs.shimmering.bind(to: showButton.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: hideButton.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: balanceLabel.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: balanceValueLabel.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: balanceDateLabel.rx.isShimmerOn).disposed(by: disposeBag)
+        
+        viewModel.outputs.balance.bind(to: balanceValueLabel.rx.attributedText).disposed(by: disposeBag)
+        
+        viewModel.outputs.dashboardWidgets.bind(to: widgetView.viewModel.inputs.widgetsDataObserver).disposed(by: disposeBag)
+        
+        viewModel.outputs.hideWidgetsBar.subscribe(onNext: {[weak self] hide in
+            if (hide) {
+//                self?.widgetViewHeightConstraints.constant = 0
+                self?.widgetView.isHidden = true
+            }
+            else {
+//                self?.widgetViewHeightConstraints.constant = 115
+                self?.widgetView.isHidden = false
+            }
+            self?.updateParallaxHeaderProgress()
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.dashboardWidgets.bind(to: widgetView.rx.dashboardWidgets).disposed(by: disposeBag)
+        
+        widgetView.viewModel.selectedWidget.subscribe(onNext: {[weak self] in
+            self?.viewModel.inputs.selectedWidgetObserver.onNext($0 ?? .unknown)
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.noTransFound.withUnretained(self).subscribe(onNext:  { `self`, text in
+            self.noTransFoundLabel.text = text
+            self.transactionContainer.removeSubviews()
+            self.transactionContainer.addSubview(self.noTransFoundLabel)
+            self.noTransFoundLabel.alignCenterWith(self.transactionContainer)
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.addCreditInfo.take(1).withUnretained(self).subscribe(onNext:  { `self`, _ in
+           /* self.isCreditInfoAdded = true
+            self.transactionContainer.removeSubviews()
+            self.transactionContainer.addSubview(self.creditLimitView)
+            self.creditLimitView.alignEdgeWithSuperview(.top, constant: 12)
+            self.creditLimitView.alignEdgeWithSuperview(.left)
+            self.creditLimitView.alignEdgeWithSuperview(.right)
+            self.creditLimitView.height(constant: 42) */
+        }).disposed(by: disposeBag)
     }
     
     func getParallaxHeaderHeight() -> CGFloat {
         var height: CGFloat = 0
         height += 0
-        height += !notificationsView.isHidden ? 150 : 0
+//        height += !notificationsView.isHidden ? 150 : 0
         height += widgetView.isHidden ? 5 : 120
         return height
     }
@@ -567,7 +658,7 @@ class HomeViewController: UIViewController {
     func updateParallaxHeaderProgress() {
         let diff: CGFloat = getParallaxHeaderHeight() - getMinimumParallaxHeaderHeight()
         let actualProgress = (scrollView.parallaxHeader.contentView.bounds.height - getMinimumParallaxHeaderHeight()) / diff
-        _ = showsNotification ? notificationsView.changeHeight(by: actualProgress) : nil
+//        _ = showsNotification ? notificationsView.changeHeight(by: actualProgress) : nil
         startUpdatingHeader(actualProgress: actualProgress)
         refreshControl.removeFromSuperview()
         scrollView.addSubview(refreshControl)
@@ -576,13 +667,13 @@ class HomeViewController: UIViewController {
     
     func startUpdatingHeader(actualProgress: CGFloat) {
         if self.isTableViewReloaded && actualProgress == 0 {
-//            transactionsViewModel.inputs.showSectionData.onNext(())
-//            transactionsViewModel.inputs.canShowDynamicData.onNext(true)
+            transactionsViewModel.inputs.showSectionData.onNext(())
+            transactionsViewModel.inputs.canShowDynamicData.onNext(true)
 //            viewModel.inputs.increaseProgressViewHeightObserver.onNext(false)
         }
         if self.isTableViewReloaded && actualProgress > 0 {
-//            transactionsViewModel.inputs.showTodaysData.onNext(())
-//            transactionsViewModel.inputs.canShowDynamicData.onNext(false)
+            transactionsViewModel.inputs.showTodaysData.onNext(())
+            transactionsViewModel.inputs.canShowDynamicData.onNext(false)
             scrollView.addSubview(refreshControl)
 //            viewModel.inputs.increaseProgressViewHeightObserver.onNext(true)
         }
@@ -604,13 +695,61 @@ class HomeViewController: UIViewController {
     func hideNotifications() {
         showsNotification = false
     }
-
-     
+    
+    func addTransactionsViewController() {
+        self.addChild(self.transactionViewController)
+        self.transactionContainer.addSubview(self.transactionViewController.view)
+        self.transactionViewController.view.alignAllEdgesWithSuperview()
+    }
+    
+    func addDebitCardTimelineIfNeeded() {
+        viewModel.outputs.debitCardOnboardingStageViewModel.withUnretained(self).subscribe(onNext: { `self`, stagesViewModel in
+         //   guard let `self` = self else { return }
+            if let stagesViewModel = stagesViewModel {
+                self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.forEach { $0.removeFromSuperview() }
+                let stagesView = PaymentCardOnboardingStatusView(theme: self.themeService, viewModel: stagesViewModel)
+                self.transactionContainer.addSubview(stagesView)
+                if !self.isCreditInfoAdded {
+                    stagesView.alignAllEdgesWithSuperview()
+                } else {
+                    stagesView.alignEdgesWithSuperview([.left,.right,.bottom])
+                    stagesView.toBottomOf(self.creditLimitView)
+                }
+                
+            } else {
+                self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.first?.removeFromSuperview()
+            }}, onCompleted: { [weak self] in
+                guard let `self` = self else { return }
+                self.addTransactionsViewController()
+        }).disposed(by: disposeBag)
+        
+       /* viewModel.outputs.resumeKYC.subscribe(onNext: { [weak self] vms in
+            guard let `self` = self else { return }
+            
+            let view = DashboardTimelineView(theme: self.themeService, viewModel: vms.first!)
+            
+            self.transactionContainer.addSubview(view)
+            view.alignAllEdgesWithSuperview()
+            
+            self.addTransactionsViewController()
+          /*  if let stagesViewModel = stagesViewModel {
+                self.transactionContainer.subviews.filter { $0 is Dashb }.forEach { $0.removeFromSuperview() }
+                let stagesView = PaymentCardOnboardingStatusView(theme: self.themeService, viewModel: stagesViewModel)
+                self.transactionContainer.addSubview(stagesView)
+                stagesView.alignAllEdgesWithSuperview()
+            } else {
+                self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.first?.removeFromSuperview()
+            }*/ }, onCompleted: { [weak self] in
+                guard let `self` = self else { return }
+//                self.addTransactionsViewController()
+        }).disposed(by: disposeBag) */
+    }
 }
 
-private extension HomeViewController {
+fileprivate extension HomeViewController {
     func animateView(balanceShown: Bool) {
         balanceHeight.constant = balanceShown ? 24 : 0
+        balanceLabelHeight.constant = balanceShown ? 24 : 0
        // delegate?.recentBeneficiaryViewWillAnimate(self)
         UIView.animate(withDuration: 0.3, animations: {
           //  self.view.layoutAllSuperViews()
@@ -619,6 +758,7 @@ private extension HomeViewController {
         }) { (completion) in
             guard completion else { return }
             self.balanceValueLabel.isHidden = !balanceShown
+            self.balanceLabel.isHidden = !balanceShown
             self.showButton.isHidden = !balanceShown
             self.hideButton.isHidden = balanceShown
 //            self.delegate?.recentBeneficiaryViewDidAnimate(self)
@@ -627,7 +767,7 @@ private extension HomeViewController {
 }
 
 private extension HomeViewController {
-    func bindTableView() {
+   /* func bindTableView() {
         dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! ConfigurableTableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
@@ -635,7 +775,7 @@ private extension HomeViewController {
         })
         
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-    }
+    } */
 
 }
 

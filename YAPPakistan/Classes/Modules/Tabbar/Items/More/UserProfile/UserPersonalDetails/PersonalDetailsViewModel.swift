@@ -50,6 +50,7 @@ class PersonalDetailsViewModel: PersonalDetailsViewModelType, PersonalDetailsVie
     let disposeBag = DisposeBag()
     var inputs: PersonalDetailsViewModelInputs { return self }
     var outputs: PersonalDetailsViewModelOutputs { return self }
+    var accountRepository : AccountRepositoryType
 
     private let customer: Observable<Customer>
     private let viewWillAppearSubject = PublishSubject<Void>()
@@ -97,11 +98,11 @@ class PersonalDetailsViewModel: PersonalDetailsViewModelType, PersonalDetailsVie
     }
     var showBlockedOTPError: Observable<String>{ blockedOTPErrorMessageSubject.asObservable() }
     // MARK: - Init
-    init(_ customer: Observable<Customer>) {
-        
-        //,profileRepository: ProfileRepository = ProfileRepository()
+    init(_ customer: Observable<Customer>, accountRepository: AccountRepositoryType) {
+        self.accountRepository = accountRepository
         
         self.customer = customer
+        fetchCustomer()
 
         //emiratesIDStatusSubject = BehaviorSubject(value: emiratesIDStatus)
 
@@ -109,5 +110,19 @@ class PersonalDetailsViewModel: PersonalDetailsViewModelType, PersonalDetailsVie
 //
 //        request.elements().unwrap().map { [$0.address1, $0.address2, $0.city].compactMap{ $0 }.joined(separator: ", ") }.bind(to: addressSubject).disposed(by: disposeBag)
 //        request.errors().bind(to: errorSubject).disposed(by: disposeBag)
+    }
+    
+    
+    func fetchCustomer() {
+        
+        
+        let fetchCustomerRequest = accountRepository.fetchCustomerPersonalDetails()
+        fetchCustomerRequest.errors().subscribe(onNext: { error in
+            print(error.localizedDescription)
+        }).disposed(by: disposeBag)
+        
+        fetchCustomerRequest.elements().subscribe(onNext: { data in
+            print(data)
+        }).disposed(by: disposeBag)
     }
 }

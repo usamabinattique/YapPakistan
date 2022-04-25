@@ -71,6 +71,7 @@ extension CustomWidgetsCollectionViewCell {
    
     func setupViews()  {
         containerView.addSubview(cateogryImage)
+        editImage.image = UIImage.init(named: "icon_edit", in: .yapPakistan)
         addSubview(containerView)
         addSubview(categoryName)
         addSubview(editImage)
@@ -117,7 +118,7 @@ extension CustomWidgetsCollectionViewCell {
 extension CustomWidgetsCollectionViewCell {
    
     func bindViews()  {
-        viewModel.outputs.categoryImage.bind(to: cateogryImage.rx.loadImage(true)).disposed(by: disposeBag)
+        viewModel.outputs.categoryImage.bind(to: cateogryImage.rx.loadImage(true,isStringPath: true)).disposed(by: disposeBag)
         viewModel.outputs.categoryName.bind(to: categoryName.rx.text).disposed(by: disposeBag)
         viewModel.outputs.removeShadow.subscribe(onNext: {[weak self] in
             if $0 == .edit {
@@ -128,7 +129,7 @@ extension CustomWidgetsCollectionViewCell {
                 self?.containerView.isHidden = false
                 self?.editImage.isHidden = true
             }
-        }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag) 
     }
 }
 

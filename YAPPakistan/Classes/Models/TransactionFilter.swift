@@ -15,6 +15,12 @@ public struct TransactionFilter {
     public var online: Bool
     public var atmWidrawl: Bool
     
+    public var creditSearch: Bool?
+    public var debitSearch: Bool?
+    public var pendingSearch: Bool?
+    public var yapYoungTransfer: Bool?
+    public var categories:[CategoryType]?
+    
     public init() {
         minAmount = -1
         maxAmount = -1

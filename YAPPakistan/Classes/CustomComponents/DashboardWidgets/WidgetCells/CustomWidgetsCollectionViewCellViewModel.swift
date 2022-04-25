@@ -23,9 +23,9 @@ public class CustomWidgetsCollectionViewCellViewModel: CustomWidgetsCollectionVi
     var outputs: CustomWidgetsCollectionViewCellViewModelOutputs {self}
     
     //MARK:- Outputs
-    var categoryImage: Observable<ImageWithURL> {categoryImageSubject}
-    var categoryName: Observable<String?> {categoryNameSubject}
-    var removeShadow: Observable<WidgetCode> {removeShadowSubject}
+    var categoryImage: Observable<ImageWithURL> { categoryImageSubject.asObservable() }
+    var categoryName: Observable<String?> { categoryNameSubject.asObservable() }
+    var removeShadow: Observable<WidgetCode> { removeShadowSubject.asObservable() }
     
     //MARK:- Subjects
     private let categoryImageSubject = BehaviorSubject<ImageWithURL>(value: (nil, nil))
@@ -35,11 +35,11 @@ public class CustomWidgetsCollectionViewCellViewModel: CustomWidgetsCollectionVi
     init(widgetData: DashboardWidgetsResponse?) {
         categoryImageSubject.onNext((widgetData?.icon, widgetData?.iconPlaceholder))
         categoryNameSubject.onNext(widgetData?.name)
+        removeShadowSubject.onNext(WidgetCode.init(rawValue: widgetData?.name ?? "") ?? .addMoney)
         
         if widgetData == nil {
             categoryNameSubject.onNext("Edit")
             removeShadowSubject.onNext(WidgetCode.init(rawValue: "Edit") ?? .edit)
-            categoryImageSubject.onNext(("",UIImage.init(named: "icon_edit", in: .yapPakistan, compatibleWith: nil)))
         }
     }
 }

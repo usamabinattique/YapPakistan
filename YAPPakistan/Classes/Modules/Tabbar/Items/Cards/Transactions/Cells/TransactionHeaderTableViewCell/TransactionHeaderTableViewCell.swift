@@ -35,6 +35,7 @@ class TransactionHeaderTableViewCell: RxUITableViewCell {
     private lazy var totalAmount: UILabel = UIFactory.makeLabel(/*with: .greyDark, */ font: .small, alignment: .right)
     
     private var viewModel: TransactionHeaderTableViewCellViewModelType!
+    private var themeService: ThemeService<AppTheme>!
     
     // MARK: Initialization
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -52,6 +53,8 @@ class TransactionHeaderTableViewCell: RxUITableViewCell {
     override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
         guard let viewModel = viewModel as? TransactionHeaderTableViewCellViewModelType else { return }
         self.viewModel = viewModel
+        self.themeService = themeService
+        setupTheme()
         bind()
     }
     
@@ -78,8 +81,40 @@ private extension TransactionHeaderTableViewCell {
             .height(constant: 46)
     }
     
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [transactionDay.rx.textColor, totalAmount.rx.textColor])
+            .disposed(by: rx.disposeBag)
+    }
+    
     func bind() {
         viewModel.outputs.date.unwrap().bind(to: transactionDay.rx.text).disposed(by: disposeBag)
+//        viewModel.outputs.date.subscribe(onNext: {[weak self] in
+//            self?.transactionDay.attributedText = $0
+//        }).disposed(by: disposeBag)
         viewModel.outputs.totalTransactionAmount.unwrap().bind(to: totalAmount.rx.text).disposed(by: disposeBag)
+        
+        viewModel.outputs.shimmering.bind(to: transactionDay.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: totalAmount.rx.isShimmerOn).disposed(by: disposeBag)
     }
+}
+
+extension TransactionHeaderTableViewCell {
+    
+    public func addShadow() {
+        layer.shadowRadius = 7
+        layer.shadowOpacity = 0.15
+        backgroundColor = .white
+        layer.shadowPath = UIBezierPath(rect: CGRect(x: 0,
+                                                     y: bounds.maxY - layer.shadowRadius,
+                                                     width: bounds.width,
+                                                     height: layer.shadowRadius)).cgPath
+    }
+    
+    public func removeShadow() {
+        layer.shadowRadius = 0
+        layer.shadowOpacity = 0
+        backgroundColor = .clear
+    }
+
 }

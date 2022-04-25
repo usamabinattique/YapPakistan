@@ -41,6 +41,9 @@ protocol CardsRepositoryType: AnyObject {
     func addOnboardingExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
     func addTopupExternalCardBeneficiary(alias: String, color: String, sessionId: String, cardNumber: String) -> Observable<Event<ExternalPaymentCard?>>
     func deletePaymentGatewayBeneficiary(id: String) -> Observable<Event<String?>>
+    func getCardBalance() -> Observable<Event<Balance>>
+    func getDashboardWidgets() -> Observable<Event<[DashboardWidgetsResponse]>>
+    func updateDashboardWidgets(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String) -> Observable<Event<UpdateDashboardWidgetsResponse?>>
 }
 
 class CardsRepository: CardsRepositoryType {
@@ -163,6 +166,18 @@ class CardsRepository: CardsRepositoryType {
     func deletePaymentGatewayBeneficiary(id: String) -> Observable<Event<String?>> {
 
         return self.customerService.deletePaymentGatewayBeneficiary(id: id).materialize()
+    }
+    
+    public func getCardBalance() -> Observable<Event<Balance>> {
+        return cardsService.getCardBalance().materialize()
+    }
+    
+    public func getDashboardWidgets() -> Observable<Event<[DashboardWidgetsResponse]>> {
+        return customerService.getDashboardWidgets().materialize()
+    }
+    
+    public func updateDashboardWidgets(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String) -> Observable<Event<UpdateDashboardWidgetsResponse?>> {
+        return customerService.updateDashboardWidgets(widgets: widgets, uuid: uuid, customer_uuid: customer_uuid).materialize()
     }
 }
 

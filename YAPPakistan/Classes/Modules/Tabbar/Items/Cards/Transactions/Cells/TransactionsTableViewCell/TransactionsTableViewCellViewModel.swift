@@ -10,6 +10,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import RxTheme
 /// import AppDatabase
 
 protocol TransactionsTableViewCellViewModelInputs {
@@ -73,7 +74,7 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
     private let transactionTypeBackgroundSubject = BehaviorSubject<UIColor>(value: .green) //.secondaryGreen)
     private let transactionTypeTintSubject = BehaviorSubject<UIColor>(value: .white)
     private let cancelledSubject = BehaviorSubject<Bool>(value: false)
-    private let transactionAmountTextColorSubject = BehaviorSubject<UIColor?>(value: nil)
+    private let transactionAmountTextColorSubject = ReplaySubject<UIColor?>.create(bufferSize: 1)
     private let transactionStatusColorSubject = BehaviorSubject<UIColor?>(value: nil)
     private let shimmeringSubject = BehaviorSubject<Bool>(value: false)
     private let addVirtualCardDesignGradientSubject = BehaviorSubject<[UIColor]?>(value: nil)
@@ -103,11 +104,11 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
     var addVirtualCardDesignGradient: Observable<[UIColor]?> { addVirtualCardDesignGradientSubject }
     var internationalAmount: Observable<String?> { internationalAmountSubject }
     
-    init(transaction: Transaction) {
+    init(transaction: TransactionResponse, themeService: ThemeService<AppTheme>) {
         self.transaction = transaction
         self.transactionId = "\(transaction.id)"
         let title = transaction.title ?? "Unknown"
-        transactionTitleSubject = BehaviorSubject(value: title)
+        transactionTitleSubject = BehaviorSubject(value: transaction.finalizedTitle)
         transactionTimeCategorySubject = BehaviorSubject(value: transaction.formattedTime + " · " + transaction.category)
         
         let amount = CurrencyFormatter.format(amount: transaction.amount, in: transaction.currency).amountFromFormattedAmount
@@ -126,9 +127,16 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
             ?? title.initialsImage(color: transaction.color,
                                    font: .small,
                                    size: CGSize(width: 40, height: 40) )
-        
-        transactionImageUrlSubject = BehaviorSubject(value: (nil, icon))
+        let url = transaction.type == .debit ? transaction.receiverUrl : transaction.senderUrl
+        transactionTypeIconSubject.onNext(icon)
+        transactionImageUrlSubject = BehaviorSubject(value: (url, transaction.title?.thumbnail))
         cdTransaction = nil
+        
+        Observable.combineLatest(transactionType, cancelled)
+            .subscribe(onNext: { [weak self] type, cancelled in
+                self?.transactionAmountTextColorSubject.onNext(type == .debit ? UIColor(themeService.attrs.primaryDark)  : UIColor(themeService.attrs.secondaryGreen))
+                self?.transactionStatusColorSubject.onNext(cancelled ? UIColor(themeService.attrs.grey) : UIColor(themeService.attrs.greyDark))
+            }).disposed(by: disposeBag)
         
         shimmeringSubject.onNext(false)
     }
