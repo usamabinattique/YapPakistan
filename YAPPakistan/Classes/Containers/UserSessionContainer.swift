@@ -23,6 +23,9 @@ public final class UserSessionContainer {
         let repository = AccountRepository(authenticationService: authService, customerService: customersService)
 
         self.accountProvider = AccountProvider(repository: repository)
+        
+        //!!!: I had to add it here because session timeout was being handled in service layer and service layer don't have access to required managers
+        NotificationCenter.default.addObserver(self, selector: #selector(clearUserCreds), name: NSNotification.Name.init(.authenticationRequired), object: nil)
     }
 
     // MARK: Properties
@@ -224,5 +227,11 @@ public final class UserSessionContainer {
     // MARK: Coordinators
     func makeTopupTransferCoordinator(root: UINavigationController, paymentGatewayModel: PaymentGatewayLocalModel) -> TopupTransferCoordinator {
         TopupTransferCoordinator(root: root, container: self, paymentGatewayModel: paymentGatewayModel)
+    }
+    
+    // MARK: Custom Methods
+    @objc func clearUserCreds() {
+        self.biometricsManager.deleteBiometryForUser(phone: self.parent.credentialsStore.getUsername() ?? "")
+        self.parent.credentialsStore.clearCredentials()
     }
 }

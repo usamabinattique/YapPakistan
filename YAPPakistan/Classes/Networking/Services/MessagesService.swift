@@ -17,7 +17,7 @@ public protocol MessagesServiceType: AnyObject {
     func generateChangeEmailOTP<T: Codable>(action: String, mobilNumber: String?) -> Observable<T>
     func verifyForgotOTP<T: Codable>(username: String, otp: String) -> Observable<T>
     func generateOTP<T: Codable>(action: String) -> Observable<T>
-    func verifyOTP<T: Codable>(action: String, otp: String) -> Observable<T>
+    func verifyOTP<T: Codable>(action: String, otp: String, mobileNumber: String) -> Observable<T>
     func getHelplineNumber<T: Codable>() -> Observable<T>
 }
 
@@ -109,17 +109,20 @@ public class MessagesService: BaseService, MessagesServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
 
-    public func verifyOTP<T: Codable>(action: String, otp: String) -> Observable<T> {
+    public func verifyOTP<T: Codable>(action: String, otp: String, mobileNumber: String) -> Observable<T> {
         //"action": "FORGOT_CARD_PIN"
         let body = [
             "action": action,
             "otp": otp
         ]
+        
+        var pathVariables: [String]? = nil
+        pathVariables = [mobileNumber]
 
         let route = APIEndpoint(.put,
                                 apiConfig.messagesURL,
                                 "/api/otp",
-                                body: body,
+                                pathVariables: pathVariables, body: body,
                                 headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)

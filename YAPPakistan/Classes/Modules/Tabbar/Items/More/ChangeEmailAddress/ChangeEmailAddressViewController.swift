@@ -30,7 +30,7 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
     
     // MARK: - Views
     private lazy var headingLabel: UILabel = UIFactory.makePaddingLabel(font: .title2, alignment: .center)  //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .title2, alignment: .center)
-    private lazy var descriptionLabel: UILabel = UIFactory.makePaddingLabel(font: .small, alignment: .center)  //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .center, numberOfLines: 0)
+    private lazy var descriptionLabel: UILabel = UIFactory.makePaddingLabel(font: .small, alignment: .center, numberOfLines: 0)  //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .center, numberOfLines: 0)
     private lazy var nextButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized, isEnable: false)
     
     private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
@@ -105,6 +105,7 @@ fileprivate extension ChangeEmailAddressViewController {
         themeService.rx
             .bind({ UIColor($0.primary        ) }, to: [nextButton.rx.enabledBackgroundColor])
             .bind({ UIColor($0.greyDark       ) }, to: [nextButton.rx.disabledBackgroundColor])
+            .bind({ UIColor($0.greyDark) }, to: [descriptionLabel.rx.textColor])
     }
     
     func setupViews() {

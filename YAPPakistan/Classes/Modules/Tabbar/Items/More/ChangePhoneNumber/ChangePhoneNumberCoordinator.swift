@@ -10,15 +10,15 @@ import YAPComponents
 import RxSwift
 import YAPCore
 
-
 public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
     
     private let root: UIViewController
     private let result = PublishSubject<ResultType<Void>>()
     private var localRoot: UINavigationController!
-    
+    private let otpResult = PublishSubject<ResultType<Void>>()
     private var container: UserSessionContainer!
     private let disposeBag = DisposeBag()
+    private var isOTPPresented = false
     
     public init(root: UIViewController, container: UserSessionContainer) {
         self.container = container
@@ -27,35 +27,53 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
     
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = ChangePhoneNumberViewModel()
+        let viewModel = ChangePhoneNumberViewModel(otpRepository: self.container.makeOTPRepository())
         let viewController = ChangePhoneNumberViewController(viewModel: viewModel, themeService: self.container.themeService)
-        
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
-
 
         viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
-            self.otp(.changeMobileNumber)
+            
+            viewModel.outputs.phoneNumberTextfield.subscribe(onNext: { [unowned self] newPhone in
+                let newPhoneNumber = newPhone
+                if !self.isOTPPresented {
+                    self.isOTPPresented = true
+                    self.otp(.changeMobileNumber, mobileNo: newPhoneNumber)
+                }
+            })
         }).disposed(by: disposeBag)
 
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
             self.localRoot.dismiss(animated: true, completion: nil)
+            self.isOTPPresented = false
         }).disposed(by: disposeBag)
 
+        viewModel.outputs.success.subscribe(onNext: { [unowned self] mobileNumber in
+            self.navigateToChangeEmailSuccess(phoneNumber: mobileNumber)
+        }).disposed(by: disposeBag)
+        
+        self.otpResult.subscribe(onNext: { [unowned self] _ in
+            viewModel.inputs.changePhoneNumberRequestObserver.onNext(())
+        }).disposed(by: disposeBag)
 
         root.present(localRoot, animated: true, completion: nil)
         return result
     }
     
-    func otp(_ action: OTPAction) {
+    func navigateToChangeEmailSuccess(phoneNumber: String) {
+        let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: phoneNumber, descriptionText: "screen_unverified_success_phone_number_display_text_sub_heading")
+        let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
         
+        viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
+            self.localRoot.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
         
-        let countryCode = container.accountProvider.currentAccountValue.value?.customer.countryCode ?? "" //""
-        let mobileNumber = container.accountProvider.currentAccountValue.value?.customer.mobileNo ?? "" //""
-        let formattedPhoneNumber: String = "0092" + mobileNumber
-       
-       
+        localRoot.pushViewController(viewController, completion: nil)
+    }
+    
+    func otp(_ action: OTPAction, mobileNo : String) {
+        let formattedPhoneNumber = mobileNo.replacePrefix("+", with: "00").removeWhitespace()
         let subHeadingText = String(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, formattedPhoneNumber)
         let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , repository: container.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty)
         let viewController = VerifyMobileOTPViewController(themeService: self.container.themeService, viewModel: viewModel)
@@ -63,44 +81,17 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
             print("OPT: Back Button Pressed")
-            
+            self.isOTPPresented = false
             self.localRoot.popViewController(animated: true)
-            
         }).disposed(by: disposeBag)
         
+        viewModel.outputs.validOTPSuccess.subscribe(onNext: { [unowned self] isOTPValid in
+            print("Chnage Phone Number Coordinator Called with OTP Valid: \(isOTPValid)")
+            if isOTPValid {
+                self.otpResult.onNext(ResultType.success(()))
+            }
+        }).disposed(by: disposeBag)
         
         localRoot.pushViewController(viewController, completion: nil)
-        
-        
-        
-        
-//        let viewModel = VerifyMobileOTPViewModel(action: action, beneficiary: nil, heading: NSAttributedString(string: "screen_add_beneificiary_otp_display_text_heading".localized), subheading: NSAttributedString(string: String.init(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, String.format(phoneNumber: countryCode + mobileNumber))), backButtonImage: .closeCircled)
-//        let viewController = VerifyMobileOTPViewController(viewModel: viewModel)
-//
-//        let nav = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController)
-//
-//        root.present(nav, animated: true, completion: nil)
-//
-//        var otpSubscriptions = [Disposable]()
-//
-//        let result = viewModel.outputs.result
-//            .map{ _ in ResultType<Void>.success(()) }
-//            .subscribe(onNext: { [weak self] in
-//                nav.dismiss(animated: true, completion: nil)
-//                self?.otpResult.onNext($0)
-//            })
-//
-//        let back = viewModel.outputs.back
-//            .map{ ResultType<Void>.cancel }
-//            .subscribe(onNext: { [weak self] in
-//                nav.dismiss(animated: true, completion: nil)
-//                self?.otpResult.onNext($0)
-//            })
-//
-//        otpSubscriptions.append(result)
-//        otpSubscriptions.append(back)
-//
-//        otpResult.subscribe(onNext: { _ in otpSubscriptions.forEach{ $0.dispose() } }).disposed(by: disposeBag)
     }
-    
 }

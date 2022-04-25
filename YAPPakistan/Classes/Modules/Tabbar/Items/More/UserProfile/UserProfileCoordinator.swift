@@ -59,7 +59,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     }
     
     fileprivate func navigateToPersonalDetails() {
-        let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()))
+        let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()), accountRepository: self.container.makeAccountRepository())
         let viewController = PersonalDetailsViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         viewModel.outputs.editEmailTap.subscribe(onNext: { [weak self] email in
@@ -113,6 +113,8 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     
     fileprivate func resultSuccess() {
         // NotificationCenter.default.post(name: NSNotification.Name("LOGOUT"), object: nil)
+        self.container.biometricsManager.deleteBiometryForUser(phone: self.container.parent.credentialsStore.getUsername() ?? "")
+        self.container.parent.credentialsStore.clearCredentials()
         let name = Notification.Name.init(.logout)
         NotificationCenter.default.post(name: name,object: nil)
     }
