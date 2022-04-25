@@ -255,8 +255,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         getCards()
         
         refreshSubject.subscribe(onNext: { [weak self] _ in
-//            self?.getCardBalance()
+            self?.getCardBalance()
 //            self?.getCards()
+            
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
         }).disposed(by: disposeBag)
         
@@ -279,7 +280,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
 
 extension HomeViewModel {
     func getCardBalance() {
-       /* let cardsRequest = cardsRepository.getCardBalance()
+        let cardsRequest = cardsRepository.getCardBalance()
             .do(onNext: { [weak self] _ in self?.shimmeringSubject.onNext(false) })
             .share()
         
@@ -292,15 +293,22 @@ extension HomeViewModel {
             self?.balanceSubject.onNext(attributedString)
         }).disposed(by: disposeBag)
         
-        cardsRequest.errors().map{ $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag) */
-        var balance: Balance {
+        cardsRequest.errors().map{
+            $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
+        
+        cardsRequest.errors().subscribe(onNext: { error in
+            print("error is \(error.localizedDescription)")
+        }).disposed(by: disposeBag)
+
+        
+       /* var balance: Balance {
             return Balance(balance: "0.0", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
         }
         let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
         let attributedString = NSMutableAttributedString(string: text)
         guard let decimal = text.components(separatedBy: ".").last else { return }
         attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
-        self.balanceSubject.onNext(attributedString)
+        self.balanceSubject.onNext(attributedString) */
     }
     
     func getCards() {
@@ -310,6 +318,7 @@ extension HomeViewModel {
         cardsRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
             print("error \($0)")
             self?.shimmeringSubject.onNext(false)
+            self?.errorSubject.onNext($0)
         }).disposed(by: disposeBag)
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
@@ -388,6 +397,9 @@ extension HomeViewModel {
 
         debitCard.subscribe(onNext: { [weak self] card in
             //TODO: handle if card is empty/nil
+            if card == nil {
+                self?.errorSubject.onNext("Card not found")
+            }
 
        }).disposed(by: disposeBag)
 

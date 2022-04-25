@@ -66,6 +66,7 @@ protocol TransactionsViewModelOutputs {
     var sectionDate: Observable<String?> { get }
     var isTableViewReloaded: Observable<Bool> { get }
     var enableLoadMore: Observable<Bool> { get }
+    var showLoadMoreIndicator: Observable<Bool> { get }
 }
 
 protocol TransactionsViewModelType {
@@ -117,7 +118,8 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let refreshSubject = ReplaySubject<Void>.create(bufferSize: 1)
     private let loadMoreSubject = PublishSubject<Void>()
     private let pageInfoSubject = ReplaySubject<PagableResponse<TransactionResponse>>.create(bufferSize: 1)
-    private let enableLoadMoreSubject = BehaviorSubject<Bool>(value: true)
+    private let enableLoadMoreSubject = BehaviorSubject<Bool>(value: false)
+    public let showLoadMoreIndicatorSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     
     // MARK: - Input
     var fetchTransactionsObserver: AnyObserver<Void> { return fetchTransactionsSubject.asObserver() }
@@ -160,6 +162,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var sectionDate: Observable<String?> { sectionDateSubject.asObservable() }
     var isTableViewReloaded: Observable<Bool> { dataReloadedSubject.asObservable() }
     var enableLoadMore: Observable<Bool> { enableLoadMoreSubject.asObservable() }
+    var showLoadMoreIndicator: Observable<Bool> { showLoadMoreIndicatorSubject.asObservable() }
     
     
     func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
@@ -247,6 +250,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private var currentBarDateMonth: String = ""
     private var latestBalance: String = "0.00"
     private var isShimmering = true
+    private var pageInfo: PagableResponse<TransactionResponse>!
     
     init(transactionDataProvider: PaymentCardTransactionProvider, cardSerialNumber: String? = nil, debitSearch: Bool = false, themService: ThemeService<AppTheme>) {
         // self.repository = repository
@@ -273,14 +277,15 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         showShimmeringSubject.onNext(true)
        // refreshSubject.onNext(())
         
-        let combine = Observable.combineLatest(pageInfoSubject,showShimmeringSubject)
-      /*  loadMoreSubject.withLatestFrom(combine){ (_,arg1) -> PagableResponse<TransactionResponse>? in
-            let (page, showLoading) = arg1
-            guard !page.isLast,
+        //let combine = Observable.combineLatest(pageInfoSubject,showShimmeringSubject)
+       loadMoreSubject.withLatestFrom(showShimmeringSubject){ [unowned self] (_,showLoading) -> PagableResponse<TransactionResponse>? in
+           // let (page, showLoading) = arg1
+           self.enableLoadMoreSubject.onNext(false)
+            guard let page = self.pageInfo ,!page.isLast,
                 !showLoading
                 else {return nil}
             var newPage = page
-            newPage.currentPage = (page.currentPage) + 1
+           newPage.currentPage =  (transactionDataProvider.currentPage) + 1
             return newPage
             }.subscribe(onNext: { [weak self] (page) in
                 guard let `self` = self else { return }
@@ -289,13 +294,16 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
                 transactionDataProvider.resetPage(newPage.currentPage)
                 self.fetchTransactionsObserver.onNext(())
                 
-            }).disposed(by: disposeBag) */
+            }).disposed(by: disposeBag)
         
         let request =  Observable.merge(fetchTransactions, viewAppearedSubject,refreshSubject)
             .do(onNext: { [weak self] _ in
 //                self?.loadingSubject.onNext(false)
 //                self?.showShimmeringSubject.onNext(false)
             //    self?.enableLoadMoreSubject.onNext(false)
+                if transactionDataProvider.currentPage > 0 {
+                    self?.showLoadMoreIndicatorSubject.onNext(true)
+                }
             })
             .flatMap {
                 _ in
@@ -304,7 +312,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             }
             .share()
         
-        /*let saveRequest = */ request.elements().map { [unowned self] pageableResponse -> Bool in
+     /*   let saveRequest =  request.elements().map { [unowned self] pageableResponse -> Bool in
             
             self.enableLoadMoreSubject.onNext(true)
             self.showShimmeringSubject.onNext(false)
@@ -320,7 +328,26 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             self.updateContent()
             let shouldFetchMore = pageableResponse.isLast ? false : true //pageableResponse.t
             return shouldFetchMore
-        }//.share()
+        }.share() */
+        
+        request.elements().subscribe(onNext:  { pageableResponse in
+            
+            self.pageInfo = pageableResponse
+//            self.pageInfoSubject.onNext(pageableResponse)
+            
+            self.enableLoadMoreSubject.onNext(true)
+            self.showShimmeringSubject.onNext(false)
+            self.loadingSubject.onNext(false)
+            
+            if pageableResponse.currentPage == 0 {
+                self.transactionsObj = pageableResponse.content ?? []
+            } else {
+                self.transactionsObj.append(contentsOf: pageableResponse.content ?? [])
+                self.showLoadMoreIndicatorSubject.onNext(false)
+            }
+            self.updateContent()
+        }).disposed(by: disposeBag)
+
         
        // saveRequest.filter { $0 }.map { _ in }.bind(to: fetchTransactionsObserver).disposed(by: disposeBag)
         
@@ -336,6 +363,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             self.showShimmeringSubject.onNext(false)
             self.loadingSubject.onNext(false)
             self.dataChanged = false
+            self.showLoadMoreIndicatorSubject.onNext(false)
         }).disposed(by: disposeBag)
         
         filterSelectedSubject.subscribe(onNext: { [unowned self] filter in
@@ -379,6 +407,9 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             self.refreshCategoryBar = $0
         }).disposed(by: disposeBag)
     }
+    
+    
+    
     // check transaction type
     init(/* repository: TransactionsRepository,*/ cardSerialNumber: String? = nil) {
         // self.repository = repository
