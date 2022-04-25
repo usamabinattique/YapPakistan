@@ -206,6 +206,8 @@ public struct PaymentCardOnboardingStageModel {
         case (_, .shipping, _, .signUpPending, _),
              (_, .shipping, _, _, .fatcaGenerated):
             return false
+        case (.booked, .shipping, _, _, _):
+            return false
         case (_, .shipping, _, _, _):
             return true
         case (.shipped, .delivery, _, _, _):
@@ -221,6 +223,8 @@ public struct PaymentCardOnboardingStageModel {
         
         case (_, .additionalRequirement, _, _, .addressCaptured):
             return true
+        case (.shipped, .setPIN, !isCardPinSet, .physicalCardSuccess, _), (_, .setPIN, _, .physicalCardSuccess, .addressCaptured):
+            return false
         case (.shipped, .setPIN, _, .physicalCardSuccess, _), (_, .setPIN, _, .physicalCardSuccess, _):
             return true
         default:

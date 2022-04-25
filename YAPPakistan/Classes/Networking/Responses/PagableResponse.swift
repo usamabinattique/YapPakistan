@@ -13,7 +13,7 @@ public struct PagableResponse<T: Codable>: Codable {
     public let totalPages: Int
     public let totalElements: Int
     public let isLast: Bool
-    public let currentPage: Int
+    public var currentPage: Int
 
     enum CodingKeys: String, CodingKey {
         case content, totalPages, totalElements

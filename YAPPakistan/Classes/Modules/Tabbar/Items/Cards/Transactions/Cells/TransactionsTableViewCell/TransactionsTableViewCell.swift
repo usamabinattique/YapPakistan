@@ -263,7 +263,7 @@ private extension TransactionsTableViewCell {
             self?.transactionTypeIcon.tintColor = $0
         }).disposed(by: disposeBag)
         
-        viewModel.outputs.transactionTypeBackground.bind(to: transactionTypeIcon.rx.backgroundColor).disposed(by: disposeBag)
+       // viewModel.outputs.transactionTypeBackground.bind(to: transactionTypeIcon.rx.backgroundColor).disposed(by: disposeBag)
         
         viewModel.outputs.cancelled
             .subscribe(onNext: { [weak self] in

@@ -104,11 +104,11 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
     var addVirtualCardDesignGradient: Observable<[UIColor]?> { addVirtualCardDesignGradientSubject }
     var internationalAmount: Observable<String?> { internationalAmountSubject }
     
-    init(transaction: Transaction, themeService: ThemeService<AppTheme>) {
+    init(transaction: TransactionResponse, themeService: ThemeService<AppTheme>) {
         self.transaction = transaction
         self.transactionId = "\(transaction.id)"
         let title = transaction.title ?? "Unknown"
-        transactionTitleSubject = BehaviorSubject(value: title)
+        transactionTitleSubject = BehaviorSubject(value: transaction.finalizedTitle)
         transactionTimeCategorySubject = BehaviorSubject(value: transaction.formattedTime + " · " + transaction.category)
         
         let amount = CurrencyFormatter.format(amount: transaction.amount, in: transaction.currency).amountFromFormattedAmount
@@ -127,8 +127,9 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
             ?? title.initialsImage(color: transaction.color,
                                    font: .small,
                                    size: CGSize(width: 40, height: 40) )
-        
-        transactionImageUrlSubject = BehaviorSubject(value: (nil, icon))
+        let url = transaction.type == .debit ? transaction.receiverUrl : transaction.senderUrl
+        transactionTypeIconSubject.onNext(icon)
+        transactionImageUrlSubject = BehaviorSubject(value: (url, transaction.title?.thumbnail))
         cdTransaction = nil
         
         Observable.combineLatest(transactionType, cancelled)

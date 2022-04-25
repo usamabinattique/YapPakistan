@@ -58,7 +58,7 @@ class TransactionsService: BaseService, TransactionsServiceType {
 
         let route = APIEndpoint<String>(.get,
                                         apiConfig.transactionsURL,
-                                        "/api/account-transactions",
+                                        "/api/account-transactions/\(pageNumber)/\(pageSize)",
                                         pathVariables: nil,
                                         query: params,
                                         body: nil,

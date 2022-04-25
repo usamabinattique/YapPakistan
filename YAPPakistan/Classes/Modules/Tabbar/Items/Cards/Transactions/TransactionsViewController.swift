@@ -284,6 +284,14 @@ extension TransactionsViewController: UITableViewDelegate {
             currentVelocityYSign != 0 {
             lastVelocityYSign = currentVelocityYSign
         }
+        
+        Observable.just("").withLatestFrom(viewModel.outputs.enableLoadMore).subscribe(onNext: { [weak self] (enableLoadMore) in
+            guard let `self` = self else {return}
+//            print("scrollPercentage:\(self.tableView.scrollPercentage)")
+            guard self.tableView.scrollPercentage > 0.6 ,
+                  enableLoadMore else {return}
+            self.viewModel.inputs.loadMore.onNext(())
+        }).disposed(by: disposeBag)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -296,5 +304,37 @@ extension TransactionsViewController: UITableViewDelegate {
         guard let transaction = ((cell as? TransactionsTableViewCell)?.viewModel as? TransactionsTableViewCellViewModel)?.cdTransaction else { return }
 
         viewModel.inputs.transactionDetailsObserver.onNext(transaction)
+    }
+    
+//    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        guard tableView.scrollPercentage > 0.6 else {return}
+//        viewModel.inputs.loadMore.onNext(())
+//    }
+}
+
+class FooterLoadingView: UIView {
+
+    let indicator = UIActivityIndicatorView(frame: .zero)
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        customizeUI(frame: frame)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private func customizeUI(frame: CGRect) {
+        indicator.frame = CGRect(x: (frame.size.width/2) - 12, y: 10, width: 24, height: 24)
+        self.addSubview(indicator)
+    }
+}
+
+public extension UITableView {
+    var scrollPercentage: CGFloat {
+        let height = self.contentSize.height - self.frame.size.height
+            let scrolledPercentage = self.contentOffset.y / height
+            return scrolledPercentage
     }
 }

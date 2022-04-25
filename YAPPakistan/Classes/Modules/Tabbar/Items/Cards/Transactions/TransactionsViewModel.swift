@@ -37,6 +37,7 @@ protocol TransactionsViewModelInputs {
     var isDataReloaded: AnyObserver<Bool> { get }
     var sectionObserver: AnyObserver<Int> { get }
     var refreshObserver: AnyObserver<Void> { get }
+    var loadMore: AnyObserver<Void> { get }
 }
 
 protocol TransactionsViewModelOutputs {
@@ -64,6 +65,7 @@ protocol TransactionsViewModelOutputs {
     var sectionAmount: Observable<String?> { get}
     var sectionDate: Observable<String?> { get }
     var isTableViewReloaded: Observable<Bool> { get }
+    var enableLoadMore: Observable<Bool> { get }
 }
 
 protocol TransactionsViewModelType {
@@ -113,6 +115,9 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let dataReloadedSubject = BehaviorSubject<Bool>(value: false)
     private let sectionSubject = BehaviorSubject<Int>(value: 0)
     private let refreshSubject = ReplaySubject<Void>.create(bufferSize: 1)
+    private let loadMoreSubject = PublishSubject<Void>()
+    private let pageInfoSubject = ReplaySubject<PagableResponse<TransactionResponse>>.create(bufferSize: 1)
+    private let enableLoadMoreSubject = BehaviorSubject<Bool>(value: true)
     
     // MARK: - Input
     var fetchTransactionsObserver: AnyObserver<Void> { return fetchTransactionsSubject.asObserver() }
@@ -131,6 +136,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var isDataReloaded: AnyObserver<Bool> {dataReloadedSubject.asObserver()}
     var sectionObserver: AnyObserver<Int> { sectionSubject.asObserver() }
     var refreshObserver: AnyObserver<Void> { refreshSubject.asObserver() }
+    var loadMore: AnyObserver<Void> { loadMoreSubject.asObserver() }
     
 
     // MARK: - Output
@@ -153,6 +159,8 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var sectionAmount: Observable<String?> { sectionAmountSubject.asObservable() }
     var sectionDate: Observable<String?> { sectionDateSubject.asObservable() }
     var isTableViewReloaded: Observable<Bool> { dataReloadedSubject.asObservable() }
+    var enableLoadMore: Observable<Bool> { enableLoadMoreSubject.asObservable() }
+    
     
     func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
         
@@ -265,30 +273,45 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         showShimmeringSubject.onNext(true)
        // refreshSubject.onNext(())
         
+        let combine = Observable.combineLatest(pageInfoSubject,showShimmeringSubject)
+      /*  loadMoreSubject.withLatestFrom(combine){ (_,arg1) -> PagableResponse<TransactionResponse>? in
+            let (page, showLoading) = arg1
+            guard !page.isLast,
+                !showLoading
+                else {return nil}
+            var newPage = page
+            newPage.currentPage = (page.currentPage) + 1
+            return newPage
+            }.subscribe(onNext: { [weak self] (page) in
+                guard let `self` = self else { return }
+                guard let newPage = page
+                    else {return}
+                transactionDataProvider.resetPage(newPage.currentPage)
+                self.fetchTransactionsObserver.onNext(())
+                
+            }).disposed(by: disposeBag) */
+        
         let request =  Observable.merge(fetchTransactions, viewAppearedSubject,refreshSubject)
             .do(onNext: { [weak self] _ in
-                self?.loadingSubject.onNext(false)
-                self?.showShimmeringSubject.onNext(false)
+//                self?.loadingSubject.onNext(false)
+//                self?.showShimmeringSubject.onNext(false)
+            //    self?.enableLoadMoreSubject.onNext(false)
             })
-            .flatMap { _ in transactionDataProvider.fetchTransactions() }
+            .flatMap {
+                _ in
+                transactionDataProvider.fetchTransactions()
+                
+            }
             .share()
         
-        let saveRequest = request.elements().map { [unowned self] pageableResponse -> Bool in
-          /*  let updatedCount = self.entityHandler.update(with: pageableResponse.content?.indexed ?? [], transcationCardType: self.transactionCardType, cardSerialNumber: debitSearch ? cardSerialNumber : nil)
+        /*let saveRequest = */ request.elements().map { [unowned self] pageableResponse -> Bool in
             
-            self.dataChanged = self.dataChanged ? self.dataChanged : updatedCount > 0
+            self.enableLoadMoreSubject.onNext(true)
+            self.showShimmeringSubject.onNext(false)
+            self.loadingSubject.onNext(false)
             
-            self.pagesEntityHandler.updatePages(for: self.transactionCardType, cardSerialNumber: self.cardSerialNumber, pagesSynced: pageableResponse.currentPage, isLast: pageableResponse.isLast)
+            self.pageInfoSubject.onNext(pageableResponse)
             
-            let syncStatus = self.pagesEntityHandler.syncStatus(for: self.transactionCardType, cardSerialNumber: cardSerialNumber)
-            
-            let shouldFetchMore = pageableResponse.isLast ? false : updatedCount >= transactionDataProvider.pageSize ? true : !syncStatus.syncCompleted
-            
-            if shouldFetchMore {
-                transactionDataProvider.resetPage(updatedCount >= transactionDataProvider.pageSize ? pageableResponse.currentPage + 1 : syncStatus.syncedPages + 1)
-            } else {
-                self.updateContent()
-            } */
             if pageableResponse.isLast {
                 self.transactionsObj = pageableResponse.content ?? []
             } else {
@@ -297,18 +320,20 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             self.updateContent()
             let shouldFetchMore = pageableResponse.isLast ? false : true //pageableResponse.t
             return shouldFetchMore
-        }.share()
+        }//.share()
         
-        saveRequest.filter { $0 }.map { _ in }.bind(to: fetchTransactionsObserver).disposed(by: disposeBag)
+       // saveRequest.filter { $0 }.map { _ in }.bind(to: fetchTransactionsObserver).disposed(by: disposeBag)
         
-        saveRequest.filter { !$0 }
+      /*  saveRequest.filter { !$0 }
             .do(onNext: { [weak self] _ in
                 transactionDataProvider.resetPage(0)
                 self?.loadingSubject.onNext(false) })
-            .subscribe(onNext: { [unowned self] _ in self.updateGraph() })
-            .disposed(by: disposeBag)
+            .subscribe(onNext: { [unowned self] _ in /*self.updateGraph() */ })
+            .disposed(by: disposeBag) */
         
         request.errors().subscribe(onNext: { [unowned self] _ in
+            self.enableLoadMoreSubject.onNext(true)
+            self.showShimmeringSubject.onNext(false)
             self.loadingSubject.onNext(false)
             self.dataChanged = false
         }).disposed(by: disposeBag)

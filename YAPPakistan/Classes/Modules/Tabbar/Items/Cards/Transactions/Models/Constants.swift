@@ -223,7 +223,7 @@ public extension TransactionProductCode {
             return UIImage.init(named: "icon_y2y_transfer", in: .yapPakistan, compatibleWith: nil)?.asTemplate
             
         case .addFundsSupplementaryCard, .removeFundsSuplementaryCard:
-            return UIImage.sharedImage(named: "icon_add_remove_funds_purple")
+            return UIImage.init(named: "icon_add_remove_funds_purple", in: .yapPakistan)
             
         default:
             return nil

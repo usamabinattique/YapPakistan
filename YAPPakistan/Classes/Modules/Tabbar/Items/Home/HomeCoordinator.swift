@@ -157,7 +157,9 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
 
             viewController.viewModel.outputs.back.withUnretained(self)
                 .subscribe(onNext: { `self`, _ in
-                    self.root.setViewControllers([self.navigationRoot.viewControllers[0]], animated: true)
+                    self.navigationRoot.setNavigationBarHidden(false, animated: true)
+                   // self.root.setViewControllers([self.navigationRoot.viewControllers[0]], animated: true)
+                    self.navigationRoot.popToRootViewController(animated: true)
                 })
                 .disposed(by: rx.disposeBag)
 

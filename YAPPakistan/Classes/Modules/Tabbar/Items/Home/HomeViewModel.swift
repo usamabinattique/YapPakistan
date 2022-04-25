@@ -316,10 +316,14 @@ extension HomeViewModel {
             print("success \(list)")
             self?.shimmeringSubject.onNext(false)
             self?.cardsSubject.onNext(list ?? [])
-            if !(list?.isEmpty ?? false), let serialNumber =  list?.first?.cardSerialNumber {
+           /* if !(list?.isEmpty ?? false), let serialNumber =  list?.first?.cardSerialNumber {
+                self?.cardStatus = list?.first?.status ?? .inActive
                 self?.transactionDataProvider.cardSerialNumber = serialNumber
                 self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
-            }
+            } */
+            
+            self?.cardStatus = list?.first?.status ?? .inActive
+            self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
         }).disposed(by: disposeBag)
         
         cardsSubject.subscribe(onNext: {[weak self] in
@@ -339,12 +343,13 @@ extension HomeViewModel {
     
     func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
         
-       // self.shimmeringSubject.onNext(true)
+        self.shimmeringSubject.onNext(true)
         let request = viewDidAppearSubject.startWith(())
-            .flatMap { [unowned self] _ in self.transactionDataProvider.fetchTransactions()
+            .flatMap {
+                [unowned self] _ in self.transactionDataProvider.fetchTransactions()
             }.share()
     
-      /*  request.elements().subscribe(onNext: { [weak self] pageAbleRes in
+       /* request.elements().subscribe(onNext: { [weak self] pageAbleRes in
             self?.shimmeringSubject.onNext(false)
             
             if let transactions = pageAbleRes.content, !transactions.isEmpty {
@@ -362,9 +367,9 @@ extension HomeViewModel {
                 }
             }
             
-        }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag) */
         
-        request.errors().subscribe(onNext: { [weak self] erro in
+      /*  request.errors().subscribe(onNext: { [weak self] erro in
             print("transactions error \(erro)")
             self?.shimmeringSubject.onNext(false)
             
@@ -376,24 +381,46 @@ extension HomeViewModel {
             }
         }).disposed(by: disposeBag) */
         
+        request.elements().subscribe(onNext: { [weak self] pageAbleRes in
+             self?.shimmeringSubject.onNext(false)
+
+        }).disposed(by: disposeBag)
+
+        debitCard.subscribe(onNext: { [weak self] card in
+            //TODO: handle if card is empty/nil
+
+       }).disposed(by: disposeBag)
+
+        accountProvider.currentAccount.unwrap().subscribe(onNext: { [weak self] account in
+
+
+       }).disposed(by: disposeBag)
+        
         let params = Observable.combineLatest(request.elements().map { $0.content },
                                               debitCard.unwrap(),
-                                              accountProvider.currentAccount.unwrap())
+                                              accountProvider.currentAccount.unwrap())//accountProvider.currentAccount.unwrap())
             .share(replay: 1, scope: .whileConnected)
         
         // Transactions are zero, show debit card timeline
         params
             .filter { ($0.0?.count ?? 0) == 0 }
             .map { PaymentCardInitiatoryStageViewModel(paymentCard: $0.1, account: $0.2) }
-            .do(onNext: { [weak self] in self?.dashobarStatusActions(viewModel: $0) })
+            .do(onNext: { [weak self] in
+                self?.shimmeringSubject.onNext(false)
+                self?.dashobarStatusActions(viewModel: $0)
+                
+            })
             .bind(to: debitCardOnboardingStageViewModelSubject)
             .disposed(by: disposeBag)
         
         // Transactions are not zero, hide debit card timeline
         params
             .filter { ($0.0?.count ?? 0) > 0 }
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] res in
+                self?.shimmeringSubject.onNext(false)
+                self?.transactionsViewModel.transactionsObj = res.0 ?? []
                 self?.debitCardOnboardingStageViewModelSubject.onCompleted()
+                
             }).disposed(by: disposeBag)
     }
     
@@ -470,7 +497,8 @@ extension HomeViewModel {
     }
     
     func widgetVisibility() {
-        if (cardStatus == .active) && (self.numberOfShownWidgets > 0) && !(YAPUserDefaults.isWidgetsBarHidden()) {
+        //if (cardStatus == .active) && (self.numberOfShownWidgets > 0) && !(YAPUserDefaults.isWidgetsBarHidden()) {
+        if  (self.numberOfShownWidgets > 0) && !(YAPUserDefaults.isWidgetsBarHidden()) {
             self.hideWidgetsSubject.onNext(false)
         }
         else {

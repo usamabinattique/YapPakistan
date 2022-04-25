@@ -34,11 +34,11 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
     var transactions: Observable<[TransactionResponse]> { return transactionsSubject }
         
     // MARK: - Init
-    init(transactionFilter: TransactionFilter? = nil, repository: TransactionsRepository, cardSerialNumber: String? = "", debitSearch: Bool = false ) {
+    init(transactionFilter: TransactionFilter? = nil, repository: TransactionsRepository, cardSerialNumber: String? = nil, debitSearch: Bool = false ) {
         self.debitSearch = debitSearch
         self.repository = repository
         self.transactionsSubject = BehaviorSubject(value: [])
-        self._pageSize = 200
+        self._pageSize =  200
         self.currentPage = 0
         self.filter = transactionFilter
         self.cardSerialNumber = cardSerialNumber
@@ -49,14 +49,24 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
         guard !isFetching else { return Observable.never() }
         
         isFetching = true
-        
-        let request = /* cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer) : */ repository.fetchCardTransactions(pageNo: currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch,filter: filter).share()
+        let request =  cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer).share() :
+        repository.fetchCardTransactions(pageNo: currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch,filter: filter).share()
 
         return request.do(onNext: { [unowned self] response in
             guard response.element != nil else { return }
 //            self.currentPage = !pagableResponse.isLast ? self.currentPage + 1 : 0
+            
+            
             self.isFetching = false
         })
+        
+      /*  return request.do(onNext: { [unowned self] response in
+          //  guard response.element != nil else { return }
+//            self.currentPage = !pagableResponse.isLast ? self.currentPage + 1 : 0
+            
+            
+            self.isFetching = false
+        }) */
     }
     
     func resetPage(_ page: Int) {
