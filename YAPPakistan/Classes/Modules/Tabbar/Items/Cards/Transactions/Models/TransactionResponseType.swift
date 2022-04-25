@@ -597,7 +597,7 @@ extension TransactionResponse {
 //        return differences
 //    }
 //
-    public static func getNumberOfSections(transactions: [TransactionResponse]) -> [TransactionResponse] {
+    public static func getNumberOfSections(allTransactions transactions: [TransactionResponse]) -> [TransactionResponse] {
         var unique = Set<DateComponents>()
         let result = transactions.filter {
             let comps = Calendar.current.dateComponents([.day, .month, .year], from: $0.date)
@@ -610,10 +610,10 @@ extension TransactionResponse {
         return result
     }
     
-    public static func transactions(for section: Int, transactions: [TransactionResponse]) -> [TransactionResponse] {
-        let sections = TransactionResponse.getNumberOfSections(transactions: transactions).count
+    public static func transactions(for section: Int,allTransactions  transactions: [TransactionResponse]) -> [TransactionResponse] {
+        let sections = TransactionResponse.getNumberOfSections(allTransactions: transactions).count
         guard sections > 0 && section < sections else { return [] }
-        let transactionSections = TransactionResponse.getNumberOfSections(transactions: transactions)
+        let transactionSections = TransactionResponse.getNumberOfSections(allTransactions: transactions)
         let requiredTransaction = transactionSections[section]
         var requiredTransactions = [TransactionResponse]()
         let result = transactions.filter {
@@ -627,12 +627,12 @@ extension TransactionResponse {
         return result
     }
     
-    static func numberOfTransaction(in section: Int, transactions: [TransactionResponse]) -> Int {
-        return TransactionResponse.transactions(for: section, transactions: transactions).count
+    static func numberOfTransaction(in section: Int,allTransactions transactions: [TransactionResponse]) -> Int {
+        return TransactionResponse.transactions(for: section, allTransactions: transactions).count
     }
     
-    static func transaction(for indexPath: IndexPath, transactions: [TransactionResponse]) -> TransactionResponse? {
-        guard indexPath.section < TransactionResponse.getNumberOfSections(transactions: transactions).count, indexPath.row < TransactionResponse.transactions(for: indexPath.section, transactions: transactions).count else { return nil }
+    static func transaction(for indexPath: IndexPath,allTransactions transactions: [TransactionResponse]) -> TransactionResponse? {
+        guard indexPath.section < TransactionResponse.getNumberOfSections(allTransactions: transactions).count, indexPath.row < TransactionResponse.transactions(for: indexPath.section, allTransactions: transactions).count else { return nil }
         
         
         return transactions[indexPath.row]//transactions.object(at: indexPath)

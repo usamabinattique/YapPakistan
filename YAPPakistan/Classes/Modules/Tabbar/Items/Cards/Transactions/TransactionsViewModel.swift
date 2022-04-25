@@ -168,7 +168,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
         
         if !isShimmering {
-            let transactions = TransactionResponse.transactions(for: section, transactions: transactionsObj) //[TransactionResponse]()
+            let transactions = TransactionResponse.transactions(for: section, allTransactions: transactionsObj) //[TransactionResponse]()
             let amount = transactions.reduce(0, { $1.type == .debit ? $0 - $1.calculatedTotalAmount : $0 + $1.calculatedTotalAmount })
             let date = transactions.first?.date ?? Date().startOfDay
             return TransactionHeaderTableViewCellViewModel(date: date.transactionSectionReadableDate, totalTransactionsAmount: (amount < 0 ? "- " : "+ ") +  CurrencyFormatter.formatAmountInLocalCurrency(abs(amount)))
@@ -179,7 +179,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
 
     func cellViewModel(for indexPath: IndexPath) -> ReusableTableViewCellViewModelType {
 
-        if let transaction = TransactionResponse.transaction(for: indexPath, transactions: transactionsObj), !isShimmering { //entityHandler.transaction(for: indexPath) {
+        if let transaction = TransactionResponse.transaction(for: indexPath, allTransactions: transactionsObj), !isShimmering { //entityHandler.transaction(for: indexPath) {
             return TransactionsTableViewCellViewModel(transaction: transaction, themeService: themeServie)
         }
 
@@ -193,7 +193,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
 //
 //        return isSearching ? 0 : 1
         
-        let numberOfSections = TransactionResponse.getNumberOfSections(transactions: transactionsObj).count
+        let numberOfSections = TransactionResponse.getNumberOfSections(allTransactions: transactionsObj).count
         _numberOfSections = numberOfSections
         guard numberOfSections <= 0 && isAccountTransaction && filter == nil else { return numberOfSections }
         
@@ -211,7 +211,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             _numberOfRows = 10
             return  _numberOfRows
         }
-        _numberOfRows = TransactionResponse.numberOfTransaction(in: section, transactions: transactionsObj)
+        _numberOfRows = TransactionResponse.numberOfTransaction(in: section, allTransactions: transactionsObj)
         return _numberOfRows //entityHandler.numberOfTransaction(in: section)
         
        // return _numberOfRows
@@ -518,10 +518,10 @@ extension TransactionsViewModel {
 
     func updateContent() {
         
-        filterEnabledSubject.onNext(TransactionResponse.getNumberOfSections(transactions: transactionsObj).count != 0 || filter != nil)
+        filterEnabledSubject.onNext(TransactionResponse.getNumberOfSections(allTransactions: transactionsObj).count != 0 || filter != nil)
         reloadDataSubject.onNext(())
         showsPlaceholderSubject.onNext(isAccountTransaction && !isSearching)
-        showsNothingLabelSubject.onNext(cardSerialNumber != nil || TransactionResponse.getNumberOfSections(transactions: transactionsObj).count == 0)
+        showsNothingLabelSubject.onNext(cardSerialNumber != nil || TransactionResponse.getNumberOfSections(allTransactions: transactionsObj).count == 0)
         nothingLabelSubject.onNext(filter != nil || isSearching ? "screen_home_display_text_nothing_to_report_search".localized : "screen_home_display_text_nothing_to_report".localized)
     }
 
@@ -575,7 +575,7 @@ private extension TransactionsViewModel {
 
 extension TransactionsViewModel {
     func getFinalBalance() {
-        let transactions = TransactionResponse.transactions(for: self.currentSection, transactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
+        let transactions = TransactionResponse.transactions(for: self.currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
         if transactions.count > 0 {
             if self.currentSection == 0 {
                 self.sectionAmountSubject.onNext("\(self.latestBalance)")
@@ -587,7 +587,7 @@ extension TransactionsViewModel {
     }
     
     func getFinalDate() {
-        let transactions = TransactionResponse.transactions(for: self.currentSection, transactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
+        let transactions = TransactionResponse.transactions(for: self.currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
         if transactions.count > 0 && self.showDynamicDataInToolbar {
             let date = transactions.first?.date ?? Date().startOfDay
          //   analyticsDateSubject.onNext(date)
