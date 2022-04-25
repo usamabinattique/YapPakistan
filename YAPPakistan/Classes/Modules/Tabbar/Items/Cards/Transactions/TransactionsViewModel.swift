@@ -118,7 +118,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let refreshSubject = ReplaySubject<Void>.create(bufferSize: 1)
     private let loadMoreSubject = PublishSubject<Void>()
     private let pageInfoSubject = ReplaySubject<PagableResponse<TransactionResponse>>.create(bufferSize: 1)
-    private let enableLoadMoreSubject = BehaviorSubject<Bool>(value: false)
+    private let enableLoadMoreSubject = BehaviorSubject<Bool>(value: true)
     public let showLoadMoreIndicatorSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     
     // MARK: - Input
@@ -250,7 +250,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private var currentBarDateMonth: String = ""
     private var latestBalance: String = "0.00"
     private var isShimmering = true
-    private var pageInfo: PagableResponse<TransactionResponse>!
+    var pageInfo: PagableResponse<TransactionResponse>!
     
     init(transactionDataProvider: PaymentCardTransactionProvider, cardSerialNumber: String? = nil, debitSearch: Bool = false, themService: ThemeService<AppTheme>) {
         // self.repository = repository
@@ -261,7 +261,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         showsFilterSubject = BehaviorSubject(value: true)
         super.init()
         
-        showShimmeringSubject.debounce(RxTimeInterval.seconds(2), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
+        showShimmeringSubject.debounce(RxTimeInterval.seconds(Int(1)), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
             self?.isShimmering = IsLoading
             self?._numberOfRows = IsLoading ? 10 : 0
             self?._numberOfSections = IsLoading ? 1 : 0
@@ -296,7 +296,24 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
                 
             }).disposed(by: disposeBag)
         
-        let request =  Observable.merge(fetchTransactions, viewAppearedSubject,refreshSubject)
+        
+        refreshSubject.withUnretained(self).subscribe(onNext: { `self`,_ in
+            print("refresh in transactions")
+            self.transactionsObj = []
+            transactionDataProvider.resetPage(0)
+           // self.showShimmeringSubject.onNext(true)
+            self.fetchTransactionsObserver.onNext(())
+            
+        }).disposed(by: disposeBag)
+
+        
+//        viewAppearedSubject.withUnretained(self).subscribe(onNext: { `self`, _ in
+//            print("enabled loard more")
+//            self.enableLoadMoreSubject.onNext(true)
+//        }).disposed(by: disposeBag)
+
+        
+        let request =  fetchTransactions //Observable.merge(fetchTransactions, viewAppearedSubject)
             .do(onNext: { [weak self] _ in
 //                self?.loadingSubject.onNext(false)
 //                self?.showShimmeringSubject.onNext(false)
@@ -331,10 +348,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         }.share() */
         
         request.elements().subscribe(onNext:  { pageableResponse in
-            
             self.pageInfo = pageableResponse
-//            self.pageInfoSubject.onNext(pageableResponse)
-            
             self.enableLoadMoreSubject.onNext(true)
             self.showShimmeringSubject.onNext(false)
             self.loadingSubject.onNext(false)
@@ -345,6 +359,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
                 self.transactionsObj.append(contentsOf: pageableResponse.content ?? [])
                 self.showLoadMoreIndicatorSubject.onNext(false)
             }
+            
             self.updateContent()
         }).disposed(by: disposeBag)
 
