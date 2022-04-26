@@ -260,6 +260,7 @@ fileprivate extension UserProfileViewController {
     
     func removePhoto() {
         print("Remove Photo Selected")
+        viewModel.inputs.removePhotoTapObserver.onNext(())
     }
     
     
@@ -334,7 +335,7 @@ extension UserProfileViewController: UIImagePickerControllerDelegate, UINavigati
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as? UIImage else { return }
         imagePicker.dismiss(animated: true) { [weak self] in
-            //self?.viewModel.inputs.imageObserver.onNext(image)
+            self?.viewModel.inputs.changedProfilePhotoObserver.onNext(image)
         }
     }
 }

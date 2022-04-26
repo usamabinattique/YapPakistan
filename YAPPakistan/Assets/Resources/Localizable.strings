@@ -238,6 +238,10 @@
 // MARK: - QR Payment success
 "screen_qr_payment_transfer_success_display_text_title" = "Payment successful!";
 
+// MARK: - DocumentValidationErrors
+"error_document_validation_malicious" = "That doesn’t look right. Please upload .jpg or .png only";
+"error_document_validation_size_exceed" = "Oops! That’s too big. Please try again with a file that’s under 25 MB";
+
 //MARK: Report Cards
 "screen_report_card_display_text_title" = "Report lost or stolen card";
 "screen_report_card_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";

@@ -14,7 +14,9 @@ public protocol LoginRepositoryType: AnyObject {
     func verifyPasscode(passcode: String) -> Observable<Event<String?>>
     func authenticate(username: String, password: String, deviceId: String) -> Observable<Event<[String: String?]?>>
     func generateLoginOTP(username: String, passcode: String, deviceId: String) -> Observable<Event<String?>>
-    func logout(deviceUUID: String) -> Observable<Event<[String: String]?>> 
+    func logout(deviceUUID: String) -> Observable<Event<[String: String]?>>
+    func changeProfilePhoto(_ data: Data, name: String, fileName: String, mimeType: String) -> Observable<Event<ProfilePhotoResponse>>
+    func removeProfilePhoto() -> Observable<Event<String?>>
 }
 
 public class LoginRepository: LoginRepositoryType {
@@ -39,6 +41,15 @@ public class LoginRepository: LoginRepositoryType {
     
     public func verifyPasscode(passcode: String) -> Observable<Event<String?>> {
         return customerService.verifyPasscode(passcode: passcode).materialize()
+    }
+    
+    public func changeProfilePhoto(_ data: Data, name: String, fileName: String, mimeType: String) -> Observable<Event<ProfilePhotoResponse>> {
+        return customerService.uploadProfilePhoto(data: data, name: name, fileName: fileName, mimeType: mimeType, progressObserver: nil).materialize()
+    }
+    
+    
+    public func removeProfilePhoto() -> Observable<Event<String?>> {
+        return customerService.removeProfilePhoto().materialize()
     }
     
     public func authenticate(username: String, password: String, deviceId: String) -> Observable<Event<[String: String?]?>> {

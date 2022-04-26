@@ -31,7 +31,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     }
     
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap(), biometricsManager: container.biometricsManager, credentialStore: container.parent.credentialsStore, repository: container.makeLoginRepository(), notificationManager: container.parent.makeNotificationManager())
+        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap(), biometricsManager: container.biometricsManager, credentialStore: container.parent.credentialsStore, repository: container.makeLoginRepository(), notificationManager: container.parent.makeNotificationManager(), accountProvider: self.container.accountProvider)
         let viewController = UserProfileViewController(viewModel: viewModel, themeService: container.themeService)
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         
