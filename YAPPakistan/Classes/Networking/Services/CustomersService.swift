@@ -110,8 +110,8 @@ public class CustomersService: BaseService, CustomerServiceType {
     }
     
     public func fetchCustomerPersonalDetails<T>() -> Observable<T> where T : Decodable, T : Encodable {
-        //let pathVariables = ["personalAddress=true"]
-        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/customer/personal-details", query: ["personalAddress" : "true"], headers: authorizationProvider.authorizationHeaders)
+//        let pathVariables = ["personalAddress=true"]
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/customer/personal-details", pathVariables: nil,body: nil ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

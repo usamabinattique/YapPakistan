@@ -18,6 +18,7 @@ public class KYCDocumentView: UIView {
         imageView.contentMode = .center
         imageView.backgroundColor = .white
         imageView.layer.cornerRadius = 21
+        imageView.tintColor = UIColor(hexString: "5E35B1")
         imageView.clipsToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -208,6 +209,7 @@ private extension KYCDocumentView {
         horizontalStack
             .toRightOf(iconImage, constant: 23)
             .alignEdgesWithSuperview([.right], constants: [20])
+            .alignEdgesWithSuperview([.top, .bottom], constants: [33, 33])
             .centerVerticallyInSuperview()
 
         editButton

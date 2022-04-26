@@ -354,7 +354,11 @@
 "screen_personal_details_display_text_phone_number" = "Phone number";
 "screen_personal_details_display_text_email" = "Email";
 "screen_personal_details_display_text_address" = "Address";
-
+"screen_personal_details_display_text_cnic_id" = "CNIC";
+"screen_personal_details_display_text_expired_cnic_id_details" = "Your CNIC is expired.\nTap to update to ensure account continuity";
+"screen_personal_details_display_text_required_cnic_id_details" = "Your CNIC is required.\nTap to update to ensure account continuity";
+"screen_personal_details_display_text_cnic_id_details_update" = "Valid";
+"screen_personal_details_display_text_cnic_id_details" = "Valid";
 
 // MARK: KYC Questions
 
