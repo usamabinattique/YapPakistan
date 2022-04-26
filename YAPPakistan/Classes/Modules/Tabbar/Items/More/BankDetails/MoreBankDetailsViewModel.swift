@@ -77,7 +77,11 @@ class MoreBankDetailsViewModel: MoreBankDetailsViewModelType, MoreBankDetailsVie
         account.map { ($0?.customer.imageURL?.absoluteString, $0?.customer.fullName?.initialsImage(color: UIColor.red))}.bind(to: profileImageSubject).disposed(by: disposeBag)
 
         account.map { $0?.customer.fullName }.bind(to: nameSubject).disposed(by: disposeBag)
-        account.map { account in account?.parnterBankStatus == .activated ? account?.formattedIBAN?.removeWhitespace() : account?.formattedIBAN?.removeDuplicates(keyPath: <#T##KeyPath<Character, Equatable>#>) }.bind(to: ibanSubject).disposed(by: disposeBag)
+        
+        
+        account.map { account in return account?.iban?.removeWhitespace() }.bind(to: ibanSubject).disposed(by: disposeBag)
+        
+        
         account.map { $0?.customer.fullMobileNo }.bind(to: swiftSubject).disposed(by: disposeBag)
         account.map { $0?.bank?.name ?? "" }.bind(to: bankSubject).disposed(by: disposeBag)
         account.map { $0?.bank?.address ?? "" }.bind(to: addressSubject).disposed(by: disposeBag)
