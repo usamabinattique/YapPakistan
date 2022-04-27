@@ -108,8 +108,9 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
         self.transaction = transaction
         self.transactionId = "\(transaction.id)"
         let title = transaction.title ?? "Unknown"
+       
         transactionTitleSubject = BehaviorSubject(value: transaction.finalizedTitle)
-        transactionTimeCategorySubject = BehaviorSubject(value: transaction.formattedTime + " · " + transaction.category)
+        transactionTimeCategorySubject = BehaviorSubject(value: transaction.formattedTime + " · " + (transaction.productName ?? transaction.category))//transaction.category)
         
         let amount = CurrencyFormatter.format(amount: transaction.amount, in: transaction.currency).amountFromFormattedAmount
         transactionAmountSubject = BehaviorSubject(value: NSAttributedString(string: (transaction.type == .debit ? "-" : "+") + amount))

@@ -216,78 +216,8 @@ struct TransactionResponse: Codable, Transaction {
         case latitude = "latitude"
         case longitude = "longitude"
         case tapixCategory = "yapCategoryDTO"
-//        case receiverProfilePictureUrl = "receiverProfilePictureUrl"
-//        case senderProfilePictureUrl = "senderProfilePictureUrl"
     }
-    
-   /* "creationDate": "2022-04-12T06:27:41",
-    "createdBy": "00aac051-2fb4-4bce-a3f6-713c6ae77df8",
-    "updatedDate": "2022-04-12T06:27:41",
-    "updatedBy": "00aac051-2fb4-4bce-a3f6-713c6ae77df8",
-    "id": 164,
-    "card1": "?C8F92RQ6XQ34EYQ",
-    "card2": "?C8FF7LRAJ0T88D7",
-    "iban1": "PK99YAPK0000003004718047",
-    "iban2": "PK99YAPK0000003001515953",
-    "txnCode": "497",
-    "productName": "Y2Y_TRANSFER",
-    "category": "TRANSACTION",
-    "txnType": "DEBIT",
-    "amount": 350.0000,
-    "totalAmount": 350.0000,
-    "currency": "PKR",
-    "txnState": "FAILURE",
-    "status": "FAILED",
-    "balanceBefore": 2689.00,
-    "balanceAfter": 2689.00,
-    "paymentMode": "CARD",
-    "productCode": "P003",
-    "accountUuid1": "bb533300-fd63-44b8-acdd-f80011280e89",
-    "accountUuid2": "b7351708-8bfd-4f7c-a748-d83740d4fcc8",
-    "initiator": "YAP",
-    "processorRefNumber": "ResponseData is null",
-    "transactionId": "387170346585",
-    "customerId1": "10000060",
-    "customerId2": "10000100",
-    "senderMobileNo": "3004718047",
-    "senderEmail": "awaisyousaf103487@gmail.com",
-    "receiverMobileNo": "3001515953",
-    "receiverEmail": "and@unverified.com",
-    "senderName": "Awais Yousaf",
-    "receiverName": "Android",
-    "maskedCardNo": "220593******4204",
-    "cardHolderBillingCurrency": "PKR",
-    "cardHolderBillingAmount": 350.00,
-    "cardHolderBillingTotalAmount": 350.00,
-    "processorErrorCode": "PROCESSOR_FAIL",
-    "processorErrorDescription": "Transaction processing failed at Processor: Error Occurred",
-    "userType2": "B2C_ACCOUNT",
-    "userType1": "B2C_ACCOUNT",
-    "title": "To Android",
-    "markupFees": 0.00,
-    "postedFees": 0.00,
-    "vatAmount": 0.00,
-    "cardType": "DEBIT",
-    "senderProfilePictureUrl": "dummy/dummy/profile_image/customer_data/10000060/documents/PROFILE_PICTURE.jpeg",
-    "receiverProfilePictureUrl": "dummy/dummy/profile_image/customer_data/10000100/documents/PROFILE_PICTURE.jpeg",
-    "currencyDecimalScale": 2,
-    "msgId": "53676675-0b7d-48c6-a318-70a3c659c47a",
-    "bankCBWISCompliant": false,
-    "cbwsi": false,
-    "feeTransactionsDetailDTO": [],
-    "txnTransactionsDetailDTO": [],
-    "tapixCall": false,
-    "approved": false,
-    "reversal": true,
-    "dispute": false,
-    "createdOn": [
-        2022,
-        4,
-        12,
-        6,
-        27,
-        41
-    ] */
+   
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -616,15 +546,16 @@ extension TransactionResponse {
         let transactionSections = TransactionResponse.getNumberOfSections(allTransactions: transactions)
         let requiredTransaction = transactionSections[section]
         var requiredTransactions = [TransactionResponse]()
-        let result = transactions.filter {
+        var result = transactions.filter {
             let comps = $0.sectionDate
-            if requiredTransaction.sectionDate == comps {
+            if requiredTransaction.sectionDate == comps { //requiredTransaction.sectionDate == comps {
                 requiredTransactions.append($0)
                 return true
             }
             return false
         }
         return result
+        
     }
     
     static func numberOfTransaction(in section: Int,allTransactions transactions: [TransactionResponse]) -> Int {
@@ -632,6 +563,7 @@ extension TransactionResponse {
     }
     
     static func transaction(for indexPath: IndexPath,allTransactions transactions: [TransactionResponse]) -> TransactionResponse? {
+//        print("indexPath Section \(indexPath.section)")
         guard indexPath.section < TransactionResponse.getNumberOfSections(allTransactions: transactions).count, indexPath.row < TransactionResponse.transactions(for: indexPath.section, allTransactions: transactions).count else { return nil }
         
         

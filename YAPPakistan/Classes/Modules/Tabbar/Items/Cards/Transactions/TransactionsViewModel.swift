@@ -357,6 +357,12 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
                 self.transactionsObj = pageableResponse.content ?? []
             } else {
                 self.transactionsObj.append(contentsOf: pageableResponse.content ?? [])
+                
+                for trans in self.transactionsObj {
+                    print("transaction title \(trans.title ?? "")")
+                    print("transaction amount \(trans.amount)")
+                }
+                
                 self.showLoadMoreIndicatorSubject.onNext(false)
             }
             
