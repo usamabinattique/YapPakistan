@@ -7,8 +7,9 @@
 
 import Foundation
 import YAPComponents
-import RxSwift
 import YAPCore
+import RxSwift
+import YAPCardScanner
 
 public enum UserProfileResult {
     case logout
@@ -59,7 +60,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     }
     
     fileprivate func navigateToPersonalDetails() {
-        let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()), accountRepository: self.container.makeAccountRepository())
+        let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()), accountRepository: self.container.makeAccountRepository(), kycRepository: self.container.makeKYCRepository())
         let viewController = PersonalDetailsViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         viewModel.outputs.editEmailTap.subscribe(onNext: { [weak self] email in
@@ -78,6 +79,35 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             guard let self = self else { return }
             self.localRoot.popViewController(animated: true, nil)
         }).disposed(by: disposeBag)
+        
+        let identityDocument = viewModel.outputs.scanCard.withUnretained(self)
+            .flatMap { _ in self.cnicScanOcrReview() }.elements()
+            .map{ $0.isSuccess?.identityDocument }.unwrap().share()
+        
+//        let identityDocument = Observable<Void>.just(()).concat(Observable.never())
+//            .flatMap { _ in self.cnicScanOcrReview() }.elements()
+//            .map{ $0.isSuccess?.identityDocument }.unwrap().share()
+        
+        identityDocument
+            .subscribe(onNext:{ identDoc in
+                viewModel.inputs.detectOCRObserver.onNext(identDoc)
+            })
+            .disposed(by: disposeBag)
+        
+//        let identityScanner = viewModel.outputs.scanCard.withUnretained(self)
+//            .flatMap({ profile, _ in
+//                self.cnicScanOcrReview()
+//            })
+//
+//        identityScanner
+//            .subscribe(onNext: { va in
+//                if let _ = va.isSuccess {
+//                    viewModel.inputs.detectOCRObserver.onNext(IdentityDocument())
+//                } else if va.isCancel {
+//                    //Do nothing
+//                }
+//            })
+//            .disposed(by: disposeBag)
         
         self.localRoot.pushViewController(viewController, completion: nil)
     }
@@ -109,6 +139,12 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
                 break
             }
         }).disposed(by: rx.disposeBag)
+    }
+    
+    fileprivate func cnicScanOcrReview() -> Observable<Event<ResultType<IdentityScannerResult>>> {
+        let coordn = coordinate(to: CNICReScanCoordinator(container: container, root: localRoot, scanType: .update))
+        let val = coordn.materialize()
+        return val
     }
     
     fileprivate func resultSuccess() {

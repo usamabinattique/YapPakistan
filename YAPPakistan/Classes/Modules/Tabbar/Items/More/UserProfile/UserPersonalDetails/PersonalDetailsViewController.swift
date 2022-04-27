@@ -129,13 +129,11 @@ extension PersonalDetailsViewController: ViewDesignable {
             })
             .disposed(by: disposeBag)
 
-//        eidView.rx.tap.withLatestFrom(status).filter { $0.1.isExpired || $0.0 == .activated }.subscribe(onNext: { [weak self] in
-//            if SessionManager.current.currentProfile?.restrictions.contains(.otpBlocked) ?? false && $0.0 == .activated {
-//                UserAccessRestriction.otpBlocked.showFeatureBlockAlert()
-//            } else {
-//                self?.viewModel.inputs.updateEmiratesIDTapObserver.onNext(())
-//            }
-//        }).disposed(by: disposeBag)
+        CNICView.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.viewModel.inputs.cardTapObserver.onNext(())
+            })
+            .disposed(by: disposeBag)
 
         viewModel.outputs.error.subscribe(onNext: { [weak self] error in
             self?.showAlert(message: error.localizedDescription)

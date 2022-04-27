@@ -1,9 +1,8 @@
 //
-//  CNICScanCoordinator.swift
-//  YAP
+//  CNICReScanCoordinator.swift
+//  YAPPakistan
 //
-//  Created by Zain on 17/07/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Umair  on 26/04/2022.
 //
 
 import AVFoundation
@@ -12,13 +11,8 @@ import Foundation
 import RxSwift
 import YAPCore
 
-enum CNICScanType: Equatable {
-    case update
-    case new
-}
-
-class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
-    private let container: KYCFeatureContainer?
+class CNICReScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
+    private let container: UserSessionContainer
     private let root: UINavigationController!
     private let scannerResultSubject = PublishSubject<ResultType<IdentityScannerResult>>()
     private var scanner: IdentityScanner!
@@ -26,7 +20,7 @@ class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
     let presentationCompletion = PublishSubject<Void>()
     let scanType: CNICScanType!
 
-    init(container: KYCFeatureContainer? = nil, root: UINavigationController!, scanType: CNICScanType) {
+    init(container: UserSessionContainer, root: UINavigationController!, scanType: CNICScanType) {
         self.container = container
         self.root = root
         self.scanType = scanType
@@ -54,7 +48,7 @@ class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
 
 // MARK: - Navigation
 
-private extension CNICScanCoordinator {
+private extension CNICReScanCoordinator {
     func settings() {
         root.showAlert(
             title: "common_display_text_permission_denied".localized,
@@ -104,7 +98,7 @@ private extension CNICScanCoordinator {
 
 // MARK: - IdentitScannerNavigation
 
-extension CNICScanCoordinator: IdentityScannerDeletgate {
+extension CNICReScanCoordinator: IdentityScannerDeletgate {
     public func identityScanner(didCancel scanner: IdentityScanner) {
         scanner.dismiss(animted: true, completion: nil)
         scannerResultSubject.onNext(ResultType.cancel)
@@ -128,3 +122,4 @@ extension CNICScanCoordinator: IdentityScannerDeletgate {
         scannerResultSubject.onCompleted()
     }
 }
+

@@ -8,11 +8,10 @@
 
 import Foundation
 import RxSwift
-import YAPCore
+import RxTheme
 import YAPCardScanner
 import YAPCore
 import YAPComponents
-import RxTheme
 
 class KYCCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
