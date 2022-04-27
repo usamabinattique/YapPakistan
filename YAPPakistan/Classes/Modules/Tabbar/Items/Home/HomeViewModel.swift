@@ -199,12 +199,14 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private var transactionDataProvider: DebitCardTransactionsProvider
     private var dashboardStatusActionDisposeBag: DisposeBag!
     private var themeService: ThemeService<AppTheme>!
+    private var transactionRepository: TransactionsRepositoryType
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManagerType,
          notificationManager: NotificationManagerType,
          credentialStore: CredentialsStoreType,
-         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: DebitCardTransactionsProvider, themeService: ThemeService<AppTheme>) {
+         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: DebitCardTransactionsProvider, transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>) {
+        self.transactionRepository = transactionRepository
         self.themeService = themeService
         self.accountProvider = accountProvider
         self.biometricsManager = biometricsManager
@@ -250,12 +252,14 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
         
        // generateCellViewModels()
-        getCardBalance()
+       // getCardBalance()
+        getCustomerAccountBalance()
         getWidgets(repository: cardsRepository)
         getCards()
         
         refreshSubject.subscribe(onNext: { [weak self] _ in
-            self?.getCardBalance()
+            self?.getCustomerAccountBalance()
+           /* self?.getCardBalance() */
 //            self?.getCards()
             
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
@@ -309,6 +313,30 @@ extension HomeViewModel {
         guard let decimal = text.components(separatedBy: ".").last else { return }
         attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
         self.balanceSubject.onNext(attributedString) */
+    }
+    
+    fileprivate func getCustomerAccountBalance() {
+        let accountBalanceRequest = transactionRepository.fetchCustomerAccountBalance().share()
+      //  accountBalanceRequest.map { _ in true }.bind(to: loadingSubject).disposed(by: disposeBag)
+
+        accountBalanceRequest
+            .errors()
+            .do(onNext: { [unowned self] _ in
+                print("account balance api onNext called")
+                /*self.shimmeringSubject.onNext(false) */ })
+            .map { $0.localizedDescription }
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+        
+        accountBalanceRequest.elements().subscribe(onNext: { [weak self] balance in
+            let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
+            let attributedString = NSMutableAttributedString(string: text)
+            guard let decimal = text.components(separatedBy: ".").last else { return }
+            attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
+            self?.balanceSubject.onNext(attributedString)
+        }).disposed(by: disposeBag)
+        
+        
     }
     
     func getCards() {
