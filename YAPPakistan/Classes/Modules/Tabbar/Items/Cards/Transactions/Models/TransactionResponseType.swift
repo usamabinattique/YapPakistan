@@ -549,8 +549,13 @@ extension TransactionResponse {
             return ()
         })
         
-        var sections = dictionary.map{Section.init(date: $0.key, transactions: $0.value)}
-        sections.sort(by: {$0.date.timeIntervalSince1970 > $1.date.timeIntervalSince1970})
+        var sections = dictionary.sorted(by: {$0.key.timeIntervalSince1970 > $1.key.timeIntervalSince1970}).map{
+            Section.init(date: $0.key, transactions: $0.value.sorted(by: {$0.date.timeIntervalSince1970 > $1.date.timeIntervalSince1970}))
+        }
+//        sections.sort(by: {$0.date.timeIntervalSince1970 > $1.date.timeIntervalSince1970})
+//        sections.map{
+//            $0.transactions.sort{}
+//        }
         
         _ = sections.map {
             print($0.date.string())
