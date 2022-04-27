@@ -330,6 +330,10 @@
 "screen_more_bank_details_display_text_for_top_up_title" = "My YAP account details";
 "screen_more_bank_details_display_text_copy" = "Copy";
 
+// MARK: - Current Passcode screen
+"screen_current_passcode_display_text_heading" = "Enter your current passcode";
+"screen_current_passcode_display_button_next" = "Next";
+
 // MARK: More Home Screen
 
 "screen_more_home_display_text_your_bank_details" = "Account details";
@@ -376,6 +380,12 @@
 "screen_kyc_review_selfie_subtitle" = "Make sure your face is clear and the photo is not blurry";
 "screen_kyc_review_selfie_yesitsme" = "Yes, that's me!";
 "screen_kyc_review_selfie_retake" = "Retake selfie";
+
+// MARK: CHANGE PASSCODE
+"screen_change_passcode_title" = "Enter your current 4 digit passcode";
+"screen_change_new_passcode_title" = "Enter your new 4 digit passcode";
+"screen_change_reenter_new_passcode_title" = "Re-enter your new 4 digit passcode";
+
 
 // MARK: KYC CARD NAME
 

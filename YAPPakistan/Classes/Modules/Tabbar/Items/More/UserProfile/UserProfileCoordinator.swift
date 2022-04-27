@@ -43,9 +43,18 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         
         viewController.viewModel.outputs.changePasscodeTap.subscribe(onNext: { [weak self] _ in
             
+            guard let self = self else { return }
             print("Change passcode button tapped in coordinator")
             
+            //let viewModel = CurrentPasscodeViewModel(popable: true, repository: self.container.makeLoginRepository())
             
+            let viewModel = ChangePasscodeViewModel(repository: self.container.makeLoginRepository())
+            let viewController: ChangePasscodeViewController = ChangePasscodeViewController(themeService: self.container.themeService, viewModel: viewModel) //PINViewController(themeService: self.container.themeService, viewModel: createPasscodeViewModel)
+            let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+            nav.modalPresentationStyle = .fullScreen
+            
+            
+            self.localRoot.present(nav, animated: true, completion: nil)
         }).disposed(by: disposeBag)
         
         
@@ -88,9 +97,9 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             switch result {
             case .success:
                 print("OTP Successfully Verified now update email")
-            
+                
             case .cancel:
-//                    self?.navigationRoot.popToRootViewController(animated: true)
+                //                    self?.navigationRoot.popToRootViewController(animated: true)
                 print("OTP not verified")
                 break
             }
@@ -104,7 +113,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             case .success:
                 print("OTP Successfully Verified now uodate email")
             case .cancel:
-//                    self?.navigationRoot.popToRootViewController(animated: true)
+                //                    self?.navigationRoot.popToRootViewController(animated: true)
                 print("OTP not verified")
                 break
             }

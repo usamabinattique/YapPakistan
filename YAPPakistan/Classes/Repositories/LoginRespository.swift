@@ -12,6 +12,7 @@ import RxSwift
 public protocol LoginRepositoryType: AnyObject {
     func verifyUser(username: String) -> Observable<Event<Bool>>
     func verifyPasscode(passcode: String) -> Observable<Event<String?>>
+    func updatePasscode(newPasscode: String, token : String) -> Observable<Event<String?>>
     func authenticate(username: String, password: String, deviceId: String) -> Observable<Event<[String: String?]?>>
     func generateLoginOTP(username: String, passcode: String, deviceId: String) -> Observable<Event<String?>>
     func logout(deviceUUID: String) -> Observable<Event<[String: String]?>>
@@ -40,6 +41,10 @@ public class LoginRepository: LoginRepositoryType {
     }
     
     public func verifyPasscode(passcode: String) -> Observable<Event<String?>> {
+        return customerService.verifyPasscode(passcode: passcode).materialize()
+    }
+    
+    public func updatePasscode(newPasscode: String, token : String) -> Observable<Event<String?>> {
         return customerService.verifyPasscode(passcode: passcode).materialize()
     }
     
