@@ -385,6 +385,7 @@
 "screen_change_passcode_title" = "Enter your current 4 digit passcode";
 "screen_change_new_passcode_title" = "Enter your new 4 digit passcode";
 "screen_change_reenter_new_passcode_title" = "Re-enter your new 4 digit passcode";
+"screen_change_passcode_success" = "Your passcode has been changed successfully";
 
 
 // MARK: KYC CARD NAME

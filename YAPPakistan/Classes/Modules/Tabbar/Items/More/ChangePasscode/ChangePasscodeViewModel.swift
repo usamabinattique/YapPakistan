@@ -66,6 +66,7 @@ protocol ChangePasscodeViewModelOutputs {
     var shake: Observable<Void> { get }
     var forgot: Observable<Void> { get }
     var biometryEnabled: Observable<Bool> { get }
+    var success : Observable<Void> { get }
 }
 
 protocol ChangePasscodeViewModelType {
@@ -106,6 +107,7 @@ open class ChangePasscodeViewModel: ChangePasscodeViewModelType,
     var shake: Observable<Void> { return shakeSubject.asObservable() }
     var forgot: Observable<Void> { return forgotPasscodeSubject.asObservable() }
     var biometryEnabled: Observable<Bool> { return biometryEnabledSubject.asObserver() }
+    var success : Observable<Void> { return pinChangeSuccessSubject.asObserver() }
 
     // MARK: - Subjects
 
@@ -123,6 +125,7 @@ open class ChangePasscodeViewModel: ChangePasscodeViewModelType,
     fileprivate let shakeSubject = PublishSubject<Void>()
     fileprivate let biometryEnabledSubject = BehaviorSubject<Bool>(value: false)
     fileprivate let biometricSubject = PublishSubject<Void>()
+    fileprivate let pinChangeSuccessSubject = PublishSubject<Void>()
     
     fileprivate let currentPINCOdeTextSubject = BehaviorSubject<String>(value: "")
     fileprivate let newPINCOdeTextSubject = BehaviorSubject<String>(value: "")
@@ -283,8 +286,19 @@ open class ChangePasscodeViewModel: ChangePasscodeViewModelType,
                               else {
                                   
                                   
-                                  let req = repository.verifyPasscode(passcode: <#T##String#>)
+                                  let req = repository.updatePasscode(newPasscode: newPassword, token: newPINToken)
                                   
+                                  req.elements().subscribe(onNext: { [weak self] data in
+                                      
+                                      print(data)
+                                      self?.pinChangeSuccessSubject.onNext(())
+                                      
+                                  }).disposed(by: self.disposeBag)
+                                  
+                                  
+                                  req.errors().subscribe(onNext: { [weak self] error in
+                                      self?.errorSubject.onNext(error.localizedDescription)
+                                  }).disposed(by: self.disposeBag)
                               }
                               
                               

@@ -53,6 +53,9 @@ public protocol CustomerServiceType {
     
     func verifyPasscode<T: Codable>(passcode: String) -> Observable<T>
     
+    func updatePasscode<T: Codable>(newPasscode: String, token : String) -> Observable<T>
+    
+    
     func generateLoginOTP<T: Codable>(username: String,
                                       passcode: String,
                                       deviceID: String) -> Observable<T>
@@ -240,6 +243,20 @@ public class CustomersService: BaseService, CustomerServiceType {
         let route = APIEndpoint(.post,
                                 apiConfig.customersURL,
                                 "/api/user/verify-passcode",
+                                query: nil,
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+        
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func updatePasscode<T: Codable>(newPasscode: String, token : String) -> Observable<T> {
+        let body = ["new-password": newPasscode,
+                    "token": token]
+
+        let route = APIEndpoint(.post,
+                                apiConfig.customersURL,
+                                "/api/user/change-password",
                                 query: nil,
                                 body: body,
                                 headers: authorizationProvider.authorizationHeaders)

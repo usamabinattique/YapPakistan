@@ -46,15 +46,32 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             guard let self = self else { return }
             print("Change passcode button tapped in coordinator")
             
-            //let viewModel = CurrentPasscodeViewModel(popable: true, repository: self.container.makeLoginRepository())
             
             let viewModel = ChangePasscodeViewModel(repository: self.container.makeLoginRepository())
             let viewController: ChangePasscodeViewController = ChangePasscodeViewController(themeService: self.container.themeService, viewModel: viewModel) //PINViewController(themeService: self.container.themeService, viewModel: createPasscodeViewModel)
             let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
             nav.modalPresentationStyle = .fullScreen
+
             
+            viewModel.outputs.success.subscribe(onNext: { _ in
+                
+                let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: "", descriptionText: "screen_change_passcode_success")
+                let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
+                
+                
+                viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
+                    nav.dismiss(animated: true, completion: nil)
+                }).disposed(by: self.disposeBag)
+                
+                nav.pushViewController(viewController, completion: nil)
+                
+            }).disposed(by: self.disposeBag)
             
+
             self.localRoot.present(nav, animated: true, completion: nil)
+            
+            //self.navigationtoChangePasscode()
+            
         }).disposed(by: disposeBag)
         
         
@@ -90,6 +107,10 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         
         self.localRoot.pushViewController(viewController, completion: nil)
     }
+    
+//    fileprivate func navigationtoChangePasscode() {
+//        ChangePasscodeCoordinator(root: self.localRoot, container: self.container)
+//    }
     
     fileprivate func navigateToEditEmail() {
         coordinate(to: ChangeEmailAddressCoordinator(root: self.localRoot, container: self.container)).subscribe(onNext: { [weak self] result in

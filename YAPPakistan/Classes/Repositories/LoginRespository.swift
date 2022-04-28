@@ -45,7 +45,7 @@ public class LoginRepository: LoginRepositoryType {
     }
     
     public func updatePasscode(newPasscode: String, token : String) -> Observable<Event<String?>> {
-        return customerService.verifyPasscode(passcode: passcode).materialize()
+        return customerService.updatePasscode(newPasscode: newPasscode, token: token).materialize()
     }
     
     public func changeProfilePhoto(_ data: Data, name: String, fileName: String, mimeType: String) -> Observable<Event<ProfilePhotoResponse>> {
