@@ -10,12 +10,40 @@
 
 
 import Foundation
+import UIKit
 
 public enum TransactionType: String, Codable {
     case debit = "DEBIT"
     case credit = "CREDIT"
     case unknown = "NA"
 }
+
+public enum ProductNameType: String {
+    case yapToYap = "Y2Y_TRANSFER"
+    case topup = "TOP_UP_VIA_CARD"
+    case unkonwn
+    
+    var type: String {
+        switch self {
+        case .yapToYap:
+            return "YAP to YAP"
+        case .topup:
+            return "Top Up"
+        case .unkonwn:
+            return ""
+        }
+    }
+}
+
+//public enum TransactionStatus: String {
+//    case pending = "PENDING"
+//    case inProgress = "IN_PROGRESS"
+//    case completed = "COMPLETED"
+//    case failed = "FAILED"
+//    case cancelled = "CANCELLED"
+//    case none = "NONE"
+//}
+
 
 public enum TransactionState: String, Codable {
     case fssStart = "FSS_START"
@@ -34,9 +62,9 @@ public extension TransactionType {
     var icon: UIImage? {
         switch self {
         case .credit:
-            return UIImage.sharedImage(named: "icon_transaction_credit")?.asTemplate
+            return UIImage.init(named: "icon_transaction_credit", in: .yapPakistan)?.asTemplate
         case .debit:
-            return UIImage.sharedImage(named: "icon_transaction_debit")?.asTemplate
+            return UIImage.init(named: "icon_transaction_debit", in: .yapPakistan)?.asTemplate
         case .unknown:
             return nil
         }
@@ -45,7 +73,7 @@ public extension TransactionType {
     var identifierIcon: UIImage? {
         switch self {
         case .debit:
-            return UIImage.sharedImage(named: "icon_transaction_type_debit")?.asTemplate
+            return UIImage.init(named: "icon_transaction_type_debit", in: .yapPakistan)?.asTemplate
         case .credit:
             return nil
         case .unknown:
@@ -55,12 +83,12 @@ public extension TransactionType {
 
     func identifierIcon(for status: TransactionStatus, for transactionProductCode: TransactionProductCode) -> UIImage? {
         guard  status != .failed && status != .cancelled else { return nil }
-        guard status == .completed else { return UIImage.sharedImage(named: "icon_transaction_type_inprogress")?.asTemplate }
+        guard status == .completed else { return UIImage.init(named: "icon_transaction_type_inprogress", in: .yapPakistan)?.asTemplate }
 
         if transactionProductCode == .atmDeposit {
-            return UIImage.sharedImage(named: "icon_identifire_atm_deposit")
+            return UIImage.init(named: "icon_identifire_atm_deposit", in: .yapPakistan)
         } else if transactionProductCode == .atmWithdrawl {
-            return UIImage.sharedImage(named: "icon_identifire_atm_withdrawal")
+            return UIImage.init(named: "icon_identifire_atm_withdrawal", in: .yapPakistan)
         }
 
         return identifierIcon
@@ -159,6 +187,118 @@ struct TransactionResponse: Codable, Transaction {
         guard type == .credit else { return totalAmount ?? 0 }
         return amount
     }
+    
+    var productNameType: ProductNameType { ProductNameType(rawValue: productName ?? "") ?? .unkonwn}
+    
+//    public var transactionProductCode: TransactionProductCode {
+//        return TransactionProductCode(rawValue: productCode ?? "") ?? .unknown
+//    }
+    
+    public var icon: (image: UIImage?, contentMode: UIView.ContentMode, imageUrl: String?, identifierImage: UIImage?) {
+        let title = self.title ?? "Unknown Transaction"
+        var icon: UIImage? = nil
+        var contentMode: UIView.ContentMode = .scaleAspectFill
+        var url: String? = nil
+        var identifierImage: UIImage?
+
+        var name:String? = ""
+        if(productCode == .y2yTransfer) {
+            name = type == .debit ? receiverName : senderName
+        }else if(productCode == .posPurchase || productCode == .eCom) {
+            name  = merchantName
+        }else{
+            name = title
+        }
+
+
+        url = type == .debit ? receiverUrl : senderUrl
+        contentMode = .scaleAspectFill
+        
+        if identifierImage == nil {
+            if type == .debit && productNameType == .yapToYap {
+                identifierImage = UIImage.init(named: "icon_send_money_completed_secondary", in: .yapPakistan)
+            } else if type == .credit && productNameType == .yapToYap {
+                let img = flipImageLeftRight( UIImage.init(named: "icon_send_money_completed_secondary", in: .yapPakistan) ?? UIImage())
+                identifierImage = img
+                //identifierImage = UIImage.init(named: "icon_transaction_type_credit", in: .yapPakistan)
+            } else if productNameType == .topup {
+                identifierImage = UIImage.init(named: "icon_identifire_atm_deposit", in: .yapPakistan)
+            } else {
+                identifierImage = UIImage.init(named: "icon_identifire_atm_withdrawal", in: .yapPakistan)
+            }
+        }
+        
+        if icon == nil {
+           /*
+            icon = iconName.flatMap {
+                UIImage.sharedImage(named: $0)
+            } */
+
+            if icon != nil {
+                if productCode.isFee || productCode.isIncoming || productCode == .y2yTransfer || productCode.isSendMoney {
+                    contentMode = .scaleAspectFill
+                } else if productCode == .addFundsSupplementaryCard || productCode == .removeFundsSuplementaryCard {
+                    contentMode = .center
+                }
+            }
+        }
+
+        if icon == nil {
+            icon = name?.thumbnail//initialsImage(color: UIColor.colorFor(listItemIndex: Int(itemIndex)))
+
+            if icon != nil {
+                contentMode = .scaleAspectFill
+            }
+        }
+        
+       /* if productCode == .posPurchase || productCode == .eCom || productCode == .billPayments {
+            let category = self.tapixCategory ?? "General"
+            let isCategoryGeneral = category.lowercased() == "general"
+            url = merchantLogo ?? tapixCategoryIconURL
+            if isCategoryGeneral {
+                icon = UIImage(named: "general_category_icon", in: Bundle.main, compatibleWith: nil)
+            }
+        } */
+        if productCode == .eCom {
+            icon = name?.thumbnail//initialsImage(color: UIColor.colorFor(listItemIndex: Int(itemIndex)))
+            if icon != nil {
+                contentMode = .scaleAspectFill
+            }
+        }
+        
+
+        if transactionStatus == .cancelled {
+            contentMode = .scaleAspectFill
+        }
+
+        return (icon, contentMode, url, identifierImage)
+    }
+    
+    func flipImageLeftRight(_ image: UIImage) -> UIImage? {
+
+        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
+        let context = UIGraphicsGetCurrentContext()!
+        context.translateBy(x: image.size.width, y: image.size.height)
+        context.scaleBy(x: -image.scale, y: -image.scale)
+
+        context.draw(image.cgImage!, in: CGRect(origin:CGPoint.zero, size: image.size))
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+
+        UIGraphicsEndImageContext()
+
+        return newImage
+    }
+    
+    public var transactionStatus: TransactionStatus { TransactionStatus.init(rawValue: status ?? "") ?? .none }
+    
+    public func transactionTypeBackgroundColor() -> UIColor {
+        return isTransactionInProgress ? .white : type == .debit && (productCode == .y2yTransfer || productCode.isSendMoney || productCode == .cashPayout) ? UIColor(Color(hex: "#478DF4")) : .white
+    }
+
+    public func transactionTypeTintColor() -> UIColor? {
+        return transactionStatus == .completed ? (productCode == .y2yTransfer || productCode.isSendMoney || productCode == .cashPayout) ? UIColor.white : UIColor(Color(hex: "#478DF4"))  : UIColor(Color(hex: "#F57F17"))
+    }
 
     enum CodingKeys: String, CodingKey {
         case date = "creationDate"
@@ -185,7 +325,7 @@ struct TransactionResponse: Codable, Transaction {
         case fee = "postedFees"
         case senderName, receiverName
         case merchantName
-        case merchantCategory = "merchantCategoryName"
+        case merchantCategory = "merchantCategory"//"merchantCategoryName"
         case merchantLogoUrl = "merchantLogo"
         case location = "cardAcceptorLocation"
         case senderUrl = "senderProfilePictureUrl"
@@ -557,12 +697,12 @@ extension TransactionResponse {
 //            $0.transactions.sort{}
 //        }
         
-        _ = sections.map {
+       /* _ = sections.map {
             print($0.date.string())
             _ = $0.transactions.map{
                 print($0.id)
             }
-        }
+        } */
         return sections
     }
 
