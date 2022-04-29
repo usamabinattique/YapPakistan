@@ -491,7 +491,7 @@
 
 //Mark: - Change Phone Number Screen
 "screen_change_phone_number_display_text_heading" = "Change phone number";
-"screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
+"screen_change_phone_number_display_text_text_field_title" = "Enter your new phone number";
 
 
 // MARK: Change Phone Number Success Screen
