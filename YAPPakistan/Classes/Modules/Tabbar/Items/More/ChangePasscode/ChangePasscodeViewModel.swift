@@ -1,43 +1,13 @@
-////
-////  ChangePasscodeViewModel.swift
-////  YAPPakistan
-////
-////  Created by Awais on 27/04/2022.
-////
 //
-//import Foundation
-//import RxSwift
+//  ChangePasscodeViewModel.swift
+//  YAPPakistan
 //
-//public protocol ChangePasscodeViewModelInputs {
-//    var backObserver: AnyObserver<Void> { get }
-//}
+//  Created by Awais on 27/04/2022.
 //
-//public protocol ChangePasscodeViewModelOutputs {}
-//
-//
-//public protocol ChangePasscodeViewModelType {
-//    var inputs: ChangePasscodeViewModelInputs { get }
-//    var outputs: ChangePasscodeViewModelOutputs { get }
-//}
-//
-//public class ChangePasscodeViewModel: ChangePasscodeViewModelType, ChangePasscodeViewModelInputs, ChangePasscodeViewModelOutputs {
-//
-//    public var inputs: ChangePasscodeViewModelInputs { return self }
-//    var outputs: ChangePasscodeViewModelOutputs { return self }
-//
-//    // MARK: Subjects
-//    private let backSubject = PublishSubject<Void>()
-//
-//    // MARK: Inputs
-//    var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
-//
-//
-//}
 
 import Foundation
 import YAPComponents
 import RxSwift
-
 
 enum ChangePasscodeInputState {
     case currentPasscode

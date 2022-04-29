@@ -102,7 +102,7 @@ class UnvarifiedEmailSuccessViewModel: UnvarifiedEmailSuccessViewModelType, Unva
         descriptionSubject = BehaviorSubject(value:  "screen_unverified_success_display_text_description".localized)
         mailButtonTitleSubject = BehaviorSubject(value:  "screen_unverified_display_button_mail".localized)
         backTitleSubject = BehaviorSubject(value:  "common_button_Done".localized)
-        subHeadingSubject.onNext(self.makeAttributesEmailAddress(email: changedEmailOrPhoneString, descriptionText: "screen_unverified_success_display_text_sub_heading"))
+        subHeadingSubject.onNext(self.makeAttributesEmailAddress(email: changedEmailOrPhoneString, descriptionText: descriptionText))
 
 //        mailAction.subscribe(onNext: {[unowned self] _ in
 //            self.checkMailAppOptionsAvailablitySubject.onNext(())

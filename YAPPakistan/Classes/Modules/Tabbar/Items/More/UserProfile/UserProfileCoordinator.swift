@@ -52,6 +52,10 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
             nav.modalPresentationStyle = .fullScreen
 
+            viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.localRoot.dismiss(animated: true, completion: nil)
+            }).disposed(by: self.disposeBag)
             
             viewModel.outputs.success.subscribe(onNext: { _ in
                 

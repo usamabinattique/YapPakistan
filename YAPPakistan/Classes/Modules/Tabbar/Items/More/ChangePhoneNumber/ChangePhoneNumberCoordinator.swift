@@ -62,12 +62,13 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func navigateToChangeEmailSuccess(phoneNumber: String) {
-        let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: phoneNumber, descriptionText: "screen_unverified_success_phone_number_display_text_sub_heading")
+        let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: "", descriptionText: "screen_phone_number_update_success")
         let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
+        
         
         viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
             self.localRoot.dismiss(animated: true, completion: nil)
-        }).disposed(by: disposeBag)
+        }).disposed(by: self.disposeBag)
         
         localRoot.pushViewController(viewController, completion: nil)
     }

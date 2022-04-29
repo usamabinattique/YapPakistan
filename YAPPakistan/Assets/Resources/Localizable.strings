@@ -495,7 +495,7 @@
 
 
 // MARK: Change Phone Number Success Screen
-"screen_unverified_success_phone_number_display_text_sub_heading" = "Your phone number has been changed to\n%@";
+"screen_phone_number_update_success" = "Your phone number has been updated successfully\n%@";
 
 // MARK: Change Email Address success Screen
 "screen_unverified_success_display_text_heading" = "Success!";
