@@ -267,13 +267,13 @@ fileprivate extension UserProfileViewController {
     func bindImageSourceType() {
         profilePhotoEditButton.rx.tap.bind(to: viewModel.inputs.profilePhotoEditObserver).disposed(by: disposeBag)
         
-//        viewModel.outputs.profilePhotoEditTap.subscribe(onNext: { [weak self] _ in
-//            
-//            guard let self = self else { return }
-//            print("Edid Photo Tapped")
-//            self.openActionSheet()
-//            
-//        }).disposed(by: disposeBag)
+        viewModel.outputs.profilePhotoEditTap.subscribe(onNext: { [weak self] _ in
+            
+            guard let self = self else { return }
+            print("Edid Photo Tapped")
+            self.openActionSheet()
+            
+        }).disposed(by: disposeBag)
         
         
         

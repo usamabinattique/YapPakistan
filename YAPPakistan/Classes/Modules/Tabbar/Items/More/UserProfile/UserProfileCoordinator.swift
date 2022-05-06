@@ -42,30 +42,30 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: disposeBag)
         
         
-        viewModel.outputs.profilePhotoEditTap.subscribe(onNext: { [weak self] _ in
-            
-            guard let self = self else { return }
-            
-            let viewModel = MoreBankDetailsViewModel(accountProvider: self.container.accountProvider)
-            let viewController = ChangeProfilePhotoOptionsViewController(themeService: self.container.themeService, viewModel: viewModel) //MoreBankDetailsViewController(themeService: self.container.themeService, viewModel: viewModel)
-            
-            
-            let alertWindow = UIWindow(frame: UIScreen.main.bounds)
-            alertWindow.rootViewController = YAPActionSheetRootViewController(nibName: nil, bundle: nil)
-            alertWindow.backgroundColor = .clear
-            alertWindow.windowLevel = .alert + 1
-            alertWindow.makeKeyAndVisible()
-            let nav = UINavigationController(rootViewController: viewController)
-
-            nav.navigationBar.isHidden = true
-            nav.modalPresentationStyle = .overCurrentContext
-            alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
-
-            viewController.window = alertWindow
-            
-            //self.localRoot.present(viewController, animated: true, completion: nil)
-            
-        }).disposed(by: self.disposeBag)
+//        viewModel.outputs.profilePhotoEditTap.subscribe(onNext: { [weak self] _ in
+//
+//            guard let self = self else { return }
+//
+//            let viewModel = MoreBankDetailsViewModel(accountProvider: self.container.accountProvider)
+//            let viewController = ChangeProfilePhotoOptionsViewController(themeService: self.container.themeService, viewModel: viewModel) //MoreBankDetailsViewController(themeService: self.container.themeService, viewModel: viewModel)
+//
+//
+//            let alertWindow = UIWindow(frame: UIScreen.main.bounds)
+//            alertWindow.rootViewController = YAPActionSheetRootViewController(nibName: nil, bundle: nil)
+//            alertWindow.backgroundColor = .clear
+//            alertWindow.windowLevel = .alert + 1
+//            alertWindow.makeKeyAndVisible()
+//            let nav = UINavigationController(rootViewController: viewController)
+//
+//            nav.navigationBar.isHidden = true
+//            nav.modalPresentationStyle = .overCurrentContext
+//            alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
+//
+//            viewController.window = alertWindow
+//
+//            //self.localRoot.present(viewController, animated: true, completion: nil)
+//
+//        }).disposed(by: self.disposeBag)
         
         viewController.viewModel.outputs.changePasscodeTap.subscribe(onNext: { [weak self] _ in
             
