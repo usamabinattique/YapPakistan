@@ -97,7 +97,7 @@ fileprivate extension CommonWebViewController {
         viewModel.outputs.cardAddedAlert.withUnretained(self)
             .subscribe(onNext: { `self`, paymentCardObj in
                 self.showCardAddedAlert(externalCard: paymentCardObj)
-            })
+            }).disposed(by: disposeBag)
     }
 }
 

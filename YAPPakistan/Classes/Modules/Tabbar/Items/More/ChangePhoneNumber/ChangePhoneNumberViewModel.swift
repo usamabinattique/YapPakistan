@@ -162,7 +162,7 @@ extension ChangePhoneNumberViewModel {
                 self.successSubject.onNext(String(formattedCountryCode + formattedPhoneNumber))
                 print(data)
             }).disposed(by: disposeBag)
-        })
+        }).disposed(by: disposeBag)
     }
 }
 

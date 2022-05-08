@@ -377,6 +377,14 @@ public extension CardStatus {
     }
 }
 
+extension PaymentCard: StatementFetchable {
+    public var idForStatements: String? {
+        return self.cardSerialNumber
+    }
+    
+    public var statementType: StatementType { .card }
+}
+
 extension PaymentCard {
     public static var mock: PaymentCard {
         PaymentCard(accountNumber: nil, accountType: nil, active: nil, atmAllowed: nil, availableBalance: nil, backImage: nil, blocked: nil, cardBalance: nil, cardName: nil, cardScheme: nil, cardSerialNumber: nil, cardType: PaymentCardType.debit, currentBalance: nil, customerId: nil, delivered: nil, deliveryStatus: .ordered, expiryDate: nil, frontImage: nil, issuanceDate: nil, maskedCardNo: nil, nameUpdated: nil, onlineBankingAllowed: nil, paymentAbroadAllowed: nil, physical: false, pinCreated: nil, pinStatus: nil, productCode: nil, retailPaymentAllowed: nil, shipmentStatus: nil, status: nil, uuid: nil, cardDetails: nil)

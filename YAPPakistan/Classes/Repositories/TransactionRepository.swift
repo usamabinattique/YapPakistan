@@ -41,9 +41,10 @@ protocol TransactionsRepositoryType {
     func getTransactionProductLimit(transactionProductCode: String) -> Observable<Event<TransactionLimit>>
     func getThresholdLimits() -> Observable<Event<TransactionThreshold>>
     func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>>
+    func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>
 }
 
-class TransactionsRepository: TransactionsRepositoryType {
+class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryType {
 
     private let transactionService: TransactionsService
     private let customersService: CustomersService
@@ -132,5 +133,17 @@ class TransactionsRepository: TransactionsRepositoryType {
     
     public func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>> {
         return transactionService.getDenominationAmount(productCode: productCode).materialize()
+    }
+    
+    public func getCardStatement(serialNumber: String) -> Observable<Event<[Statement]?>> {
+        return self.transactionService.cardStatement(serialNumber).materialize()
+    }
+    
+    public func getCustomCardStatement(serialNumber: String, startDate: String, endDate: String) -> Observable<Event<Statement?>> {
+        return self.transactionService.cardCustomStatement(serialNumber, startDate: startDate, endDate: endDate).materialize()
+    }
+    
+    public func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>{
+        transactionService.emailStatement(url: request.url?.absoluteString ?? "", month: request.month ?? "", year: request.year ?? "", statementType: request.statementType ?? "", cardType: request.cardType).materialize()
     }
 }

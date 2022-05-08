@@ -40,7 +40,7 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
                     self.isOTPPresented = true
                     self.otp(.changeMobileNumber, mobileNo: newPhoneNumber)
                 }
-            })
+            }).disposed(by: self.disposeBag)
         }).disposed(by: disposeBag)
 
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
