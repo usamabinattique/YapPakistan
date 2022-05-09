@@ -353,6 +353,8 @@ private extension CardStatementViewController {
         viewModel.outputs.customDateDescription.bind(to: CDStatementDateText.rx.text).disposed(by: disposeBag)
         
         CDViewButton.rx.tap.bind(to: viewModel.inputs.customDateObserver).disposed(by: disposeBag)
+        LFYViewButton.rx.tap.bind(to: viewModel.inputs.lastFinYearObserver).disposed(by: disposeBag)
+        YTDViewButton.rx.tap.bind(to: viewModel.inputs.yearToDateObserver).disposed(by: disposeBag)
     }
     
     func bindTableView() {

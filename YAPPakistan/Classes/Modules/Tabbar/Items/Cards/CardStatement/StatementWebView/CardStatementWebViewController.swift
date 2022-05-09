@@ -103,7 +103,10 @@ extension CardStatementWebViewController: ViewDesignable {
             guard let `self` = self else { return }
             self.title = "Statement".localized
             guard let url = URL(string: html) else { return }
-            self.webView.load(URLRequest(url: url))
+            if let data = try? Data(contentsOf: url) {
+                self.webView.load(data, mimeType: "application/pdf", characterEncodingName: "", baseURL: url)
+            }
+            //self.webView.load(URLRequest(url: url))
         }).disposed(by: disposeBag)
         
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)

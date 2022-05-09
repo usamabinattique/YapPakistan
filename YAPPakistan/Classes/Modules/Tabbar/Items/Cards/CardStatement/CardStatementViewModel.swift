@@ -13,6 +13,8 @@ import YAPComponents
 protocol CardStatementViewModelInput {
     var backObserver: AnyObserver<Void> { get }
     var customDateObserver: AnyObserver<Void> { get }
+    var yearToDateObserver: AnyObserver<Void> { get }
+    var lastFinYearObserver: AnyObserver<Void> { get }
     var decrementYearObserver: AnyObserver<Void> { get }
     var incrementYearObserver: AnyObserver<Void> { get }
     var viewWillAppearObserver: AnyObserver<Void> { get }
@@ -49,6 +51,8 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
     
     private let backSubject = PublishSubject<Void>()
     private let customDateViewSubject = PublishSubject<Void>()
+    private let yearToDateViewSubject = PublishSubject<Void>()
+    private let lastFinYearViewSubject = PublishSubject<Void>()
     private let decrementYearSubject = PublishSubject<Void>()
     private let incrementYearSubject = PublishSubject<Void>()
     private let viewWillAppearSubject = PublishSubject<Void>()
@@ -70,6 +74,8 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
     // MARK: - Inputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     var customDateObserver: AnyObserver<Void> { customDateViewSubject.asObserver() }
+    var yearToDateObserver: AnyObserver<Void> { yearToDateViewSubject.asObserver() }
+    var lastFinYearObserver: AnyObserver<Void> { lastFinYearViewSubject.asObserver() }
     var decrementYearObserver: AnyObserver<Void> { return decrementYearSubject.asObserver() }
     var incrementYearObserver: AnyObserver<Void> { return incrementYearSubject.asObserver() }
     var viewWillAppearObserver: AnyObserver<Void> { return viewWillAppearSubject.asObserver() }
@@ -110,8 +116,6 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
         
         titleSubject.onNext(statementFetchable?.statementType.viewTitle)
         
-        fetchCustomDateStatements(statementFetchable: statementFetchable)
-        
         let cardStatementRequest = viewWillAppearSubject.take(1)
             .do(onNext: { YAPProgressHud.showProgressHud() })
             .flatMap { [unowned self] _ -> Observable<Event<[Statement]?>> in
@@ -134,7 +138,7 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
         let statements = cardStatementRequest.elements().unwrap()
             .map { $0.sorted{ $0.date > $1.date } }
             .map {
-                Dictionary(grouping: $0, by: { statement in statement.year }) }
+                Dictionary(grouping: $0, by: { statement in statement.year ?? ""}) }
             .map { group in
                 group.sorted { lhs, rhs in
                     return Double(lhs.key) ?? 0 > Double(rhs.key) ?? 0 } }
@@ -178,24 +182,44 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
         
         incrementYearSubject.withLatestFrom(currentIndexSubject).map { $0 - 1 }.bind(to: currentIndexSubject).disposed(by: disposeBag)
         
+        customDateRefreshSubject
+            .subscribe(onNext: { [weak self] selectedDate in
+                self?.fetchCustomDateStatements(statementFetchable: statementFetchable, startDate: selectedDate.startDate, endDate: selectedDate.endDate)
+            })
+            .disposed(by: disposeBag)
+        
+        lastFinYearViewSubject
+            .subscribe(onNext: { [weak self] _ in
+                self?.fetchCustomDateStatements(statementFetchable: statementFetchable, startDate: "01-07-\(previousYear)", endDate: "30-06-\(currentYear)")
+            })
+            .disposed(by: disposeBag)
+        
+        yearToDateViewSubject
+            .subscribe(onNext: { [weak self] _ in
+                let todayFormattedDate = Date().string(withFormat: DateFormatter.serverReadableDateFormat)
+                self?.fetchCustomDateStatements(statementFetchable: statementFetchable, startDate: "01-01-\(currentYear)", endDate: "\(todayFormattedDate)")
+            })
+            .disposed(by: disposeBag)
+        
     }
     
-    func fetchCustomDateStatements(statementFetchable: StatementFetchable?) {
-        let cardStatementRequest = customDateRefreshSubject
-            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-                .flatMap { [unowned self] rangeSelected -> Observable<Event<Statement?>> in
-                    return self.repository.getCustomCardStatement(serialNumber: statementFetchable?.idForStatements ?? "", startDate: rangeSelected.0, endDate: rangeSelected.1)
-                }
-                .share()
-                .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+    func fetchCustomDateStatements(statementFetchable: StatementFetchable?, startDate: String, endDate: String) {
         
-        cardStatementRequest.errors().subscribe(onNext: { [unowned self] in self.errorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
+        YAPProgressHud.showProgressHud()
+        
+        let cardStatementRequest =  self.repository.getCustomCardStatement(serialNumber: statementFetchable?.idForStatements ?? "", startDate: startDate, endDate: endDate)
+            .share()
+        
+        cardStatementRequest.errors().subscribe(onNext: { [unowned self] in
+            YAPProgressHud.hideProgressHud()
+            self.errorSubject.onNext($0.localizedDescription)
+        }).disposed(by: disposeBag)
         
         cardStatementRequest.elements().unwrap()
-                    .subscribe(onNext: { statement in
-                        print(statement.month)
-                        print(statement.year)
-                        print(statement.url)
+                    .subscribe(onNext: { [weak self] statement in
+                        YAPProgressHud.hideProgressHud()
+                        let webContent = EmailStatement(url: URL(string: statement.url), month: nil, year: nil, statementType: nil, cardType: nil)
+                        self?.viewStatementSubject.onNext(webContent)
                     })
                     .disposed(by: disposeBag)
     }

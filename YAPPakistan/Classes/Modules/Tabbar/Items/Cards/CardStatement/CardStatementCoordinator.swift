@@ -42,7 +42,7 @@ public class CardStatementCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.customDateView.subscribe(onNext: { [weak self] _ in
-            self?.showCustomDateView()
+            self?.showCustomDateView(statementVM: viewModel)
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.viewStatement.withUnretained(self).subscribe(onNext: { `self`, request in
@@ -53,7 +53,7 @@ public class CardStatementCoordinator: Coordinator<ResultType<Void>> {
         return result
     }
     
-    private func showCustomDateView() {
+    private func showCustomDateView(statementVM: CardStatementViewModel) {
         let viewModel = CustomDateStatementViewModel()
         let viewController = CustomDateStatementViewController(themeService: self.container.themeService, viewModel: viewModel)
         
@@ -63,11 +63,10 @@ public class CardStatementCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
         
-        viewModel.outputs.next
+        viewModel.outputs.next.debug("custom date filter next--->")
             .subscribe(onNext:{ [weak self] startD, endD in
                 self?.localNavRoot.popViewController()
-                print(startD)
-                print(endD)
+                statementVM.inputs.customDateRefreshObserver.onNext((startDate: startD, endDate: endD))
             })
             .disposed(by: rx.disposeBag)
         

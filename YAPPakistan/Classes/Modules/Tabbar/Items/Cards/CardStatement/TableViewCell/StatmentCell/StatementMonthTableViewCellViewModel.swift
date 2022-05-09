@@ -47,7 +47,7 @@ class StatementMonthTableViewCellViewModel: ReusableTableViewCellViewModelType, 
     // MARK: - Init
     init(_ statement: Statement) {
         
-        monthSubject.onNext(statement.month)
+        monthSubject.onNext(statement.month ?? "")
         
         viewObserverSubject.map { statement }.bind(to: viewStatementSubject).disposed(by: disposeBag)
     }

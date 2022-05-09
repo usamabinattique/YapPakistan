@@ -14,28 +14,32 @@ fileprivate var statementDateFormatter: DateFormatter {
 }
 
 public struct Statement: Codable {
-    let month: String
-    let year: String
+    let month: String?
+    let year: String?
     let url: String
+    let startDate: String?
+    let endDate: String?
     
     enum CodingKeys: String, CodingKey {
         case month = "month"
         case year = "year"
         case url = "statementURL"
+        case startDate = "toDate"
+        case endDate = "fromDate"
     }
 }
 
 // MARK: - Mocked extension
 extension Statement {
     public static var mocked: Statement {
-        return Statement(month: "05", year: "2020", url: "")
+        return Statement(month: "05", year: "2020", url: "", startDate: "", endDate: "")
     }
 
 }
 
 extension Statement {
     var date: Date {
-        statementDateFormatter.date(from: [month, year].joined(separator: " ")) ?? Date()
+        statementDateFormatter.date(from: [month ?? "", year ?? ""].joined(separator: " ")) ?? Date()
     }
 }
 
