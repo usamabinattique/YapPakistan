@@ -12,7 +12,7 @@ import YAPComponents
 import RxDataSources
 import RxTheme
 
-class StatementViewController: UIViewController {
+class CardStatementViewController: UIViewController {
     
     // MARK: Views
     
@@ -123,12 +123,12 @@ class StatementViewController: UIViewController {
     
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
     private let disposeBag = DisposeBag()
-    private var viewModel: StatementViewModelType!
+    private var viewModel: CardStatementViewModelType!
     private var themeService: ThemeService<AppTheme>!
     
     // MARK: Initialization
     
-    init(themeService: ThemeService<AppTheme>, viewModel: StatementViewModelType) {
+    init(themeService: ThemeService<AppTheme>, viewModel: CardStatementViewModelType) {
         super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
         self.themeService = themeService
@@ -161,7 +161,7 @@ class StatementViewController: UIViewController {
 
 // MARK: View setup
 
-private extension StatementViewController {
+private extension CardStatementViewController {
     func setupViews() {
         
         lastFinYearView.addSubview(LFYIcon)
@@ -329,7 +329,7 @@ private extension StatementViewController {
 
 // MARK: Binding
 
-private extension StatementViewController {
+private extension CardStatementViewController {
     
     func bindViews() {
         
@@ -356,14 +356,33 @@ private extension StatementViewController {
     }
     
     func bindTableView() {
+        tableView.rx.setDelegate(self).disposed(by: disposeBag)
+        
         dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
             return cell
         })
         
+        dataSource.titleForHeaderInSection = { [weak self] dataSource, index in
+            let yearRelay = BehaviorRelay<String?>(value: "")
+            self?.viewModel.outputs.year.bind(to: yearRelay).disposed(by: self!.disposeBag)
+            let yearString = yearRelay.value
+            return "Available \(yearString ?? "") statements"
+        }
+        
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
     }
+}
+
+extension CardStatementViewController: UIScrollViewDelegate, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.tintColor = UIColor.white
+        let header:UITableViewHeaderFooterView = view as! UITableViewHeaderFooterView
+        header.textLabel?.textColor = UIColor(self.themeService.attrs.greyDark)
+    }
+    
 }
 
 

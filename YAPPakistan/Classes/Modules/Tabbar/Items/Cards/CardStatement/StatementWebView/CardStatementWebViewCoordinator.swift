@@ -33,10 +33,6 @@ class CardStatementWebViewCoordinator: Coordinator<ResultType<Void>> {
             self?.root.popViewController()
         }).disposed(by: rx.disposeBag)
         
-        viewController.viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
-            self?.root.popViewController()
-        }).disposed(by: rx.disposeBag)
-        
         viewModel.outputs.emailButton
             .subscribe(onNext: { [weak self] _ in
                 //self?.showEmailPopup()

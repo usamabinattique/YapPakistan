@@ -28,8 +28,8 @@ public class CardStatementCoordinator: Coordinator<ResultType<Void>> {
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = StatementViewModel(statementFetchable: card, repository: repository)
-        let viewController = StatementViewController(themeService: container.themeService, viewModel: viewModel)
+        let viewModel = CardStatementViewModel(statementFetchable: card, repository: repository)
+        let viewController = CardStatementViewController(themeService: container.themeService, viewModel: viewModel)
         
         self.localNavRoot = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
         

@@ -10,7 +10,7 @@ import RxSwift
 import RxDataSources
 import YAPComponents
 
-protocol StatementViewModelInput {
+protocol CardStatementViewModelInput {
     var backObserver: AnyObserver<Void> { get }
     var customDateObserver: AnyObserver<Void> { get }
     var decrementYearObserver: AnyObserver<Void> { get }
@@ -20,7 +20,7 @@ protocol StatementViewModelInput {
     var customDateRefreshObserver: AnyObserver<DateRangeSelected> { get }
 }
 
-protocol StatementViewModelOutput {
+protocol CardStatementViewModelOutput {
     var back: Observable<Void> { get }
     var customDateView: Observable<Void> { get }
     var viewStatement: Observable<WebContentType> { get }
@@ -35,17 +35,17 @@ protocol StatementViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
 }
 
-protocol StatementViewModelType {
-    var inputs: StatementViewModelInput { get }
-    var outputs: StatementViewModelOutput { get }
+protocol CardStatementViewModelType {
+    var inputs: CardStatementViewModelInput { get }
+    var outputs: CardStatementViewModelOutput { get }
 }
 
-class StatementViewModel: StatementViewModelType, StatementViewModelInput, StatementViewModelOutput {
+class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModelInput, CardStatementViewModelOutput {
     
     // MARK: - Properties
     let disposeBag = DisposeBag()
-    var inputs: StatementViewModelInput { return self }
-    var outputs: StatementViewModelOutput { return self }
+    var inputs: CardStatementViewModelInput { return self }
+    var outputs: CardStatementViewModelOutput { return self }
     
     private let backSubject = PublishSubject<Void>()
     private let customDateViewSubject = PublishSubject<Void>()
