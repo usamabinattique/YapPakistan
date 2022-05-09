@@ -53,7 +53,7 @@ class CardStatementWebViewCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.send
             .subscribe(onNext: { _ in
                 viewController.completeHide(0)
-                print("call api to send statment via email")
+                //print("call api to send statment via email")
             }).disposed(by: disposeBag)
         
         viewModel.outputs.editEmail.subscribe(onNext:{ [weak self] _ in
@@ -63,13 +63,12 @@ class CardStatementWebViewCoordinator: Coordinator<ResultType<Void>> {
                     guard let _ = self else { return }
                     switch result {
                     case .success:
-                        print("OTP Successfully Verified now update email")
                         self?.container.accountProvider.refreshAccount()
                             .subscribe(onNext: { _ in
                                 self?.showEmailPopup()
                             }).disposed(by: self!.disposeBag)
                     case .cancel:
-                        print("OTP not verified")
+                        //print("OTP not verified")
                         break
                     }
                 }).disposed(by: self!.disposeBag)

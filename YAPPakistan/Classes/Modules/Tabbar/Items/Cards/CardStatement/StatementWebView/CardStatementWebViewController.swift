@@ -101,7 +101,7 @@ extension CardStatementWebViewController: ViewDesignable {
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
         viewModel.outputs.webUrl.subscribe(onNext: { [weak self] html in
             guard let `self` = self else { return }
-            self.title = "Statement".localized
+//            self.title = "Statement".localized
             guard let url = URL(string: html) else { return }
             if let data = try? Data(contentsOf: url) {
                 self.webView.load(data, mimeType: "application/pdf", characterEncodingName: "", baseURL: url)
