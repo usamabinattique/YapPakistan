@@ -53,6 +53,9 @@ public protocol CustomerServiceType {
     
     func verifyPasscode<T: Codable>(passcode: String) -> Observable<T>
     
+    func updatePasscode<T: Codable>(newPasscode: String, token : String) -> Observable<T>
+    
+    
     func generateLoginOTP<T: Codable>(username: String,
                                       passcode: String,
                                       deviceID: String) -> Observable<T>
@@ -206,12 +209,54 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
+    public func uploadProfilePhoto<T: Codable>(data: Data, name: String, fileName: String, mimeType: String, progressObserver: AnyObserver<Progress>?) -> Observable<T> {
+        let photoRequest = DocumentUploadRequest(data: data, name: name, fileName: fileName, mimeType: mimeType)
+        let documents = [photoRequest]
+        
+        
+//        let profilePhotoRequest = ProfilePhotoRequest.init(profilePicture: photoRequest.data)
+//        let input = RouterInput(body: profilePhotoRequest, query: nil, pathVariables: nil)
+//        let route = CustomersRouter.uploadPhoto(input)
+        
+        let route = APIEndpoint(.post,
+                                apiConfig.customersURL,
+                                "/api/customers/profile-picture",
+                                body: documents,
+                                headers: authorizationProvider.authorizationHeaders)
+        
+        return self.upload(apiClient: apiClient, documents: documents, route: route, progressObserver: progressObserver, otherFormValues: [:])
+    }
+    
+    public func removeProfilePhoto<T: Codable>() -> Observable<T> {
+        let router = APIEndpoint<String>(.delete,
+                                 apiConfig.customersURL,
+                                 "/api/customers/profile-picture",
+                                 query: nil,
+                                 body: nil,
+                                 headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: router)
+    }
+    
     public func verifyPasscode<T: Codable>(passcode: String) -> Observable<T> {
         let body = ["passcode": passcode]
 
         let route = APIEndpoint(.post,
                                 apiConfig.customersURL,
                                 "/api/user/verify-passcode",
+                                query: nil,
+                                body: body,
+                                headers: authorizationProvider.authorizationHeaders)
+        
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func updatePasscode<T: Codable>(newPasscode: String, token : String) -> Observable<T> {
+        let body = ["new-password": newPasscode,
+                    "token": token]
+
+        let route = APIEndpoint(.post,
+                                apiConfig.customersURL,
+                                "/api/user/change-password",
                                 query: nil,
                                 body: body,
                                 headers: authorizationProvider.authorizationHeaders)

@@ -50,6 +50,7 @@ class UserProfileViewController: UIViewController {
     lazy var contentStackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 0, arrangedSubviews: [profileImageViewContainer, tableView])
     
     // MARK: - Properties
+    private lazy var imagePicker = UIImagePickerController()
     let viewModel: UserProfileViewModelType
     let disposeBag: DisposeBag
     var removeProfilePhotoFlag: Bool? = nil
@@ -211,8 +212,71 @@ fileprivate extension UserProfileViewController {
             }).disposed(by: disposeBag)
     }
     
+    
+    func openActionSheet() {
+        let cameraAction = UIAlertAction(title: "Open camera", style: .default) { [unowned self] _ in
+            self.pickImageFromCamera()
+        }
+        
+        let gelleryAction = UIAlertAction(title: "Choose photo", style: .default) { [unowned self] _ in
+            self.pickImageFromGallery()
+        }
+        
+        let removeAction = UIAlertAction(title: "Remove photo", style: .default) { [unowned self] _ in
+            self.removePhoto()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        alertController.popoverPresentationController?.sourceView = self.view
+        alertController.popoverPresentationController?.sourceRect = self.view.frame
+        
+        alertController.addAction(gelleryAction)
+        alertController.addAction(cameraAction)
+        alertController.addAction(removeAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+        
+    }
+    
+    func pickImageFromCamera() {
+        imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .camera
+        imagePicker.allowsEditing = true
+        imagePicker.delegate = self
+        self.present(imagePicker, animated: true, completion: nil)
+        
+    }
+    
+    func pickImageFromGallery() {
+        imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.allowsEditing = false
+        imagePicker.delegate = self
+        self.present(imagePicker, animated: true, completion: nil)
+    }
+    
+    func removePhoto() {
+        print("Remove Photo Selected")
+        viewModel.inputs.removePhotoTapObserver.onNext(())
+    }
+    
+    
     func bindImageSourceType() {
-//        profilePhotoEditButton.rx.tap.bind(to: viewModel.inputs.profilePhotoEditObserver).disposed(by: disposeBag)
+        profilePhotoEditButton.rx.tap.bind(to: viewModel.inputs.profilePhotoEditObserver).disposed(by: disposeBag)
+        
+        viewModel.outputs.profilePhotoEditTap.subscribe(onNext: { [weak self] _ in
+            
+            guard let self = self else { return }
+            print("Edid Photo Tapped")
+            self.openActionSheet()
+            
+        }).disposed(by: disposeBag)
+        
+        
+        
 //        viewModel.outputs.profilePhotoEditTap.subscribe(onNext: { [unowned self] _ in
 //            AppAnalytics.shared.logEvent(ProfileEvent.tapAddPhoto())
 //            let actionSheet = YAPActionSheet(title:  "screen_user_profile_display_text_update_profile_photo".localized)
@@ -259,6 +323,20 @@ fileprivate extension UserProfileViewController {
 //
     func bindLogoutPopup() {
         viewModel.outputs.logoutTap.subscribe(onNext: {[weak self] _ in self?.logoutPopup() }).disposed(by: disposeBag)
+    }
+}
+
+//MARK: // UIImagePickerDelegate
+extension UserProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        imagePicker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as? UIImage else { return }
+        imagePicker.dismiss(animated: true) { [weak self] in
+            self?.viewModel.inputs.changedProfilePhotoObserver.onNext(image)
+        }
     }
 }
 

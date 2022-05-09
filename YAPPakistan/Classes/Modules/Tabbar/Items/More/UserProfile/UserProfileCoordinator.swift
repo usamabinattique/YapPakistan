@@ -32,7 +32,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
     }
     
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap(), biometricsManager: container.biometricsManager, credentialStore: container.parent.credentialsStore, repository: container.makeLoginRepository(), notificationManager: container.parent.makeNotificationManager())
+        let viewModel: UserProfileViewModelType = UserProfileViewModel(customer: container.accountProvider.currentAccount.map{ $0?.customer }.unwrap(), biometricsManager: container.biometricsManager, credentialStore: container.parent.credentialsStore, repository: container.makeLoginRepository(), notificationManager: container.parent.makeNotificationManager(), accountProvider: self.container.accountProvider)
         let viewController = UserProfileViewController(viewModel: viewModel, themeService: container.themeService)
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         
@@ -42,10 +42,66 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             self?.navigateToPersonalDetails()
         }).disposed(by: disposeBag)
         
+        
+//        viewModel.outputs.profilePhotoEditTap.subscribe(onNext: { [weak self] _ in
+//
+//            guard let self = self else { return }
+//
+//            let viewModel = MoreBankDetailsViewModel(accountProvider: self.container.accountProvider)
+//            let viewController = ChangeProfilePhotoOptionsViewController(themeService: self.container.themeService, viewModel: viewModel) //MoreBankDetailsViewController(themeService: self.container.themeService, viewModel: viewModel)
+//
+//
+//            let alertWindow = UIWindow(frame: UIScreen.main.bounds)
+//            alertWindow.rootViewController = YAPActionSheetRootViewController(nibName: nil, bundle: nil)
+//            alertWindow.backgroundColor = .clear
+//            alertWindow.windowLevel = .alert + 1
+//            alertWindow.makeKeyAndVisible()
+//            let nav = UINavigationController(rootViewController: viewController)
+//
+//            nav.navigationBar.isHidden = true
+//            nav.modalPresentationStyle = .overCurrentContext
+//            alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
+//
+//            viewController.window = alertWindow
+//
+//            //self.localRoot.present(viewController, animated: true, completion: nil)
+//
+//        }).disposed(by: self.disposeBag)
+        
         viewController.viewModel.outputs.changePasscodeTap.subscribe(onNext: { [weak self] _ in
             
+            guard let self = self else { return }
             print("Change passcode button tapped in coordinator")
             
+            
+            let viewModel = ChangePasscodeViewModel(repository: self.container.makeLoginRepository())
+            let viewController: ChangePasscodeViewController = ChangePasscodeViewController(themeService: self.container.themeService, viewModel: viewModel) //PINViewController(themeService: self.container.themeService, viewModel: createPasscodeViewModel)
+            let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+            nav.modalPresentationStyle = .fullScreen
+
+            viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.localRoot.dismiss(animated: true, completion: nil)
+            }).disposed(by: self.disposeBag)
+            
+            viewModel.outputs.success.subscribe(onNext: { _ in
+                
+                let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: "", descriptionText: "screen_change_passcode_success")
+                let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
+                
+                
+                viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
+                    nav.dismiss(animated: true, completion: nil)
+                }).disposed(by: self.disposeBag)
+                
+                nav.pushViewController(viewController, completion: nil)
+                
+            }).disposed(by: self.disposeBag)
+            
+
+            self.localRoot.present(nav, animated: true, completion: nil)
+            
+            //self.navigationtoChangePasscode()
             
         }).disposed(by: disposeBag)
         
@@ -112,15 +168,19 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
         self.localRoot.pushViewController(viewController, completion: nil)
     }
     
+//    fileprivate func navigationtoChangePasscode() {
+//        ChangePasscodeCoordinator(root: self.localRoot, container: self.container)
+//    }
+    
     fileprivate func navigateToEditEmail() {
         coordinate(to: ChangeEmailAddressCoordinator(root: self.localRoot, container: self.container)).subscribe(onNext: { [weak self] result in
             guard let _ = self else { return }
             switch result {
             case .success:
                 print("OTP Successfully Verified now update email")
-            
+                
             case .cancel:
-//                    self?.navigationRoot.popToRootViewController(animated: true)
+                //                    self?.navigationRoot.popToRootViewController(animated: true)
                 print("OTP not verified")
                 break
             }
@@ -134,7 +194,7 @@ public class UserProfileCoordinator: Coordinator<ResultType<Void>> {
             case .success:
                 print("OTP Successfully Verified now uodate email")
             case .cancel:
-//                    self?.navigationRoot.popToRootViewController(animated: true)
+                //                    self?.navigationRoot.popToRootViewController(animated: true)
                 print("OTP not verified")
                 break
             }
