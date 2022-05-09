@@ -50,7 +50,7 @@ class CustomDateStatementViewModel: CustomDateStatementViewModelType, CustomDate
     private let endDateSubject = BehaviorSubject<Date?>(value: nil)
     private let endDateValueSubject = BehaviorSubject<String>(value: "")
     private let nextSubject = PublishSubject<Void>()
-    private let generateStatementSubject = BehaviorSubject<DateRangeSelected>(value: ("", ""))
+    private let generateStatementSubject = PublishSubject<DateRangeSelected>()
     private let isValidDatesSubject = BehaviorSubject<Bool>(value: false)
     
     // MARK: Inputs
@@ -104,9 +104,8 @@ class CustomDateStatementViewModel: CustomDateStatementViewModelType, CustomDate
         
         nextSubject
             .subscribe(onNext: { [weak self] _ in
-                let dateFormatter = DateFormatter.appReadableDateFormatter
-                let startDateString = dateFormatter.string(from: self!.startDate)
-                let endDateString = dateFormatter.string(from: self!.endDate)
+                let startDateString = self!.startDate.string(withFormat: DateFormatter.serverReadableDateFormat)
+                let endDateString = self!.endDate.string(withFormat: DateFormatter.serverReadableDateFormat)
                 
                 self?.generateStatementSubject.onNext((startDate: startDateString, endDate: endDateString))
             })

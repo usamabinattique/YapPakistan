@@ -12,6 +12,10 @@ import YAPCore
 import RxSwift
 import RxCocoa
 
+protocol WebContentType {
+    var url : URL? { get }
+}
+
 protocol CardStatementWebViewModelInput {
     var backObserver: AnyObserver<Void> { get }
     var emailButtonObserver: AnyObserver<Void> { get }

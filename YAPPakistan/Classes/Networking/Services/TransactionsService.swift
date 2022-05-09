@@ -192,11 +192,12 @@ class TransactionsService: BaseService, TransactionsServiceType {
     }
     
     public func cardCustomStatement<T: Codable>(_ cardSerialNumber: String, startDate: String, endDate: String) -> Observable<T> {
+        let pathVariables = ["filter"]
         let query: [String: String] = [
             "cardSerialNumber": cardSerialNumber,
-            "fromDate": startDate,
-            "toDate": endDate]
-        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/card-statements", query: query, body: nil ,headers: authorizationProvider.authorizationHeaders)
+            "fromDate": endDate,
+            "toDate": startDate]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/card-statements", pathVariables: pathVariables, query: query, body: nil ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

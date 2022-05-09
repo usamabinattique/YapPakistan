@@ -28,8 +28,14 @@ class StatementConfirmEmailViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
-    public lazy var headerTitle: UILabel = UIFactory.makeLabel(font: .title3, text: "Account details")
+    
+    private lazy var headerTitle: UILabel = UIFactory.makeLabel(font: .title3, alignment: .center, numberOfLines: 0, text: "Confirm Email address")
+    private lazy var descriptionLabel: UILabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, text: "We’ll be sending your statment to the following email address")
+    private lazy var currentEmail = UIFactory.makeAppRoundedButton(with: .regular)
+    private lazy var sendButton = UIFactory.makeAppRoundedButton(with: .large, title: "Send now")
+    private lazy var editEmailButton = UIFactory.makeButton(with: .large, backgroundColor: .clear, title: "I’d like to change my email")
+    
+    private lazy var stackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fill, spacing: 6, arrangedSubviews: [headerTitle, descriptionLabel, currentEmail, sendButton, editEmailButton])
     
     // MARK: Properties
     public var window: UIWindow?
@@ -37,14 +43,14 @@ class StatementConfirmEmailViewController: UIViewController {
     public var start: CGFloat = 0
     private var viewModel: StatementConfirmEmailViewModel!
     private let disposeBag = DisposeBag()
-    private var themeService: ThemeService<AppTheme>
+    private var themeService: ThemeService<AppTheme>!
 
     // MARK: Initialization
 
     init(themeService: ThemeService<AppTheme>,viewModel: StatementConfirmEmailViewModel) {
+        super.init(nibName: nil, bundle: nil)
         self.viewModel = viewModel
         self.themeService = themeService
-        super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -56,6 +62,8 @@ class StatementConfirmEmailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        currentEmail.isEnabled = false
+        
         setupSubViews()
         setupTheme()
         setupConstraints()
@@ -119,20 +127,75 @@ class StatementConfirmEmailViewController: UIViewController {
 extension StatementConfirmEmailViewController: ViewDesignable {
     
     func setupSubViews() {
-        
+        view.addSubview(sheetView)
+        sheetView.addSubview(holder)
+        sheetView.addSubview(stackView)
     }
     
     func setupConstraints() {
+        sheetView
+            .alignEdgesWithSuperview([.left, .right])
+            .height(.lessThanOrEqualTo, constant: 517)//UIScreen.main.bounds.height*0.59)
+        
+        holder
+            .alignEdgeWithSuperview(.top, constant: 15)
+            .height(constant: 4)
+            .width(constant: 60)
+            .centerHorizontallyInSuperview()
+        
+        stackView
+            .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
+            .toBottomOf(holder,constant: 17)
+            .centerHorizontallyInSuperview()
+            .alignEdgeWithSuperview(.safeAreaBottom, constant: UIDevice.current.hasNotch ? 0 : 15)
+        
+        headerTitle
+            .height(constant: 39)
+        
+        descriptionLabel
+            .height(constant: 40)
+        
+        currentEmail
+            .width(constant: 294)
+            .height(constant: 44)
+        
+        sendButton
+            .width(constant: 294)
+            .height(constant: 52)
+        
+        editEmailButton
+            .alignEdgesWithSuperview([.left, .right], constants: [28, 28])
+            //.width(constant: 325)
+            .height(constant: 28)
+        
+        stackView
+            .setCustomSpacing(22, after: descriptionLabel)
+        stackView
+            .setCustomSpacing(31, after: currentEmail)
+        stackView
+            .setCustomSpacing(22, after: sendButton)
+        
+        
         viewTop = sheetView.topAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         viewTop.isActive = true
     }
     
     func setupBindings() {
-        
+        viewModel.outputs.currentEmail.bind(to: currentEmail.rx.title(for: .normal)).disposed(by: disposeBag)
+        sendButton.rx.tap.bind(to: viewModel.inputs.sendObserver).disposed(by: disposeBag)
+        editEmailButton.rx.tap.bind(to: viewModel.inputs.editEmailObserver).disposed(by: disposeBag)
     }
     
     func setupTheme() {
-        
+        self.themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: headerTitle.rx.textColor)
+            .bind({ UIColor($0.greyDark) }, to: descriptionLabel.rx.textColor)
+            .bind({ UIColor($0.greyLight).withAlphaComponent(0.5) }, to: currentEmail.rx.disabledBackgroundColor)
+            .bind({ UIColor($0.greyDark) }, to: currentEmail.rx.titleColor(for: .normal))
+            .bind({ UIColor($0.primary) }, to: sendButton.rx.enabledBackgroundColor)
+            .bind({ UIColor($0.backgroundColor) }, to: sendButton.rx.titleColor(for: .normal))
+            .bind({ UIColor($0.primary) }, to: editEmailButton.rx.titleColor(for: .normal))
+            .disposed(by: disposeBag)
     }
 }
 
@@ -188,7 +251,7 @@ extension StatementConfirmEmailViewController {
         }
     }
 
-    func completeHide(_ velocity: CGFloat) {
+    public func completeHide(_ velocity: CGFloat) {
         let distance = view.bounds.height - sheetView.frame.origin.y
 
         var time: TimeInterval = abs(velocity) > 0 ? TimeInterval(abs(distance)/abs(velocity)) : 0.25
