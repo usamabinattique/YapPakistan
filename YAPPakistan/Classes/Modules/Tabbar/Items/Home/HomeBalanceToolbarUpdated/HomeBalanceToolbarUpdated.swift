@@ -240,7 +240,7 @@ public extension HomeBalanceToolbarUpdated {
     
     func setBalance(balance: String) {
         var finalBalance: Balance {
-            return Balance(balance: balance, currencyCode: "AED", currencyDecimals: "2", accountNumber: "")
+            return Balance(balance: balance, currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
         }
         let text = finalBalance.formattedBalance(showCurrencyCode: false, shortFormat: true)
         let attributedString = NSMutableAttributedString(string: text)

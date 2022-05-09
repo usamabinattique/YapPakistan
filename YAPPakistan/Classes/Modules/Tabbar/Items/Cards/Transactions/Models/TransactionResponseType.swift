@@ -218,9 +218,7 @@ struct TransactionResponse: Codable, Transaction {
             if type == .debit && productNameType == .yapToYap {
                 identifierImage = UIImage.init(named: "icon_send_money_completed_secondary", in: .yapPakistan)
             } else if type == .credit && productNameType == .yapToYap {
-                let img = flipImageLeftRight( UIImage.init(named: "icon_send_money_completed_secondary", in: .yapPakistan) ?? UIImage())
-                identifierImage = img
-                //identifierImage = UIImage.init(named: "icon_transaction_type_credit", in: .yapPakistan)
+                identifierImage = UIImage.init(named: "icon_received_money_completed", in: .yapPakistan)
             } else if productNameType == .topup {
                 identifierImage = UIImage.init(named: "icon_identifire_atm_deposit", in: .yapPakistan)
             } else {
@@ -293,7 +291,7 @@ struct TransactionResponse: Codable, Transaction {
     public var transactionStatus: TransactionStatus { TransactionStatus.init(rawValue: status ?? "") ?? .none }
     
     public func transactionTypeBackgroundColor() -> UIColor {
-        return isTransactionInProgress ? .white : type == .debit && (productCode == .y2yTransfer || productCode.isSendMoney || productCode == .cashPayout) ? UIColor(Color(hex: "#478DF4")) : .white
+        return isTransactionInProgress ? .white : type == .debit && (productCode == .y2yTransfer || productCode.isSendMoney || productCode == .cashPayout) ?  UIColor(Color(hex: "#478DF4"))  : .white
     }
 
     public func transactionTypeTintColor() -> UIColor? {

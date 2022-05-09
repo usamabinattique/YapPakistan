@@ -63,10 +63,11 @@ protocol TransactionsViewModelOutputs {
     var showsFilter: Observable<Bool> { get }
     var showShimmering: Observable<Bool> { get }
     var sectionAmount: Observable<String?> { get}
-    var sectionDate: Observable<String?> { get }
+    var sectionDate: Observable<NSMutableAttributedString?> { get }
     var isTableViewReloaded: Observable<Bool> { get }
     var enableLoadMore: Observable<Bool> { get }
     var showLoadMoreIndicator: Observable<Bool> { get }
+    var categorySectionCount: Observable<Int> { get }
 }
 
 protocol TransactionsViewModelType {
@@ -111,7 +112,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let canShowDynamicDataSubject = BehaviorSubject<Bool>(value: false)
     private let showSectionDataSubject = PublishSubject<Void>()
     private let sectionAmountSubject = BehaviorSubject<String?>(value: nil)
-    private let sectionDateSubject = BehaviorSubject<String?>(value: nil)
+    private let sectionDateSubject = BehaviorSubject<NSMutableAttributedString?>(value: nil)
     private let showTodaysDataSubject = PublishSubject<Void>()
     private let dataReloadedSubject = BehaviorSubject<Bool>(value: false)
     private let sectionSubject = BehaviorSubject<Int>(value: 0)
@@ -159,10 +160,11 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var showsFilter: Observable<Bool> { showsFilterSubject.asObservable() }
     var showShimmering: Observable<Bool> { showShimmeringSubject.asObservable() }
     var sectionAmount: Observable<String?> { sectionAmountSubject.asObservable() }
-    var sectionDate: Observable<String?> { sectionDateSubject.asObservable() }
+    var sectionDate: Observable<NSMutableAttributedString?> { sectionDateSubject.asObservable() }
     var isTableViewReloaded: Observable<Bool> { dataReloadedSubject.asObservable() }
     var enableLoadMore: Observable<Bool> { enableLoadMoreSubject.asObservable() }
     var showLoadMoreIndicator: Observable<Bool> { showLoadMoreIndicatorSubject.asObservable() }
+    var categorySectionCount: Observable<Int> {categorySectionCountSubject.asObservable()}
     
     
     func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
@@ -171,7 +173,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             let transactions = TransactionResponse.transactions(for: section, allTransactions: transactionsObj) //[TransactionResponse]()
             let amount = transactions.reduce(0, { $1.type == .debit ? $0 - $1.calculatedTotalAmount : $0 + $1.calculatedTotalAmount })
             let date = transactions.first?.date ?? Date().startOfDay
-            return TransactionHeaderTableViewCellViewModel(date: date.transactionSectionReadableDate, totalTransactionsAmount: (amount < 0 ? "- " : "+ ") +  CurrencyFormatter.formatAmountInLocalCurrency(abs(amount)))
+            return TransactionHeaderTableViewCellViewModel(date: date.transactionSectionReadableDate.string, totalTransactionsAmount: (amount < 0 ? "- " : "+ ") +  CurrencyFormatter.formatAmountInLocalCurrency(abs(amount)))
         } else {
             return TransactionHeaderTableViewCellViewModel()
         }
@@ -251,6 +253,8 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private var latestBalance: String = "0.00"
     private var isShimmering = true
     var pageInfo: PagableResponse<TransactionResponse>!
+    
+    private var transactionBarData: TransactionBarCategoriesResponse?
     
     init(transactionDataProvider: PaymentCardTransactionProvider, cardSerialNumber: String? = nil, debitSearch: Bool = false, themService: ThemeService<AppTheme>) {
         // self.repository = repository
@@ -412,7 +416,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         
         showTodaysDataSubject.subscribe(onNext: {[weak self] _ in
             if self?.currentSection == 0 {
-                self?.sectionDateSubject.onNext("screen_home_todays_balance_title".localized)
+                self?.sectionDateSubject.onNext(NSMutableAttributedString(string: "screen_home_todays_balance_title".localized) )
             }
         }).disposed(by: disposeBag)
         
@@ -448,6 +452,15 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             self.searchTransactions(text: $0)
         }).disposed(by: disposeBag)
         
+    }
+    
+    func getNumberOfCategorySection() {
+        var sectionList: [Int] = []
+        guard let monthData = transactionBarData?.monthData else {return}
+        for data in monthData {
+            sectionList.append(data.categories.count)
+        }
+        categorySectionCountSubject.onNext(sectionList.max() ?? 0)
     }
 
 }
@@ -600,7 +613,7 @@ extension TransactionsViewModel {
             self.currentSectionMonth = date.dashboardSectionBarDate
            // changeAnaliticsBar()
             if Calendar.current.isDateInToday(date){
-                self.sectionDateSubject.onNext("screen_home_todays_balance_title".localized)
+                self.sectionDateSubject.onNext(NSMutableAttributedString(string: "screen_home_todays_balance_title".localized))
             }
             else {
                 self.sectionDateSubject.onNext(date.transactionSectionReadableDate)
@@ -609,6 +622,6 @@ extension TransactionsViewModel {
     }
     
     func tableViewReloaded() {
-        self.sectionDateSubject.onNext("screen_home_todays_balance_title".localized)
+        self.sectionDateSubject.onNext(NSMutableAttributedString(string: "screen_home_todays_balance_title".localized))
     }
 }

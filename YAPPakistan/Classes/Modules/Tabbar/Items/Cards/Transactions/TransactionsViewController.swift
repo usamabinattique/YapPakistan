@@ -321,6 +321,12 @@ extension TransactionsViewController: UITableViewDelegate {
 //        guard tableView.scrollPercentage > 0.6 else {return}
 //        viewModel.inputs.loadMore.onNext(())
 //    }
+    
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let index = tableView.indexPathsForVisibleRows?.first?.section {
+            viewModel.inputs.sectionObserver.onNext(index)
+        }
+    }
 }
 
 class FooterLoadingView: UIView {

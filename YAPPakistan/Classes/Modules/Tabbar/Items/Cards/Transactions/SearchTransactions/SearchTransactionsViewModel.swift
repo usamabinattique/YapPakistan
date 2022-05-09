@@ -43,9 +43,11 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     
     lazy var transactionsViewModelSubject: TransactionsViewModelType = {
         let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(cardSerialNumber: card?.cardSerialNumber)
-        
+
         return transactionViewModel
     }()
+    
+    
     
     private let card: PaymentCard?
     

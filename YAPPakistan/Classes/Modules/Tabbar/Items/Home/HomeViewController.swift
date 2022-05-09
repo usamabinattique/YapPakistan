@@ -337,20 +337,15 @@ fileprivate extension HomeViewController {
         
         balanceView.addSubviews([balanceLabel,balanceValueLabel,showButton,hideButton,balanceDateLabel,separtorView])
         
-       // view.addSubview(balanceView)
-//        view.addSubview(toolBar)
+//        view.addSubview(balanceView)
+        view.addSubview(toolBar)
         view.addSubview(balanceView)
         view.addSubview(scrollView)
+        
+        toolBar.isHidden = true
 
         scrollView.addSubview(transactionContainer)
-     //   scrollView.addSubview(bottomContainerView)
         parallaxHeaderView.addSubview(headerStackView)
-//        bottomContainerView.addSubview(timelineView)
-//        bottomContainerView.addSubview(creditLimitView)
-      
-        
-        
-        
         separtorView.alpha = 0
         
     /*    tableView.register(CreditLimitCell.self, forCellReuseIdentifier: CreditLimitCell.defaultIdentifier)
@@ -456,12 +451,12 @@ fileprivate extension HomeViewController {
         balanceLabelHeight.priority = .required
         balanceLabelHeight.isActive = true
         
-        /*toolBar
+        toolBar
             .alignEdgesWithSuperview([.left, .right])
             .alignEdgeWithSuperview(.top, constant: (self.navigationController?.navigationBar.frame.size.height ?? 0.0) + UIApplication.shared.statusBarFrame.size.height)
 
         toolBarHeightConstraint = toolBar.heightAnchor.constraint(equalToConstant: 80)
-        toolBarHeightConstraint.isActive = true */
+        toolBarHeightConstraint.isActive = true
         
     }
 
@@ -549,12 +544,19 @@ fileprivate extension HomeViewController {
             self.creditLimitView.height(constant: 42) */
         }).disposed(by: disposeBag)
         
-     /*   viewModel.outputs.shrinkProgressView.bind(to: toolBar.rx.shrink).disposed(by: disposeBag)
+//        transactionsViewModel.outputs.sectionAmount.unwrap().bind(to: self.rx.balance).disposed(by: disposeBag)
+//        transactionsViewModel.outputs.sectionDate.unwrap().bind(to: self.rx.date).disposed(by: disposeBag)
+//        transactionsViewModel.outputs.sectionDate.unwrap().withUnretained(self).subscribe(onNext: { (`self`, value) in
+//            self.setDate(date: value)
+//        }).disposed(by: disposeBag)
+
+        
+        viewModel.outputs.shrinkProgressView.bind(to: toolBar.rx.shrink).disposed(by: disposeBag)
         transactionsViewModel.outputs.categorySectionCount.bind(to: toolBar.rx.numberOfSections).disposed(by: disposeBag)
         transactionsViewModel.outputs.sectionAmount.unwrap().bind(to: toolBar.rx.balance).disposed(by: disposeBag)
-        transactionsViewModel.outputs.sectionDate.unwrap().map{ $0.date }.bind(to: toolBar.rx.date).disposed(by: disposeBag)
+        transactionsViewModel.outputs.sectionDate.unwrap().bind(to: toolBar.rx.date).disposed(by: disposeBag)
         
-        transactionsViewModel.outputs.categoryBarData.subscribe(onNext: { [weak self] categoryData in
+      /*  transactionsViewModel.outputs.categoryBarData.subscribe(onNext: { [weak self] categoryData in
            
             if categoryData.0 == nil {
                 UIView.animate(withDuration: 0.8, animations: {[weak self] in
@@ -600,13 +602,13 @@ fileprivate extension HomeViewController {
         if self.isTableViewReloaded && actualProgress == 0 {
             transactionsViewModel.inputs.showSectionData.onNext(())
             transactionsViewModel.inputs.canShowDynamicData.onNext(true)
-//            viewModel.inputs.increaseProgressViewHeightObserver.onNext(false)
+            viewModel.inputs.increaseProgressViewHeightObserver.onNext(false)
         }
         if self.isTableViewReloaded && actualProgress > 0 {
             transactionsViewModel.inputs.showTodaysData.onNext(())
             transactionsViewModel.inputs.canShowDynamicData.onNext(false)
             scrollView.addSubview(refreshControl)
-//            viewModel.inputs.increaseProgressViewHeightObserver.onNext(true)
+            viewModel.inputs.increaseProgressViewHeightObserver.onNext(true)
         }
     }
 
@@ -727,4 +729,79 @@ extension HomeViewController: ProgressBarDidTapped {
     func progressViewDidTapped(viewForMonth month: String) {
        // viewModel.inputs.progressViewTappedObserver.onNext(())
     }
+    
+    func setDate(date: NSMutableAttributedString) {
+       // todaysBalanceTitleLabel.attributedText = date
+        balanceDateLabel.attributedText = date
+    }
+    
+    func setBalance(balance: String) {
+        var finalBalance: Balance {
+            return Balance(balance: balance, currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
+        }
+        let text = finalBalance.formattedBalance(showCurrencyCode: false, shortFormat: true)
+        let attributedString = NSMutableAttributedString(string: text)
+        guard let decimal = text.components(separatedBy: ".").last else { return }
+        attributedString.addAttribute(.font, value: UIFont.regular/*appFont(ofSize: 18, weigth: .regular, theme: .main) */, range: NSRange(location: text.count-decimal.count, length: decimal.count))
+       // ammount.attributedText = attributedString
+        balanceValueLabel.attributedText = attributedString
+    }
+}
+
+extension Reactive where Base: HomeViewController {
+    
+    var date: Binder<NSMutableAttributedString> {
+        return Binder(self.base) { home, date in
+            home.setDate(date: date)
+        }
+    }
+    
+    var balance: Binder<String> {
+        return Binder(self.base) { home, balance in
+            home.setBalance(balance: balance)
+        }
+    }
+    
+  /*  var month: Binder<String> {
+        return Binder(self.base) { toolbar,month in
+            toolbar.month = month
+        }
+    }
+    
+    var shrink: Binder<Bool> {
+        return Binder(self.base) { toolbar,shrink in
+            toolbar.shrinkProgressView(shrink)
+            toolbar.isProgressViewShrinked = shrink
+        }
+    }
+    
+    var monthData: Binder<(MonthData?, Int?)> {
+        return Binder(self.base) { toolBar,monthData in
+            if let monthlyAnalytics = monthData.0 {
+                toolBar.progressView.isHidden = false
+                toolBar.animateMonthlyAnalytics(monthData: monthlyAnalytics)
+                toolBar.setupBarData(section: monthData.1 ?? 0)
+            }
+            else {
+                toolBar.progressView.isHidden = true
+            }
+        }
+    }
+    
+    var numberOfSections: Binder<Int?> {
+        return Binder(self.base) { toolBar,section in
+            if section ?? 0 > 9 {
+                toolBar.sectionCount = 10
+            }
+            else {
+                toolBar.sectionCount = section ?? 0
+            }
+        }
+    }
+    
+    var categoryImage: Binder<String> {
+        return Binder(self.base) { toolBar,url in
+            toolBar.setupCategoryImage(url)
+        }
+    } */
 }

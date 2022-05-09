@@ -27,6 +27,7 @@ protocol HomeViewModelInputs {
     var searchTapObserver: AnyObserver<Void> { get }
     var categoryChangedObserver: AnyObserver<Void> { get }
     var refreshObserver: AnyObserver<Void> { get }
+    var increaseProgressViewHeightObserver: AnyObserver<Bool> {get}
 }
 
 protocol HomeViewModelOutputs {
@@ -74,6 +75,7 @@ protocol HomeViewModelOutputs {
     var categoryChanged: Observable<Void> { get }
     var refresh: Observable<Void> {  get }
     var selectedWidget: Observable<WidgetCode?> { get }
+    var shrinkProgressView: Observable<Bool> { get }
 }
 
 protocol HomeViewModelType {
@@ -123,6 +125,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let categoryChangedSubject = PublishSubject<Void>()
     private let refreshSubject = PublishSubject<Void>()
     private let menuTapSubject = PublishSubject<Void>()
+    private let shrinkProgressViewSubject = BehaviorSubject<Bool>(value: false)
+    private let increaseProgressViewHeightSubject = BehaviorSubject<Bool>(value: true)
     
     
     private var numberOfShownWidgets = 0
@@ -144,6 +148,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var categoryChangedObserver: AnyObserver<Void> { categoryChangedSubject.asObserver() }
     var refreshObserver: AnyObserver<Void> { refreshSubject.asObserver() }
     var menuTapObserver: AnyObserver<Void> { return menuTapSubject.asObserver() }
+    var increaseProgressViewHeightObserver: AnyObserver<Bool> {increaseProgressViewHeightSubject.asObserver()}
     
     // MARK: Outputs
 
@@ -186,6 +191,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var categoryChanged: Observable<Void> { categoryChangedSubject.asObservable() }
     var refresh: Observable<Void> { refreshSubject.asObservable() }
     var selectedWidget: Observable<WidgetCode?> { selectedWidgetSubject.asObservable() }
+    var shrinkProgressView: Observable<Bool> { shrinkProgressViewSubject }
+    
 
     // MARK: Init
 
@@ -250,6 +257,11 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL?.absoluteString, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
         
         accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
+        
+        increaseProgressViewHeightSubject.subscribe(onNext: { [unowned self] increaseSize in
+            increaseSize ? shrinkProgressViewSubject.onNext(false) :
+                shrinkProgressViewSubject.onNext(true)
+        }).disposed(by: disposeBag)
         
        // generateCellViewModels()
        // getCardBalance()
