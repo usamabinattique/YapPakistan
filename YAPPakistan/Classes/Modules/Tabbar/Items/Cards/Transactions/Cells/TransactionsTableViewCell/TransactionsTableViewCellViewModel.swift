@@ -108,8 +108,9 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
         self.transaction = transaction
         self.transactionId = "\(transaction.id)"
         let title = transaction.title ?? "Unknown"
+       
         transactionTitleSubject = BehaviorSubject(value: transaction.finalizedTitle)
-        transactionTimeCategorySubject = BehaviorSubject(value: transaction.formattedTime + " · " + transaction.category)
+        transactionTimeCategorySubject = BehaviorSubject(value: transaction.formattedTime + " · " + ((transaction.productNameType != .unkonwn ? transaction.productNameType.type : transaction.merchantCategory ?? transaction.category)))//transaction.category)
         
         let amount = CurrencyFormatter.format(amount: transaction.amount, in: transaction.currency).amountFromFormattedAmount
         transactionAmountSubject = BehaviorSubject(value: NSAttributedString(string: (transaction.type == .debit ? "-" : "+") + amount))
@@ -120,16 +121,21 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
         senderNameSubject = BehaviorSubject(value: transaction.senderName)
         receiverNameSubject = BehaviorSubject(value: transaction.receiverName)
         
-        let icon = transaction.productCode.icon(
+        let icon = transaction.icon.identifierImage /*transaction.productCode.icon(
             forTransactionType: transaction.type,
             transactionStatus: TransactionStatus(rawValue: transaction.status ?? "") ?? .none)
             ?? transaction.type.icon
             ?? title.initialsImage(color: transaction.color,
                                    font: .small,
-                                   size: CGSize(width: 40, height: 40) )
+                                   size: CGSize(width: 40, height: 40) ) */
         let url = transaction.type == .debit ? transaction.receiverUrl : transaction.senderUrl
         transactionTypeIconSubject.onNext(icon)
         transactionImageUrlSubject = BehaviorSubject(value: (url, transaction.title?.thumbnail))
+        contentModeSubject.onNext(transaction.icon.contentMode)
+        transactionTypeBackgroundSubject.onNext(transaction.transactionTypeBackgroundColor())
+        
+        transactionTypeTintSubject.onNext(transaction.transactionTypeTintColor() ?? UIColor.red)
+        
         cdTransaction = nil
         
         Observable.combineLatest(transactionType, cancelled)
@@ -137,6 +143,10 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
                 self?.transactionAmountTextColorSubject.onNext(type == .debit ? UIColor(themeService.attrs.primaryDark)  : UIColor(themeService.attrs.secondaryGreen))
                 self?.transactionStatusColorSubject.onNext(cancelled ? UIColor(themeService.attrs.grey) : UIColor(themeService.attrs.greyDark))
             }).disposed(by: disposeBag)
+        
+        if let remarks = transaction.remarks {
+            remarksSubject.onNext(remarks)
+        }
         
         shimmeringSubject.onNext(false)
     }

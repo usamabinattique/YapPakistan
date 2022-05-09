@@ -158,6 +158,9 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         
         let charges = SMFTChargesCellViewModel() //SMFTChargesCellViewModel(chargesType: .cashPickup)
         Observable.combineLatest(enteredAmount, feeRes).map { (amount,fee) -> NSAttributedString in
+            
+            print("enteredAmount \(amount)")
+            print("fee in sendMoneyFundsTransferViewModel \(fee.fixedAmount ?? 0)")
             let amountFormatted = String(format: "%.2f", fee.fixedAmount ?? 0.0)
             let amount = "PKR \(amountFormatted)"
             let text = String.init(format: "screen_y2y_funds_transfer_display_text_fee".localized, amount)
@@ -172,6 +175,7 @@ class SendMoneyFundsTransferViewModel: SendMoneyFundsTransferViewModelType, Send
         //TODO: uncomment following comment
         customerBalanceRes.map{
             customerBalance -> NSAttributedString in
+//            print("current balance in sendMoneyFundsTransferViewModel \(customerBalance.currentBalance)")
             let blnceFormatted = String(format: "%.2f", customerBalance.currentBalance)
             let balance = "PKR \(blnceFormatted)"
             let text = String.init(format: "screen_y2y_funds_transfer_display_text_balance".localized, balance)
@@ -292,8 +296,9 @@ private extension SendMoneyFundsTransferViewModel {
 
         request.elements().bind(to: thresholdRes).disposed(by: disposeBag)
         
-        request.elements().subscribe(onNext: { _ in
+        request.elements().subscribe(onNext: { [weak self] limit in
             print("limits")
+            self?.transactionThreshold = limit
         }).disposed(by: disposeBag)
         return request.map { _ in }
     }

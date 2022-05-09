@@ -42,8 +42,8 @@ extension Date {
         return Calendar.current.date(byAdding: .month, value: months, to: self) ?? self
     }
 
-    var transactionSectionReadableDate: String {
-        let dateFormatter = DateFormatter()
+    var transactionSectionReadableDate: NSMutableAttributedString {
+       /* let dateFormatter = DateFormatter()
         let day: String
         let dayName: String
         if Date().startOfDay == self.startOfDay {
@@ -58,9 +58,9 @@ extension Date {
         }
         
         dateFormatter.dateFormat = dayName + "MMMM dd"
-        return day + dateFormatter.string(from: self)
+        return day + dateFormatter.string(from: self) */
         
-       /* let dateFormatter = DateFormatter()
+        let dateFormatter = DateFormatter()
         let day: String
         let dayName: String
         if Date().startOfDay == self.startOfDay {
@@ -82,7 +82,7 @@ extension Date {
         combination.append(dayAndMonth)
         combination.append(superScripterDate)
         combination.append(year)
-        return combination */
+        return combination
     }
     
     public func day() -> String {

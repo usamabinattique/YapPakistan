@@ -48,8 +48,13 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
         
         if accountStatus == .addressCaptured {
             stages.append(.init(paymentCard: paymentCard, stage: .additionalRequirement, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
+            if partnerBankStatus == .physicalCardSuccess && paymentCard.deliveryStatus == .shipped , let pinSet = paymentCard.pinSet, pinSet == false {
+                // so it won't append in list
+                stages.append(.init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
+            } else {
+              
+            }
             
-            stages.append(.init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
             
             stages.append(.init(paymentCard: paymentCard, stage: .setPIN, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
         } else if partnerBankStatus == .ibanAssigned {

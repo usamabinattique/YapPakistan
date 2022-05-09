@@ -238,6 +238,17 @@ fileprivate extension TransactionsViewController {
         
         viewModel.outputs.nothingLabelText.bind(to: nothingLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.showsFilter.map{ !$0 }.bind(to: filterView.rx.isHidden).disposed(by: disposeBag)
+        
+        viewModel.outputs.showLoadMoreIndicator.subscribe( onNext: { [weak self] (show) in
+            guard let self = self else {return}
+            if show {
+                let loading = FooterLoadingView(frame: CGRect(x: 0, y: 0, width: self.tableView.frame.size.width, height: 64))
+                self.tableView.tableFooterView = loading
+                loading.indicator.startAnimating()
+            }else {
+                self.tableView.tableFooterView = nil
+            }
+        }).disposed(by: disposeBag)
     }
 }
 
@@ -310,6 +321,12 @@ extension TransactionsViewController: UITableViewDelegate {
 //        guard tableView.scrollPercentage > 0.6 else {return}
 //        viewModel.inputs.loadMore.onNext(())
 //    }
+    
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if let index = tableView.indexPathsForVisibleRows?.first?.section {
+            viewModel.inputs.sectionObserver.onNext(index)
+        }
+    }
 }
 
 class FooterLoadingView: UIView {
