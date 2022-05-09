@@ -70,6 +70,8 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
             self.localRoot.dismiss(animated: true, completion: nil)
+            self.result.onNext(.success(()))
+            self.result.onCompleted()
         }).disposed(by: disposeBag)
         
         localRoot.pushViewController(viewController, completion: nil)
