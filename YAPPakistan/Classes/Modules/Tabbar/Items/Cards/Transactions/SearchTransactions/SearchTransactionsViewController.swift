@@ -22,8 +22,7 @@ class SearchTransactionsViewController: UIViewController {
         searchBar.font = .regular
         searchBar.borderStyle = .none
         searchBar.backgroundColor = .white
-        searchBar.returnKeyType = .search
-//        searchBar.tintColor = .primary
+        searchBar.returnKeyType = .done
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         return searchBar
     }()
@@ -54,6 +53,11 @@ class SearchTransactionsViewController: UIViewController {
         let viewController = TransactionsViewController(viewModel: viewModel.outputs.transactionsViewModel, themeService: themeService)
         return viewController
     }()
+    
+    private lazy var noTransFoundLabel = UIFactory.makeLabel(font: .large,
+                                                        alignment: .center,
+                                                        numberOfLines: 1,
+                                                        lineBreakMode: .byWordWrapping)
     
     // MARK: Properties
     
@@ -154,6 +158,7 @@ private extension SearchTransactionsViewController {
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.primary) }, to: [searchBar.rx.tintColor,closeButton.rx.tintColor])
+            .bind({ UIColor($0.greyDark) }, to: [noTransFoundLabel.rx.textColor])
             .disposed(by: disposeBag)
     }
     
@@ -170,6 +175,13 @@ private extension SearchTransactionsViewController {
         
         closeButton.rx.tap.bind(to: viewModel.inputs.closeObserver).disposed(by: disposeBag)
         searchBar.rx.text.bind(to: viewModel.inputs.searchTextObserver).disposed(by: disposeBag)
+        
+        viewModel.outputs.noTransFound.withUnretained(self).subscribe(onNext:  { `self`, text in
+            self.noTransFoundLabel.text = text
+            self.transactionContainer.removeSubviews()
+            self.transactionContainer.addSubview(self.noTransFoundLabel)
+            self.noTransFoundLabel.alignCenterWith(self.transactionContainer)
+        }).disposed(by: disposeBag)
     }
 }
 

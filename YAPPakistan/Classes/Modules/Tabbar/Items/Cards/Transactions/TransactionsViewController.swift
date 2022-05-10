@@ -101,6 +101,11 @@ class TransactionsViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
+    private lazy var noTransFoundLabel = UIFactory.makeLabel(font: .large,
+                                                        alignment: .center,
+                                                        numberOfLines: 1,
+                                                        lineBreakMode: .byWordWrapping)
 
     // MARK: - Properties
     let viewModel: TransactionsViewModelType
@@ -157,6 +162,8 @@ fileprivate extension TransactionsViewController {
         filterView.addSubview(filterViewSeprator)
         filterView.addSubview(filterCount)
         filterView.addSubview(activityIndicator)
+        
+        view.addSubview(noTransFoundLabel)
     }
     func themeSetup() {
         themeService.rx
@@ -164,7 +171,7 @@ fileprivate extension TransactionsViewController {
             .bind({ UIColor($0.greyDark) }, to: [nothingLabel.rx.textColor])
             .bind({ UIColor($0.primary).withAlphaComponent(0.17) }, to: [filterCount.rx.backgroundColor])
             .bind({ UIColor($0.primary) }, to: [filterCount.rx.textColor])
-            .bind({ UIColor($0.primaryDark) }, to: [transactionLabel.rx.textColor])
+            .bind({ UIColor($0.primaryDark) }, to: [transactionLabel.rx.textColor, noTransFoundLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [filterButton.rx.tintColor])
             .bind({ UIColor($0.primary) }, to: [filterButton.rx.titleColor(for: .normal)])
             .bind({ UIColor($0.grey) }, to: [filterButton.rx.titleColor(for: .disabled)])
@@ -219,7 +226,10 @@ fileprivate extension TransactionsViewController {
         placeholderImageView
             .toBottomOf(nothingLabel, constant: 15)
             .alignEdgesWithSuperview([.left, .bottom, .right], constant: 25)
-
+        
+        noTransFoundLabel
+            .centerVerticallyInSuperview()
+            .centerHorizontallyInSuperview()
     }
 }
 
@@ -262,6 +272,8 @@ fileprivate extension TransactionsViewController {
                 self.tableView.tableFooterView = nil
             }
         }).disposed(by: disposeBag)
+        
+        viewModel.outputs.noTransFound.bind(to: noTransFoundLabel.rx.text).disposed(by: disposeBag)
     }
 }
 

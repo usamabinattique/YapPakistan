@@ -13,7 +13,7 @@ import UIKit
 
 protocol TransactionsServiceType {
 
-    func fetchTransactions<T>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<T> where T : Decodable, T : Encodable
+    func fetchTransactions<T>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?, searchText: String?) -> Observable<T> where T : Decodable, T : Encodable
 
     func fetchCardTransactions<T>(cardSerialNumber: String, pageNumber: Int, pageSize: Int, debitSearch: Bool, filter: TransactionFilter?) -> Observable<T> where T : Decodable, T : Encodable
 
@@ -36,7 +36,7 @@ protocol TransactionsServiceType {
 
 class TransactionsService: BaseService, TransactionsServiceType {
    
-    func fetchTransactions<T: Codable>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?) -> Observable<T> {
+    func fetchTransactions<T: Codable>(pageNumber: Int, pageSize: Int, minAmount: Double?, maxAmount: Double?, creditSearch: Bool?, debitSearch: Bool?, yapYoungTransfer: Bool?, searchText: String? = nil) -> Observable<T> {
         var params = [String: String]()
 
         if let minAmount = minAmount {
@@ -52,6 +52,10 @@ class TransactionsService: BaseService, TransactionsServiceType {
 
         if creditSearch != debitSearch {
             params["txnType"] = creditSearch ? "CREDIT" : "DEBIT"
+        }
+        
+        if let text = searchText {
+            params["searchField"] = text
         }
 
         params["cardDetailsRequired"] = String(true)

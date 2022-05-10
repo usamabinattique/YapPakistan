@@ -13,7 +13,7 @@ import RxSwift
 
 protocol PaymentCardTransactionProvider: AnyObject {
     var transactions: Observable<[TransactionResponse]> { get }
-    func fetchTransactions() -> Observable<Event<PagableResponse<TransactionResponse>>>
+    func fetchTransactions(searchText:String?) -> Observable<Event<PagableResponse<TransactionResponse>>>
     func resetPage(_ page: Int)
     var pageSize: Int { get }
     func resetCardSerialNumber(_ serialNumber: String)

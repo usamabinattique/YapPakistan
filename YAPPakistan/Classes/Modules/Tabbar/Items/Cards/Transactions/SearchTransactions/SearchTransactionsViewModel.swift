@@ -23,6 +23,7 @@ protocol SearchTransactionsViewModelOutput {
     var transactionsViewModel: TransactionsViewModelType { get }
     var close: Observable<Void> { get }
     var transactionDetails: Observable<CDTransaction> { get }
+    var noTransFound: Observable<String> { get }
 }
 
 protocol SearchTransactionsViewModelType {
@@ -41,6 +42,7 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     private let searchTextSubject = PublishSubject<String?>()
     private let closeSubject = PublishSubject<Void>()
     private let transactionDetailsSubject = PublishSubject<CDTransaction>()
+    private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     lazy var transactionsViewModelSubject: TransactionsViewModelType = {
         let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(transactionDataProvider: transactionDataProvider, cardSerialNumber: card?.cardSerialNumber, themService: themeService, showFilter: false)
@@ -63,6 +65,7 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     var transactionsViewModel: TransactionsViewModelType { transactionsViewModelSubject }
     var close: Observable<Void> { closeSubject.asObservable() }
     var transactionDetails: Observable<CDTransaction> { transactionDetailsSubject.asObservable() }
+    var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>!
     private var transactionDataProvider: PaymentCardTransactionProvider!

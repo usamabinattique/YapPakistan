@@ -68,6 +68,7 @@ protocol TransactionsViewModelOutputs {
     var enableLoadMore: Observable<Bool> { get }
     var showLoadMoreIndicator: Observable<Bool> { get }
     var categorySectionCount: Observable<Int> { get }
+    var noTransFound: Observable<String> { get }
 }
 
 protocol TransactionsViewModelType {
@@ -121,6 +122,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let pageInfoSubject = ReplaySubject<PagableResponse<TransactionResponse>>.create(bufferSize: 1)
     private let enableLoadMoreSubject = BehaviorSubject<Bool>(value: true)
     public let showLoadMoreIndicatorSubject = ReplaySubject<Bool>.create(bufferSize: 1)
+    private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     // MARK: - Input
     var fetchTransactionsObserver: AnyObserver<Void> { return fetchTransactionsSubject.asObserver() }
@@ -165,6 +167,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var enableLoadMore: Observable<Bool> { enableLoadMoreSubject.asObservable() }
     var showLoadMoreIndicator: Observable<Bool> { showLoadMoreIndicatorSubject.asObservable() }
     var categorySectionCount: Observable<Int> {categorySectionCountSubject.asObservable()}
+    var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
     
     
     func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
@@ -193,7 +196,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         _numberOfSections = numberOfSections
         guard numberOfSections <= 0 && isAccountTransaction && filter == nil else { return numberOfSections }
         
-        return isSearching ? 0 : 1
+        return (isSearching && self.transactionsObj.isEmpty ) ? 0 : 1
     }
 //
     func numberOfRows(inSection section: Int) -> Int {
@@ -227,6 +230,11 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private var debitSearch: Bool = false
     var transactionsObj = [TransactionResponse]() {
         didSet {
+            if transactionsObj.isEmpty {
+                noTransFoundSubject.onNext("No transactions found")
+            } else {
+                noTransFoundSubject.onNext("")
+            }
             //reloadDataSubject.onNext(())
         }
     }
@@ -243,7 +251,11 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var pageInfo: PagableResponse<TransactionResponse>!
     
     private var transactionBarData: TransactionBarCategoriesResponse?
-    private var searchText: String?
+    private var searchText: String? {
+        didSet {
+            isSearching = true
+        }
+    }
     
     init(transactionDataProvider: PaymentCardTransactionProvider, cardSerialNumber: String? = nil, debitSearch: Bool = false, themService: ThemeService<AppTheme>, showFilter: Bool = true) {
         // self.repository = repository
@@ -315,9 +327,9 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
                     self?.showLoadMoreIndicatorSubject.onNext(true)
                 }
             })
-            .flatMap {
+            .flatMap { [weak self]
                 _ in
-                transactionDataProvider.fetchTransactions()
+                transactionDataProvider.fetchTransactions(searchText: self?.searchText)
                 
             }
             .share()
@@ -349,11 +361,10 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             if pageableResponse.currentPage == 0 {
                 self.transactionsObj = pageableResponse.content ?? []
             } else {
-                self.transactionsObj.append(contentsOf: pageableResponse.content ?? [])
-                
-                for trans in self.transactionsObj {
-                    print("transaction title \(trans.title ?? "")")
-                    print("transaction amount \(trans.amount)")
+                if (pageableResponse.content?.isEmpty ?? false) {
+                    self.transactionsObj = []
+                } else {
+                    self.transactionsObj.append(contentsOf: pageableResponse.content ?? [])
                 }
                 
                 self.showLoadMoreIndicatorSubject.onNext(false)
@@ -422,11 +433,20 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         }).disposed(by: disposeBag)
         
         searchTextSubject.distinctUntilChanged().throttle(RxTimeInterval.seconds(1), scheduler: MainScheduler.instance).subscribe(onNext: { [unowned self]  in
-            guard let text = $0, text != "" else {
+//            guard let text = $0, text != "" else {
+//                self.searchText = nil
+//                return
+//            }
+            
+            if let text = $0, text == "" {
                 self.searchText = nil
-                return
+            } else {
+                self.searchText = $0
             }
-            self.searchTransactions(text: text)
+            
+            
+            self.fetchTransactionsObserver.onNext(())
+            //self.searchTransactions(text: text)
            
         }).disposed(by: disposeBag)
     }

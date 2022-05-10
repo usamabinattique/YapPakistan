@@ -360,7 +360,7 @@ fileprivate extension HomeViewController {
         separtorView.alpha = 0
         
         balanceLabel.text = "PKR"
-       // balanceValueLabel.text = "PKR 0.00"
+        balanceValueLabel.text = "0.00"
         balanceDateLabel.text = "Today's balance"
     }
 
@@ -372,7 +372,6 @@ fileprivate extension HomeViewController {
             .bind({ UIColor($0.greyDark) }, to: [balanceDateLabel.rx.textColor, noTransFoundLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [completeVerificationButton.rx.backgroundColor,showButton.rx.tintColor])
             .bind({ UIColor($0.primaryDark) }, to: [separtorView.rx.backgroundColor,balanceValueLabel.rx.textColor])
-        
             .disposed(by: disposeBag)
     }
 
@@ -528,10 +527,10 @@ fileprivate extension HomeViewController {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.noTransFound.withUnretained(self).subscribe(onNext:  { `self`, text in
-            self.noTransFoundLabel.text = text
+           /* self.noTransFoundLabel.text = text
             self.transactionContainer.removeSubviews()
             self.transactionContainer.addSubview(self.noTransFoundLabel)
-            self.noTransFoundLabel.alignCenterWith(self.transactionContainer)
+            self.noTransFoundLabel.alignCenterWith(self.transactionContainer) */
         }).disposed(by: disposeBag)
         
         viewModel.outputs.addCreditInfo.take(1).withUnretained(self).subscribe(onNext:  { `self`, _ in

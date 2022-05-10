@@ -110,7 +110,7 @@ class CardDetailViewModel: CardDetailViewModelType, CardDetailViewModelInputs, C
             return
         } else {
            
-          let req =   transactionDataProvider.fetchTransactions()
+            let req =   transactionDataProvider.fetchTransactions(searchText: nil)
             loaderSubject.onNext(true)
             req.elements().subscribe(onNext: { [unowned self] response in
                 print("filter applied successfully \(response)")

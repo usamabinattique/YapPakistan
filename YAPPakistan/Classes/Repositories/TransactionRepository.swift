@@ -19,7 +19,8 @@ protocol TransactionsRepositoryType {
         maxAmount: Double?,
         creditSearch: Bool?,
         debitSearch: Bool?,
-        yapYoungTransfer: Bool?
+        yapYoungTransfer: Bool?,
+        searchText: String?
     ) -> Observable<Event<PagableResponse<TransactionResponse>>>
 
     func fetchCardTransactions(
@@ -60,7 +61,8 @@ class TransactionsRepository: TransactionsRepositoryType {
         maxAmount: Double?,
         creditSearch: Bool?,
         debitSearch: Bool?,
-        yapYoungTransfer: Bool?
+        yapYoungTransfer: Bool?,
+        searchText: String? = nil
     ) -> Observable<Event<PagableResponse<TransactionResponse>>> {
         return transactionService.fetchTransactions(
             pageNumber: pageNumber,
@@ -69,7 +71,8 @@ class TransactionsRepository: TransactionsRepositoryType {
             maxAmount: maxAmount,
             creditSearch: creditSearch,
             debitSearch: debitSearch,
-            yapYoungTransfer: yapYoungTransfer
+            yapYoungTransfer: yapYoungTransfer,
+            searchText: searchText
         ).materialize()
     }
 
