@@ -30,7 +30,7 @@ class SearchTransactionsViewController: UIViewController {
     
     private lazy var closeButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage.sharedImage(named: "icon_close")?.asTemplate, for: .normal)
+        button.setImage(UIImage.init(named: "icon_close", in: .yapPakistan)?.asTemplate, for: .normal)
         button.backgroundColor = .clear
 //        button.tintColor = .primary
         button.translatesAutoresizingMaskIntoConstraints = false

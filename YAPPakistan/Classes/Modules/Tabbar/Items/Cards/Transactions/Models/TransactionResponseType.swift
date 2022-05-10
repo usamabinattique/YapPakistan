@@ -668,7 +668,7 @@ extension TransactionResponse {
     
     struct Section {
         let date: Date
-        let transactions: [TransactionResponse]
+        var transactions: [TransactionResponse]
         
         init(date: Date, transactions: [TransactionResponse]) {
             self.date = date
@@ -676,7 +676,7 @@ extension TransactionResponse {
         }
     }
     
-    public static func getNumberOfSections(allTransactions transactions: [TransactionResponse]) -> [Section] {
+    public static func getNumberOfSections(allTransactions transactions: [TransactionResponse], searchText:String? = nil) -> [Section] {
         // var unique = Set<DateComponents>()
         var dictionary = [Date:[TransactionResponse]]()
         
@@ -686,6 +686,7 @@ extension TransactionResponse {
             dictionary[transaction.sectionDate] = [transaction] + existingItems
             return ()
         })
+        
         
         var sections = dictionary.sorted(by: {$0.key.timeIntervalSince1970 > $1.key.timeIntervalSince1970}).map{
             Section.init(date: $0.key, transactions: $0.value.sorted(by: {$0.date.timeIntervalSince1970 > $1.date.timeIntervalSince1970}))
@@ -701,6 +702,21 @@ extension TransactionResponse {
                 print($0.id)
             }
         } */
+        /*
+        if let text = searchText {
+            var newSections = [Section]()
+            for section in sections {
+                var newTransactions = [TransactionResponse]()
+                for transaction in section.transactions {
+                    if transaction.title?.lowercased() == text.lowercased() {
+                        newTransactions.append(transaction)
+                    }
+                }
+                newSections.append(section)
+            }
+            sections = newSections
+        } */
+        
         return sections
     }
 

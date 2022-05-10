@@ -36,6 +36,7 @@ class TransactionsViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
+       // tableView.backgroundColor = .yellow
         return tableView
     }()
     
@@ -44,8 +45,19 @@ class TransactionsViewController: UIViewController {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         nothingLabel.isHidden = true
+        placeholderImageView.isHidden = true
+        view.addSubview(placeholderImageView)
         view.addSubview(nothingLabel)
         return view
+    }()
+    
+    lazy var placeholderImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage.init(named: "image_empty_transaction", in: .yapPakistan, compatibleWith: nil)
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        return imageView
     }()
     
     lazy var filterView: UIView = {
@@ -55,8 +67,8 @@ class TransactionsViewController: UIViewController {
         return view
     }()
     
-    // private lazy var stackView = UIStackViewFactory.createStackView(with: .vertical,
-    // alignment: .fill, distribution: .fill, spacing: 0, arrangedSubviews: [filterView, tableView])
+     private lazy var stackView = UIStackViewFactory.createStackView(with: .vertical,
+     alignment: .fill, distribution: .fill, spacing: 0, arrangedSubviews: [filterView, tableView])
     
     lazy var filterCount: PaddedLabel = {
         let label = PaddedLabel()
@@ -126,10 +138,10 @@ fileprivate extension TransactionsViewController {
     }
 
     func setupViews() {
-        view.addSubview(filterView)
-        view.addSubview(tableView)
+//        view.addSubview(filterView)
+//        view.addSubview(tableView)
         view.addSubview(placeholderView)
-        // view.addSubview(stackView)
+         view.addSubview(stackView)
         
         tableView.tableFooterView = UIView()
 
@@ -178,8 +190,8 @@ fileprivate extension TransactionsViewController {
         filterButton
             .alignEdgesWithSuperview([.right, .top, .bottom], constants: [25, 15, 15])
 
-        // stackView
-        //    .alignAllEdgesWithSuperview()
+         stackView
+            .alignAllEdgesWithSuperview()
         
 //        filterView
 //            .alignEdgesWithSuperview([.top, .left, .right])
@@ -204,9 +216,9 @@ fileprivate extension TransactionsViewController {
         nothingLabel
             .alignEdgesWithSuperview([.left, .right, .top, .bottom], constants: [25, 25, 50, 50])
         
-//        placeholderImageView
-//            .toBottomOf(nothingLabel, constant: 15)
-//            .alignEdgesWithSuperview([.left, .bottom, .right], constant: 25)
+        placeholderImageView
+            .toBottomOf(nothingLabel, constant: 15)
+            .alignEdgesWithSuperview([.left, .bottom, .right], constant: 25)
 
     }
 }
@@ -221,12 +233,13 @@ fileprivate extension TransactionsViewController {
                 .asTemplate : nil }
             .bind(to: filterButton.rx.image(for: .normal)).disposed(by: disposeBag)
         viewModel.outputs.reloadData.subscribe(onNext: { [weak self] in self?.tableView.reloadData() }).disposed(by: disposeBag)
-//        viewModel.outputs.showsPlaceholder.map { !$0 }.bind(to: placeholderImageView.rx.isHidden).disposed(by: disposeBag)
+        viewModel.outputs.showsPlaceholder.map { !$0 }.bind(to: placeholderImageView.rx.isHidden).disposed(by: disposeBag)
         filterButton.rx.tap.bind(to: viewModel.inputs.openFilterObserver).disposed(by: disposeBag)
-        //viewModel.outputs.filterEnabled.bind(to: filterButton.rx.isEnabled).disposed(by: disposeBag)
-//        viewModel.outputs.filterEnabled.subscribe(onNext: { [weak self] in
-//            self?.filterButton.tintColor = $0 ? .blue: .gray /*.primary : .greyDark */
-//        }).disposed(by: disposeBag)
+        viewModel.outputs.filterEnabled.bind(to: filterButton.rx.isEnabled).disposed(by: disposeBag)
+        viewModel.outputs.filterEnabled.subscribe(onNext: { [weak self] in
+            guard let `self` = self else { return }
+            self.filterButton.tintColor = $0 ? UIColor(self.themeService.attrs.primary) : UIColor(self.themeService.attrs.greyDark)
+        }).disposed(by: disposeBag)
         viewModel.outputs.showsNothingLabel.subscribe(onNext: { [weak self] in
             self?.nothingLabel.isHidden = !$0
         }).disposed(by: disposeBag)

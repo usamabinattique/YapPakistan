@@ -31,8 +31,8 @@ public class SearchTransactionsCoordinator: Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        
-        let viewModel = SearchTransactionsViewModel(card: card)
+        let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository())
+        let viewModel = SearchTransactionsViewModel(themeService: container.themeService, transactionDataProvider: tProvider)
         
 //        guard let tVM = viewModel else {
 //            return result.do(onNext: { [weak self] _ in self?.localRoot.dismiss(animated: true, completion: nil) })

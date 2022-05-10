@@ -10,6 +10,7 @@ import RxSwift
 import YAPCore
 import YAPComponents
 import RxDataSources
+import RxTheme
 
 
 protocol SearchTransactionsViewModelInput {
@@ -42,7 +43,7 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     private let transactionDetailsSubject = PublishSubject<CDTransaction>()
     
     lazy var transactionsViewModelSubject: TransactionsViewModelType = {
-        let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(cardSerialNumber: card?.cardSerialNumber)
+        let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(transactionDataProvider: transactionDataProvider, cardSerialNumber: card?.cardSerialNumber, themService: themeService, showFilter: false)
 
         return transactionViewModel
     }()
@@ -63,11 +64,22 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     var close: Observable<Void> { closeSubject.asObservable() }
     var transactionDetails: Observable<CDTransaction> { transactionDetailsSubject.asObservable() }
     
-    init(card: PaymentCard? = nil) {
+    private var themeService: ThemeService<AppTheme>!
+    private var transactionDataProvider: PaymentCardTransactionProvider!
+    
+    init(card: PaymentCard? = nil, themeService: ThemeService<AppTheme>!, transactionDataProvider: PaymentCardTransactionProvider) {
         self.card = card
+        self.themeService = themeService
+        self.transactionDataProvider = transactionDataProvider
+        
+        searchTextSubject.subscribe(onNext: { text in
+            print("search text in searchTranVM \(text)")
+        }).disposed(by: disposeBag)
         
         searchTextSubject.bind(to: transactionsViewModelSubject.inputs.searchTextObserver).disposed(by: disposeBag)
         transactionsViewModelSubject.outputs.transactionDetails.bind(to: transactionDetailsSubject).disposed(by: disposeBag)
+        
+        transactionsViewModelSubject.inputs.fetchTransactionsObserver.onNext(())
     }
     
 }
