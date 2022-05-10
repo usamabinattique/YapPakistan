@@ -18,7 +18,7 @@ enum CNICScanType: Equatable {
 }
 
 class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
-    private let container: KYCFeatureContainer
+    private let container: KYCFeatureContainer?
     private let root: UINavigationController!
     private let scannerResultSubject = PublishSubject<ResultType<IdentityScannerResult>>()
     private var scanner: IdentityScanner!
@@ -26,7 +26,7 @@ class CNICScanCoordinator: Coordinator<ResultType<IdentityScannerResult>> {
     let presentationCompletion = PublishSubject<Void>()
     let scanType: CNICScanType!
 
-    init(container: KYCFeatureContainer, root: UINavigationController!, scanType: CNICScanType) {
+    init(container: KYCFeatureContainer? = nil, root: UINavigationController!, scanType: CNICScanType) {
         self.container = container
         self.root = root
         self.scanType = scanType
@@ -95,9 +95,9 @@ private extension CNICScanCoordinator {
         scanner.ui.tintColor = UIColor(theme.primary)
         scanner.expectedObservation = .emiratesId
         scanner.delegate = self
-        scanner.scan { [unowned self] in
-            self.presentationCompletion.onNext(())
-            self.presentationCompletion.onCompleted()
+        scanner.scan { [weak self] in
+            self?.presentationCompletion.onNext(())
+            self?.presentationCompletion.onCompleted()
         }
     }
 }

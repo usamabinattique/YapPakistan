@@ -12,7 +12,7 @@ import RxSwift
 public protocol AccountRepositoryType {
     func fetchAccounts() -> Observable<Event<[Account]>>
     func assignIBAN(countryCode: String, mobileNo: String) -> Observable<Event<String?>>
-    func fetchCustomerPersonalDetails() -> Observable<Event<Customer?>>
+    func fetchCustomerPersonalDetails() -> Observable<Event<CustomerPersonalDetailResponse>>
     func logout(deviceUUID: String) -> Observable<Event<[String: String]?>>
 }
 
@@ -26,7 +26,7 @@ public class AccountRepository: AccountRepositoryType {
         self.customerService = customerService
     }
 
-    public func fetchCustomerPersonalDetails() -> Observable<Event<Customer?>> {
+    public func fetchCustomerPersonalDetails() -> Observable<Event<CustomerPersonalDetailResponse>> {
         return customerService.fetchCustomerPersonalDetails().materialize()
     }
     

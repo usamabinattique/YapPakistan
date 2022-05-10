@@ -144,7 +144,7 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
         accountProvider.currentAccount.map { account -> NSAttributedString? in
             
             guard let iban = account?.formattedIBAN else { return nil } 
-            let attributed = NSMutableAttributedString(string: "IBAN " + iban)
+            let attributed = NSMutableAttributedString(string: "IBAN " + iban.removeWhitespace())
             attributed.addAttribute(.foregroundColor, value: UIColor(self.theme.attrs.primaryDark), range: NSRange(location: 0, length: 4))
             return attributed
         }.bind(to: ibanSubject).disposed(by: disposeBag)

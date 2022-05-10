@@ -119,13 +119,13 @@ class HomeViewController: UIViewController {
         return view
     }()
 
-//    private lazy var toolBar: HomeBalanceToolbarUpdated = {
-//        let toolBar = HomeBalanceToolbarUpdated()
-//        toolBar.backgroundColor = .clear
-//        toolBar.delegate = self
-//        toolBar.translatesAutoresizingMaskIntoConstraints = false
-//        return toolBar
-//    }()
+    private lazy var toolBar: HomeBalanceToolbarUpdated = {
+        let toolBar = HomeBalanceToolbarUpdated()
+        toolBar.backgroundColor = .clear
+        toolBar.delegate = self
+        toolBar.translatesAutoresizingMaskIntoConstraints = false
+        return toolBar
+    }()
 
 //    private lazy var notificationsView: NotificationsView = {
 //        let view = NotificationsView(theme: self.themeService)
@@ -233,8 +233,10 @@ class HomeViewController: UIViewController {
     var viewModel: HomeViewModelType!
     private var balanceHeight: NSLayoutConstraint!
     private var balanceLabelHeight: NSLayoutConstraint!
+    private var toolBarHeightConstraint: NSLayoutConstraint!
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
     private var isCreditInfoAdded = false
+    private var graphBottom: NSLayoutConstraint!
 
     // MARK: Initialization
 
@@ -267,6 +269,12 @@ class HomeViewController: UIViewController {
         
         setup()
       //  bindTableView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = false
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -328,48 +336,16 @@ fileprivate extension HomeViewController {
     private func setupViews() {
         
         balanceView.addSubviews([balanceLabel,balanceValueLabel,showButton,hideButton,balanceDateLabel,separtorView])
-      //  containerView.addSubview(balanceView)
-      /*  containerView.addSubview(tableView)
-        view.addSubview(containerView)
         
-        containerView.isHidden = true
-        tableView.isHidden = true */
-        
+//        view.addSubview(balanceView)
+        view.addSubview(toolBar)
         view.addSubview(balanceView)
         view.addSubview(scrollView)
+        
+        toolBar.isHidden = true
 
         scrollView.addSubview(transactionContainer)
-     //   scrollView.addSubview(bottomContainerView)
         parallaxHeaderView.addSubview(headerStackView)
-//        bottomContainerView.addSubview(timelineView)
-//        bottomContainerView.addSubview(creditLimitView)
-      
-        
-        parallaxHeaderView
-            .width(with: .width, ofView: view)
-            //.height(constant: scrollView.parallaxHeader.height)
-
-        headerStackView
-            .alignEdgesWithSuperview([.left, .right,.top])
-        
-        scrollView
-            .alignEdgesWithSuperview([.left, .right, .safeAreaBottom])
-            .toBottomOf(balanceView)
-        
-
-//        barGraphView
-//            .alignEdgesWithSuperview([.left, .right])
-
-        widgetView
-            .alignEdgesWithSuperview([.left, .right])
-        widgetViewHeightConstraints = widgetView.heightAnchor.constraint(equalToConstant: 115)
-        widgetViewHeightConstraints.isActive = true
-        
-        containerViewHeightConstraint = transactionContainer.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
-        containerViewHeightConstraint.isActive = true
-//        containerViewHeightConstraint = bottomContainerView.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
-//        containerViewHeightConstraint.isActive = true
-        
         separtorView.alpha = 0
         
     /*    tableView.register(CreditLimitCell.self, forCellReuseIdentifier: CreditLimitCell.defaultIdentifier)
@@ -402,8 +378,31 @@ fileprivate extension HomeViewController {
 
     private func setupConstraints() {
         
-//        containerView
-//            .alignAllEdgesWithSuperview()
+        parallaxHeaderView
+            .width(with: .width, ofView: view)
+            //.height(constant: scrollView.parallaxHeader.height)
+
+        headerStackView
+            .alignEdgesWithSuperview([.left, .right,.top])
+        
+        scrollView
+            .alignEdgesWithSuperview([.left, .right, .safeAreaBottom])
+            .toBottomOf(balanceView) //(balanceView)
+        
+
+//        barGraphView
+//            .alignEdgesWithSuperview([.left, .right])
+
+        widgetView
+            .alignEdgesWithSuperview([.left, .right])
+        widgetViewHeightConstraints = widgetView.heightAnchor.constraint(equalToConstant: 115)
+        widgetViewHeightConstraints.isActive = true
+        
+        containerViewHeightConstraint = transactionContainer.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
+        containerViewHeightConstraint.isActive = true
+//        containerViewHeightConstraint = bottomContainerView.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
+//        containerViewHeightConstraint.isActive = true
+        
         transactionContainer
             .alignEdgesWithSuperview([.left, .top, .bottom])
             .width(with: .width, ofView: scrollView)
@@ -412,13 +411,6 @@ fileprivate extension HomeViewController {
             .height(constant: 70)
             .alignEdgesWithSuperview([.left, .top, .right], constants: [0, 0, 0])
         
-//        tableView
-//            .toBottomOf(balanceView)
-//            .alignEdgesWithSuperview([.left, .right,.bottom], constants: [0, 0,0])
-        
-//        balanceValueLabel
-//            .alignEdgesWithSuperview([.left, .top, .right], constants: [24, 12, 24])
-        
         balanceLabel
             .alignEdgesWithSuperview([.left, .top], constants: [24, 12])
         
@@ -426,7 +418,6 @@ fileprivate extension HomeViewController {
             .toRightOf(balanceLabel ,constant: 4)
             .centerVerticallyWith(balanceLabel)
             .alignEdgesWithSuperview([.right], .greaterThanOrEqualTo , constants: [12])
-            
         
         showButton
             .height(constant: 18)
@@ -451,7 +442,7 @@ fileprivate extension HomeViewController {
             .toRightOf(showButton,constant: 8)
             .toBottomOf(balanceValueLabel,constant: 12)
         
-        balanceHeight = balanceValueLabel.heightAnchor.constraint(equalToConstant: 24) //balanceValueLabel.heightAnchor.constraint(equalToConstant: 24)
+        balanceHeight = balanceValueLabel.heightAnchor.constraint(equalToConstant: 24)
         balanceHeight.priority = .required
         balanceHeight.isActive = true
         
@@ -459,106 +450,19 @@ fileprivate extension HomeViewController {
         balanceLabelHeight = balanceLabel.heightAnchor.constraint(equalToConstant: 24)
         balanceLabelHeight.priority = .required
         balanceLabelHeight.isActive = true
-//        transactionContainer
-//            .alignEdgesWithSuperview([.left, .top, .bottom])
-//            .width(with: .width, ofView: scrollView)
         
-      /*  bottomContainerView
-            .alignEdgesWithSuperview([.left, .top, .bottom])
-            .width(with: .width, ofView: scrollView)
-        
-        creditLimitView
-            .alignEdgesWithSuperview([.left, .top,.right])
-          //  .toBottomOf(timelineView,constant: 12)
-          //  .height(constant: 42)
-            .height(constant: 0)
-        
-        timelineView
+        toolBar
             .alignEdgesWithSuperview([.left, .right])
-            .toBottomOf(creditLimitView,constant: 12)
-            .height(constant: 140) */
-        
-       /* headingLabel
-            .alignEdgeWithSuperviewSafeArea(.top, constant: 30)
-            .alignEdgesWithSuperview([.left, .right], constant: 25)
-        
-        stack
-            .toBottomOf(headingLabel, constant: 30)
-            .alignEdgesWithSuperview([.left, .right, .bottom])
-        
-        collectionView
-            .alignEdgesWithSuperview([.left, .right], constant: 25)
-        
-        recentBeneficiaryView
-            .alignEdgesWithSuperview([.left, .right])
-        
-       logo
-            .alignEdgeWithSuperviewSafeArea(.top, constant: 120)
-            .centerHorizontallyInSuperview()
+            .alignEdgeWithSuperview(.top, constant: (self.navigationController?.navigationBar.frame.size.height ?? 0.0) + UIApplication.shared.statusBarFrame.size.height)
 
-        headingLabel
-            .toBottomOf(logo, constant: 40)
-            .alignEdgesWithSuperview([.left, .right], constants: [20, 20])
-            .centerHorizontallyInSuperview()
-
-        logoutButton
-            .toBottomOf(headingLabel, constant: 70)
-            .height(constant: 52)
-            .width(constant: 250)
-            .centerHorizontallyInSuperview()
-
-        biometryStackView
-            .toBottomOf(logoutButton, constant: 20)
-            .width(with: .width, ofView: logoutButton)
-            .centerHorizontallyInSuperview()
-
-        completeVerificationButton
-            .alignEdgeWithSuperviewSafeArea(.bottom, constant: 20)
-            .centerHorizontallyInSuperview()
-            .height(constant: 52)
-            .width(constant: 250) */
+        toolBarHeightConstraint = toolBar.heightAnchor.constraint(equalToConstant: 80)
+        toolBarHeightConstraint.isActive = true
+        
     }
 
     // MARK: Binding
 
     private func bindViewModel() {
-     /*   viewModel.outputs.biometrySupported.map { $0 }.subscribe(onNext: {[unowned self] isHidden in
-            self.biometryLabel.isHidden = !isHidden
-            self.biometrySwitch.isHidden = !isHidden
-        }).disposed(by: disposeBag)
-
-        viewModel.outputs.biometryTitle
-            .map { "Sign in with \($0 ?? "")" }
-            .bind(to: biometryLabel.rx.text)
-            .disposed(by: disposeBag)
-
-        viewModel.outputs.biometry
-            .bind(to: biometrySwitch.rx.value)
-            .disposed(by: disposeBag)
-
-        viewModel.outputs.headingText
-            .bind(to: headingLabel.rx.text)
-            .disposed(by: disposeBag)
-
-        viewModel.outputs.logOutButtonTitle
-            .bind(to: logoutButton.rx.title(for: .normal))
-            .disposed(by: disposeBag)
-
-        logoutButton.rx.tap
-            .bind(to: viewModel.inputs.logoutObserver)
-            .disposed(by: disposeBag)
-
-        viewModel.outputs.completeVerificationHidden
-            .bind(to: completeVerificationButton.rx.isHidden)
-            .disposed(by: disposeBag)
-
-        completeVerificationButton.rx.tap
-            .bind(to: viewModel.inputs.completeVerificationObserver)
-            .disposed(by: disposeBag)
-
-        biometrySwitch.rx.value
-            .bind(to: viewModel.inputs.biometryChangeObserver)
-            .disposed(by: disposeBag) */
 
         viewModel.outputs.showActivity
             .bind(to: view.rx.showActivity)
@@ -568,7 +472,7 @@ fileprivate extension HomeViewController {
             .bind(to: rx.showErrorMessage)
             .disposed(by: disposeBag)
         
-        //viewModel.outputs.profilePic.bind(to: (userBarButtonItem.barItem.rx.loadImage())).disposed(by: disposeBag)
+        
         viewModel.outputs.profilePic.subscribe(onNext: { [weak self] _arg0 in
             let (imageUrl,placeholderImg) = _arg0
             
@@ -639,6 +543,35 @@ fileprivate extension HomeViewController {
             self.creditLimitView.alignEdgeWithSuperview(.right)
             self.creditLimitView.height(constant: 42) */
         }).disposed(by: disposeBag)
+        
+//        transactionsViewModel.outputs.sectionAmount.unwrap().bind(to: self.rx.balance).disposed(by: disposeBag)
+//        transactionsViewModel.outputs.sectionDate.unwrap().bind(to: self.rx.date).disposed(by: disposeBag)
+//        transactionsViewModel.outputs.sectionDate.unwrap().withUnretained(self).subscribe(onNext: { (`self`, value) in
+//            self.setDate(date: value)
+//        }).disposed(by: disposeBag)
+
+        
+        viewModel.outputs.shrinkProgressView.bind(to: toolBar.rx.shrink).disposed(by: disposeBag)
+        transactionsViewModel.outputs.categorySectionCount.bind(to: toolBar.rx.numberOfSections).disposed(by: disposeBag)
+        transactionsViewModel.outputs.sectionAmount.unwrap().bind(to: toolBar.rx.balance).disposed(by: disposeBag)
+        transactionsViewModel.outputs.sectionDate.unwrap().bind(to: toolBar.rx.date).disposed(by: disposeBag)
+        
+      /*  transactionsViewModel.outputs.categoryBarData.subscribe(onNext: { [weak self] categoryData in
+           
+            if categoryData.0 == nil {
+                UIView.animate(withDuration: 0.8, animations: {[weak self] in
+                    self?.toolBarHeightConstraint.constant = 80
+                    self?.view.layoutIfNeeded()
+                })
+            }
+            else {
+                UIView.animate(withDuration: 0.8, animations: { [weak self] in
+                    self?.toolBarHeightConstraint.constant = 120
+                    self?.view.layoutIfNeeded()
+                })
+            }
+            self?.toolBar.rx.monthData.onNext(categoryData)
+        }).disposed(by: disposeBag) */
     }
     
     func getParallaxHeaderHeight() -> CGFloat {
@@ -669,13 +602,13 @@ fileprivate extension HomeViewController {
         if self.isTableViewReloaded && actualProgress == 0 {
             transactionsViewModel.inputs.showSectionData.onNext(())
             transactionsViewModel.inputs.canShowDynamicData.onNext(true)
-//            viewModel.inputs.increaseProgressViewHeightObserver.onNext(false)
+            viewModel.inputs.increaseProgressViewHeightObserver.onNext(false)
         }
         if self.isTableViewReloaded && actualProgress > 0 {
             transactionsViewModel.inputs.showTodaysData.onNext(())
             transactionsViewModel.inputs.canShowDynamicData.onNext(false)
             scrollView.addSubview(refreshControl)
-//            viewModel.inputs.increaseProgressViewHeightObserver.onNext(true)
+            viewModel.inputs.increaseProgressViewHeightObserver.onNext(true)
         }
     }
 
@@ -723,26 +656,22 @@ fileprivate extension HomeViewController {
                 self.addTransactionsViewController()
         }).disposed(by: disposeBag)
         
-       /* viewModel.outputs.resumeKYC.subscribe(onNext: { [weak self] vms in
-            guard let `self` = self else { return }
-            
-            let view = DashboardTimelineView(theme: self.themeService, viewModel: vms.first!)
-            
-            self.transactionContainer.addSubview(view)
-            view.alignAllEdgesWithSuperview()
-            
-            self.addTransactionsViewController()
-          /*  if let stagesViewModel = stagesViewModel {
-                self.transactionContainer.subviews.filter { $0 is Dashb }.forEach { $0.removeFromSuperview() }
-                let stagesView = PaymentCardOnboardingStatusView(theme: self.themeService, viewModel: stagesViewModel)
-                self.transactionContainer.addSubview(stagesView)
-                stagesView.alignAllEdgesWithSuperview()
-            } else {
-                self.transactionContainer.subviews.filter { $0 is PaymentCardOnboardingStatusView }.first?.removeFromSuperview()
-            }*/ }, onCompleted: { [weak self] in
-                guard let `self` = self else { return }
-//                self.addTransactionsViewController()
-        }).disposed(by: disposeBag) */
+    }
+    
+    func showHomeTourGuide() {
+
+       /* let points: [DashboardTourGuide] = [
+
+            (title :"screen_home_display_tour_guide_text_title_top_menue".localized, desc: "screen_home_display_tour_guide_text_desc_top_menue".localized, buttonTitle: nil, x: Int(self.rightBarButtonItemCenterInWindow.x), y: Int(self.rightBarButtonItemCenterInWindow.y), radius: 35),
+
+            (title :"screen_home_display_tour_guide_text_title_amount".localized, desc: "screen_home_display_tour_guide_text_desc_amount".localized, buttonTitle: nil, x: Int(self.toolBar.ammount.centerInWindow.x), y: Int(self.toolBar.ammount.centerInWindow.y), radius: 80),
+
+            (title :"screen_home_display_tour_guide_text_title_yap_it".localized, desc: "screen_home_display_tour_guide_text_desc_yap_it".localized, buttonTitle: nil, x: Int(UIScreen.main.bounds.width)/2, y: Int(UIScreen.main.bounds.maxY) - Int(35 + (UIApplication.shared.keyWindow?.safeAreaInsets.bottom == 0 ? 20 : UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)), radius: 100),
+
+            (title :"screen_home_display_tour_guide_text_title_search".localized, desc: "screen_home_display_tour_guide_text_desc_search".localized, buttonTitle: "Finish", x: Int(self.secondLeftBarButtonItemCenterInWindow.x), y: Int(self.secondLeftBarButtonItemCenterInWindow.y), radius: 35)
+
+        ]
+        viewModel.inputs.dashboardTourGuideObserver.onNext(points) */
     }
 }
 
@@ -796,8 +725,83 @@ extension HomeViewController: MXScrollViewDelegate {
     }
 }
 
-//extension HomeViewController: ProgressBarDidTapped {
-//    func progressViewDidTapped(viewForMonth month: String) {
-//        viewModel.inputs.progressViewTappedObserver.onNext(())
-//    }
-//}
+extension HomeViewController: ProgressBarDidTapped {
+    func progressViewDidTapped(viewForMonth month: String) {
+       // viewModel.inputs.progressViewTappedObserver.onNext(())
+    }
+    
+    func setDate(date: NSMutableAttributedString) {
+       // todaysBalanceTitleLabel.attributedText = date
+        balanceDateLabel.attributedText = date
+    }
+    
+    func setBalance(balance: String) {
+        var finalBalance: Balance {
+            return Balance(balance: balance, currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
+        }
+        let text = finalBalance.formattedBalance(showCurrencyCode: false, shortFormat: true)
+        let attributedString = NSMutableAttributedString(string: text)
+        guard let decimal = text.components(separatedBy: ".").last else { return }
+        attributedString.addAttribute(.font, value: UIFont.regular/*appFont(ofSize: 18, weigth: .regular, theme: .main) */, range: NSRange(location: text.count-decimal.count, length: decimal.count))
+       // ammount.attributedText = attributedString
+        balanceValueLabel.attributedText = attributedString
+    }
+}
+
+extension Reactive where Base: HomeViewController {
+    
+    var date: Binder<NSMutableAttributedString> {
+        return Binder(self.base) { home, date in
+            home.setDate(date: date)
+        }
+    }
+    
+    var balance: Binder<String> {
+        return Binder(self.base) { home, balance in
+            home.setBalance(balance: balance)
+        }
+    }
+    
+  /*  var month: Binder<String> {
+        return Binder(self.base) { toolbar,month in
+            toolbar.month = month
+        }
+    }
+    
+    var shrink: Binder<Bool> {
+        return Binder(self.base) { toolbar,shrink in
+            toolbar.shrinkProgressView(shrink)
+            toolbar.isProgressViewShrinked = shrink
+        }
+    }
+    
+    var monthData: Binder<(MonthData?, Int?)> {
+        return Binder(self.base) { toolBar,monthData in
+            if let monthlyAnalytics = monthData.0 {
+                toolBar.progressView.isHidden = false
+                toolBar.animateMonthlyAnalytics(monthData: monthlyAnalytics)
+                toolBar.setupBarData(section: monthData.1 ?? 0)
+            }
+            else {
+                toolBar.progressView.isHidden = true
+            }
+        }
+    }
+    
+    var numberOfSections: Binder<Int?> {
+        return Binder(self.base) { toolBar,section in
+            if section ?? 0 > 9 {
+                toolBar.sectionCount = 10
+            }
+            else {
+                toolBar.sectionCount = section ?? 0
+            }
+        }
+    }
+    
+    var categoryImage: Binder<String> {
+        return Binder(self.base) { toolBar,url in
+            toolBar.setupCategoryImage(url)
+        }
+    } */
+}

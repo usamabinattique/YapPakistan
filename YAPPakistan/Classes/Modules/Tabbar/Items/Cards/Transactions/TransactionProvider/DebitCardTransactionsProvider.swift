@@ -20,10 +20,10 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
     private var repository: TransactionsRepository
     private var transactionsSubject: BehaviorSubject<[TransactionResponse]>
     private let _pageSize: Int
-    private var currentPage: Int
+    private var _currentPage: Int
     var filter: TransactionFilter? {
         didSet {
-            currentPage = 0
+            _currentPage = 0
         }
     }
     private let disposeBag = DisposeBag()
@@ -38,8 +38,8 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
         self.debitSearch = debitSearch
         self.repository = repository
         self.transactionsSubject = BehaviorSubject(value: [])
-        self._pageSize =  200
-        self.currentPage = 0
+        self._pageSize =  10 // 200
+        self._currentPage = 0
         self.filter = transactionFilter
         self.cardSerialNumber = cardSerialNumber
     }
@@ -49,28 +49,24 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
         guard !isFetching else { return Observable.never() }
         
         isFetching = true
-        let request =  cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer).share() :
-        repository.fetchCardTransactions(pageNo: currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch,filter: filter).share()
+        let request =  cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: _currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer).share() :
+        repository.fetchCardTransactions(pageNo: _currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch,filter: filter).share()
 
-        return request.do(onNext: { [unowned self] response in
+     /*   return request.do(onNext: { [unowned self] response in
             guard response.element != nil else { return }
 //            self.currentPage = !pagableResponse.isLast ? self.currentPage + 1 : 0
             
             
             self.isFetching = false
-        })
-        
-      /*  return request.do(onNext: { [unowned self] response in
-          //  guard response.element != nil else { return }
-//            self.currentPage = !pagableResponse.isLast ? self.currentPage + 1 : 0
-            
-            
-            self.isFetching = false
         }) */
+//
+        return request.do(onNext: { [unowned self] response in
+            self.isFetching = false
+        })
     }
     
     func resetPage(_ page: Int) {
-        currentPage = page
+        _currentPage = page
     }
     
     func resetCardSerialNumber(serialNumber: String) {
@@ -79,4 +75,5 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
     
     var pageSize: Int { return _pageSize }
     
+    var currentPage: Int { return _currentPage }
 }

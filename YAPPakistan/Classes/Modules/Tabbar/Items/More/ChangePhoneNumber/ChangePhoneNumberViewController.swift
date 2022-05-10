@@ -140,7 +140,7 @@ fileprivate extension ChangePhoneNumberViewController {
         
         viewModel.outputs.activateAction.subscribe(onNext: { [weak self] isActive in
 //            print(isActive)
-        })
+        }).disposed(by: disposeBag)
 
         viewModel.outputs.activateAction.bind(to: nextButton.rx.isEnabled).disposed(by: disposeBag)
 

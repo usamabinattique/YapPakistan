@@ -238,6 +238,10 @@
 // MARK: - QR Payment success
 "screen_qr_payment_transfer_success_display_text_title" = "Payment successful!";
 
+// MARK: - DocumentValidationErrors
+"error_document_validation_malicious" = "That doesn’t look right. Please upload .jpg or .png only";
+"error_document_validation_size_exceed" = "Oops! That’s too big. Please try again with a file that’s under 25 MB";
+
 //MARK: Report Cards
 "screen_report_card_display_text_title" = "Report lost or stolen card";
 "screen_report_card_display_text_complete_transaction" = "Transaction completed!\nYou now have a physical spare card";
@@ -326,6 +330,10 @@
 "screen_more_bank_details_display_text_for_top_up_title" = "My YAP account details";
 "screen_more_bank_details_display_text_copy" = "Copy";
 
+// MARK: - Current Passcode screen
+"screen_current_passcode_display_text_heading" = "Enter your current passcode";
+"screen_current_passcode_display_button_next" = "Next";
+
 // MARK: More Home Screen
 
 "screen_more_home_display_text_your_bank_details" = "Account details";
@@ -354,7 +362,11 @@
 "screen_personal_details_display_text_phone_number" = "Phone number";
 "screen_personal_details_display_text_email" = "Email";
 "screen_personal_details_display_text_address" = "Address";
-
+"screen_personal_details_display_text_cnic_id" = "CNIC";
+"screen_personal_details_display_text_expired_cnic_id_details" = "Your CNIC is expired.\nTap to update to ensure account continuity";
+"screen_personal_details_display_text_required_cnic_id_details" = "Your CNIC is required.\nTap to update to ensure account continuity";
+"screen_personal_details_display_text_cnic_id_details_update" = "Valid";
+"screen_personal_details_display_text_cnic_id_details" = "Valid";
 
 // MARK: KYC Questions
 
@@ -372,6 +384,13 @@
 "screen_kyc_review_selfie_subtitle" = "Make sure your face is clear and the photo is not blurry";
 "screen_kyc_review_selfie_yesitsme" = "Yes, that's me!";
 "screen_kyc_review_selfie_retake" = "Retake selfie";
+
+// MARK: CHANGE PASSCODE
+"screen_change_passcode_title" = "Enter your current 4 digit passcode";
+"screen_change_new_passcode_title" = "Enter your new 4 digit passcode";
+"screen_change_reenter_new_passcode_title" = "Re-enter your new 4 digit passcode";
+"screen_change_passcode_success" = "Your passcode has been changed successfully";
+
 
 // MARK: KYC CARD NAME
 
@@ -476,11 +495,11 @@
 
 //Mark: - Change Phone Number Screen
 "screen_change_phone_number_display_text_heading" = "Change phone number";
-"screen_change_phone_number_display_text_text_field_title" = "Enter your new number";
+"screen_change_phone_number_display_text_text_field_title" = "Enter your new phone number";
 
 
 // MARK: Change Phone Number Success Screen
-"screen_unverified_success_phone_number_display_text_sub_heading" = "Your phone number has been changed to\n%@";
+"screen_phone_number_update_success" = "Your phone number has been updated successfully\n%@";
 
 // MARK: Change Email Address success Screen
 "screen_unverified_success_display_text_heading" = "Success!";
@@ -744,3 +763,14 @@
 "screen_hide_widget_popup_description" = "You have chosen to hide the quick link widgets from your dashboard. To turn these back on,
 go to the dashboard menu in the top right
 and click on Quick Access Widgets.";
+
+//MARK: Store
+"screen_store_screen_title_text" = "YAP Store";
+"screen_store_heading_label_text" = "Browse YAP packages\nand add-ons";
+"screen_store_package_cell_coming_soon_text" = "Coming soon";
+
+//Mark: - Card statement Screen
+"screen_card_statements_display_text_title" = "Card statements";
+"screen_card_statements_display_text_view" = "View";
+
+

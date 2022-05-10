@@ -5,68 +5,133 @@
 //  Created by Sarmad on 09/11/2021.
 //
 
+import UIKit
 import RxSwift
 import YAPComponents
+import RxCocoa
+import RxTheme
 
 class StoreViewController: UIViewController {
-
-    let label = UIFactory.makeLabel(text: "Store")
-    private lazy var completeVerificationButton = UIFactory.makeAppRoundedButton(with: .large, title: "Complete verification")
-
+    
+    // MARK: - Views
+    lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
+    lazy var heading: UILabel = {
+        let label = UILabel()
+        label.text = "screen_store_heading_label_text".localized
+        label.font = .title3
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     // MARK: - Properties
-    var viewModel: StoreViewModelType!
-    private let disposeBag = DisposeBag()
-
+    let viewModel: StoreViewModelType
+    let themeService: ThemeService<AppTheme>
+    let disposeBag: DisposeBag
+    
     // MARK: - Init
-    convenience init(viewModel: StoreViewModelType) {
-        self.init(nibName: nil, bundle: nil)
+    init(viewModel: StoreViewModelType, themeService: ThemeService<AppTheme>) {
         self.viewModel = viewModel
+        self.themeService = themeService
+        disposeBag = DisposeBag()
+        super.init(nibName: nil, bundle: nil)
     }
-
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError()
+    }
+    
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setup()
-        bind()
+        
+        setupSubViews()
+        setupConstraints()
+        setupBindings()
+        setupTheme()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel.inputs.viewDidAppearObserver.onNext(())
     }
 }
 
 // MARK: - Setup
-fileprivate extension StoreViewController {
-    func setup() {
-        setupViews()
-        setupConstraints()
-    }
-
-    func setupViews() {
-        view.backgroundColor = .white
-        completeVerificationButton.backgroundColor = UIColor(Color(hex: "#5E35B1"))
-        view.addSub(view: label)
-        view.addSub(view: completeVerificationButton)
-    }
-
-    func setupConstraints() {
-        label.centerInSuperView()
+extension StoreViewController: ViewDesignable {
+    
+    func setupSubViews(){
         
-        completeVerificationButton
-            .alignEdgeWithSuperviewSafeArea(.bottom, constant: 20)
+        view.backgroundColor = .white
+        view.addSubview(heading)
+        view.addSubview(tableView)
+        tableView.tableFooterView = UIView()
+        tableView.backgroundColor = .clear
+        tableView.showsVerticalScrollIndicator = false
+        
+        tableView.register(StorePackageTableViewCell.self, forCellReuseIdentifier: StorePackageTableViewCell.defaultIdentifier)
+        title = "screen_store_screen_title_text".localized
+    }
+    
+    func setupConstraints(){
+        
+        heading
             .centerHorizontallyInSuperview()
-            .height(constant: 52)
-            .width(constant: 250)
+            .alignEdgesWithSuperview([.left, .right], constants: [20, 20])
+            .alignEdgeWithSuperviewSafeArea(.top, constant: 20)
+        
+        tableView
+            .toBottomOf(heading)
+            .alignEdgesWithSuperview([.left, .right, .bottom])
+        
+        tableView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0)
+    }
+    
+    func setupBindings(){
+        bindPackages()
+        bindTourGuidePresentation()
+    }
+    
+    func setupTheme(){
+        self.themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: heading.rx.textColor)
+            .disposed(by: disposeBag)
+    }
+    
+    // Private action
+    @objc func onShopping() {
+        print("Shopping Tapped...")
+        viewModel.inputs.actionObserver.onNext(())
     }
 }
 
 // MARK: - Bind
 fileprivate extension StoreViewController {
-    func bind() {
-        viewModel.outputs.completeVerificationHidden
-            .bind(to: completeVerificationButton.rx.isHidden)
-            .disposed(by: disposeBag)
-
-        completeVerificationButton.rx.tap
-            .bind(to: viewModel.inputs.completeVerificationObserver)
+    
+    private func bindPackages() {
+        viewModel.outputs.StoreInformationCellViewModel.bind(to: tableView.rx.items) { tableView, index, viewModel in
+            let cell = tableView.dequeueReusableCell(withIdentifier: StorePackageTableViewCell.defaultIdentifier) as! ConfigurableTableViewCell
+            cell.configure(with: self.themeService, viewModel: viewModel)
+            return cell as! UITableViewCell
+        }.disposed(by: disposeBag)
+        
+        tableView.rx
+            .modelSelected(StorePackageTableViewCellViewModel.self)
+            .flatMap{ $0.selectPackage }
+            .bind(to: viewModel.inputs.selectStorePackageObserver)
             .disposed(by: disposeBag)
     }
+    
+    private func bindTourGuidePresentation() {
+        viewModel.outputs.presentTourGuide.subscribe(onNext: { [weak self] in
+            //self?.presentTourGuide()
+        }).disposed(by: disposeBag)
+    }
 }
-

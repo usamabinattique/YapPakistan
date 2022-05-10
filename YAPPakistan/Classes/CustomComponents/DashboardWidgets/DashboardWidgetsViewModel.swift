@@ -76,9 +76,9 @@ public class DashboardWidgetsViewModel: DashboardWidgetsViewModelType, Dashboard
         var viewModels: [CustomWidgetsCollectionViewCellViewModel] = []
         
         var shownData = widgetsData.filter { ($0.status ?? false)}
-        if !featureFlag {
-            shownData = shownData.filter { $0.name != "Bills" }
-        }
+//        if !featureFlag {
+//            shownData = shownData.filter { $0.name != "Bills" }
+//        }
         
         for widget in shownData {
             let vm = CustomWidgetsCollectionViewCellViewModel(widgetData: widget)

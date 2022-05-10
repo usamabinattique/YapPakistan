@@ -195,8 +195,9 @@ extension HomeCoodinator {
 
 //MARK: Search
 extension HomeCoodinator {
-    func navigateToSearch(card: PaymentCard?) {
-        /*let coordinator = SearchTransactionsCoordinator(card: card, root: root,container: container)
+    func navigateToSearch(card: PaymentCard?, viewModel: TransactionsViewModel? = nil) {
+     /*   let coordinator = SearchTransactionsCoordinator(card: card, root: root,container: container)
+        //coordinator.viewModel = viewModel
         
         coordinate(to: coordinator).subscribe(onNext: {[weak self] result in
             if !(result.isCancel) {

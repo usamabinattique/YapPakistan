@@ -164,7 +164,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
                 case 0: self.changeCardName(cardDetaild: self.cardDetaild)
                 case 1: self.changePin(cardDetaild: self.cardDetaild)
                 case 2: self.forgotPin(cardDetaild: self.cardDetaild)
-                case 3: break   //View statement pending
+                case 3: self.cardStatement(cardDetaild: self.cardDetaild)
                 case 4: self.reportLostCard(cardDetaild: self.cardDetaild!)
                 default: break
                 }
@@ -216,6 +216,11 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     
     func reportLostCard(cardDetaild: PaymentCard) {
         let coordinator = ReportCardCoordinator(root: self.navigationRoot, container: self.container, cardDetail: cardDetaild)
+        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
+    }
+    
+    func cardStatement(cardDetaild: PaymentCard?) {
+        let coordinator = CardStatementCoordinator(root: self.navigationRoot, container: self.container, card: cardDetaild, repository: self.container.makeTransactionsRepository() as StatementsRepositoryType)
         coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 

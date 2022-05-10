@@ -31,7 +31,6 @@ class EditSendMoneyBeneficiaryViewController: KeyboardAvoidingViewController {
     private lazy var imagePicker = UIImagePickerController()
     
     // MARK: Properties
-    
     private let disposeBag = DisposeBag()
     private var themeService: ThemeService<AppTheme>!
     let viewModel: EditSendMoneyBeneficiaryViewModel!

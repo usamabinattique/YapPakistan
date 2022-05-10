@@ -214,6 +214,10 @@ public final class UserSessionContainer {
         return CommonWebViewController(themeService: self.themeService, viewModel: viewModel)
     }
     
+    func makeCardStatementWebViewController(viewModel: CardStatementWebViewModel) -> CardStatementWebViewController {
+        return CardStatementWebViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+    
     func makeTopupCardDetailViewController(externalCard: ExternalPaymentCard) -> TopUpCardDetailsViewController {
         let viewModel = TopUpCardDetailsViewModel(externalCard: externalCard, repository: self.makeCardsRepository())
         return TopUpCardDetailsViewController(themeService: self.themeService, viewModel: viewModel)

@@ -10,6 +10,7 @@ import RxSwift
 import YAPComponents
 import RxDataSources
 import YAPCore
+import Adjust
 //import Authentication
 //import Networking
 
@@ -207,13 +208,15 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
             errorSubject.map { _ in false }
         ]).merge().startWith(true)
     }
+    private var accountProvider: AccountProvider
 
     // MARK: - Init
     init(customer: Observable<Customer>,
          biometricsManager: BiometricsManager = BiometricsManager(), credentialStore: CredentialsStoreType,
-         repository: LoginRepository, notificationManager: NotificationManagerType) {
+         repository: LoginRepository, notificationManager: NotificationManagerType, accountProvider : AccountProvider) {
 
         self.customer = customer
+        self.accountProvider = accountProvider
         self.credentialStore = credentialStore
         self.biometricsManager = biometricsManager
         self.notificationManager = notificationManager
@@ -256,8 +259,8 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         emiratesIDSubject.map { EmiratesIDStatus(isExpired: $0?.isExpired) }.bind(to: emiratedIdExpiredSbuject).disposed(by: disposeBag)
         
 //        fetchEmiratesID(repository: repository)
-//        uploadProfilePhoto(repository: repository)
-//        removeProfilePicture(repository: repository)
+        uploadProfilePhoto(repository: repository)
+        removeProfilePicture(repository: repository)
         logout(repository: repository)
         openInstagram()
         openTwitter()
@@ -309,50 +312,56 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
 //        request.do(onNext: { _ in YAPProgressHud.hideProgressHud() }).elements().bind(to: emiratesIDSubject).disposed(by: disposeBag)
 //        request.errors().map { _ in EmiratesIDStatus(isExpired: Bool?.none) }.bind(to: emiratedIdExpiredSbuject).disposed(by: disposeBag)
 //    }
-//
-//    func uploadProfilePhoto(repository: ProfileRepository) {
-//        let imageValidation = changedProfilePhoto.unwrap().flatMap { (image: UIImage) -> Observable<Event<Data>> in
-//            return Observable.create { observer in
-//                let compressedImage = image.jpegData(compressionQuality: 0.5)!
-//                do {
-//                    try UploadingImageValiadtor(data: compressedImage).validate()
-//                } catch {
-//                    observer.onError(error)
-//                }
-//                observer.onNext(compressedImage)
-//                return Disposables.create()
-//            }.materialize()
-//        }.share(replay: 1, scope: .whileConnected)
-//
-//        let request = imageValidation.elements().do(onNext: { _ in YAPProgressHud.showProgressHud() }).flatMap { repository.changeProfilePhoto($0, name: "profile-picture", fileName: "profile_photo.jpg", mimeType: "image/jpg") }.share(replay: 1, scope: .whileConnected)
-//
-//        request.elements().map { $0.imageUrl }.do(onNext: { _ in SessionManager.current.refreshAccount() }).bind(to: profilePhotoURLSubject).disposed(by: disposeBag)
-//
-//        Observable.merge(imageValidation.errors(),
-//                         request.errors()).debug("Error").delaySubscription(RxTimeInterval.milliseconds(500), scheduler: MainScheduler.instance).bind(to: errorSubject).disposed(by: disposeBag)
-//    }
-//
-//    func removeProfilePicture(repository: ProfileRepository){
-//
-//        let result = removePhotoTapSubject
-//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-//            .flatMap {_ -> Observable<Event<String?>> in
-//                return repository.removeProfilePhoto()
-//        }.share()
-//
-//        result.elements()
-//            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-//            .subscribe(onNext: {_ in
-//                SessionManager.current.refreshAccount()
-//            }).disposed(by: disposeBag)
-//
-//        result
-//            .errors()
-//            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-//            .bind(to: errorSubject)
-//            .disposed(by: disposeBag)
-//    }
-//
+
+    func uploadProfilePhoto(repository: LoginRepositoryType) {
+        let imageValidation = changedProfilePhoto.unwrap().do( onNext: { _ in YAPProgressHud.showProgressHud() }  ).flatMap { (image: UIImage) -> Observable<Event<Data>> in
+            return Observable.create { observer in
+                let compressedImage = image.jpegData(compressionQuality: 0.5)!
+                do {
+                    try UploadingImageValiadtor(data: compressedImage).validate() //UploadingImageValiadtor(data: compressedImage).validate()
+                    YAPProgressHud.hideProgressHud()
+                } catch {
+                    observer.onError(error)
+                    YAPProgressHud.hideProgressHud()
+                }
+                observer.onNext(compressedImage)
+                return Disposables.create()
+            }.materialize()
+        }.share(replay: 1, scope: .whileConnected)
+
+        let request = imageValidation.elements().do(onNext: { _ in YAPProgressHud.showProgressHud() }).flatMap { repository.changeProfilePhoto($0, name: "profile-picture", fileName: "profile_photo.jpg", mimeType: "image/jpg") }.share(replay: 1, scope: .whileConnected)
+
+        request.elements().map { $0.imageUrl }.do(onNext: { [weak self] _ in
+            self?.accountProvider.refreshAccount()
+            YAPProgressHud.hideProgressHud()
+        }).bind(to: profilePhotoURLSubject).disposed(by: disposeBag)
+
+            Observable.merge(imageValidation.errors(),
+                         request.errors()).debug("Error").delaySubscription(RxTimeInterval.milliseconds(500), scheduler: MainScheduler.instance).do(onNext: { _ in YAPProgressHud.hideProgressHud() }).bind(to: errorSubject).disposed(by: disposeBag)
+    }
+    
+func removeProfilePicture(repository: LoginRepositoryType){
+
+        let result = removePhotoTapSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .flatMap {_ -> Observable<Event<String?>> in
+                return repository.removeProfilePhoto()
+        }.share()
+
+        result.elements()
+            .do(onNext: { [weak self] _ in YAPProgressHud.hideProgressHud() })
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                self.accountProvider.refreshAccount()
+            }).disposed(by: disposeBag)
+
+        result
+            .errors()
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+    }
+
     func openInstagram() {
         instagramTap.subscribe(onNext: { _ in
             let username =  "yap"

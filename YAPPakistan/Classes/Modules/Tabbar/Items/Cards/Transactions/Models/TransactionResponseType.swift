@@ -10,12 +10,40 @@
 
 
 import Foundation
+import UIKit
 
 public enum TransactionType: String, Codable {
     case debit = "DEBIT"
     case credit = "CREDIT"
     case unknown = "NA"
 }
+
+public enum ProductNameType: String {
+    case yapToYap = "Y2Y_TRANSFER"
+    case topup = "TOP_UP_VIA_CARD"
+    case unkonwn
+    
+    var type: String {
+        switch self {
+        case .yapToYap:
+            return "YAP to YAP"
+        case .topup:
+            return "Top Up"
+        case .unkonwn:
+            return ""
+        }
+    }
+}
+
+//public enum TransactionStatus: String {
+//    case pending = "PENDING"
+//    case inProgress = "IN_PROGRESS"
+//    case completed = "COMPLETED"
+//    case failed = "FAILED"
+//    case cancelled = "CANCELLED"
+//    case none = "NONE"
+//}
+
 
 public enum TransactionState: String, Codable {
     case fssStart = "FSS_START"
@@ -34,9 +62,9 @@ public extension TransactionType {
     var icon: UIImage? {
         switch self {
         case .credit:
-            return UIImage.sharedImage(named: "icon_transaction_credit")?.asTemplate
+            return UIImage.init(named: "icon_transaction_credit", in: .yapPakistan)?.asTemplate
         case .debit:
-            return UIImage.sharedImage(named: "icon_transaction_debit")?.asTemplate
+            return UIImage.init(named: "icon_transaction_debit", in: .yapPakistan)?.asTemplate
         case .unknown:
             return nil
         }
@@ -45,7 +73,7 @@ public extension TransactionType {
     var identifierIcon: UIImage? {
         switch self {
         case .debit:
-            return UIImage.sharedImage(named: "icon_transaction_type_debit")?.asTemplate
+            return UIImage.init(named: "icon_transaction_type_debit", in: .yapPakistan)?.asTemplate
         case .credit:
             return nil
         case .unknown:
@@ -55,12 +83,12 @@ public extension TransactionType {
 
     func identifierIcon(for status: TransactionStatus, for transactionProductCode: TransactionProductCode) -> UIImage? {
         guard  status != .failed && status != .cancelled else { return nil }
-        guard status == .completed else { return UIImage.sharedImage(named: "icon_transaction_type_inprogress")?.asTemplate }
+        guard status == .completed else { return UIImage.init(named: "icon_transaction_type_inprogress", in: .yapPakistan)?.asTemplate }
 
         if transactionProductCode == .atmDeposit {
-            return UIImage.sharedImage(named: "icon_identifire_atm_deposit")
+            return UIImage.init(named: "icon_identifire_atm_deposit", in: .yapPakistan)
         } else if transactionProductCode == .atmWithdrawl {
-            return UIImage.sharedImage(named: "icon_identifire_atm_withdrawal")
+            return UIImage.init(named: "icon_identifire_atm_withdrawal", in: .yapPakistan)
         }
 
         return identifierIcon
@@ -159,6 +187,116 @@ struct TransactionResponse: Codable, Transaction {
         guard type == .credit else { return totalAmount ?? 0 }
         return amount
     }
+    
+    var productNameType: ProductNameType { ProductNameType(rawValue: productName ?? "") ?? .unkonwn}
+    
+//    public var transactionProductCode: TransactionProductCode {
+//        return TransactionProductCode(rawValue: productCode ?? "") ?? .unknown
+//    }
+    
+    public var icon: (image: UIImage?, contentMode: UIView.ContentMode, imageUrl: String?, identifierImage: UIImage?) {
+        let title = self.title ?? "Unknown Transaction"
+        var icon: UIImage? = nil
+        var contentMode: UIView.ContentMode = .scaleAspectFill
+        var url: String? = nil
+        var identifierImage: UIImage?
+
+        var name:String? = ""
+        if(productCode == .y2yTransfer) {
+            name = type == .debit ? receiverName : senderName
+        }else if(productCode == .posPurchase || productCode == .eCom) {
+            name  = merchantName
+        }else{
+            name = title
+        }
+
+
+        url = type == .debit ? receiverUrl : senderUrl
+        contentMode = .scaleAspectFill
+        
+        if identifierImage == nil {
+            if type == .debit && productNameType == .yapToYap {
+                identifierImage = UIImage.init(named: "icon_send_money_completed_secondary", in: .yapPakistan)
+            } else if type == .credit && productNameType == .yapToYap {
+                identifierImage = UIImage.init(named: "icon_received_money_completed", in: .yapPakistan)
+            } else if productNameType == .topup {
+                identifierImage = UIImage.init(named: "icon_identifire_atm_deposit", in: .yapPakistan)
+            } else {
+                identifierImage = UIImage.init(named: "icon_identifire_atm_withdrawal", in: .yapPakistan)
+            }
+        }
+        
+        if icon == nil {
+           /*
+            icon = iconName.flatMap {
+                UIImage.sharedImage(named: $0)
+            } */
+
+            if icon != nil {
+                if productCode.isFee || productCode.isIncoming || productCode == .y2yTransfer || productCode.isSendMoney {
+                    contentMode = .scaleAspectFill
+                } else if productCode == .addFundsSupplementaryCard || productCode == .removeFundsSuplementaryCard {
+                    contentMode = .center
+                }
+            }
+        }
+
+        if icon == nil {
+            icon = name?.thumbnail//initialsImage(color: UIColor.colorFor(listItemIndex: Int(itemIndex)))
+
+            if icon != nil {
+                contentMode = .scaleAspectFill
+            }
+        }
+        
+       /* if productCode == .posPurchase || productCode == .eCom || productCode == .billPayments {
+            let category = self.tapixCategory ?? "General"
+            let isCategoryGeneral = category.lowercased() == "general"
+            url = merchantLogo ?? tapixCategoryIconURL
+            if isCategoryGeneral {
+                icon = UIImage(named: "general_category_icon", in: Bundle.main, compatibleWith: nil)
+            }
+        } */
+        if productCode == .eCom {
+            icon = name?.thumbnail//initialsImage(color: UIColor.colorFor(listItemIndex: Int(itemIndex)))
+            if icon != nil {
+                contentMode = .scaleAspectFill
+            }
+        }
+        
+
+        if transactionStatus == .cancelled {
+            contentMode = .scaleAspectFill
+        }
+
+        return (icon, contentMode, url, identifierImage)
+    }
+    
+    func flipImageLeftRight(_ image: UIImage) -> UIImage? {
+
+        UIGraphicsBeginImageContextWithOptions(image.size, false, image.scale)
+        let context = UIGraphicsGetCurrentContext()!
+        context.translateBy(x: image.size.width, y: image.size.height)
+        context.scaleBy(x: -image.scale, y: -image.scale)
+
+        context.draw(image.cgImage!, in: CGRect(origin:CGPoint.zero, size: image.size))
+
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+
+        UIGraphicsEndImageContext()
+
+        return newImage
+    }
+    
+    public var transactionStatus: TransactionStatus { TransactionStatus.init(rawValue: status ?? "") ?? .none }
+    
+    public func transactionTypeBackgroundColor() -> UIColor {
+        return isTransactionInProgress ? .white : type == .debit && (productCode == .y2yTransfer || productCode.isSendMoney || productCode == .cashPayout) ?  UIColor(Color(hex: "#478DF4"))  : .white
+    }
+
+    public func transactionTypeTintColor() -> UIColor? {
+        return transactionStatus == .completed ? (productCode == .y2yTransfer || productCode.isSendMoney || productCode == .cashPayout) ? UIColor.white : UIColor(Color(hex: "#478DF4"))  : UIColor(Color(hex: "#F57F17"))
+    }
 
     enum CodingKeys: String, CodingKey {
         case date = "creationDate"
@@ -185,7 +323,7 @@ struct TransactionResponse: Codable, Transaction {
         case fee = "postedFees"
         case senderName, receiverName
         case merchantName
-        case merchantCategory = "merchantCategoryName"
+        case merchantCategory = "merchantCategory"//"merchantCategoryName"
         case merchantLogoUrl = "merchantLogo"
         case location = "cardAcceptorLocation"
         case senderUrl = "senderProfilePictureUrl"
@@ -216,78 +354,8 @@ struct TransactionResponse: Codable, Transaction {
         case latitude = "latitude"
         case longitude = "longitude"
         case tapixCategory = "yapCategoryDTO"
-//        case receiverProfilePictureUrl = "receiverProfilePictureUrl"
-//        case senderProfilePictureUrl = "senderProfilePictureUrl"
     }
-    
-   /* "creationDate": "2022-04-12T06:27:41",
-    "createdBy": "00aac051-2fb4-4bce-a3f6-713c6ae77df8",
-    "updatedDate": "2022-04-12T06:27:41",
-    "updatedBy": "00aac051-2fb4-4bce-a3f6-713c6ae77df8",
-    "id": 164,
-    "card1": "?C8F92RQ6XQ34EYQ",
-    "card2": "?C8FF7LRAJ0T88D7",
-    "iban1": "PK99YAPK0000003004718047",
-    "iban2": "PK99YAPK0000003001515953",
-    "txnCode": "497",
-    "productName": "Y2Y_TRANSFER",
-    "category": "TRANSACTION",
-    "txnType": "DEBIT",
-    "amount": 350.0000,
-    "totalAmount": 350.0000,
-    "currency": "PKR",
-    "txnState": "FAILURE",
-    "status": "FAILED",
-    "balanceBefore": 2689.00,
-    "balanceAfter": 2689.00,
-    "paymentMode": "CARD",
-    "productCode": "P003",
-    "accountUuid1": "bb533300-fd63-44b8-acdd-f80011280e89",
-    "accountUuid2": "b7351708-8bfd-4f7c-a748-d83740d4fcc8",
-    "initiator": "YAP",
-    "processorRefNumber": "ResponseData is null",
-    "transactionId": "387170346585",
-    "customerId1": "10000060",
-    "customerId2": "10000100",
-    "senderMobileNo": "3004718047",
-    "senderEmail": "awaisyousaf103487@gmail.com",
-    "receiverMobileNo": "3001515953",
-    "receiverEmail": "and@unverified.com",
-    "senderName": "Awais Yousaf",
-    "receiverName": "Android",
-    "maskedCardNo": "220593******4204",
-    "cardHolderBillingCurrency": "PKR",
-    "cardHolderBillingAmount": 350.00,
-    "cardHolderBillingTotalAmount": 350.00,
-    "processorErrorCode": "PROCESSOR_FAIL",
-    "processorErrorDescription": "Transaction processing failed at Processor: Error Occurred",
-    "userType2": "B2C_ACCOUNT",
-    "userType1": "B2C_ACCOUNT",
-    "title": "To Android",
-    "markupFees": 0.00,
-    "postedFees": 0.00,
-    "vatAmount": 0.00,
-    "cardType": "DEBIT",
-    "senderProfilePictureUrl": "dummy/dummy/profile_image/customer_data/10000060/documents/PROFILE_PICTURE.jpeg",
-    "receiverProfilePictureUrl": "dummy/dummy/profile_image/customer_data/10000100/documents/PROFILE_PICTURE.jpeg",
-    "currencyDecimalScale": 2,
-    "msgId": "53676675-0b7d-48c6-a318-70a3c659c47a",
-    "bankCBWISCompliant": false,
-    "cbwsi": false,
-    "feeTransactionsDetailDTO": [],
-    "txnTransactionsDetailDTO": [],
-    "tapixCall": false,
-    "approved": false,
-    "reversal": true,
-    "dispute": false,
-    "createdOn": [
-        2022,
-        4,
-        12,
-        6,
-        27,
-        41
-    ] */
+   
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -597,28 +665,71 @@ extension TransactionResponse {
 //        return differences
 //    }
 //
-    public static func getNumberOfSections(transactions: [TransactionResponse]) -> [TransactionResponse] {
-        var unique = Set<DateComponents>()
-        let result = transactions.filter {
-            let comps = Calendar.current.dateComponents([.day, .month, .year], from: $0.date)
-            if unique.contains(comps) {
-                return false
-            }
-            unique.insert(comps)
-            return true
+    
+    struct Section {
+        let date: Date
+        let transactions: [TransactionResponse]
+        
+        init(date: Date, transactions: [TransactionResponse]) {
+            self.date = date
+            self.transactions = transactions
         }
-        return result
     }
     
-    public static func transactions(for section: Int, transactions: [TransactionResponse]) -> [TransactionResponse] {
-        let sections = TransactionResponse.getNumberOfSections(transactions: transactions).count
+    public static func getNumberOfSections(allTransactions transactions: [TransactionResponse]) -> [Section] {
+        // var unique = Set<DateComponents>()
+        var dictionary = [Date:[TransactionResponse]]()
+        
+        _ = transactions/*.sorted(by: { $0.date.compare($1.date) == .orderedDescending })*/.map({ transaction -> Void in
+            // let comps = Calendar.current.dateComponents([.day, .month, .year], from: transaction.date)
+            let existingItems = dictionary[transaction.sectionDate] ?? []
+            dictionary[transaction.sectionDate] = [transaction] + existingItems
+            return ()
+        })
+        
+        var sections = dictionary.sorted(by: {$0.key.timeIntervalSince1970 > $1.key.timeIntervalSince1970}).map{
+            Section.init(date: $0.key, transactions: $0.value.sorted(by: {$0.date.timeIntervalSince1970 > $1.date.timeIntervalSince1970}))
+        }
+//        sections.sort(by: {$0.date.timeIntervalSince1970 > $1.date.timeIntervalSince1970})
+//        sections.map{
+//            $0.transactions.sort{}
+//        }
+        
+       /* _ = sections.map {
+            print($0.date.string())
+            _ = $0.transactions.map{
+                print($0.id)
+            }
+        } */
+        return sections
+    }
+
+    public static func transactions(for section: Int, allTransactions  transactions: [TransactionResponse]) -> [TransactionResponse] {
+        let sections = TransactionResponse.getNumberOfSections(allTransactions: transactions)
+        guard !sections.isEmpty && section < sections.count else { return [] }
+        return sections[section].transactions
+    }
+    
+    static func numberOfTransaction(in section: Int, allTransactions transactions: [TransactionResponse]) -> Int {
+        return TransactionResponse.transactions(for: section, allTransactions: transactions).count
+    }
+    
+    static func transaction(for indexPath: IndexPath, allTransactions transactions: [TransactionResponse]) -> TransactionResponse? {
+        let transactions = TransactionResponse.transactions(for: indexPath.section, allTransactions: transactions)
+        guard indexPath.row < transactions.count else {return nil}
+        return transactions[indexPath.row]
+    }
+    
+    /*
+    public static func transactions(for section: Int,allTransactions  transactions: [TransactionResponse]) -> [TransactionResponse] {
+        let sections = TransactionResponse.getNumberOfSections(allTransactions: transactions).count
         guard sections > 0 && section < sections else { return [] }
-        let transactionSections = TransactionResponse.getNumberOfSections(transactions: transactions)
+        let transactionSections = TransactionResponse.getNumberOfSections(allTransactions: transactions)
         let requiredTransaction = transactionSections[section]
         var requiredTransactions = [TransactionResponse]()
-        let result = transactions.filter {
+        var result = transactions.filter {
             let comps = $0.sectionDate
-            if requiredTransaction.sectionDate == comps {
+            if requiredTransaction.sectionDate == comps { //requiredTransaction.sectionDate == comps {
                 requiredTransactions.append($0)
                 return true
             }
@@ -627,16 +738,16 @@ extension TransactionResponse {
         return result
     }
     
-    static func numberOfTransaction(in section: Int, transactions: [TransactionResponse]) -> Int {
-        return TransactionResponse.transactions(for: section, transactions: transactions).count
+    static func numberOfTransaction(in section: Int,allTransactions transactions: [TransactionResponse]) -> Int {
+        return TransactionResponse.transactions(for: section, allTransactions: transactions).count
     }
     
-    static func transaction(for indexPath: IndexPath, transactions: [TransactionResponse]) -> TransactionResponse? {
-        guard indexPath.section < TransactionResponse.getNumberOfSections(transactions: transactions).count, indexPath.row < TransactionResponse.transactions(for: indexPath.section, transactions: transactions).count else { return nil }
+    static func transaction(for indexPath: IndexPath,allTransactions transactions: [TransactionResponse]) -> TransactionResponse? {
+//        print("indexPath Section \(indexPath.section)")
+        guard indexPath.section < TransactionResponse.getNumberOfSections(allTransactions: transactions).count, indexPath.row < TransactionResponse.transactions(for: indexPath.section, allTransactions: transactions).count else { return nil }
         
         
         return transactions[indexPath.row]//transactions.object(at: indexPath)
-    }
-   
+    }*/
 }
 

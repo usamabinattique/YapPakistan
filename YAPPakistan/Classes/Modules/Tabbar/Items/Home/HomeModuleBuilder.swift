@@ -17,7 +17,7 @@ struct HomeModuleBuilder {
                                                biometricsManager: container.biometricsManager,
                                                notificationManager: notificationManager,
                                                credentialStore: container.parent.credentialsStore,
-                                      repository: container.makeLoginRepository(),cardsRepository: container.makeCardsRepository(),transactionDataProvider: tProvider, themeService: container.themeService)
+                                      repository: container.makeLoginRepository(),cardsRepository: container.makeCardsRepository(),transactionDataProvider: tProvider, transactionRepository: container.makeTransactionsRepository(), themeService: container.themeService)
         let viewController = HomeViewController(themeService: container.parent.themeService,
                                                          viewModel: viewModel)
 

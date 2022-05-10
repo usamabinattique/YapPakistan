@@ -17,10 +17,12 @@ protocol PaymentCardTransactionProvider: AnyObject {
     func resetPage(_ page: Int)
     var pageSize: Int { get }
     func resetCardSerialNumber(_ serialNumber: String)
+    var currentPage: Int { get }
 }
 
 extension PaymentCardTransactionProvider {
     func resetPage(_ page: Int) {}
     var pageSize: Int { return 0 }
     func resetCardSerialNumber(_ serialNumber: String) {}
+    var currentPage: Int { return 0 }
 }

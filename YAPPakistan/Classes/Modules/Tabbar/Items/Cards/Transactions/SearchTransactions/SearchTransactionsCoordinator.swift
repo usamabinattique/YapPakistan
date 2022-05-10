@@ -33,9 +33,12 @@ public class SearchTransactionsCoordinator: Coordinator<ResultType<Void>> {
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
         let viewModel = SearchTransactionsViewModel(card: card)
-//        guard let viewModel = viewModel else {
+        
+//        guard let tVM = viewModel else {
 //            return result.do(onNext: { [weak self] _ in self?.localRoot.dismiss(animated: true, completion: nil) })
 //        }
+//
+//        viewModel.transactionsViewModelSubject = tVM
 
         let viewController = SearchTransactionsViewController(viewModel: viewModel, themeService: container.themeService)
         

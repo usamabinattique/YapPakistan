@@ -16,6 +16,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     private let container: KYCFeatureContainer
     private let navigation: NavigationContainerViewController
     private var paymentGatewayM: PaymentGatewayLocalModel!
+    private var disposeBag = DisposeBag()
 
     init(root: UINavigationController,
          container: KYCFeatureContainer, schemeObj: KYCCardsSchemeM, paymentGatewayM: PaymentGatewayLocalModel) {
@@ -40,7 +41,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
                 self.root.popViewController()
                 self.goBack()
             })
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
@@ -50,7 +51,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
                         self.topupCardSelection()
                             .subscribe(onNext: { _ in
                                 print("In cardName -> TopupCardSelection is subscribed")
-                            })
+                            }).disposed(by: self.disposeBag)
                     } else {
                         self.cardDetailWeb()
                     }
@@ -59,12 +60,12 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
                     self.addressPending()
                 }
             })
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.editNameForEditNameScreen).withUnretained(self)
             .flatMap({ `self`, name in self.editName(name: name) })
             .bind(to: viewController.viewModel.inputs.nameObserver)
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
         
         
     }
@@ -75,7 +76,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.navigation.childNavigation.popViewController(animated: true) })
-            .disposed(by: rx.disposeBag)
+            .disposed(by: disposeBag)
 
         let next = viewController.viewModel.outputs.next
             .do(onNext: { [weak self] _ in self?.navigation.childNavigation.popViewController(animated: true) })
@@ -98,7 +99,7 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
                     print("go back from Name address")
                     break
                 }
-            }).disposed(by: rx.disposeBag)
+            }).disposed(by: disposeBag)
         
     }
     

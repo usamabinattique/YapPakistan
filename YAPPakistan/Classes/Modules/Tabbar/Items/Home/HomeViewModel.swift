@@ -27,6 +27,7 @@ protocol HomeViewModelInputs {
     var searchTapObserver: AnyObserver<Void> { get }
     var categoryChangedObserver: AnyObserver<Void> { get }
     var refreshObserver: AnyObserver<Void> { get }
+    var increaseProgressViewHeightObserver: AnyObserver<Bool> {get}
 }
 
 protocol HomeViewModelOutputs {
@@ -74,6 +75,7 @@ protocol HomeViewModelOutputs {
     var categoryChanged: Observable<Void> { get }
     var refresh: Observable<Void> {  get }
     var selectedWidget: Observable<WidgetCode?> { get }
+    var shrinkProgressView: Observable<Bool> { get }
 }
 
 protocol HomeViewModelType {
@@ -123,6 +125,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let categoryChangedSubject = PublishSubject<Void>()
     private let refreshSubject = PublishSubject<Void>()
     private let menuTapSubject = PublishSubject<Void>()
+    private let shrinkProgressViewSubject = BehaviorSubject<Bool>(value: false)
+    private let increaseProgressViewHeightSubject = BehaviorSubject<Bool>(value: true)
     
     
     private var numberOfShownWidgets = 0
@@ -144,6 +148,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var categoryChangedObserver: AnyObserver<Void> { categoryChangedSubject.asObserver() }
     var refreshObserver: AnyObserver<Void> { refreshSubject.asObserver() }
     var menuTapObserver: AnyObserver<Void> { return menuTapSubject.asObserver() }
+    var increaseProgressViewHeightObserver: AnyObserver<Bool> {increaseProgressViewHeightSubject.asObserver()}
     
     // MARK: Outputs
 
@@ -186,6 +191,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var categoryChanged: Observable<Void> { categoryChangedSubject.asObservable() }
     var refresh: Observable<Void> { refreshSubject.asObservable() }
     var selectedWidget: Observable<WidgetCode?> { selectedWidgetSubject.asObservable() }
+    var shrinkProgressView: Observable<Bool> { shrinkProgressViewSubject }
+    
 
     // MARK: Init
 
@@ -199,12 +206,14 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private var transactionDataProvider: DebitCardTransactionsProvider
     private var dashboardStatusActionDisposeBag: DisposeBag!
     private var themeService: ThemeService<AppTheme>!
+    private var transactionRepository: TransactionsRepositoryType
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManagerType,
          notificationManager: NotificationManagerType,
          credentialStore: CredentialsStoreType,
-         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: DebitCardTransactionsProvider, themeService: ThemeService<AppTheme>) {
+         repository: LoginRepository, cardsRepository: CardsRepositoryType, transactionDataProvider: DebitCardTransactionsProvider, transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>) {
+        self.transactionRepository = transactionRepository
         self.themeService = themeService
         self.accountProvider = accountProvider
         self.biometricsManager = biometricsManager
@@ -249,14 +258,22 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
         accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
         
+        increaseProgressViewHeightSubject.subscribe(onNext: { [unowned self] increaseSize in
+            increaseSize ? shrinkProgressViewSubject.onNext(false) :
+                shrinkProgressViewSubject.onNext(true)
+        }).disposed(by: disposeBag)
+        
        // generateCellViewModels()
-        getCardBalance()
+       // getCardBalance()
+        getCustomerAccountBalance()
         getWidgets(repository: cardsRepository)
         getCards()
         
         refreshSubject.subscribe(onNext: { [weak self] _ in
-//            self?.getCardBalance()
+            self?.getCustomerAccountBalance()
+           /* self?.getCardBalance() */
 //            self?.getCards()
+            
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
         }).disposed(by: disposeBag)
         
@@ -279,7 +296,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
 
 extension HomeViewModel {
     func getCardBalance() {
-       /* let cardsRequest = cardsRepository.getCardBalance()
+        let cardsRequest = cardsRepository.getCardBalance()
             .do(onNext: { [weak self] _ in self?.shimmeringSubject.onNext(false) })
             .share()
         
@@ -292,15 +309,46 @@ extension HomeViewModel {
             self?.balanceSubject.onNext(attributedString)
         }).disposed(by: disposeBag)
         
-        cardsRequest.errors().map{ $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag) */
-        var balance: Balance {
+        cardsRequest.errors().map{
+            $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
+        
+        cardsRequest.errors().subscribe(onNext: { error in
+            print("error is \(error.localizedDescription)")
+        }).disposed(by: disposeBag)
+
+        
+       /* var balance: Balance {
             return Balance(balance: "0.0", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
         }
         let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
         let attributedString = NSMutableAttributedString(string: text)
         guard let decimal = text.components(separatedBy: ".").last else { return }
         attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
-        self.balanceSubject.onNext(attributedString)
+        self.balanceSubject.onNext(attributedString) */
+    }
+    
+    fileprivate func getCustomerAccountBalance() {
+        let accountBalanceRequest = transactionRepository.fetchCustomerAccountBalance().share()
+      //  accountBalanceRequest.map { _ in true }.bind(to: loadingSubject).disposed(by: disposeBag)
+
+        accountBalanceRequest
+            .errors()
+            .do(onNext: { [unowned self] _ in
+                print("account balance api onNext called")
+                /*self.shimmeringSubject.onNext(false) */ })
+            .map { $0.localizedDescription }
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+        
+        accountBalanceRequest.elements().subscribe(onNext: { [weak self] balance in
+            let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
+            let attributedString = NSMutableAttributedString(string: text)
+            guard let decimal = text.components(separatedBy: ".").last else { return }
+            attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
+            self?.balanceSubject.onNext(attributedString)
+        }).disposed(by: disposeBag)
+        
+        
     }
     
     func getCards() {
@@ -310,6 +358,7 @@ extension HomeViewModel {
         cardsRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
             print("error \($0)")
             self?.shimmeringSubject.onNext(false)
+            self?.errorSubject.onNext($0)
         }).disposed(by: disposeBag)
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
@@ -344,10 +393,10 @@ extension HomeViewModel {
     func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
         
         self.shimmeringSubject.onNext(true)
-        let request = viewDidAppearSubject.startWith(())
+        let request = self.transactionDataProvider.fetchTransactions().share()  /*viewDidAppearSubject.startWith(())
             .flatMap {
                 [unowned self] _ in self.transactionDataProvider.fetchTransactions()
-            }.share()
+            }.share() */
     
        /* request.elements().subscribe(onNext: { [weak self] pageAbleRes in
             self?.shimmeringSubject.onNext(false)
@@ -380,14 +429,12 @@ extension HomeViewModel {
                 self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
             }
         }).disposed(by: disposeBag) */
-        
-        request.elements().subscribe(onNext: { [weak self] pageAbleRes in
-             self?.shimmeringSubject.onNext(false)
-
-        }).disposed(by: disposeBag)
 
         debitCard.subscribe(onNext: { [weak self] card in
             //TODO: handle if card is empty/nil
+            if card == nil {
+                self?.errorSubject.onNext("Card not found")
+            }
 
        }).disposed(by: disposeBag)
 
@@ -401,6 +448,12 @@ extension HomeViewModel {
                                               accountProvider.currentAccount.unwrap())//accountProvider.currentAccount.unwrap())
             .share(replay: 1, scope: .whileConnected)
         
+        request.elements().withUnretained(self).subscribe(onNext: { `self`, respon in
+            self.shimmeringSubject.onNext(false)
+            self.transactionsViewModel.pageInfo = respon
+        }).disposed(by: disposeBag)
+
+        
         // Transactions are zero, show debit card timeline
         params
             .filter { ($0.0?.count ?? 0) == 0 }
@@ -408,7 +461,6 @@ extension HomeViewModel {
             .do(onNext: { [weak self] in
                 self?.shimmeringSubject.onNext(false)
                 self?.dashobarStatusActions(viewModel: $0)
-                
             })
             .bind(to: debitCardOnboardingStageViewModelSubject)
             .disposed(by: disposeBag)
@@ -418,7 +470,11 @@ extension HomeViewModel {
             .filter { ($0.0?.count ?? 0) > 0 }
             .subscribe(onNext: { [weak self] res in
                 self?.shimmeringSubject.onNext(false)
-                self?.transactionsViewModel.transactionsObj = res.0 ?? []
+                // set transactions if they are empty
+                if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false ) {
+                    self?.transactionsViewModel.transactionsObj = res.0 ?? []
+                }
+                
                 self?.debitCardOnboardingStageViewModelSubject.onCompleted()
                 
             }).disposed(by: disposeBag)
