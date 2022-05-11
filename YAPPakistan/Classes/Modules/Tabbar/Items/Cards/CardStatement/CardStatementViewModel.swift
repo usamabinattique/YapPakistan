@@ -242,7 +242,7 @@ fileprivate extension StatementType {
         case .account:
             return "EMAIL_ME_ACCOUNT"
         case .card:
-            return "EMAIL_ME_CARD"
+            return "CARD_STATEMENT"
         case .wallet:
             return "EMAIL_ME_ACCOUNT"
         }

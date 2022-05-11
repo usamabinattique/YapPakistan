@@ -74,7 +74,7 @@ public class CardStatementCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func showStatementDetail(webModel: WebContentType) {
-        coordinate(to: CardStatementWebViewCoordinator(root: self.localNavRoot, container: self.container, repository: self.repository, url: webModel.url?.absoluteString ?? ""))
+        coordinate(to: CardStatementWebViewCoordinator(root: self.localNavRoot, container: self.container, repository: self.repository, statementModel: webModel))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:

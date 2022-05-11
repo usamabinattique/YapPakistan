@@ -195,21 +195,16 @@ class TransactionsService: BaseService, TransactionsServiceType {
         let pathVariables = ["filter"]
         let query: [String: String] = [
             "cardSerialNumber": cardSerialNumber,
-            "fromDate": endDate,
-            "toDate": startDate]
+            "fromDate": startDate,
+            "toDate": endDate]
         let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/card-statements", pathVariables: pathVariables, query: query, body: nil ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func emailStatement<T: Codable>(url: String, month: String, year: String, statementType: String, cardType: String?) -> Observable<T> {
-//        let body = EmailStatementRequest(fileUrl: url, month: month, year: year, statementType: statementType, cardType: cardType)
-//        let input: RouterInput = RouterInput(body: body, query: nil, pathVariables: nil)
-//        let route = TransactionsRouter.emailStatement(input)
-//        return request(apiClient: apiClient, route: route)
+    public func emailStatement<T: Codable>(url: String, month: String, year: String, statementType: String, cardType: String? = nil) -> Observable<T> {
+        let body = EmailStatementRequest(fileUrl: url, month: month, year: year, statementType: statementType, cardType: cardType)
         
-        let body = ["":""]
-        
-        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/mastercard/create-checkout-session", body: body ,headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/statement-via-email", body: body ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

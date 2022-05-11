@@ -32,11 +32,12 @@ class StatementConfirmEmailViewModel: StatementConfirmEmailViewModelType, Statem
     //MARK: Subjects
     var currentEmailSubject = BehaviorSubject<String>(value: "")
     var editEmailSubject = PublishSubject<Void>()
+    var sendEmailSubject = PublishSubject<Void>()
     var sendSubject = PublishSubject<Void>()
     
     //MARK: Inputs
     var editEmailObserver: AnyObserver<Void> { editEmailSubject.asObserver() }
-    var sendObserver: AnyObserver<Void> { sendSubject.asObserver() }
+    var sendObserver: AnyObserver<Void> { sendEmailSubject.asObserver() }
     
     //MARK: Outputs
     var currentEmail: Observable<String> { currentEmailSubject.asObservable() }
@@ -47,12 +48,33 @@ class StatementConfirmEmailViewModel: StatementConfirmEmailViewModelType, Statem
     var outputs: StatementConfirmEmailViewModelOutput { self }
     
     //MARK: Properties
+    let disposeBag = DisposeBag()
     
     
-    init(accountProvider: AccountProvider) {
+    init(accountProvider: AccountProvider, repository: TransactionsRepositoryType, statementModel: WebContentType) {
         guard let account = accountProvider.currentAccountValue.value else { return }
         print(account.customer.email)
         currentEmailSubject.onNext(account.customer.email)
+        
+        let emailRequest = sendEmailSubject.do(onNext:{ YAPProgressHud.showProgressHud() })
+                .flatMap({ _ -> Observable<Event<String?>> in
+                    return repository.emailStatement(request: statementModel as! EmailStatement)
+                })
+                .share()
+        emailRequest.errors()
+            .subscribe(onNext:{ error in
+                YAPProgressHud.hideProgressHud()
+                print(error.localizedDescription)
+            }).disposed(by: disposeBag)
+        
+        emailRequest.elements()
+            .subscribe(onNext:{ [weak self] _ in
+                YAPProgressHud.hideProgressHud()
+                print("statement sent successfully")
+                //YAPToast.show("Statement sent successfully, please check your email")
+                self?.sendSubject.onNext(())
+            })
+            .disposed(by: disposeBag)
     }
     
 }

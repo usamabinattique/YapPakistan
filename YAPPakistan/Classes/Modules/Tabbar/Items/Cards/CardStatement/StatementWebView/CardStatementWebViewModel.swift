@@ -57,9 +57,9 @@ class CardStatementWebViewModel: CardStatementWebViewModelInput, CardStatementWe
     var inputs: CardStatementWebViewModelInput { return self }
     var outputs: CardStatementWebViewModelOutput { return self }
     
-    init(repository: StatementsRepositoryType, url: String) {
+    init(repository: StatementsRepositoryType, statementModel: WebContentType) {
         self.repository = repository
-        self.webUrlSubject.onNext(url)
+        self.webUrlSubject.onNext(statementModel.url?.absoluteString ?? "")
         
         
     }

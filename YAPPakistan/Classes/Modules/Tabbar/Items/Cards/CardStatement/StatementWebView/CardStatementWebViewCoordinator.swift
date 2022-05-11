@@ -14,20 +14,20 @@ class CardStatementWebViewCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
     private let container: UserSessionContainer
-    private var html: String!
+    private var statementM: WebContentType!
     private var repository: StatementsRepositoryType
     private let disposeBag = DisposeBag()
 
-    init(root: UINavigationController, container: UserSessionContainer, repository: StatementsRepositoryType, url: String) {
+    init(root: UINavigationController, container: UserSessionContainer, repository: StatementsRepositoryType, statementModel: WebContentType) {
         self.root = root
         self.container = container
         self.repository = repository
-        self.html = url
+        self.statementM = statementModel
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = CardStatementWebViewModel(repository: repository, url: html)
+        let viewModel = CardStatementWebViewModel(repository: repository, statementModel: statementM)
         let viewController = CardStatementWebViewController(themeService: container.themeService, viewModel: viewModel)
         
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
@@ -47,13 +47,13 @@ class CardStatementWebViewCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func showEmailPopup() {
-        let viewModel = StatementConfirmEmailViewModel(accountProvider: container.accountProvider)
+        let viewModel = StatementConfirmEmailViewModel(accountProvider: container.accountProvider, repository: container.makeTransactionsRepository(), statementModel: statementM)
         let viewController = StatementConfirmEmailViewController(themeService: container.themeService, viewModel: viewModel)
         
         viewModel.outputs.send
-            .subscribe(onNext: { _ in
+            .subscribe(onNext: { [unowned self] _ in
                 viewController.completeHide(0)
-                //print("call api to send statment via email")
+                self.root.popViewController()
             }).disposed(by: disposeBag)
         
         viewModel.outputs.editEmail.subscribe(onNext:{ [weak self] _ in

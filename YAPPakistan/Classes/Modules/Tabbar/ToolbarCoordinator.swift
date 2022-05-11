@@ -76,7 +76,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                         //self.helpAndSupport(viewController)
                     case .statements:
                         print("statements")
-                        //self.statements(viewController)
+                        self.statements(viewController)
                     case .referFriend:
                         self.inviteFriend(viewController)
                     case .housholdSalary:
@@ -197,6 +197,12 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     
     private func settings(_ root: UIViewController) {
         coordinate(to: UserProfileCoordinator(root: root, container: self.container))
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
+    
+    private func statements(_ viewController: UIViewController) {
+        coordinate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
             .subscribe()
             .disposed(by: disposeBag)
     }
