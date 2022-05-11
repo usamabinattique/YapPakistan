@@ -47,6 +47,20 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
             openUserProfileSettings()
         }).disposed(by: disposeBag)
         
+        viewModel.outputs.helpAndSupport.subscribe(onNext: { [unowned self] in
+            
+            openHelpAndSupport()
+            
+//            print("Open Help and Support")
+//
+//            let viewModel = HelpAndSupportViewModel()
+//            let viewController = HelpAndSupportViewController(viewModel: viewModel, themeService: self.container.themeService)
+//            let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+//
+//            root.present(viewController, animated: true)
+            
+        }).disposed(by: disposeBag)
+        
         viewModel.outputs.bankDetails.subscribe(onNext: { [unowned self] in
             openAccountDetails()
         }).disposed(by: disposeBag)
@@ -77,13 +91,15 @@ extension MoreCoordinator {
         viewController.window = alertWindow
     }
     
+    func openHelpAndSupport() {
+        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
+    }
+    
     func openUserProfileSettings() {
         coordinate(to: UserProfileCoordinator(root: root, container: self.container))
             .subscribe(onNext:{ _ in
             })
             .disposed(by: rx.disposeBag)
-
-        
     }
     
     func openMoreItem(_ item: MoreCollectionViewCellViewModel.CellType) {
