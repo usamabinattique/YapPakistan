@@ -119,10 +119,13 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
         let cardStatementRequest = viewWillAppearSubject.take(1)
             .do(onNext: { YAPProgressHud.showProgressHud() })
             .flatMap { [unowned self] _ -> Observable<Event<[Statement]?>> in
-                
-                switch statementFetchable!.statementType {
+                guard let statementFetchable = statementFetchable else {
+                    YAPProgressHud.hideProgressHud()
+                    return Observable.never()
+                }
+                switch statementFetchable.statementType {
                 case .card:
-                    return self.repository.getCardStatement(serialNumber: statementFetchable?.idForStatements ?? "")
+                    return self.repository.getCardStatement(serialNumber: statementFetchable.idForStatements ?? "")
                 case .account:
                     return self.repository.getAccountStatement()
                 case .wallet:
