@@ -346,6 +346,7 @@ extension HomeViewModel {
             guard let decimal = text.components(separatedBy: ".").last else { return }
             attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
             self?.balanceSubject.onNext(attributedString)
+            self?.transactionsViewModel.latestBalance = "\(balance.amount)"
         }).disposed(by: disposeBag)
         
         

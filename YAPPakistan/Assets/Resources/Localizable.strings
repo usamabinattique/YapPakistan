@@ -606,6 +606,7 @@
 "screen_home_button_business" = "Business";
 "screen_home_button_filter" = "Filter";
 "screen_home_display_text_sign_in" = "Already have an account? Sign in";
+"screen_home_todays_balance_title" = "Today’s balance";
 
 // MARK: Transaction filter screen
 "screen_transaction_filter_display_text_title" = "Filters";

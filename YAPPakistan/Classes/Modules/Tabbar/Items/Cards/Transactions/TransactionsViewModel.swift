@@ -246,7 +246,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private var refreshCategoryBar = false
     private var currentSectionMonth: String = Date().dashboardSectionBarDate
     private var currentBarDateMonth: String = ""
-    private var latestBalance: String = "0.00"
+    var latestBalance: String = "0.00"
     private var isShimmering = true
     var pageInfo: PagableResponse<TransactionResponse>!
     
@@ -632,8 +632,8 @@ extension TransactionsViewModel {
     }
     
     func getFinalDate() {
-        let transactions = TransactionResponse.transactions(for: self.currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
-        if transactions.count > 0 && self.showDynamicDataInToolbar {
+        let transactions = TransactionResponse.transactions(for: currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
+        if transactions.count > 0 { //&& self.showDynamicDataInToolbar {
             let date = transactions.first?.date ?? Date().startOfDay
          //   analyticsDateSubject.onNext(date)
             self.currentSectionMonth = date.dashboardSectionBarDate

@@ -120,8 +120,8 @@ class HomeViewController: UIViewController {
     }()
 
     private lazy var toolBar: HomeBalanceToolbarUpdated = {
-        let toolBar = HomeBalanceToolbarUpdated()
-        toolBar.backgroundColor = .clear
+        let toolBar = HomeBalanceToolbarUpdated(theme: themeService)
+        toolBar.backgroundColor = .red
         toolBar.delegate = self
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         return toolBar
@@ -342,7 +342,7 @@ fileprivate extension HomeViewController {
         view.addSubview(balanceView)
         view.addSubview(scrollView)
         
-        toolBar.isHidden = true
+        balanceView.isHidden = true
 
         scrollView.addSubview(transactionContainer)
         parallaxHeaderView.addSubview(headerStackView)
@@ -386,7 +386,7 @@ fileprivate extension HomeViewController {
         
         scrollView
             .alignEdgesWithSuperview([.left, .right, .safeAreaBottom])
-            .toBottomOf(balanceView) //(balanceView)
+            .toBottomOf(toolBar) //(balanceView)
         
 
 //        barGraphView
@@ -452,7 +452,7 @@ fileprivate extension HomeViewController {
         
         toolBar
             .alignEdgesWithSuperview([.left, .right])
-            .alignEdgeWithSuperview(.top, constant: (self.navigationController?.navigationBar.frame.size.height ?? 0.0) + UIApplication.shared.statusBarFrame.size.height)
+            .alignEdgeWithSuperview(.top, constant: 0)//(self.navigationController?.navigationBar.frame.size.height ?? 0.0) + UIApplication.shared.statusBarFrame.size.height)
 
         toolBarHeightConstraint = toolBar.heightAnchor.constraint(equalToConstant: 80)
         toolBarHeightConstraint.isActive = true
