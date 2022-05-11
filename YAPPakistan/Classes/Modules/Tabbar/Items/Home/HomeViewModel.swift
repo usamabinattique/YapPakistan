@@ -346,6 +346,7 @@ extension HomeViewModel {
             guard let decimal = text.components(separatedBy: ".").last else { return }
             attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
             self?.balanceSubject.onNext(attributedString)
+            self?.transactionsViewModel.latestBalance = "\(balance.amount)"
         }).disposed(by: disposeBag)
         
         
@@ -432,8 +433,12 @@ extension HomeViewModel {
 
         debitCard.subscribe(onNext: { [weak self] card in
             //TODO: handle if card is empty/nil
-            if card == nil {
-                self?.errorSubject.onNext("Card not found")
+            if card == nil, let account = self?.accountProvider.currentAccountValue.value {
+//                self?.errorSubject.onNext("Card not found")
+                self?.shimmeringSubject.onNext(false)
+                let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
+                self?.dashobarStatusActions(viewModel: initioaryModel)
+                self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
             }
 
        }).disposed(by: disposeBag)

@@ -68,6 +68,7 @@ protocol TransactionsViewModelOutputs {
     var enableLoadMore: Observable<Bool> { get }
     var showLoadMoreIndicator: Observable<Bool> { get }
     var categorySectionCount: Observable<Int> { get }
+    var noTransFound: Observable<String> { get }
 }
 
 protocol TransactionsViewModelType {
@@ -121,6 +122,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let pageInfoSubject = ReplaySubject<PagableResponse<TransactionResponse>>.create(bufferSize: 1)
     private let enableLoadMoreSubject = BehaviorSubject<Bool>(value: true)
     public let showLoadMoreIndicatorSubject = ReplaySubject<Bool>.create(bufferSize: 1)
+    private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     // MARK: - Input
     var fetchTransactionsObserver: AnyObserver<Void> { return fetchTransactionsSubject.asObserver() }
@@ -165,12 +167,13 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var enableLoadMore: Observable<Bool> { enableLoadMoreSubject.asObservable() }
     var showLoadMoreIndicator: Observable<Bool> { showLoadMoreIndicatorSubject.asObservable() }
     var categorySectionCount: Observable<Int> {categorySectionCountSubject.asObservable()}
+    var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
     
     
     func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
         
         if !isShimmering {
-            let transactions = TransactionResponse.transactions(for: section, allTransactions: transactionsObj) //[TransactionResponse]()
+            let transactions = TransactionResponse.transactions(for: section, allTransactions: transactionsObj)
             let amount = transactions.reduce(0, { $1.type == .debit ? $0 - $1.calculatedTotalAmount : $0 + $1.calculatedTotalAmount })
             let date = transactions.first?.date ?? Date().startOfDay
             return TransactionHeaderTableViewCellViewModel(date: date.transactionSectionReadableDate.string, totalTransactionsAmount: (amount < 0 ? "- " : "+ ") +  CurrencyFormatter.formatAmountInLocalCurrency(abs(amount)))
@@ -181,7 +184,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
 
     func cellViewModel(for indexPath: IndexPath) -> ReusableTableViewCellViewModelType {
 
-        if let transaction = TransactionResponse.transaction(for: indexPath, allTransactions: transactionsObj), !isShimmering { //entityHandler.transaction(for: indexPath) {
+        if let transaction = TransactionResponse.transaction(for: indexPath, allTransactions: transactionsObj), !isShimmering {
             return TransactionsTableViewCellViewModel(transaction: transaction, themeService: themeServie)
         }
 
@@ -189,26 +192,14 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     }
 //
     var numberOfSections: Int {
-        //TODO: handle sections here
-//        let numberOfSections = entityHandler.numberOfSection()
-//        guard numberOfSections <= 0 && isAccountTransaction && filter == nil else { return numberOfSections }
-//
-//        return isSearching ? 0 : 1
-        
-        let numberOfSections = TransactionResponse.getNumberOfSections(allTransactions: transactionsObj).count
+        let numberOfSections = TransactionResponse.getNumberOfSections(allTransactions: transactionsObj,searchText: searchText).count
         _numberOfSections = numberOfSections
         guard numberOfSections <= 0 && isAccountTransaction && filter == nil else { return numberOfSections }
         
-        return isSearching ? 0 : 1
+        return (isSearching && self.transactionsObj.isEmpty ) ? 0 : 1
     }
 //
     func numberOfRows(inSection section: Int) -> Int {
-        //TODO: handle rows here
-//        let numberOfSections = entityHandler.numberOfSection()
-//        if numberOfSections == 0 && !isSearching {  return  10 }
-//
-//        return entityHandler.numberOfTransaction(in: section)
-        
         if numberOfSections == 0 && !isSearching {
             _numberOfRows = 10
             return  _numberOfRows
@@ -239,6 +230,11 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private var debitSearch: Bool = false
     var transactionsObj = [TransactionResponse]() {
         didSet {
+            if transactionsObj.isEmpty {
+                noTransFoundSubject.onNext("No transactions found")
+            } else {
+                noTransFoundSubject.onNext("")
+            }
             //reloadDataSubject.onNext(())
         }
     }
@@ -250,19 +246,24 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private var refreshCategoryBar = false
     private var currentSectionMonth: String = Date().dashboardSectionBarDate
     private var currentBarDateMonth: String = ""
-    private var latestBalance: String = "0.00"
+    var latestBalance: String = "0.00"
     private var isShimmering = true
     var pageInfo: PagableResponse<TransactionResponse>!
     
     private var transactionBarData: TransactionBarCategoriesResponse?
+    private var searchText: String? {
+        didSet {
+            isSearching = true
+        }
+    }
     
-    init(transactionDataProvider: PaymentCardTransactionProvider, cardSerialNumber: String? = nil, debitSearch: Bool = false, themService: ThemeService<AppTheme>) {
+    init(transactionDataProvider: PaymentCardTransactionProvider, cardSerialNumber: String? = nil, debitSearch: Bool = false, themService: ThemeService<AppTheme>, showFilter: Bool = true) {
         // self.repository = repository
         self.themeServie = themService
         self.debitSearch = debitSearch
         self.cardSerialNumber = cardSerialNumber
         nothingLabelSubject = BehaviorSubject(value: "screen_home_display_text_nothing_to_report".localized)
-        showsFilterSubject = BehaviorSubject(value: true)
+        showsFilterSubject = BehaviorSubject(value: showFilter)
         super.init()
         
         showShimmeringSubject.debounce(RxTimeInterval.seconds(Int(1)), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
@@ -326,9 +327,9 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
                     self?.showLoadMoreIndicatorSubject.onNext(true)
                 }
             })
-            .flatMap {
+            .flatMap { [weak self]
                 _ in
-                transactionDataProvider.fetchTransactions()
+                transactionDataProvider.fetchTransactions(searchText: self?.searchText)
                 
             }
             .share()
@@ -360,11 +361,10 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             if pageableResponse.currentPage == 0 {
                 self.transactionsObj = pageableResponse.content ?? []
             } else {
-                self.transactionsObj.append(contentsOf: pageableResponse.content ?? [])
-                
-                for trans in self.transactionsObj {
-                    print("transaction title \(trans.title ?? "")")
-                    print("transaction amount \(trans.amount)")
+                if (pageableResponse.content?.isEmpty ?? false) {
+                    self.transactionsObj = []
+                } else {
+                    self.transactionsObj.append(contentsOf: pageableResponse.content ?? [])
                 }
                 
                 self.showLoadMoreIndicatorSubject.onNext(false)
@@ -431,6 +431,24 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         updateCategoryBarSubject.subscribe(onNext: {[unowned self] in
             self.refreshCategoryBar = $0
         }).disposed(by: disposeBag)
+        
+        searchTextSubject.distinctUntilChanged().throttle(RxTimeInterval.seconds(1), scheduler: MainScheduler.instance).subscribe(onNext: { [unowned self]  in
+//            guard let text = $0, text != "" else {
+//                self.searchText = nil
+//                return
+//            }
+            
+            if let text = $0, text == "" {
+                self.searchText = nil
+            } else {
+                self.searchText = $0
+            }
+            
+            
+            self.fetchTransactionsObserver.onNext(())
+            //self.searchTransactions(text: text)
+           
+        }).disposed(by: disposeBag)
     }
     
     
@@ -448,9 +466,11 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         updateFilter()
         updateContent()
 
-        searchTextSubject.subscribe(onNext: { [unowned self] in
-            self.searchTransactions(text: $0)
-        }).disposed(by: disposeBag)
+//        searchTextSubject.subscribe(onNext: { [unowned self] in
+//            self.searchTransactions(text: $0)
+//        }).disposed(by: disposeBag)
+        
+        
         
     }
     
@@ -559,6 +579,9 @@ extension TransactionsViewModel {
 
 private extension TransactionsViewModel {
     func searchTransactions(text: String?) {
+        
+        
+        
 //        let sortDescriptors = [NSSortDescriptor(key: "transactionDay", ascending: false), NSSortDescriptor(key: "createdDate", ascending: false)]
 //
 //        guard let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
@@ -589,6 +612,9 @@ private extension TransactionsViewModel {
 //        try? entityHandler.updateFRCRequest(sortDescriptors: sortDescriptors, predicate: predicate, sectionNameKeyPath: "transactionDay")
 //
 //        updateContent()
+        
+        self.searchText = text
+        updateContent()
     }
 }
 
@@ -606,8 +632,8 @@ extension TransactionsViewModel {
     }
     
     func getFinalDate() {
-        let transactions = TransactionResponse.transactions(for: self.currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
-        if transactions.count > 0 && self.showDynamicDataInToolbar {
+        let transactions = TransactionResponse.transactions(for: currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
+        if transactions.count > 0 { //&& self.showDynamicDataInToolbar {
             let date = transactions.first?.date ?? Date().startOfDay
          //   analyticsDateSubject.onNext(date)
             self.currentSectionMonth = date.dashboardSectionBarDate

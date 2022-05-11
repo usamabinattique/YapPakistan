@@ -16,6 +16,7 @@ import RxSwift
 
 class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
     
+    
     // MARK: - Properties
     private var repository: TransactionsRepository
     private var transactionsSubject: BehaviorSubject<[TransactionResponse]>
@@ -45,11 +46,11 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
     }
     
     // MARK: - Methods
-    func fetchTransactions() -> Observable<Event<PagableResponse<TransactionResponse>>> {
+    func fetchTransactions(searchText:String? = nil) -> Observable<Event<PagableResponse<TransactionResponse>>> {
         guard !isFetching else { return Observable.never() }
         
         isFetching = true
-        let request =  cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: _currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer).share() :
+        let request =  cardSerialNumber == nil ? repository.fetchTransactions(pageNumber: _currentPage, pageSize: pageSize, minAmount: filter?.minAmount, maxAmount: filter?.maxAmount, creditSearch: filter?.creditSearch, debitSearch: filter?.debitSearch, yapYoungTransfer: filter?.yapYoungTransfer, searchText: searchText).share() :
         repository.fetchCardTransactions(pageNo: _currentPage, pageSize: pageSize, cardSerialNo: cardSerialNumber!, debitSearch: debitSearch,filter: filter).share()
 
      /*   return request.do(onNext: { [unowned self] response in
