@@ -24,6 +24,11 @@ public class PaymentCardInitiatoryStageViewModel {
     public init(paymentCard: PaymentCard, account: Account) {
         stagesSubject.onNext(makeStages(paymentCard: paymentCard, partnerBankStatus: account.parnterBankStatus ?? .signUpPending, partnerBankApprovalDate: account.partnerBankApprovalDate, documentSubmissionDate: account.documentSubmissionDate, accountStatus: account.accountStatus))
     }
+    
+    // in case debit card is nil
+    public init( account: Account) {
+        stagesSubject.onNext(makeStages(paymentCard: .mock, partnerBankStatus: account.parnterBankStatus ?? .signUpPending, partnerBankApprovalDate: account.partnerBankApprovalDate, documentSubmissionDate: account.documentSubmissionDate, accountStatus: account.accountStatus))
+    }
 }
 
 fileprivate extension PaymentCardInitiatoryStageViewModel {
@@ -46,13 +51,13 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
         
         var stages: [PaymentCardOnboardingStageModel] = []
         
-        if accountStatus == .addressCaptured {
+        if accountStatus == .addressCaptured || accountStatus == .onboarded {
             stages.append(.init(paymentCard: paymentCard, stage: .additionalRequirement, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
-            if partnerBankStatus == .physicalCardSuccess && paymentCard.deliveryStatus == .shipped , let pinSet = paymentCard.pinSet, pinSet == false {
+            if partnerBankStatus == .physicalCardSuccess && paymentCard.deliveryStatus == .shipped , let pinSet = paymentCard.pinSet, pinSet == false  {
                 // so it won't append in list
                 stages.append(.init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
-            } else {
-              
+            } else if accountStatus == .onboarded  {
+                stages.append(.init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
             }
             
             

@@ -120,8 +120,8 @@ class HomeViewController: UIViewController {
     }()
 
     private lazy var toolBar: HomeBalanceToolbarUpdated = {
-        let toolBar = HomeBalanceToolbarUpdated()
-        toolBar.backgroundColor = .clear
+        let toolBar = HomeBalanceToolbarUpdated(theme: themeService)
+        toolBar.backgroundColor = .red
         toolBar.delegate = self
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         return toolBar
@@ -342,7 +342,7 @@ fileprivate extension HomeViewController {
         view.addSubview(balanceView)
         view.addSubview(scrollView)
         
-        toolBar.isHidden = true
+        balanceView.isHidden = true
 
         scrollView.addSubview(transactionContainer)
         parallaxHeaderView.addSubview(headerStackView)
@@ -360,7 +360,7 @@ fileprivate extension HomeViewController {
         separtorView.alpha = 0
         
         balanceLabel.text = "PKR"
-       // balanceValueLabel.text = "PKR 0.00"
+        balanceValueLabel.text = "0.00"
         balanceDateLabel.text = "Today's balance"
     }
 
@@ -372,7 +372,6 @@ fileprivate extension HomeViewController {
             .bind({ UIColor($0.greyDark) }, to: [balanceDateLabel.rx.textColor, noTransFoundLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [completeVerificationButton.rx.backgroundColor,showButton.rx.tintColor])
             .bind({ UIColor($0.primaryDark) }, to: [separtorView.rx.backgroundColor,balanceValueLabel.rx.textColor])
-        
             .disposed(by: disposeBag)
     }
 
@@ -387,7 +386,7 @@ fileprivate extension HomeViewController {
         
         scrollView
             .alignEdgesWithSuperview([.left, .right, .safeAreaBottom])
-            .toBottomOf(balanceView) //(balanceView)
+            .toBottomOf(toolBar) //(balanceView)
         
 
 //        barGraphView
@@ -453,7 +452,7 @@ fileprivate extension HomeViewController {
         
         toolBar
             .alignEdgesWithSuperview([.left, .right])
-            .alignEdgeWithSuperview(.top, constant: (self.navigationController?.navigationBar.frame.size.height ?? 0.0) + UIApplication.shared.statusBarFrame.size.height)
+            .alignEdgeWithSuperview(.top, constant: 0)//(self.navigationController?.navigationBar.frame.size.height ?? 0.0) + UIApplication.shared.statusBarFrame.size.height)
 
         toolBarHeightConstraint = toolBar.heightAnchor.constraint(equalToConstant: 80)
         toolBarHeightConstraint.isActive = true
@@ -528,10 +527,10 @@ fileprivate extension HomeViewController {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.noTransFound.withUnretained(self).subscribe(onNext:  { `self`, text in
-            self.noTransFoundLabel.text = text
+           /* self.noTransFoundLabel.text = text
             self.transactionContainer.removeSubviews()
             self.transactionContainer.addSubview(self.noTransFoundLabel)
-            self.noTransFoundLabel.alignCenterWith(self.transactionContainer)
+            self.noTransFoundLabel.alignCenterWith(self.transactionContainer) */
         }).disposed(by: disposeBag)
         
         viewModel.outputs.addCreditInfo.take(1).withUnretained(self).subscribe(onNext:  { `self`, _ in
