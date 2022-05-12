@@ -53,4 +53,10 @@ class TransactionFilterCheckBoxCellViewModel: TransactionFilterCheckBoxCellViewM
         checkSubject.onNext(type.isChecked)
         titleSubject.onNext(type.title)
     }
+    
+    init(_ type: HomeTransactionFilterType) {
+        selectedSubject.withLatestFrom(checkSubject).map{ !$0 }.bind(to: checkSubject).disposed(by: disposeBag)
+        checkSubject.onNext(type.isChecked)
+        titleSubject.onNext(type.title)
+    }
 }

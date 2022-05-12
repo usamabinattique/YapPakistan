@@ -181,6 +181,9 @@ private extension HomeBalanceToolbarUpdated {
                               paddingTop: 20,
                               paddingLeft: 25,
                               paddingRight: 25
+//                              paddingTop: 0,
+//                              paddingLeft: 0,
+//                              paddingRight: 0
         )
         
         progressView.anchor(top: backgroundView.topAnchor,
@@ -228,9 +231,9 @@ private extension HomeBalanceToolbarUpdated {
             .alignEdgesWithSuperview([.left], constants: [24])
         
        todaysBalanceTitleLabel
-            .height(constant: 14)
+//            .height(constant: 18)
             .toRightOf(showButton,constant: 8)
-            .toBottomOf(ammount,constant: 12)
+            .toBottomOf(ammount,constant: 8)//12)
         
         balanceHeight = ammount.heightAnchor.constraint(equalToConstant: 24)
         balanceHeight.priority = .required

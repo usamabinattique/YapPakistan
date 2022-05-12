@@ -28,6 +28,10 @@ protocol HomeViewModelInputs {
     var categoryChangedObserver: AnyObserver<Void> { get }
     var refreshObserver: AnyObserver<Void> { get }
     var increaseProgressViewHeightObserver: AnyObserver<Bool> {get}
+    
+    var transactionsObserver: AnyObserver<[SectionTransaction]> { get }
+    var openFilterObserver: AnyObserver<TransactionFilter?> { get }
+    var filterSelectedObserver: AnyObserver<TransactionFilter?> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -76,6 +80,11 @@ protocol HomeViewModelOutputs {
     var refresh: Observable<Void> {  get }
     var selectedWidget: Observable<WidgetCode?> { get }
     var shrinkProgressView: Observable<Bool> { get }
+    
+    var transactions: Observable<[SectionTransaction]> { get }
+    var openFilter: Observable<TransactionFilter?> { get }
+    
+    var filterSelected: Observable<TransactionFilter?> { get }
 }
 
 protocol HomeViewModelType {
@@ -127,7 +136,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let menuTapSubject = PublishSubject<Void>()
     private let shrinkProgressViewSubject = BehaviorSubject<Bool>(value: false)
     private let increaseProgressViewHeightSubject = BehaviorSubject<Bool>(value: true)
-    
+    private let transactionsSubject = BehaviorSubject<[SectionTransaction]>(value: [])
+    private let openFilterSubject = PublishSubject<TransactionFilter?>()
+    private let filterSelectedSubject = PublishSubject<TransactionFilter?>()
     
     private var numberOfShownWidgets = 0
     private var cardStatus: CardStatus = .inActive
@@ -149,6 +160,10 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var refreshObserver: AnyObserver<Void> { refreshSubject.asObserver() }
     var menuTapObserver: AnyObserver<Void> { return menuTapSubject.asObserver() }
     var increaseProgressViewHeightObserver: AnyObserver<Bool> {increaseProgressViewHeightSubject.asObserver()}
+    
+    var transactionsObserver: AnyObserver<[SectionTransaction]> { return transactionsSubject.asObserver() }
+    var openFilterObserver: AnyObserver<TransactionFilter?> { return openFilterSubject.asObserver() }
+    var filterSelectedObserver: AnyObserver<TransactionFilter?> { return filterSelectedSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -193,6 +208,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var selectedWidget: Observable<WidgetCode?> { selectedWidgetSubject.asObservable() }
     var shrinkProgressView: Observable<Bool> { shrinkProgressViewSubject }
     
+    var transactions: Observable<[SectionTransaction]> { return transactionsSubject.asObservable() }
+    var openFilter: Observable<TransactionFilter?> { return openFilterSubject.asObservable() }
+    var filterSelected: Observable<TransactionFilter?> { return filterSelectedSubject.asObservable() }
 
     // MARK: Init
 
@@ -360,6 +378,15 @@ extension HomeViewModel {
             print("error \($0)")
             self?.shimmeringSubject.onNext(false)
             self?.errorSubject.onNext($0)
+            
+            if let account = self?.accountProvider.currentAccountValue.value {
+//                self?.errorSubject.onNext("Card not found")
+                self?.shimmeringSubject.onNext(false)
+                let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
+                self?.dashobarStatusActions(viewModel: initioaryModel)
+                self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
+            }
+            
         }).disposed(by: disposeBag)
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in

@@ -123,7 +123,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             guard let widget = $0 else { return }
             self?.navigateFromWidgets(selectedWidget: widget)
         }).disposed(by: rx.disposeBag)
-
+        
+        viewController.viewModel.outputs.openFilter.subscribe(onNext: { [weak self] in
+            //AppAnalytics.shared.logEvent(DashboardEvent.tapFilterTransactions())
+            self?.navigateToFilterSelection(selectedFilter: $0, resultObserver: viewController.viewModel.inputs.filterSelectedObserver)
+        }).disposed(by: rx.disposeBag)
     }
     
     func showCreditLimit() {
@@ -362,13 +366,13 @@ extension HomeCoodinator {
     }
 
     func navigateToFilterSelection(selectedFilter: TransactionFilter?, resultObserver: AnyObserver<TransactionFilter?>) {
-//        let viewModel = TransactionFilterViewModel(selectedFilter)
-//        let viewController = TransactionFilterViewController(viewModel: viewModel)
-//        let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
-//
-//        root.present(nav, animated: true, completion: nil)
-//
-//        viewModel.outputs.result.subscribe(onNext: { resultObserver.onNext($0) }).disposed(by: disposeBag)
+        let viewModel = TransactionFilterViewModel(selectedFilter, repository: container.makeTransactionsRepository(),isHomeTransactions: true)
+        let viewController = TransactionFilterViewController(viewModel: viewModel, themeService: container.themeService)
+        let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+
+        root.present(nav, animated: true, completion: nil)
+
+        viewModel.outputs.result.subscribe(onNext: { resultObserver.onNext($0) }).disposed(by: rx.disposeBag)
     }
 
     func analytics(_ paymentCard: PaymentCard, date: Date? = nil) {

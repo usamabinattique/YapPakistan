@@ -71,9 +71,9 @@ private extension TransactionFilterSliderCell {
         range.adjustsFontSizeToFitWidth = true
         sliderContainer.clipsToBounds = false
         
-        customSlider.maxValue = 20000.0000
-        customSlider.minValue = 0
-        customSlider.minDistance = 5000
+//        customSlider.maxValue = 20000.0000
+//        customSlider.minValue = 0
+//        customSlider.minDistance = 5000
 //        customSlider.delegate = self
     }
     

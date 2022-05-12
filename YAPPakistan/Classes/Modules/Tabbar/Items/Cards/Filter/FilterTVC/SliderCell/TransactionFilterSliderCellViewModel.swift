@@ -96,4 +96,29 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
         progressSubjectShare.bind(to: rangeSubject).disposed(by: disposeBag)
         
     }
+    
+    init(_ range: ClosedRange<Double>, _ selectedRange: ClosedRange<Double> = 0...0, isHomeSearch: Bool) {
+        
+        var selectedRange = selectedRange
+        
+        
+        progressSubject.onNext((minValue: CGFloat(selectedRange.lowerBound), maxValue: CGFloat(range.upperBound)))
+
+        let progressSubjectShare = progressSubject.share()
+//        progressSubjectShare.skip(while: { (minValue: CGFloat, maxValue: CGFloat) in
+//            maxValue <= minValue
+//        }).map { (minValue: CGFloat, maxValue: CGFloat) in
+//            return  Double(minValue)...Double(maxValue > 0 ? maxValue : 0)
+//
+//        }.bind(to: selectedRangeSubject).disposed(by: disposeBag)
+        
+//        progressSubjectShare.map { (minValue: CGFloat, maxValue: CGFloat) in
+//            return  Double(minValue)...Double(maxValue > 0 ? maxValue : 0)
+//
+//        }.bind(to: selectedRangeSubject).disposed(by: disposeBag)
+        
+        
+        progressSubjectShare.bind(to: rangeSubject).disposed(by: disposeBag)
+        
+    }
 }

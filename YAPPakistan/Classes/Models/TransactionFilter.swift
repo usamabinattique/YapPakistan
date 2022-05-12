@@ -40,6 +40,15 @@ public struct TransactionFilter {
             atmWidrawl = value
         }
     }
+    
+    mutating public func assignValueAcordingToFilterType(type:HomeTransactionFilterType ,value:Bool){
+        switch type {
+        case .incoming:
+            creditSearch = value
+        case .outgoing:
+            debitSearch = value
+        }
+    }
 }
 
 public extension TransactionFilter {

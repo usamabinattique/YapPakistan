@@ -121,7 +121,7 @@ class HomeViewController: UIViewController {
 
     private lazy var toolBar: HomeBalanceToolbarUpdated = {
         let toolBar = HomeBalanceToolbarUpdated(theme: themeService)
-        toolBar.backgroundColor = .red
+//        toolBar.backgroundColor = .red
         toolBar.delegate = self
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         return toolBar
@@ -458,120 +458,6 @@ fileprivate extension HomeViewController {
         toolBarHeightConstraint.isActive = true
         
     }
-
-    // MARK: Binding
-
-    private func bindViewModel() {
-
-        viewModel.outputs.showActivity
-            .bind(to: view.rx.showActivity)
-            .disposed(by: disposeBag)
-
-        viewModel.outputs.error
-            .bind(to: rx.showErrorMessage)
-            .disposed(by: disposeBag)
-        
-        
-        viewModel.outputs.profilePic.subscribe(onNext: { [weak self] _arg0 in
-            let (imageUrl,placeholderImg) = _arg0
-            
-            self?.userBarButtonItem.button?.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
-            self?.userBarButtonItem.button?.layer.cornerRadius = (self?.userBarButtonItem.button?.frame.size.height  ?? 30 )/2
-            self?.userBarButtonItem.button?.clipsToBounds = true
-            
-           // self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
-            if let url = imageUrl {
-                self?.userBarButtonItem.button?.sd_setImage(with: URL(string:url), for: .normal)
-            } else {
-                self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
-            }
-            
-        }).disposed(by: disposeBag)
-
-        showButton.rx.tap.withLatestFrom(viewModel.outputs.shimmering).withUnretained(self).subscribe(onNext: { `self`, isShimmering in
-            guard !isShimmering else { return }
-            self.animateView(balanceShown: false)
-        }).disposed(by: disposeBag)
-        
-        hideButton.rx.tap.withLatestFrom(viewModel.outputs.shimmering).withUnretained(self).subscribe(onNext: { `self`, isShimmering in
-            guard !isShimmering else { return }
-            self.animateView(balanceShown: true)
-        }).disposed(by: disposeBag)
-        
-        viewModel.outputs.shimmering.bind(to: showButton.rx.isShimmerOn).disposed(by: disposeBag)
-        viewModel.outputs.shimmering.bind(to: hideButton.rx.isShimmerOn).disposed(by: disposeBag)
-        viewModel.outputs.shimmering.bind(to: balanceLabel.rx.isShimmerOn).disposed(by: disposeBag)
-        viewModel.outputs.shimmering.bind(to: balanceValueLabel.rx.isShimmerOn).disposed(by: disposeBag)
-        viewModel.outputs.shimmering.bind(to: balanceDateLabel.rx.isShimmerOn).disposed(by: disposeBag)
-        
-        viewModel.outputs.balance.bind(to: balanceValueLabel.rx.attributedText).disposed(by: disposeBag)
-        
-        viewModel.outputs.dashboardWidgets.bind(to: widgetView.viewModel.inputs.widgetsDataObserver).disposed(by: disposeBag)
-        
-        viewModel.outputs.hideWidgetsBar.subscribe(onNext: {[weak self] hide in
-            if (hide) {
-//                self?.widgetViewHeightConstraints.constant = 0
-                self?.widgetView.isHidden = true
-            }
-            else {
-//                self?.widgetViewHeightConstraints.constant = 115
-                self?.widgetView.isHidden = false
-            }
-            self?.updateParallaxHeaderProgress()
-        }).disposed(by: disposeBag)
-        
-        viewModel.outputs.dashboardWidgets.bind(to: widgetView.rx.dashboardWidgets).disposed(by: disposeBag)
-        
-        widgetView.viewModel.selectedWidget.subscribe(onNext: {[weak self] in
-            self?.viewModel.inputs.selectedWidgetObserver.onNext($0 ?? .unknown)
-        }).disposed(by: disposeBag)
-        
-        viewModel.outputs.noTransFound.withUnretained(self).subscribe(onNext:  { `self`, text in
-           /* self.noTransFoundLabel.text = text
-            self.transactionContainer.removeSubviews()
-            self.transactionContainer.addSubview(self.noTransFoundLabel)
-            self.noTransFoundLabel.alignCenterWith(self.transactionContainer) */
-        }).disposed(by: disposeBag)
-        
-        viewModel.outputs.addCreditInfo.take(1).withUnretained(self).subscribe(onNext:  { `self`, _ in
-           /* self.isCreditInfoAdded = true
-            self.transactionContainer.removeSubviews()
-            self.transactionContainer.addSubview(self.creditLimitView)
-            self.creditLimitView.alignEdgeWithSuperview(.top, constant: 12)
-            self.creditLimitView.alignEdgeWithSuperview(.left)
-            self.creditLimitView.alignEdgeWithSuperview(.right)
-            self.creditLimitView.height(constant: 42) */
-        }).disposed(by: disposeBag)
-        
-//        transactionsViewModel.outputs.sectionAmount.unwrap().bind(to: self.rx.balance).disposed(by: disposeBag)
-//        transactionsViewModel.outputs.sectionDate.unwrap().bind(to: self.rx.date).disposed(by: disposeBag)
-//        transactionsViewModel.outputs.sectionDate.unwrap().withUnretained(self).subscribe(onNext: { (`self`, value) in
-//            self.setDate(date: value)
-//        }).disposed(by: disposeBag)
-
-        
-        viewModel.outputs.shrinkProgressView.bind(to: toolBar.rx.shrink).disposed(by: disposeBag)
-        transactionsViewModel.outputs.categorySectionCount.bind(to: toolBar.rx.numberOfSections).disposed(by: disposeBag)
-        transactionsViewModel.outputs.sectionAmount.unwrap().bind(to: toolBar.rx.balance).disposed(by: disposeBag)
-        transactionsViewModel.outputs.sectionDate.unwrap().bind(to: toolBar.rx.date).disposed(by: disposeBag)
-        
-      /*  transactionsViewModel.outputs.categoryBarData.subscribe(onNext: { [weak self] categoryData in
-           
-            if categoryData.0 == nil {
-                UIView.animate(withDuration: 0.8, animations: {[weak self] in
-                    self?.toolBarHeightConstraint.constant = 80
-                    self?.view.layoutIfNeeded()
-                })
-            }
-            else {
-                UIView.animate(withDuration: 0.8, animations: { [weak self] in
-                    self?.toolBarHeightConstraint.constant = 120
-                    self?.view.layoutIfNeeded()
-                })
-            }
-            self?.toolBar.rx.monthData.onNext(categoryData)
-        }).disposed(by: disposeBag) */
-    }
     
     func getParallaxHeaderHeight() -> CGFloat {
         var height: CGFloat = 0
@@ -671,6 +557,164 @@ fileprivate extension HomeViewController {
 
         ]
         viewModel.inputs.dashboardTourGuideObserver.onNext(points) */
+    }
+}
+
+fileprivate extension HomeViewController {
+    
+    // MARK: Binding
+    private func bindViewModel() {
+
+        viewModel.outputs.showActivity
+            .bind(to: view.rx.showActivity)
+            .disposed(by: disposeBag)
+
+        viewModel.outputs.error
+            .bind(to: rx.showErrorMessage)
+            .disposed(by: disposeBag)
+        
+        
+        viewModel.outputs.profilePic.subscribe(onNext: { [weak self] _arg0 in
+            let (imageUrl,placeholderImg) = _arg0
+            
+            self?.userBarButtonItem.button?.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+            self?.userBarButtonItem.button?.layer.cornerRadius = (self?.userBarButtonItem.button?.frame.size.height  ?? 30 )/2
+            self?.userBarButtonItem.button?.clipsToBounds = true
+            
+           // self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
+            if let url = imageUrl {
+                self?.userBarButtonItem.button?.sd_setImage(with: URL(string:url), for: .normal)
+            } else {
+                self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
+            }
+            
+        }).disposed(by: disposeBag)
+
+        showButton.rx.tap.withLatestFrom(viewModel.outputs.shimmering).withUnretained(self).subscribe(onNext: { `self`, isShimmering in
+            guard !isShimmering else { return }
+            self.animateView(balanceShown: false)
+        }).disposed(by: disposeBag)
+        
+        hideButton.rx.tap.withLatestFrom(viewModel.outputs.shimmering).withUnretained(self).subscribe(onNext: { `self`, isShimmering in
+            guard !isShimmering else { return }
+            self.animateView(balanceShown: true)
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.shimmering.bind(to: showButton.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: hideButton.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: balanceLabel.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: balanceValueLabel.rx.isShimmerOn).disposed(by: disposeBag)
+        viewModel.outputs.shimmering.bind(to: balanceDateLabel.rx.isShimmerOn).disposed(by: disposeBag)
+        
+        viewModel.outputs.balance.bind(to: balanceValueLabel.rx.attributedText).disposed(by: disposeBag)
+        viewModel.outputs.dashboardWidgets.bind(to: widgetView.viewModel.inputs.widgetsDataObserver).disposed(by: disposeBag)
+        viewModel.outputs.hideWidgetsBar.subscribe(onNext: {[weak self] hide in
+            if (hide) {
+//                self?.widgetViewHeightConstraints.constant = 0
+                self?.widgetView.isHidden = true
+            }
+            else {
+//                self?.widgetViewHeightConstraints.constant = 115
+                self?.widgetView.isHidden = false
+            }
+            self?.updateParallaxHeaderProgress()
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.dashboardWidgets.bind(to: widgetView.rx.dashboardWidgets).disposed(by: disposeBag)
+        
+        widgetView.viewModel.selectedWidget.subscribe(onNext: {[weak self] in
+            self?.viewModel.inputs.selectedWidgetObserver.onNext($0 ?? .unknown)
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.noTransFound.withUnretained(self).subscribe(onNext:  { `self`, text in
+           /* self.noTransFoundLabel.text = text
+            self.transactionContainer.removeSubviews()
+            self.transactionContainer.addSubview(self.noTransFoundLabel)
+            self.noTransFoundLabel.alignCenterWith(self.transactionContainer) */
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.addCreditInfo.take(1).withUnretained(self).subscribe(onNext:  { `self`, _ in
+           /* self.isCreditInfoAdded = true
+            self.transactionContainer.removeSubviews()
+            self.transactionContainer.addSubview(self.creditLimitView)
+            self.creditLimitView.alignEdgeWithSuperview(.top, constant: 12)
+            self.creditLimitView.alignEdgeWithSuperview(.left)
+            self.creditLimitView.alignEdgeWithSuperview(.right)
+            self.creditLimitView.height(constant: 42) */
+        }).disposed(by: disposeBag)
+        
+        bindTransactions()
+    }
+    
+    func bindTransactions() {
+       /* transactionsViewModel.outputs.transactions
+            .map { $0.reversed() }
+            .filter{ $0.count >= 5 }
+            .delaySubscription(.seconds(1), scheduler: MainScheduler.instance)
+            .bind(to: barGraphView.rx.transactionsObserver).disposed(by: disposeBag) */
+
+        transactionsViewModel.outputs.transactions.debug("transactions").bind(to: viewModel.inputs.transactionsObserver).disposed(by: disposeBag)
+
+      /*  transactionsViewModel.outputs.transactionDetails
+            .filter({ [weak self] _ in !(self?.selectionLocked ?? false) })
+            .bind(to: viewModel.inputs.transactionDetalsObserver).disposed(by: disposeBag) */
+        transactionsViewModel.outputs.openFilter.subscribe(onNext: {[weak self]  in
+            self?.viewModel.inputs.openFilterObserver.onNext($0)
+          /*  if CheckInternetConnectivity.isConnectedToInternet {
+                self?.viewModel.inputs.openFilterObserver.onNext($0)
+            }else{
+                self?.alert.show(inView: self!.view, type: .error, text:  "common_display_text_error_no_internet".localized, autoHides: true)
+            } */
+        }).disposed(by: disposeBag)
+        
+
+       // viewModel.outputs.filterSelected.bind(to: transactionsViewModel.inputs.filterSelected).disposed(by: disposeBag)
+        viewModel.outputs.shrinkProgressView.bind(to: toolBar.rx.shrink).disposed(by: disposeBag)
+        transactionsViewModel.outputs.categorySectionCount.bind(to: toolBar.rx.numberOfSections).disposed(by: disposeBag)
+
+       /* viewModel.outputs.refresh.withLatestFrom(SessionManager.current.currentAccount.map { $0?.parnterBankStatus ?? .signUpPending }).filter { $0 == .activated }.map { _ in }.bind(to: transactionsViewModel.inputs.fetchTransactionsObserver).disposed(by: disposeBag)
+        transactionsViewModel.outputs.openWelcomTutorial.bind(to: viewModel.inputs.openWelcomeObserver).disposed(by: disposeBag) */
+
+        transactionsViewModel.outputs.transactions.map { $0.count >= 5 }.subscribe(onNext: { [weak self] in
+            self?.showsGraph = $0
+        }).disposed(by: disposeBag)
+        transactionsViewModel.outputs.sectionAmount.unwrap().bind(to: toolBar.rx.balance).disposed(by: disposeBag)
+        transactionsViewModel.outputs.sectionDate.unwrap().bind(to: toolBar.rx.date).disposed(by: disposeBag)
+        
+      /*  transactionsViewModel.outputs.analyticsDate.bind(to: viewModel.inputs.sectionDateObserver).disposed(by: disposeBag) */
+        
+       /* let notificationsAndTransactions = Observable.combineLatest(viewModel.outputs.notificationsCount,
+                                                                    transactionsViewModel.outputs.transactions)
+        notificationsView.rx.notificationDeleted.withLatestFrom(notificationsAndTransactions).subscribe(onNext: { [weak self] params in
+            defer {
+                self?.viewModel.inputs.notificationsCountObserver.onNext(max(0, params.0 - 1))
+            }
+            guard params.0 <= 1 else { return }
+            self?.showsNotification = false
+            self?.showsGraph = params.1.count >= 5
+            if self?.showsGraph == true { self?.viewModel.inputs.invokeGraphTourGuideObserver.onNext(()) }
+        }).disposed(by: disposeBag) */
+        
+        transactionsViewModel.outputs.isTableViewReloaded.subscribe(onNext: { [weak self] val in
+            self?.isTableViewReloaded = val
+        }).disposed(by: disposeBag)
+    
+     /*   transactionsViewModel.outputs.categoryBarData.subscribe(onNext: { [weak self] categoryData in
+           
+            if categoryData.0 == nil {
+                UIView.animate(withDuration: 0.8, animations: {[weak self] in
+                    self?.toolBarHeightConstraint.constant = 80
+                    self?.view.layoutIfNeeded()
+                })
+            }
+            else {
+                UIView.animate(withDuration: 0.8, animations: { [weak self] in
+                    self?.toolBarHeightConstraint.constant = 120
+                    self?.view.layoutIfNeeded()
+                })
+            }
+            self?.toolBar.rx.monthData.onNext(categoryData)
+        }).disposed(by: disposeBag) */
     }
 }
 
