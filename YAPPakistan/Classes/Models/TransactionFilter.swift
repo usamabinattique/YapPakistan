@@ -56,7 +56,8 @@ public extension TransactionFilter {
     func getFiltersCount() -> Int {
         var count = [retail, online, atmWidrawl].filter{ $0 }.count
         count +=  (minAmount < 0 || maxAmount < 0) || maxAllowedAmount == maxAmount ? 0 : 1
-        
+        count += (debitSearch == true) ? 1 : 0
+        count += (creditSearch == true) ? 1 : 0
         return count
     }
 }

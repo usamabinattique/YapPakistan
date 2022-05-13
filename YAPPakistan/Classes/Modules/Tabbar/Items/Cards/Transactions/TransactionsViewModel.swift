@@ -352,7 +352,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             return shouldFetchMore
         }.share() */
         
-        request.elements().subscribe(onNext:  { pageableResponse in
+        request.elements().subscribe(onNext:  { [unowned self] pageableResponse in
             self.pageInfo = pageableResponse
             self.enableLoadMoreSubject.onNext(true)
             self.showShimmeringSubject.onNext(false)
@@ -396,8 +396,11 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             self.dataChanged = true
             self.filterCountSubject.onNext(filter?.getFiltersCount() ?? 0)
             self.updateFilter(filter)
-            self.updateContent()
-            self.updateGraph()
+            transactionDataProvider.transactionFilter = filter
+            self.pageInfo.currentPage = 0
+            self.fetchTransactionsObserver.onNext(())
+//            self.updateContent()
+//            self.updateGraph()
         }).disposed(by: disposeBag)
         
         sectionSubject.subscribe(onNext: {[unowned self] section in
@@ -491,6 +494,7 @@ extension TransactionsViewModel {
     
     func updateFilter(_ filter: TransactionFilter? = nil) {
         self.filter = filter
+        
         
         let sortDescriptors = [NSSortDescriptor(key: "transactionDay", ascending: false), NSSortDescriptor(key: "createdDate", ascending: false)]
                 
