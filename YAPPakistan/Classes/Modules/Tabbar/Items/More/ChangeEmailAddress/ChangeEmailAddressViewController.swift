@@ -172,12 +172,10 @@ fileprivate extension ChangeEmailAddressViewController {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.emailValidation.bind(to: emailTextfield.rx.validationState).disposed(by: disposeBag)
-        emailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.emailTextFieldObserver).disposed(by: disposeBag)
-        
-        confirmEmailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.confirmEmailTextFieldObserver).disposed(by: disposeBag)
-        
         viewModel.outputs.confirmEmailValidation.bind(to: confirmEmailTextfield.rx.validationState).disposed(by: disposeBag)
         
+        emailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.emailTextFieldObserver).disposed(by: disposeBag)
+        confirmEmailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.confirmEmailTextFieldObserver).disposed(by: disposeBag)
         viewModel.outputs.error.bind(to: confirmEmailTextfield.rx.errorText).disposed(by: disposeBag)
         
         viewModel.outputs.activateAction.subscribe(onNext: { isOK in

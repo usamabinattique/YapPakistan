@@ -34,7 +34,7 @@ class UserProfileViewController: UIViewController {
         return view
     }()
     
-    lazy var profileImageView = UIFactory.makeImageView()
+    lazy var profileImageView = UIFactory.makeImageView(contentMode: .scaleAspectFill)
     lazy var profileImageViewContainer = UIView()
     lazy var profilePhotoEditButton = UIButtonFactory.createButton(backgroundColor: .clear) //.createButton(backgroundColor: .clear)
     lazy var profilePhotoEditButtonContainer = UIView()
@@ -130,6 +130,7 @@ fileprivate extension UserProfileViewController {
         
         profileImageView.clipsToBounds = true
         profileImageView.layer.cornerRadius = 32
+        profileImageView.contentMode = .scaleAspectFill
         profilePhotoEditButtonContainer.backgroundColor = .white
         
         profilePhotoEditButtonContainer.clipsToBounds = true
@@ -196,6 +197,7 @@ fileprivate extension UserProfileViewController {
     func bindTableView() {
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
         viewModel.outputs.userProfileItems.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+        //profilePhotoEditButton.imageView?.image = UIImage(named: "icon_edit_profile_photo", in: .yapPakistan)
         viewModel.outputs.profilePhotoEditButtonImage.bind(to: profilePhotoEditButton.rx.image(for: .normal)).disposed(by: disposeBag)
     }
     
