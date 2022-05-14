@@ -208,6 +208,8 @@ public struct PaymentCardOnboardingStageModel {
             return false
         case (.booked, .shipping, _, _, _):
             return false
+        case (_, .shipping, _, .physicalCardPending,_):
+            return false
         case (_, .shipping, _, _, _):
             return true
         case (.shipped, .delivery, _, _, _):
