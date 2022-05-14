@@ -178,6 +178,7 @@ fileprivate extension ChangeEmailAddressViewController {
         confirmEmailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.confirmEmailTextFieldObserver).disposed(by: disposeBag)
         viewModel.outputs.error.bind(to: confirmEmailTextfield.rx.errorText).disposed(by: disposeBag)
         
+        
         viewModel.outputs.activateAction.subscribe(onNext: { isOK in
             print("Actiavte button: \(isOK)")
         }).disposed(by: disposeBag)
