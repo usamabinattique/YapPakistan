@@ -274,7 +274,7 @@ private extension MoreBankDetailsViewController {
 //        viewModel.outputs.account.bind(to: account.rx.details).disposed(by: disposeBag)
 //        viewModel.outputs.bank.bind(to: bank.rx.details).disposed(by: disposeBag)
 //        viewModel.outputs.address.bind(to: address.rx.details).disposed(by: disposeBag)
-        viewModel.outputs.canShare.map{ !$0 }.bind(to: shareButton.rx.isHidden).disposed(by: disposeBag)
+        //viewModel.outputs.canShare.map{ !$0 }.bind(to: shareButton.rx.isHidden).disposed(by: disposeBag)
         
         shareButton.rx.tap.bind(to: viewModel.inputs.shareObserver).disposed(by: disposeBag)
         
