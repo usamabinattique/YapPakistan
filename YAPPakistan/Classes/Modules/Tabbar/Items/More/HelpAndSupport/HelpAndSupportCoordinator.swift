@@ -29,7 +29,7 @@ public class HelpAndSupportCoordinator: Coordinator<ResultType<Void>> {
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
         
-        let viewModel = HelpAndSupportViewModel()
+        let viewModel = HelpAndSupportViewModel(cardsRepo: self.container.makeCardsRepository())
         let viewController = HelpAndSupportViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)

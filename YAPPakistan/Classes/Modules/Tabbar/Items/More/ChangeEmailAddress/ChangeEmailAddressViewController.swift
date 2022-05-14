@@ -42,6 +42,8 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
         textfield.autocapitalizationType = .none
         textfield.autocorrectionType = .no
         textfield.returnKeyType = .next
+        textfield.invalidImage = UIImage(named: "icon_invalid", in: .yapPakistan)
+        textfield.invalidImage = UIImage(named: "icon_check", in: .yapPakistan)
         textfield.placeholder =  "screen_change_email_placeholder_email_address".localized
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
@@ -53,6 +55,8 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
         textfield.autocapitalizationType = .none
         textfield.autocorrectionType = .no
         textfield.returnKeyType = .done
+        textfield.invalidImage = UIImage(named: "icon_invalid", in: .yapPakistan)
+        textfield.validImage = UIImage(named: "icon_check", in: .yapPakistan)
         textfield.placeholder =  "screen_change_email_placeholder_confirm_email_address".localized
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield

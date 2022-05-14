@@ -33,7 +33,7 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
     let disposeBag = DisposeBag()
     var inputs: HelpAndSupportViewModelInput { return self }
     var outputs: HelpAndSupportViewModelOutput { return self }
-    //let repository = YAPMoreRepository()
+    let cardsRepository : CardsRepositoryType!
     
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private let cellSelectedSubject = PublishSubject<ReusableTableViewCellViewModelType>()
@@ -53,49 +53,88 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
     var requestFaqUrl: Observable<Void> { return faqRequestSubject.asObservable() }
     
     // MARK: - Init
-    init() {
+    init(cardsRepo : CardsRepositoryType) {
         //let callUsViewModel = HSCallUsTableViewCellViewModel()
-        let cellViewModels: [ReusableTableViewCellViewModelType] = [HelpAndSupportTableViewCellViewModel(.faq), HelpAndSupportTableViewCellViewModel(.call)]
-
+        self.cardsRepository = cardsRepo
+        var cellViewModels: [ReusableTableViewCellViewModelType] = [HelpAndSupportTableViewCellViewModel(.faq), HelpAndSupportTableViewCellViewModel(.call)]
+        
         dataSourceSubject.onNext([SectionModel(model: 0, items: cellViewModels)])
-
-//        let action = Observable.merge(cellSelectedSubject.filter { $0 is HelpAndSupportTableViewCellViewModelType }.map { ($0 as! HelpAndSupportTableViewCellViewModel).action }, cellSelectedSubject.filter { $0 is HSCallUsTableViewCellViewModelType }.map { ($0 as! HSCallUsTableViewCellViewModel).action }).unwrap().share()
-//
-//        action.filter { $0 == .chat }
-//            .do(onNext:{ _ in AppAnalytics.shared.logEvent(MoreEvent.livechat()) })
-//            .subscribe(onNext: { _ in
-//            ChatManager.shared.openChat()
-//            /*YAPToast.show("commn_display_text_comming_soon".localized)*/ }).disposed(by: disposeBag)
-//
-//        action.filter { $0 == .whatsapp }.subscribe(onNext: { [unowned self] _ in self.openWhatsapp() }).disposed(by: disposeBag)
-//
-//        action.filter { $0 == .faq }
-//            .do(onNext:{ _ in AppAnalytics.shared.logEvent(MoreEvent.faqs()) })
-//            .map { _ in }.bind(to: faqRequestSubject).disposed(by: disposeBag)
-//
-//        YAPProgressHud.showProgressHud()
         
-//        let helplineNumberRequest = repository.getHelpLineNumber().share().do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-//
-//        helplineNumberRequest.elements().bind(to: callUsViewModel.inputs.phoneNumberObserver).disposed(by: disposeBag)
-//
-//        action.filter { $0 == .call }
-//            .do(onNext:{ _ in AppAnalytics.shared.logEvent(MoreEvent.call()) })
-//            .withLatestFrom(helplineNumberRequest.elements().unwrap().map { $0.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: " ", with: "")}).subscribe(onNext: {
-//            guard let number = URL(string: "tel://" + $0 ) else { return }
-//            UIApplication.shared.open(number)
-//        }).disposed(by: disposeBag)
-//
-//        helplineNumberRequest.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
+        let action = Observable.merge(cellSelectedSubject.filter { $0 is HelpAndSupportTableViewCellViewModelType }.map { ($0 as! HelpAndSupportTableViewCellViewModel).action }).unwrap().share()
         
-//        helplineNumberRequest.errors().map { _ -> [ReusableTableViewCellViewModelType] in
-//            cellViewModels.removeLast()
-//            return cellViewModels }
-//            .map { [SectionModel(model: 0, items: $0)] }
-//            .bind(to: dataSourceSubject)
-//            .disposed(by: disposeBag)
+        action.filter { $0 == .chat }
+        .do(onNext:{ _ in  })
+        .subscribe(onNext: { _ in
+            //            ChatManager.shared.openChat()
+            /*YAPToast.show("commn_display_text_comming_soon".localized)*/ }).disposed(by: disposeBag)
+            
+            action.filter { $0 == .whatsapp }.subscribe(onNext: { [unowned self] _ in self.openWhatsapp() }).disposed(by: disposeBag)
+        //
+        //        action.filter { $0 == .faq }
+        //            .do(onNext:{ _ in AppAnalytics.shared.logEvent(MoreEvent.faqs()) })
+        //            .map { _ in }.bind(to: faqRequestSubject).disposed(by: disposeBag)
+        
+        
+        action.filter { $0 == .call }.subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            YAPProgressHud.showProgressHud()
+            let helpLineNumberReq = self.cardsRepository.getHelpLineNumber()
+            helpLineNumberReq.elements().subscribe(onNext: { data in
+                YAPProgressHud.hideProgressHud()
+                print(data)
+                if let data = data {
+                    let phoneNumber = data.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: " ", with: "")
+                    self.dialNumber(number: phoneNumber)
+                }
+            }).disposed(by: self.disposeBag)
+            
+            helpLineNumberReq.errors().subscribe(onNext: { error in
+                YAPProgressHud.hideProgressHud()
+                print(error)
+            }).disposed(by: self.disposeBag)
+            
+        }).disposed(by: disposeBag)
+        
+        
+        
+        //        let helplineNumberRequest = cardsRepository.getHelpLineNumber().share().do(onNext: { _ in YAPProgressHud.hideProgressHud() }).subscribe(onNext: { data in
+        //            print(data)
+        //
+        //        }).disposed(by: disposeBag)
+        
+        //        helplineNumberRequest.elements().bind(to: callUsViewModel.inputs.phoneNumberObserver).disposed(by: disposeBag)
+        
+        //        action.filter { $0 == .call }
+        //            .do(onNext:{ _ in  })
+        //            .withLatestFrom(helplineNumberRequest.elements().unwrap().map { $0.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: " ", with: "")}).subscribe(onNext: {
+        //            guard let number = URL(string: "tel://" + $0 ) else { return }
+        //            UIApplication.shared.open(number)
+        //        }).disposed(by: disposeBag)
+        //
+        //        helplineNumberRequest.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
+        //
+        //        helplineNumberRequest.errors().map { _ -> [ReusableTableViewCellViewModelType] in
+        //            cellViewModels.removeLast()
+        //            return cellViewModels }
+        //            .map { [SectionModel(model: 0, items: $0)] }
+        //            .bind(to: dataSourceSubject)
+        //            .disposed(by: disposeBag)
         
         //getFaqsUrl()
+    }
+    
+    func dialNumber(number : String) {
+
+     if let url = URL(string: "tel://\(number)"),
+       UIApplication.shared.canOpenURL(url) {
+          if #available(iOS 10, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler:nil)
+           } else {
+               UIApplication.shared.openURL(url)
+           }
+       } else {
+                // add error message here
+       }
     }
 }
 
@@ -118,23 +157,23 @@ private extension HelpAndSupportViewModel {
 extension HelpAndSupportViewModel {
     fileprivate func getFaqsUrl() {
         
-//        let request =  faqRequestSubject.do(onNext: { _ in YAPProgressHud.showProgressHud() })
-//
-//        let result = request.flatMap {[unowned self] _ -> Observable<Event<String?>> in
-//            return self.repository.getFAQ()
-//        }.do(onNext: { _ in YAPProgressHud.hideProgressHud() }).share()
-//
-//        result
-//            .elements()
-//            //.map{_ in "https://www.yap.com/support" } //after discussion with android removing hard code value
-//            .bind(to: faqsUrlSubject)
-//            .disposed(by: disposeBag)
-//
-//        result
-//            .errors()
-//            .map { $0.localizedDescription }
-//            .bind(to: showErrorSubject)
-//            .disposed(by: disposeBag)
+        //        let request =  faqRequestSubject.do(onNext: { _ in YAPProgressHud.showProgressHud() })
+        //
+        //        let result = request.flatMap {[unowned self] _ -> Observable<Event<String?>> in
+        //            return self.repository.getFAQ()
+        //        }.do(onNext: { _ in YAPProgressHud.hideProgressHud() }).share()
+        //
+        //        result
+        //            .elements()
+        //            //.map{_ in "https://www.yap.com/support" } //after discussion with android removing hard code value
+        //            .bind(to: faqsUrlSubject)
+        //            .disposed(by: disposeBag)
+        //
+        //        result
+        //            .errors()
+        //            .map { $0.localizedDescription }
+        //            .bind(to: showErrorSubject)
+        //            .disposed(by: disposeBag)
     }
 }
 
