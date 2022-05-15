@@ -27,7 +27,7 @@ class CardAnalyticsViewController: UIViewController {
     
     private lazy var monthly = UIFactory.makeLabel(font: .micro, alignment: .center) //UILabelFactory.createUILabel(with: .primary, textStyle: .micro, alignment: .center)
     
-    private lazy var weekly = UILabelFactory.createUILabel(with: .primary, textStyle: .micro, alignment: .center)
+    private lazy var weekly = UIFactory.makeLabel(font: .micro, alignment: .center) //UILabelFactory.createUILabel(with: .primary, textStyle: .micro, alignment: .center)
     
     private lazy var monthlyWeeklyStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 16, arrangedSubviews: [monthlyContainerView])
     
@@ -49,30 +49,30 @@ class CardAnalyticsViewController: UIViewController {
     }()
     
     
-    private lazy var monthLabel = UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center)
+    private lazy var monthLabel = UIFactory.makeLabel(font: .micro, alignment: .center) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center)
     
-    private lazy var amountLabel = UILabelFactory.createUILabel(with: .primaryDark, textStyle: .large, alignment: .center)
+    private lazy var amountLabel = UIFactory.makeLabel(font: .large, alignment: .center) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .large, alignment: .center)
     
     private lazy var monthAmountStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 1, arrangedSubviews: [monthLabel, amountLabel])
     
     private lazy var backArrow: UIButton = {
         let button = UIButton()
         button.setImage(UIImage.sharedImage(named: "icon_backward")?.asTemplate, for: .normal)
-        button.tintColor = .greyDark
+        //button.tintColor = .greyDark
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     private lazy var nextArrow: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage.sharedImage(named: "icon_forward")?.asTemplate, for: .normal)
-        button.tintColor = .greyDark
+        button.setImage(UIImage.init(named: "icon_forward", in: .yapPakistan)?.asTemplate, for: .normal)
+       // button.tintColor = .greyDark
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     
-    private lazy var amountHeaderLabel = UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro , alignment: .center, text: "Total spent")
+    private lazy var amountHeaderLabel = UIFactory.makeLabel(font: .micro, alignment: .center, text: "Total spent") //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro , alignment: .center, text: "Total spent")
     
     private lazy var navStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 10, arrangedSubviews: [backArrow, monthAmountStack, nextArrow])
     
@@ -90,18 +90,18 @@ class CardAnalyticsViewController: UIViewController {
         return imageView
     }()
     
-    private lazy var categoryTitle = UILabelFactory.createUILabel(with: .white, textStyle: .micro, alignment: .center)
-    private lazy var categoryAmount = UILabelFactory.createUILabel(with: .primaryDark, textStyle: .micro, alignment: .center)
-    private lazy var percentage = UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center)
+    private lazy var categoryTitle = UIFactory.makeLabel(font: .micro, alignment: .center) //UILabelFactory.createUILabel(with: .white, textStyle: .micro, alignment: .center)
+    private lazy var categoryAmount = UIFactory.makeLabel(font: .micro, alignment: .center) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .micro, alignment: .center)
+    private lazy var percentage = UIFactory.makeLabel(font: .micro, alignment: .center) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center)
     
-    private lazy var averageLabel = UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var averageLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     
     private lazy var categoryButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .clear
         button.setTitle("screen_card_analytics_display_text_category".localized, for: .normal)
         button.titleLabel?.font = .small
-        button.setTitleColor(.primaryDark, for: .normal)
+        //button.setTitleColor(.primaryDark, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -111,21 +111,21 @@ class CardAnalyticsViewController: UIViewController {
         button.backgroundColor = .clear
         button.setTitle("screen_card_analytics_display_text_merchant".localized, for: .normal)
         button.titleLabel?.font = .small
-        button.setTitleColor(.primaryDark, for: .normal)
+       // button.setTitleColor(.primaryDark, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
     private lazy var selector: UIView = {
         let view = UIView()
-        view.backgroundColor = .primary
+       // view.backgroundColor = .primary
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private lazy var separator: UIView = {
         let view = UIView()
-        view.backgroundColor = .greyLight
+      //  view.backgroundColor = .greyLight
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -155,16 +155,17 @@ class CardAnalyticsViewController: UIViewController {
     private var viewModel: CardAnalyticsViewModelType!
     private let disposeBag = DisposeBag()
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
-    private let themeService: ThemeService<AppTheme>
+    private var themeService: ThemeService<AppTheme>!
     
     // MARK: Initialization
-    
-    init(viewModel: CardAnalyticsViewModelType, themeService: ThemeService<AppTheme>) {
+    init(themeService: ThemeService<AppTheme>, viewModel: CardAnalyticsViewModelType) {
         super.init(nibName: nil, bundle: nil)
-        self.viewModel = viewModel
+        
         self.themeService = themeService
+        self.viewModel = viewModel
+        
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
@@ -174,7 +175,7 @@ class CardAnalyticsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        addBackButton(.closeEmpty)
+        addBackButton(of: .closeEmpty)
         navigationItem.title = "screen_card_analytics_display_text_title".localized
         
         setupViews()
@@ -197,7 +198,7 @@ class CardAnalyticsViewController: UIViewController {
     }
     
     @objc func typeAction(sender: UIButton) {
-        sender.tag==0 ? AppAnalytics.shared.logEvent(AnalyticsEvent.monthlyTapped()):AppAnalytics.shared.logEvent(AnalyticsEvent.weeklyTapped())
+//        sender.tag==0 ? AppAnalytics.shared.logEvent(AnalyticsEvent.monthlyTapped()):AppAnalytics.shared.logEvent(AnalyticsEvent.weeklyTapped())
     }
 }
 
@@ -309,6 +310,7 @@ private extension CardAnalyticsViewController {
             .alignEdgeWithSuperview(.left, constant: pieChart.selectedArcWidth + 10)
         
         averageLabel
+            
             .alignEdgesWithSuperview([.left, .right], constant: 25)
             .alignEdgeWithSuperview(.bottom, constant: 50)
             .height(constant: 15)
@@ -347,7 +349,7 @@ private extension CardAnalyticsViewController {
     }
     
     func render() {
-        monthly.backgroundColor = UIColor.primary.withAlphaComponent(0.15)
+       // monthly.backgroundColor = UIColor.primary.withAlphaComponent(0.15)
         monthly.roundView()
     }
 }
