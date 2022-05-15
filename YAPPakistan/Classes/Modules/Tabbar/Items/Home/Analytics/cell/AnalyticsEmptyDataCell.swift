@@ -42,9 +42,11 @@ class AnalyticsEmptyDataCell: RxUITableViewCell {
     // MARK: Configuration
     
     override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
+        guard let viewModel = viewModel as? AnalyticsEmptyDataCellViewModel else { return }
+        self.viewModel = viewModel
+        self.theme = themeService
+        
         label.textColor = UIColor(theme.attrs.greyDark)
-        guard let vm = viewModel as? AnalyticsEmptyDataCellViewModel else {return}
-        self.viewModel = vm
         bindViews()
     }
 }

@@ -515,7 +515,7 @@ extension HomeViewModel {
         
         var vms = [DashboardTimelineModel]()
         if accountStatus == .addressCaptured {
-            let vm = DashboardTimelineModel(title: "Complete your application", description: "We need some additional information", leftIcon: UIImage.init(named: "timeline_account_verification", in: .yapPakistan), isSeparator: true, isSeparatorVague: false, isProgress: false, progressStatus: "", isWholeContainerVague: false, btnTitle: "Complete your registration", isBtnHidden: false)
+            let vm = DashboardTimelineModel(title: "Complete your didTapAnalyticsication", description: "We need some additional information", leftIcon: UIImage.init(named: "timeline_account_verification", in: .yapPakistan), isSeparator: true, isSeparatorVague: false, isProgress: false, progressStatus: "", isWholeContainerVague: false, btnTitle: "Complete your registration", isBtnHidden: false)
             vms.append(vm)
         }
         self.resumeKYCSubject.onNext(vms)
