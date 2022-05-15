@@ -145,6 +145,11 @@ public final class UserSessionContainer {
         return MoreRepository(messagesService: messageService, authenticationService: authenticationService)
     }
     
+    func makeAnalyticsRepository() -> AnalyticsRepositoryType {
+        let service = makeTransactionsService()
+        return AnalyticsRepository(service: service)
+    }
+    
     // MARK: Account Provider
     
     func makeAccountProvider() -> AccountProvider {

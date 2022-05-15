@@ -317,6 +317,10 @@ class HomeViewController: UIViewController {
     @objc func searchAction(_ sender: UIButton) {
         viewModel.inputs.searchTapObserver.onNext(())
     }
+    
+    @objc func showAnalyticsActions(_ sender: UIButton) {
+        viewModel.inputs.didTapAnalytics.onNext(())
+    }
 }
 
 // MARK: View Setup
@@ -648,7 +652,6 @@ fileprivate extension HomeViewController {
 //        }).disposed(by: disposeBag)
 //        viewModel.outputs.unreadCount.bind(to: floatingButton.rx.count).disposed(by: disposeBag)
         
-        viewModel.outputs.balance.map{ $0?.string }.unwrap().bind(to: toolBar.rx.balance).disposed(by: disposeBag)
         bindTransactions()
     }
     

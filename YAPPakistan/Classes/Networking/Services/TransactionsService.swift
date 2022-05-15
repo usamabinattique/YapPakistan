@@ -35,6 +35,10 @@ protocol TransactionsServiceType {
     func cardStatement<T: Codable>(_ cardSerialNumber: String) -> Observable<T>
     func cardCustomStatement<T: Codable>(_ cardSerialNumber: String, startDate: String, endDate: String) -> Observable<T>
     func emailStatement<T: Codable>(url: String, month: String, year: String, statementType: String, cardType: String?) -> Observable<T>
+    func getTransactionsByCategory<T: Codable> (date: String) -> Observable<T>
+    func getTransactionsByMerchant<T: Codable>(date: String) -> Observable<T>
+    func fetchMerchantAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [String]?) -> Observable<T>
+    func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [Int?]) -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
@@ -209,6 +213,30 @@ class TransactionsService: BaseService, TransactionsServiceType {
         let body = EmailStatementRequest(fileUrl: url, month: month, year: year, statementType: statementType, cardType: cardType)
         
         let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/statement-via-email", body: body ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getTransactionsByCategory<T: Codable> (date: String) -> Observable<T> {
+        let query = ["date": date]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction/card/analytics-merchant-category", query: query, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getTransactionsByMerchant<T: Codable>(date: String) -> Observable<T> {
+        let query = ["date": date]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction/card/analytics-merchant-name", query: query, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchMerchantAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [String]?) -> Observable<T> {
+        let query = ["cardSerialNo" : cardSerialNo, "date" : date]
+        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/transaction-search/merchant-name", query: query, body: categories, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [Int?]) -> Observable<T> {
+        let query = ["cardSerialNo" : cardSerialNo, "date" : date]
+        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/transaction-search/merchant-category-id", query: query, body: categories, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
 }
