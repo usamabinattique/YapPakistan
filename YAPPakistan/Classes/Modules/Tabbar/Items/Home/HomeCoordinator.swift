@@ -128,6 +128,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             //AppAnalytics.shared.logEvent(DashboardEvent.tapFilterTransactions())
             self?.navigateToFilterSelection(selectedFilter: $0, resultObserver: viewController.viewModel.inputs.filterSelectedObserver)
         }).disposed(by: rx.disposeBag)
+        
+        
+        viewController.viewModel.outputs.topUp.withUnretained(self).subscribe(onNext: { `self`, card in
+            self.topup(self.root)
+        }).disposed(by: rx.disposeBag)
     }
     
     func showCreditLimit() {

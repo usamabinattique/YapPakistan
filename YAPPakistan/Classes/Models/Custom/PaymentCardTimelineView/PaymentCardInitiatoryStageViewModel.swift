@@ -54,9 +54,21 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
         if accountStatus == .addressCaptured || accountStatus == .onboarded || accountStatus == .cardSchemeExternalCardPending {
             
             if paymentCard.active == false && paymentCard.cardScheme == "Mastercard" {
-                stages.append(.init(paymentCard: paymentCard, stage: .topUp, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus))
+                //  stages.append(.init(paymentCard: paymentCard, stage: .topUp, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus))
+                let customData1 =  PaymentCardOnboardingStageModelCustomData(title: "view_payment_card_onboarding_stage_four_title".localized, subHeading: "view_payment_card_onboarding_stage_four_subheading".localized, actionTitle: "view_payment_card_onboarding_stage_four_action_title".localized, icon: UIImage.init(named: "icon_stage_top_up", in: .yapPakistan)?.asTemplate, showVerticleBreadcrum: true, completed: false, inProcess: false, isEnabled: true)
                 
-                stages.append(.init(paymentCard: paymentCard, stage: .applicationInProcess, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
+                stages.append(.init(paymentCard: paymentCard, stage: .topUp, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus, customData: customData1))
+                
+//                stages.append(.init(paymentCard: paymentCard, stage: .applicationInProcess, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
+                let customData2 =  PaymentCardOnboardingStageModelCustomData(title: "view_payment_card_onboarding_stage_account_verification_label_title".localized, subHeading: "view_payment_card_onboarding_stage_initial_in_process_subtitle".localized, actionTitle: nil, icon: UIImage.init(named: "timeline_account_verification", in: .yapPakistan), showVerticleBreadcrum: true, completed: false, inProcess: true, isEnabled: false)
+                stages.append(.init(paymentCard: paymentCard, stage: .applicationInProcess, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured,customData: customData2))
+               
+                // for card is on the way/disabled
+                let customData = PaymentCardOnboardingStageModelCustomData(title: "view_payment_card_onboarding_stage_card_on_the_way_title".localized, subHeading: "view_payment_card_onboarding_stage_card_on_the_way_subheading".localized, actionTitle: "view_payment_card_onboarding_stage_card_on_the_way_action_title".localized, icon: UIImage.init(named: "icon_stage_shipping_in_progress", in: .yapPakistan), showVerticleBreadcrum: true, completed: false, inProcess: false, isEnabled: false)
+                let stageVM: PaymentCardOnboardingStageModel = .init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: .physicalCardPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured,customData: customData)
+                
+                stages.append(stageVM)
+                
             } else {
                 stages.append(.init(paymentCard: paymentCard, stage: .additionalRequirement, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
             }
