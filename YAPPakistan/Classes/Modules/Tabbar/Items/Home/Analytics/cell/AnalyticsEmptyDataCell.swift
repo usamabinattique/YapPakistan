@@ -45,7 +45,6 @@ class AnalyticsEmptyDataCell: RxUITableViewCell {
         guard let viewModel = viewModel as? AnalyticsEmptyDataCellViewModel else { return }
         self.viewModel = viewModel
         self.theme = themeService
-        
         label.textColor = UIColor(theme.attrs.greyDark)
         bindViews()
     }
