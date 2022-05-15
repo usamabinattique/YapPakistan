@@ -25,6 +25,7 @@ protocol HomeViewModelInputs {
     var widgetsChangeObserver: AnyObserver<Void> { get }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> { get }
     var searchTapObserver: AnyObserver<Void> { get }
+    var didTapAnalytics: AnyObserver<Void> { get }
     var categoryChangedObserver: AnyObserver<Void> { get }
     var refreshObserver: AnyObserver<Void> { get }
     var increaseProgressViewHeightObserver: AnyObserver<Bool> {get}
@@ -43,6 +44,7 @@ protocol HomeViewModelOutputs {
     var loading: Observable<Bool> { get }
     var error: Observable<String> { get }
     var showActivity: Observable<Bool> { get }
+    var showAnalytics: Observable<Void> { get }
     var headingText: Observable<String> { get }
     var logOutButtonTitle: Observable<String> { get }
     var completeVerificationHidden: Observable<Bool> { get }
@@ -104,6 +106,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let loadingSubject = PublishSubject<Bool>()
     private var biometryChangeSuject = PublishSubject<Bool>()
     private let showActivitySubject = BehaviorSubject<Bool>(value: false)
+    var showAnalytics: Observable<Void> {analyticsSubject}
     private let completeVerificationHiddenSubject = BehaviorSubject<Bool>(value: true)
     private let completeVerificationSubject = PublishSubject<Void>()
     private let completeVerificationResultSubject = PublishSubject<Bool>()
@@ -131,6 +134,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let addCreditInfoSubject = ReplaySubject<Void>.create(bufferSize: 1)
     private let searchSubject = PublishSubject<Void>()
+    private let analyticsSubject = PublishSubject<Void>()
     private let categoryChangedSubject = PublishSubject<Void>()
     private let refreshSubject = PublishSubject<Void>()
     private let menuTapSubject = PublishSubject<Void>()
@@ -156,6 +160,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var widgetsChangeObserver: AnyObserver<Void> { widgetsChangeSubject.asObserver() }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> {selectedWidgetSubject.asObserver()}
     var searchTapObserver: AnyObserver<Void> { searchSubject.asObserver() }
+    var didTapAnalytics: AnyObserver<Void> { analyticsSubject.asObserver() }
     var categoryChangedObserver: AnyObserver<Void> { categoryChangedSubject.asObserver() }
     var refreshObserver: AnyObserver<Void> { refreshSubject.asObserver() }
     var menuTapObserver: AnyObserver<Void> { return menuTapSubject.asObserver() }

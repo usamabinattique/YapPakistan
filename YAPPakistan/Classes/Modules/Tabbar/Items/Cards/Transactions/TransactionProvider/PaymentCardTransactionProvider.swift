@@ -18,6 +18,7 @@ protocol PaymentCardTransactionProvider: AnyObject {
     var pageSize: Int { get }
     func resetCardSerialNumber(_ serialNumber: String)
     var currentPage: Int { get }
+    var transactionFilter: TransactionFilter? { get set }
 }
 
 extension PaymentCardTransactionProvider {
@@ -25,4 +26,5 @@ extension PaymentCardTransactionProvider {
     var pageSize: Int { return 0 }
     func resetCardSerialNumber(_ serialNumber: String) {}
     var currentPage: Int { return 0 }
+    var transactionFilter: TransactionFilter? { return nil }
 }

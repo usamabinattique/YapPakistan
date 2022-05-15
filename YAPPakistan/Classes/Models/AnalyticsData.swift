@@ -82,6 +82,7 @@ struct AnalyticsData: Codable {
     var title: String { _title?.capitalized ?? "Other"}
     var categories: [String]?
     var categoryId: Int?
+    var categoryColor: String?
     
     enum CodingKeys: String, CodingKey {
         case transactions = "txnCount"
@@ -91,6 +92,7 @@ struct AnalyticsData: Codable {
         case logoUrl = "logoUrl"
         case categories = "categories"
         case categoryId = "yapCategoryId"
+        case categoryColor = "categoryColor"
     }
 }
 

@@ -263,6 +263,7 @@ class HomeViewController: UIViewController {
         searchButton.addTarget(self, action: #selector(self.searchAction(_:)), for: .touchUpInside)
         searchButton.tintColor = UIColor(themeService.attrs.primary)
         searchBarButtonItem = UIBarButtonItem(customView: searchButton)
+        analyticsBarButtonItem.button?.addTarget(self, action: #selector(showAnalyticsActions(_:)), for: .touchUpInside)
         
         navigationItem.leftBarButtonItem = userBarButtonItem.barItem
         navigationItem.rightBarButtonItems = [menuButtonItem.barItem,searchBarButtonItem,analyticsBarButtonItem.barItem]
@@ -316,6 +317,10 @@ class HomeViewController: UIViewController {
     
     @objc func searchAction(_ sender: UIButton) {
         viewModel.inputs.searchTapObserver.onNext(())
+    }
+    
+    @objc func showAnalyticsActions(_ sender: UIButton) {
+        viewModel.inputs.didTapAnalytics.onNext(())
     }
 }
 
@@ -643,6 +648,11 @@ fileprivate extension HomeViewController {
             self.creditLimitView.height(constant: 42) */
         }).disposed(by: disposeBag)
         
+//        viewModel.outputs.hideFloatingButton.subscribe(onNext: { [weak self] hide in
+//            self?.hideFloatingButton(hide)
+//        }).disposed(by: disposeBag)
+//        viewModel.outputs.unreadCount.bind(to: floatingButton.rx.count).disposed(by: disposeBag)
+        
         bindTransactions()
     }
     
@@ -668,7 +678,7 @@ fileprivate extension HomeViewController {
         }).disposed(by: disposeBag)
         
 
-       // viewModel.outputs.filterSelected.bind(to: transactionsViewModel.inputs.filterSelected).disposed(by: disposeBag)
+        viewModel.outputs.filterSelected.bind(to: transactionsViewModel.inputs.filterSelected).disposed(by: disposeBag)
         viewModel.outputs.shrinkProgressView.bind(to: toolBar.rx.shrink).disposed(by: disposeBag)
         transactionsViewModel.outputs.categorySectionCount.bind(to: toolBar.rx.numberOfSections).disposed(by: disposeBag)
 

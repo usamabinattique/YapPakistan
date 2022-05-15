@@ -118,11 +118,11 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
             .disposed(by: disposeBag)
         
         
-//        clearSubject.map { _ in }
-//            .subscribe(onNext: { [unowned self] in
-//                self.resultSubject.onNext(nil)
-//            })
-//            .disposed(by: disposeBag)
+        clearSubject.map { _ in }
+            .subscribe(onNext: { [unowned self] in
+                self.resultSubject.onNext(nil)
+            })
+            .disposed(by: disposeBag)
         
         closeSubject
             .filter{ [unowned self] in self.filter.getFiltersCount() > 0 }
@@ -177,9 +177,9 @@ private extension TransactionFilterViewModel {
             
             shareClear.subscribe(onNext: { [unowned self] in
                 guard self.filter != nil else { return }
-                self.filter.minAmount = 0
-                self.filter.maxAmount = 20000.0000
-                self.filter.maxAllowedAmount = 20000.0000
+//                self.filter.minAmount = 0
+//                self.filter.maxAmount = 20000.0000
+//                self.filter.maxAllowedAmount = 20000.0000
             }).disposed(by: disposeBag)
 
         }
@@ -202,8 +202,11 @@ private extension TransactionFilterViewModel {
         
         requestShare.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
         requestShare.errors().subscribe(onNext: { [unowned self] error in
-            self.addMockSlider()
-            self.loadCells()
+            if !isHomeSearch {
+                self.addMockSlider()
+                self.loadCells()
+            }
+            
         }).disposed(by: disposeBag)
         
         
@@ -216,23 +219,9 @@ private extension TransactionFilterViewModel {
             } else {
                 self.addSlider(range: range, selectedRange: selectedRange)
             }
-            
+            self.filter.minAmount = $0.minAmount
+            self.filter.maxAmount = $0.maxAmount
         }).disposed(by: disposeBag)
-        
-        //TODO: remove following lines
-     /*   if self.filter != nil {
-            let range = filter.minAmount...(filter.maxAmount <= 0 ? 20000 : filter.maxAmount)
-          //  self.filter.maxAllowedAmount = filter.maxAmount
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
-            self.addSlider(range: range, selectedRange: selectedRange)
-        } else {
-            let range = 0...20000.0000
-
-            self.filter.maxAllowedAmount = 80.0000
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount > 0 ? (self.filter.maxAmount - 1.0) : 0.0)
-            self.addSlider(range: range, selectedRange: selectedRange)
-        } */
-        
        
     }
     

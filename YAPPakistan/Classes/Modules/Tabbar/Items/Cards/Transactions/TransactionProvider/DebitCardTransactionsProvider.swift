@@ -33,6 +33,11 @@ class DebitCardTransactionsProvider: PaymentCardTransactionProvider {
     private var debitSearch: Bool = false
     
     var transactions: Observable<[TransactionResponse]> { return transactionsSubject }
+    var transactionFilter: TransactionFilter? {
+        didSet {
+            filter = transactionFilter
+        }
+    }
         
     // MARK: - Init
     init(transactionFilter: TransactionFilter? = nil, repository: TransactionsRepository, cardSerialNumber: String? = nil, debitSearch: Bool = false ) {
