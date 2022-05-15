@@ -97,13 +97,30 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
     var customDateDescription: Observable<String?> { customDateDescriptionSubject.asObservable() }
     
     private let repository: StatementsRepositoryType
+    private var cardsRepository: CardsRepositoryType
     
     private let yearFomatter = DateFormatter()
     
+    private var statementFetchable: StatementFetchable?
+    
     // MARK: - Init
-    init(statementFetchable: StatementFetchable?, repository: StatementsRepositoryType) {
-        yearFomatter.dateFormat = "yyyy"
+    init(statementFetchable: StatementFetchable?, repository: StatementsRepositoryType, cardsRepository: CardsRepositoryType) {
+        
         self.repository = repository
+        self.cardsRepository = cardsRepository
+        self.statementFetchable = statementFetchable
+        
+        if statementFetchable == nil {
+            getCards()
+        }
+        
+        startProcessing()
+        
+    }
+    
+    func startProcessing() {
+        yearFomatter.dateFormat = "yyyy"
+        
         yearSubject.onNext(yearFomatter.string(from: Date()))
         
         let currentYear = Date().year
@@ -116,9 +133,16 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
         
         titleSubject.onNext(statementFetchable?.statementType.viewTitle)
         
-        let cardStatementRequest = viewWillAppearSubject.take(1)
+        let cardStatementRequest = viewWillAppearSubject
             .do(onNext: { YAPProgressHud.showProgressHud() })
             .flatMap { [unowned self] _ -> Observable<Event<[Statement]?>> in
+                
+                guard let statementFetchable = statementFetchable else {
+                    YAPProgressHud.hideProgressHud()
+                    return Observable.never()
+                }
+                
+                switch statementFetchable.statementType {
                 guard let statementFetchable = statementFetchable else {
                     YAPProgressHud.hideProgressHud()
                     return Observable.never()
@@ -187,23 +211,22 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
         
         customDateRefreshSubject
             .subscribe(onNext: { [weak self] selectedDate in
-                self?.fetchCustomDateStatements(statementFetchable: statementFetchable, startDate: selectedDate.startDate, endDate: selectedDate.endDate)
+                self?.fetchCustomDateStatements(statementFetchable: self?.statementFetchable, startDate: selectedDate.startDate, endDate: selectedDate.endDate)
             })
             .disposed(by: disposeBag)
         
         lastFinYearViewSubject
             .subscribe(onNext: { [weak self] _ in
-                self?.fetchCustomDateStatements(statementFetchable: statementFetchable, startDate: "01-07-\(previousYear)", endDate: "30-06-\(currentYear)")
+                self?.fetchCustomDateStatements(statementFetchable: self?.statementFetchable, startDate: "01-07-\(previousYear)", endDate: "30-06-\(currentYear)")
             })
             .disposed(by: disposeBag)
         
         yearToDateViewSubject
             .subscribe(onNext: { [weak self] _ in
                 let todayFormattedDate = Date().string(withFormat: DateFormatter.serverReadableDateFormat)
-                self?.fetchCustomDateStatements(statementFetchable: statementFetchable, startDate: "01-01-\(currentYear)", endDate: "\(todayFormattedDate)")
+                self?.fetchCustomDateStatements(statementFetchable: self?.statementFetchable, startDate: "01-01-\(currentYear)", endDate: "\(todayFormattedDate)")
             })
             .disposed(by: disposeBag)
-        
     }
     
     func fetchCustomDateStatements(statementFetchable: StatementFetchable?, startDate: String, endDate: String) {
@@ -225,6 +248,24 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
                         self?.viewStatementSubject.onNext(webContent)
                     })
                     .disposed(by: disposeBag)
+    }
+    
+    func getCards() {
+        YAPProgressHud.showProgressHud()
+        let cardsRequest = cardsRepository.getCards().share()
+        
+        cardsRequest.errors().map { $0.localizedDescription }.subscribe(onNext: { [weak self] in
+            print("error \($0)")
+            YAPProgressHud.hideProgressHud()
+            self?.errorSubject.onNext($0)
+        }).disposed(by: disposeBag)
+        
+        cardsRequest.elements().subscribe(onNext:{ [weak self] list in
+            print("success \(list)")
+            YAPProgressHud.hideProgressHud()
+            self?.statementFetchable = list?.first
+            self?.viewWillAppearSubject.onNext(())
+        }).disposed(by: disposeBag)
     }
 }
 

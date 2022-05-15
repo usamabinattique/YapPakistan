@@ -43,6 +43,7 @@ protocol TransactionsRepositoryType {
     func getThresholdLimits() -> Observable<Event<TransactionThreshold>>
     func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>>
     func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>
+    func getAccountLimits() -> Observable<Event<[AccountLimits]?>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryType {
@@ -136,6 +137,10 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
     
     public func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>> {
         return transactionService.getDenominationAmount(productCode: productCode).materialize()
+    }
+    
+    public func getAccountLimits() -> Observable<Event<[AccountLimits]?>> {
+        return transactionService.accountLimits().materialize()
     }
     
     public func getCardStatement(serialNumber: String) -> Observable<Event<[Statement]?>> {
