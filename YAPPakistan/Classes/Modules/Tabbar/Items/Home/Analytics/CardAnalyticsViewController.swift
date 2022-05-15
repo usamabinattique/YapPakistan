@@ -25,7 +25,7 @@ class CardAnalyticsViewController: UIViewController {
         return view
     }()
     
-    private lazy var monthly = UILabelFactory.createUILabel(with: .primary, textStyle: .micro, alignment: .center)
+    private lazy var monthly = UIFactory.makeLabel(font: .micro, alignment: .center) //UILabelFactory.createUILabel(with: .primary, textStyle: .micro, alignment: .center)
     
     private lazy var weekly = UILabelFactory.createUILabel(with: .primary, textStyle: .micro, alignment: .center)
     
