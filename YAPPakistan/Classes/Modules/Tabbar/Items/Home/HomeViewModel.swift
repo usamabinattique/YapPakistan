@@ -470,7 +470,7 @@ extension HomeViewModel {
             .disposed(by: disposeBag)
         
         // Transactions are not zero, hide debit card timeline
-        params
+            params.take(1)
             .filter { ($0.0?.count ?? 0) > 0 }
             .subscribe(onNext: { [weak self] res in
                 self?.shimmeringSubject.onNext(false)

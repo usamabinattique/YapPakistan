@@ -31,7 +31,7 @@ public class CardAnalyticsCoordinator: Coordinator<ResultType<Void>> {
 
         
         let viewModel = CardAnalyticsViewModel(repository: container.makeAnalyticsRepository(), themeService: container.themeService, card: card, accountCreatedDate: container.makeAccountProvider().currentAccount.compactMap{$0?.creationDate}, date: date)
-        let viewController = CardAnalyticsViewController(viewModel: viewModel, themeService: container.themeService)
+        let viewController = CardAnalyticsViewController(themeService: container.themeService, viewModel: viewModel)
         localNavigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
 
         root.present(localNavigationController!, animated: true, completion: nil)

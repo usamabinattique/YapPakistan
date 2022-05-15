@@ -58,6 +58,7 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
     public var result: Observable<TransactionFilter?> { return resultSubject.asObservable() }
     public var error: Observable<String> { return errorSubject.asObservable() }
     public var close: Observable<Void> { closeSubject.asObservable() }
+    private var responseRange:  ClosedRange<Double> = 0...100
     
     // MARK: - Init
     init(_ filter: TransactionFilter? = nil, repository: TransactionsRepositoryType, isHomeTransactionsSearch:Bool = false) {
@@ -212,8 +213,9 @@ private extension TransactionFilterViewModel {
         
         requestShare.elements().subscribe(onNext: { [unowned self] in
             let range = $0.minAmount...$0.maxAmount
+            self.responseRange = range
          //   self.filter.maxAllowedAmount = $0.maxAmount
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
+            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount <= $0.maxAmount ? self.filter.maxAmount : self.filter.maxAmount-1) //self.filter.minAmount...(self.filter.maxAmount-1)
             if isHomeSearch {
                 self.addSlider(range: range, selectedRange: selectedRange,isHomeSearch: isHomeSearch)
             } else {
@@ -265,7 +267,8 @@ private extension TransactionFilterViewModel {
 //        clearSubject.map{ _ in (minValue: CGFloat, maxValue: CGFloat) }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
         
         clearSubject.map { [unowned self] _ -> (minValue: CGFloat, maxValue: CGFloat)  in
-            return (minValue: CGFloat(self.filter.minAmount), maxValue: CGFloat(self.filter.maxAmount))
+            //return (minValue: CGFloat(self.filter.minAmount), maxValue: CGFloat(self.filter.maxAmount))
+            return (minValue: CGFloat(self.responseRange.lowerBound), maxValue: CGFloat(self.responseRange.upperBound))
         }.bind(to: slider.inputs.progressObserver, slider.inputs.resetRangeObserver).disposed(by: disposeBag)
 
         self.loadCells()
