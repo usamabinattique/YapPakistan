@@ -331,11 +331,7 @@ fileprivate extension HomeViewController {
         setupViews()
         setupTheme()
         setupConstraints()
-        //TODO: remove following comment
         addDebitCardTimelineIfNeeded()
-        
-        //TODO: remove this line from here after handling transactions api success
-       // addTransactionsViewController()
         bindViewModel()
     }
     

@@ -477,6 +477,7 @@ extension HomeViewModel {
                 // set transactions if they are empty
                 if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false ) {
                     self?.transactionsViewModel.transactionsObj = res.0 ?? []
+                    self?.transactionsViewModel.updateContent()
                 }
                 
                 self?.debitCardOnboardingStageViewModelSubject.onCompleted()

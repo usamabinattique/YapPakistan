@@ -92,7 +92,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let transactionDetailsSubject = PublishSubject<CDTransaction>()
     private let openFilterSubject = PublishSubject<Void>()
     private let filterSelectedSubject = PublishSubject<TransactionFilter?>()
-    private let filterEnabledSubject = BehaviorSubject<Bool>(value: false)
+    private let filterEnabledSubject = BehaviorSubject<Bool>(value: true)
     private let filterCountSubject = BehaviorSubject<Int>(value: 0)
     private var sectionViewModels = [TransactionHeaderTableViewCellViewModel]()
     private var cellViewModels = [[TransactionsTableViewCellViewModel]]()
