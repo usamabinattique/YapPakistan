@@ -306,6 +306,7 @@ class HomeViewController: UIViewController {
     }
     
     @objc func menuAction(_ sender: UIButton) {
+        self.view.generateImpact()
         viewModel.inputs.menuTapObserver.onNext(())
     }
     

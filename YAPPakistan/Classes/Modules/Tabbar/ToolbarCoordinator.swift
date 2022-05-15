@@ -65,6 +65,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         menuViewModel.outputs.menuItemSelected
             .subscribe(onNext: { [weak self] menuItem in
                 guard let self = self else { return }
+                //viewController.view.generateSelectionImpact()
                 viewController.hideMenu()
                         DispatchQueue.main.async { [self] in
                     switch menuItem {
@@ -92,6 +93,8 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                         //self.myQrCode(self.rootNavigationController)
                     case .dashboardWidget:
                         self.coordinateToEditWidgets()
+                    case .accountLimits:
+                        self.coordinateToAccountLimits(viewController)
                     default:
                         break
                     }
@@ -145,6 +148,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         root.viewControllers?.append(yapit)
     }
     fileprivate func yapIt(root: UITabBarController, height: CGFloat) {
+        root.view.generateImpact(.light)
         coordinate(to: YAPItCoordinator(root: root, container: container, tabBarHeight: height))
             .withUnretained(self)
             .subscribe(onNext: { `self`, value in
@@ -203,6 +207,12 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     
     private func statements(_ viewController: UIViewController) {
         coordinate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
+    
+    private func coordinateToAccountLimits(_ viewController: UIViewController){
+        coordinate(to: AccountLimitsCoordinator(root: viewController, container: self.container, repository: container.makeTransactionsRepository()))
             .subscribe()
             .disposed(by: disposeBag)
     }
