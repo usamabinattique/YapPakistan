@@ -263,7 +263,6 @@ class HomeViewController: UIViewController {
         searchButton.addTarget(self, action: #selector(self.searchAction(_:)), for: .touchUpInside)
         searchButton.tintColor = UIColor(themeService.attrs.primary)
         searchBarButtonItem = UIBarButtonItem(customView: searchButton)
-        analyticsBarButtonItem.button?.addTarget(self, action: #selector(showAnalyticsActions(_:)), for: .touchUpInside)
         
         navigationItem.leftBarButtonItem = userBarButtonItem.barItem
         navigationItem.rightBarButtonItems = [menuButtonItem.barItem,searchBarButtonItem,analyticsBarButtonItem.barItem]
@@ -639,13 +638,13 @@ fileprivate extension HomeViewController {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.addCreditInfo.take(1).withUnretained(self).subscribe(onNext:  { `self`, _ in
-           /* self.isCreditInfoAdded = true
+            self.isCreditInfoAdded = true
             self.transactionContainer.removeSubviews()
             self.transactionContainer.addSubview(self.creditLimitView)
             self.creditLimitView.alignEdgeWithSuperview(.top, constant: 12)
             self.creditLimitView.alignEdgeWithSuperview(.left)
             self.creditLimitView.alignEdgeWithSuperview(.right)
-            self.creditLimitView.height(constant: 42) */
+            self.creditLimitView.height(constant: 42)
         }).disposed(by: disposeBag)
         
 //        viewModel.outputs.hideFloatingButton.subscribe(onNext: { [weak self] hide in
@@ -653,6 +652,7 @@ fileprivate extension HomeViewController {
 //        }).disposed(by: disposeBag)
 //        viewModel.outputs.unreadCount.bind(to: floatingButton.rx.count).disposed(by: disposeBag)
         
+        viewModel.outputs.balance.map{ $0?.string }.unwrap().bind(to: toolBar.rx.balance).disposed(by: disposeBag)
         bindTransactions()
     }
     

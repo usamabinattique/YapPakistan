@@ -262,8 +262,11 @@ private extension TransactionFilterViewModel {
             
         }).disposed(by: self.disposeBag)
         
-       // clearSubject.map{ _ in 1.0 }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
+//        clearSubject.map{ _ in (minValue: CGFloat, maxValue: CGFloat) }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
         
+        clearSubject.map { [unowned self] _ -> (minValue: CGFloat, maxValue: CGFloat)  in
+            return (minValue: CGFloat(self.filter.minAmount), maxValue: CGFloat(self.filter.maxAmount))
+        }.bind(to: slider.inputs.progressObserver, slider.inputs.resetRangeObserver).disposed(by: disposeBag)
 
         self.loadCells()
     }

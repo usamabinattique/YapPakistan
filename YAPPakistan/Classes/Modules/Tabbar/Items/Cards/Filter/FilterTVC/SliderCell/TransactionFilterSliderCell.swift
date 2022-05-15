@@ -139,7 +139,7 @@ private extension TransactionFilterSliderCell {
         viewModel.outputs.selectedRange.subscribe(onNext: { [unowned self] range in
             self.customSlider.selectedMinValue = range.lowerBound
             self.customSlider.selectedMaxValue = range.upperBound
-           
+            
         }).disposed(by: rx.disposeBag) 
 
 //        viewModel.outputs.selectedRange.bind(to: customSlider.rx.did)
@@ -154,8 +154,6 @@ private extension TransactionFilterSliderCell {
         //custom.rx.value.map { CGFloat($0) }.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
         
         customSlider.rx.didChange.subscribe(onNext: { [unowned self]  in
-            print("range: custom slider change \($0)")
-            
             let value = String(format: "%@ — %@",
                                NumberFormatter.formateAmount(Double($0), fractionDigits: 0),
                                NumberFormatter.formateAmount(Double($1), fractionDigits: 0))

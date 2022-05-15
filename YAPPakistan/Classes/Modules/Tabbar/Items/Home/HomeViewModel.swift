@@ -279,22 +279,20 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
         profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL?.absoluteString, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
         
-        accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
+//        accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
         
         increaseProgressViewHeightSubject.subscribe(onNext: { [unowned self] increaseSize in
             increaseSize ? shrinkProgressViewSubject.onNext(false) :
                 shrinkProgressViewSubject.onNext(true)
         }).disposed(by: disposeBag)
         
-       // generateCellViewModels()
-       // getCardBalance()
+        generateCellViewModels()
         getCustomerAccountBalance()
         getWidgets(repository: cardsRepository)
         getCards()
         
         refreshSubject.subscribe(onNext: { [weak self] _ in
             self?.getCustomerAccountBalance()
-           /* self?.getCardBalance() */
 //            self?.getCards()
             
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
@@ -318,38 +316,6 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
 }
 
 extension HomeViewModel {
-    func getCardBalance() {
-        let cardsRequest = cardsRepository.getCardBalance()
-            .do(onNext: { [weak self] _ in self?.shimmeringSubject.onNext(false) })
-            .share()
-        
-        cardsRequest.elements().subscribe(onNext: { [weak self] balance in
-          //  self?.shimmeringSubject.onNext(false)
-            let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
-            let attributedString = NSMutableAttributedString(string: text)
-            guard let decimal = text.components(separatedBy: ".").last else { return }
-            attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
-            self?.balanceSubject.onNext(attributedString)
-        }).disposed(by: disposeBag)
-        
-        cardsRequest.errors().map{
-            $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
-        
-        cardsRequest.errors().subscribe(onNext: { error in
-            print("error is \(error.localizedDescription)")
-        }).disposed(by: disposeBag)
-
-        
-       /* var balance: Balance {
-            return Balance(balance: "0.0", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
-        }
-        let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
-        let attributedString = NSMutableAttributedString(string: text)
-        guard let decimal = text.components(separatedBy: ".").last else { return }
-        attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
-        self.balanceSubject.onNext(attributedString) */
-    }
-    
     fileprivate func getCustomerAccountBalance() {
         let accountBalanceRequest = transactionRepository.fetchCustomerAccountBalance().share()
       //  accountBalanceRequest.map { _ in true }.bind(to: loadingSubject).disposed(by: disposeBag)
@@ -471,12 +437,13 @@ extension HomeViewModel {
                 let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
                 self?.dashobarStatusActions(viewModel: initioaryModel)
                 self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
+            } else {
+                if let account = self?.accountProvider.currentAccountValue.value {
+                    if !account.isFirstCredit && account.parnterBankStatus == .physicalCardSuccess {
+                        self?.addCreditInfoSubject.onNext(())
+                    }
+                }
             }
-
-       }).disposed(by: disposeBag)
-
-        accountProvider.currentAccount.unwrap().subscribe(onNext: { [weak self] account in
-
 
        }).disposed(by: disposeBag)
         

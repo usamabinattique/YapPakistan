@@ -352,7 +352,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             return shouldFetchMore
         }.share() */
         
-        request.elements().subscribe(onNext:  { pageableResponse in
+        request.elements().subscribe(onNext:  { [unowned self] pageableResponse in
             self.pageInfo = pageableResponse
             self.enableLoadMoreSubject.onNext(true)
             self.showShimmeringSubject.onNext(false)

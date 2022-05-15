@@ -39,6 +39,7 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.4
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "0.00"
         return label
     }()
     

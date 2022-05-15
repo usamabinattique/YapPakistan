@@ -12,6 +12,7 @@ import RxSwift
 protocol TransactionFilterSliderCellViewModelInput {
     var progressObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { get }
 //    var progressObserver: AnyObserver<CGFloat> { get }
+    var resetRangeObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { get }
 }
 
 protocol TransactionFilterSliderCellViewModelOutput {
@@ -55,7 +56,7 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
     
     // MARK: - Inputs
     var progressObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { return progressSubject.asObserver() }
-    
+    var resetRangeObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { rangeSubject.asObserver() }
     // MARK: - Outputs
     
     
@@ -133,9 +134,10 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
                 selectedRange = range.lowerBound...selectedRange.upperBound
             }
         
-       rangeSubject.onNext((minValue: CGFloat(selectedRange.lowerBound), maxValue: CGFloat(range.upperBound)))
+       rangeSubject.onNext((minValue: CGFloat(selectedRange.lowerBound), maxValue: CGFloat(selectedRange.upperBound)))
         
         progressSubject.map { (minValue: CGFloat, maxValue: CGFloat) in
+            guard minValue < maxValue else { return Double(selectedRange.lowerBound)...Double(selectedRange.upperBound) }
             return  Double(minValue)...Double(maxValue > 0 ? maxValue : 0)
         }.bind(to: selectedRangeSubject).disposed(by: disposeBag)
         
