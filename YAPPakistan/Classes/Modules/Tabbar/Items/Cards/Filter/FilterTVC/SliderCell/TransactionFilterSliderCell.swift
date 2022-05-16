@@ -139,7 +139,7 @@ private extension TransactionFilterSliderCell {
         viewModel.outputs.selectedRange.subscribe(onNext: { [unowned self] range in
             self.customSlider.selectedMinValue = range.lowerBound
             self.customSlider.selectedMaxValue = range.upperBound
-           
+            
         }).disposed(by: rx.disposeBag) 
 
 //        viewModel.outputs.selectedRange.bind(to: customSlider.rx.did)
@@ -151,7 +151,17 @@ private extension TransactionFilterSliderCell {
 //          //  self?.slider.setValue($0, animated: true)
 //        }).disposed(by: disposeBag)
         
-      //  slider.rx.value.map { CGFloat($0) }.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
+        //custom.rx.value.map { CGFloat($0) }.bind(to: viewModel.inputs.progressObserver).disposed(by: disposeBag)
         
+        customSlider.rx.didChange.subscribe(onNext: { [unowned self]  in
+            let value = String(format: "%@ — %@",
+                               NumberFormatter.formateAmount(Double($0), fractionDigits: 0),
+                               NumberFormatter.formateAmount(Double($1), fractionDigits: 0))
+            self.range.text = value
+            
+        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.filterTotalRange.subscribe(onNext: { [unowned self]  in
+            self.customSlider.changeRange(minValue: $0, maxValue: $1, selectedMinValue: $0, selectedMaxValue: $1)
+        }).disposed(by: rx.disposeBag)
     }
 }

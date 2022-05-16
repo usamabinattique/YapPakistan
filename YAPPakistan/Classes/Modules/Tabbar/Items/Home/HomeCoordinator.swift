@@ -109,9 +109,14 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.search.withLatestFrom(viewController.viewModel.outputs.debitCard).subscribe(onNext: { [weak self] card in
-            
             self?.navigateToSearch(card: card)
         }).disposed(by: rx.disposeBag)
+        
+        // show analytics
+        viewController.viewModel.outputs.showAnalytics
+            .withLatestFrom(viewController.viewModel.outputs.debitCard).compactMap{$0}
+            .subscribe(onNext: { [weak self] in self?.analytics($0) })
+            .disposed(by: rx.disposeBag)
         
         transactionCategoryResult.bind(to: viewController.viewModel.inputs.categoryChangedObserver).disposed(by: rx.disposeBag)
         
@@ -127,6 +132,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.openFilter.subscribe(onNext: { [weak self] in
             //AppAnalytics.shared.logEvent(DashboardEvent.tapFilterTransactions())
             self?.navigateToFilterSelection(selectedFilter: $0, resultObserver: viewController.viewModel.inputs.filterSelectedObserver)
+        }).disposed(by: rx.disposeBag)
+        
+        
+        viewController.viewModel.outputs.topUp.withUnretained(self).subscribe(onNext: { `self`, card in
+            self.topup(self.root)
         }).disposed(by: rx.disposeBag)
     }
     
@@ -376,7 +386,7 @@ extension HomeCoodinator {
     }
 
     func analytics(_ paymentCard: PaymentCard, date: Date? = nil) {
-//        coordinate(to: CardAnalyticsCoordinator(root: self.root, card: paymentCard, date: date)).subscribe().disposed(by: self.disposeBag)
+        coordinate(to: CardAnalyticsCoordinator(root: self.root, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
     }
 
     func topUp() {

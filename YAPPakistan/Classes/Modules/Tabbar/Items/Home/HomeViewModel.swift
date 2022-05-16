@@ -25,6 +25,7 @@ protocol HomeViewModelInputs {
     var widgetsChangeObserver: AnyObserver<Void> { get }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> { get }
     var searchTapObserver: AnyObserver<Void> { get }
+    var didTapAnalytics: AnyObserver<Void> { get }
     var categoryChangedObserver: AnyObserver<Void> { get }
     var refreshObserver: AnyObserver<Void> { get }
     var increaseProgressViewHeightObserver: AnyObserver<Bool> {get}
@@ -32,6 +33,8 @@ protocol HomeViewModelInputs {
     var transactionsObserver: AnyObserver<[SectionTransaction]> { get }
     var openFilterObserver: AnyObserver<TransactionFilter?> { get }
     var filterSelectedObserver: AnyObserver<TransactionFilter?> { get }
+    var isBarGraphVisibleObserver: AnyObserver<Bool> { get }
+    var selectedTransactionIndexObserver: AnyObserver<Int?> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -43,6 +46,7 @@ protocol HomeViewModelOutputs {
     var loading: Observable<Bool> { get }
     var error: Observable<String> { get }
     var showActivity: Observable<Bool> { get }
+    var showAnalytics: Observable<Void> { get }
     var headingText: Observable<String> { get }
     var logOutButtonTitle: Observable<String> { get }
     var completeVerificationHidden: Observable<Bool> { get }
@@ -85,6 +89,7 @@ protocol HomeViewModelOutputs {
     var openFilter: Observable<TransactionFilter?> { get }
     
     var filterSelected: Observable<TransactionFilter?> { get }
+    var selectedTransactionIndex: Observable<Int> { get }
 }
 
 protocol HomeViewModelType {
@@ -104,6 +109,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let loadingSubject = PublishSubject<Bool>()
     private var biometryChangeSuject = PublishSubject<Bool>()
     private let showActivitySubject = BehaviorSubject<Bool>(value: false)
+    var showAnalytics: Observable<Void> {analyticsSubject}
     private let completeVerificationHiddenSubject = BehaviorSubject<Bool>(value: true)
     private let completeVerificationSubject = PublishSubject<Void>()
     private let completeVerificationResultSubject = PublishSubject<Bool>()
@@ -131,6 +137,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let addCreditInfoSubject = ReplaySubject<Void>.create(bufferSize: 1)
     private let searchSubject = PublishSubject<Void>()
+    private let analyticsSubject = PublishSubject<Void>()
     private let categoryChangedSubject = PublishSubject<Void>()
     private let refreshSubject = PublishSubject<Void>()
     private let menuTapSubject = PublishSubject<Void>()
@@ -139,6 +146,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let transactionsSubject = BehaviorSubject<[SectionTransaction]>(value: [])
     private let openFilterSubject = PublishSubject<TransactionFilter?>()
     private let filterSelectedSubject = PublishSubject<TransactionFilter?>()
+    private let isBarGraphVisibleSubject = BehaviorSubject<Bool>(value: false)
+    private let selectedTransactionIndexSubject = BehaviorSubject<Int?>(value: nil)
     
     private var numberOfShownWidgets = 0
     private var cardStatus: CardStatus = .inActive
@@ -156,6 +165,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var widgetsChangeObserver: AnyObserver<Void> { widgetsChangeSubject.asObserver() }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> {selectedWidgetSubject.asObserver()}
     var searchTapObserver: AnyObserver<Void> { searchSubject.asObserver() }
+    var didTapAnalytics: AnyObserver<Void> { analyticsSubject.asObserver() }
     var categoryChangedObserver: AnyObserver<Void> { categoryChangedSubject.asObserver() }
     var refreshObserver: AnyObserver<Void> { refreshSubject.asObserver() }
     var menuTapObserver: AnyObserver<Void> { return menuTapSubject.asObserver() }
@@ -164,6 +174,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var transactionsObserver: AnyObserver<[SectionTransaction]> { return transactionsSubject.asObserver() }
     var openFilterObserver: AnyObserver<TransactionFilter?> { return openFilterSubject.asObserver() }
     var filterSelectedObserver: AnyObserver<TransactionFilter?> { return filterSelectedSubject.asObserver() }
+    var isBarGraphVisibleObserver: AnyObserver<Bool> { isBarGraphVisibleSubject.asObserver() }
+    var selectedTransactionIndexObserver: AnyObserver<Int?> { return selectedTransactionIndexSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -211,6 +223,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var transactions: Observable<[SectionTransaction]> { return transactionsSubject.asObservable() }
     var openFilter: Observable<TransactionFilter?> { return openFilterSubject.asObservable() }
     var filterSelected: Observable<TransactionFilter?> { return filterSelectedSubject.asObservable() }
+    var selectedTransactionIndex: Observable<Int> { return selectedTransactionIndexSubject.unwrap().distinctUntilChanged() }
 
     // MARK: Init
 
@@ -274,22 +287,20 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         
         profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL?.absoluteString, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
         
-        accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
+//        accountProvider.currentAccount.unwrap().map{ !$0.isFirstCredit }.map{ _ in return () }.bind(to: addCreditInfoSubject).disposed(by: disposeBag)
         
         increaseProgressViewHeightSubject.subscribe(onNext: { [unowned self] increaseSize in
             increaseSize ? shrinkProgressViewSubject.onNext(false) :
                 shrinkProgressViewSubject.onNext(true)
         }).disposed(by: disposeBag)
         
-       // generateCellViewModels()
-       // getCardBalance()
+        generateCellViewModels()
         getCustomerAccountBalance()
         getWidgets(repository: cardsRepository)
         getCards()
         
         refreshSubject.subscribe(onNext: { [weak self] _ in
             self?.getCustomerAccountBalance()
-           /* self?.getCardBalance() */
 //            self?.getCards()
             
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
@@ -313,38 +324,6 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
 }
 
 extension HomeViewModel {
-    func getCardBalance() {
-        let cardsRequest = cardsRepository.getCardBalance()
-            .do(onNext: { [weak self] _ in self?.shimmeringSubject.onNext(false) })
-            .share()
-        
-        cardsRequest.elements().subscribe(onNext: { [weak self] balance in
-          //  self?.shimmeringSubject.onNext(false)
-            let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
-            let attributedString = NSMutableAttributedString(string: text)
-            guard let decimal = text.components(separatedBy: ".").last else { return }
-            attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
-            self?.balanceSubject.onNext(attributedString)
-        }).disposed(by: disposeBag)
-        
-        cardsRequest.errors().map{
-            $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
-        
-        cardsRequest.errors().subscribe(onNext: { error in
-            print("error is \(error.localizedDescription)")
-        }).disposed(by: disposeBag)
-
-        
-       /* var balance: Balance {
-            return Balance(balance: "0.0", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
-        }
-        let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
-        let attributedString = NSMutableAttributedString(string: text)
-        guard let decimal = text.components(separatedBy: ".").last else { return }
-        attributedString.addAttribute(.font, value: UIFont.large, range: NSRange(location: text.count-decimal.count, length: decimal.count))
-        self.balanceSubject.onNext(attributedString) */
-    }
-    
     fileprivate func getCustomerAccountBalance() {
         let accountBalanceRequest = transactionRepository.fetchCustomerAccountBalance().share()
       //  accountBalanceRequest.map { _ in true }.bind(to: loadingSubject).disposed(by: disposeBag)
@@ -421,57 +400,21 @@ extension HomeViewModel {
     func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
         
         self.shimmeringSubject.onNext(true)
-        let request = self.transactionDataProvider.fetchTransactions().share()  /*viewDidAppearSubject.startWith(())
-            .flatMap {
-                [unowned self] _ in self.transactionDataProvider.fetchTransactions()
-            }.share() */
-    
-       /* request.elements().subscribe(onNext: { [weak self] pageAbleRes in
-            self?.shimmeringSubject.onNext(false)
-            
-            if let transactions = pageAbleRes.content, !transactions.isEmpty {
-                //TODO: assign transactions
-                self?.transactionsViewModel.transactionsObj = transactions
-            } else {
-                if let card = card, let account = self?.accountProvider.currentAccountValue.value {
-                    if card.deliveryStatus == .shipped && (card.pinSet ?? false) {
-                        self?.noTransFoundSubject.onNext("view_payment_card_onboarding_stage_initial_in_no_trans_found_subtitle".localized)
-                    } else {
-                        let vm = PaymentCardInitiatoryStageViewModel(paymentCard: card, account: account)
-                        self?.dashobarStatusActions(viewModel: vm)
-                        self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
-                    }
-                }
-            }
-            
-        }).disposed(by: disposeBag) */
-        
-      /*  request.errors().subscribe(onNext: { [weak self] erro in
-            print("transactions error \(erro)")
-            self?.shimmeringSubject.onNext(false)
-            
-            //TODO: remove following
-            if let card = card, let account = self?.accountProvider.currentAccountValue.value {
-                let vm = PaymentCardInitiatoryStageViewModel(paymentCard: card, account: account)
-                self?.dashobarStatusActions(viewModel: vm)
-                self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
-            }
-        }).disposed(by: disposeBag) */
+        let request = self.transactionDataProvider.fetchTransactions().share()
 
         debitCard.subscribe(onNext: { [weak self] card in
-            //TODO: handle if card is empty/nil
             if card == nil, let account = self?.accountProvider.currentAccountValue.value {
-//                self?.errorSubject.onNext("Card not found")
                 self?.shimmeringSubject.onNext(false)
                 let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
                 self?.dashobarStatusActions(viewModel: initioaryModel)
                 self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
+            } else {
+                if let account = self?.accountProvider.currentAccountValue.value {
+                    if !account.isFirstCredit && account.parnterBankStatus == .physicalCardSuccess {
+                        self?.addCreditInfoSubject.onNext(())
+                    }
+                }
             }
-
-       }).disposed(by: disposeBag)
-
-        accountProvider.currentAccount.unwrap().subscribe(onNext: { [weak self] account in
-
 
        }).disposed(by: disposeBag)
         
@@ -498,15 +441,15 @@ extension HomeViewModel {
             .disposed(by: disposeBag)
         
         // Transactions are not zero, hide debit card timeline
-        params
+            params.take(1)
             .filter { ($0.0?.count ?? 0) > 0 }
             .subscribe(onNext: { [weak self] res in
                 self?.shimmeringSubject.onNext(false)
                 // set transactions if they are empty
                 if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false ) {
                     self?.transactionsViewModel.transactionsObj = res.0 ?? []
+                    self?.transactionsViewModel.updateContent()
                 }
-                
                 self?.debitCardOnboardingStageViewModelSubject.onCompleted()
                 
             }).disposed(by: disposeBag)
@@ -543,7 +486,7 @@ extension HomeViewModel {
         
         var vms = [DashboardTimelineModel]()
         if accountStatus == .addressCaptured {
-            let vm = DashboardTimelineModel(title: "Complete your application", description: "We need some additional information", leftIcon: UIImage.init(named: "timeline_account_verification", in: .yapPakistan), isSeparator: true, isSeparatorVague: false, isProgress: false, progressStatus: "", isWholeContainerVague: false, btnTitle: "Complete your registration", isBtnHidden: false)
+            let vm = DashboardTimelineModel(title: "Complete your didTapAnalyticsication", description: "We need some additional information", leftIcon: UIImage.init(named: "timeline_account_verification", in: .yapPakistan), isSeparator: true, isSeparatorVague: false, isProgress: false, progressStatus: "", isWholeContainerVague: false, btnTitle: "Complete your registration", isBtnHidden: false)
             vms.append(vm)
         }
         self.resumeKYCSubject.onNext(vms)
@@ -556,12 +499,6 @@ extension HomeViewModel {
     
     func getWidgets(repository: CardsRepositoryType) {
         
-     /*   let request = Observable.merge(canCallForWidgetsSubject, widgetsChangeSubject)
-            .do(onNext: {[weak self] in
-                    self?.paralaxHeightSubject.onNext(())
-                self?.showLoaderSubject.onNext(true) })
-            .flatMap { repository.getDashboardWidgets() }
-            .share(replay: 1, scope: .whileConnected) */
         self.showLoaderSubject.onNext(true)
         let request = repository.getDashboardWidgets().share()
         

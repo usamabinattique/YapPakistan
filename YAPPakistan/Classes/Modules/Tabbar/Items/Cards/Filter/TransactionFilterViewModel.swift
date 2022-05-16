@@ -58,6 +58,7 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
     public var result: Observable<TransactionFilter?> { return resultSubject.asObservable() }
     public var error: Observable<String> { return errorSubject.asObservable() }
     public var close: Observable<Void> { closeSubject.asObservable() }
+    private var responseRange:  ClosedRange<Double> = 0...100
     
     // MARK: - Init
     init(_ filter: TransactionFilter? = nil, repository: TransactionsRepositoryType, isHomeTransactionsSearch:Bool = false) {
@@ -118,11 +119,11 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
             .disposed(by: disposeBag)
         
         
-//        clearSubject.map { _ in }
-//            .subscribe(onNext: { [unowned self] in
-//                self.resultSubject.onNext(nil)
-//            })
-//            .disposed(by: disposeBag)
+        clearSubject.map { _ in }
+            .subscribe(onNext: { [unowned self] in
+                self.resultSubject.onNext(nil)
+            })
+            .disposed(by: disposeBag)
         
         closeSubject
             .filter{ [unowned self] in self.filter.getFiltersCount() > 0 }
@@ -177,9 +178,9 @@ private extension TransactionFilterViewModel {
             
             shareClear.subscribe(onNext: { [unowned self] in
                 guard self.filter != nil else { return }
-                self.filter.minAmount = 0
-                self.filter.maxAmount = 20000.0000
-                self.filter.maxAllowedAmount = 20000.0000
+//                self.filter.minAmount = 0
+//                self.filter.maxAmount = 20000.0000
+//                self.filter.maxAllowedAmount = 20000.0000
             }).disposed(by: disposeBag)
 
         }
@@ -202,37 +203,27 @@ private extension TransactionFilterViewModel {
         
         requestShare.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
         requestShare.errors().subscribe(onNext: { [unowned self] error in
-            self.addMockSlider()
-            self.loadCells()
+            if !isHomeSearch {
+                self.addMockSlider()
+                self.loadCells()
+            }
+            
         }).disposed(by: disposeBag)
         
         
         requestShare.elements().subscribe(onNext: { [unowned self] in
             let range = $0.minAmount...$0.maxAmount
+            self.responseRange = range
          //   self.filter.maxAllowedAmount = $0.maxAmount
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
+            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount <= $0.maxAmount ? self.filter.maxAmount : self.filter.maxAmount-1) //self.filter.minAmount...(self.filter.maxAmount-1)
             if isHomeSearch {
                 self.addSlider(range: range, selectedRange: selectedRange,isHomeSearch: isHomeSearch)
             } else {
                 self.addSlider(range: range, selectedRange: selectedRange)
             }
-            
+            self.filter.minAmount = $0.minAmount
+            self.filter.maxAmount = $0.maxAmount
         }).disposed(by: disposeBag)
-        
-        //TODO: remove following lines
-     /*   if self.filter != nil {
-            let range = filter.minAmount...(filter.maxAmount <= 0 ? 20000 : filter.maxAmount)
-          //  self.filter.maxAllowedAmount = filter.maxAmount
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
-            self.addSlider(range: range, selectedRange: selectedRange)
-        } else {
-            let range = 0...20000.0000
-
-            self.filter.maxAllowedAmount = 80.0000
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount > 0 ? (self.filter.maxAmount - 1.0) : 0.0)
-            self.addSlider(range: range, selectedRange: selectedRange)
-        } */
-        
        
     }
     
@@ -273,8 +264,12 @@ private extension TransactionFilterViewModel {
             
         }).disposed(by: self.disposeBag)
         
-       // clearSubject.map{ _ in 1.0 }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
+//        clearSubject.map{ _ in (minValue: CGFloat, maxValue: CGFloat) }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
         
+        clearSubject.map { [unowned self] _ -> (minValue: CGFloat, maxValue: CGFloat)  in
+            //return (minValue: CGFloat(self.filter.minAmount), maxValue: CGFloat(self.filter.maxAmount))
+            return (minValue: CGFloat(self.responseRange.lowerBound), maxValue: CGFloat(self.responseRange.upperBound))
+        }.bind(to: slider.inputs.progressObserver, slider.inputs.resetRangeObserver).disposed(by: disposeBag)
 
         self.loadCells()
     }
