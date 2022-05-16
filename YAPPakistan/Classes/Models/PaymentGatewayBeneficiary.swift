@@ -117,7 +117,7 @@ public extension ExternalPaymentCard {
 
 extension ExternalPaymentCard {
     var maskedNumber: String {
-        return "XXXX XXXX XXXX \(last4Digits)"
+        return "**** **** **** \(last4Digits)"
     }
     
     var expiryDate: Date? {

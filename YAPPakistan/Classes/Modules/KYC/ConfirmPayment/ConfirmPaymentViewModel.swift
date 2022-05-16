@@ -135,6 +135,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         }
         if let cardDetail =  paymentGatewayM.cardDetailObject {
             cardNumberSubject.onNext(cardDetail.cardNumber ?? "")
+        } else {
+            cardNumberSubject.onNext(paymentGatewayM.beneficiary?.maskedNumber ?? "")
         }
         localizedStringsSubject.onNext(theStrings)
         
