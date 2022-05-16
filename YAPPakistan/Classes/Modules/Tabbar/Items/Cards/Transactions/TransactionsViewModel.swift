@@ -583,40 +583,6 @@ extension TransactionsViewModel {
 
 private extension TransactionsViewModel {
     func searchTransactions(text: String?) {
-        
-        
-        
-//        let sortDescriptors = [NSSortDescriptor(key: "transactionDay", ascending: false), NSSortDescriptor(key: "createdDate", ascending: false)]
-//
-//        guard let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
-//            let predicate = isAccountTransaction ? NSPredicate(format: "transactionCardType = %@", transactionCardType.rawValue) : NSPredicate(format: "cardSerialNumber = %@ && transactionCardType = %@", cardSerialNumber!, transactionCardType.rawValue)
-//            try? entityHandler.updateFRCRequest(sortDescriptors: sortDescriptors, predicate: predicate, sectionNameKeyPath: "transactionDay")
-//
-//            updateContent()
-//            return
-//        }
-//
-//        var query: String = ""
-//        var args: [Any] = []
-//
-//        query += "((title CONTAINS[c] %@) || (senderName CONTAINS[c] %@ && type = %@) || (receiverName CONTAINS[c] %@ && type = %@) || merchantCategory CONTAINS[c] %@)"
-//
-//        args.append(contentsOf: [text, text, TransactionType.credit.rawValue, text, TransactionType.debit.rawValue, text])
-//
-//        query += " && (transactionCardType == %@)"
-//        args.append(transactionCardType.rawValue)
-//
-//        if !isAccountTransaction {
-//            query += " && (cardSerialNumber == %@)"
-//            args.append(cardSerialNumber!)
-//        }
-//
-//        let predicate: NSPredicate = NSPredicate(format: query, argumentArray: args)
-//
-//        try? entityHandler.updateFRCRequest(sortDescriptors: sortDescriptors, predicate: predicate, sectionNameKeyPath: "transactionDay")
-//
-//        updateContent()
-        
         self.searchText = text
         updateContent()
     }

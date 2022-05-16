@@ -149,13 +149,13 @@ class HomeViewController: UIViewController {
     }()
 
 
-//    lazy var barGraphView: BarGraphView = {
-//        let graph = BarGraphView()
-//        graph.translatesAutoresizingMaskIntoConstraints = false
-//        graph.isHidden = true
-//        graph.barWidth = 8
-//        return graph
-//    }()
+    lazy var barGraphView: BarGraphView = {
+        let graph = BarGraphView()
+        graph.translatesAutoresizingMaskIntoConstraints = false
+        graph.isHidden = true
+        graph.barWidth = 8
+        return graph
+    }()
     
     private var widgetViewHeightConstraints: NSLayoutConstraint!
 
