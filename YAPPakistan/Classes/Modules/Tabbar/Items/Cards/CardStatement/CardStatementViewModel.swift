@@ -217,7 +217,7 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
         
         yearToDateViewSubject
             .subscribe(onNext: { [weak self] _ in
-                let todayFormattedDate = Date().string(withFormat: DateFormatter.serverReadableDateFormat)
+                let todayFormattedDate = Date().string(withFormat: DateFormatter.statementReadableDateFormat)
                 self?.fetchCustomDateStatements(statementFetchable: self?.statementFetchable, startDate: "01-01-\(currentYear)", endDate: "\(todayFormattedDate)")
             })
             .disposed(by: disposeBag)
