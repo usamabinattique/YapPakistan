@@ -392,47 +392,10 @@ extension HomeViewModel {
     func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
         
         self.shimmeringSubject.onNext(true)
-        let request = self.transactionDataProvider.fetchTransactions().share()  /*viewDidAppearSubject.startWith(())
-            .flatMap {
-                [unowned self] _ in self.transactionDataProvider.fetchTransactions()
-            }.share() */
-    
-       /* request.elements().subscribe(onNext: { [weak self] pageAbleRes in
-            self?.shimmeringSubject.onNext(false)
-            
-            if let transactions = pageAbleRes.content, !transactions.isEmpty {
-                //TODO: assign transactions
-                self?.transactionsViewModel.transactionsObj = transactions
-            } else {
-                if let card = card, let account = self?.accountProvider.currentAccountValue.value {
-                    if card.deliveryStatus == .shipped && (card.pinSet ?? false) {
-                        self?.noTransFoundSubject.onNext("view_payment_card_onboarding_stage_initial_in_no_trans_found_subtitle".localized)
-                    } else {
-                        let vm = PaymentCardInitiatoryStageViewModel(paymentCard: card, account: account)
-                        self?.dashobarStatusActions(viewModel: vm)
-                        self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
-                    }
-                }
-            }
-            
-        }).disposed(by: disposeBag) */
-        
-      /*  request.errors().subscribe(onNext: { [weak self] erro in
-            print("transactions error \(erro)")
-            self?.shimmeringSubject.onNext(false)
-            
-            //TODO: remove following
-            if let card = card, let account = self?.accountProvider.currentAccountValue.value {
-                let vm = PaymentCardInitiatoryStageViewModel(paymentCard: card, account: account)
-                self?.dashobarStatusActions(viewModel: vm)
-                self?.debitCardOnboardingStageViewModelSubject.onNext(vm)
-            }
-        }).disposed(by: disposeBag) */
+        let request = self.transactionDataProvider.fetchTransactions().share()
 
         debitCard.subscribe(onNext: { [weak self] card in
-            //TODO: handle if card is empty/nil
             if card == nil, let account = self?.accountProvider.currentAccountValue.value {
-//                self?.errorSubject.onNext("Card not found")
                 self?.shimmeringSubject.onNext(false)
                 let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
                 self?.dashobarStatusActions(viewModel: initioaryModel)
@@ -479,7 +442,6 @@ extension HomeViewModel {
                     self?.transactionsViewModel.transactionsObj = res.0 ?? []
                     self?.transactionsViewModel.updateContent()
                 }
-                
                 self?.debitCardOnboardingStageViewModelSubject.onCompleted()
                 
             }).disposed(by: disposeBag)
@@ -529,12 +491,6 @@ extension HomeViewModel {
     
     func getWidgets(repository: CardsRepositoryType) {
         
-     /*   let request = Observable.merge(canCallForWidgetsSubject, widgetsChangeSubject)
-            .do(onNext: {[weak self] in
-                    self?.paralaxHeightSubject.onNext(())
-                self?.showLoaderSubject.onNext(true) })
-            .flatMap { repository.getDashboardWidgets() }
-            .share(replay: 1, scope: .whileConnected) */
         self.showLoaderSubject.onNext(true)
         let request = repository.getDashboardWidgets().share()
         
