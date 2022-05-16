@@ -774,4 +774,10 @@ and click on Quick Access Widgets.";
 "screen_card_statements_display_text_title" = "Card statements";
 "screen_card_statements_display_text_view" = "View";
 
-
+// MARK: Screen card analytics
+"screen_card_analytics_display_text_category" = "Category";
+"screen_card_analytics_display_text_merchant" = "Merchant";
+"screen_card_analytics_display_text_monthly_average" = "Monthly average is %@";
+"screen_card_analytics_display_text_title" = "Analytics";
+"screen_card_analytics_display_text_transaction" = "transaction";
+"screen_card_analytics_display_text_transactions" = "transactions";

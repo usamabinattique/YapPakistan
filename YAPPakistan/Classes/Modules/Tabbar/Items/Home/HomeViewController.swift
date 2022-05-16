@@ -149,13 +149,13 @@ class HomeViewController: UIViewController {
     }()
 
 
-//    lazy var barGraphView: BarGraphView = {
-//        let graph = BarGraphView()
-//        graph.translatesAutoresizingMaskIntoConstraints = false
-//        graph.isHidden = true
-//        graph.barWidth = 8
-//        return graph
-//    }()
+    lazy var barGraphView: BarGraphView = {
+        let graph = BarGraphView()
+        graph.translatesAutoresizingMaskIntoConstraints = false
+        graph.isHidden = true
+        graph.barWidth = 8
+        return graph
+    }()
     
     private var widgetViewHeightConstraints: NSLayoutConstraint!
 
@@ -191,9 +191,9 @@ class HomeViewController: UIViewController {
     }
     var showsGraph = false {
         didSet {
-       //     self.barGraphView.isHidden = !(!showsNotification && showsGraph)
+            self.barGraphView.isHidden = !(!showsNotification && showsGraph)
             self.updateParallaxHeaderProgress()
-          //  viewModel.inputs.isBarGraphVisibleObserver.onNext(showsGraph)
+            viewModel.inputs.isBarGraphVisibleObserver.onNext(showsGraph)
         }
     }
     private var showsButtons = true
@@ -283,6 +283,7 @@ class HomeViewController: UIViewController {
        // viewModel.inputs.viewAppearObserver.onNext(())
         updateParallaxHeaderProgress()
         self.menuButtonItem.button?.addTarget(self, action: #selector(self.menuAction(_:)), for: .touchUpInside)
+        analyticsBarButtonItem.button?.addTarget(self, action: #selector(self.showAnalyticsActions(_:)), for: .touchUpInside)
     }
 
     override func viewDidLayoutSubviews() {
@@ -318,6 +319,11 @@ class HomeViewController: UIViewController {
     @objc func searchAction(_ sender: UIButton) {
         viewModel.inputs.searchTapObserver.onNext(())
     }
+    
+    @objc func showAnalyticsActions(_ sender: UIButton) {
+        viewModel.inputs.didTapAnalytics.onNext(())
+    }
+    
 }
 
 // MARK: View Setup
@@ -326,11 +332,7 @@ fileprivate extension HomeViewController {
         setupViews()
         setupTheme()
         setupConstraints()
-        //TODO: remove following comment
         addDebitCardTimelineIfNeeded()
-        
-        //TODO: remove this line from here after handling transactions api success
-       // addTransactionsViewController()
         bindViewModel()
     }
     
@@ -390,8 +392,8 @@ fileprivate extension HomeViewController {
             .toBottomOf(toolBar) //(balanceView)
         
 
-//        barGraphView
-//            .alignEdgesWithSuperview([.left, .right])
+        barGraphView
+            .alignEdgesWithSuperview([.left, .right])
 
         widgetView
             .alignEdgesWithSuperview([.left, .right])
@@ -470,7 +472,7 @@ fileprivate extension HomeViewController {
 
     func getMinimumParallaxHeaderHeight() -> CGFloat {
         var height: CGFloat = 0
-        height +=  0//!barGraphView.isHidden ? 20 : 0
+//        height += !barGraphView.isHidden ? 20 : 0
         return height
     }
     
@@ -635,24 +637,30 @@ fileprivate extension HomeViewController {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.addCreditInfo.take(1).withUnretained(self).subscribe(onNext:  { `self`, _ in
-           /* self.isCreditInfoAdded = true
+            self.isCreditInfoAdded = true
             self.transactionContainer.removeSubviews()
             self.transactionContainer.addSubview(self.creditLimitView)
             self.creditLimitView.alignEdgeWithSuperview(.top, constant: 12)
             self.creditLimitView.alignEdgeWithSuperview(.left)
             self.creditLimitView.alignEdgeWithSuperview(.right)
-            self.creditLimitView.height(constant: 42) */
+            self.creditLimitView.height(constant: 42)
         }).disposed(by: disposeBag)
         
+//        viewModel.outputs.hideFloatingButton.subscribe(onNext: { [weak self] hide in
+//            self?.hideFloatingButton(hide)
+//        }).disposed(by: disposeBag)
+//        viewModel.outputs.unreadCount.bind(to: floatingButton.rx.count).disposed(by: disposeBag)
+        
         bindTransactions()
+        bindTransactionSelection()
     }
     
     func bindTransactions() {
-       /* transactionsViewModel.outputs.transactions
+        transactionsViewModel.outputs.transactions
             .map { $0.reversed() }
             .filter{ $0.count >= 5 }
             .delaySubscription(.seconds(1), scheduler: MainScheduler.instance)
-            .bind(to: barGraphView.rx.transactionsObserver).disposed(by: disposeBag) */
+            .bind(to: barGraphView.rx.transactionsObserver).disposed(by: disposeBag)
 
         transactionsViewModel.outputs.transactions.debug("transactions").bind(to: viewModel.inputs.transactionsObserver).disposed(by: disposeBag)
 
@@ -669,7 +677,7 @@ fileprivate extension HomeViewController {
         }).disposed(by: disposeBag)
         
 
-       // viewModel.outputs.filterSelected.bind(to: transactionsViewModel.inputs.filterSelected).disposed(by: disposeBag)
+        viewModel.outputs.filterSelected.bind(to: transactionsViewModel.inputs.filterSelected).disposed(by: disposeBag)
         viewModel.outputs.shrinkProgressView.bind(to: toolBar.rx.shrink).disposed(by: disposeBag)
         transactionsViewModel.outputs.categorySectionCount.bind(to: toolBar.rx.numberOfSections).disposed(by: disposeBag)
 
@@ -716,6 +724,24 @@ fileprivate extension HomeViewController {
             }
             self?.toolBar.rx.monthData.onNext(categoryData)
         }).disposed(by: disposeBag) */
+    }
+    
+    func bindTransactionSelection() {
+        let graphSelectedIndex = barGraphView.rx.selectedSectionIndex.filter { $0 >= 0 }.distinctUntilChanged()
+        let tableViewVisibleIndex = transactionViewController.tableView.rx.visibleIndexPath.unwrap().map { $0.section }.distinctUntilChanged()
+
+        Observable.merge(graphSelectedIndex,
+                         tableViewVisibleIndex).bind(to: viewModel.inputs.selectedTransactionIndexObserver).disposed(by: disposeBag)
+
+        tableViewVisibleIndex.subscribe(onNext: { [weak self] index in
+            self?.barGraphView.selectedItem(at: index)
+        }).disposed(by: disposeBag)
+
+        graphSelectedIndex.subscribe(onNext: { [weak self] index in
+            let indexPath = IndexPath(row: 0, section: index)
+            guard self?.transactionViewController.tableView.hasRowAtIndexPath(indexPath: indexPath) ?? false else { return }
+            self?.transactionViewController.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
+        }).disposed(by: disposeBag)
     }
 }
 

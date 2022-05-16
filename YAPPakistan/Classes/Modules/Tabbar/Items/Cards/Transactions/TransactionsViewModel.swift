@@ -92,7 +92,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let transactionDetailsSubject = PublishSubject<CDTransaction>()
     private let openFilterSubject = PublishSubject<Void>()
     private let filterSelectedSubject = PublishSubject<TransactionFilter?>()
-    private let filterEnabledSubject = BehaviorSubject<Bool>(value: false)
+    private let filterEnabledSubject = BehaviorSubject<Bool>(value: true)
     private let filterCountSubject = BehaviorSubject<Int>(value: 0)
     private var sectionViewModels = [TransactionHeaderTableViewCellViewModel]()
     private var cellViewModels = [[TransactionsTableViewCellViewModel]]()
@@ -352,7 +352,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             return shouldFetchMore
         }.share() */
         
-        request.elements().subscribe(onNext:  { pageableResponse in
+        request.elements().subscribe(onNext:  { [unowned self] pageableResponse in
             self.pageInfo = pageableResponse
             self.enableLoadMoreSubject.onNext(true)
             self.showShimmeringSubject.onNext(false)
@@ -396,8 +396,11 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             self.dataChanged = true
             self.filterCountSubject.onNext(filter?.getFiltersCount() ?? 0)
             self.updateFilter(filter)
-            self.updateContent()
-            self.updateGraph()
+            transactionDataProvider.transactionFilter = filter
+            self.pageInfo.currentPage = 0
+            self.fetchTransactionsObserver.onNext(())
+//            self.updateContent()
+//            self.updateGraph()
         }).disposed(by: disposeBag)
         
         sectionSubject.subscribe(onNext: {[unowned self] section in
@@ -492,6 +495,7 @@ extension TransactionsViewModel {
     func updateFilter(_ filter: TransactionFilter? = nil) {
         self.filter = filter
         
+        
         let sortDescriptors = [NSSortDescriptor(key: "transactionDay", ascending: false), NSSortDescriptor(key: "createdDate", ascending: false)]
                 
         guard let filter = filter, filter.getFiltersCount() > 0 else {
@@ -579,40 +583,6 @@ extension TransactionsViewModel {
 
 private extension TransactionsViewModel {
     func searchTransactions(text: String?) {
-        
-        
-        
-//        let sortDescriptors = [NSSortDescriptor(key: "transactionDay", ascending: false), NSSortDescriptor(key: "createdDate", ascending: false)]
-//
-//        guard let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
-//            let predicate = isAccountTransaction ? NSPredicate(format: "transactionCardType = %@", transactionCardType.rawValue) : NSPredicate(format: "cardSerialNumber = %@ && transactionCardType = %@", cardSerialNumber!, transactionCardType.rawValue)
-//            try? entityHandler.updateFRCRequest(sortDescriptors: sortDescriptors, predicate: predicate, sectionNameKeyPath: "transactionDay")
-//
-//            updateContent()
-//            return
-//        }
-//
-//        var query: String = ""
-//        var args: [Any] = []
-//
-//        query += "((title CONTAINS[c] %@) || (senderName CONTAINS[c] %@ && type = %@) || (receiverName CONTAINS[c] %@ && type = %@) || merchantCategory CONTAINS[c] %@)"
-//
-//        args.append(contentsOf: [text, text, TransactionType.credit.rawValue, text, TransactionType.debit.rawValue, text])
-//
-//        query += " && (transactionCardType == %@)"
-//        args.append(transactionCardType.rawValue)
-//
-//        if !isAccountTransaction {
-//            query += " && (cardSerialNumber == %@)"
-//            args.append(cardSerialNumber!)
-//        }
-//
-//        let predicate: NSPredicate = NSPredicate(format: query, argumentArray: args)
-//
-//        try? entityHandler.updateFRCRequest(sortDescriptors: sortDescriptors, predicate: predicate, sectionNameKeyPath: "transactionDay")
-//
-//        updateContent()
-        
         self.searchText = text
         updateContent()
     }
