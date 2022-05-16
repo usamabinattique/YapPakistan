@@ -255,7 +255,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         self.biometrySuject = BehaviorSubject(value: biometricsManager.isBiometryEnabled(for: ""))
         self.biometrySupportedSuject = BehaviorSubject(value: false)
         self.transactionDataProvider = transactionDataProvider
-        self.transactionsViewModel = TransactionsViewModel(transactionDataProvider: transactionDataProvider, themService: themeService)
+        self.transactionsViewModel = TransactionsViewModel(transactionDataProvider: transactionDataProvider, repository: transactionRepository, themService: themeService)
         
         
         shimmeringSubject.bind(to: transactionsViewModel.showShimmeringObserver).disposed(by: disposeBag)

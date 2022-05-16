@@ -69,6 +69,7 @@ protocol TransactionsViewModelOutputs {
     var showLoadMoreIndicator: Observable<Bool> { get }
     var categorySectionCount: Observable<Int> { get }
     var noTransFound: Observable<String> { get }
+    var analyticsDate: Observable<Date> { get }
 }
 
 protocol TransactionsViewModelType {
@@ -123,6 +124,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let enableLoadMoreSubject = BehaviorSubject<Bool>(value: true)
     public let showLoadMoreIndicatorSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let analyticsDateSubject = BehaviorSubject<Date>(value: Date())
     
     // MARK: - Input
     var fetchTransactionsObserver: AnyObserver<Void> { return fetchTransactionsSubject.asObserver() }
@@ -168,6 +170,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var showLoadMoreIndicator: Observable<Bool> { showLoadMoreIndicatorSubject.asObservable() }
     var categorySectionCount: Observable<Int> {categorySectionCountSubject.asObservable()}
     var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
+    var analyticsDate: Observable<Date> {analyticsDateSubject.asObservable()}
     
     
     func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {
@@ -257,8 +260,10 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         }
     }
     
-    init(transactionDataProvider: PaymentCardTransactionProvider, cardSerialNumber: String? = nil, debitSearch: Bool = false, themService: ThemeService<AppTheme>, showFilter: Bool = true) {
-        // self.repository = repository
+    private var repository: TransactionsRepositoryType
+    
+    init(transactionDataProvider: PaymentCardTransactionProvider, repository: TransactionsRepositoryType ,cardSerialNumber: String? = nil, debitSearch: Bool = false, themService: ThemeService<AppTheme>, showFilter: Bool = true) {
+         self.repository = repository
         self.themeServie = themService
         self.debitSearch = debitSearch
         self.cardSerialNumber = cardSerialNumber
@@ -276,8 +281,8 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         showsNothingLabelSubject.onNext(cardSerialNumber != nil)
         updateFilter()
         updateContent()
-//        updateGraph()
-//        getTransactionBar()
+        updateGraph()
+        getTransactionBar()
 
         showShimmeringSubject.onNext(true)
        // refreshSubject.onNext(())
@@ -371,6 +376,9 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             }
             
             self.updateContent()
+            if !pageableResponse.isLast {
+                self.updateGraph()
+            }
         }).disposed(by: disposeBag)
 
         
@@ -399,8 +407,8 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             transactionDataProvider.transactionFilter = filter
             self.pageInfo.currentPage = 0
             self.fetchTransactionsObserver.onNext(())
-//            self.updateContent()
-//            self.updateGraph()
+            //self.updateContent()
+            self.updateGraph()
         }).disposed(by: disposeBag)
         
         sectionSubject.subscribe(onNext: {[unowned self] section in
@@ -452,13 +460,14 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             //self.searchTransactions(text: text)
            
         }).disposed(by: disposeBag)
+        
     }
     
     
     
     // check transaction type
-    init(/* repository: TransactionsRepository,*/ cardSerialNumber: String? = nil) {
-        // self.repository = repository
+    init( repository: TransactionsRepositoryType, cardSerialNumber: String? = nil) {
+         self.repository = repository
         self.cardSerialNumber = cardSerialNumber
         nothingLabelSubject = BehaviorSubject(value: "screen_home_display_text_nothing_to_report_search".localized)
         showsFilterSubject = BehaviorSubject(value: false)
@@ -476,15 +485,6 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         
         
     }
-    
-    func getNumberOfCategorySection() {
-        var sectionList: [Int] = []
-        guard let monthData = transactionBarData?.monthData else {return}
-        for data in monthData {
-            sectionList.append(data.categories.count)
-        }
-        categorySectionCountSubject.onNext(sectionList.max() ?? 0)
-    }
 
 }
 
@@ -495,7 +495,7 @@ extension TransactionsViewModel {
     func updateFilter(_ filter: TransactionFilter? = nil) {
         self.filter = filter
         
-        
+      /*
         let sortDescriptors = [NSSortDescriptor(key: "transactionDay", ascending: false), NSSortDescriptor(key: "createdDate", ascending: false)]
                 
         guard let filter = filter, filter.getFiltersCount() > 0 else {
@@ -547,7 +547,7 @@ extension TransactionsViewModel {
         }
 
 //        let predicate: NSPredicate = NSPredicate(format: query, argumentArray: args)
-//        try? entityHandler.updateFRCRequest(sortDescriptors: sortDescriptors, predicate: predicate, sectionNameKeyPath: "transactionDay")
+//        try? entityHandler.updateFRCRequest(sortDescriptors: sortDescriptors, predicate: predicate, sectionNameKeyPath: "transactionDay") */
 
     }
 }
@@ -569,15 +569,15 @@ extension TransactionsViewModel {
     }
 
     func updateGraph() {
-     /*   guard dataChanged || isFirstTime else { return }
+        guard dataChanged || isFirstTime else { return }
         isFirstTime = false
         dataChanged = false
-        let sectionTransactions = entityHandler.allSections().map { section -> SectionTransaction in
-            let transaction = section.first
-            return SectionTransaction(day: transaction?.transactionDay ?? Date().startOfDay, amount: 0, closingBalance: transaction?.closingBalance ?? 0)
+        let sectionTransactions = TransactionResponse.getNumberOfSections(allTransactions: transactionsObj, searchText: self.searchText).map { section -> SectionTransaction in
+            let transaction = section.transactions.first
+            return SectionTransaction(day: transaction?.date.startOfDay ?? Date().startOfDay, amount: 0, closingBalance: transaction?.closingBalance ?? 0)
             }
 
-        transactionSubject.onNext(sectionTransactions) */
+        transactionSubject.onNext(sectionTransactions)
     }
 }
 
@@ -603,11 +603,11 @@ extension TransactionsViewModel {
     
     func getFinalDate() {
         let transactions = TransactionResponse.transactions(for: currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
-        if transactions.count > 0 { //&& self.showDynamicDataInToolbar {
+        if transactions.count > 0 && self.showDynamicDataInToolbar {
             let date = transactions.first?.date ?? Date().startOfDay
-         //   analyticsDateSubject.onNext(date)
+            analyticsDateSubject.onNext(date)
             self.currentSectionMonth = date.dashboardSectionBarDate
-           // changeAnaliticsBar()
+            changeAnaliticsBar()
             if Calendar.current.isDateInToday(date){
                 self.sectionDateSubject.onNext(NSMutableAttributedString(string: "screen_home_todays_balance_title".localized))
             }
@@ -620,4 +620,73 @@ extension TransactionsViewModel {
     func tableViewReloaded() {
         self.sectionDateSubject.onNext(NSMutableAttributedString(string: "screen_home_todays_balance_title".localized))
     }
+}
+
+fileprivate extension TransactionsViewModel {
+    
+    func getTransactionBar() {
+       // showLoaderSubject.onNext(true)
+        let request = repository.getTransactionCategories().share() /* viewDidLoadSubject
+            .do(onNext: {[weak self] _ in self?.showLoaderSubject.onNext(true)})
+            .flatMap { [weak self]  in
+                (self?.repository.getTransactionCategories())!
+            }
+            .share(replay: 1, scope: .whileConnected) */
+        
+        request.elements()
+            .do(onNext: { [weak self] _ in
+                   // self?.showLoaderSubject.onNext(false)
+                print("response")
+            })
+            .subscribe(onNext: {[weak self] in
+                self?.transactionBarData = $0
+                self?.getNumberOfCategorySection()
+                self?.getFirstSectionDate()
+                self?.isBarDataFetched = true
+                self?.changeAnaliticsBar()
+        }).disposed(by: disposeBag)
+        
+        
+        request
+            .errors()
+            .do(onNext: { [weak self] _ in
+                //self?.showLoaderSubject.onNext(false)
+                print("error")
+            })
+                .subscribe(onNext: { err in
+                    print(err.localizedDescription)
+                }).disposed(by: disposeBag)
+        
+    }
+    
+    func changeAnaliticsBar(){
+        if !isBarDataFetched {
+          return
+        }
+        guard let barData = transactionBarData else {return}
+        if self.currentBarDateMonth != currentSectionMonth || refreshCategoryBar{
+            self.currentBarDateMonth = currentSectionMonth
+            let monthData =  barData.monthData.filter {$0.date ==  self.currentBarDateMonth}.first
+            categoryBarDataSubject.onNext((monthData, self.currentSection))
+        }
+    }
+    
+    func getFirstSectionDate() {
+        let transactions = TransactionResponse.transactions(for: 0, allTransactions: transactionsObj)
+        if transactions.count > 0 {
+            let date = transactions.first?.date.startOfDay ?? Date().startOfDay
+            self.currentSectionMonth = date.dashboardSectionBarDate
+            analyticsDateSubject.onNext(date)
+        }
+    }
+    
+    func getNumberOfCategorySection() {
+        var sectionList: [Int] = []
+        guard let monthData = transactionBarData?.monthData else {return}
+        for data in monthData {
+            sectionList.append(data.categories.count)
+        }
+        categorySectionCountSubject.onNext(sectionList.max() ?? 0)
+    }
+    
 }
