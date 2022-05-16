@@ -70,6 +70,7 @@ protocol TransactionsViewModelOutputs {
     var categorySectionCount: Observable<Int> { get }
     var noTransFound: Observable<String> { get }
     var analyticsDate: Observable<Date> { get }
+    var categoryBarData: Observable<(MonthData?,Int?)> {get}
 }
 
 protocol TransactionsViewModelType {
@@ -171,6 +172,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     var categorySectionCount: Observable<Int> {categorySectionCountSubject.asObservable()}
     var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
     var analyticsDate: Observable<Date> {analyticsDateSubject.asObservable()}
+    var categoryBarData: Observable<(MonthData?, Int?)>  { categoryBarDataSubject.asObservable() }
     
     
     func sectionViewModel(for section: Int) -> TransactionHeaderTableViewCellViewModelType {

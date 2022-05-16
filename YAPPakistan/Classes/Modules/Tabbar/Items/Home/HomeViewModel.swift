@@ -35,6 +35,8 @@ protocol HomeViewModelInputs {
     var filterSelectedObserver: AnyObserver<TransactionFilter?> { get }
     var isBarGraphVisibleObserver: AnyObserver<Bool> { get }
     var selectedTransactionIndexObserver: AnyObserver<Int?> { get }
+    var sectionDateObserver: AnyObserver<Date> {get}
+    var progressViewTappedObserver: AnyObserver<Void> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -90,6 +92,7 @@ protocol HomeViewModelOutputs {
     
     var filterSelected: Observable<TransactionFilter?> { get }
     var selectedTransactionIndex: Observable<Int> { get }
+    var progressViewTapped: Observable<Date> { get }
 }
 
 protocol HomeViewModelType {
@@ -148,6 +151,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let filterSelectedSubject = PublishSubject<TransactionFilter?>()
     private let isBarGraphVisibleSubject = BehaviorSubject<Bool>(value: false)
     private let selectedTransactionIndexSubject = BehaviorSubject<Int?>(value: nil)
+    private let sectionDateSubject = BehaviorSubject<Date>(value: Date())
+    private let progressViewTappedSubject = PublishSubject<Void>()
+    private let progressViewDateSubject = BehaviorSubject<Date>(value: Date())
     
     private var numberOfShownWidgets = 0
     private var cardStatus: CardStatus = .inActive
@@ -176,6 +182,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var filterSelectedObserver: AnyObserver<TransactionFilter?> { return filterSelectedSubject.asObserver() }
     var isBarGraphVisibleObserver: AnyObserver<Bool> { isBarGraphVisibleSubject.asObserver() }
     var selectedTransactionIndexObserver: AnyObserver<Int?> { return selectedTransactionIndexSubject.asObserver() }
+    var sectionDateObserver: AnyObserver<Date> { sectionDateSubject.asObserver() }
+    var progressViewTappedObserver: AnyObserver<Void> { progressViewTappedSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -224,6 +232,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var openFilter: Observable<TransactionFilter?> { return openFilterSubject.asObservable() }
     var filterSelected: Observable<TransactionFilter?> { return filterSelectedSubject.asObservable() }
     var selectedTransactionIndex: Observable<Int> { return selectedTransactionIndexSubject.unwrap().distinctUntilChanged() }
+    var progressViewTapped: Observable<Date> { progressViewDateSubject }
 
     // MARK: Init
 
@@ -238,6 +247,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private var dashboardStatusActionDisposeBag: DisposeBag!
     private var themeService: ThemeService<AppTheme>!
     private var transactionRepository: TransactionsRepositoryType
+    var currentSectionDate = Date()
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManagerType,
@@ -305,6 +315,12 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
         }).disposed(by: disposeBag)
+        
+        sectionDateSubject
+            .subscribe(onNext: {[weak self] in
+                self?.currentSectionDate = $0
+            }).disposed(by: disposeBag)
+        progressViewTappedSubject.subscribe(onNext: {[unowned self] in progressViewDateSubject.onNext(currentSectionDate) }).disposed(by: disposeBag)
         
     }
     

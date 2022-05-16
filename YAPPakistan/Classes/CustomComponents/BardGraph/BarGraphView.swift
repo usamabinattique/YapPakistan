@@ -11,6 +11,7 @@ import RxCocoa
 
 import RxDataSources
 import YAPComponents
+import RxTheme
 
 public class BarGraphView: UIView {
 
@@ -91,6 +92,7 @@ public class BarGraphView: UIView {
     let selectRecentItemSubject = PublishSubject<[SectionTransaction]>()
     var isSelectedByGraph = false
     var maxTransactionAmount: Double?
+    private var themeService: ThemeService<AppTheme>!
 
     // MARK: - Init
     override init(frame: CGRect) {
@@ -102,7 +104,14 @@ public class BarGraphView: UIView {
         super.init(coder: aDecoder)
         commonInit()
     }
-
+    
+    init(theme:ThemeService<AppTheme>) {
+        super.init(frame: .zero)
+        self.themeService = theme
+        commonInit()
+        setupTheme()
+    }
+    
     private func commonInit() {
         translatesAutoresizingMaskIntoConstraints = false
         setupViews()
@@ -112,6 +121,13 @@ public class BarGraphView: UIView {
         setupGestureView()
         backgroundColor = .clear
         bindMostRecentItem()
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [placeholderLabel.rx.textColor, monthLabel.rx.textColor])
+           // .bind({ UIColor($0.primary) }, to: [showButton.rx.tintColor])
+            .disposed(by: rx.disposeBag)
     }
 
     public func bindMostRecentItem() {
@@ -176,7 +192,7 @@ public class BarGraphView: UIView {
                 guard let `self` = self,
                     let maxAmount = self.maxTransactionAmount else { return UICollectionViewCell() }
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BarGraphCollectionViewCell.defaultIdentifier, for: IndexPath(item: item, section: 0)) as! BarGraphCollectionViewCell
-                cell.configure(with: transaction.amountPercentage(withRespectTo: maxAmount))
+                cell.configure(with: transaction.amountPercentage(withRespectTo: maxAmount), theme: self.themeService)
                 return cell
         }.disposed(by: disposeBag)
 
@@ -265,7 +281,9 @@ public class BarGraphView: UIView {
     private func barSelected() {
         toolTip.isPopoverHidden = false
     }
-
+    
+    
+    
 }
 
 extension BarGraphView {
