@@ -121,7 +121,7 @@ class HomeViewController: UIViewController {
 
     private lazy var toolBar: HomeBalanceToolbarUpdated = {
         let toolBar = HomeBalanceToolbarUpdated(theme: themeService)
-//        toolBar.backgroundColor = .red
+        toolBar.backgroundColor = .clear
         toolBar.delegate = self
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         return toolBar
@@ -690,7 +690,7 @@ fileprivate extension HomeViewController {
         transactionsViewModel.outputs.sectionAmount.unwrap().bind(to: toolBar.rx.balance).disposed(by: disposeBag)
         transactionsViewModel.outputs.sectionDate.unwrap().bind(to: toolBar.rx.date).disposed(by: disposeBag)
         
-      /*  transactionsViewModel.outputs.analyticsDate.bind(to: viewModel.inputs.sectionDateObserver).disposed(by: disposeBag) */
+        transactionsViewModel.outputs.analyticsDate.bind(to: viewModel.inputs.sectionDateObserver).disposed(by: disposeBag)
         
        /* let notificationsAndTransactions = Observable.combineLatest(viewModel.outputs.notificationsCount,
                                                                     transactionsViewModel.outputs.transactions)
@@ -708,7 +708,7 @@ fileprivate extension HomeViewController {
             self?.isTableViewReloaded = val
         }).disposed(by: disposeBag)
     
-     /*   transactionsViewModel.outputs.categoryBarData.subscribe(onNext: { [weak self] categoryData in
+        transactionsViewModel.outputs.categoryBarData.subscribe(onNext: { [weak self] categoryData in
            
             if categoryData.0 == nil {
                 UIView.animate(withDuration: 0.8, animations: {[weak self] in
@@ -723,7 +723,7 @@ fileprivate extension HomeViewController {
                 })
             }
             self?.toolBar.rx.monthData.onNext(categoryData)
-        }).disposed(by: disposeBag) */
+        }).disposed(by: disposeBag)
     }
     
     func bindTransactionSelection() {

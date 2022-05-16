@@ -44,6 +44,7 @@ protocol TransactionsRepositoryType {
     func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>>
     func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>
     func getAccountLimits() -> Observable<Event<[AccountLimits]?>>
+    func getTransactionCategories() -> Observable<Event<TransactionBarCategoriesResponse>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryType {
@@ -153,5 +154,9 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
     
     public func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>{
         transactionService.emailStatement(url: request.url?.absoluteString ?? "", month: request.month ?? "", year: request.year ?? "", statementType: request.statementType ?? "", cardType: request.cardType).materialize()
+    }
+    
+    public func getTransactionCategories() -> Observable<Event<TransactionBarCategoriesResponse>> {
+        return transactionService.getTransactionCategories().materialize()
     }
 }

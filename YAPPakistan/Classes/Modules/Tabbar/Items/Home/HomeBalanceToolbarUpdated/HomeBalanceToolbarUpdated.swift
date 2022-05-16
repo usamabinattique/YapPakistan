@@ -136,9 +136,9 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
 
 private extension HomeBalanceToolbarUpdated {
     func setupViews() {
-//        addSubview(stack)
+        addSubview(stack)
         addSubview(balanceView)
-//        addSubview(todaysBalanceTitleLabel)
+        addSubview(todaysBalanceTitleLabel)
         addSubview(backgroundView)
         backgroundView.addSubview(progressView)
         progressView.backgroundColor = .white

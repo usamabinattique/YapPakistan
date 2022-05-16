@@ -29,7 +29,7 @@ extension BarGraphTransaction {
         formatter.maximumFractionDigits = 2
         formatter.minimumFractionDigits = 2
         // TODO: Show curreny dynamically once API is integrated
-        return "AED " + (formatter.string(from: NSNumber(value: balance)) ?? "0.00")
+        return "PKR " + (formatter.string(from: NSNumber(value: balance)) ?? "0.00")
     }
 }
 

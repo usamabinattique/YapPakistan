@@ -74,6 +74,7 @@ public struct Account: Codable {
     private let _partnerBankApprovalDate: String?
     public var _isWaiting: Bool?
     public let isSecretQuestionVerified: Bool?
+    public let paidCard: Bool?
 
     public var freezeCode: AccountFreezeCode? { AccountFreezeCode(rawValue: _freezeCode ?? "") ?? AccountFreezeCode.none }
     public var freezeInitiator: AccountFreezeInitiator? { AccountFreezeInitiator(rawValue: _freezeInitiator ?? "") ?? AccountFreezeInitiator.none }
@@ -105,7 +106,7 @@ public struct Account: Codable {
     private enum CodingKeys: String, CodingKey {
         case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active,
              documentsVerified, companyType, soleProprietary, customer, bank, parentAccount,
-             otpBlocked, isSecretQuestionVerified, isFirstCredit, firstCreditLimit
+             otpBlocked, isSecretQuestionVerified, isFirstCredit, firstCreditLimit, paidCard
         case cardName
         case cnicName
         case isDocumentsVerified
@@ -165,6 +166,7 @@ public extension Account {
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
         self.firstCreditLimit = account.firstCreditLimit
+        self.paidCard = account.paidCard
     }
 
     init(account: Account, updatedEmail: String) {
@@ -202,6 +204,7 @@ public extension Account {
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
         self.firstCreditLimit = account.firstCreditLimit
+        self.paidCard = account.paidCard
     }
 
     init(account: Account, soleProprietary: Bool) {
@@ -239,6 +242,7 @@ public extension Account {
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
         self.firstCreditLimit = account.firstCreditLimit
+        self.paidCard = account.paidCard
     }
 
     init(account: Account, accountStatus: AccountStatus) {
@@ -276,6 +280,7 @@ public extension Account {
         self.isDocumentsVerified = account.isDocumentsVerified
         self.isActive = account.isActive
         self.firstCreditLimit = account.firstCreditLimit
+        self.paidCard = account.paidCard
     }
 }
 
