@@ -403,18 +403,29 @@ extension HomeViewModel {
         let request = self.transactionDataProvider.fetchTransactions().share()
 
         debitCard.subscribe(onNext: { [weak self] card in
+            
+            if (self?.accountProvider.currentAccountValue.value?.paidCard ?? false) {
+                self?.addCreditInfoSubject.onNext(())
+            }
+            
             if card == nil, let account = self?.accountProvider.currentAccountValue.value {
                 self?.shimmeringSubject.onNext(false)
+                
+               /* if (account.paidCard ?? false) {
+                    self?.addCreditInfoSubject.onNext(())
+                } */
+                
+                
                 let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
                 self?.dashobarStatusActions(viewModel: initioaryModel)
                 self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
-            } else {
+            }/* else {
                 if let account = self?.accountProvider.currentAccountValue.value {
                     if !account.isFirstCredit && account.parnterBankStatus == .physicalCardSuccess {
                         self?.addCreditInfoSubject.onNext(())
                     }
                 }
-            }
+            } */
 
        }).disposed(by: disposeBag)
         
@@ -474,10 +485,16 @@ extension HomeViewModel {
             .map{ _ in }
             .bind(to: additionalRequirementsSubject)
             .disposed(by: dashboardStatusActionDisposeBag)
-        
+        /*
         viewModel.actionTap
             .filter { $0 == .topUp }
             .withLatestFrom(debitCard.unwrap())
+            .bind(to: topUpCardSubject)
+            .disposed(by: dashboardStatusActionDisposeBag) */
+        
+        viewModel.actionTap
+            .filter { $0 == .topUp }
+            .map{ _ in .mock }
             .bind(to: topUpCardSubject)
             .disposed(by: dashboardStatusActionDisposeBag)
     }
