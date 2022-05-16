@@ -51,7 +51,7 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
         
         var stages: [PaymentCardOnboardingStageModel] = []
         
-        if accountStatus == .addressCaptured || accountStatus == .onboarded || accountStatus == .cardSchemeExternalCardPending {
+        if accountStatus == .addressCaptured || accountStatus == .onboarded || accountStatus == .cardSchemeExternalCardPending || accountStatus == .cardSchemePending {
             
             if paymentCard.active == false && paymentCard.cardScheme == "Mastercard" {
                 //  stages.append(.init(paymentCard: paymentCard, stage: .topUp, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus))
@@ -77,7 +77,7 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
             if partnerBankStatus == .physicalCardSuccess && paymentCard.deliveryStatus == .shipped , let pinSet = paymentCard.pinSet, pinSet == false  {
                 // so it won't append in list
                 stages.append(.init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
-            } else if accountStatus == .onboarded || accountStatus == .cardSchemeExternalCardPending {
+            } else if accountStatus == .onboarded || accountStatus == .cardSchemeExternalCardPending || accountStatus == .cardSchemePending {
                 stages.append(.init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
             }
             
