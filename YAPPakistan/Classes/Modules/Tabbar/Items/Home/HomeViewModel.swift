@@ -33,6 +33,8 @@ protocol HomeViewModelInputs {
     var transactionsObserver: AnyObserver<[SectionTransaction]> { get }
     var openFilterObserver: AnyObserver<TransactionFilter?> { get }
     var filterSelectedObserver: AnyObserver<TransactionFilter?> { get }
+    var isBarGraphVisibleObserver: AnyObserver<Bool> { get }
+    var selectedTransactionIndexObserver: AnyObserver<Int?> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -87,6 +89,7 @@ protocol HomeViewModelOutputs {
     var openFilter: Observable<TransactionFilter?> { get }
     
     var filterSelected: Observable<TransactionFilter?> { get }
+    var selectedTransactionIndex: Observable<Int> { get }
 }
 
 protocol HomeViewModelType {
@@ -143,6 +146,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let transactionsSubject = BehaviorSubject<[SectionTransaction]>(value: [])
     private let openFilterSubject = PublishSubject<TransactionFilter?>()
     private let filterSelectedSubject = PublishSubject<TransactionFilter?>()
+    private let isBarGraphVisibleSubject = BehaviorSubject<Bool>(value: false)
+    private let selectedTransactionIndexSubject = BehaviorSubject<Int?>(value: nil)
     
     private var numberOfShownWidgets = 0
     private var cardStatus: CardStatus = .inActive
@@ -169,6 +174,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var transactionsObserver: AnyObserver<[SectionTransaction]> { return transactionsSubject.asObserver() }
     var openFilterObserver: AnyObserver<TransactionFilter?> { return openFilterSubject.asObserver() }
     var filterSelectedObserver: AnyObserver<TransactionFilter?> { return filterSelectedSubject.asObserver() }
+    var isBarGraphVisibleObserver: AnyObserver<Bool> { isBarGraphVisibleSubject.asObserver() }
+    var selectedTransactionIndexObserver: AnyObserver<Int?> { return selectedTransactionIndexSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -216,6 +223,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var transactions: Observable<[SectionTransaction]> { return transactionsSubject.asObservable() }
     var openFilter: Observable<TransactionFilter?> { return openFilterSubject.asObservable() }
     var filterSelected: Observable<TransactionFilter?> { return filterSelectedSubject.asObservable() }
+    var selectedTransactionIndex: Observable<Int> { return selectedTransactionIndexSubject.unwrap().distinctUntilChanged() }
 
     // MARK: Init
 

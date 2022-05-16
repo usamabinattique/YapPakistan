@@ -191,9 +191,9 @@ class HomeViewController: UIViewController {
     }
     var showsGraph = false {
         didSet {
-       //     self.barGraphView.isHidden = !(!showsNotification && showsGraph)
+            self.barGraphView.isHidden = !(!showsNotification && showsGraph)
             self.updateParallaxHeaderProgress()
-          //  viewModel.inputs.isBarGraphVisibleObserver.onNext(showsGraph)
+            viewModel.inputs.isBarGraphVisibleObserver.onNext(showsGraph)
         }
     }
     private var showsButtons = true
@@ -391,8 +391,8 @@ fileprivate extension HomeViewController {
             .toBottomOf(toolBar) //(balanceView)
         
 
-//        barGraphView
-//            .alignEdgesWithSuperview([.left, .right])
+        barGraphView
+            .alignEdgesWithSuperview([.left, .right])
 
         widgetView
             .alignEdgesWithSuperview([.left, .right])
@@ -471,7 +471,7 @@ fileprivate extension HomeViewController {
 
     func getMinimumParallaxHeaderHeight() -> CGFloat {
         var height: CGFloat = 0
-        height +=  0//!barGraphView.isHidden ? 20 : 0
+//        height += !barGraphView.isHidden ? 20 : 0
         return height
     }
     
@@ -651,14 +651,15 @@ fileprivate extension HomeViewController {
 //        viewModel.outputs.unreadCount.bind(to: floatingButton.rx.count).disposed(by: disposeBag)
         
         bindTransactions()
+        bindTransactionSelection()
     }
     
     func bindTransactions() {
-       /* transactionsViewModel.outputs.transactions
+        transactionsViewModel.outputs.transactions
             .map { $0.reversed() }
             .filter{ $0.count >= 5 }
             .delaySubscription(.seconds(1), scheduler: MainScheduler.instance)
-            .bind(to: barGraphView.rx.transactionsObserver).disposed(by: disposeBag) */
+            .bind(to: barGraphView.rx.transactionsObserver).disposed(by: disposeBag)
 
         transactionsViewModel.outputs.transactions.debug("transactions").bind(to: viewModel.inputs.transactionsObserver).disposed(by: disposeBag)
 
@@ -722,6 +723,24 @@ fileprivate extension HomeViewController {
             }
             self?.toolBar.rx.monthData.onNext(categoryData)
         }).disposed(by: disposeBag) */
+    }
+    
+    func bindTransactionSelection() {
+        let graphSelectedIndex = barGraphView.rx.selectedSectionIndex.filter { $0 >= 0 }.distinctUntilChanged()
+        let tableViewVisibleIndex = transactionViewController.tableView.rx.visibleIndexPath.unwrap().map { $0.section }.distinctUntilChanged()
+
+        Observable.merge(graphSelectedIndex,
+                         tableViewVisibleIndex).bind(to: viewModel.inputs.selectedTransactionIndexObserver).disposed(by: disposeBag)
+
+        tableViewVisibleIndex.subscribe(onNext: { [weak self] index in
+            self?.barGraphView.selectedItem(at: index)
+        }).disposed(by: disposeBag)
+
+        graphSelectedIndex.subscribe(onNext: { [weak self] index in
+            let indexPath = IndexPath(row: 0, section: index)
+            guard self?.transactionViewController.tableView.hasRowAtIndexPath(indexPath: indexPath) ?? false else { return }
+            self?.transactionViewController.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
+        }).disposed(by: disposeBag)
     }
 }
 

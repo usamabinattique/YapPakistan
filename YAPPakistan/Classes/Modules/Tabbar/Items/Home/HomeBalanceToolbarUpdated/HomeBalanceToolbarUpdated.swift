@@ -216,13 +216,13 @@ private extension HomeBalanceToolbarUpdated {
         showButton
             .height(constant: 18)
             .width(constant: 20)
-            .toBottomOf(ammount,constant: 12)
+            .toBottomOf(ammount,constant: 8)
             .alignEdgesWithSuperview([.left], constants: [24])
         
         hideButton
             .height(constant: 18)
             .width(constant: 20)
-            .toBottomOf(ammount,constant: 12)
+            .toBottomOf(ammount,constant: 8)
             .alignEdgesWithSuperview([.left], constants: [24])
         
         separtorView
@@ -234,7 +234,9 @@ private extension HomeBalanceToolbarUpdated {
        todaysBalanceTitleLabel
 //            .height(constant: 18)
             .toRightOf(showButton,constant: 8)
-            .toBottomOf(ammount,constant: 8)//12)
+           // .toBottomOf(ammount,constant: 8)//12)
+            .centerVerticallyWith(showButton,constant: -2)
+            
         
         balanceHeight = ammount.heightAnchor.constraint(equalToConstant: 24)
         balanceHeight.priority = .required
