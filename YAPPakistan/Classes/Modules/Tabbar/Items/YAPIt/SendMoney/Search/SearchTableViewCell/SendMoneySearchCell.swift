@@ -99,7 +99,7 @@ extension SendMoneySearchCell: ViewDesignable {
         
         nameStack
             .toRightOf(userImage, constant: 15)
-            .verticallyCenterWith(userImage)
+            .centerVerticallyWith(userImage)
         
         flag
             .alignEdgeWithSuperview(.right, constant: 25)
