@@ -38,6 +38,10 @@ public protocol Theme {
     var separatorColor: Color     { get }
     var paleLilac: Color          { get }
     var clear: UIColor            { get }
+    
+    var categoryGradientFirst: Color { get }
+    var categoryGradientSecond: Color { get }
+    var categoryGradientThird: Color { get }
 }
 
 struct LightTheme: Theme {
@@ -70,6 +74,10 @@ struct LightTheme: Theme {
     var separatorColor: Color       { Color(hex: "#979797") }
     var paleLilac: Color            { Color(hex: "#F1EDFF") }
     var clear: UIColor                { UIColor.clear }
+    
+    var categoryGradientFirst: Color { Color(hex: "#DAE8FD") }
+    var categoryGradientSecond: Color { Color(hex: "#64D5CF") }
+    var categoryGradientThird: Color { Color(hex: "#EF6A90") }
 
 }
 
@@ -103,6 +111,10 @@ struct DarkTheme: Theme {
     var separatorColor: Color       { Color(hex: "#979797") }
     var paleLilac: Color            { Color(hex: "#F1EDFF") }
     var clear: UIColor              { UIColor.clear }
+    
+    var categoryGradientFirst: Color { Color(hex: "#DAE8FD") }
+    var categoryGradientSecond: Color { Color(hex: "#64D5CF") }
+    var categoryGradientThird: Color { Color(hex: "#EF6A90") }
 }
 
 public enum AppTheme: ThemeProvider {

@@ -88,7 +88,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
 
         let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository(),cardSerialNumber: paymentCard?.cardSerialNumber)
     
-        let tviewModel = TransactionsViewModel.init(transactionDataProvider: tProvider,
+        let tviewModel = TransactionsViewModel.init(transactionDataProvider: tProvider, repository: container.makeTransactionsRepository(),
                                                cardSerialNumber: paymentCard?.cardSerialNumber ?? "",
                                                     debitSearch: true, themService: container.themeService)
         // let tviewModel = TransactionsViewModel(cardSerialNumber: paymentCard?.cardSerialNumber)

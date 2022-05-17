@@ -35,6 +35,8 @@ protocol HomeViewModelInputs {
     var filterSelectedObserver: AnyObserver<TransactionFilter?> { get }
     var isBarGraphVisibleObserver: AnyObserver<Bool> { get }
     var selectedTransactionIndexObserver: AnyObserver<Int?> { get }
+    var sectionDateObserver: AnyObserver<Date> {get}
+    var progressViewTappedObserver: AnyObserver<Void> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -90,6 +92,7 @@ protocol HomeViewModelOutputs {
     
     var filterSelected: Observable<TransactionFilter?> { get }
     var selectedTransactionIndex: Observable<Int> { get }
+    var progressViewTapped: Observable<Date> { get }
 }
 
 protocol HomeViewModelType {
@@ -148,6 +151,9 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let filterSelectedSubject = PublishSubject<TransactionFilter?>()
     private let isBarGraphVisibleSubject = BehaviorSubject<Bool>(value: false)
     private let selectedTransactionIndexSubject = BehaviorSubject<Int?>(value: nil)
+    private let sectionDateSubject = BehaviorSubject<Date>(value: Date())
+    private let progressViewTappedSubject = PublishSubject<Void>()
+    private let progressViewDateSubject = BehaviorSubject<Date>(value: Date())
     
     private var numberOfShownWidgets = 0
     private var cardStatus: CardStatus = .inActive
@@ -176,6 +182,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var filterSelectedObserver: AnyObserver<TransactionFilter?> { return filterSelectedSubject.asObserver() }
     var isBarGraphVisibleObserver: AnyObserver<Bool> { isBarGraphVisibleSubject.asObserver() }
     var selectedTransactionIndexObserver: AnyObserver<Int?> { return selectedTransactionIndexSubject.asObserver() }
+    var sectionDateObserver: AnyObserver<Date> { sectionDateSubject.asObserver() }
+    var progressViewTappedObserver: AnyObserver<Void> { progressViewTappedSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -224,6 +232,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var openFilter: Observable<TransactionFilter?> { return openFilterSubject.asObservable() }
     var filterSelected: Observable<TransactionFilter?> { return filterSelectedSubject.asObservable() }
     var selectedTransactionIndex: Observable<Int> { return selectedTransactionIndexSubject.unwrap().distinctUntilChanged() }
+    var progressViewTapped: Observable<Date> { progressViewDateSubject }
 
     // MARK: Init
 
@@ -238,6 +247,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private var dashboardStatusActionDisposeBag: DisposeBag!
     private var themeService: ThemeService<AppTheme>!
     private var transactionRepository: TransactionsRepositoryType
+    var currentSectionDate = Date()
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManagerType,
@@ -255,7 +265,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         self.biometrySuject = BehaviorSubject(value: biometricsManager.isBiometryEnabled(for: ""))
         self.biometrySupportedSuject = BehaviorSubject(value: false)
         self.transactionDataProvider = transactionDataProvider
-        self.transactionsViewModel = TransactionsViewModel(transactionDataProvider: transactionDataProvider, themService: themeService)
+        self.transactionsViewModel = TransactionsViewModel(transactionDataProvider: transactionDataProvider, repository: transactionRepository, themService: themeService)
         
         
         shimmeringSubject.bind(to: transactionsViewModel.showShimmeringObserver).disposed(by: disposeBag)
@@ -305,6 +315,12 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
         }).disposed(by: disposeBag)
+        
+        sectionDateSubject
+            .subscribe(onNext: {[weak self] in
+                self?.currentSectionDate = $0
+            }).disposed(by: disposeBag)
+        progressViewTappedSubject.subscribe(onNext: {[unowned self] in progressViewDateSubject.onNext(currentSectionDate) }).disposed(by: disposeBag)
         
     }
     
@@ -403,18 +419,29 @@ extension HomeViewModel {
         let request = self.transactionDataProvider.fetchTransactions().share()
 
         debitCard.subscribe(onNext: { [weak self] card in
+            
+            if (self?.accountProvider.currentAccountValue.value?.paidCard ?? false) {
+                self?.addCreditInfoSubject.onNext(())
+            }
+            
             if card == nil, let account = self?.accountProvider.currentAccountValue.value {
                 self?.shimmeringSubject.onNext(false)
+                
+               /* if (account.paidCard ?? false) {
+                    self?.addCreditInfoSubject.onNext(())
+                } */
+                
+                
                 let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
                 self?.dashobarStatusActions(viewModel: initioaryModel)
                 self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
-            } else {
+            }/* else {
                 if let account = self?.accountProvider.currentAccountValue.value {
                     if !account.isFirstCredit && account.parnterBankStatus == .physicalCardSuccess {
                         self?.addCreditInfoSubject.onNext(())
                     }
                 }
-            }
+            } */
 
        }).disposed(by: disposeBag)
         
@@ -474,10 +501,16 @@ extension HomeViewModel {
             .map{ _ in }
             .bind(to: additionalRequirementsSubject)
             .disposed(by: dashboardStatusActionDisposeBag)
-        
+        /*
         viewModel.actionTap
             .filter { $0 == .topUp }
             .withLatestFrom(debitCard.unwrap())
+            .bind(to: topUpCardSubject)
+            .disposed(by: dashboardStatusActionDisposeBag) */
+        
+        viewModel.actionTap
+            .filter { $0 == .topUp }
+            .map{ _ in .mock }
             .bind(to: topUpCardSubject)
             .disposed(by: dashboardStatusActionDisposeBag)
     }

@@ -45,7 +45,7 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     lazy var transactionsViewModelSubject: TransactionsViewModelType = {
-        let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(transactionDataProvider: transactionDataProvider, cardSerialNumber: card?.cardSerialNumber, themService: themeService, showFilter: false)
+        let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(transactionDataProvider: transactionDataProvider, repository: repository, cardSerialNumber: card?.cardSerialNumber, themService: themeService, showFilter: false)
 
         return transactionViewModel
     }()
@@ -69,8 +69,10 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     
     private var themeService: ThemeService<AppTheme>!
     private var transactionDataProvider: PaymentCardTransactionProvider!
+    private var repository: TransactionsRepositoryType
     
-    init(card: PaymentCard? = nil, themeService: ThemeService<AppTheme>!, transactionDataProvider: PaymentCardTransactionProvider) {
+    init(card: PaymentCard? = nil, themeService: ThemeService<AppTheme>!, transactionDataProvider: PaymentCardTransactionProvider, repository: TransactionsRepositoryType) {
+        self.repository = repository
         self.card = card
         self.themeService = themeService
         self.transactionDataProvider = transactionDataProvider

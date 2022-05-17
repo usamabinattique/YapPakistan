@@ -629,6 +629,8 @@
 "screen_home_display_text_sign_in" = "Already have an account? Sign in";
 "screen_home_todays_balance_title" = "Today’s balance";
 
+"screen_home_display_text_nothing_to_report_search" = "No results found.";
+
 // MARK: Transaction filter screen
 "screen_transaction_filter_display_text_title" = "Filters";
 "screen_transaction_filter_button_apply_filter" = "Apply filters";
