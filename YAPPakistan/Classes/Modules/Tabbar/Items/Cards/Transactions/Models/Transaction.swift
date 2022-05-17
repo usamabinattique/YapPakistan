@@ -171,7 +171,7 @@ extension Transaction {
         }
         
         if productCode.isBank {
-            return "icon_send_money"
+            return "icon_trans_send_money"
         }
         
         if productCode == .virtualCardIssuanceFee {
@@ -183,7 +183,7 @@ extension Transaction {
             return "icon_virtual_card_transaction"
         }
         
-        guard !productCode.isIncoming else { return "icon_send_money" }
+        guard !productCode.isIncoming else { return "icon_trans_send_money" }
         
         guard !productCode.isCash else { return "icon_cash_payout" }
         

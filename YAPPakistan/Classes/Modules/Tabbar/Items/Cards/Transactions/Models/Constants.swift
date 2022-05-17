@@ -207,7 +207,7 @@ public extension TransactionProductCode {
             return UIImage.init(named: "icon_cancelled_transaction", in: .yapPakistan, compatibleWith: nil)
         }
         
-        guard !isBank else { return UIImage.init(named: "icon_send_money", in: .yapPakistan, compatibleWith: nil)?.asTemplate }
+        guard !isBank else { return UIImage.init(named: "icon_trans_send_money", in: .yapPakistan, compatibleWith: nil)?.asTemplate }
         
         guard !isCash else { return UIImage.init(named: "icon_cash_payout", in: .yapPakistan, compatibleWith: nil)?.asTemplate }
         
