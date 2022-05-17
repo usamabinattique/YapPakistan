@@ -41,7 +41,7 @@ protocol CommonWebViewModelType {
 
 class CommonWebViewModel:CommonWebViewModelInput, CommonWebViewModelOutput, CommonWebViewModelType {
     
-    private let confirmSubject = PublishSubject<CommonWebViewM>()
+    private let confirmSubject = ReplaySubject<CommonWebViewM>.create(bufferSize: 1)
     private let closeSubject = PublishSubject<Void>()
     private let showCardAddedAlertSubject = PublishSubject<ExternalPaymentCard>()
     private let navigationActionSubject = ReplaySubject<WKNavigationAction>.create(bufferSize: 1)

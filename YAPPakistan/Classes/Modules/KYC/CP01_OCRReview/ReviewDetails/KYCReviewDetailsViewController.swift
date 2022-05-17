@@ -126,7 +126,6 @@ class KYCReviewDetailsViewController: UIViewController {
 
         cardView
             .alignEdgesWithSuperview([.left, .right], constants: [20, 20])
-            .height(constant: 70)
             .toBottomOf(subHeadingLabel, constant: 35)
 
         tableView

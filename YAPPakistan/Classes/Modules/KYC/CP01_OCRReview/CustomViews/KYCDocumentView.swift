@@ -206,12 +206,18 @@ private extension KYCDocumentView {
             .width(constant: 32)
             .height(constant: 32)
 
+        #warning("[UMAIR] - Check constraints for this stack")
         horizontalStack
             .toRightOf(iconImage, constant: 23)
             .alignEdgesWithSuperview([.right], constants: [20])
             .alignEdgesWithSuperview([.top, .bottom], constants: [33, 33])
             .centerVerticallyInSuperview()
 
+        titleLabel
+            .height(constant: 28)
+        detailsLabel
+            .height(.greaterThanOrEqualTo, constant: 20)
+        
         editButton
             .alignEdge(.centerX, withView: validationImage)
             .alignEdge(.centerY, withView: bottomStack)
