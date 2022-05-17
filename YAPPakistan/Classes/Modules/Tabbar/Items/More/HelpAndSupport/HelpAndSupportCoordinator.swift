@@ -32,10 +32,21 @@ public class HelpAndSupportCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = HelpAndSupportViewModel(cardsRepo: self.container.makeCardsRepository())
         let viewController = HelpAndSupportViewController(viewModel: viewModel, themeService: self.container.themeService)
         
+        viewModel.outputs.openFAQ.subscribe(onNext: { [unowned self] _ in naviagteToFAQs() }).disposed(by: disposeBag)
+        
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         root.present(localRoot, animated: true, completion: nil)
         return result
     }
+    
+    fileprivate func naviagteToFAQs() {
+        print("Navigate to FAQs")
+        
+        let viewModel = FAQsViewModel(repository: container.makeAccountRepository())
+        let viewController = FAQsViewController(viewModel: viewModel, themeService: self.container.themeService)
+        localRoot.pushViewController(viewController, completion: nil) //.present(viewController, animated: true)
+    }
+    
     
 //    fileprivate func navigateToPersonalDetails() {
 //        let viewModel = PersonalDetailsViewModel((self.container.accountProvider.currentAccount.map{ $0?.customer }.unwrap()), accountRepository: self.container.makeAccountRepository(), kycRepository: self.container.makeKYCRepository())

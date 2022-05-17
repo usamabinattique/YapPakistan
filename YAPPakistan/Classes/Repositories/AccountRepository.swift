@@ -14,9 +14,11 @@ public protocol AccountRepositoryType {
     func assignIBAN(countryCode: String, mobileNo: String) -> Observable<Event<String?>>
     func fetchCustomerPersonalDetails() -> Observable<Event<CustomerPersonalDetailResponse>>
     func logout(deviceUUID: String) -> Observable<Event<[String: String]?>>
+    func fetchFAQs() -> Observable<Event<[FAQsResponse]>>
 }
 
 public class AccountRepository: AccountRepositoryType {
+    
     private let authenticationService: AuthenticationServiceType
     private let customerService: CustomersService
 
@@ -24,6 +26,10 @@ public class AccountRepository: AccountRepositoryType {
                 customerService: CustomersService) {
         self.authenticationService = authenticationService
         self.customerService = customerService
+    }
+    
+    public func fetchFAQs() -> Observable<Event<[FAQsResponse]>> {
+        return customerService.fetchFAQs().materialize()
     }
 
     public func fetchCustomerPersonalDetails() -> Observable<Event<CustomerPersonalDetailResponse>> {

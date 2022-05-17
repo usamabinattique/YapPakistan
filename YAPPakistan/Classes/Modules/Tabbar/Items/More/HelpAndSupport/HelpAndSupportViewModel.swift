@@ -18,7 +18,7 @@ protocol HelpAndSupportViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var startChat: Observable<Void> { get }
     var showError: Observable<String> { get }
-    var requestFaqUrl: Observable<Void> { get }
+    var openFAQ: Observable<Void> { get }
     var faqsUrl: Observable<String?> { get }
 }
 
@@ -50,7 +50,7 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
     var startChat: Observable<Void> { return startChatSubject.asObservable() }
     var showError: Observable<String> { return showErrorSubject.asObservable() }
     var faqsUrl: Observable<String?> { return faqsUrlSubject.asObservable() }
-    var requestFaqUrl: Observable<Void> { return faqRequestSubject.asObservable() }
+    var openFAQ: Observable<Void> { return faqRequestSubject.asObservable() }
     
     // MARK: - Init
     init(cardsRepo : CardsRepositoryType) {
@@ -68,11 +68,7 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
             //            ChatManager.shared.openChat()
             /*YAPToast.show("commn_display_text_comming_soon".localized)*/ }).disposed(by: disposeBag)
             
-            action.filter { $0 == .whatsapp }.subscribe(onNext: { [unowned self] _ in self.openWhatsapp() }).disposed(by: disposeBag)
-        //
-        //        action.filter { $0 == .faq }
-        //            .do(onNext:{ _ in AppAnalytics.shared.logEvent(MoreEvent.faqs()) })
-        //            .map { _ in }.bind(to: faqRequestSubject).disposed(by: disposeBag)
+            action.filter { $0 == .faq }.subscribe(onNext: { [unowned self] _ in self.openFAQs() }).disposed(by: disposeBag)
         
         
         action.filter { $0 == .call }.subscribe(onNext: { [weak self] _ in
@@ -94,6 +90,8 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
             }).disposed(by: self.disposeBag)
             
         }).disposed(by: disposeBag)
+        
+        
         
         
         
@@ -139,18 +137,22 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
 }
 
 private extension HelpAndSupportViewModel {
-    func openWhatsapp() {
-        let phoneNumber = "971600551214"
-        
-        let appURL = URL(string: "whatsapp://send?phone=\(phoneNumber)")!
-        if UIApplication.shared.canOpenURL(appURL) {
-            UIApplication.shared.open(appURL, options: [:], completionHandler: nil)
-        } else {
-            guard let whatsappUrl = URL(string: "https://web.whatsapp.com/") else {
-                showErrorSubject.onNext("screen_help_and_support_display_text_whatsapp_not_installed".localized)
-                return }
-            UIApplication.shared.open(whatsappUrl, options: [:], completionHandler: nil)
-        }
+//    func openWhatsapp() {
+//        let phoneNumber = "971600551214"
+//
+//        let appURL = URL(string: "whatsapp://send?phone=\(phoneNumber)")!
+//        if UIApplication.shared.canOpenURL(appURL) {
+//            UIApplication.shared.open(appURL, options: [:], completionHandler: nil)
+//        } else {
+//            guard let whatsappUrl = URL(string: "https://web.whatsapp.com/") else {
+//                showErrorSubject.onNext("screen_help_and_support_display_text_whatsapp_not_installed".localized)
+//                return }
+//            UIApplication.shared.open(whatsappUrl, options: [:], completionHandler: nil)
+//        }
+//    }
+    
+    func openFAQs() {
+        self.faqRequestSubject.onNext(())
     }
 }
 
