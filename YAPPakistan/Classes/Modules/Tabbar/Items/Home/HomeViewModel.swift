@@ -548,7 +548,9 @@ extension HomeViewModel {
         request
             .errors()
             .do(onNext: { [weak self] _ in
-            self?.showLoaderSubject.onNext(false) })
+            self?.showLoaderSubject.onNext(false)
+                
+            })
             .map{$0.localizedDescription}
             .bind(to: errorSubject)
             .disposed(by: disposeBag)
