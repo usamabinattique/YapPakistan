@@ -12,6 +12,7 @@ import YAPComponents
 
 protocol HelpAndSupportViewModelInput {
     var cellSelectedObserver: AnyObserver<ReusableTableViewCellViewModelType> { get }
+    var backObserver: AnyObserver<Void> { get }
 }
 
 protocol HelpAndSupportViewModelOutput {
@@ -20,6 +21,7 @@ protocol HelpAndSupportViewModelOutput {
     var showError: Observable<String> { get }
     var openFAQ: Observable<Void> { get }
     var faqsUrl: Observable<String?> { get }
+    var back: Observable<Void> { get }
 }
 
 protocol HelpAndSupportViewModelType {
@@ -41,15 +43,18 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
     private let showErrorSubject = PublishSubject<String>()
     private let faqsUrlSubject = PublishSubject<String?>()
     private let faqRequestSubject = PublishSubject<Void>()
+    private let backSubject = PublishSubject<Void>()
     
     // MARK: - Inputs
     var cellSelectedObserver: AnyObserver<ReusableTableViewCellViewModelType> { return cellSelectedSubject.asObserver() }
+    var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     
     // MARK: - Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
     var startChat: Observable<Void> { return startChatSubject.asObservable() }
     var showError: Observable<String> { return showErrorSubject.asObservable() }
     var faqsUrl: Observable<String?> { return faqsUrlSubject.asObservable() }
+    var back: Observable<Void> { return backSubject.asObservable() }
     var openFAQ: Observable<Void> { return faqRequestSubject.asObservable() }
     
     // MARK: - Init

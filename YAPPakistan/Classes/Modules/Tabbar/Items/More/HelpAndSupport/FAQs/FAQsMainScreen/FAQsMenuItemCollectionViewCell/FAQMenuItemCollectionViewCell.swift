@@ -15,7 +15,7 @@ final class FAQMenuItemCollectionViewCell: RxUICollectionViewCell {
     
     var bgView: UIView = UIFactory.makeView(alpha: 0.1, cornerRadious: 15)
     
-    var menuTitle: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center)
+    var menuTitle: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
     
     private var viewModel: FAQMenuItemCollectionViewCellViewModelType!
     private var themeService: ThemeService<AppTheme>!

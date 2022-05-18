@@ -33,6 +33,10 @@ public class HelpAndSupportCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.openFAQ.subscribe(onNext: { [unowned self] _ in naviagteToFAQs() }).disposed(by: disposeBag)
         
+        viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
+            self.localRoot.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
+        
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         root.present(localRoot, animated: true, completion: nil)
         return result

@@ -30,7 +30,7 @@ class HelpAndSupportViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private var themeService: ThemeService<AppTheme>!
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
-    
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
     // MARK: Initialization
     
     init(viewModel: HelpAndSupportViewModelType, themeService: ThemeService<AppTheme>) {
@@ -78,7 +78,7 @@ class HelpAndSupportViewController: UIViewController {
 private extension HelpAndSupportViewController {
     func setupViews() {
         view.backgroundColor = .white
-        
+        navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         view.addSubview(tableView)
         
         tableView.register(HelpAndSupportTableViewCell.self, forCellReuseIdentifier: HelpAndSupportTableViewCell.defaultIdentifier)
@@ -105,6 +105,7 @@ private extension HelpAndSupportViewController {
     }
     
     func bindViews() {
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
         viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
     }
 }
