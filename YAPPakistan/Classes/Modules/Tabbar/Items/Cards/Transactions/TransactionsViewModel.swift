@@ -605,7 +605,7 @@ extension TransactionsViewModel {
     
     func getFinalDate() {
         let transactions = TransactionResponse.transactions(for: currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
-        if transactions.count > 0 && self.showDynamicDataInToolbar {
+        if transactions.count > 0 { //&& self.showDynamicDataInToolbar {
             let date = transactions.first?.date ?? Date().startOfDay
             analyticsDateSubject.onNext(date)
             self.currentSectionMonth = date.dashboardSectionBarDate
