@@ -205,8 +205,7 @@ private extension KYCDocumentView {
             .alignEdge(.centerY, withView: iconImage)
             .width(constant: 32)
             .height(constant: 32)
-
-        #warning("[UMAIR] - Check constraints for this stack")
+        
         horizontalStack
             .toRightOf(iconImage, constant: 23)
             .alignEdgesWithSuperview([.right], constants: [20])

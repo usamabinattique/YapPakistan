@@ -70,6 +70,12 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         self.navigationRoot.navigationBar.isHidden = true
         self.root.present(self.navigationRoot, animated: true, completion: nil)
 
+        viewController.viewModel.outputs.fedValue
+            .subscribe(onNext:{ fed in
+                self.paymentGatewayM.cardSchemeObject?.fedFee = fed
+            })
+            .disposed(by: rx.disposeBag)
+        
         viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] isPaid in
             self?.cardNamePending(schemeObj: schemeObj)
         }).disposed(by: rx.disposeBag)

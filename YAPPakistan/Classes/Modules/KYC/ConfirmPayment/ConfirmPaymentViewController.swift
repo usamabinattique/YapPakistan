@@ -163,9 +163,9 @@ class ConfirmPaymentViewController: UIViewController {
             .disposed(by: rx.disposeBag) */
         viewModel.outputs.isPaid.bind(to: cardFEDFeeStack.rx.isHidden,payWithContainerStack.rx.isHidden).disposed(by: rx.disposeBag)
         viewModel.outputs.cardFee.bind(to: cardFeeValueLabel.rx.text).disposed(by: rx.disposeBag)
-        //viewModel.outputs.cardFee.bind(to: fedValueLabel.rx.text).disposed(by: rx.disposeBag)
-        fedValueLabel.text = "PKR 0.00"
-        viewModel.outputs.cardFee.bind(to: orderTotalValueLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.fedFee.bind(to: fedValueLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.orderTotalFee.bind(to: orderTotalValueLabel.rx.text).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.cardNumber.bind(to: cardMasksLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.address.withUnretained(self)
             .subscribe(onNext: { `self`, address in

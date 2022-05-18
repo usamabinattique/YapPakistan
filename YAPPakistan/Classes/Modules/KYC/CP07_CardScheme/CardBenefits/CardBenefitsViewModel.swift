@@ -16,6 +16,7 @@ protocol CardBenefitsViewModelInput {
     var nextObserver: AnyObserver<Void> { get }
     var cardSchemeMObserver: AnyObserver<KYCCardsSchemeM> { get }
     var fetchBenefitsObserver: AnyObserver<Void> { get }
+    var fetchFEDFeeObserver: AnyObserver<Void> { get }
 }
 
 protocol CardBenefitsViewModelOutput {
@@ -27,6 +28,7 @@ protocol CardBenefitsViewModelOutput {
     var next: Observable<Void> { get }
     var back: Observable<Void> { get }
     var error: Observable<String> { get }
+    var fedValue: Observable<Double> { get }
 }
 
 protocol CardBenefitsViewModelType{
@@ -48,6 +50,8 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     private var nextButtonTitleSubject = BehaviorSubject<String?>(value: "")
     private var isNextButtonEnabledSubject = BehaviorSubject<Bool>(value: false)
     private var viewModels = [ReusableTableViewCellViewModelType]()
+    private var fetchFEDFeeSubject = PublishSubject<Void>()
+    private var fedValueSubject = PublishSubject<Double>()
     
     var inputs: CardBenefitsViewModelInput { self }
     var outputs: CardBenefitsViewModelOutput { self }
@@ -57,6 +61,7 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     var cardSchemeMObserver: AnyObserver<KYCCardsSchemeM> { cardSchemeSubject.asObserver() }
     var fetchBenefitsObserver: AnyObserver<Void> { fetchBenefitsSubject.asObserver() }
     var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
+    var fetchFEDFeeObserver: AnyObserver<Void> { fetchFEDFeeSubject.asObserver() }
     
     // MARK: Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
@@ -67,10 +72,11 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     var coverImage: Observable<String?> { coverImageSubject.asObservable() }
     var buttonTitle: Observable<String?> { nextButtonTitleSubject.asObservable() }
     var isNextButtonEnabled: Observable<Bool> { isNextButtonEnabledSubject.asObservable() }
+    var fedValue: Observable<Double> { fedValueSubject.asObservable() }
     
     let disposeBag = DisposeBag()
     
-    init(_ repository: KYCRepository) {
+    init(_ repository: KYCRepository, transactionRepo: TransactionsRepository) {
         
         cardSchemeSubject
             .subscribe(onNext:{ [weak self] obj in
@@ -86,6 +92,7 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
                     self?.isNextButtonEnabledSubject.onNext(true)
                 }
                 self?.fetchCardsBenefits(repository, cardObj: obj)
+                self?.fetchFEDFee(transactionRepo, cardObj: obj)
             })
             .disposed(by: disposeBag)
     }
@@ -105,11 +112,10 @@ extension CardBenefitsViewModel {
                 }
             .share()
         
-        cardsRequest.subscribe(onNext: { _ in
-            YAPProgressHud.hideProgressHud()
+        cardsRequest.subscribe(onNext: { [weak self] _ in
+            //YAPProgressHud.hideProgressHud()
+            self?.fetchFEDFeeSubject.onNext(())
         }).disposed(by: disposeBag)
-        
-//        let cardObjSuccess = cardsRequest.elements()
         
         cardsRequest.elements().withUnretained(self)
             .subscribe {  benefits in
@@ -123,21 +129,27 @@ extension CardBenefitsViewModel {
             }
             .disposed(by: disposeBag)
         
-        
-        
-//        dataSourceSubject.onNext([SectionModel(model: 0, items: cardObjSuccess.map { CardBenefitsCellViewModel($0) })])
-//
-//        cardObjSuccess
-//            .map { $0.map { CardBenefitsCellViewModel($0) } }
-//            .bind(to: optionViewModelsSubject)
-//            .disposed(by: disposeBag)
-//
-//        cardObjSuccess
-//            .map { $0.map { CardBenefitsCellViewModel($0) } }
-//            .bind(to: optionViewModelsSubject)
-//            .disposed(by: disposeBag)
-        
         cardsRequest.errors()
+            .map{ $0.localizedDescription }
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
+    }
+    
+    func fetchFEDFee(_ repository: TransactionsRepository, cardObj: KYCCardsSchemeM) {
+        
+        let FEDRequest = fetchFEDFeeSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+                .flatMap{ repository.getFEDFee(for: cardObj.schemeName) }
+                .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+                .share()
+                    
+        FEDRequest.elements()
+            .map { $0 ?? 0 }
+            .unwrap()
+            .bind(to: fedValueSubject)
+            .disposed(by: disposeBag)
+        
+        FEDRequest.errors()
             .map{ $0.localizedDescription }
             .bind(to: errorSubject)
             .disposed(by: disposeBag)

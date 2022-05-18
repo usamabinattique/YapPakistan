@@ -18,10 +18,16 @@ public struct KYCCardsSchemeM: Codable {
     public var schemeCode: String
     public var isActive: Bool
     public var fee: Double
+    public var fedFee: Double?
     
     public var isPaidScheme: Bool {
          return fee > 0
     }
+    
+    public var totalFee: Double {
+        return fee+(fedFee ?? 0)
+    }
+    
     public var scheme: SchemeType? { SchemeType(rawValue: schemeName ) }
     public var cardTitle: String?
     public var cardDescription: String?

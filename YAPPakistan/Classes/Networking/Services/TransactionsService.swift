@@ -41,6 +41,7 @@ protocol TransactionsServiceType {
     func fetchMerchantAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [String]?) -> Observable<T>
     func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [Int?]) -> Observable<T>
     func getTransactionCategories<T: Codable>() -> Observable<T>
+    func getFEDFee<T: Codable>(for scheme: String) -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
@@ -249,6 +250,13 @@ class TransactionsService: BaseService, TransactionsServiceType {
     
     public func getTransactionCategories<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction/dashboard/category-bar", query: nil, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func getFEDFee<T: Codable>(for scheme: String) -> Observable<T> {
+        //let pathVariables = [scheme]
+        let pathVariables = ["PAYPAK-PHYSICAL"]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/fee", pathVariables: pathVariables, query: nil, body: nil, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
 }
