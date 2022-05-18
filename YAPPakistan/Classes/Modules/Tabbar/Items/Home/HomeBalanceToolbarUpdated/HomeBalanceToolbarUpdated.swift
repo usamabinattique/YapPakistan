@@ -81,7 +81,6 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
         let progress = MultiProgressView()
         progress.trackBackgroundColor = .white
         progress.lineCap = .round
-        //progress.cornerRadius = progressViewHeight / 4
         progress.cornerRadiusProperty = progressViewHeight / 4
         return progress
     }()
@@ -136,9 +135,9 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
 
 private extension HomeBalanceToolbarUpdated {
     func setupViews() {
-//        addSubview(stack)
+      //  addSubview(stack)
         addSubview(balanceView)
-//        addSubview(todaysBalanceTitleLabel)
+        addSubview(todaysBalanceTitleLabel)
         addSubview(backgroundView)
         backgroundView.addSubview(progressView)
         progressView.backgroundColor = .white
@@ -150,15 +149,18 @@ private extension HomeBalanceToolbarUpdated {
         hideButton.setImage(UIImage.init(named: "eye_close", in: .yapPakistan), for: .normal)
         hideButton.isHidden = true
         separtorView.alpha = 0
+        separtorView.backgroundColor = UIColor(themeService.attrs.primaryDark)
         
         showButton.rx.tap.withUnretained(self).subscribe(onNext: { `self`, _ in
            // guard !isShimmering else { return }
+            print("button show")
             self.animateView(balanceShown: false)
         }).disposed(by: disposeBag)
         
         hideButton.rx.tap.withUnretained(self).subscribe(onNext: { `self`, _ in
 //            guard !isShimmering else { return }
             self.animateView(balanceShown: true)
+            print("button hide")
         }).disposed(by: disposeBag)
     }
     
@@ -250,9 +252,9 @@ private extension HomeBalanceToolbarUpdated {
     
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.primaryDark) }, to: [currency.rx.textColor,ammount.rx.textColor, separtorView.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark) }, to: [currency.rx.textColor,ammount.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [todaysBalanceTitleLabel.rx.textColor])
-            .bind({ UIColor($0.primary) }, to: [showButton.rx.tintColor])
+            .bind({ UIColor($0.primary) }, to: [showButton.rx.tintColor, separtorView.rx.backgroundColor])
             .disposed(by: rx.disposeBag)
     }
     
@@ -306,6 +308,17 @@ private extension HomeBalanceToolbarUpdated {
                         
                         (0..<categorySections.count).forEach {[weak self] index in
                             self?.categorySections[index].backgroundColor = hexStringToUIColor(hex: self?.sectionColor[index] ?? "")
+                            
+//                            self?.categorySections[index].backgroundColor = index == 0 ? .purple : .yellow
+                            
+                          /*  switch index {
+                            case 0:
+                                self?.categorySections[index].backgroundColor = UIColor.StorageExample.progressGreen
+                            case 1:
+                                self?.categorySections[index].backgroundColor = UIColor.StorageExample.progressBlue
+                            default:
+                                self?.categorySections[index].backgroundColor = UIColor.StorageExample.progressPurple
+                            }*/
                         }
                         
                        })
@@ -318,9 +331,7 @@ private extension HomeBalanceToolbarUpdated {
     func animateView(balanceShown: Bool) {
         balanceHeight.constant = balanceShown ? 24 : 0
         balanceLabelHeight.constant = balanceShown ? 24 : 0
-       // delegate?.recentBeneficiaryViewWillAnimate(self)
         UIView.animate(withDuration: 0.3, animations: {
-          //  self.view.layoutAllSuperViews()
             self.layoutAllSubviews()
             self.separtorView.alpha = !balanceShown ? 1 : 0
         }) { (completion) in
@@ -329,7 +340,6 @@ private extension HomeBalanceToolbarUpdated {
             self.currency.isHidden = !balanceShown
             self.showButton.isHidden = !balanceShown
             self.hideButton.isHidden = balanceShown
-//            self.delegate?.recentBeneficiaryViewDidAnimate(self)
         }
     }
 }
@@ -459,6 +469,7 @@ public extension Reactive where Base: HomeBalanceToolbarUpdated {
     
     var monthData: Binder<(MonthData?, Int?)> {
         return Binder(self.base) { toolBar,monthData in
+            print("toolbar monthData \(monthData.0)")
             if let monthlyAnalytics = monthData.0 {
                 toolBar.progressView.isHidden = false
                 toolBar.animateMonthlyAnalytics(monthData: monthlyAnalytics)
