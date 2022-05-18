@@ -29,7 +29,7 @@ public class CardAnalyticsCoordinator: Coordinator<ResultType<Void>> {
 
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
-        let viewModel = CardAnalyticsViewModel(repository: container.makeAnalyticsRepository(), themeService: container.themeService, card: card, accountCreatedDate: container.makeAccountProvider().currentAccount.map{$0?.creationDate ?? Date()}, date: date)
+        let viewModel = CardAnalyticsViewModel(repository: container.makeAnalyticsRepository(), themeService: container.themeService, card: card, accountCreatedDate: container.accountProvider.currentAccount.map{$0?.creationDate ?? Date()}, date: date)
         let viewController = CardAnalyticsViewController(themeService: container.themeService, viewModel: viewModel)
         localNavigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
 

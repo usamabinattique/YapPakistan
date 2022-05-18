@@ -577,7 +577,7 @@ private extension CardAnalyticsViewController {
         
         monthsCollectionView.rx.itemSelected.do (onNext:{ [weak self] index in
             guard let cell = self?.monthsCollectionView.cellForItem(at: index) as? MonthCollectionViewCell else {return}
-            //            guard cell.viewModel?.isEnable ?? true else {return}
+                        guard cell.viewModel?.isEnable ?? true else {return}
             
             self?.selectedMonth = index
             self?.monthsCollectionView.reloadData()

@@ -167,8 +167,8 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
         currencySubject.onNext("AED")
         
         months = analytics.withLatestFrom(accountCreatedDate) { data, accountCreatedDate in
-//            let startDate = accountCreatedDate
-            let startDate = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
+            let startDate = accountCreatedDate
+//            let startDate = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
             let comp: DateComponents = Calendar.current.dateComponents([.year, .month], from: startDate)
             let startOfMonth = Calendar.current.date(from: comp)!
             let currentYear = Calendar.current.dateComponents([.year], from: Date()).year ?? 0
