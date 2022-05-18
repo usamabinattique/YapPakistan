@@ -56,6 +56,11 @@ public class FAQsCoordinator: Coordinator<ResultType<Void>> {
             self.localRoot.popViewController(animated: true, nil)
         }).disposed(by: disposeBag)
         
+        viewModel.outputs.showFAQDetail.subscribe(onNext: { faq in
+            print("Seaas")
+            self.naviagteToFAQDetails(faq: faq)
+        }).disposed(by: disposeBag)
+        
         localRoot.pushViewController(viewController, completion: nil)
     }
     

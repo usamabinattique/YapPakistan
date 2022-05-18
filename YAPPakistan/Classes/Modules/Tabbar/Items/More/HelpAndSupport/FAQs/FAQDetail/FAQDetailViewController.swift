@@ -74,7 +74,7 @@ class FAQDetailViewController: UIViewController {
 private extension FAQDetailViewController {
     func setupViews() {
         navigationItem.leftBarButtonItem = backBarButtonItem.barItem
-        navigationItem.rightBarButtonItem = searchBarButtonItem.barItem
+        //navigationItem.rightBarButtonItem = searchBarButtonItem.barItem
         view.backgroundColor = .white
         view.addSubview(categoryTitle)
         view.addSubview(question)

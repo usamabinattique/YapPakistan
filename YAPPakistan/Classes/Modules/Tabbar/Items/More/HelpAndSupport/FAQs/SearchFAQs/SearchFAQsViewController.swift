@@ -95,7 +95,7 @@ private extension SearchFAQsViewController {
         
         tableView
             .alignEdgesWithSuperview([.left, .right])
-            .toBottomOf(searchBar)
+            .toBottomOf(searchBar, constant: 10)
             .alignEdgeWithSuperviewSafeArea(.bottomAvoidingKeyboard)
     }
 }
@@ -107,11 +107,6 @@ private extension SearchFAQsViewController {
         
         searchBar.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: disposeBag)
         searchBar.rx.cancelTap.bind(to: viewModel.inputs.cancelObserver).disposed(by: disposeBag)
-        
-        viewModel.outputs.cancelPressFromSenedMoneyFundTransfer.delay(RxTimeInterval.microseconds(300), scheduler: MainScheduler.instance).subscribe(onNext:{[weak self] _ in
-            self?.searchBar.becomeFirstResponder()
-        }).disposed(by: disposeBag)
-        
         viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
     }
     
@@ -125,39 +120,7 @@ private extension SearchFAQsViewController {
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
         tableView.rx.modelSelected(ReusableTableViewCellViewModelType.self).subscribe(onNext: { data in
             print(data)
-            //self.viewModel.inputs.tableViewItemTapped.onNext(data)
+            self.viewModel.inputs.tableViewItemTapped.onNext(data)
         }).disposed(by: disposeBag)
     }
 }
-
-// MARK: Swipe cell delegate
-
-//extension SearchFAQsViewController: SwipeTableViewCellDelegate {
-//
-//    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
-//        guard orientation == .right else { return nil }
-//        
-//        let edit = SwipeAction(style: .default, title: "screen_send_money_display_text_edit".localized) { (_, indexPath) in
-//            
-//            
-//            
-////            self.viewModel.inputs.editBeneficiaryObserver.onNext(((tableView.cellForRow(at: indexPath) as! SendMoneyHomeBeneficiaryCell).viewModel as! SendMoneyHomeBeneficiaryCellViewModel).beneficiary)
-//            
-//            
-//            
-//        }
-//        edit.backgroundColor = UIColor.red
-//        edit.image = UIImage.init(named: "iconsLock", in: .yapPakistan, compatibleWith: nil)?.asTemplate
-//        
-//        let delete = SwipeAction(style: .default, title: "screen_send_money_display_text_delete".localized) { [unowned self] (_, indexPath) in
-//            self.deleteBeneficiary(at: indexPath)
-//        }
-//        
-//        delete.backgroundColor = UIColor.red
-//        delete.image = UIImage.sharedImage(named: "iconsLock")?.asTemplate
-//        
-//        return [delete, edit]
-//    }
-//}
-
-
