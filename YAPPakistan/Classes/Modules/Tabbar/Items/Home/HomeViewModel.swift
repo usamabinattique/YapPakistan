@@ -420,7 +420,7 @@ extension HomeViewModel {
 
         debitCard.subscribe(onNext: { [weak self] card in
             
-            if (self?.accountProvider.currentAccountValue.value?.paidCard ?? false) {
+            if let account = self?.accountProvider.currentAccountValue.value, (account.paidCard ?? false), account.parnterBankStatus != .physicalCardPending {
                 self?.addCreditInfoSubject.onNext(())
             }
             
