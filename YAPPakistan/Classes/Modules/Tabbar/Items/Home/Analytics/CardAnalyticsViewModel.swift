@@ -14,10 +14,12 @@ import YAPCore
 import UIKit
 import RxDataSources
 import RxTheme
+import RxRelay
 
 protocol CardAnalyticsViewModelInput {
-    var backObserver: AnyObserver<Void> { get }
-    var nextObserver: AnyObserver<Void> { get }
+//    var backObserver: AnyObserver<Void> { get }
+//    var nextObserver: AnyObserver<Void> { get }
+    var didSelectDate: AnyObserver<Date> { get }
     var closeObserver: AnyObserver<Void> { get }
     var selectedTabObserver: AnyObserver<Int> { get }
     var selectedCategoryObserver: AnyObserver<Int> { get }
@@ -27,12 +29,12 @@ protocol CardAnalyticsViewModelInput {
 
 protocol CardAnalyticsViewModelOutput {
     var currency: Observable<String?> { get }
-    var month: Observable<String?> { get }
-    var monthly: Observable<String?> { get }
-    var weekly: Observable<String?> { get }
+//    var month: Observable<String?> { get }
+//    var monthly: Observable<String?> { get }
+//    var weekly: Observable<String?> { get }
     var amount: Observable<String?> { get }
-    var nextEnabled: Observable<Bool> { get }
-    var backEnabled: Observable<Bool> { get }
+//    var nextEnabled: Observable<Bool> { get }
+//    var backEnabled: Observable<Bool> { get }
     var average: Observable<NSAttributedString?> { get }
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var selectedTab: Observable<Int> { get }
@@ -52,6 +54,8 @@ protocol CardAnalyticsViewModelOutput {
     var selectedCategoryName: Observable<String?> { get }
     var userAllowedToInteract: Observable<Bool> {get}
     var selectedIndex: Observable<Int> {get}
+    var months: Observable<[MonthCollectionViewCellViewModel]> {get}
+    var selectedDate: Observable<Date> {get}
     
 }
 
@@ -62,13 +66,15 @@ protocol CardAnalyticsViewModelType {
 
 class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModelInput, CardAnalyticsViewModelOutput {
     
+    
+    
     // MARK: - Properties
     let disposeBag = DisposeBag()
     var inputs: CardAnalyticsViewModelInput { return self }
     var outputs: CardAnalyticsViewModelOutput { return self }
     
-    private let backSubject = PublishSubject<Void>()
-    private let nextSubject = PublishSubject<Void>()
+//    private let backSubject = PublishSubject<Void>()
+//    private let nextSubject = PublishSubject<Void>()
     private let closeSubject = PublishSubject<Void>()
     
     private let currencySubject = BehaviorSubject<String?>(value: nil)
@@ -96,10 +102,13 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
     private let modeSubject = BehaviorSubject<UIImageView.ContentMode>(value: .center)
     private let userAllowedToInteractSubject = BehaviorSubject<Bool>(value: true)
     private let selectedIndexSubject = BehaviorSubject<Int>(value: 0)
+    private let dateSubject = BehaviorSubject<Date>(value: Date().startOfMonth)
     
     // MARK: - Inputs
-    var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
-    var nextObserver: AnyObserver<Void> { return nextSubject.asObserver() }
+//    var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
+//    var nextObserver: AnyObserver<Void> { return nextSubject.asObserver() }
+//    var selectedDate: AnyObserver<Date> { return dateSubject.asObserver() }
+    var didSelectDate: AnyObserver<Date> {dateSubject.asObserver()}
     var closeObserver: AnyObserver<Void> { return closeSubject.asObserver() }
     var selectedTabObserver: AnyObserver<Int> { return selectedTabSubject.asObserver() }
     var selectedCategoryObserver: AnyObserver<Int> { return selectedCategorySubject.asObserver() }
@@ -108,7 +117,7 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
     
     // MARK: - Outputs
     var currency: Observable<String?> { return currencySubject.asObservable() }
-    var monthly: Observable<String?> { return monthlySubject.asObservable() }
+//    var monthly: Observable<String?> { return monthlySubject.asObservable() }
     var weekly: Observable<String?> { return Observable.of("Weekly") }
     var month: Observable<String?> { return monthSubject.asObservable() }
     var amount: Observable<String?> { return amountSubject.asObservable() }
@@ -133,6 +142,8 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
     var mode: Observable<UIView.ContentMode> { modeSubject.asObservable() }
     var userAllowedToInteract: Observable<Bool> {userAllowedToInteractSubject}
     var selectedIndex: Observable<Int> {selectedIndexSubject}
+    let months: Observable<[MonthCollectionViewCellViewModel]>
+    var selectedDate: Observable<Date> { dateSubject.asObservable()}
     
     private let formatter = DateFormatter()
     private let repository: AnalyticsRepositoryType
@@ -141,7 +152,7 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
     private var card: PaymentCard
     private var currentTab = 0
     private var currentDate = Date().startOfMonth
-    private let monthlySubject = BehaviorSubject<String?>(value: nil)
+//    private let monthlySubject = BehaviorSubject<String?>(value: nil)
     private var defaultColor: UIColor?
     
     // MARK: - Init
@@ -154,6 +165,70 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
         
         formatter.dateFormat = "MMMM, yyyy"
         currencySubject.onNext("AED")
+        
+        months = analytics.withLatestFrom(accountCreatedDate) { data, accountCreatedDate in
+//            let startDate = accountCreatedDate
+            let startDate = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
+            let comp: DateComponents = Calendar.current.dateComponents([.year, .month], from: startDate)
+            let startOfMonth = Calendar.current.date(from: comp)!
+            let currentYear = Calendar.current.dateComponents([.year], from: Date()).year ?? 0
+            var dates = [Date]()
+            dates.append(startOfMonth)
+            
+            var endOfYearReached = false
+            var previousDate = startOfMonth
+            while(!endOfYearReached) {
+                
+                // get next date, while next date is less than or equal to current year add it to list
+                if let nextDate = Calendar.current.date(byAdding: .month, value: 1, to: previousDate),
+                   let year = Calendar.current.dateComponents([.year], from: nextDate).year,
+                   year <= currentYear {
+                    dates.append(nextDate)
+                    previousDate = nextDate
+                }else {
+                    endOfYearReached = true
+                }
+            }
+            
+            var index = -1
+            return dates.map{
+                index += 1
+                return MonthCollectionViewCellViewModel(date: $0, isFirstItem: index == 0, isLastItem: index == dates.count-1)
+            }
+        }
+
+        /*
+        months = analytics.map { data -> [MonthCollectionViewCellViewModel] in
+           
+            let comp: DateComponents = Calendar.current.dateComponents([.year, .month], from: data.date)
+            let startOfMonth = Calendar.current.date(from: comp)!
+            let currentYear = Calendar.current.dateComponents([.year], from: Date()).year ?? 0
+            var dates = [Date]()
+            dates.append(startOfMonth)
+            
+            var endOfYearReached = false
+            var previousDate = startOfMonth
+            while(!endOfYearReached) {
+                
+                // get next date, while next date is less than or equal to current year add it to list
+                if let nextDate = Calendar.current.date(byAdding: .month, value: 1, to: previousDate),
+                   let year = Calendar.current.dateComponents([.year], from: nextDate).year,
+                   year <= currentYear {
+                    dates.append(nextDate)
+                    previousDate = nextDate
+                }else {
+                    endOfYearReached = true
+                }
+            }
+            
+            var index = -1
+            return dates.map{
+                index += 1
+                return MonthCollectionViewCellViewModel(date: $0, isFirstItem: index == 0, isLastItem: index == dates.count-1)
+            }
+        }*/
+        
+        /*
         analytics.map { [unowned self] in
             if $0.date.isInSameYear(as: Date()) {
                 self.formatter.dateFormat = "MMMM"
@@ -164,7 +239,7 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
             let startOfMonth = Calendar.current.date(from: comp)!
             let startOfMonthString = self.formatter.string(from: startOfMonth)
             return startOfMonthString
-        }.bind(to: monthlySubject).disposed(by: disposeBag)
+        }.bind(to: monthlySubject).disposed(by: disposeBag)*/
         
         analytics.subscribe(onNext: {[weak self] in
             self?.currentDate = $0.date
@@ -177,10 +252,16 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
         
         Observable.combineLatest(analytics.map { $0.date }, accountCreatedDate.map{$0.startOfMonth}).map { $0.0 > $0.1 }.bind(to: backEnabledSubject).disposed(by: disposeBag)
         
-        let backDate = backSubject.withLatestFrom(analytics.map { $0.date }).map { $0.date(byAddingMonths: -1) }
-        let nextDate = nextSubject.withLatestFrom(analytics.map { $0.date }).map { $0.date(byAddingMonths: 1) }
+//        let backDate = backSubject.withLatestFrom(analytics.map { $0.date }).map { $0.date(byAddingMonths: -1) }
+//        let nextDate = nextSubject.withLatestFrom(analytics.map { $0.date }).map { $0.date(byAddingMonths: 1) }
         
-        Observable.merge(backDate, nextDate).startWith(date?.startOfMonth ??  Date().startOfMonth).subscribe(onNext: { [weak self] in self?.fetchData(forDate: $0)
+        /*
+        Observable.merge(backDate, nextDate).startWith(date?.startOfMonth ??  Date().startOfMonth).subscribe(onNext: { [weak self] in
+            self?.fetchData(forDate: $0)
+//            AppAnalytics.shared.logEvent(AnalyticsEvent.dateScrolled())
+        }).disposed(by: disposeBag)*/
+        dateSubject.subscribe(onNext: { [weak self] in
+            self?.fetchData(forDate: $0)
 //            AppAnalytics.shared.logEvent(AnalyticsEvent.dateScrolled())
         }).disposed(by: disposeBag)
         

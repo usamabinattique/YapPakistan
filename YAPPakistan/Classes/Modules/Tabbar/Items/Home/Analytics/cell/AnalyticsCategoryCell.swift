@@ -103,7 +103,7 @@ class AnalyticsCategoryCell: RxUITableViewCell {
     }
     
     override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
-        set(theme: theme)
+        set(theme: themeService)
         guard let vm = viewModel as? AnalyticsCategoryCellViewModelType else {return}
         self.viewModel = vm
         bindViews()
