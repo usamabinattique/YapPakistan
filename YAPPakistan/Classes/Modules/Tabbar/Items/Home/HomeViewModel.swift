@@ -21,6 +21,7 @@ protocol HomeViewModelInputs {
     var completeVerificationObserver: AnyObserver<Void> { get }
     var viewDidAppearObserver: AnyObserver<Void> { get }
     var menuTapObserver: AnyObserver<Void> { get }
+    var profileTapObserver: AnyObserver<Void> { get }
     
     var widgetsChangeObserver: AnyObserver<Void> { get }
     var selectedWidgetObserver: AnyObserver<WidgetCode?> { get }
@@ -55,6 +56,7 @@ protocol HomeViewModelOutputs {
     var completeVerification: Observable<Bool> { get }
     var profilePic: Observable<(String?,UIImage?)> { get }
     var menuTap: Observable<Void> { get }
+    var profileTap: Observable<Void> { get }
     
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var showCreditLimit: Observable<Void> { get }
@@ -154,6 +156,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let sectionDateSubject = BehaviorSubject<Date>(value: Date())
     private let progressViewTappedSubject = PublishSubject<Void>()
     private let progressViewDateSubject = BehaviorSubject<Date>(value: Date())
+    private let profileTapSubject = PublishSubject<Void>()
     
     private var numberOfShownWidgets = 0
     private var cardStatus: CardStatus = .inActive
@@ -184,6 +187,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var selectedTransactionIndexObserver: AnyObserver<Int?> { return selectedTransactionIndexSubject.asObserver() }
     var sectionDateObserver: AnyObserver<Date> { sectionDateSubject.asObserver() }
     var progressViewTappedObserver: AnyObserver<Void> { progressViewTappedSubject.asObserver() }
+    var profileTapObserver: AnyObserver<Void> { profileTapSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -205,6 +209,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var shimmering: Observable<Bool> { shimmeringSubject.asObservable() }
     var transactionsViewModelObservable: TransactionsViewModel { transactionsViewModel }
     var menuTap: Observable<Void> { return menuTapSubject.asObservable() }
+    var profileTap: Observable<Void> { profileTapSubject.asObservable() }
     
     var debitCard: Observable<PaymentCard?> { cardsSubject.map { $0.filter { $0.cardType == .debit }.first } }
     var debitCardOnboardingStageViewModel: Observable<PaymentCardInitiatoryStageViewModel?> { debitCardOnboardingStageViewModelSubject.skip(1) }

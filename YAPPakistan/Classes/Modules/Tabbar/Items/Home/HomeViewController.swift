@@ -284,6 +284,8 @@ class HomeViewController: UIViewController {
         updateParallaxHeaderProgress()
         self.menuButtonItem.button?.addTarget(self, action: #selector(self.menuAction(_:)), for: .touchUpInside)
         analyticsBarButtonItem.button?.addTarget(self, action: #selector(self.showAnalyticsActions(_:)), for: .touchUpInside)
+        
+        userBarButtonItem.button?.addTarget(self, action: #selector(self.showProfile(_:)), for: .touchUpInside)
     }
 
     override func viewDidLayoutSubviews() {
@@ -322,6 +324,10 @@ class HomeViewController: UIViewController {
     
     @objc func showAnalyticsActions(_ sender: UIButton) {
         viewModel.inputs.didTapAnalytics.onNext(())
+    }
+    
+    @objc func showProfile(_ sender: UIButton) {
+        viewModel.inputs.profileTapObserver.onNext(())
     }
     
 }
