@@ -39,9 +39,24 @@ public class FAQsCoordinator: Coordinator<ResultType<Void>> {
             self.localRoot.dismiss(animated: true, completion: nil)
         }).disposed(by: disposeBag)
         
+        viewModel.outputs.search.subscribe(onNext: { [unowned self] faqs in
+            self.navigateToSearchFAQS(faqs: faqs)
+        }).disposed(by: disposeBag)
+        
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         root.present(localRoot, animated: true, completion: nil)
         return result
+    }
+    
+    fileprivate func navigateToSearchFAQS(faqs: [FAQsResponse]) {
+        let viewModel = SearchFAQsViewModel(faqs: faqs)
+        let viewController = SearchFAQsViewController(themeService: self.container.themeService, viewModel: viewModel)
+        
+        viewModel.outputs.cancel.subscribe(onNext: { [unowned self] _ in
+            self.localRoot.popViewController(animated: true, nil)
+        }).disposed(by: disposeBag)
+        
+        localRoot.pushViewController(viewController, completion: nil)
     }
     
     fileprivate func naviagteToFAQDetails(faq: FAQsResponse) {

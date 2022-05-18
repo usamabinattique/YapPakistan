@@ -27,6 +27,7 @@ protocol SearchFAQsViewModelOutput {
     var cancelPressFromSenedMoneyFundTransfer: Observable<Void>{ get }
     var editBeneficiary: Observable<SendMoneyBeneficiary> { get }
     var error: Observable<String>{ get }
+    var cancel: Observable<Void>{ get }
 }
 
 protocol SearchFAQsViewModelType {
@@ -70,23 +71,20 @@ class SearchFAQsViewModel: SearchFAQsViewModelType, SearchFAQsViewModelInput, Se
     var cancelPressFromSenedMoneyFundTransfer: Observable<Void>{ return cancelPressFromSenedMoneyFundTransferSubject.asObservable() }
     var editBeneficiary: Observable<SendMoneyBeneficiary> { return editBeneficiarySubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
+    var cancel: Observable<Void> { cancelSubject.asObservable() }
     
-    private let repository : YapItRepositoryType!
+    private var faqs = [FAQsResponse]()
     
     // MARK: - Init
-    init(_ beneficiaries: [SendMoneyBeneficiary], repository: YapItRepositoryType) {
-        self.repository = repository
-        allBeneficiaries = beneficiaries
+    init(faqs: [FAQsResponse]) {
         
-        dataSourceSubject.onNext([SectionModel(model: 0, items: beneficiaries.map { SendMoneyHomeBeneficiaryCellViewModel($0) })])
+        self.faqs = faqs
+//        dataSourceSubject.onNext([SectionModel(model: 0, items: beneficiaries.map { SendMoneyHomeBeneficiaryCellViewModel($0) })])
+
+//        search()
+//        refresh()
+
         
-        search()
-        refresh()
-        
-        cancelSubject.subscribe(onNext: { [unowned self] in
-            self.beneficiarySubject.onCompleted()
-            self.editBeneficiarySubject.onCompleted()
-        }).disposed(by: disposeBag)
     }
 }
 
@@ -95,24 +93,24 @@ class SearchFAQsViewModel: SearchFAQsViewModelType, SearchFAQsViewModelInput, Se
 private extension SearchFAQsViewModel {
     func search() {
         
-        let filtered = textSubject.filter { !($0?.isEmpty ?? true) }.unwrap().map { [unowned self] text -> [SendMoneyBeneficiary] in
-            return self.allBeneficiaries.filter { $0.accountTitle.lowercased().contains(text.lowercased()) || ($0.nickName?.lowercased().contains(text.lowercased()) ?? false) } }
-        
-        let unfiltered = textSubject.filter { $0?.isEmpty ?? true }.map { [unowned self] _ in self.allBeneficiaries }
-        
-        let beneficiaries = Observable.merge(filtered, unfiltered)
-        
-        let noResults = beneficiaries.filter { $0.count == 0 }.map { _ -> [SectionModel<Int, ReusableTableViewCellViewModelType>] in
-            return [SectionModel(model: 0, items: [NoSearchResultCellViewModel()])]
-        }
-        
-        let results = beneficiaries.filter { $0.count > 0 }.map { allBeneficiaries -> [SectionModel<Int, ReusableTableViewCellViewModelType>] in
-            return [SectionModel(model: 0, items: allBeneficiaries.map { SendMoneyHomeBeneficiaryCellViewModel($0)})]
-        }
-        
-        Observable.merge(results, noResults)
-            .bind(to: dataSourceSubject)
-            .disposed(by: disposeBag)
+//        let filtered = textSubject.filter { !($0?.isEmpty ?? true) }.unwrap().map { [unowned self] text -> [SendMoneyBeneficiary] in
+//            return self.allBeneficiaries.filter { $0.accountTitle.lowercased().contains(text.lowercased()) || ($0.nickName?.lowercased().contains(text.lowercased()) ?? false) } }
+//
+//        let unfiltered = textSubject.filter { $0?.isEmpty ?? true }.map { [unowned self] _ in self.allBeneficiaries }
+//
+//        let beneficiaries = Observable.merge(filtered, unfiltered)
+//
+//        let noResults = beneficiaries.filter { $0.count == 0 }.map { _ -> [SectionModel<Int, ReusableTableViewCellViewModelType>] in
+//            return [SectionModel(model: 0, items: [NoSearchResultCellViewModel()])]
+//        }
+//
+//        let results = beneficiaries.filter { $0.count > 0 }.map { allBeneficiaries -> [SectionModel<Int, ReusableTableViewCellViewModelType>] in
+//            return [SectionModel(model: 0, items: allBeneficiaries.map { SendMoneyHomeBeneficiaryCellViewModel($0)})]
+//        }
+//
+//        Observable.merge(results, noResults)
+//            .bind(to: dataSourceSubject)
+//            .disposed(by: disposeBag)
     }
 }
 
@@ -120,23 +118,23 @@ private extension SearchFAQsViewModel {
 
 private extension SearchFAQsViewModel {
     func refresh() {
-        let refreshRequest = refreshSubject
-            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-            .flatMap{ [unowned self] _ in self.repository.fetchAllIBFTBeneficiaries() }
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-            .share()
-        
-        refreshRequest.errors()
-            .map{ $0.localizedDescription }
-            .bind(to: errorSubject)
-            .disposed(by: disposeBag)
-        
-        refreshRequest.elements()
-            .map { $0.enumerated().map { SendMoneyBeneficiary($0.1, index: $0.0) } }
-            .do(onNext: { [weak self] in self?.allBeneficiaries = $0 })
-            .withLatestFrom(textSubject)
-            .bind(to: textSubject)
-            .disposed(by: disposeBag)
+//        let refreshRequest = refreshSubject
+//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+//            .flatMap{ [unowned self] _ in self.repository.fetchAllIBFTBeneficiaries() }
+//            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+//            .share()
+//
+//        refreshRequest.errors()
+//            .map{ $0.localizedDescription }
+//            .bind(to: errorSubject)
+//            .disposed(by: disposeBag)
+//
+//        refreshRequest.elements()
+//            .map { $0.enumerated().map { SendMoneyBeneficiary($0.1, index: $0.0) } }
+//            .do(onNext: { [weak self] in self?.allBeneficiaries = $0 })
+//            .withLatestFrom(textSubject)
+//            .bind(to: textSubject)
+//            .disposed(by: disposeBag)
     }
 }
 

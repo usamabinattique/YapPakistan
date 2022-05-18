@@ -22,7 +22,7 @@ protocol FAQsViewModelOutput {
     var tableViewDataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var showFAQDetail: Observable<FAQsResponse> { get }
     var back: Observable<Void> { get }
-    var search: Observable<Void> { get }
+    var search: Observable<[FAQsResponse]> { get }
 }
 
 protocol FAQsViewModelType {
@@ -46,14 +46,14 @@ class FAQsViewModel: FAQsViewModelInput, FAQsViewModelOutput, FAQsViewModelType 
     var tableViewDataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return tableViewDataSourceSubject.asObservable()}
     var showFAQDetail: Observable<FAQsResponse> { return showFAQDetailsSubject.asObservable() }
     var back: Observable<Void> { return backSubject.asObservable() }
-    var search: Observable<Void> { return searchSubject.asObservable() }
+    var search: Observable<[FAQsResponse]> { return searchSubject.asObservable() }
     
     
     // MARK: Inputs
     var itemTappedObserver: AnyObserver<ReusableCollectionViewCellViewModelType> { return itemTappedSubject.asObserver() }
     var tableViewItemTapped: AnyObserver<ReusableTableViewCellViewModelType> { return tableViewItemTappedSubject.asObserver() }
     var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
-    var searchObserver: AnyObserver<Void> { return searchSubject.asObserver() }
+    var searchObserver: AnyObserver<Void> { return searchInputSubject.asObserver() }
     
     // MARK: Subjects
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]>(value: [])
@@ -62,7 +62,8 @@ class FAQsViewModel: FAQsViewModelInput, FAQsViewModelOutput, FAQsViewModelType 
     private let tableViewItemTappedSubject = PublishSubject<ReusableTableViewCellViewModelType>()
     private let showFAQDetailsSubject = PublishSubject<FAQsResponse>()
     private let backSubject = PublishSubject<Void>()
-    private let searchSubject = PublishSubject<Void>()
+    private let searchInputSubject = PublishSubject<Void>()
+    private let searchSubject = PublishSubject<[FAQsResponse]>()
     
     init(repository : AccountRepository) {
         self.repository = repository
@@ -78,6 +79,10 @@ class FAQsViewModel: FAQsViewModelInput, FAQsViewModelOutput, FAQsViewModelType 
         tableViewItemTappedSubject.subscribe(onNext: { [unowned self] item in
             guard let selectedItem = item as? FAQsTableViewCellViewModel else { return }
             self.getTappedFAQ(viewModel: selectedItem)
+        }).disposed(by: disposeBag)
+        
+        searchInputSubject.subscribe(onNext: { [unowned self] _ in
+            self.searchSubject.onNext(self.allFaqs)
         }).disposed(by: disposeBag)
         
         getFAQs()
