@@ -27,12 +27,21 @@ class FAQsViewController: UIViewController {
         return collectionView
     }()
     
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.separatorStyle = .none
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
     // MARK: Properties
     
     private var viewModel: FAQsViewModelType!
     private let disposeBag = DisposeBag()
     private var themeService: ThemeService<AppTheme>!
     private var dataSource: RxCollectionViewSectionedReloadDataSource<SectionModel<Int, ReusableCollectionViewCellViewModelType>>!
+    private var tableViewDataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
     
     // MARK: Initialization
     
@@ -56,6 +65,7 @@ class FAQsViewController: UIViewController {
         
         setupViews()
         setupConstraints()
+        bindCollectionView()
         bindTableView()
         bindViews()
         //addBackButton(.closeEmpty)
@@ -83,43 +93,37 @@ private extension FAQsViewController {
         view.backgroundColor = .white
         
         view.addSubview(collectionView)
-        collectionView.register(FAQMenuItemCollectionViewCell.self.self, forCellWithReuseIdentifier: FAQMenuItemCollectionViewCell.defaultIdentifier)
+        view.addSubview(tableView)
+        collectionView.register(FAQMenuItemCollectionViewCell.self, forCellWithReuseIdentifier: FAQMenuItemCollectionViewCell.defaultIdentifier)
+        tableView.register(FAQsTableViewCell.self, forCellReuseIdentifier: FAQsTableViewCell.defaultIdentifier)
     }
     
     func setupConstraints() {
         collectionView
             .alignEdgesWithSuperview([.left,.right,.top], constants: [10,10,15])
             .height(constant: 50)
+            .centerHorizontallyInSuperview()
         
+        tableView
+            .alignEdgesWithSuperview([.left, .right,.safeAreaBottom], constants: [10,5,0])
+            .toBottomOf(collectionView, constant: 10)
+            .centerHorizontallyInSuperview()
+        
+        //tableView.backgroundColor = UIColor.red
     }
 }
 
 private extension FAQsViewController {
-    func bindTableView() {
-        
-//        let cities = Observable.of(["Lisbon", "Copenhagen", "London", "Madrid", "Vienna"])
-//        
-//        cities
-//            .bind(to: collectionView.rx.items) { (collectionView, row, element) in
-//                let indexPath = IndexPath(row: row, section: 0)
-//                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FAQMenuItemCollectionViewCell", for: indexPath) as! FAQMenuItemCollectionViewCell
-//                //cell.value?.text = "\(element) @ \(row)"
-//                cell.menuTitle.text = element
-//                return cell
-//            }
-//            .disposed(by: disposeBag)
+    func bindCollectionView() {
+        dataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { [unowned self] (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: indexPath) as! RxUICollectionViewCell
+            
+            cell.configure(with: viewModel, theme: self.themeService)
+            return cell
+        })
         
         
-                dataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { [unowned self] (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
-                    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: indexPath) as! RxUICollectionViewCell
-        
-                    cell.configure(with: viewModel, theme: self.themeService)
-                    return cell
-                })
-        
-        
-                viewModel.outputs.dataSource.bind(to: collectionView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-        
+        viewModel.outputs.dataSource.bind(to: collectionView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
         
         collectionView.rx.modelSelected(FAQMenuItemCollectionViewCellViewModel.self).subscribe(onNext: { [unowned self] data in
             print(data)
@@ -131,6 +135,18 @@ private extension FAQsViewController {
         //        }).disposed(by: disposeBag)
         
         
+    }
+    
+    func bindTableView() {
+        tableViewDataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
+            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell //tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
+            cell.configure(with: self.themeService, viewModel: viewModel)
+            return cell
+        })
+        
+        viewModel.outputs.tableViewDataSource.bind(to: tableView.rx.items(dataSource: tableViewDataSource)).disposed(by: disposeBag)
+        
+//        tableView.rx.modelSelected(ReusableTableViewCellViewModelType.self).bind(to: viewModel.inputs.cellSelectedObserver).disposed(by: disposeBag)
     }
     
     func bindViews() {
@@ -145,6 +161,6 @@ extension FAQsViewController: UICollectionViewDelegateFlowLayout {
     }
     
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 140, height: 40)
+        return CGSize(width: 140, height: 30)
     }
 }

@@ -28,8 +28,8 @@ class FAQMenuItemCollectionViewCellViewModel: FAQMenuItemCollectionViewCellViewM
     var outputs: FAQMenuItemCollectionViewCellViewModelOutput { return self }
     var reusableIdentifier: String { return FAQMenuItemCollectionViewCell.defaultIdentifier }
     
-    private var titleSubject = BehaviorSubject<String?>(value: nil)
-    private var isSelectedSubject = BehaviorSubject<Bool?>(value: false)
+    public var titleSubject = BehaviorSubject<String?>(value: nil)
+    public var isSelectedSubject = BehaviorSubject<Bool?>(value: false)
     
     // MARK: Outputs
     var menuTitle: Observable<String?> { return titleSubject.asObservable() }

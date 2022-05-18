@@ -13,7 +13,7 @@ import RxCocoa
 
 final class FAQMenuItemCollectionViewCell: RxUICollectionViewCell {
     
-    var bgView: UIView = UIFactory.makeView(alpha: 0.1, cornerRadious: 20)
+    var bgView: UIView = UIFactory.makeView(alpha: 0.1, cornerRadious: 15)
     
     var menuTitle: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center)
     
@@ -130,10 +130,10 @@ extension FAQMenuItemCollectionViewCell {
             
             
             if isSelectedCell! {
-                self.bgView.backgroundColor = UIColor.clear
+                self.bgView.backgroundColor = UIColor(themeService.attrs.primary)
             }
             else {
-                self.bgView.backgroundColor = UIColor(themeService.attrs.primary)
+                self.bgView.backgroundColor = UIColor.clear
             }
             
         }).disposed(by: disposeBag)
