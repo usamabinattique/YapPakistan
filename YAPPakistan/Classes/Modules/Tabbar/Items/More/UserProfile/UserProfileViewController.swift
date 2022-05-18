@@ -167,14 +167,10 @@ fileprivate extension UserProfileViewController {
     func logoutPopup() {
         showAlert(title: "screen_profile_action_display_text_logout_popups_title".localized, message: "screen_profile_action_display_text_logout_popups_message".localized, defaultButtonTitle: "screen_profile_action_display_text_logout_popups_logout".localized, secondayButtonTitle: "screen_profile_action_display_text_logout_popups_cencel".localized, defaultButtonHandler: { [weak self] _ in
             
-            
-            
             self?.viewModel.inputs.logoutConfirmObserver.onNext(())
             }, secondaryButtonHandler: { [weak self] _ in
                 self?.hideAlertView()
             }, completion: nil)
-        
-        
     }
 }
 
@@ -185,13 +181,7 @@ fileprivate extension UserProfileViewController {
         bindTableView()
         bindProfileImageView()
         bindImageSourceType()
-//        bindError()
-//        bindActivityIndicator()
         bindLogoutPopup()
-//
-//        viewModel.outputs.removeProfilePhotoFlag.subscribe(onNext: {[weak self] in
-//            self?.removeProfilePhotoFlag = $0
-//        }).disposed(by: disposeBag)
     }
     
     func bindTableView() {

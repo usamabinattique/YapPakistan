@@ -17,19 +17,17 @@ class HelpAndSupportTableViewCell: RxUITableViewCell {
     
     private lazy var icon: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .center //SessionManager.current.currentAccountType == .b2cAccount ? UIColor.primary.withAlphaComponent(0.14) : .primary
-        //imageView.tintColor = UIColor(themeService.attrs.primary)  //SessionManager.current.currentAccountType == .b2cAccount ? .primary : .white
+        imageView.contentMode = .center
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
     
-    private lazy var titleLabel: UILabel = UIFactory.makeLabel(font: .small, numberOfLines: 0, lineBreakMode: .byWordWrapping)  //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var titleLabel: UILabel = UIFactory.makeLabel(font: .small, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     
     private lazy var nextImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage.sharedImage(named: "icon_forward")?.withRenderingMode(.alwaysTemplate)
-        //imageView.tintColor = UIColor(themeService.attrs.primary)  //.primary
+        imageView.image = UIImage(named: "icon_forward", in: .yapPakistan)
         imageView.contentMode = .center
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -97,12 +95,12 @@ private extension HelpAndSupportTableViewCell {
     
     func setupConstraints() {
         icon
-            .alignEdgesWithSuperview([.left, .top, .bottom], constants: [20, 10, 10])
-            .height(constant: 40)
-            .width(constant: 40)
+            .alignEdgesWithSuperview([.left, .top, .bottom], constants: [20, 15, 15])
+            .height(constant: 20)
+            .width(constant: 20)
         
         titleLabel
-            .toRightOf(icon, constant: 20)
+            .toRightOf(icon, constant: 25)
             .centerVerticallyInSuperview()
         
         nextImage

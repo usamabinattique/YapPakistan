@@ -35,6 +35,8 @@ class FAQsViewController: UIViewController {
         return tableView
     }()
     
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
+    private lazy var searchBarButtonItem = barButtonItem(image: UIImage(named: "icon_search", in: .yapPakistan), insectBy:.zero)
     // MARK: Properties
     
     private var viewModel: FAQsViewModelType!
@@ -60,7 +62,7 @@ class FAQsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.title = "Help & support"
+        navigationItem.title = "FAQs"
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_back",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
         
         setupViews()
@@ -91,7 +93,8 @@ class FAQsViewController: UIViewController {
 private extension FAQsViewController {
     func setupViews() {
         view.backgroundColor = .white
-        
+        navigationItem.leftBarButtonItem = backBarButtonItem.barItem
+        navigationItem.rightBarButtonItem = searchBarButtonItem.barItem
         view.addSubview(collectionView)
         view.addSubview(tableView)
         collectionView.register(FAQMenuItemCollectionViewCell.self, forCellWithReuseIdentifier: FAQMenuItemCollectionViewCell.defaultIdentifier)
@@ -129,12 +132,6 @@ private extension FAQsViewController {
             print(data)
             self.viewModel.inputs.itemTappedObserver.onNext(data)
         }).disposed(by: disposeBag)
-        
-        //        viewModel.scrollToTop.subscribe(onNext: {[unowned self] in
-        //            collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .left, animated: false)
-        //        }).disposed(by: disposeBag)
-        
-        
     }
     
     func bindTableView() {
@@ -145,12 +142,16 @@ private extension FAQsViewController {
         })
         
         viewModel.outputs.tableViewDataSource.bind(to: tableView.rx.items(dataSource: tableViewDataSource)).disposed(by: disposeBag)
-        
-//        tableView.rx.modelSelected(ReusableTableViewCellViewModelType.self).bind(to: viewModel.inputs.cellSelectedObserver).disposed(by: disposeBag)
+        tableView.rx.modelSelected(ReusableTableViewCellViewModelType.self).subscribe(onNext: { data in
+            print(data)
+            self.viewModel.inputs.tableViewItemTapped.onNext(data)
+        }).disposed(by: disposeBag)
     }
     
     func bindViews() {
         //viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: disposeBag)
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
+        searchBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.searchObserver).disposed(by: disposeBag)
     }
 }
 

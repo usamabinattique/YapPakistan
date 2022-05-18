@@ -12,11 +12,17 @@ import YAPComponents
 
 protocol FAQsViewModelInput {
     var itemTappedObserver: AnyObserver<ReusableCollectionViewCellViewModelType> { get }
+    var tableViewItemTapped: AnyObserver<ReusableTableViewCellViewModelType> { get }
+    var backObserver: AnyObserver<Void> { get }
+    var searchObserver: AnyObserver<Void> { get }
 }
 
 protocol FAQsViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { get }
     var tableViewDataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
+    var showFAQDetail: Observable<FAQsResponse> { get }
+    var back: Observable<Void> { get }
+    var search: Observable<Void> { get }
 }
 
 protocol FAQsViewModelType {
@@ -38,20 +44,29 @@ class FAQsViewModel: FAQsViewModelInput, FAQsViewModelOutput, FAQsViewModelType 
     // MARK: Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
     var tableViewDataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return tableViewDataSourceSubject.asObservable()}
+    var showFAQDetail: Observable<FAQsResponse> { return showFAQDetailsSubject.asObservable() }
+    var back: Observable<Void> { return backSubject.asObservable() }
+    var search: Observable<Void> { return searchSubject.asObservable() }
+    
     
     // MARK: Inputs
     var itemTappedObserver: AnyObserver<ReusableCollectionViewCellViewModelType> { return itemTappedSubject.asObserver() }
+    var tableViewItemTapped: AnyObserver<ReusableTableViewCellViewModelType> { return tableViewItemTappedSubject.asObserver() }
+    var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
+    var searchObserver: AnyObserver<Void> { return searchSubject.asObserver() }
     
     // MARK: Subjects
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]>(value: [])
     private let tableViewDataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private let itemTappedSubject = PublishSubject<ReusableCollectionViewCellViewModelType>()
+    private let tableViewItemTappedSubject = PublishSubject<ReusableTableViewCellViewModelType>()
+    private let showFAQDetailsSubject = PublishSubject<FAQsResponse>()
+    private let backSubject = PublishSubject<Void>()
+    private let searchSubject = PublishSubject<Void>()
     
     init(repository : AccountRepository) {
         self.repository = repository
-//        self.cellViewModels = [FAQMenuItemCollectionViewCellViewModel(title: "Awais", isSelected: false), FAQMenuItemCollectionViewCellViewModel(title: "Iqbal", isSelected: true)]
-//        dataSourceSubject.onNext([SectionModel(model: 0, items: cellViewModels)])
-        
+
         itemTappedSubject.subscribe(onNext: { viewModel in
             print(viewModel)
             guard let selectedModel = viewModel as? FAQMenuItemCollectionViewCellViewModel else {return}
@@ -60,8 +75,27 @@ class FAQsViewModel: FAQsViewModelInput, FAQsViewModelOutput, FAQsViewModelType 
         }).disposed(by: disposeBag)
         
         
+        tableViewItemTappedSubject.subscribe(onNext: { [unowned self] item in
+            guard let selectedItem = item as? FAQsTableViewCellViewModel else { return }
+            self.getTappedFAQ(viewModel: selectedItem)
+        }).disposed(by: disposeBag)
         
         getFAQs()
+    }
+    
+    func getTappedFAQ(viewModel: FAQsTableViewCellViewModel) {
+        var question = ""
+        viewModel.question.subscribe(onNext: { [unowned self] questionString in
+            question = questionString ?? ""
+        }).disposed(by: disposeBag)
+        
+        var faqs = self.allFaqs
+        faqs.removeAll { faq in
+            if faq.question == question { return false }
+            else { return true }
+        }
+        
+        self.showFAQDetailsSubject.onNext(faqs.first!)
     }
     
     func getClickedCell(model: FAQMenuItemCollectionViewCellViewModel) {
@@ -93,8 +127,6 @@ class FAQsViewModel: FAQsViewModelInput, FAQsViewModelOutput, FAQsViewModelType 
         for question in selectedQuestions {
             tableViewCells.append(FAQsTableViewCellViewModel(faq: question))
         }
-        
-        //[FAQsTableViewCellViewModel(faq: FAQsResponse(title: "ABC", question: "Question1", answer: "Answer")), FAQsTableViewCellViewModel(faq: FAQsResponse(title: "ABC", question: "Question2", answer: "Answer")),FAQsTableViewCellViewModel(faq: FAQsResponse(title: "ABC", question: "Question3", answer: "Answer"))]
         self.tableViewDataSourceSubject.onNext([SectionModel(model: 0, items: tableViewCells)])
     }
     

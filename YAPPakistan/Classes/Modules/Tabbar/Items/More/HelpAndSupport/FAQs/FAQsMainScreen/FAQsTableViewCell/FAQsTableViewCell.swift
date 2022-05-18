@@ -74,7 +74,7 @@ private extension FAQsTableViewCell {
     func setupConstraints() {
         question
             .centerHorizontallyInSuperview()
-            .alignEdgesWithSuperview([.left, .right, .safeAreaTop, .safeAreaBottom], constants: [10, 35, 10, 10])
+            .alignEdgesWithSuperview([.left, .right, .safeAreaTop, .safeAreaBottom], constants: [10, 40, 10, 10])
 
         nextImage
             //.centerHorizontallyInSuperview()
