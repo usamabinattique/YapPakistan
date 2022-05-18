@@ -109,8 +109,8 @@
 "screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
 "screen_create_passcode_button_create_passcode" = "Create passcode";
 "screen_create_passcode_button_create_new_passcode" = "Create new passcode";
-"screen_create_passcode_display_text_error_sequence" = "Sequential numbers are not allowed";
-"screen_create_passcode_display_text_error_same_digits" = "Repetitive numbers are not allowed";
+"screen_create_passcode_display_text_error_sequence" = "You cannot use consecutive digits.";
+"screen_create_passcode_display_text_error_same_digits" = "You cannot use repeat digits.";
 
 //MARK: Waiting list screen
 "screen_waiting_list_dispaly_text_heading" = "You’re on our waiting list";
