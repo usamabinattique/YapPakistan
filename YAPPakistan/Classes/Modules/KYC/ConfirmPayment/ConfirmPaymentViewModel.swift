@@ -206,7 +206,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         let sessionID = self.paymentGatewayM.cardDetailObject?.sessionID ?? ""
         let beneficiaryID = String(self.paymentGatewayM.beneficiary?.id ?? 0)
         
-        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(beneficiaryId: beneficiaryID, amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: sessionID)
+        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(beneficiaryId: beneficiaryID, amount: String(self.paymentGatewayM.cardSchemeObject?.totalFee ?? 0), currency: "PKR", sessionId: sessionID)
         
         let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
             self.checkoutSessionObject = paymentGatewayCheckoutSession
