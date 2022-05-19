@@ -294,6 +294,8 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
             self.dismissSubject.onCompleted()
 
         }).disposed(by: disposeBag)
+        
+        print("Notifications Permission \(NotificationManager().isNotificationPermissionPrompt)")
     }
 
     deinit {
@@ -402,9 +404,8 @@ func removeProfilePicture(repository: LoginRepositoryType){
     }
     
     func notificationAuthorisationStatausChange() {
-        appNotificationsDidChangeSubject.subscribe(onNext: { [weak self] notifValue in
-            guard let self = self else { return }
-            if self.notificationManager.isNotificationAuthorised() {
+        appNotificationsDidChangeSubject.subscribe(onNext: { [unowned self] notifValue in
+            if NotificationManager().isNotificationPermissionPrompt {
                 self.notificationManager.setNotificationPermission(isPrompt: false)
             }
             else {
