@@ -187,7 +187,7 @@ fileprivate extension UserProfileViewController {
     func bindTableView() {
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
         viewModel.outputs.userProfileItems.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-        //profilePhotoEditButton.imageView?.image = UIImage(named: "icon_edit_profile_photo", in: .yapPakistan)
+        profilePhotoEditButton.imageView?.image = UIImage(named: "icon_edit_profile_photo", in: .yapPakistan)
         viewModel.outputs.profilePhotoEditButtonImage.bind(to: profilePhotoEditButton.rx.image(for: .normal)).disposed(by: disposeBag)
     }
     
