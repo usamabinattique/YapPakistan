@@ -1,9 +1,8 @@
 //
 //  CardAnalyticsViewModel.swift
-//  YAP
+//  YAPPakistan
 //
-//  Created by Zain on 20/11/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
 
 //import AppAnalytics
@@ -281,7 +280,7 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
                 let text = String.init(format: "screen_card_analytics_display_text_monthly_average".localized, amountText)
                 let attribute = NSMutableAttributedString(string: text)
                 
-                attribute.addAttributes([.foregroundColor: UIColor(themeService.attrs.primaryDark)], range: NSRange(location: text.count - amountText.count, length: amountText.count))
+                attribute.addAttributes([.foregroundColor: UIColor(themeService.attrs.greyLight)], range: NSRange(location: text.count - amountText.count, length: amountText.count))
                 return attribute }
             .bind(to: averageSubject)
             .disposed(by: disposeBag)

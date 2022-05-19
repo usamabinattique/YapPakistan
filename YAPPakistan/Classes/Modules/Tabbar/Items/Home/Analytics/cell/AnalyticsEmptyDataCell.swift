@@ -1,9 +1,8 @@
 //
 //  NoDataIndecationCell.swift
-//  Cards
+//  YAPPakistan
 //
-//  Created by Wajahat Hassan on 16/02/2021.
-//  Copyright © 2021 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
 
 import UIKit

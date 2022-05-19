@@ -1,9 +1,8 @@
 //
 //  CardAnalyticsViewController.swift
-//  YAP
+//  YAPPakistan
 //
-//  Created by Zain on 20/11/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
 
 // import AppAnalytics
@@ -260,7 +259,9 @@ class CardAnalyticsViewController: UIViewController {
                 (monthsCollectionView.cellForItem(at: newValue) as? MonthCollectionViewCell)?.set(theme: themeService, isSelected: true)
             }
         }
-    }*/
+    } */
+    
+    private var backButton: UIButton?
     
     // MARK: Initialization
     init(themeService: ThemeService<AppTheme>, viewModel: CardAnalyticsViewModelType) {
@@ -280,11 +281,12 @@ class CardAnalyticsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        _ = addBackButton(of: .closeEmpty)
+         backButton = addBackButton(of: .closeEmpty)
         navigationItem.title = "screen_card_analytics_display_text_title".localized
         
         setupViews()
         setupConstraints()
+        setupTheme()
         setupSensitiveViews()
         bindViews()
         bindTableView()
@@ -312,22 +314,20 @@ class CardAnalyticsViewController: UIViewController {
 private extension CardAnalyticsViewController {
     func setupViews() {
         view.backgroundColor = .white
-        navStack.backgroundColor = .yellow
-        themeService.rx.bind({ UIColor($0.primary) }, to: monthsSelectionView.rx.backgroundColor)
+        
+        themeService.rx.bind({ UIColor($0.primary) }, to: monthsSelectionView.rx.backgroundColor).disposed(by: disposeBag)
         
         monthsCollectionView.addSubview(monthsSelectionView)
         parallax.addSubview(monthsCollectionView)
         
-        let separator = UIView(frame: .zero)
-        separator.translatesAutoresizingMaskIntoConstraints = false
-        parallax.addSubview(separator)
-        separator.alignEdgesWithSuperview([.left, .right])
-        separator.toBottomOf(monthsCollectionView)
-        separator.height(constant: 1)
-        themeService.rx.bind({ UIColor($0.greyExtraLight) }, to: separator.rx.backgroundColor)
+        let theSeparator = UIView(frame: .zero)
+        theSeparator.translatesAutoresizingMaskIntoConstraints = false
+        parallax.addSubview(theSeparator)
+        theSeparator.alignEdgesWithSuperview([.left, .right])
+        theSeparator.toBottomOf(monthsCollectionView)
+        theSeparator.height(constant: 1)
+        themeService.rx.bind({ UIColor($0.greyLight) }, to: theSeparator.rx.backgroundColor).disposed(by: disposeBag)
         
-//        monthlyContainerView.addSubview(monthly)
-//        monthlyContainerView.addSubview(monthlyButton)
         parallax.addSubview(amountHeaderLabel)
         parallax.addSubview(navStack)
         parallax.addSubview(pieChart)
@@ -347,6 +347,9 @@ private extension CardAnalyticsViewController {
         tableView.register(AnalyticsEmptyDataCell.self, forCellReuseIdentifier: AnalyticsEmptyDataCell.defaultIdentifier)
         
         averageLabel.isHidden = true
+        
+        nextArrow.isHidden = true
+        backArrow.isHidden = true
     }
     
     func setupConstraints() {
@@ -360,6 +363,11 @@ private extension CardAnalyticsViewController {
         monthsCollectionView.alignEdgesWithSuperview([.left, .top, .right])
         monthsCollectionView.toTopOf(parallax, constant: 16)
         monthsCollectionView.height(constant: 38)
+        
+//        monthsSeparator
+//            .toBottomOf(monthsCollectionView)
+//            .alignEdgesWithSuperview([.left,.right])
+//            .height(constant: 1)
         
         /*
         monthlyWeeklyStack
@@ -467,6 +475,21 @@ private extension CardAnalyticsViewController {
         self.view.layoutAllSubviews()
     }
     
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.greyDark       ) }, to: [amountHeaderLabel.rx.textColor,percentage.rx.textColor])
+//            .bind({ UIColor($0.primary        ) }, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primary        ) }, to: [selector.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark    ) }, to: [amountLabel.rx.textColor, categoryButton.rx.titleColor(for: .normal), merchantButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.greyLight) }, to: [separator.rx.backgroundColor])
+            .disposed(by: disposeBag)
+
+        guard backButton != nil else { return }
+        themeService.rx
+            .bind({ UIColor($0.primary) }, to: [backButton!.rx.tintColor])
+            .disposed(by: disposeBag)
+    }
+    
     func setupSensitiveViews() {
         // UIView.markSensitiveViews([amountLabel, categoryAmount])
     }
@@ -503,7 +526,7 @@ private extension CardAnalyticsViewController {
             self?.icon.tintColor = $0
         }).disposed(by: disposeBag)
         
-        viewModel.outputs.categoryIcon
+     /*   viewModel.outputs.categoryIcon
             .delay(.milliseconds(100), scheduler: MainScheduler.asyncInstance)
             .subscribe(onNext: {[weak self] args in
             self?.icon.loadImage(with: args.0.0, placeholder: args.0.1, showsIndicator: false, completion: { (image, error, url) in
@@ -511,7 +534,11 @@ private extension CardAnalyticsViewController {
                     self?.icon.image = image?.withRenderingMode(.alwaysTemplate)
                 }
             })
-        }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag) */
+        
+        viewModel.outputs.categoryIcon
+            .delay(.milliseconds(100), scheduler: MainScheduler.asyncInstance)
+            .map{ ImageWithURL($0.0.0,$0.0.1) }.bind(to: icon.rx.loadImage(true, isStringPath: true)).disposed(by: disposeBag)
         
         viewModel.outputs.categoryTitle.bind(to: categoryTitle.rx.text).disposed(by: disposeBag)
         viewModel.outputs.categoryAmount.bind(to: categoryAmount.rx.text).disposed(by: disposeBag)
@@ -541,6 +568,8 @@ private extension CardAnalyticsViewController {
         viewModel.outputs.mode.subscribe(onNext: { [unowned self] (mode) in
             self.icon.contentMode = mode
         }).disposed(by: disposeBag)
+        
+        backButton?.rx.tap.bind(to: viewModel.inputs.closeObserver).disposed(by: disposeBag)
     }
     
     func bindTableView() {

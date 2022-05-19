@@ -1,9 +1,8 @@
 //
 //  AnalyticsCategoryCell.swift
-//  YAP
+//  YAPPakistan
 //
-//  Created by Zain on 20/11/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
 
 import UIKit
@@ -189,15 +188,22 @@ private extension AnalyticsCategoryCell {
             }
         }).disposed(by: disposeBag)
         
-        viewModel.outputs.image.subscribe(onNext: {[weak self] args in
-            self?.icon.loadImage(with: args.0.0, placeholder: args.0.1, showsIndicator: false, completion: { (image, error, url) in
-                if url != nil && args.1 == .category {
-                    self?.icon.image = image?.withRenderingMode(.alwaysTemplate)
-                } else {
-                    self?.icon.image = image?.withRenderingMode(.alwaysOriginal)
-                }
-            })
-        }).disposed(by: disposeBag)
+//        viewModel.outputs.image.subscribe(onNext: {[weak self] args in
+//            self?.icon.loadImage(with: args.0.0, placeholder: args.0.1, showsIndicator: false, isStringPath: true ,completion: { (image, error, url) in
+//                if url != nil && args.1 == .category {
+//                    self?.icon.image = image?.withRenderingMode(.alwaysTemplate)
+//                } else {
+//                    self?.icon.image = image?.withRenderingMode(.alwaysOriginal)
+//                }
+//            })
+//
+//
+//
+//            self?.icon.rx.loadImage(true, isStringPath: true).onNext(ImageWithURL(args.0.0,args.0.1))
+//
+//        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.image.map{ ImageWithURL($0.0.0,$0.0.1) }.bind(to: icon.rx.loadImage(true, isStringPath: true)).disposed(by: disposeBag)
         
         viewModel.outputs.title.bind(to: title.rx.text).disposed(by: disposeBag)
         viewModel.outputs.amount.bind(to: amount.rx.text).disposed(by: disposeBag)

@@ -1,10 +1,10 @@
 //
 //  MerchantCategoryDetail.swift
-//  Cards
+//  YAPPakistan
 //
-//  Created by Muhammad Awais on 21/10/2020.
-//  Copyright © 2020 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
+
 
 import Foundation
 

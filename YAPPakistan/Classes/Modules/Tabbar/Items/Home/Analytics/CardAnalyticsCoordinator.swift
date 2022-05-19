@@ -1,9 +1,8 @@
 //
 //  CardAnalyticsCoordinator.swift
-//  YAP
+//  YAPPakistan
 //
-//  Created by Zain on 21/11/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
 
 import Foundation
@@ -36,6 +35,7 @@ public class CardAnalyticsCoordinator: Coordinator<ResultType<Void>> {
         root.present(localNavigationController!, animated: true, completion: nil)
 
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
+            self?.root.dismiss(animated: true, completion: nil)
             self?.result.onNext(ResultType.cancel)
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
