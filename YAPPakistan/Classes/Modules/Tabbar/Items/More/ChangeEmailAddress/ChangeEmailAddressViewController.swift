@@ -29,8 +29,8 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
     }
     
     // MARK: - Views
-    private lazy var headingLabel: UILabel = UIFactory.makePaddingLabel(font: .title2, alignment: .center)  //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .title2, alignment: .center)
-    private lazy var descriptionLabel: UILabel = UIFactory.makePaddingLabel(font: .small, alignment: .center, numberOfLines: 0)  //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .center, numberOfLines: 0)
+    private lazy var headingLabel: UILabel = UIFactory.makePaddingLabel(font: .title2, alignment: .center)
+    private lazy var descriptionLabel: UILabel = UIFactory.makePaddingLabel(font: .small, alignment: .center, numberOfLines: 0)  
     private lazy var nextButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized, isEnable: false)
     
     private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
@@ -43,7 +43,7 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
         textfield.autocorrectionType = .no
         textfield.returnKeyType = .next
         textfield.invalidImage = UIImage(named: "icon_invalid", in: .yapPakistan)
-        textfield.invalidImage = UIImage(named: "icon_check", in: .yapPakistan)
+        textfield.validImage = UIImage(named: "icon_check", in: .yapPakistan)
         textfield.placeholder =  "screen_change_email_placeholder_email_address".localized
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
