@@ -87,7 +87,7 @@ private extension HelpAndSupportViewController {
     
     func setupConstraints() {
         tableView
-            .alignEdgesWithSuperview([.left, .safeAreaTop, .right, .bottom])
+            .alignEdgesWithSuperview([.left, .safeAreaTop, .right, .bottom], constants: [10,10,10,0])
     }
 }
 
