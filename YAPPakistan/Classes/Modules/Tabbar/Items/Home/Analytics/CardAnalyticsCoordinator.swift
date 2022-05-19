@@ -1,9 +1,8 @@
 //
 //  CardAnalyticsCoordinator.swift
-//  YAP
+//  YAPPakistan
 //
-//  Created by Zain on 21/11/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
 
 import Foundation
@@ -29,14 +28,14 @@ public class CardAnalyticsCoordinator: Coordinator<ResultType<Void>> {
 
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
-        
-        let viewModel = CardAnalyticsViewModel(repository: container.makeAnalyticsRepository(), themeService: container.themeService, card: card, accountCreatedDate: container.makeAccountProvider().currentAccount.compactMap{$0?.creationDate}, date: date)
+        let viewModel = CardAnalyticsViewModel(repository: container.makeAnalyticsRepository(), themeService: container.themeService, card: card, accountCreatedDate: container.accountProvider.currentAccount.map{$0?.creationDate ?? Date()}, date: date)
         let viewController = CardAnalyticsViewController(themeService: container.themeService, viewModel: viewModel)
         localNavigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
 
         root.present(localNavigationController!, animated: true, completion: nil)
 
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
+            self?.root.dismiss(animated: true, completion: nil)
             self?.result.onNext(ResultType.cancel)
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)

@@ -1,9 +1,8 @@
 //
 //  AnalyticsCategoryCellViewModel.swift
-//  YAP
+//  YAPPakistan
 //
-//  Created by Zain on 20/11/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
 
 import Foundation

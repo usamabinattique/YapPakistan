@@ -112,6 +112,10 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             self?.navigateToSearch(card: card)
         }).disposed(by: rx.disposeBag)
         
+        viewController.viewModel.outputs.profileTap.subscribe(onNext: { [weak self] _ in
+            self?.navigateToProfile()
+        }).disposed(by: rx.disposeBag)
+        
         // show analytics
         viewController.viewModel.outputs.showAnalytics
             .withLatestFrom(viewController.viewModel.outputs.debitCard).compactMap{$0}
@@ -481,8 +485,22 @@ extension HomeCoodinator {
     }
     
     func navigateToProfile() {
-//        coordinate(to: UserProfileCoordinator(navigationController: root, customer: SessionManager.current.currentAccount.map{ $0?.customer }.unwrap()))
-//            .subscribe().disposed(by: disposeBag)
+       
+//        coordinate(to: UserProfileCoordinator(navigationController: root, customer: container.accountProvider.current.map{ $0?.customer }.unwrap()))
+//            .subscribe(onNext: { result in
+//
+//            }).disposed(by: rx.disposeBag)
+        
+        coordinate(to: UserProfileCoordinator(root: root, container: self.container))
+            .subscribe()
+            .disposed(by: rx.disposeBag)
+        
+//        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+//            if case ResultType.success = result {
+//                root.dismiss(animated: true, completion: nil)
+//                (root as? UITabBarController)?.selectedIndex = 0
+//            }
+//        }).disposed(by: rx.disposeBag)
 
     }
     

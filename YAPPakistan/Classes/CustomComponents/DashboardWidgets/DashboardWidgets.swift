@@ -71,7 +71,7 @@ extension DashboardWidgets {
     func setupConstraints() {
         
         collectionView
-            .alignEdgesWithSuperview([.left,.right,.top,.bottom], constants: [25,10,15,0])
+            .alignEdgesWithSuperview([.left,.right,.top,.bottom], constants: [24,10,15,0])//[25,10,15,0])
             .height(constant: 120)
     }
 }
