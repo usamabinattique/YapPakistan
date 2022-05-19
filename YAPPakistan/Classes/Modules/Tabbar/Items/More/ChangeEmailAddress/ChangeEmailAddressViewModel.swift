@@ -135,10 +135,21 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
         confirmEmailTextFieldTitleSubject = BehaviorSubject(value:  "screen_change_email_display_text_confirm_email_title".localized)
         
         
-        emailTextFieldSubject.subscribe(onNext: { valueString in
-            print(valueString)
-            
-        }).disposed(by: disposeBag)
+//        emailTextFieldSubject.subscribe(onNext: { [unowned self] valueString in
+//            print(valueString)
+//
+//            //guard let self = self else { return }
+//
+//            let isValid = ValidationService.shared.validateEmail(valueString)
+//            if isValid {
+//                self.emailValidationSubject.onNext(.valid)
+//            }
+//            else {
+//                self.emailValidationSubject.onNext(.invalid)
+//            }
+//
+//
+//        }).disposed(by: disposeBag)
         
         isEmailValid = emailTextFieldSubject.skip(1).map { ValidationService.shared.validateEmail($0) }
         isEmailValid.map { $0 ? .valid : .invalid }.bind(to: emailValidationSubject).disposed(by: disposeBag)
@@ -148,14 +159,16 @@ class ChangeEmailAddressViewModel: ChangeEmailAddressViewModelType, ChangeEmailA
         let confirmEmailValidation = Observable.combineLatest(emailTextFieldSubject, confirmEmailTextFieldSubject, isEmailValid)
             .map{ email, confirmEmail, emailValid -> AppTextField.ValidationState in
                 email == confirmEmail && !email.isEmpty && emailValid ? .valid : email.hasPrefix(confirmEmail) || confirmEmail.isEmpty ? .normal : .invalid }
-        
+
         confirmEmailValidation.bind(to: confirmEmailValidationSubject).disposed(by: disposeBag)
-        
+
         confirmEmailValidation.map{ $0 == .invalid ? "screen_change_email_display_text_confirm_email_diff_error".localized : "" }.bind(to: errorSubject).disposed(by: disposeBag)
-        
+
         isConfirmEmailValid = confirmEmailValidation.map{ $0 == .valid }
-        
+
         Observable.combineLatest(isEmailValid, isConfirmEmailValid).map { $0.0 == true && $0.1 == true }.bind(to: activateActionSubject).disposed(by: disposeBag)
+        
+        
         updateEmail()
     }
     

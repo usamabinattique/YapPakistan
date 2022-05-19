@@ -40,6 +40,7 @@ protocol MoreViewModelOutput {
     var logout: Observable<Void> { get }
     var settings: Observable<Void> { get }
     var showError: Observable<String> { get }
+    var helpAndSupport: Observable<Void> { get }
 //    var moreHelpTour: Observable<[GuidedTour]> { get }
     var presentTourGuide: Observable<Void> { get }
     var badgeValue: Observable<String?> { get }
@@ -78,6 +79,7 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
 //    private let markTourGuideSkipSubject = PublishSubject<TourGuideView>()
     private let presentTourGuideSubject = PublishSubject<Void>()
     private let unreadNotificationsCount = BehaviorSubject<String?>(value: nil)
+    private let helpAndSupportSubject = PublishSubject<Void>()
     
     // MARK: - Inputs
     var viewDidAppearObserver: AnyObserver<Void> { viewDidAppearSubject.asObserver() }
@@ -104,6 +106,7 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
     var openProfile: Observable<Void> { return settingsSubject.asObservable() }
     var openNotification: Observable<Void> { return notificationSubject.asObservable() }
     var badgeValue: Observable<String?> {unreadNotificationsCount}
+    var helpAndSupport: Observable<Void> { return helpAndSupportSubject.asObservable() }
     
     var accountNumber: Observable<String?> { self.accountProvider.currentAccount
         .map{ $0?.accountNumber }.unwrap()
@@ -162,6 +165,8 @@ class MoreViewModel: MoreViewModelType, MoreViewModelInput, MoreViewModelOutput 
         itemTappedSubject.subscribe(onNext: { vm in
             switch (vm as? MoreCollectionViewCellViewModel)?.cellType  {
                 
+            case .help:
+                self.helpAndSupportSubject.onNext(())
             case .yapForYou:
                 YAPToast.show("Coming Soon!")
             case .locateAtm:

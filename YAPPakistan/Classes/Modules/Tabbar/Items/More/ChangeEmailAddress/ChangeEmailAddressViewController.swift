@@ -29,8 +29,8 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
     }
     
     // MARK: - Views
-    private lazy var headingLabel: UILabel = UIFactory.makePaddingLabel(font: .title2, alignment: .center)  //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .title2, alignment: .center)
-    private lazy var descriptionLabel: UILabel = UIFactory.makePaddingLabel(font: .small, alignment: .center, numberOfLines: 0)  //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .center, numberOfLines: 0)
+    private lazy var headingLabel: UILabel = UIFactory.makePaddingLabel(font: .title2, alignment: .center)
+    private lazy var descriptionLabel: UILabel = UIFactory.makePaddingLabel(font: .small, alignment: .center, numberOfLines: 0)  
     private lazy var nextButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized, isEnable: false)
     
     private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
@@ -42,6 +42,8 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
         textfield.autocapitalizationType = .none
         textfield.autocorrectionType = .no
         textfield.returnKeyType = .next
+        textfield.invalidImage = UIImage(named: "icon_invalid", in: .yapPakistan)
+        textfield.validImage = UIImage(named: "icon_check", in: .yapPakistan)
         textfield.placeholder =  "screen_change_email_placeholder_email_address".localized
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
@@ -53,6 +55,8 @@ class ChangeEmailAddressViewController: KeyboardAvoidingViewController {
         textfield.autocapitalizationType = .none
         textfield.autocorrectionType = .no
         textfield.returnKeyType = .done
+        textfield.invalidImage = UIImage(named: "icon_invalid", in: .yapPakistan)
+        textfield.validImage = UIImage(named: "icon_check", in: .yapPakistan)
         textfield.placeholder =  "screen_change_email_placeholder_confirm_email_address".localized
         textfield.translatesAutoresizingMaskIntoConstraints = false
         return textfield
@@ -168,13 +172,12 @@ fileprivate extension ChangeEmailAddressViewController {
         }).disposed(by: disposeBag)
         
         viewModel.outputs.emailValidation.bind(to: emailTextfield.rx.validationState).disposed(by: disposeBag)
-        emailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.emailTextFieldObserver).disposed(by: disposeBag)
-        
-        confirmEmailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.confirmEmailTextFieldObserver).disposed(by: disposeBag)
-        
         viewModel.outputs.confirmEmailValidation.bind(to: confirmEmailTextfield.rx.validationState).disposed(by: disposeBag)
         
+        emailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.emailTextFieldObserver).disposed(by: disposeBag)
+        confirmEmailTextfield.rx.text.unwrap().bind(to: viewModel.inputs.confirmEmailTextFieldObserver).disposed(by: disposeBag)
         viewModel.outputs.error.bind(to: confirmEmailTextfield.rx.errorText).disposed(by: disposeBag)
+        
         
         viewModel.outputs.activateAction.subscribe(onNext: { isOK in
             print("Actiavte button: \(isOK)")

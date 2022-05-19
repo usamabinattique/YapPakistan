@@ -53,8 +53,6 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
         
         
         viewModel.outputs.success.subscribe(onNext: { [unowned self] emailString in
-            
-            print("jjj")
             self.navigateToChangeEmailSuccess(email: emailString)
             
         }).disposed(by: disposeBag)

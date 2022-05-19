@@ -34,7 +34,7 @@ class UserProfileViewController: UIViewController {
         return view
     }()
     
-    lazy var profileImageView = UIFactory.makeImageView()
+    lazy var profileImageView = UIFactory.makeImageView(contentMode: .scaleAspectFill)
     lazy var profileImageViewContainer = UIView()
     lazy var profilePhotoEditButton = UIButtonFactory.createButton(backgroundColor: .clear) //.createButton(backgroundColor: .clear)
     lazy var profilePhotoEditButtonContainer = UIView()
@@ -130,6 +130,7 @@ fileprivate extension UserProfileViewController {
         
         profileImageView.clipsToBounds = true
         profileImageView.layer.cornerRadius = 32
+        profileImageView.contentMode = .scaleAspectFill
         profilePhotoEditButtonContainer.backgroundColor = .white
         
         profilePhotoEditButtonContainer.clipsToBounds = true
@@ -166,14 +167,10 @@ fileprivate extension UserProfileViewController {
     func logoutPopup() {
         showAlert(title: "screen_profile_action_display_text_logout_popups_title".localized, message: "screen_profile_action_display_text_logout_popups_message".localized, defaultButtonTitle: "screen_profile_action_display_text_logout_popups_logout".localized, secondayButtonTitle: "screen_profile_action_display_text_logout_popups_cencel".localized, defaultButtonHandler: { [weak self] _ in
             
-            
-            
             self?.viewModel.inputs.logoutConfirmObserver.onNext(())
             }, secondaryButtonHandler: { [weak self] _ in
                 self?.hideAlertView()
             }, completion: nil)
-        
-        
     }
 }
 
@@ -184,18 +181,13 @@ fileprivate extension UserProfileViewController {
         bindTableView()
         bindProfileImageView()
         bindImageSourceType()
-//        bindError()
-//        bindActivityIndicator()
         bindLogoutPopup()
-//
-//        viewModel.outputs.removeProfilePhotoFlag.subscribe(onNext: {[weak self] in
-//            self?.removeProfilePhotoFlag = $0
-//        }).disposed(by: disposeBag)
     }
     
     func bindTableView() {
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
         viewModel.outputs.userProfileItems.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+        profilePhotoEditButton.imageView?.image = UIImage(named: "icon_edit_profile_photo", in: .yapPakistan)
         viewModel.outputs.profilePhotoEditButtonImage.bind(to: profilePhotoEditButton.rx.image(for: .normal)).disposed(by: disposeBag)
     }
     

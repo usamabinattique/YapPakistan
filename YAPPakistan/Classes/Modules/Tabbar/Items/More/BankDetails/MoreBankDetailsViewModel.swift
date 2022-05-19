@@ -88,9 +88,9 @@ class MoreBankDetailsViewModel: MoreBankDetailsViewModelType, MoreBankDetailsVie
         account.map { account in account?.parnterBankStatus == .activated ? account?.accountNumber : account?.maskedAccountNumber }.bind(to: accountSubject).disposed(by: disposeBag)
 
         shareObserverSubject.withLatestFrom(account).unwrap().map {
-            let iban = ($0.parnterBankStatus == .activated ? $0.formattedIBAN : $0.maskedAndFormattedIBAN) ?? ""
-            let accountNumber = ($0.parnterBankStatus == .activated ? $0.accountNumber : $0.maskedAccountNumber) ?? ""
-            return String.init(format: "Name: %@\nSWIFT/BIC: %@\nIBAN: %@\nAccount: %@\nBank: %@\nAddress: %@", $0.customer.fullName ?? "", $0.bank?.swiftCode ?? "", iban, accountNumber, $0.bank?.name ?? "", $0.bank?.address ?? "")
+            let iban = ($0.parnterBankStatus == .activated ? $0.formattedIBAN?.removeWhitespace() : $0.formattedIBAN?.removeWhitespace()) ?? ""
+            let accountNumber = ($0.parnterBankStatus == .activated ? $0.accountNumber : $0.accountNumber) ?? ""
+            return String.init(format: "Name: %@\nIBAN: %@\nAccount: %@", $0.customer.fullName ?? "", iban, accountNumber)
         }.bind(to: shareInfoSubject).disposed(by: disposeBag)
         
     }
