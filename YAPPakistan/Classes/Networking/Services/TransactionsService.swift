@@ -5,7 +5,6 @@
 //  Created by Muhammad Hassan on 15/05/2019.
 //  Copyright © 2019 YAP. All rights reserved.
 //
-// swiftlint:disable line_length
 
 import Foundation
 import RxSwift
@@ -237,14 +236,14 @@ class TransactionsService: BaseService, TransactionsServiceType {
     }
     
     public func fetchMerchantAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [String]?) -> Observable<T> {
-        let query = ["cardSerialNo" : cardSerialNo, "date" : date]
-        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/transaction-search/merchant-name", query: query, body: categories, headers: authorizationProvider.authorizationHeaders)
+        let query = ["cardSerialNumber": cardSerialNo, "date" : date, "isMerchantAnalytics": String(true)] //["cardSerialNo" : cardSerialNo, "date" : date]
+        let route = APIEndpoint(.get, apiConfig.transactionsURL, "/api/transaction/analytics-details"/*"/api/transaction-search/merchant-name" */, query: query, body: categories, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [Int?]) -> Observable<T> {
-        let query = ["cardSerialNo" : cardSerialNo, "date" : date]
-        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/transaction-search/merchant-category-id", query: query, body: categories, headers: authorizationProvider.authorizationHeaders)
+        let query = ["cardSerialNumber": cardSerialNo, "date" : date, "isMerchantAnalytics": String(false)] // ["cardSerialNo" : cardSerialNo, "date" : date]
+        let route = APIEndpoint(.get, apiConfig.transactionsURL, "/api/transaction/analytics-details", query: query, body: categories, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

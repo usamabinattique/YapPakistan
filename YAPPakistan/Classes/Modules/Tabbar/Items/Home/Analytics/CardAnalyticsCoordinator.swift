@@ -40,16 +40,16 @@ public class CardAnalyticsCoordinator: Coordinator<ResultType<Void>> {
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
 
-//        viewModel.outputs.selectedAnalyticData.subscribe(onNext: { [weak self] (data, type, color, date) in
-//            self?.navigateToMerchantAnalyticsDetail(analyticsData: data, type: type, color: color, date: date)
-//        }).disposed(by: rx.disposeBag)
+        viewModel.outputs.selectedAnalyticData.subscribe(onNext: { [weak self] (data, type, color, date) in
+            self?.navigateToMerchantAnalyticsDetail(analyticsData: data, type: type, color: color, date: date)
+        }).disposed(by: rx.disposeBag)
 
         return result
     }
 
-//    private func navigateToMerchantAnalyticsDetail(analyticsData: AnalyticsData, type: AnalyticsDataType, color: UIColor, date: Date) {
-//        let viewModel = MerchantAnalyticsDetailViewModel(card: card, data: analyticsData, type: type, color: color, date: date)
-//        let viewController = MerchantAnalyticsDetailViewController(viewModel: viewModel)
-//        localNavigationController?.pushViewController(viewController, animated: true)
-//    }
+    private func navigateToMerchantAnalyticsDetail(analyticsData: AnalyticsData, type: AnalyticsDataType, color: UIColor, date: Date) {
+        let viewModel = MerchantAnalyticsDetailViewModel(repository: container.makeAnalyticsRepository(),themeService: container.themeService,card: card, data: analyticsData, type: type, color: color, date: date)
+        let viewController = MerchantAnalyticsDetailViewController(themeService: container.themeService, viewModel: viewModel)
+        localNavigationController?.pushViewController(viewController, animated: true)
+    }
 }
