@@ -96,6 +96,12 @@ public struct Account: Codable {
     public var securedIBAN: String? {
         return (accountStatus == .verificationSucceed || accountStatus == .cardActivated) ? iban : String(repeating: "*", count: iban?.count ?? 0)
     }
+    
+    public var securedIBANLast7: String? {
+        guard let iban = iban else { return nil }
+        let maskedIban = String(format: "\(iban.dropLast(7))*******")
+        return maskedIban
+    }
 
     public var securedBIC: String {
         return (accountStatus == .verificationSucceed || accountStatus == .cardActivated) ? bank?.swiftCode ?? "" : String(repeating: "*", count: (bank?.swiftCode ?? "").count)
