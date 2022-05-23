@@ -11,7 +11,7 @@ import YAPCore
 import UIKit
 
 public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
-
+    
     private let root: UITabBarController
     private var localRoot: UINavigationController!
     private var navigationRoot: UINavigationController!
@@ -23,9 +23,9 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
         self.root = root
         self.container = container
     }
-
+    
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<UserProfileResult>> {
-
+        
         let viewModel = MoreViewModel(accountProvider: container.accountProvider, repository: container.makeMoreRepository(), theme: container.themeService)
         let viewController = MoreViewController(viewModel: viewModel, themeService: container.themeService)
         navigationRoot = UINavigationController(rootViewController: viewController)
@@ -33,7 +33,7 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
         navigationRoot.tabBarItem = UITabBarItem(title: "More",
                                                  image: UIImage(named: "icon_tabbar_more", in: .yapPakistan),
                                                  selectedImage: nil)
-
+        
         if root.viewControllers == nil {
             root.viewControllers = [navigationRoot]
         } else {
@@ -51,23 +51,23 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
             
             openHelpAndSupport()
             
-//            print("Open Help and Support")
-//
-//            let viewModel = HelpAndSupportViewModel()
-//            let viewController = HelpAndSupportViewController(viewModel: viewModel, themeService: self.container.themeService)
-//            let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
-//
-//            root.present(viewController, animated: true)
+            //            print("Open Help and Support")
+            //
+            //            let viewModel = HelpAndSupportViewModel()
+            //            let viewController = HelpAndSupportViewController(viewModel: viewModel, themeService: self.container.themeService)
+            //            let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+            //
+            //            root.present(viewController, animated: true)
             
         }).disposed(by: disposeBag)
         
         viewModel.outputs.bankDetails.subscribe(onNext: { [unowned self] in
             openAccountDetails()
         }).disposed(by: disposeBag)
-
+        
         return result
     }
-
+    
 }
 
 extension MoreCoordinator {
@@ -83,19 +83,25 @@ extension MoreCoordinator {
         alertWindow.windowLevel = .alert + 1
         alertWindow.makeKeyAndVisible()
         let nav = UINavigationController(rootViewController: viewController)
-
+        
         nav.navigationBar.isHidden = true
         nav.modalPresentationStyle = .overCurrentContext
         alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
-
+        
         viewController.window = alertWindow
     }
     
     func openHelpAndSupport() {
         //coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
         
-        let viewModel = AddTransactionDetailViewModel(transactionID: "1", note: "sdasdasdasd", transactionRepository: self.container.makeTransactionsRepository())
-        let viewController = AddTransactionNoteViewController(viewModel: viewModel, themeService: self.container.themeService)
+        //        let viewModel = AddTransactionDetailViewModel(transactionID: "1", note: "sdasdasdasd", transactionRepository: self.container.makeTransactionsRepository())
+        //        let viewController = AddTransactionNoteViewController(viewModel: viewModel, themeService: self.container.themeService)
+        //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        //        navigationRoot.present(navController, animated: true)
+        
+        
+        let viewModel = TotalTransactionsViewModel(themeService: self.container.themeService)
+        let viewController = TotalTransactionsViewController(viewModel: viewModel, themeService: self.container.themeService)
         let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
         navigationRoot.present(navController, animated: true)
     }
