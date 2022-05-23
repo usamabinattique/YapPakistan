@@ -60,7 +60,7 @@ class TotalTransactionsViewController: UIViewController {
         super.viewDidLoad()
         
         self.title = "Total Transactions"
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_close",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_back",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
         setup()
         bind()
         bindTableView()
@@ -103,6 +103,7 @@ fileprivate extension TotalTransactionsViewController {
         themeService.rx
             .bind({ UIColor($0.greyDark) }, to: [merchantTitleLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [totalTransactionsAmountLabel.rx.textColor])
+            .bind({ UIColor($0.primaryDark) }, to: [(navigationItem.leftBarButtonItem?.rx.tintColor)!])
         
     }
     
@@ -138,7 +139,7 @@ fileprivate extension TotalTransactionsViewController {
         
         tableView
             .toBottomOf(stackView, constant: 25)
-            .alignEdgesWithSuperview([.safeAreaLeft, .safeAreaRight, .safeAreaBottom], constants: [20,20,0])
+            .alignEdgesWithSuperview([.safeAreaLeft, .safeAreaRight, .safeAreaBottom], constants: [5,5,0])
         
         merchantImageView.backgroundColor = UIColor.blue
     }
@@ -147,7 +148,12 @@ fileprivate extension TotalTransactionsViewController {
 
 // MARK: - Bind
 fileprivate extension TotalTransactionsViewController {
-    func bind() {}
+    func bind() {
+        viewModel.outputs.navigationTitle.subscribe(onNext: { [weak self] title in
+            guard let self = self else { return }
+            self.title = title
+        }).disposed(by: disposeBag)
+    }
     
     func bindTableView() {
         dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
