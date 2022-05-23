@@ -45,6 +45,7 @@ protocol TransactionsRepositoryType {
     func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>
     func getAccountLimits() -> Observable<Event<[AccountLimits]?>>
     func getTransactionCategories() -> Observable<Event<TransactionBarCategoriesResponse>>
+    func addTransactionNote(trnsactionID: String, transactionNote: String, receiverTransactionNote: String?) -> Observable<Event<String>>
     func getFEDFee(for scheme: String) -> Observable<Event<Double?>>
 }
 
@@ -159,6 +160,10 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
     
     public func getTransactionCategories() -> Observable<Event<TransactionBarCategoriesResponse>> {
         return transactionService.getTransactionCategories().materialize()
+    }
+    
+    public func addTransactionNote(trnsactionID: String, transactionNote: String, receiverTransactionNote: String?)  -> Observable<Event<String>> {
+        return transactionService.addTransactionNote(transactionID: trnsactionID, transactionNote: transactionNote, receiverTransactionNote: receiverTransactionNote).materialize()
     }
     
     public func getFEDFee(for scheme: String) -> Observable<Event<Double?>> {
