@@ -122,6 +122,17 @@ fileprivate extension AddTransactionNoteViewController {
         noteTextView.text = "Type Something..."
         noteTextView.textColor = UIColor(themeService.attrs.greyDark)
     }
+    
+    private func enableSaveBarButton() {
+        self.navigationItem.rightBarButtonItem?.isEnabled = true
+        self.navigationItem.rightBarButtonItem?.tintColor = UIColor(self.themeService.attrs.primaryDark)
+    }
+    
+    private func disableSaveBarButton() {
+        self.navigationItem.rightBarButtonItem?.isEnabled = false
+        self.navigationItem.rightBarButtonItem?.tintColor = UIColor(self.themeService.attrs.greyDark)
+    }
+    
 }
 
 
@@ -131,14 +142,21 @@ fileprivate extension AddTransactionNoteViewController {
         saveBarButton.rx.tap.bind(to: viewModel.inputs.saveNoteTappedObserver).disposed(by: disposeBag)
         noteTextView.rx.text.unwrap().bind(to: viewModel.inputs.noteTextViewObserver).disposed(by: disposeBag)
         viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
+        
+        viewModel.outputs.note.subscribe(onNext: { [weak self] note in
+            guard let self = self else { return }
+            self.noteTextView.text = note
+            self.enableSaveBarButton()
+            self.noteTextView.textColor = UIColor(self.themeService.attrs.primary)
+        }).disposed(by: disposeBag)
+        
         viewModel.outputs.isActiveSaveBtn.subscribe(onNext: { [weak self] isActive in
             guard let self = self else { return }
             if isActive {
-                self.navigationItem.rightBarButtonItem?.isEnabled = true
-                self.navigationItem.rightBarButtonItem?.tintColor = UIColor(self.themeService.attrs.primaryDark)
+                self.enableSaveBarButton()
             }
             else {
-                self.navigationItem.rightBarButtonItem?.isEnabled = false
+                self.disableSaveBarButton()
             }
         }).disposed(by: disposeBag)
     }

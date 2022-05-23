@@ -94,7 +94,7 @@ extension MoreCoordinator {
     func openHelpAndSupport() {
         //coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
         
-        let viewModel = AddTransactionDetailViewModel(transactionID: "1", transactionRepository: self.container.makeTransactionsRepository())
+        let viewModel = AddTransactionDetailViewModel(transactionID: "1", note: "sdasdasdasd", transactionRepository: self.container.makeTransactionsRepository())
         let viewController = AddTransactionNoteViewController(viewModel: viewModel, themeService: self.container.themeService)
         let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
         navigationRoot.present(navController, animated: true)

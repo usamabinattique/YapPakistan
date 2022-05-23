@@ -20,6 +20,7 @@ protocol AddTransactionDetailViewModelInput {
 protocol AddTransactionDetailViewModelOutput {
     var isActiveSaveBtn: Observable<Bool> { get }
     var error: Observable<String> { get }
+    var note: Observable<String?> { get }
 }
 
 protocol AddTransactionDetailViewModelType {
@@ -35,6 +36,7 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
     var outputs: AddTransactionDetailViewModelOutput { return self }
     var transactionID : String
     var transactionRepo : TransactionsRepositoryType
+    var previousNote : String?
     
     // MARK: Inputs
     var noteTextViewObserver: AnyObserver<String> { return noteTextViewSubject.asObserver() }
@@ -43,21 +45,27 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
     // MARK: Outputs
     var isActiveSaveBtn: Observable<Bool> { return isActiveSaveBtnSubject.asObservable() }
     var error: Observable<String> { return errorSubject.asObservable() }
-     
+    var note: Observable<String?> { return noteSubject.asObservable() }
     
     // MARK: Subjects
     internal var noteTextViewSubject = BehaviorSubject<String>(value: "")
     internal var isActiveSaveBtnSubject = BehaviorSubject<Bool>(value: false)
     internal var saveNoteTappedSubject = PublishSubject<Void>()
     internal var errorSubject = PublishSubject<String>()
+    internal var noteSubject = BehaviorSubject<String?>(value: "") //PublishSubject<String>()
     
     // MARK: - Init
-    init(transactionID: String, transactionRepository: TransactionsRepositoryType) {
+    init(transactionID: String, note: String?, transactionRepository: TransactionsRepositoryType) {
         self.transactionID = transactionID
         self.transactionRepo = transactionRepository
+        self.previousNote = note
         
         saveNoteTapped()
         iSActiveSaveButtonBinding()
+        
+        if let note = note {
+            noteSubject.onNext(note)
+        }
     }
     
     func saveNoteTapped() {
