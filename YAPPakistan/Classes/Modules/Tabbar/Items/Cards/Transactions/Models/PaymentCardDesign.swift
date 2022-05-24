@@ -36,6 +36,16 @@ extension CardDesign: Codable {
         isActive = ((try? container.decode(String?.self, forKey: .designCode)) ?? "") == "ACTIVE"
         colorCodes = (try? container.decode([CardDesignColorCode]?.self, forKey: .colorCodes)) ?? []
     }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(designCodeName, forKey: .designCodeName)
+        try container.encodeIfPresent(designCode, forKey: .designCode)
+        try container.encodeIfPresent(frontImageUrl, forKey: .frontImageUrl)
+        try container.encodeIfPresent(backImageUrl, forKey: .backImageUrl)
+        try container.encodeIfPresent(isActive, forKey: .isActive)
+        try container.encodeIfPresent(colorCodes, forKey: .colorCodes)
+    }
 }
 
 

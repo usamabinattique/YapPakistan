@@ -307,6 +307,11 @@ private extension MerchantAnalyticsDetailViewController {
 
 private extension MerchantAnalyticsDetailViewController {
     func bindViews() {
+        backButton?.rx.tap.subscribe(onNext: { [weak self] _ in
+            self?.onTapBackButton()
+        }).disposed(by: disposeBag)
+
+        
         viewModel.outputs.color.subscribe(onNext: { [weak self] in
             //            self?.title.textColor = $0
             self?.icon.tintColor = $0.0

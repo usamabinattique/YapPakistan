@@ -169,7 +169,8 @@ fileprivate extension MerchantAnalyticsDetailViewModel {
                 } else {
                     categories = [self.data.title]
                 }
-                return self.repository.fetchMerchantAnalytics(date, self.card.cardSerialNumber ?? "", categories: categories)
+               /* return self.repository.fetchMerchantAnalytics(date, self.card.cardSerialNumber ?? "", categories: categories)  */
+                return self.repository.fetchMerchantAnalytics(date, self.card.cardSerialNumber ?? "", isMerchantAnalytics: true, filterBy: self.data.title)
         }
         .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
         .share()
@@ -195,7 +196,7 @@ fileprivate extension MerchantAnalyticsDetailViewModel {
             .flatMap{ [unowned self] bool -> Observable<Event<MerchantCategoryDetail?>> in
                 var categories: [Int?] = []
                 categories = [data.categoryId]
-                return self.repository.fetchCategorynalytics(date, self.card.cardSerialNumber ?? "", categories: categories)
+                return self.repository.fetchCategorynalytics(date, self.card.cardSerialNumber ?? "", filterBy: String(self.data.categoryId ?? 0))
         }
         .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
         .share()
