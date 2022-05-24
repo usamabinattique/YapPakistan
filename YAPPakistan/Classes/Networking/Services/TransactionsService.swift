@@ -41,6 +41,7 @@ protocol TransactionsServiceType {
     func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [Int?]) -> Observable<T>
     func getTransactionCategories<T: Codable>() -> Observable<T>
     func addTransactionNote< T: Codable>(transactionID : String, transactionNote : String, receiverTransactionNote: String?) -> Observable<T>
+    func fetchTotalPurchases<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T>
     func getFEDFee<T: Codable>(for scheme: String) -> Observable<T>
 }
 
@@ -258,6 +259,13 @@ class TransactionsService: BaseService, TransactionsServiceType {
         let params : [String:String] = ["transactionId": transactionID, "transactionNote": transactionNote, "receiverTransactionNote": receiverTransactionNote ?? ""]
         let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/transaction-note", body: params, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: apiClient, route: route)
+    }
+    
+    func fetchTotalPurchases<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T> {
+        //let pathVariables = [scheme]
+        let pathVariables = ["PAYPAK-PHYSICAL"]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/fee", pathVariables: pathVariables, query: nil, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func getFEDFee<T: Codable>(for scheme: String) -> Observable<T> {

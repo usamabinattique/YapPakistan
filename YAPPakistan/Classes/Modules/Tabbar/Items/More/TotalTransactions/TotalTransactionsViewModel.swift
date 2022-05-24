@@ -33,6 +33,7 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
     var inputs: TotalTransactionsViewModelInput { return self }
     var outputs: TotalTransactionsViewModelOutput { return self }
     private var themeService: ThemeService<AppTheme>
+    private var transactionRepository : TransactionsRepositoryType
     
     // MARK: - Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
@@ -43,16 +44,31 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     
     // MARK: - Init
-    init(themeService: ThemeService<AppTheme>) {
+    init(transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>) {
         self.themeService = themeService
+        self.transactionRepository = transactionRepository
         let cellViewModels: [ReusableTableViewCellViewModelType] = [TransactionTabelViewCellViewModel(transaction: TransactionResponse(), color: UIColor.gray, themeService: themeService),TransactionTabelViewCellViewModel(transaction: TransactionResponse(), color: UIColor.gray, themeService: themeService),TransactionTabelViewCellViewModel(transaction: TransactionResponse(), color: UIColor.gray, themeService: themeService),TransactionTabelViewCellViewModel(transaction: TransactionResponse(), color: UIColor.gray, themeService: themeService),TransactionTabelViewCellViewModel(transaction: TransactionResponse(), color: UIColor.gray, themeService: themeService)]
         dataSourceSubject.onNext([SectionModel(model: 0, items: cellViewModels)])
         
         setNaviagtionTitle(withTransacationsCount: cellViewModels.count)
+        getTotalTransactions()
     }
     
     private func setNaviagtionTitle(withTransacationsCount count : Int) {
         navigationTitleSubject.onNext("\(count) Transactions")
+    }
+    
+    private func getTotalTransactions() {
+        YAPProgressHud.showProgressHud()
+        let fetchTotalTransactionsRequest = transactionRepository.fetchTotalPurchases(txnType: "", productCode: "", receiverCustomerId: "", senderCustomerId: "", beneficiaryId: "", merchantName: "")
+        
+        fetchTotalTransactionsRequest.elements().subscribe(onNext: { [unowned self] _ in
+            YAPProgressHud.hideProgressHud()
+        }).disposed(by: disposeBag)
+        
+        fetchTotalTransactionsRequest.errors().subscribe(onNext: { [unowned self] error in
+            YAPProgressHud.hideProgressHud()
+        }).disposed(by: disposeBag)
     }
 }
 
