@@ -46,7 +46,7 @@ protocol TransactionsRepositoryType {
     func getAccountLimits() -> Observable<Event<[AccountLimits]?>>
     func getTransactionCategories() -> Observable<Event<TransactionBarCategoriesResponse>>
     func addTransactionNote(trnsactionID: String, transactionNote: String, receiverTransactionNote: String?) -> Observable<Event<String>>
-    func fetchTotalPurchases(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<[TotalPurchaseResponse]>>
+    func fetchTotalPurchases(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<[TransactionResponse]>>
     func getFEDFee(for scheme: String) -> Observable<Event<Double?>>
 }
 
@@ -167,7 +167,7 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
         return transactionService.addTransactionNote(transactionID: trnsactionID, transactionNote: transactionNote, receiverTransactionNote: receiverTransactionNote).materialize()
     }
     
-    public func fetchTotalPurchases(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<[TotalPurchaseResponse]>> {
+    public func fetchTotalPurchases(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<[TransactionResponse]>> {
         return transactionService.fetchTotalPurchases(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: merchantName).materialize()
     }
     
