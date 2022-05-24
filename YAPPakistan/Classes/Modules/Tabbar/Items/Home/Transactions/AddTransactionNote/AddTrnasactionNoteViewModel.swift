@@ -73,7 +73,7 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
         
         req.subscribe(onNext: { [unowned self] note in
             
-            var addNoteReq = transactionRepo.addTransactionNote(trnsactionID: self.transactionID, transactionNote: note, receiverTransactionNote: nil)
+            let addNoteReq = transactionRepo.addTransactionNote(trnsactionID: self.transactionID, transactionNote: note, receiverTransactionNote: nil)
             
             addNoteReq.elements().subscribe(onNext: { data in
                 print(data)

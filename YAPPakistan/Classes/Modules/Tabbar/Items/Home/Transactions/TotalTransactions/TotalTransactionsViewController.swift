@@ -104,7 +104,6 @@ fileprivate extension TotalTransactionsViewController {
             .bind({ UIColor($0.greyDark) }, to: [merchantTitleLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [totalTransactionsAmountLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [(navigationItem.leftBarButtonItem?.rx.tintColor)!])
-        
     }
     
     func setupViews() {
@@ -163,7 +162,6 @@ fileprivate extension TotalTransactionsViewController {
             cell.configure(with: self.themeService, viewModel: viewModel)
             return cell
         })
-        
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
     }
 }
