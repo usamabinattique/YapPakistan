@@ -107,7 +107,7 @@ extension TransactionDetailsViewController: ViewDesignable {
             .width(constant: 64)
         
         headerShareBtn
-            .alignEdgesWithSuperview([.safeAreaTop, .right], constants: [20, 25])
+            .alignEdgesWithSuperview([.safeAreaTop, .right], constants: [0, 25])
             .height(constant: 32)
             .width(constant: 32)
         
