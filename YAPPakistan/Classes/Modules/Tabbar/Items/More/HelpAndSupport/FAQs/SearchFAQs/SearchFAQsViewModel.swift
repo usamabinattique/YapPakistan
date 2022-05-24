@@ -14,6 +14,7 @@ protocol SearchFAQsViewModelInput {
     var textObserver: AnyObserver<String?> { get }
     var cancelObserver: AnyObserver<Void> { get }
     var tableViewItemTapped: AnyObserver<ReusableTableViewCellViewModelType> { get }
+    var isSearching: AnyObserver<Bool?> { get }
 }
 
 protocol SearchFAQsViewModelOutput {
@@ -38,16 +39,17 @@ class SearchFAQsViewModel: SearchFAQsViewModelType, SearchFAQsViewModelInput, Se
     private let showFAQDetailsSubject = PublishSubject<FAQsResponse>()
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     var tableViewCells: [ReusableTableViewCellViewModelType] = [FAQsTableViewCellViewModel]()
-    private let textSubject = PublishSubject<String?>()
+    private let textSubject = BehaviorSubject<String?>(value: "") //PublishSubject<String?>()
     private let cancelSubject = PublishSubject<Void>()
     private let tableViewItemTappedSubject = PublishSubject<ReusableTableViewCellViewModelType>()
     private let errorSubject = PublishSubject<String>()
+    private let isSearchingSubject = BehaviorSubject<Bool?>(value: false)
     
     // MARK: - Inputs
     var tableViewItemTapped: AnyObserver<ReusableTableViewCellViewModelType> { return tableViewItemTappedSubject.asObserver() }
     var textObserver: AnyObserver<String?> { return textSubject.asObserver() }
     var cancelObserver: AnyObserver<Void> { return cancelSubject.asObserver() }
-    
+    var isSearching: AnyObserver<Bool?> { return isSearchingSubject.asObserver() }
     
     // MARK: - Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
@@ -69,6 +71,7 @@ class SearchFAQsViewModel: SearchFAQsViewModelType, SearchFAQsViewModelInput, Se
             guard let selectedItem = item as? FAQsTableViewCellViewModel else { return }
             self.getTappedFAQ(viewModel: selectedItem)
         }).disposed(by: disposeBag)
+        
     }
     
     func getTappedFAQ(viewModel: FAQsTableViewCellViewModel) {
@@ -92,6 +95,13 @@ class SearchFAQsViewModel: SearchFAQsViewModelType, SearchFAQsViewModelInput, Se
         }
     }
     
+    func prepareCellViewModels(withFAQs faqs: [FAQsResponse]) {
+        self.tableViewCells.removeAll()
+        for faq in faqs {
+            tableViewCells.append(FAQsTableViewCellViewModel(faq: faq))
+        }
+    }
+    
     func reloadTableViewCells() {
         self.dataSourceSubject.onNext([SectionModel(model: 0, items: tableViewCells)])
     }
@@ -101,11 +111,25 @@ class SearchFAQsViewModel: SearchFAQsViewModelType, SearchFAQsViewModelInput, Se
 
 private extension SearchFAQsViewModel {
     func search() {
+        
         textSubject.subscribe(onNext: { searchText in
             print("Searched Text: \(searchText)")
-            self.faqs = self.faqs.sorted(by: { $0.question.contains(searchText ?? "") && !$1.question.contains(searchText ?? "") })
-            self.prepareCellViewModels()
-             self.reloadTableViewCells()
+            if searchText == "" {
+                self.prepareCellViewModels()
+                self.reloadTableViewCells()
+                return
+            }
+            var searchFAQs = self.faqs
+            searchFAQs.removeAll { faq in
+                if faq.question.contains(searchText!, caseSensitive: false) {
+                    return false
+                }
+                else {
+                    return true
+                }
+            }
+            self.prepareCellViewModels(withFAQs: searchFAQs)
+            self.reloadTableViewCells()
         }).disposed(by: disposeBag)
     }
 }

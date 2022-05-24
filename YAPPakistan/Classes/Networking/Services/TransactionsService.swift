@@ -41,6 +41,7 @@ protocol TransactionsServiceType {
     func fetchMerchantAnalytics<T: Codable>(_ date: String, _ cardSerialNo: String, isMerchantAnalytics: Bool, filterBy: String) -> Observable<T>
     func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, filterBy: String) -> Observable<T>
     func getTransactionCategories<T: Codable>() -> Observable<T>
+    func addTransactionNote< T: Codable>(transactionID : String, transactionNote : String, receiverTransactionNote: String?) -> Observable<T>
     func getFEDFee<T: Codable>(for scheme: String) -> Observable<T>
 }
 
@@ -261,6 +262,13 @@ class TransactionsService: BaseService, TransactionsServiceType {
     public func getTransactionCategories<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction/dashboard/category-bar", query: nil, body: nil, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func addTransactionNote<T: Codable>(transactionID: String, transactionNote: String, receiverTransactionNote: String?) -> Observable<T> {
+        
+        let params : [String:String] = ["transactionId": transactionID, "transactionNote": transactionNote, "receiverTransactionNote": receiverTransactionNote ?? ""]
+        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/transaction-note", body: params, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: apiClient, route: route)
     }
     
     public func getFEDFee<T: Codable>(for scheme: String) -> Observable<T> {
