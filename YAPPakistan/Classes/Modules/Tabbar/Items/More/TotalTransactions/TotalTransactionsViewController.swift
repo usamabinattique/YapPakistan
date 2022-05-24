@@ -153,6 +153,8 @@ fileprivate extension TotalTransactionsViewController {
             guard let self = self else { return }
             self.title = title
         }).disposed(by: disposeBag)
+        
+        viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
     }
     
     func bindTableView() {

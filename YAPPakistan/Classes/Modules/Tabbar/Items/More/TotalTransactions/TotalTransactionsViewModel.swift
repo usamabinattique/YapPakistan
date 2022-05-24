@@ -19,6 +19,7 @@ protocol TotalTransactionsViewModelInput {
 protocol TotalTransactionsViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var navigationTitle: Observable<String> { get }
+    var error: Observable<String> { get }
 }
 
 protocol TotalTransactionsViewModelType {
@@ -38,10 +39,12 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
     // MARK: - Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
     var navigationTitle: Observable<String> { return navigationTitleSubject.asObservable()}
+    var error: Observable<String> { return errorSubject.asObservable() }
     
     internal var navigationTitleSubject = BehaviorSubject<String>(value: "")
     
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
+    private let errorSubject = PublishSubject<String>()
     
     // MARK: - Init
     init(transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>) {
@@ -68,6 +71,7 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
         
         fetchTotalTransactionsRequest.errors().subscribe(onNext: { [unowned self] error in
             YAPProgressHud.hideProgressHud()
+            errorSubject.onNext(error.localizedDescription)
         }).disposed(by: disposeBag)
     }
 }
