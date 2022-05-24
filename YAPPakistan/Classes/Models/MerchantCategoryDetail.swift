@@ -10,13 +10,13 @@ import Foundation
 
 // MARK: - Welcome
 struct MerchantCategoryDetail: Codable {
-    let currentToLastMonth: String
-    let averageSpending: String
+    let currentToLastMonth: Double
+    let averageSpending: Double
     let transactionDetails: [TransactionResponse]
 }
 
 extension MerchantCategoryDetail {
-    static var mocked: MerchantCategoryDetail = MerchantCategoryDetail(currentToLastMonth: "50", averageSpending: "80", transactionDetails: [TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init()])
+    static var mocked: MerchantCategoryDetail = MerchantCategoryDetail(currentToLastMonth: 50, averageSpending: 80, transactionDetails: [TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init(), TransactionResponse.init()])
 }
 
 //MARK: Transaction

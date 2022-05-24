@@ -37,9 +37,11 @@ protocol TransactionsServiceType {
     func emailStatement<T: Codable>(url: String, month: String, year: String, statementType: String, cardType: String?) -> Observable<T>
     func getTransactionsByCategory<T: Codable> (date: String) -> Observable<T>
     func getTransactionsByMerchant<T: Codable>(date: String) -> Observable<T>
-    func fetchMerchantAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [String]?) -> Observable<T>
-    func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [Int?]) -> Observable<T>
+   /* func fetchMerchantAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [String]?) -> Observable<T> */
+    func fetchMerchantAnalytics<T: Codable>(_ date: String, _ cardSerialNo: String, isMerchantAnalytics: Bool, filterBy: String) -> Observable<T>
+    func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, filterBy: String) -> Observable<T>
     func getTransactionCategories<T: Codable>() -> Observable<T>
+    func addTransactionNote< T: Codable>(transactionID : String, transactionNote : String, receiverTransactionNote: String?) -> Observable<T>
     func getFEDFee<T: Codable>(for scheme: String) -> Observable<T>
 }
 
@@ -235,21 +237,38 @@ class TransactionsService: BaseService, TransactionsServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
-    public func fetchMerchantAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [String]?) -> Observable<T> {
-        let query = ["cardSerialNumber": cardSerialNo, "date" : date, "isMerchantAnalytics": String(true)] //["cardSerialNo" : cardSerialNo, "date" : date]
-        let route = APIEndpoint(.get, apiConfig.transactionsURL, "/api/transaction/analytics-details"/*"/api/transaction-search/merchant-name" */, query: query, body: categories, headers: authorizationProvider.authorizationHeaders)
+    public func /*fetchMerchantAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [String]?) -> Observable<T> */ fetchMerchantAnalytics<T: Codable> (_ date: String, _ cardSerialNo: String, isMerchantAnalytics: Bool, filterBy: String) -> Observable<T> {
+        let query = ["cardSerialNo": cardSerialNo, "date" : date, "isMerchantAnalytics": String(isMerchantAnalytics), "filterBy": filterBy] //["cardSerialNo" : cardSerialNo, "date" : date]
+      /*  let route = APIEndpoint(.get, apiConfig.transactionsURL, "/api/transaction/analytics-details"/*"/api/transaction-search/merchant-name" */, query: query, body: [], headers: authorizationProvider.authorizationHeaders)  */
+        
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction/analytics-details"/*"/api/transaction-search/merchant-name" */, query:query ,body: nil ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
+//
+    struct AnalyticsDataInput: Codable {
+        var cardSerialNo: String?
+        var date: String?
+        var isMerchantAnalytics: Bool?
+        var filterBy: String?
+    }
     
-    public func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, categories: [Int?]) -> Observable<T> {
-        let query = ["cardSerialNumber": cardSerialNo, "date" : date, "isMerchantAnalytics": String(false)] // ["cardSerialNo" : cardSerialNo, "date" : date]
-        let route = APIEndpoint(.get, apiConfig.transactionsURL, "/api/transaction/analytics-details", query: query, body: categories, headers: authorizationProvider.authorizationHeaders)
+    public func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, filterBy: String) -> Observable<T> {
+        let query = ["cardSerialNo": cardSerialNo, "date" : date, "isMerchantAnalytics": String(false), "filterBy": filterBy] // ["cardSerialNo" : cardSerialNo, "date" : date]
+//        let body = AnalyticsDataInput(cardSerialNo: cardSerialNo, date: date, isMerchantAnalytics: false, filterBy: filterBy)
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction/analytics-details", query: query ,body: nil, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func getTransactionCategories<T: Codable>() -> Observable<T> {
         let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction/dashboard/category-bar", query: nil, body: nil, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func addTransactionNote<T: Codable>(transactionID: String, transactionNote: String, receiverTransactionNote: String?) -> Observable<T> {
+        
+        let params : [String:String] = ["transactionId": transactionID, "transactionNote": transactionNote, "receiverTransactionNote": receiverTransactionNote ?? ""]
+        let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/transaction-note", body: params, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: apiClient, route: route)
     }
     
     public func getFEDFee<T: Codable>(for scheme: String) -> Observable<T> {
