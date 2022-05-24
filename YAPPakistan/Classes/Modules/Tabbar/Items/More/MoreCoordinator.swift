@@ -100,8 +100,13 @@ extension MoreCoordinator {
         //        navigationRoot.present(navController, animated: true)
         
         
-        let viewModel = TotalTransactionsViewModel(transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
-        let viewController = TotalTransactionsViewController(viewModel: viewModel, themeService: self.container.themeService)
+        //        let viewModel = TotalTransactionsViewModel(transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
+        //        let viewController = TotalTransactionsViewController(viewModel: viewModel, themeService: self.container.themeService)
+        //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        //        navigationRoot.present(navController, animated: true)
+        
+        let viewModel = TransactionReceiptViewModel()
+        let viewController = TransactionReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
         let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
         navigationRoot.present(navController, animated: true)
     }
