@@ -22,7 +22,7 @@ import UIKit
 protocol TransactionsViewModelInputs {
     var fetchTransactionsObserver: AnyObserver<Void> { get }
     var viewAppearedObsever: AnyObserver<Void> { get }
-    var transactionDetailsObserver: AnyObserver<CDTransaction> { get }
+    var transactionDetailsObserver: AnyObserver<TransactionResponse> { get }
     var openFilterObserver: AnyObserver<Void> { get }
     var filterSelected: AnyObserver<TransactionFilter?> { get }
     var openWelcomeTutorialObserver: AnyObserver<Void> { get }
@@ -44,7 +44,7 @@ protocol TransactionsViewModelOutputs {
     var transactionTableViewCellViewModel: Observable<[SectionModel<(date: String, amount: String), ReusableTableViewCellViewModelType>]> { get }
     var transactions: Observable<[SectionTransaction]> { get }
     var fetchTransactions: Observable<Void> { get }
-    var transactionDetails: Observable<CDTransaction> { get }
+    var transactionDetails: Observable<TransactionResponse> { get }
     var openFilter: Observable<TransactionFilter?> { get }
     var filterEnabled: Observable<Bool> { get }
     var filterCount: Observable<Int> { get }
@@ -91,7 +91,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private let showsPlaceholderSubject = BehaviorSubject<Bool>(value: true)
     private let viewAppearedSubject = PublishSubject<Void>()
     private let isLast = BehaviorSubject<Bool>(value: false)
-    private let transactionDetailsSubject = PublishSubject<CDTransaction>()
+    private let transactionDetailsSubject = PublishSubject<TransactionResponse>()
     private let openFilterSubject = PublishSubject<Void>()
     private let filterSelectedSubject = PublishSubject<TransactionFilter?>()
     private let filterEnabledSubject = BehaviorSubject<Bool>(value: true)
@@ -130,7 +130,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     // MARK: - Input
     var fetchTransactionsObserver: AnyObserver<Void> { return fetchTransactionsSubject.asObserver() }
     var viewAppearedObsever: AnyObserver<Void> { return viewAppearedSubject.asObserver() }
-    var transactionDetailsObserver: AnyObserver<CDTransaction> { return transactionDetailsSubject.asObserver() }
+    var transactionDetailsObserver: AnyObserver<TransactionResponse> { return transactionDetailsSubject.asObserver() }
     var openWelcomeTutorialObserver: AnyObserver<Void> { openWelcomTutorialSubject.asObserver() }
     var updateCategoryBarObserver: AnyObserver<Bool> { updateCategoryBarSubject.asObserver() }
     var canShowDynamicData: AnyObserver<Bool> {canShowDynamicDataSubject.asObserver()}
@@ -150,7 +150,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     // MARK: - Output
     var fetchTransactions: Observable<Void> { return fetchTransactionsSubject.asObservable() }
     var transactionTableViewCellViewModel: Observable<[SectionModel<(date: String, amount: String), ReusableTableViewCellViewModelType>]> { return transactionTableViewCellViewModelSubject.asObservable() }
-    var transactionDetails: Observable<CDTransaction> { return transactionDetailsSubject.asObservable() }
+    var transactionDetails: Observable<TransactionResponse> { return transactionDetailsSubject.asObservable() }
     var openFilter: Observable<TransactionFilter?> { return  openFilterSubject.map { [weak self] in self?.filter } }
     var filterEnabled: Observable<Bool> { return filterEnabledSubject.asObservable() }
     var reloadData: Observable<Void> { return reloadDataSubject.asObservable() }
@@ -272,6 +272,13 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         nothingLabelSubject = BehaviorSubject(value: "screen_home_display_text_nothing_to_report".localized)
         showsFilterSubject = BehaviorSubject(value: showFilter)
         super.init()
+        
+        transactionDetailsSubject
+            .subscribe(onNext:{ _ in
+                print("detail for transactions tapped")
+            })
+            .disposed(by: rx.disposeBag)
+
         
         showShimmeringSubject.debounce(RxTimeInterval.seconds(Int(1)), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
             self?.isShimmering = IsLoading

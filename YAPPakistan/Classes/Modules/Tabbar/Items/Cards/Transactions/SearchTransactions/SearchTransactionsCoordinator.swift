@@ -64,7 +64,7 @@ public class SearchTransactionsCoordinator: Coordinator<ResultType<Void>> {
 // MARK: Navigation
 
 private extension SearchTransactionsCoordinator {
-    func navigateToDetails(_ transaction: CDTransaction) {
+    func navigateToDetails(_ transaction: TransactionResponse) {
        /* coordinate(to: TransactionDetailsCoordinator(cdTransaction: transaction, root: localRoot)).subscribe(onNext: {[weak self] result in
             if !(result.isCancel) {
                 self?.categoryChangedResult = true

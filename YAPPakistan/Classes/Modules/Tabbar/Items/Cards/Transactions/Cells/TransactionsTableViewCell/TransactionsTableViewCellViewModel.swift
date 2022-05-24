@@ -54,7 +54,7 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
     var inputs: TransactionsTableViewCellViewModelInputs { return self}
     var outputs: TransactionsTableViewCellViewModelOutputs { return self }
     var reusableIdentifier: String { return TransactionsTableViewCell.defaultIdentifier }
-    var transaction: Transaction!
+    var transaction: TransactionResponse!
     let transactionId: String
     let cdTransaction: CDTransaction?
     

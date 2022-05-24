@@ -142,6 +142,13 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.topUp.withUnretained(self).subscribe(onNext: { `self`, card in
             self.topup(self.root)
         }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.transactionDetails
+            .subscribe(onNext: { obj in
+                print(obj)
+                self.navigateToTransactionDetails(transaction: obj)
+            })
+            .disposed(by: rx.disposeBag)
     }
     
     func showCreditLimit() {
@@ -370,13 +377,13 @@ extension HomeCoodinator {
 //        }).disposed(by: disposeBag)
     }
 
-    func navigateToTransactionDetails(cdTransaction: CDTransaction) {
-//        self.coordinate(to: TransactionDetailsCoordinator(cdTransaction: cdTransaction, root: root))
-//            .subscribe(onNext: {[weak self] result in
-//                if !(result.isCancel) {
-//                    self?.transactionCategoryResult.onNext(())
-//                }
-//            }).disposed(by: disposeBag)
+    func navigateToTransactionDetails(transaction: Transaction) {
+        self.coordinate(to: TransactionDetailsCoordinator(root: root, container: container, repository: container.makeTransactionsRepository()))
+            .subscribe(onNext: {[weak self] result in
+                if !(result.isCancel) {
+                    self?.transactionCategoryResult.onNext(())
+                }
+            }).disposed(by: rx.disposeBag)
     }
 
     func navigateToFilterSelection(selectedFilter: TransactionFilter?, resultObserver: AnyObserver<TransactionFilter?>) {
