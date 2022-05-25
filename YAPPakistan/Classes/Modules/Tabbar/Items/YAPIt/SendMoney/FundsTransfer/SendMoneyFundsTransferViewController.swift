@@ -104,7 +104,14 @@ class SendMoneyFundsTransferViewController: KeyboardAvoidingViewController {
     
     @objc
     private func backAction() {
-        viewModel.inputs.backObserver.onNext(())
+        self.showAddBeneficiaryCancelAlert()
+    }
+    
+    func showAddBeneficiaryCancelAlert() {
+        
+        showAddBeneficiaryCancelAlert(title:"screen_add_beneficiary_detail_display_text_cancel_popup_title".localized, message: "screen_add_beneficiary_detail_display_text_cancel_popup_message".localized, cancelButtonTitle: "common_button_cancel".localized, confirmButtonTitle: "common_button_confirm".localized, cancelButtonHandler: nil, confirmButtonHandler: { [weak self] _ in
+        self?.viewModel.inputs.backObserver.onNext(())
+              }, completion: nil)
     }
 }
 
