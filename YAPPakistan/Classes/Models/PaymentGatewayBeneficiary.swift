@@ -117,7 +117,7 @@ public extension ExternalPaymentCard {
 
 extension ExternalPaymentCard {
     var maskedNumber: String {
-        return "**** **** **** \(last4Digits)"
+        return "XXXX XXXX XXXX \(last4Digits)"
     }
     
     var expiryDate: Date? {
@@ -132,7 +132,7 @@ extension ExternalPaymentCard {
             return brokenDate
         }
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/yyyy"
+        dateFormatter.dateFormat = "MM/yy"
         return dateFormatter.string(from: expiry)
     }
     

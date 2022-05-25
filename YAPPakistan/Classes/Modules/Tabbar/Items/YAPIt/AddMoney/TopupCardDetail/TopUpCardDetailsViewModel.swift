@@ -81,7 +81,7 @@ class TopUpCardDetailsViewModel: TopUpCardDetailsViewModelType, TopUpCardDetails
     var expiryPlaceholder: Observable<String> { return Observable.of( "screen_topup_card_details_display_text_placeholder_expiry".localized) }
     var expiry: Observable<String> {
         return externalPaymentCard.map {
-            "\($0.expiry.subString(0, length: 2))/20\($0.expiry.subString(2, length: 4))"
+            "\($0.expiry.subString(0, length: 2))/\($0.expiry.subString(2, length: 4))"
         }
     }
     var isExpired: Observable<Bool> { isExpiredSubject.asObservable() }
