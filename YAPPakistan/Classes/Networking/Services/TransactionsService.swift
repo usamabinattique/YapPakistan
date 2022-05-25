@@ -42,6 +42,7 @@ protocol TransactionsServiceType {
     func getTransactionCategories<T: Codable>() -> Observable<T>
     func addTransactionNote< T: Codable>(transactionID : String, transactionNote : String, receiverTransactionNote: String?) -> Observable<T>
     func fetchTotalPurchases<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T>
+    func fetchTransactionReceipt<T: Codable>(transactionID: String) -> Observable<T>
     func getFEDFee<T: Codable>(for scheme: String) -> Observable<T>
 }
 
@@ -261,7 +262,13 @@ class TransactionsService: BaseService, TransactionsServiceType {
         return self.request(apiClient: apiClient, route: route)
     }
     
-    func fetchTotalPurchases<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T> {
+    public func fetchTransactionReceipt<T: Codable>(transactionID: String) -> Observable<T> {
+        let pathVariables = [transactionID]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction-receipt/transaction-id/", pathVariables: pathVariables, query: nil, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchTotalPurchases<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T> {
         //let pathVariables = [scheme]
         
         var params = [String: String]()

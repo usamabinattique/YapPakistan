@@ -26,20 +26,6 @@ class TransactionReceiptViewController: UIViewController {
     }
     
     // MARK: - Views
-    private lazy var stackView = UIFactory.makeStackView( axis: .vertical,
-                                                          alignment: .center,
-                                                          distribution: .fill,
-                                                          spacing: 15 )
-    
-    private lazy var innerStackView = UIFactory.makeStackView( axis: .vertical,
-                                                          alignment: .center,
-                                                          distribution: .fill,
-                                                          spacing: 3 )
-    
-    lazy var merchantImageView = UIFactory.makeImageView(contentMode: .scaleAspectFill)
-    lazy var merchantTitleLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0)
-    lazy var totalTransactionsAmountLabel = UIFactory.makeLabel(font: .systemFont(ofSize: 24), alignment: .center, numberOfLines: 0)
-    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.separatorStyle = .none
@@ -48,6 +34,7 @@ class TransactionReceiptViewController: UIViewController {
         return tableView
     }()
     
+    private lazy var shareBtn = UIFactory.makeAppRoundedButton(with: .regular, title: "Share")
     
     // MARK: - Properties
     let viewModel: TransactionReceiptViewModelType
@@ -59,8 +46,10 @@ class TransactionReceiptViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Total Transactions"
+        self.title = "Transcation receipt"
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_back",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
+        
+        shareBtn.addTarget(self, action: #selector(shareScreenShotAction), for: .touchUpInside)
         setup()
         bind()
         bindTableView()
@@ -71,7 +60,16 @@ class TransactionReceiptViewController: UIViewController {
     private func backAction() {
         self.navigationController?.dismiss(animated: true, completion: nil)
     }
-
+    
+    @objc
+    private func shareScreenShotAction() {
+        let screenShot = self.getScreenshot(view: self.tableView)
+        let imageShare = [ screenShot ]
+        let activityViewController = UIActivityViewController(activityItems: imageShare , applicationActivities: nil)
+        activityViewController.popoverPresentationController?.sourceView = self.view
+        self.present(activityViewController, animated: true, completion: nil)
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -84,6 +82,22 @@ class TransactionReceiptViewController: UIViewController {
     
     override internal func onTapBackButton() {
         //viewModel.inputs.backObserver.onNext(())
+    }
+    
+    private func getScreenshot(view: UIView) -> UIImage? {
+        //creates new image context with same size as view
+        // UIGraphicsBeginImageContextWithOptions (scale=0.0) for high res capture
+        UIGraphicsBeginImageContextWithOptions(view.frame.size, true, 0.0)
+        
+        // renders the view's layer into the current graphics context
+        if let context = UIGraphicsGetCurrentContext() { view.layer.render(in: context) }
+        
+        // creates UIImage from what was drawn into graphics context
+        let screenshot: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
+        
+        // clean up newly created context and return screenshot
+        UIGraphicsEndImageContext()
+        return screenshot
     }
     
     deinit {
@@ -101,46 +115,27 @@ fileprivate extension TransactionReceiptViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.greyDark) }, to: [merchantTitleLabel.rx.textColor])
-            .bind({ UIColor($0.primaryDark) }, to: [totalTransactionsAmountLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [(navigationItem.leftBarButtonItem?.rx.tintColor)!])
+            .bind({ UIColor($0.primary) }, to: [shareBtn.rx.backgroundColor])
     }
     
     func setupViews() {
         view.backgroundColor = .white
-        view.addSubview(stackView)
-        
-        stackView.addArrangedSubview(merchantImageView)
-        
-        innerStackView.addArrangedSubview(merchantTitleLabel)
-        innerStackView.addArrangedSubview(totalTransactionsAmountLabel)
-        stackView.addArrangedSubview(innerStackView)
         
         view.addSubview(tableView)
-        
-        merchantTitleLabel.text = "DSTV"
-        totalTransactionsAmountLabel.text = "PKR 780.23"
-        merchantImageView.clipsToBounds = true
-        merchantImageView.layer.cornerRadius = 32
-        merchantImageView.contentMode = .scaleAspectFill
-        
-        tableView.register(TransactionTableViewCell.self, forCellReuseIdentifier: TransactionTableViewCell.defaultIdentifier)
+        view.addSubview(shareBtn)
+        tableView.register(TransactionReceiptTableViewCell.self, forCellReuseIdentifier: TransactionReceiptTableViewCell.defaultIdentifier)
     }
     
     func setupConstraints() {
-        stackView
-            .alignEdgesWithSuperview([.safeAreaTop, .safeAreaLeft, .safeAreaRight], constants: [25,25,25])
-            .centerHorizontallyInSuperview()
-            
-        merchantImageView
-            .height(constant: 64)
-            .width(constant: 64)
-        
         tableView
-            .toBottomOf(stackView, constant: 25)
-            .alignEdgesWithSuperview([.safeAreaLeft, .safeAreaRight, .safeAreaBottom], constants: [5,5,0])
+            .alignEdgesWithSuperview([.safeAreaTop, .safeAreaRight, .safeAreaLeft], constants: [20, 20, 20])
         
-        merchantImageView.backgroundColor = UIColor.blue
+        shareBtn
+            .alignEdgesWithSuperview([.bottom, .left, .right], constants: [60, 108, 108])
+            .toBottomOf(tableView, constant: 20)
+            .centerHorizontallyInSuperview()
+            .height(constant: 55)
     }
 }
 
@@ -148,21 +143,21 @@ fileprivate extension TransactionReceiptViewController {
 // MARK: - Bind
 fileprivate extension TransactionReceiptViewController {
     func bind() {
-//        viewModel.outputs.navigationTitle.subscribe(onNext: { [weak self] title in
-//            guard let self = self else { return }
-//            self.title = title
-//        }).disposed(by: disposeBag)
-//        
-//        viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
+        //        viewModel.outputs.navigationTitle.subscribe(onNext: { [weak self] title in
+        //            guard let self = self else { return }
+        //            self.title = title
+        //        }).disposed(by: disposeBag)
+        //
+        //        viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
     }
     
     func bindTableView() {
-//        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
-//            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
-//            cell.configure(with: self.themeService, viewModel: viewModel)
-//            return cell
-//        })
-//        viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
+            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
+            cell.configure(with: self.themeService, viewModel: viewModel)
+            return cell
+        })
+        viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
     }
 }
 
