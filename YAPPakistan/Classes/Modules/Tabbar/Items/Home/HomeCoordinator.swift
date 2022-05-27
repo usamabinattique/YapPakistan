@@ -377,8 +377,8 @@ extension HomeCoodinator {
 //        }).disposed(by: disposeBag)
     }
 
-    func navigateToTransactionDetails(transaction: Transaction) {
-        self.coordinate(to: TransactionDetailsCoordinator(root: root, container: container, repository: container.makeTransactionsRepository()))
+    func navigateToTransactionDetails(transaction: TransactionResponse) {
+        self.coordinate(to: TransactionDetailsCoordinator(root: root, container: container, repository: container.makeTransactionsRepository(), transaction: transaction))
             .subscribe(onNext: {[weak self] result in
                 if !(result.isCancel) {
                     self?.transactionCategoryResult.onNext(())

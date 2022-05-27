@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "td_image_light_blue_background.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
