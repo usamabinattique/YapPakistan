@@ -31,30 +31,30 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
     private lazy var countryPicker: AppPickerView = {
         return AppPickerView()
     }()
-
+    
     private lazy var countryTextField: UITextField = {
         let textField = UITextField(frame: .zero)
         textField.inputView = countryPicker
         return textField
     }()
-
+    
     override var firstReponder: UITextField? {
         return mobileNumber
     }
-
+    
     var viewModel: PhoneNumberViewModelType!
     private var themeService: ThemeService<AppTheme>!
-
+    
     init(themeService: ThemeService<AppTheme>, viewModel: PhoneNumberViewModelType) {
         self.viewModel = viewModel
         self.themeService = themeService
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
@@ -62,7 +62,7 @@ class PhoneNumberViewController: OnBoardinContainerChildViewController {
         setupConstraint()
         bindViews()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.inputs.viewAppearedObserserver.onNext(true)
@@ -88,7 +88,7 @@ private extension PhoneNumberViewController {
         view.addSubview(mobileNumber)
         view.addSubview(countryTextField)
     }
-
+    
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor ) }, to: [view.rx.backgroundColor])
@@ -99,12 +99,12 @@ private extension PhoneNumberViewController {
             .bind({ UIColor($0.error           ) }, to: [mobileNumber.rx.errorColor])
             .disposed(by: rx.disposeBag)
     }
-
+    
     func setupConstraint() {
-
+        
         headingLabel
             .alignEdgesWithSuperview([.right, .left, .top], constants: [25, 25, 30])
-
+        
         mobileNumber
             .toBottomOf(headingLabel, .lessThanOrEqualTo, constant: 90)
             .alignEdgesWithSuperview([.left, .right], constant: 25)
@@ -121,16 +121,19 @@ private extension PhoneNumberViewController {
         mobileNumber.rx.text.bind(to: viewModel.inputs.textObserver).disposed(by: rx.disposeBag)
         mobileNumber.leftIcon.rx.tap.bind(to: viewModel.inputs.iconTapObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.inputValidation.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
-        viewModel.outputs.icon.map({  UIImage(named: $0 ?? "") }).bind(to: mobileNumber.leftIcon.rx.image(for: .normal)).disposed(by: rx.disposeBag)
-
+        viewModel.outputs.icon
+            .map({ UIImage(named: $0, in: .yapPakistan) })
+            .bind(to: mobileNumber.leftIcon.rx.image(for: .normal))
+            .disposed(by: rx.disposeBag)
+        
         Observable.merge(countryPicker.rx.cancel, countryPicker.rx.done.map { _ in }).subscribe(onNext: { [unowned self] in
             _ = self.mobileNumber.becomeFirstResponder()
         }).disposed(by: rx.disposeBag)
-
+        
         viewModel.outputs.countries.bind(to: countryPicker.rx.itemTitles) { _, text in return text }.disposed(by: rx.disposeBag)
-
+        
         countryPicker.rx.itemSelected.map { $0.row }.bind(to: viewModel.inputs.countrySelectionObserver).disposed(by: rx.disposeBag)
-
+        
         viewModel.outputs.showError.bind(to: mobileNumber.errorLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.showError.map { _ in AppRoundedTextFieldValidation.invalid(nil) }.bind(to: mobileNumber.rx.validation).disposed(by: rx.disposeBag)
         viewModel.outputs.endEditting.bind(to: view.rx.endEditting).disposed(by: rx.disposeBag)
@@ -150,26 +153,26 @@ extension Reactive where Base: AppPickerView {
     var itemSelected: ControlEvent<(row: Int, component: Int)> {
         return base.pickerView.rx.itemSelected
     }
-
+    
     var done: Observable<[(row: Int, component: Int)]> {
         return base.toolbaar.doneButton.rx.tap.map{ base.getSelectedIndexes() }
     }
-
+    
     var cancel: Observable <Void> {
         return base.toolbaar.cancelButton.rx.tap.asObservable()
     }
-
+    
     func itemTitles<S: Sequence, O: ObservableType>
-        (_ source: O)
-        -> (_ titleForRow: @escaping (Int, S.Iterator.Element) -> String?)
-        -> Disposable where O.Element == S {
-            return base.pickerView.rx.itemTitles(source)
+    (_ source: O)
+    -> (_ titleForRow: @escaping (Int, S.Iterator.Element) -> String?)
+    -> Disposable where O.Element == S {
+        return base.pickerView.rx.itemTitles(source)
     }
-
+    
     func itemAttributedTitles<S: Sequence, O: ObservableType>
-        (_ source: O)
-        -> (_ attributedTitleForRow: @escaping (Int, S.Iterator.Element) -> NSAttributedString?)
-        -> Disposable where O.Element == S {
-            return base.pickerView.rx.itemAttributedTitles(source)
+    (_ source: O)
+    -> (_ attributedTitleForRow: @escaping (Int, S.Iterator.Element) -> NSAttributedString?)
+    -> Disposable where O.Element == S {
+        return base.pickerView.rx.itemAttributedTitles(source)
     }
 }
