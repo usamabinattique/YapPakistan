@@ -108,6 +108,12 @@ extension MoreCoordinator {
         let viewModel = TransactionReceiptViewModel(transactionRepository: self.container.makeTransactionsRepository(), transaction: TransactionResponse())
         let viewController = TransactionReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
         let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        
+        viewModel.outputs.back.subscribe(onNext: { _ in
+            print("Back Pressed")
+            navController.dismiss(animated: true, completion: nil)
+        }).disposed(by: disposeBag)
+        
         navigationRoot.present(navController, animated: true)
     }
     

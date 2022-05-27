@@ -14,10 +14,12 @@ import UIKit
 
 protocol TransactionReceiptViewModelInput {
     var shareObserver: AnyObserver<UIImage?> { get }
+    var backObserver: AnyObserver<Void> { get }
 }
 
 protocol TransactionReceiptViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
+    var back: Observable<Void> { get }
 }
 
 protocol TransactionReceiptViewModelType {
@@ -36,12 +38,15 @@ class TransactionReceiptViewModel: TransactionReceiptViewModelType, TransactionR
     
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private let shareSubject = PublishSubject<UIImage?>()
+    private let backSubject = PublishSubject<Void>()
     
     // MARK: Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
+    var back: Observable<Void> { return backSubject.asObservable() }
     
     // MARK: Inputs
     var shareObserver: AnyObserver<UIImage?> { return shareSubject.asObserver() }
+    var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     
     // MARK: - Init
     init(transactionRepository: TransactionsRepositoryType, transaction: TransactionResponse) {
