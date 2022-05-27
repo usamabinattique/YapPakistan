@@ -59,6 +59,6 @@ class TransactionReceiptTableViewCellViewModel: TransactionReceiptTableViewCellV
         self.transactionDateSubject.onNext(DateFormatter.transactionNoteUserReadableDateFormatter.string(from: self.transaction.date))
         //self.accountNoSubject.onNext(String(transaction.amount))
         self.amountSubject.onNext(String(CurrencyFormatter.format(amount: transaction.amount, in: .pkr)))
-        self.referenceNumberSubject.onNext("asdsadsa")
+        self.referenceNumberSubject.onNext(self.transaction.transactionId)
     }
 }
