@@ -102,7 +102,6 @@ private extension TDReceiptCollectionViewCell {
     
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.primary).withAlphaComponent(0.16) }, to: [roundedView.rx.backgroundColor])
             .bind({ UIColor($0.primary) }, to: [icon.rx.tintColor, titleLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }

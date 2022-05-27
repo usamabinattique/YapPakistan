@@ -70,12 +70,6 @@ class TDReceiptsTableViewCell: RxUITableViewCell {
     }
     
     // MARK: Configuration
-//    override public func configure(with viewModel: Any) {
-//        guard let viewModel = viewModel as? TDReceiptsTableViewCellViewModelType else { return }
-//        self.viewModel = viewModel
-//        bind()
-//    }
-    
     override func configure(with themeService: ThemeService<AppTheme>, viewModel: Any) {
         guard let viewModel = viewModel as? TDReceiptsTableViewCellViewModelType else { return }
         self.viewModel = viewModel
@@ -133,7 +127,9 @@ private extension TDReceiptsTableViewCell {
     
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.primary) }, to: [icon.rx.tintColor])
+            .bind({ UIColor($0.primary) }, to: [icon.rx.tintColor,titleLabel.rx.textColor])
+            .bind({ UIColor($0.primary).withAlphaComponent(0.16) }, to: [iconContainerView.rx.backgroundColor])
+            .bind({ UIColor($0.greyDark) }, to: [descriptionLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
     
