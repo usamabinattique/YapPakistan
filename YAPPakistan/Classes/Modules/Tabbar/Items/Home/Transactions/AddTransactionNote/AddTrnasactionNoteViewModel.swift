@@ -15,11 +15,14 @@ import UIKit
 protocol AddTransactionDetailViewModelInput {
     var noteTextViewObserver: AnyObserver<String> { get }
     var saveNoteTappedObserver: AnyObserver<Void> { get }
+    var backObserver: AnyObserver<Void> { get }
 }
 
 protocol AddTransactionDetailViewModelOutput {
     var isActiveSaveBtn: Observable<Bool> { get }
     var error: Observable<String> { get }
+    var note: Observable<String?> { get }
+    var back: Observable<Void> { get }
 }
 
 protocol AddTransactionDetailViewModelType {
@@ -35,29 +38,39 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
     var outputs: AddTransactionDetailViewModelOutput { return self }
     var transactionID : String
     var transactionRepo : TransactionsRepositoryType
+    var previousNote : String?
     
     // MARK: Inputs
     var noteTextViewObserver: AnyObserver<String> { return noteTextViewSubject.asObserver() }
     var saveNoteTappedObserver: AnyObserver<Void> { return saveNoteTappedSubject.asObserver()}
+    var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     
     // MARK: Outputs
     var isActiveSaveBtn: Observable<Bool> { return isActiveSaveBtnSubject.asObservable() }
     var error: Observable<String> { return errorSubject.asObservable() }
-     
+    var note: Observable<String?> { return noteSubject.asObservable() }
+    var back: Observable<Void> { return backSubject.asObservable() }
     
     // MARK: Subjects
     internal var noteTextViewSubject = BehaviorSubject<String>(value: "")
     internal var isActiveSaveBtnSubject = BehaviorSubject<Bool>(value: false)
     internal var saveNoteTappedSubject = PublishSubject<Void>()
     internal var errorSubject = PublishSubject<String>()
+    internal var backSubject = PublishSubject<Void>()
+    internal var noteSubject = BehaviorSubject<String?>(value: "") //PublishSubject<String>()
     
     // MARK: - Init
-    init(transactionID: String, transactionRepository: TransactionsRepositoryType) {
+    init(transactionID: String, note: String?, transactionRepository: TransactionsRepositoryType) {
         self.transactionID = transactionID
         self.transactionRepo = transactionRepository
+        self.previousNote = note
         
         saveNoteTapped()
         iSActiveSaveButtonBinding()
+        
+        if let note = note {
+            noteSubject.onNext(note)
+        }
     }
     
     func saveNoteTapped() {
@@ -65,7 +78,7 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
         
         req.subscribe(onNext: { [unowned self] note in
             
-            var addNoteReq = transactionRepo.addTransactionNote(trnsactionID: self.transactionID, transactionNote: note, receiverTransactionNote: nil)
+            let addNoteReq = transactionRepo.addTransactionNote(trnsactionID: self.transactionID, transactionNote: note, receiverTransactionNote: nil)
             
             addNoteReq.elements().subscribe(onNext: { data in
                 print(data)

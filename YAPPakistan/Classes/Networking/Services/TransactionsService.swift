@@ -42,6 +42,8 @@ protocol TransactionsServiceType {
     func fetchCategoryAnalytics<T: Codable>(cardSerialNo: String, date: String, filterBy: String) -> Observable<T>
     func getTransactionCategories<T: Codable>() -> Observable<T>
     func addTransactionNote< T: Codable>(transactionID : String, transactionNote : String, receiverTransactionNote: String?) -> Observable<T>
+    func fetchTotalPurchases<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T>
+    func fetchTransactionReceipt<T: Codable>(transactionID: String) -> Observable<T>
     func getFEDFee<T: Codable>(for scheme: String) -> Observable<T>
 }
 
@@ -269,6 +271,35 @@ class TransactionsService: BaseService, TransactionsServiceType {
         let params : [String:String] = ["transactionId": transactionID, "transactionNote": transactionNote, "receiverTransactionNote": receiverTransactionNote ?? ""]
         let route = APIEndpoint(.post, apiConfig.transactionsURL, "/api/transaction-note", body: params, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: apiClient, route: route)
+    }
+    
+    public func fetchTransactionReceipt<T: Codable>(transactionID: String) -> Observable<T> {
+        let pathVariables = [transactionID]
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/transaction-receipt/transaction-id/", pathVariables: pathVariables, query: nil, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchTotalPurchases<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T> {
+        //let pathVariables = [scheme]
+        
+        var params = [String: String]()
+        params["txnType"] = txnType
+        params["productCode"] = productCode
+        if let receiverCustomerId = receiverCustomerId {
+             params["receiverCustomerId"] = receiverCustomerId
+        }
+        if let senderCustomerId = senderCustomerId {
+            params["senderCustomerId"] = senderCustomerId
+        }
+        if let beneficiaryId = beneficiaryId {
+            params["beneficiaryId"] = beneficiaryId
+        }
+        if let merchantName = merchantName {
+            params["merchantName"] = merchantName
+        }
+        
+        let route = APIEndpoint<String>(.post, apiConfig.transactionsURL, "/api/total-transaction-purchases", pathVariables: nil, query: params, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
     }
     
     public func getFEDFee<T: Codable>(for scheme: String) -> Observable<T> {

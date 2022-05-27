@@ -113,7 +113,6 @@ private extension TransactionTableViewCell {
     }
     
     func setupConstraints() {
-        
         iconContainer
             .width(constant: 40)
             .height(constant: 40)
