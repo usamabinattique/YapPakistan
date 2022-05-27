@@ -94,27 +94,32 @@ extension MoreCoordinator {
     func openHelpAndSupport() {
         //coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
         
-        //        let viewModel = AddTransactionDetailViewModel(transactionID: "1", note: "sdasdasdasd", transactionRepository: self.container.makeTransactionsRepository())
-        //        let viewController = AddTransactionNoteViewController(viewModel: viewModel, themeService: self.container.themeService)
-        //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
-        //        navigationRoot.present(navController, animated: true)
+//        let viewModel = AddTransactionDetailViewModel(transactionID: "1", note: "sdasdasdasd", transactionRepository: self.container.makeTransactionsRepository())
+//        let viewController = AddTransactionNoteViewController(viewModel: viewModel, themeService: self.container.themeService)
+//        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+//        viewModel.outputs.back.subscribe(onNext: { _ in
+//            print("Back Pressed on Note")
+//        }).disposed(by: disposeBag)
+//        navigationRoot.present(navController, animated: true)
         
         
-        //        let viewModel = TotalTransactionsViewModel(transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
+        //        let viewModel = TotalTransactionsViewModel(txnType: "", productCode: "", receiverCustomerId: nil, senderCustomerId: nil, beneficiaryId: nil, merchantName: nil, transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
         //        let viewController = TotalTransactionsViewController(viewModel: viewModel, themeService: self.container.themeService)
         //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        //        viewModel.outputs.back.subscribe(onNext: { _ in
+        //            print("Back Pressed")
+        //            navController.dismiss(animated: true, completion: nil)
+        //        }).disposed(by: disposeBag)
         //        navigationRoot.present(navController, animated: true)
         
-        let viewModel = TransactionReceiptViewModel(transactionRepository: self.container.makeTransactionsRepository(), transaction: TransactionResponse())
-        let viewController = TransactionReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
-        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
-        
-        viewModel.outputs.back.subscribe(onNext: { _ in
-            print("Back Pressed")
-            navController.dismiss(animated: true, completion: nil)
-        }).disposed(by: disposeBag)
-        
-        navigationRoot.present(navController, animated: true)
+        //        let viewModel = TransactionReceiptViewModel(transactionRepository: self.container.makeTransactionsRepository(), transaction: TransactionResponse())
+        //        let viewController = TransactionReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
+        //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        //        viewModel.outputs.back.subscribe(onNext: { _ in
+        //            print("Back Pressed")
+        //            navController.dismiss(animated: true, completion: nil)
+        //        }).disposed(by: disposeBag)
+        //        navigationRoot.present(navController, animated: true)
     }
     
     func openUserProfileSettings() {

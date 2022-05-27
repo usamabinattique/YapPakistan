@@ -69,7 +69,8 @@ class TotalTransactionsViewController: UIViewController {
     // MARK: Actions
     @objc
     private func backAction() {
-        self.navigationController?.dismiss(animated: true, completion: nil)
+        //self.navigationController?.dismiss(animated: true, completion: nil)
+        self.viewModel.inputs.backObserver.onNext(())
     }
 
     override func viewDidLayoutSubviews() {

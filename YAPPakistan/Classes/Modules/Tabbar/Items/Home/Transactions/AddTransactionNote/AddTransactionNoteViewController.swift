@@ -59,7 +59,8 @@ class AddTransactionNoteViewController: UIViewController {
     // MARK: Actions
     @objc
     private func backAction() {
-        self.navigationController?.dismiss(animated: true, completion: nil)
+        //self.navigationController?.dismiss(animated: true, completion: nil)
+        viewModel.inputs.backObserver.onNext(())
     }
 
     override func viewDidLayoutSubviews() {

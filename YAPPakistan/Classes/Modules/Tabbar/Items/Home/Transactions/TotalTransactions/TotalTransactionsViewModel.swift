@@ -13,13 +13,14 @@ import RxTheme
 import UIKit
 
 protocol TotalTransactionsViewModelInput {
-    
+    var backObserver: AnyObserver<Void> { get}
 }
 
 protocol TotalTransactionsViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
     var navigationTitle: Observable<String> { get }
     var error: Observable<String> { get }
+    var back: Observable<Void> { get }
 }
 
 protocol TotalTransactionsViewModelType {
@@ -37,31 +38,36 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
     private var transactionRepository : TransactionsRepositoryType
     var cellViewModels: [ReusableTableViewCellViewModelType] = [ReusableTableViewCellViewModelType]()
     
+    // MARK: Inputs
+    var backObserver: AnyObserver<Void> { return backSubject.asObserver() } 
+    
     // MARK: - Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
     var navigationTitle: Observable<String> { return navigationTitleSubject.asObservable()}
     var error: Observable<String> { return errorSubject.asObservable() }
+    var back: Observable<Void> { return backSubject.asObservable() }
     
     internal var navigationTitleSubject = BehaviorSubject<String>(value: "")
     
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private let errorSubject = PublishSubject<String>()
+    private let backSubject = PublishSubject<Void>()
     
     // MARK: - Init
-    init(transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>) {
+    init(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?, transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>) {
         self.themeService = themeService
         self.transactionRepository = transactionRepository
         //setNaviagtionTitle(withTransacationsCount: cellViewModels.count)
-        self.getTotalTransactions()
+        self.getTotalTransactions(txnType: "", productCode: "", receiverCustomerId: "", senderCustomerId: "", beneficiaryId: "", merchantName: "")
     }
     
     private func setNaviagtionTitle(withTransacationsCount count : Int) {
         navigationTitleSubject.onNext("\(count) Transactions")
     }
     
-    private func getTotalTransactions() {
+    private func getTotalTransactions(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) {
         YAPProgressHud.showProgressHud()
-        let fetchTotalTransactionsRequest = transactionRepository.fetchTotalPurchases(txnType: "", productCode: "", receiverCustomerId: "", senderCustomerId: "", beneficiaryId: "", merchantName: "")
+        let fetchTotalTransactionsRequest = transactionRepository.fetchTotalPurchases(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: merchantName)
         
         fetchTotalTransactionsRequest.elements().subscribe(onNext: { [unowned self] transactions in
             YAPProgressHud.hideProgressHud()
