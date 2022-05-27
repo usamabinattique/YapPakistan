@@ -29,7 +29,7 @@ class SendMoneyFundsTransferViewController: KeyboardAvoidingViewController {
         return alert
     }()
     
-    private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized)
+    private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized, font: .large)
     
     // MARK: Properties
     

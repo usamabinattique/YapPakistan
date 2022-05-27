@@ -99,8 +99,8 @@ private extension Y2YFundsTransferCoordinator {
         viewModel.outputs.completed.subscribe(onNext: { result.onNext(()) }).disposed(by: disposeBag)
     } */
     
-    func tranferSuccess(_ contact: YAPContact, _ amount: Double) {
-        let viewModel = Y2YTransferSuccessViewModel(contact, amount)
+    func tranferSuccess(_ contact: YAPContact, _ y2yResponse: Y2YTransactionResponse) {
+        let viewModel = Y2YTransferSuccessViewModel(contact, y2yResponse: y2yResponse)
         let viewController = Y2YTransferSuccessViewController(theme: container.themeService, viewModel: viewModel)
         if self.shouldPresent {
             self.localNavigationController.pushViewController(viewController, animated: true)
