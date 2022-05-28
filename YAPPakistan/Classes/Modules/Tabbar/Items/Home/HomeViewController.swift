@@ -658,9 +658,10 @@ fileprivate extension HomeViewController {
 
         transactionsViewModel.outputs.transactions.debug("transactions").bind(to: viewModel.inputs.transactionsObserver).disposed(by: disposeBag)
 
-      /*  transactionsViewModel.outputs.transactionDetails
+        transactionsViewModel.outputs.transactionDetails
             .filter({ [weak self] _ in !(self?.selectionLocked ?? false) })
-            .bind(to: viewModel.inputs.transactionDetalsObserver).disposed(by: disposeBag) */
+            .bind(to: viewModel.inputs.transactionDetailsObserver)
+            .disposed(by: disposeBag)
         transactionsViewModel.outputs.openFilter.subscribe(onNext: {[weak self]  in
             self?.viewModel.inputs.openFilterObserver.onNext($0)
           /*  if CheckInternetConnectivity.isConnectedToInternet {

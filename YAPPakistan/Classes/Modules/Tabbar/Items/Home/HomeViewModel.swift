@@ -38,6 +38,8 @@ protocol HomeViewModelInputs {
     var selectedTransactionIndexObserver: AnyObserver<Int?> { get }
     var sectionDateObserver: AnyObserver<Date> {get}
     var progressViewTappedObserver: AnyObserver<Void> { get }
+    
+    var transactionDetailsObserver: AnyObserver<TransactionResponse> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -95,6 +97,7 @@ protocol HomeViewModelOutputs {
     var filterSelected: Observable<TransactionFilter?> { get }
     var selectedTransactionIndex: Observable<Int> { get }
     var progressViewTapped: Observable<Date> { get }
+    var transactionDetails: Observable<TransactionResponse> { get }
 }
 
 protocol HomeViewModelType {
@@ -158,6 +161,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let progressViewDateSubject = BehaviorSubject<Date>(value: Date())
     private let profileTapSubject = PublishSubject<Void>()
     
+    private var transactionDetailsSubject = PublishSubject<TransactionResponse>()
+    
     private var numberOfShownWidgets = 0
     private var cardStatus: CardStatus = .inActive
 
@@ -188,6 +193,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var sectionDateObserver: AnyObserver<Date> { sectionDateSubject.asObserver() }
     var progressViewTappedObserver: AnyObserver<Void> { progressViewTappedSubject.asObserver() }
     var profileTapObserver: AnyObserver<Void> { profileTapSubject.asObserver() }
+    
+    var transactionDetailsObserver: AnyObserver<TransactionResponse> { transactionDetailsSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -238,6 +245,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var filterSelected: Observable<TransactionFilter?> { return filterSelectedSubject.asObservable() }
     var selectedTransactionIndex: Observable<Int> { return selectedTransactionIndexSubject.unwrap().distinctUntilChanged() }
     var progressViewTapped: Observable<Date> { progressViewDateSubject }
+    var transactionDetails: Observable<TransactionResponse> { transactionDetailsSubject.asObservable() }
 
     // MARK: Init
 

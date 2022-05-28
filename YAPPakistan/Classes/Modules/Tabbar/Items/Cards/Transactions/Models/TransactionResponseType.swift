@@ -103,7 +103,7 @@ struct TransactionResponse: Codable, Transaction {
     let updatedDate: Date?
     private let _type: String?
     let amount: Double
-    let currency: String
+    let currency: String?
     let category: String
     let paymentMode: String?
     let closingBalance: Double?
@@ -157,7 +157,7 @@ struct TransactionResponse: Codable, Transaction {
     var cardHolderBillingTotalAmount: Double
     var latitude: Double
     var longitude: Double
-    let tapixCategory: TapixTransactionCategory?
+    var tapixCategory: TapixTransactionCategory?
 //    let senderProfilePictureUrl: String?
 //    let receiverProfilePictureUrl: String?
     
@@ -172,6 +172,21 @@ struct TransactionResponse: Codable, Transaction {
     var time: String {
         let timeFormatter = DateFormatter()
         timeFormatter.dateFormat = "HH:mm"
+        return timeFormatter.string(from: date)
+    }
+    
+    var transactionDetailTime: String {
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "MMM d, yyyy . h:mm a"
+        
+//        let dateFormatterPrint = DateFormatter()
+//        dateFormatterPrint.dateFormat = "MMM d, yyyy . h:mm a"
+//
+//        if let date = transaction.date.date(withFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS") {
+//            let stringDate = dateFormatterPrint.string(from: date)
+//            dateSubject.onNext("\(stringDate)")
+//        }
+        
         return timeFormatter.string(from: date)
     }
     
@@ -194,9 +209,40 @@ struct TransactionResponse: Codable, Transaction {
 //        return TransactionProductCode(rawValue: productCode ?? "") ?? .unknown
 //    }
     
-    public var icon: (image: UIImage?, contentMode: UIView.ContentMode, imageUrl: String?, identifierImage: UIImage?) {
+    public var isNonPKRTransaction: Bool {
+        (productCode == .posPurchase || productCode == .atmDeposit || productCode == .atmWithdrawl || productCode == .eCom) && currency != "PKR"
+    }
+    
+    public var isInternationaleComAndPos: Bool {
+        (productCode == .posPurchase || productCode == .eCom) && currency != "PKR"
+    }
+    
+    public var transactionUserUrl: String? {
+        switch type {
+        case .credit:
+            return receiverUrl
+        case .debit:
+            return senderUrl
+        default:
+            return nil
+        }
+    }
+    
+    public var transactionUserName: String? {
+        switch type {
+        case .credit:
+            return receiverName
+        case .debit:
+            return senderName
+        default:
+            return nil
+        }
+    }
+    
+    public var icon: (image: UIImage?, contentMode: UIView.ContentMode, imageUrl: String?, identifierImage: UIImage?, emptyThumbnail: UIImage?) {
         let title = self.title ?? "Unknown Transaction"
         var icon: UIImage? = nil
+        var emptyThumbnail: UIImage? = nil
         var contentMode: UIView.ContentMode = .scaleAspectFill
         var url: String? = nil
         var identifierImage: UIImage?
@@ -268,8 +314,10 @@ struct TransactionResponse: Codable, Transaction {
         if transactionStatus == .cancelled {
             contentMode = .scaleAspectFill
         }
-
-        return (icon, contentMode, url, identifierImage)
+        
+        emptyThumbnail = "".thumbnail
+        
+        return (icon, contentMode, url, identifierImage,emptyThumbnail)
     }
     
     func flipImageLeftRight(_ image: UIImage) -> UIImage? {

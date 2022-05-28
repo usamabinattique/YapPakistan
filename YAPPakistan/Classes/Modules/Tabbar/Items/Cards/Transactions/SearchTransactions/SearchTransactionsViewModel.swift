@@ -22,7 +22,7 @@ protocol SearchTransactionsViewModelOutput {
     var searchText: Observable<String?> { get }
     var transactionsViewModel: TransactionsViewModelType { get }
     var close: Observable<Void> { get }
-    var transactionDetails: Observable<CDTransaction> { get }
+    var transactionDetails: Observable<TransactionResponse> { get }
     var noTransFound: Observable<String> { get }
 }
 
@@ -41,7 +41,7 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     
     private let searchTextSubject = PublishSubject<String?>()
     private let closeSubject = PublishSubject<Void>()
-    private let transactionDetailsSubject = PublishSubject<CDTransaction>()
+    private let transactionDetailsSubject = PublishSubject<TransactionResponse>()
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     lazy var transactionsViewModelSubject: TransactionsViewModelType = {
@@ -64,7 +64,7 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     var searchText: Observable<String?> { searchTextSubject.asObservable() }
     var transactionsViewModel: TransactionsViewModelType { transactionsViewModelSubject }
     var close: Observable<Void> { closeSubject.asObservable() }
-    var transactionDetails: Observable<CDTransaction> { transactionDetailsSubject.asObservable() }
+    var transactionDetails: Observable<TransactionResponse> { transactionDetailsSubject.asObservable() }
     var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>!

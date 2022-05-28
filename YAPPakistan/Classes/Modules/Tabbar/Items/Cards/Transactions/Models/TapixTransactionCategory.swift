@@ -10,8 +10,8 @@ import Foundation
 
 struct TapixTransactionCategory: Codable {
     let id: Int
-    let name: String
-    let iconUrl: String?
+    var name: String
+    var iconUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case id

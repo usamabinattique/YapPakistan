@@ -54,7 +54,7 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
     var inputs: TransactionsTableViewCellViewModelInputs { return self}
     var outputs: TransactionsTableViewCellViewModelOutputs { return self }
     var reusableIdentifier: String { return TransactionsTableViewCell.defaultIdentifier }
-    var transaction: Transaction!
+    var transaction: TransactionResponse!
     let transactionId: String
     let cdTransaction: CDTransaction?
     
@@ -112,7 +112,7 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
         transactionTitleSubject = BehaviorSubject(value: transaction.finalizedTitle)
         transactionTimeCategorySubject = BehaviorSubject(value: transaction.formattedTime + " · " + ((transaction.productNameType != .unkonwn ? transaction.productNameType.type : transaction.merchantCategory ?? transaction.category)))//transaction.category)
         
-        let amount = CurrencyFormatter.format(amount: transaction.amount, in: transaction.currency).amountFromFormattedAmount
+        let amount = CurrencyFormatter.format(amount: transaction.amount, in: CurrencyType(rawValue: transaction.currency ?? "") ?? .pkr).amountFromFormattedAmount
         transactionAmountSubject = BehaviorSubject(value: NSAttributedString(string: (transaction.type == .debit ? "-" : "+") + amount))
         currencySubject = BehaviorSubject(value: transaction.currency)
         
