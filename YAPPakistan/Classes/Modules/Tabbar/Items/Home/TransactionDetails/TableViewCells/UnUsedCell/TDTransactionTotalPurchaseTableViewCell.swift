@@ -27,10 +27,10 @@ public class TDTransactionTotalPurchaseTableViewCell: RxUITableViewCell {
         let imageView = UIImageView()
         imageView.image = UIImage.init(named: "icon_forward", in: .yapPakistan) //UIImage.sharedImage(named: "icon_forward")
         if #available(iOS 13.0, *) {
-            imageView.image = UIImage.init(named: "icon_forward", in: .yapPakistan)?.withTintColor(UIColor(themeService.attrs.primary))  //UIImage.sharedImage(named: "icon_forward")?.withTintColor(.primary)
+            imageView.image = UIImage.init(named: "icon_forward", in: .yapPakistan)?.asTemplate  //UIImage.sharedImage(named: "icon_forward")?.withTintColor(.primary)
         } else {
             imageView.image = UIImage.init(named: "icon_forward", in: .yapPakistan)?.asTemplate
-            imageView.tintColor = UIColor(themeService.attrs.primary)
+            
         }
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -77,21 +77,21 @@ public class TDTransactionTotalPurchaseTableViewCell: RxUITableViewCell {
     
     private lazy var sepratorView1: UIView = {
         let view = UIView()
-        view.backgroundColor =  UIColor(themeService.attrs.separatorColor).withAlphaComponent(0.11) //UIColor.appColor(ofType: .separatorGrey).withAlphaComponent(0.11)
+//        view.backgroundColor = UIColor.appColor(ofType: .separatorGrey).withAlphaComponent(0.11)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private lazy var sepratorView2: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(themeService.attrs.separatorColor).withAlphaComponent(0.11) //UIColor.appColor(ofType: .separatorGrey).withAlphaComponent(0.11)
+//        view.backgroundColor = UIColor(themeService.attrs.separatorColor).withAlphaComponent(0.11) //UIColor.appColor(ofType: .separatorGrey).withAlphaComponent(0.11)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
     private lazy var sepratorView3: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(themeService.attrs.separatorColor).withAlphaComponent(0.11) //UIColor.appColor(ofType: .separatorGrey).withAlphaComponent(0.11)
+//        view.backgroundColor = UIColor(themeService.attrs.separatorColor).withAlphaComponent(0.11) //UIColor.appColor(ofType: .separatorGrey).withAlphaComponent(0.11)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -254,9 +254,13 @@ private extension TDTransactionTotalPurchaseTableViewCell {
     }
     
     func setupTheme() {
-//        themeService.rx
-//            .bind({ UIColor($0.primaryDark) }, to: [name.rx.textColor])
-//            .disposed(by: rx.disposeBag)
+        
+        themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [averageTitle.rx.textColor,averageAmountCurrencySymbol.rx.textColor,totalAmountTitle.rx.textColor,totalAmountCurrencySymbol.rx.textColor])
+            .bind({ UIColor($0.primaryDark) }, to: [purchaseTitle.rx.textColor,averageAmount.rx.textColor,totalAmount.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [forwardImageView.rx.tintColor,purchaseCount.rx.textColor])
+            .bind({ UIColor($0.separatorColor).withAlphaComponent(0.11) }, to: [sepratorView1.rx.backgroundColor,sepratorView2.rx.backgroundColor,sepratorView3.rx.backgroundColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func setupSensitiveViews() {

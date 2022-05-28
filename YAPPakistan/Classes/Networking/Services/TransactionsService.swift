@@ -45,6 +45,7 @@ protocol TransactionsServiceType {
     func fetchTotalPurchases<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T>
     func fetchTransactionReceipt<T: Codable>(transactionID: String) -> Observable<T>
     func getFEDFee<T: Codable>(for scheme: String) -> Observable<T>
+    func fetchTotalPurchasesCount<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
@@ -306,6 +307,27 @@ class TransactionsService: BaseService, TransactionsServiceType {
         //let pathVariables = [scheme]
         let pathVariables = ["PAYPAK-PHYSICAL"]
         let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/fee", pathVariables: pathVariables, query: nil, body: nil, headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func fetchTotalPurchasesCount<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T> {
+        var params = [String: String]()
+        params["txnType"] = txnType
+        params["productCode"] = productCode
+        if let receiverCustomerId = receiverCustomerId {
+             params["receiverCustomerId"] = receiverCustomerId
+        }
+        if let senderCustomerId = senderCustomerId {
+            params["senderCustomerId"] = senderCustomerId
+        }
+        if let beneficiaryId = beneficiaryId {
+            params["beneficiaryId"] = beneficiaryId
+        }
+        if let merchantName = merchantName {
+            params["merchantName"] = merchantName
+        }
+        
+        let route = APIEndpoint<String>(.post, apiConfig.transactionsURL, "/api/total-purchases", pathVariables: nil, query: params, body: nil, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
 }

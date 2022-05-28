@@ -37,6 +37,9 @@ protocol Transaction {
     var cardHolderBillingAmount: Double { get }
     var cardHolderBillingCurrency: String? { get }
     var cardHolderBillingTotalAmount: Double { get }
+    
+    var customerId1: String? { get }
+    var customerId2: String? { get }
 }
 
 extension Transaction {

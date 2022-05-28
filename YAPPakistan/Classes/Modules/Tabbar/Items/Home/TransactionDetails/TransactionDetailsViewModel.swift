@@ -297,7 +297,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             let transactionDetail = TotalTransactionModel(transactionCount: txnCount , vendorName: title, iconUrl: "logo_starBucks", transaction: self.transaction)
             self.totalTransactionsSubject.onNext(transactionDetail)
         }).disposed(by: disposeBag)
-       /* fetchTotalPurchaseDate(repository: repository, transactionId: transaction.transactionId) */
+        fetchTotalPurchaseDate(repository: repository, transactionId: transaction.transactionId, transaction: transaction)
     }
     
    /* fileprivate func updateNotes(cdTransaction: TransactionResponse) {
@@ -385,12 +385,17 @@ private extension TransactionDetailsViewModel {
 // MARK: - Multipart requests
 private extension TransactionDetailsViewModel {
     
-/*    func fetchTotalPurchaseDate(repository: TransactionsRepository, transactionId: String?) {
+    func fetchTotalPurchaseDate(repository: TransactionsRepositoryType, transactionId: String?, transaction: TransactionResponse) {
         
         let request = Observable.of(self.validateTotalPurchaseCriteria)
             .filter{ $0 }
             .map{_ in }
-            .flatMap {[weak self] in repository.fetchTotalPurchaseData(transactionType: self?.processTransactionType.rawValue ?? "", beneficiaryId: self?.beneficiaryIdInCaseOfSendMoney, receiverCustomerId: self?.receiverCustomerIdInCaseOfY2Y, productCode: self?.transaction.transactionProductCode.rawValue ?? "", merchantName: self?.merchantNameInCaseOfPOSEcom, senderCustomerId: self?.senderCustomerIdInCaseOfY2Y) }
+            .flatMap {[weak self] in
+//                repository.fetchTotalPurchaseData(transactionType: self?.processTransactionType.rawValue ?? "", beneficiaryId: self?.beneficiaryIdInCaseOfSendMoney, receiverCustomerId: self?.receiverCustomerIdInCaseOfY2Y, productCode: transaction.transactionProductCode.rawValue ?? "", merchantName: self?.merchantNameInCaseOfPOSEcom, senderCustomerId: self?.senderCustomerIdInCaseOfY2Y)
+                
+                repository.fetchTotalPurchasesCount(txnType: self?.processTransactionType.rawValue ?? "", productCode: transaction.productCode.rawValue, receiverCustomerId: self?.receiverCustomerIdInCaseOfY2Y, senderCustomerId: self?.senderCustomerIdInCaseOfY2Y, beneficiaryId: self?.beneficiaryIdInCaseOfSendMoney, merchantName: self?.merchantNameInCaseOfPOSEcom)
+                
+            }
             .share(replay: 1, scope: .whileConnected)
         
         request
@@ -402,7 +407,7 @@ private extension TransactionDetailsViewModel {
             .errors()
             .map { $0.localizedDescription }
             .bind(to: errorSubject).disposed(by: disposeBag)
-    } */
+    }
     
 /*    func uploadReceiptPhoto(repository: TransactionsRepository, transactionId: String?) {
         
@@ -487,7 +492,7 @@ private extension TransactionDetailsViewModel {
     }
     
     var beneficiaryIdInCaseOfSendMoney: String? {
-        transaction.productCode.isSendMoney ? self.transaction.beneficiaryId : nil
+        (transaction.productCode.isSendMoney || transaction.productCode == .ibftTransaction ) ? self.transaction.beneficiaryId : nil
     }
     
     var receiverCustomerIdInCaseOfY2Y: String? {

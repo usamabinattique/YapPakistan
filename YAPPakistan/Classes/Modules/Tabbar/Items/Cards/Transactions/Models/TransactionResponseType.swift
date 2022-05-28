@@ -160,6 +160,8 @@ struct TransactionResponse: Codable, Transaction {
     var tapixCategory: TapixTransactionCategory?
 //    let senderProfilePictureUrl: String?
 //    let receiverProfilePictureUrl: String?
+    var customerId1: String?
+    var customerId2: String?
     
     var sectionDate: Date {
         return date.startOfDay

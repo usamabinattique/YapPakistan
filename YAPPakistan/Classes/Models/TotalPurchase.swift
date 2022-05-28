@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 public struct TotalPurchase: Codable {
     public let txnCount:Int
     public let avgSpendAmount: Double
