@@ -21,6 +21,7 @@ public enum TransactionType: String, Codable {
 public enum ProductNameType: String {
     case yapToYap = "Y2Y_TRANSFER"
     case topup = "TOP_UP_VIA_CARD"
+    case ibft = "IBFT"
     case unkonwn
     
     var type: String {
@@ -29,6 +30,8 @@ public enum ProductNameType: String {
             return "YAP to YAP"
         case .topup:
             return "Top Up"
+        case .ibft:
+            return "IBFT"
         case .unkonwn:
             return ""
         }
@@ -394,7 +397,7 @@ struct TransactionResponse: Codable, Transaction {
         case markupFee = "markupFees"
         case cardHolderBillingAmount = "cardHolderBillingAmount"
         case virtualCardDesignCode = "designCodesDTO"
-        case beneficiaryId = "beneficiaryId"
+        case beneficiaryId = "beneficiaryId" 
         case _txnState = "txnState"
         case senderCustomerId = "customerId1"
         case cardHolderBillingCurrency
