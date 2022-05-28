@@ -5,8 +5,7 @@
 // Created by Wajahat Hassan on 27/08/2019.
 // Copyright © 2019 YAP. All rights reserved.
 //
-// swiftlint:disable line_length
-// swiftlint:disable identifier_name
+
 
 import YAPComponents
 import RxSwift
