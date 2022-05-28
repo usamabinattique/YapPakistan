@@ -18,7 +18,6 @@ class TDReceiptsTableViewCell: RxUITableViewCell {
     private lazy var icon: UIImageView = UIImageViewFactory.createImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_add_receipt", in: .yapPakistan))
     private lazy var iconContainerView: UIView = {
         let view = UIView()
-//        view.backgroundColor = UIColor.initials.withAlphaComponent(0.16)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
