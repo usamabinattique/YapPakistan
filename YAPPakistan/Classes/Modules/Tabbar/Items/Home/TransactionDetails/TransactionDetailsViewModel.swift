@@ -496,11 +496,11 @@ private extension TransactionDetailsViewModel {
     }
     
     var receiverCustomerIdInCaseOfY2Y: String? {
-        transaction.productCode == .y2yTransfer && transaction.type == .debit ? self.transaction.customerId : nil
+        transaction.productCode == .y2yTransfer && transaction.type == .credit ? self.transaction.customerId : nil
     }
     
     var senderCustomerIdInCaseOfY2Y: String? {
-        transaction.productCode == .y2yTransfer && transaction.type == .credit ? self.transaction.customerId : nil
+        transaction.productCode == .y2yTransfer && transaction.type == .debit ? self.transaction.customerId : nil
     }
     
     var merchantNameInCaseOfPOSEcom: String? {
@@ -508,7 +508,7 @@ private extension TransactionDetailsViewModel {
     }
     
     var processTransactionType: TransactionType {
-        return senderCustomerIdInCaseOfY2Y != nil ? .credit : .debit
+        return transaction.type //senderCustomerIdInCaseOfY2Y != nil ? .credit : .debit
     }
     
 }
