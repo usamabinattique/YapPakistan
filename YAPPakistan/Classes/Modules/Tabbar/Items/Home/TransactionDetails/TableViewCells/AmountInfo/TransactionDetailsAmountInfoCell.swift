@@ -14,18 +14,19 @@ import YAPComponents
 import SDWebImage
 import RxTheme
 import RxTheme
+import UIKit
 
 public class TransactionDetailsAmountInfoCell: RxUITableViewCell {
     
-    private lazy var paymentInfo = UIFactory.makeLabel(font: .small, alignment: .left,  text: "Payment details") //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, alignment: .left, text: "Payment details")
+   /* private lazy var paymentInfo = UIFactory.makeLabel(font: .small, alignment: .left,  text: "Payment details") //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, alignment: .left, text: "Payment details")
     
-    private lazy var cancelReason = UIFactory.makeLabel(font: .micro, alignment: .left, numberOfLines: 0, lineBreakMode: .byWordWrapping) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .micro, alignment: .left, numberOfLines: 0, lineBreakMode: .byWordWrapping)
+    private lazy var cancelReason = UIFactory.makeLabel(font: .micro, alignment: .left, numberOfLines: 0, lineBreakMode: .byWordWrapping) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .micro, alignment: .left, numberOfLines: 0, lineBreakMode: .byWordWrapping) */
     
     private lazy var cardHeading = UIFactory.makeLabel(font: .small, alignment: .left, text: "Card") //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .left, text: "Card")
     private lazy var cardValue = UIFactory.makeLabel(font: .small, alignment: .right) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, alignment: .right)
     private lazy var cardStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .fill, distribution: .fill, spacing: 10, arrangedSubviews: [cardHeading, cardValue])
     
-    private lazy var foreignAmountHeading = UIFactory.makeLabel(font: .small, alignment: .left, text: "Transfer amount") //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .left, text: "Transfer amount")
+   /* private lazy var foreignAmountHeading = UIFactory.makeLabel(font: .small, alignment: .left, text: "Transfer amount") //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .left, text: "Transfer amount")
     private lazy var foreignAmountValue = UIFactory.makeLabel(font: .small, alignment: .right) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, alignment: .right)
     private lazy var foreignAmountStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .fill, distribution: .fill, spacing: 10, arrangedSubviews: [foreignAmountHeading, foreignAmountValue])
     
@@ -51,13 +52,13 @@ public class TransactionDetailsAmountInfoCell: RxUITableViewCell {
     
     private lazy var totalAmountHeading = UIFactory.makeLabel(font: .small, alignment: .left, text: "screen_transaction_details_display_text_total_amount".localized) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .left, text: "screen_transaction_details_display_text_total_amount".localized)
     private lazy var totalAmountValue = UIFactory.makeLabel(font: .small, alignment: .right) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, alignment: .right)
-    private lazy var totalAmountStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .fill, distribution: .fill, spacing: 10, arrangedSubviews: [totalAmountHeading, totalAmountValue])
+    private lazy var totalAmountStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .fill, distribution: .fill, spacing: 10, arrangedSubviews: [totalAmountHeading, totalAmountValue]) */
     
     private lazy var referenceHeading = UIFactory.makeLabel(font: .small, alignment: .left,  text: "screen_transaction_details_display_text_refrence_number".localized) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .left, text: "screen_transaction_details_display_text_refrence_number".localized)
     private lazy var referenceValue = UIFactory.makeLabel(font: .small, alignment: .right) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, alignment: .right)
     private lazy var referenceStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .fill, distribution: .fill, spacing: 10, arrangedSubviews: [referenceHeading, referenceValue])
     
-    private lazy var remarksHeading = UIFactory.makeLabel(font: .small, alignment: .left, text: "Remarks".localized) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .left, text: "Remarks".localized)
+ /*   private lazy var remarksHeading = UIFactory.makeLabel(font: .small, alignment: .left, text: "Remarks".localized) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .left, text: "Remarks".localized)
     private lazy var remarksValue = UIFactory.makeLabel(font: .small, alignment: .left) //UILabelFactory.createUILabel(with: .primaryDark, textStyle: .small, alignment: .right,  numberOfLines: 0)
     private lazy var paymentDetailsStackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .fill, distribution: .fill, arrangedSubviews: [paymentInfo])
     
@@ -68,13 +69,15 @@ public class TransactionDetailsAmountInfoCell: RxUITableViewCell {
         return view
     }()
     
-    private lazy var remarksStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .fill, distribution: .fill, spacing: 10, arrangedSubviews: [remarksContainerView])
+    private lazy var remarksStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .fill, distribution: .fill, spacing: 10, arrangedSubviews: [remarksContainerView]) */
     
-    private lazy var stackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .fill, distribution: .fill, spacing: 15, arrangedSubviews: [cancelReason, cardStack, foreignAmountStack, exchangeRateStack, nameStack, amountStack, feeStack, vatStack, totalAmountStack, referenceStack, remarksStack])
+//    private lazy var stackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .fill, distribution: .fill, spacing: 15, arrangedSubviews: [cancelReason, cardStack, foreignAmountStack, exchangeRateStack, nameStack, amountStack, feeStack, vatStack, totalAmountStack, referenceStack, remarksStack])
+    
+    private lazy var stackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .fill, distribution: .fill, spacing: 15, arrangedSubviews: [ cardStack, referenceStack])
     
     private lazy var shadedView : UIView = {
         let view = UIView()
-       // view.backgroundColor = .cell
+        view.backgroundColor = UIColor(red: 248, green: 248, blue: 252) //.cell
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -124,18 +127,21 @@ public class TransactionDetailsAmountInfoCell: RxUITableViewCell {
 // MARK: SetupViews
 private extension TransactionDetailsAmountInfoCell {
     func setupViews() {
-        remarksContainerView.addSubview(remarksHeading)
-        remarksContainerView.addSubview(remarksValue)
-        contentView.addSubview(paymentDetailsStackView)
+//        remarksContainerView.addSubview(remarksHeading)
+//        remarksContainerView.addSubview(remarksValue)
+//        contentView.addSubview(paymentDetailsStackView)
         contentView.addSubview(shadedView)
         shadedView.addSubview(stackView)
+        
+        stackView.backgroundColor = UIColor(red: 248, green: 248, blue: 252)
+        contentView.backgroundColor = UIColor(red: 248, green: 248, blue: 252)
     }
     
     func setupConstraints() {
-        
+     /*
         remarksHeading
             .alignEdgesWithSuperview([.left, .top])
-        
+
         remarksValue
             .toRightOf(remarksHeading, constant: 40)
             .alignEdgesWithSuperview([.right, .bottom, .top])
@@ -150,31 +156,47 @@ private extension TransactionDetailsAmountInfoCell {
         
         shadedView
             .toBottomOf(paymentDetailsStackView, constant: isHiddenPaymentDetailsFlag ? 0 : 12)
-            .alignEdgesWithSuperview([.left, .right, .bottom], constants: [0, 0, 0])
+            .alignEdgesWithSuperview([.left, .right, .bottom], constants: [0, 0, 0]) */
+        
+//        stackView
+//            .alignEdgesWithSuperview([.left, .top, .right, .bottom], constants: [25, 25, 25, 25])
+        
+        let stackViewConstraints = [
+           stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
+           contentView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: 25)
+        ]
+       NSLayoutConstraint.activate(stackViewConstraints)
         
         stackView
-            .alignEdgesWithSuperview([.left, .top, .right, .bottom], constants: [25, 25, 25, 25])
+            .alignEdge(.top, withView: contentView,constant: 25)
+            .alignEdge(.bottom, withView: contentView,constant: 25)
+                   //.alignEdgesWithSuperview([.top, .bottom], constants: [25, 25])
         
-        [cardValue, foreignAmountValue, exchangeRateValue, nameValue, amountValue, feeValue, vatValue, totalAmountValue, referenceValue, remarksValue].forEach{ $0.setContentHuggingPriority(.required, for: .horizontal) }
+      /*  [cardValue, foreignAmountValue, exchangeRateValue, nameValue, amountValue, feeValue, vatValue, totalAmountValue, referenceValue, remarksValue].forEach{ $0.setContentHuggingPriority(.required, for: .horizontal) }
         
-        [cardHeading, foreignAmountHeading, exchangeRateHeading, nameHeading, amountHeading, feeHeading, vatHeading, totalAmountHeading, referenceHeading, remarksHeading].forEach{ $0.setContentCompressionResistancePriority(.required, for: .horizontal) }
+        [cardHeading, foreignAmountHeading, exchangeRateHeading, nameHeading, amountHeading, feeHeading, vatHeading, totalAmountHeading, referenceHeading, remarksHeading].forEach{ $0.setContentCompressionResistancePriority(.required, for: .horizontal) } */
+        
+        [cardValue,  referenceValue].forEach{ $0.setContentHuggingPriority(.required, for: .horizontal) }
+        
+        [cardHeading,  referenceHeading].forEach{ $0.setContentCompressionResistancePriority(.required, for: .horizontal) }
     }
     
     func setupTheme() {
-//        themeService.rx
-//            .bind({ UIColor($0.primaryDark) }, to: [name.rx.textColor])
-//            .disposed(by: rx.disposeBag)
+        themeService.rx
+            .bind({ UIColor($0.greyDark) }, to: [cardHeading.rx.textColor, referenceHeading.rx.textColor])
+            .bind({ UIColor($0.primaryDark) }, to: [cardValue.rx.textColor,referenceValue.rx.textColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func bindViews() {
         
-        viewModel.cancelReason.bind(to: cancelReason.rx.text).disposed(by: disposeBag)
-        viewModel.cancelReason.map{ $0 == nil }.bind(to: cancelReason.rx.isHidden).disposed(by: disposeBag)
+    /*    viewModel.cancelReason.bind(to: cancelReason.rx.text).disposed(by: disposeBag)
+        viewModel.cancelReason.map{ $0 == nil }.bind(to: cancelReason.rx.isHidden).disposed(by: disposeBag) */
         
         viewModel.cardValue.bind(to: cardValue.rx.text).disposed(by: disposeBag)
         viewModel.cardValue.map{ $0 == nil }.bind(to: cardStack.rx.isHidden).disposed(by: disposeBag)
         
-        viewModel.foreignAmountHeading.bind(to: foreignAmountHeading.rx.text).disposed(by: disposeBag)
+       /* viewModel.foreignAmountHeading.bind(to: foreignAmountHeading.rx.text).disposed(by: disposeBag)
         viewModel.foreignAmountValue.bind(to: foreignAmountValue.rx.text).disposed(by: disposeBag)
         viewModel.foreignAmountValue.map{ $0 == nil }.bind(to: foreignAmountStack.rx.isHidden).disposed(by: disposeBag)
         
@@ -198,12 +220,12 @@ private extension TransactionDetailsAmountInfoCell {
         viewModel.vatValue.bind(to: vatValue.rx.text).disposed(by: disposeBag)
         
         viewModel.totalAmountValue.bind(to: totalAmountValue.rx.text).disposed(by: disposeBag)
-        viewModel.totalAmountValue.map{ $0 == nil }.bind(to: totalAmountStack.rx.isHidden).disposed(by: disposeBag)
+        viewModel.totalAmountValue.map{ $0 == nil }.bind(to: totalAmountStack.rx.isHidden).disposed(by: disposeBag) */
         
         viewModel.referenceNumber.bind(to: referenceValue.rx.text).disposed(by: disposeBag)
         viewModel.referenceNumber.map{ $0 == nil }.bind(to: referenceStack.rx.isHidden).disposed(by: disposeBag)
         
-        Observable.combineLatest([viewModel.userHeading.map{ $0 == nil }, viewModel.userValue.map{ $0 == nil }])
+      /*  Observable.combineLatest([viewModel.userHeading.map{ $0 == nil }, viewModel.userValue.map{ $0 == nil }])
             .map{ $0.contains(true) }
             .bind(to: nameStack.rx.isHidden)
             .disposed(by: disposeBag)
@@ -215,7 +237,7 @@ private extension TransactionDetailsAmountInfoCell {
             self?.isHiddenPaymentDetailsFlag = $0
             self?.paymentInfo.isHidden = $0
             self?.paymentDetailsStackViewHeightConstraints.constant = $0 ? -15 : 15
-        }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag) */
     }
     
     func setupSensitiveViews() {
