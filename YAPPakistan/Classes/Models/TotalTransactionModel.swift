@@ -13,4 +13,9 @@ struct TotalTransactionModel {
     var vendorName: String
     var iconUrl: String
     var transaction: TransactionResponse//Trans
+    
+    
+    var receiverCustomerId: String?
+    var senderCustomerId: String?
+    var beneficiaryId: String?
 }

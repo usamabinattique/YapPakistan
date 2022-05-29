@@ -58,7 +58,7 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
         self.themeService = themeService
         self.transactionRepository = transactionRepository
         //setNaviagtionTitle(withTransacationsCount: cellViewModels.count)
-        self.getTotalTransactions(txnType: "", productCode: "", receiverCustomerId: "", senderCustomerId: "", beneficiaryId: "", merchantName: "")
+        self.getTotalTransactions(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: merchantName)
     }
     
     private func setNaviagtionTitle(withTransacationsCount count : Int) {

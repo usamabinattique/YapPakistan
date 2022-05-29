@@ -121,7 +121,7 @@ protocol TransactionDetailsViewModelOutputs {
     var error: Observable<String> { get }
     var success: Observable<Void> { get }
     var updateTransactionNote: Observable<String?> { get }
-    var addNote: Observable<CDTransaction?> { get }
+    var addNote: Observable<TransactionResponse?> { get }
     var addReceipt: Observable<Void> { get }
     var receiptsSelected: Observable<IndexPath> { get }
     var photoTap: Observable<Void>{ get }
@@ -170,7 +170,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let successSubject = PublishSubject<Void>()
     private let updateTransactionNoteSubject = PublishSubject<String?>()
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
-    private let addNoteSubject = BehaviorSubject<CDTransaction?>(value: nil)
+    private let addNoteSubject = BehaviorSubject<TransactionResponse?>(value: nil)
     private let receiptsSelectedSubject = PublishSubject<IndexPath>()
     private let addReceiptSubject = PublishSubject<Void>()
     private let photoTapSubject = PublishSubject<Void>()
@@ -217,7 +217,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable()}
     var success: Observable<Void> { return successSubject.asObservable() }
     var updateTransactionNote: Observable<String?> { return updateTransactionNoteSubject.asObservable() }
-    var addNote: Observable<CDTransaction?> { return addNoteSubject.asObservable() }
+    var addNote: Observable<TransactionResponse?> { return addNoteSubject.asObservable() }
     var addReceipt: Observable<Void> { return addReceiptSubject.asObservable() }
     var receiptsSelected: Observable<IndexPath> { return receiptsSelectedSubject.asObservable() }
     var photoTap: Observable<Void>{ return photoTapSubject.asObservable() }
@@ -246,7 +246,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         bindCategoryUpdate()
         self.globalNote = self.transaction.type == .credit ? self.transaction.receiverTransactionNote ?? nil : nil != nil ? self.transaction.receiverTransactionNote ?? nil : self.transaction.transactionNote ?? nil
         generateTransactionCellViewModels()
-//        addNoteAction.map { return self.transaction }.bind(to: addNoteSubject).disposed(by: disposeBag)
+        addNoteAction.map { transaction }.bind(to: addNoteSubject).disposed(by: disposeBag)
 //        updateNotes(cdTransaction: cdTransaction)
         
 //        uploadReceiptPhoto(repository: self.repository, transactionId: self.transaction.transactionId )
@@ -294,7 +294,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             
             let title = transaction.merchantName ?? "Unknown"
             guard let txnCount = self.transactionTotalPurchase?.txnCount else {return}
-            let transactionDetail = TotalTransactionModel(transactionCount: txnCount , vendorName: title, iconUrl: "logo_starBucks", transaction: self.transaction)
+            let transactionDetail = TotalTransactionModel(transactionCount: txnCount , vendorName: title, iconUrl: "logo_starBucks", transaction: self.transaction,receiverCustomerId: self.receiverCustomerIdInCaseOfY2Y,senderCustomerId: self.senderCustomerIdInCaseOfY2Y,beneficiaryId: self.beneficiaryIdInCaseOfSendMoney)
             self.totalTransactionsSubject.onNext(transactionDetail)
         }).disposed(by: disposeBag)
         fetchTotalPurchaseDate(repository: repository, transactionId: transaction.transactionId, transaction: transaction)
