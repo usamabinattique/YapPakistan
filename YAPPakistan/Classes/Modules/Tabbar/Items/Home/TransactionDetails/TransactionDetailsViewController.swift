@@ -24,6 +24,7 @@ class TransactionDetailsViewController: UIViewController {
     
     private lazy var headerShareBtn = UIFactory.makeButton(with: .micro)
     private lazy var headerCloseBtn = UIFactory.makeButton(with: .micro)
+    private lazy var btnHelp = UIFactory.makeButton(with: .large,title: "Something wrong? Get help")
     
     
     private lazy var headerLogoImage: UIImageView = {
@@ -92,6 +93,7 @@ extension TransactionDetailsViewController: ViewDesignable {
         headerView.addSubview(headerCloseBtn)
         
         view.addSubview(stackView)
+        view.addSubview(btnHelp)
         
         headerShareBtn.setImage(UIImage(named: "icon_share", in: .yapPakistan), for: .normal)
         headerCloseBtn.setImage(UIImage(named: "icon_close", in: .yapPakistan), for: .normal)
@@ -112,7 +114,13 @@ extension TransactionDetailsViewController: ViewDesignable {
     func setupConstraints() {
         
         stackView
-            .alignAllEdgesWithSuperview()
+            .alignEdgesWithSuperview([.top,.left,.right])
+            //.alignAllEdgesWithSuperview()
+        
+        btnHelp
+            .toBottomOf(stackView,constant: 12)
+            .alignEdgeWithSuperviewSafeArea(.bottom,constant: 8)
+            .centerHorizontallyInSuperview()
         
         headerView
             .alignEdgesWithSuperview([.top, .left, .right], constants: [0, 0, 0])
@@ -166,7 +174,7 @@ extension TransactionDetailsViewController: ViewDesignable {
         self.themeService.rx
             .bind({ UIColor($0.primaryDiffuse) }, to: headerView.rx.backgroundColor)
             .bind({ UIColor($0.backgroundColor) }, to: view.rx.backgroundColor)
-            .bind({ UIColor($0.primary) }, to: backButton.rx.tintColor)
+            .bind({ UIColor($0.primary) }, to: backButton.rx.tintColor, btnHelp.rx.titleColor(for: .normal))
             .bind({ UIColor($0.backgroundColor) }, to: tableView.rx.backgroundColor)
             .disposed(by: disposeBag)
     }
@@ -216,6 +224,11 @@ extension TransactionDetailsViewController: ViewDesignable {
             self.headerBackgroundImage.contentMode = $0.1
 
         }).disposed(by: disposeBag)
+        
+        btnHelp.rx.tap.withUnretained(self).subscribe(onNext: { (`self`, _) in
+            self.showHelpAlert()
+        }).disposed(by: disposeBag)
+
     }
     
     func bindImageSourceType() {
@@ -234,6 +247,32 @@ extension TransactionDetailsViewController: ViewDesignable {
         
     }
     
+    private func showHelpAlert() {
+        let title = "Help"
+        let details = "Need help? call us now at +92420000000"
+        let text = title + "\n\n\n" + details + "\n"
+        
+        let attributted = NSMutableAttributedString(string: text)
+        
+        attributted.addAttributes([.foregroundColor: UIColor(self.themeService.attrs.primaryDark), .font: UIFont.title3], range: NSRange(location: 0, length: title.count))
+        attributted.addAttributes([.foregroundColor: UIColor(self.themeService.attrs.greyDark), .font: UIFont.small], range: NSRange(location: text.count - details.count - 1, length: details.count))
+        
+        let alert = YAPAlertView(theme: self.themeService, icon: nil, text: attributted, primaryButtonTitle: "Call now", cancelButtonTitle: "Cancel")
+        
+        alert.show()
+        alert.rx.primaryTap.withUnretained(self).subscribe(onNext: { `self`,_ in
+           print("call now")
+            self.callNumber(phoneNumber: "+92420000000")
+        }).disposed(by: disposeBag)
+    }
+    
+    private func callNumber(phoneNumber: String) {
+        guard let url = URL(string: "telprompt://\(phoneNumber)"),
+            UIApplication.shared.canOpenURL(url) else {
+            return
+        }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
     
 }
 
