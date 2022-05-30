@@ -35,6 +35,7 @@ class ViewReceiptViewModel: ViewReceiptViewModelType, ViewReceiptViewModelInput,
     var inputs: ViewReceiptViewModelInput { return self }
     var outputs: ViewReceiptViewModelOutput { return self }
     var imageURL : String!
+    var transactionID : String
     
     // MARK: Subjects
     var backSubject = PublishSubject<Void>()
@@ -48,8 +49,9 @@ class ViewReceiptViewModel: ViewReceiptViewModelType, ViewReceiptViewModelInput,
     var back: Observable<Void> { backSubject.asObservable() }
     
     // MARK: - Init
-    init(imageURL: String) {
+    init(imageURL: String, transcationID: String) {
         self.imageURL = imageURL
+        self.transactionID = transcationID
     }
     
 }
