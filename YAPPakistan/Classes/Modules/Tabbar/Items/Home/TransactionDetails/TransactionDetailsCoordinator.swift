@@ -60,26 +60,30 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
     
     private func navigateToAddNote(viewModel: TransactionDetailsViewModelType) {
         let noteTransactionViewModel = AddTransactionDetailViewModel(transaction: transaction, transactionRepository: self.container.makeTransactionsRepository())
-        
+
         let noteTransactionViewController = AddTransactionNoteViewController(viewModel: noteTransactionViewModel, themeService: self.container.themeService)
-        
+
         let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: noteTransactionViewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
-        
+
         noteTransactionViewModel.outputs.back.subscribe(onNext: { updatedTransaction in
-            
-            
-            
+
+
+
             navController.dismiss(animated: true, completion: nil)
         }).disposed(by: rx.disposeBag)
-        
+
         noteTransactionViewModel.outputs.success.subscribe(onNext: { updatedTransaction in
             print("Note successfully update")
-            
+
             navController.dismiss(animated: true, completion: nil)
             viewModel.inputs.updatedTransactionOnNoteObserver.onNext(updatedTransaction)
         }).disposed(by: rx.disposeBag)
-        
+
         localNavRoot.present(navController, animated: true)
+        
+//        let viewModel = ReceiptUploadSuccessViewModel()
+//        let viewController = ReceiptUploadSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
+//        localNavRoot.present(viewController, animated: true, completion: nil)
     }
     
     private func navigateToTotalTransactionList(vm: TotalTransactionModel) {

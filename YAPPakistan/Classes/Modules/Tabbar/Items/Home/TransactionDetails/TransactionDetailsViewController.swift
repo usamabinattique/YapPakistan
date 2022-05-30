@@ -235,18 +235,20 @@ extension TransactionDetailsViewController: ViewDesignable {
     func bindImageSourceType() {
         //TODO: add YapActionSheet
         print("bindImagesource action sheet")
-      /*  let actionSheet = YAPActionSheet(title: "Add a receipt", subTitle: "Take a photo or upload your receipt")
-        let cameraAction = YAPActionSheetAction(title: "screen_user_profile_display_text_open_camera".localized, image: UIImage.sharedImage(named: "icon_camera")?.asTemplate) { [weak self] _ in
-            self?.viewModel.inputs.addReceiptViaCameraObserver.onNext(())
+        let actionSheet = YAPActionSheet(title: "Add a receipt", subTitle: "Take a photo or upload your receipt", themeService: self.themeService)
+        let cameraAction = YAPActionSheetAction(title: "screen_user_profile_display_text_open_camera".localized, image: UIImage(named: "icon_camera", in: .yapPakistan)) { [weak self] _ in
+            //self?.viewModel.inputs.addReceiptViaCameraObserver.onNext(())
+            self?.pickImageFromCamera()
         }
-        let photosAction = YAPActionSheetAction(title: "Upload from files".localized, image: UIImage.sharedImage(named: "icon_folder_purple")?.asTemplate) { [weak self] _ in
-            self?.viewModel.inputs.photoTapObserver.onNext(())
+        let photosAction = YAPActionSheetAction(title: "Upload from files".localized, image: UIImage(named: "icon_photoLibrary", in: .yapPakistan)) { [weak self] _ in
+            //self?.viewModel.inputs.photoTapObserver.onNext(())
+            self?.pickImageFromGallery()
         }
         actionSheet.addAction(cameraAction)
         actionSheet.addAction(photosAction)
-        actionSheet.show() */
+        actionSheet.show()
         
-        self.openActionSheet()
+        //self.openActionSheet()
     }
     
     func openActionSheet() {

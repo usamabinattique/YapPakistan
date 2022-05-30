@@ -358,10 +358,10 @@ extension MoreBankDetailsViewController {
 }
 
 //// MARK: Root View controller
-public class YAPActionSheetRootViewController: UIViewController {
-    public override var preferredStatusBarStyle: UIStatusBarStyle {
-        get {
-            return UIApplication.shared.statusBarStyle
-        }
-    }
-}
+//public class YAPActionSheetRootViewController: UIViewController {
+//    public override var preferredStatusBarStyle: UIStatusBarStyle {
+//        get {
+//            return UIApplication.shared.statusBarStyle
+//        }
+//    }
+//}

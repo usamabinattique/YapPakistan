@@ -357,7 +357,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         
         fetchReq.elements().subscribe(onNext: { [unowned self] photos in
             YAPProgressHud.hideProgressHud()
-            print(photos)
+           // print(photos)
         }).disposed(by: disposeBag)
         
         fetchReq.errors().subscribe(onNext: { [unowned self] error in
