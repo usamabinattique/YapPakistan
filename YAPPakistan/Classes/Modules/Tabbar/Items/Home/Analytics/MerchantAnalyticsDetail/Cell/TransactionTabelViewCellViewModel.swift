@@ -83,7 +83,7 @@ class TransactionTabelViewCellViewModel: TransactionTabelViewCellViewModelType, 
             logoUrl = transaction.senderUrl ?? ""
         }
         else {
-            logoUrl = transaction.receiverUrl ?? ""
+            logoUrl = transaction.merchantLogoUrl ?? ""
         }
         icon = title.components(separatedBy: " ").first?.initialsImage(color: color)
         let categoryIcon = type == .category ? url : nil

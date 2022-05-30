@@ -50,7 +50,6 @@ class ReceiptUploadSuccessViewModel: ReceiptUploadSuccessViewModelType, ReceiptU
     
     // MARK: - Init
     init() {
-        
     }
 }
 
