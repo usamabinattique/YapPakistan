@@ -231,7 +231,8 @@ extension TransactionDetailsViewController: ViewDesignable {
         }).disposed(by: disposeBag)
         
         btnHelp.rx.tap.withUnretained(self).subscribe(onNext: { (`self`, _) in
-            self.showHelpAlert()
+//            self.showHelpAlert()
+            self.callNumber(phoneNumber: "+92420000000")
         }).disposed(by: disposeBag)
         
         viewModel.outputs.showReceiptDeleteAlert.withUnretained(self).subscribe(onNext: { `self`,_ in
