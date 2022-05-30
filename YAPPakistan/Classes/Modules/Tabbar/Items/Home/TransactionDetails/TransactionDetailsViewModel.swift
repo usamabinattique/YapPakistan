@@ -164,7 +164,8 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private var globalNote: String?
     private var transaction: TransactionResponse //CDTransaction
     private var receiptsArray : [String]? = nil
-    private var transactionTotalPurchase : TotalPurchase? = nil
+    public var transactionTotalPurchase : TotalPurchase? = nil
+    //private var totalPurchaseObject: TotalPurchase
     
     var inputs: TransactionDetailsViewModelInputs {  self}
     var outputs: TransactionDetailsViewModelOutputs {  self }

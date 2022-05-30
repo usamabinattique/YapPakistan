@@ -119,8 +119,8 @@ fileprivate extension TotalTransactionsViewController {
         
         view.addSubview(tableView)
         
-        merchantTitleLabel.text = "DSTV"
-        totalTransactionsAmountLabel.text = "PKR 780.23"
+//        merchantTitleLabel.text = "DSTV"
+//        totalTransactionsAmountLabel.text = "PKR 780.23"
         merchantImageView.clipsToBounds = true
         merchantImageView.layer.cornerRadius = 32
         merchantImageView.contentMode = .scaleAspectFill
@@ -149,9 +149,17 @@ fileprivate extension TotalTransactionsViewController {
 // MARK: - Bind
 fileprivate extension TotalTransactionsViewController {
     func bind() {
+        viewModel.outputs.totalAmount.subscribe(onNext: { [weak self] totalAmount in
+            self?.totalTransactionsAmountLabel.text = totalAmount
+        }).disposed(by: disposeBag)
+        
         viewModel.outputs.navigationTitle.subscribe(onNext: { [weak self] title in
             guard let self = self else { return }
             self.title = title
+        }).disposed(by: disposeBag)
+        
+        viewModel.outputs.merchantName.subscribe(onNext: { [weak self] merchantName in
+            self?.merchantTitleLabel.text = merchantName
         }).disposed(by: disposeBag)
         
         viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)

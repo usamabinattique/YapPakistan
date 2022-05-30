@@ -58,7 +58,7 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.totalTransactions.unwrap().withUnretained(self).subscribe(onNext: { `self`,model in
-            self.navigateToTotalTransactionList(vm: model)
+            self.navigateToTotalTransactionList(vm: model, totalPuchase: CurrencyFormatter.formatAmountInLocalCurrency(abs(viewModel.transactionTotalPurchase?.totalSpendAmount ?? 0.00)))
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.addReceipt.withUnretained(self).subscribe(onNext: { `self`,_ in
@@ -116,8 +116,8 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         
     }
     
-    private func navigateToTotalTransactionList(vm: TotalTransactionModel) {
-        let viewModel = TotalTransactionsViewModel(txnType: vm.transaction.type.rawValue, productCode: vm.transaction.productCode.rawValue , receiverCustomerId: vm.receiverCustomerId, senderCustomerId: vm.senderCustomerId, beneficiaryId: vm.beneficiaryId, merchantName: vm.vendorName, transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
+    private func navigateToTotalTransactionList(vm: TotalTransactionModel, totalPuchase :String) {
+        let viewModel = TotalTransactionsViewModel(txnType: vm.transaction.type.rawValue, productCode: vm.transaction.productCode.rawValue , receiverCustomerId: vm.receiverCustomerId, senderCustomerId: vm.senderCustomerId, beneficiaryId: vm.beneficiaryId, merchantName: vm.transaction.receiverName, totalPurchase: totalPuchase, transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
         
         let viewController = TotalTransactionsViewController(viewModel: viewModel, themeService: self.container.themeService)
         
