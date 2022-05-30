@@ -32,6 +32,9 @@ class ReceiptUploadSuccessViewController: UIViewController {
     let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, text: "Your receipt has been added")
     
     let addAnotherReceiptButton = UIFactory.makeButton(with: .large, backgroundColor: .clear, title: "Add another receipt")
+    let receiptImage = UIFactory.makeImageView()
+    
+    let doneBtn = UIFactory.makeAppRoundedButton(with: .large, title: "Done")//.makeButton(with: .large, title: "Done")
     
 //    let noteTextView : UITextView = {
 //        let view = UITextView()
@@ -104,21 +107,27 @@ fileprivate extension ReceiptUploadSuccessViewController {
             .bind({ UIColor($0.primaryDark) }, to: [(navigationItem.leftBarButtonItem?.rx.tintColor)!])
             .bind({ UIColor($0.primaryDark) }, to: [titleLabel.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [subTitleLabel.rx.textColor])
-            //.bind({ UIColor($0.primary) }, to: [addAnotherReceiptButton.rx.ti])
+            .bind({ UIColor($0.primary) }, to: [addAnotherReceiptButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primary) }, to: [doneBtn.rx.backgroundColor])
+            
+            
         navigationItem.rightBarButtonItem?.tintColor = UIColor(themeService.attrs.primaryDark)
     }
     
     func setupViews() {
         view.backgroundColor = .clear
         innerView.backgroundColor = .white
-        addAnotherReceiptButton.backgroundColor = UIColor.red
+        //addAnotherReceiptButton.backgroundColor = UIColor.red
         view.addSubview(innerView)
         innerView.addSubview(titleLabel)
         innerView.addSubview(subTitleLabel)
         innerView.addSubview(addAnotherReceiptButton)
-        //view.addSubview(seperatorView)
-//        view.addSubview(noteTextView)
-//        setupNoteTextView()
+        innerView.addSubview(receiptImage)
+        innerView.addSubview(doneBtn)
+        
+        receiptImage.image = UIImage(named: "icon_receipt", in: .yapPakistan)
+        innerView.layer.cornerRadius = 20
+        innerView.clipsToBounds = true
     }
     
     func setupConstraints() {
@@ -129,6 +138,18 @@ fileprivate extension ReceiptUploadSuccessViewController {
         subTitleLabel
             .alignEdgesWithSuperview([.left, .right], constants: [0,0])
             .toBottomOf(titleLabel, constant: 8)
+        
+        receiptImage
+            .alignEdgesWithSuperview([.left, .right], constants: [0, 0])
+            .toBottomOf(subTitleLabel, constant: 34)
+            .toTopOf(doneBtn, constant: 50)
+            
+        
+        doneBtn
+            .centerHorizontallyInSuperview()
+            .toTopOf(addAnotherReceiptButton, constant: 24)
+            .height(constant: 53)
+            .width(constant: 158)
         
         addAnotherReceiptButton
             .alignEdgesWithSuperview([.left, .right, .bottom], constants: [10,10,24])
