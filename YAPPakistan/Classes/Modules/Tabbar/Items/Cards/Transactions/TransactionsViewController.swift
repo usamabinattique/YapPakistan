@@ -337,9 +337,11 @@ extension TransactionsViewController: UITableViewDelegate {
             return
         }
         
-        guard let transaction = ((cell as? TransactionsTableViewCell)?.viewModel as? TransactionsTableViewCellViewModel)?.cdTransaction else { return }
+//        guard let transaction = ((cell as? TransactionsTableViewCell)?.viewModel as? TransactionsTableViewCellViewModel)?.cdTransaction else { return }
 
-        viewModel.inputs.transactionDetailsObserver.onNext(transaction)
+        let cellViewModel = viewModel.outputs.cellViewModel(for: indexPath) as? TransactionsTableViewCellViewModel
+        
+        viewModel.inputs.transactionDetailsObserver.onNext((cellViewModel?.transaction)!)
     }
     
 //    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

@@ -14,7 +14,7 @@ protocol Transaction {
     var type: TransactionType { get }
     var date: Date { get }
     var status: String? { get }
-    var currency: String { get }
+    var currency: String? { get }
     var amount: Double { get }
     var totalAmount: Double? { get }
     var productCode: TransactionProductCode { get }
@@ -37,6 +37,9 @@ protocol Transaction {
     var cardHolderBillingAmount: Double { get }
     var cardHolderBillingCurrency: String? { get }
     var cardHolderBillingTotalAmount: Double { get }
+    
+    var customerId1: String? { get }
+    var customerId2: String? { get }
 }
 
 extension Transaction {
@@ -128,7 +131,7 @@ extension Transaction {
             return "Transfer rejected"
         }
         
-        if productCode == .y2yTransfer { return "YTY Transfer" }
+        if productCode == .y2yTransfer { return "YAP to YAP transfer" }
         return transferType
     }
     

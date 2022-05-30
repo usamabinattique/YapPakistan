@@ -88,7 +88,8 @@ public extension TransactionProductCode {
     }
     
     var isValidForTotalPurchase: Bool {
-        [.atmWithdrawl, .eCom, .rmt, .swift, .uaeftsTransfer, .posPurchase, .y2yTransfer, .domestic].contains(self)
+       // [.atmWithdrawl, .eCom, .rmt, .swift, .uaeftsTransfer, .posPurchase, .y2yTransfer, .domestic].contains(self)
+        [.atmWithdrawl, .eCom, .rmt, .swift, .uaeftsTransfer, .posPurchase, .y2yTransfer, .domestic,.ibftTransaction].contains(self)
     }
     
     var shouldDisplayCategory: Bool {

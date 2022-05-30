@@ -49,6 +49,7 @@ protocol TransactionsRepositoryType {
     func fetchTotalPurchases(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<[TransactionResponse]>>
     func fetchTransactionReceipt(transactionID : String) -> Observable<Event<[String]>>
     func getFEDFee(for scheme: String) -> Observable<Event<Double?>>
+    func fetchTotalPurchasesCount(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<TotalPurchase>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryType {
@@ -178,5 +179,9 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
     
     public func getFEDFee(for scheme: String) -> Observable<Event<Double?>> {
         return transactionService.getFEDFee(for: scheme).materialize()
+    }
+    
+    public func fetchTotalPurchasesCount(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<TotalPurchase>> {
+        return transactionService.fetchTotalPurchasesCount(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: merchantName).materialize()
     }
 }
