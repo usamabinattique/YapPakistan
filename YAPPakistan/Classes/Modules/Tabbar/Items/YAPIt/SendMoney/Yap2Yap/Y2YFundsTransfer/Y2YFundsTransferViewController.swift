@@ -64,7 +64,7 @@ class Y2YFundsTransferViewController: UIViewController {
         return textField
     }()
 
-    private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_confirm".localized)
+    private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_confirm".localized, font: .large)
 
     // MARK: Properties
     private var themeService: ThemeService<AppTheme>!

@@ -17,7 +17,7 @@ public extension NumberFormatter {
 //        return formatter
 //    }
     
-    static func formateAmount(_ amount: Double, fractionDigits: Int = 2) -> String {
+    static func formateAmount(_ amount: Double, fractionDigits: Int = 0) -> String {
         let formatter = NumberFormatter()
         formatter.locale = .current
         formatter.numberStyle = .decimal

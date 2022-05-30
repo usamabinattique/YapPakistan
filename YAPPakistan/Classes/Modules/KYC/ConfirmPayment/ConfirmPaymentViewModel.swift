@@ -131,8 +131,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
                 addressSubject.onNext(location)
             }
             
-            fedFeeSubject.onNext(String(format: "%.2f", payment.cardSchemeObject?.fedFee ?? 0.0))
-            orderTotalFeeSubject.onNext(String(format: "%.2f", payment.cardSchemeObject?.totalFee ?? 0.0))
+            fedFeeSubject.onNext(String(format: "PKR %.2f", payment.cardSchemeObject?.fedFee ?? 0.0))
+            orderTotalFeeSubject.onNext(String(format: "PKR %.2f", payment.cardSchemeObject?.totalFee ?? 0.0))
             
             let text = String.init(format: "screen_yap_confirm_payment_display_text_place_order_for".localized)
             buttonTitleSubject.onNext(text)

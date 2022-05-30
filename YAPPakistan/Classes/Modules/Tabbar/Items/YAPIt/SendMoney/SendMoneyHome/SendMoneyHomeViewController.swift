@@ -22,7 +22,7 @@ class SendMoneyHomeViewController: UIViewController {
     
     private lazy var subHeading: UILabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "screen_send_money_no_contacts_display_text_detail".localized) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "screen_send_money_no_contacts_display_text_detail".localized)
     
-    private lazy var addNowButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_send_money_no_contacts_button_title_add_now".localized)
+    private lazy var addNowButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_send_money_no_contacts_button_title_add_now".localized, font: .large)
     
     private lazy var noBeneficiaryView: UIView = {
         let view = UIView()

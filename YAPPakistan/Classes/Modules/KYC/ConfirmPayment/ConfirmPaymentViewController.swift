@@ -55,7 +55,7 @@ class ConfirmPaymentViewController: UIViewController {
     
     private lazy var addressContainerView: UIView = UIFactory.makeView()
     
-    private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_yap_confirm_payment_display_text_place_order_for".localized)
+    private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_yap_confirm_payment_display_text_place_order_for".localized, font: .large)
     
     private lazy var scrollView: UIScrollView = {
         let view = UIScrollView()

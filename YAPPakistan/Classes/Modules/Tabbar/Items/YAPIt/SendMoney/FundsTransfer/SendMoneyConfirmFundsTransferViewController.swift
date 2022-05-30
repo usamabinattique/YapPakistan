@@ -24,7 +24,7 @@ class SendMoneyConfirmFundsTransferViewController: UIViewController {
     private lazy var name: UILabel = UIFactory.makeLabel(font: .large, alignment: .center, numberOfLines: 0)
     private lazy var balance = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
     private lazy var feeLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
-    private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_confirm".localized)
+    private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_confirm".localized, font: .large)
     
     private lazy var stackView = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 20, arrangedSubviews: [userImage, name])
     private var backButton: UIButton!

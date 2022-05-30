@@ -98,21 +98,21 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
             .share()
         
         #warning("[UMAIR] - uncomment following error block and remove current error block")
-//        paymentRequest.errors()
-//            .do(onNext: { _ in
-//                YAPProgressHud.hideProgressHud()
-//            })
-//            .subscribe(onNext:{ [weak self] error in
-//                self?.errorSubject.onNext(error.localizedDescription)
-//            })
-//            .disposed(by: disposeBag)
+        paymentRequest.errors()
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .subscribe(onNext:{ [weak self] error in
+                self?.errorSubject.onNext(error.localizedDescription)
+            })
+            .disposed(by: disposeBag)
         
-                paymentRequest.errors()
-                        .flatMap{ _ in self.getCustomerAccountBalance() }
-                    .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
-                    .subscribe(onNext: { [weak self] _ in
-                        self?.resultSubject.onNext((amount: amount, currency: currency, card: card, newBalance: self?.accountBalance ?? "")) })
-                    .disposed(by: disposeBag)
+//                paymentRequest.errors()
+//                        .flatMap{ _ in self.getCustomerAccountBalance() }
+//                    .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
+//                    .subscribe(onNext: { [weak self] _ in
+//                        self?.resultSubject.onNext((amount: amount, currency: currency, card: card, newBalance: self?.accountBalance ?? "")) })
+//                    .disposed(by: disposeBag)
                 
         paymentRequest.elements()
                 .flatMap{ _ in self.getCustomerAccountBalance() }

@@ -211,23 +211,18 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                 onAuthenticate(self.session, &self.accountProvider, &self.repository, &self.demographicsRepository)
                 self.saveDeviceSubject.onNext(())
                 self.refreshAccount()
+                
             })
-            .filter { _ in referralManager.isReferralInformationAvailable }
-            .flatMap { _ in
-                self.repository.saveReferralInvitation(inviterCustomerId: referralManager.inviterId ?? "", referralDate: referralManager.invitationTimeString ?? "")
-            }
-            .elements()
-            .do(onNext: { _ in referralManager.removeReferralInformation() })
             .subscribe()
             .disposed(by: disposeBag)
-
-        saveProfileRequest
-            .elements()
-            .withUnretained(self)
-            // .delay(.milliseconds(10), scheduler: MainScheduler.instance)
-            .map{ `self`, _ in (self.user, self.session) }
-            .bind(to: self.resultSubject)
-            .disposed(by: disposeBag)
+                
+        if referralManager.isReferralInformationAvailable {
+            let referralRequest = self.repository.saveReferralInvitation(inviterCustomerId: referralManager.inviterId ?? "", referralDate: referralManager.invitationTimeString ?? "")
+            referralRequest.elements()
+                .do(onNext: { _ in referralManager.removeReferralInformation() })
+                .subscribe()
+                .disposed(by: disposeBag)
+        }
 
         saveProfileRequest.errors()
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
@@ -285,7 +280,9 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
                 self?.user.iban = $0.iban
                 self?.user.isWaiting = $0.isWaiting
             })
-            .subscribe()
+            .subscribe(onNext: { [unowned self] _ in
+                self.resultSubject.onNext((self.user, self.session))
+            })
             .disposed(by: disposeBag)
     }
 }

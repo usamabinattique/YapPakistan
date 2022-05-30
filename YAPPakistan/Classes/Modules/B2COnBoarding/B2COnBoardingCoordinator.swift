@@ -199,9 +199,9 @@ private extension B2COnBoardingCoordinator {
         enterEmailViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
             var user = result.user
             user.timeTaken = self.viewModel.time
-            //user.isWaiting == true ?
+            user.isWaiting == true ?
             self.navigateToWaitingUserCongratulation(user: user, session: result.session)
-            //: self.navigateToCongratulation(user: user)
+            : self.navigateToCongratulation(user: user)
                 // AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailSuccess())
         }).disposed(by: disposeBag)
     }
@@ -214,6 +214,15 @@ private extension B2COnBoardingCoordinator {
 
         containerNavigation.pushViewController(congratulationViewController, animated: true)
 
+        congratulationViewModel.outputs.progress.subscribe(onNext: { [weak self] progress in
+            self?.viewModel.inputs.progressObserver.onNext(progress)
+        }).disposed(by: disposeBag)
+        
+        self.viewModel.outputs.animationCompleted.subscribe(onNext: {  _ in
+            print("animation completed call in B@COn")
+            congratulationViewController.resumeAnimation?()
+        }).disposed(by: disposeBag)
+        
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
             /// self?.b2cKyc()
             // AppAnalytics.shared.logEvent(OnBoardingEvent.completeVerification())
