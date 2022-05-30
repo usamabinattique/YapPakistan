@@ -75,7 +75,7 @@ class TopUpCardDetailsViewModel: TopUpCardDetailsViewModelType, TopUpCardDetails
     var cardNicknamePlaceholder: Observable<String> { return Observable.of( "screen_topup_card_details_display_text_placeholder_card_nickname".localized) }
     var cardNickname: Observable<String> { return externalPaymentCard.map { $0.nickName } }
     var cardNumberPlaceholder: Observable<String> { return Observable.of( "screen_topup_card_details_display_text_placeholder_card_number".localized) }
-    var cardNumber: Observable<String> { return externalPaymentCard.map { "*" + $0.last4Digits } }
+    var cardNumber: Observable<String> { return externalPaymentCard.map { $0.maskedNumber } }
     var cardTypePlaceholder: Observable<String> { return Observable.of( "screen_topup_card_details_display_text_placeholder_card_type".localized) }
     var cardType: Observable<String> { return externalPaymentCard.map { $0.type.scheme ?? $0.name } }
     var expiryPlaceholder: Observable<String> { return Observable.of( "screen_topup_card_details_display_text_placeholder_expiry".localized) }

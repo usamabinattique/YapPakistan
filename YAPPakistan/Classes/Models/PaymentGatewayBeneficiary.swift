@@ -204,6 +204,7 @@ extension ExternalPaymentCard {
         return roundedImage!
     }
     
+    //TODO: [UMAIR] - remove hardcoded Z from date formatter
     func checkIfCardExpired() -> Bool {
         
         let isoDate = "20\(self.expiry.subString(2, length: 4))-\(self.expiry.subString(0, length: 2))-01T00:00:00+0000"
