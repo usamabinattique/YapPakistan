@@ -162,6 +162,10 @@ fileprivate extension TotalTransactionsViewController {
             self?.merchantTitleLabel.text = merchantName
         }).disposed(by: disposeBag)
         
+        viewModel.outputs.merchantLogo.subscribe(onNext: { [weak self] logoURL in
+            self?.merchantImageView.sd_setImage(with: URL(string: logoURL), completed: nil)
+        }).disposed(by: disposeBag)
+        
         viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
     }
     

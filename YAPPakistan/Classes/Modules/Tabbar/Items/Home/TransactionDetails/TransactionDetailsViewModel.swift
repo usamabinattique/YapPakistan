@@ -12,6 +12,7 @@ import RxSwift
 import RxCocoa
 import RxDataSources
 import RxTheme
+import Alamofire
 /*
 protocol TransactionDetailsViewModelInput {
     var fetchDataObserver: AnyObserver<Void> { get }
@@ -115,6 +116,7 @@ protocol TransactionDetailsViewModelInputs {
     var openReciptImagePicker: AnyObserver<Void> { get }
     var showReceiptDeleteAlertObserver: AnyObserver<Void> { get }
     var confirmDeleteReceiptObserver: AnyObserver<Void> { get }
+    var refreshReceiptsObserver: AnyObserver<Void> { get }
 }
 
 protocol TransactionDetailsViewModelOutputs {
@@ -215,6 +217,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let showReceiptDeleteAlertSubject = PublishSubject<Void>()
     private let confirmReceiptDeleteAlertSubject = PublishSubject<Void>()//.create(bufferSize: 1)
     private let openReceiptSubject = PublishSubject<(String, String)>()
+    private let refreshReceiptsSubject = PublishSubject<Void>()
     
     // MARK: - Inputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver()}
@@ -237,6 +240,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var openReciptImagePicker: AnyObserver<Void> { openReceiptImagePickerSubject.asObserver() }
     var showReceiptDeleteAlertObserver: AnyObserver<Void> { showReceiptDeleteAlertSubject.asObserver() }
     var confirmDeleteReceiptObserver: AnyObserver<Void> { confirmReceiptDeleteAlertSubject.asObserver() }
+    var refreshReceiptsObserver: AnyObserver<Void> { return fetchReceiptsFromServerSubject.asObserver() }
     
     // MARK: - Outputs
     var error: Observable<String> { return errorSubject.asObservable() }
@@ -343,6 +347,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
                 self.uploadReceipt(receiptImage: receiptImage, transactionID: self.transaction.transactionId)
             }
         }).disposed(by: disposeBag)
+        
         self.fetchReceiptPhotos()
         
         self.shareObserverSubject.subscribe(onNext: { [unowned self] in
@@ -361,32 +366,29 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     }
     
     fileprivate func uploadReceipt(receiptImage: UIImage, transactionID: String) {
-        let imageValidation = receiptPhotoSubject.unwrap().do( onNext: { [unowned self] _ in YAPProgressHud.showProgressHud() }  ).flatMap { (image: UIImage) -> Observable<Event<Data>> in
-            return Observable.create { observer in
-                let compressedImage = image.jpegData(compressionQuality: 0.3)!
-                do {
-                    try UploadingImageValiadtor(data: compressedImage).validate() //UploadingImageValiadtor(data: compressedImage).validate()
-                    YAPProgressHud.hideProgressHud()
-                } catch {
-                    observer.onError(error)
-                    YAPProgressHud.hideProgressHud()
-                }
-                observer.onNext(compressedImage)
-                return Disposables.create()
-            }.materialize()
-        }.share(replay: 1, scope: .whileConnected)
         
-        let request = imageValidation.elements().do(onNext: { [unowned self] _ in YAPProgressHud.showProgressHud() }).flatMap { self.repository.uploadReceiptImage($0, name: "receipt-image", fileName: "receipt-image.jpg", mimeType: "image/jpg", transactionID: self.transaction.transactionId) }.share(replay: 1, scope: .whileConnected)
+        YAPProgressHud.showProgressHud()
         
-        request.elements().subscribe(onNext: { [unowned self] responseData in
+        let compressedImage = receiptImage.jpegData(compressionQuality: 0.3)!
+        
+        do {
+            try UploadingImageValiadtor(data: compressedImage).validate()
+        } catch let err {
+            print("image validation error \(err.localizedDescription)")
             YAPProgressHud.hideProgressHud()
-            
-            // Receipt Photo Upload Successfully
-            self.receiptUploadSuccessSubject.onNext(())
-            
+        }
+        
+        let uploadRequest = self.repository.uploadReceiptImage(compressedImage, name: "receipt-image", fileName: "receipt-image.jpg", mimeType: "image/jpg", transactionID: self.transaction.transactionId).share()
+        
+        uploadRequest.elements()
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .subscribe(onNext:{ _ in
+                self.receiptUploadSuccessSubject.onNext(())
         }).disposed(by: disposeBag)
         
-        request.errors().subscribe(onNext: { [unowned self] error in
+        uploadRequest.errors().subscribe(onNext: { [unowned self] error in
             YAPProgressHud.hideProgressHud()
             print(error.localizedDescription)
             self.errorSubject.onNext(error.localizedDescription)

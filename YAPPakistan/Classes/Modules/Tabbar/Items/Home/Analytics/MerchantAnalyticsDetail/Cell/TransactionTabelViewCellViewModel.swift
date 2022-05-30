@@ -79,11 +79,11 @@ class TransactionTabelViewCellViewModel: TransactionTabelViewCellViewModelType, 
         
         var icon: UIImage?
         var logoUrl = ""
-        if transaction.merchantLogoUrl == "" {
-            logoUrl = transaction.senderUrl ?? ""
+        if transaction.merchantLogoUrl == "" || transaction.merchantLogoUrl == nil {
+            logoUrl = transaction.receiverUrl ?? ""
         }
         else {
-            logoUrl = transaction.receiverUrl ?? ""
+            logoUrl = transaction.merchantLogoUrl ?? ""
         }
         icon = title.components(separatedBy: " ").first?.initialsImage(color: color)
         let categoryIcon = type == .category ? url : nil

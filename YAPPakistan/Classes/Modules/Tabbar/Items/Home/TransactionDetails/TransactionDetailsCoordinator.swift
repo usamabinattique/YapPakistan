@@ -45,7 +45,7 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
             
             print("Image URL: \(imageURL)")
             print("TransactionID: \(transactionId)")
-            self.navigateToViewReceipt(imageURL: imageURL, transactionID: transactionId)
+            self.navigateToViewReceipt(imageURL: imageURL, transactionID: transactionId, vm: viewModel)
             
         }).disposed(by: rx.disposeBag)
         
@@ -82,10 +82,15 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         return result
     }
     
-    private func navigateToViewReceipt(imageURL : String, transactionID: String) {
-        let viewModel = ViewReceiptViewModel(imageURL: imageURL, transcationID: transactionID)
+    private func navigateToViewReceipt(imageURL : String, transactionID: String, vm: TransactionDetailsViewModelType) {
+        let viewModel = ViewReceiptViewModel(imageURL: imageURL, transcationID: transactionID, transactionRepo: self.container.makeTransactionsRepository())
         let viewController = ViewReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
         let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        
+        viewModel.outputs.imageDeleteSuccess.subscribe(onNext: { [unowned self] _ in
+            vm.inputs.refreshReceiptsObserver.onNext(())
+            localNavRoot.dismiss(animated: true, completion: nil)
+        }).disposed(by: rx.disposeBag) //.bind(to: vm.inputs.refreshReceiptsObserver).disposed(by: rx.disposeBag)
         localNavRoot.present(navController, animated: true)
     }
     
@@ -94,7 +99,9 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         let viewController = ReceiptUploadSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         viewModel.outputs.done.subscribe(onNext: { [unowned self] _ in
+            
             localNavRoot.dismiss(animated: true, completion: nil)
+            vm.inputs.refreshReceiptsObserver.onNext(())
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.addAnotherReceipt.subscribe(onNext: { [unowned self] _ in
@@ -132,7 +139,7 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func navigateToTotalTransactionList(vm: TotalTransactionModel, totalPuchase :String) {
-        let viewModel = TotalTransactionsViewModel(txnType: vm.transaction.type.rawValue, productCode: vm.transaction.productCode.rawValue , receiverCustomerId: vm.receiverCustomerId, senderCustomerId: vm.senderCustomerId, beneficiaryId: vm.beneficiaryId, merchantName: vm.transaction.receiverName, totalPurchase: totalPuchase, transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
+        let viewModel = TotalTransactionsViewModel(txnType: vm.transaction.type.rawValue, productCode: vm.transaction.productCode.rawValue , receiverCustomerId: vm.receiverCustomerId, senderCustomerId: vm.senderCustomerId, beneficiaryId: vm.beneficiaryId, merchantName: vm.transaction.receiverName, totalPurchase: totalPuchase, transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService, transaction: vm.transaction)
         
         let viewController = TotalTransactionsViewController(viewModel: viewModel, themeService: self.container.themeService)
         
