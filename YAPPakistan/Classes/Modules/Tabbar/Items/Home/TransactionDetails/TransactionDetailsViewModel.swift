@@ -110,6 +110,7 @@ protocol TransactionDetailsViewModelInputs {
     var categoryChangedObserver: AnyObserver<TapixTransactionCategory> { get }
     var improveCategoryAttributeObserver: AnyObserver<Void> { get }
     var transactionTotalPurchaseObserver: AnyObserver<Void> { get }
+    var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { get }
 }
 
 protocol TransactionDetailsViewModelOutputs {
@@ -141,6 +142,7 @@ protocol TransactionDetailsViewModelOutputs {
     var transactionCategoryChanged: Observable<TapixTransactionCategory> {get}
     var transactionUserUrl: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
+    var updatedTransactionOnNote: Observable<TransactionResponse> { get }
 }
 
 protocol TransactionDetailsViewModelType {
@@ -190,6 +192,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let totalSpentAmountSubject = BehaviorSubject<Double?>(value: nil)
     private let transactionUserUrlSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
     private let transactionUserBackgroundImageSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
+    private let updatedTransactionOnNoteSubject = PublishSubject<TransactionResponse>()
     
     // MARK: - Inputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver()}
@@ -207,6 +210,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         transactionTotalPurchaseSubject.asObserver() }
     var totalTransactions: Observable<TotalTransactionModel?> {
         totalTransactionsSubject }
+    var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { updatedTransactionOnNoteSubject.asObserver() }
     
     // MARK: - Outputs
     var error: Observable<String> { return errorSubject.asObservable() }
@@ -236,6 +240,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var transactionCategoryChanged: Observable<TapixTransactionCategory> { categoryChangedSubject }
     var transactionUserUrl: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserUrlSubject.asObservable() }
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserBackgroundImageSubject.asObservable() }
+    var updatedTransactionOnNote: Observable<TransactionResponse> { updatedTransactionOnNoteSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>
     
@@ -298,6 +303,11 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             self.totalTransactionsSubject.onNext(transactionDetail)
         }).disposed(by: disposeBag)
         fetchTotalPurchaseDate(repository: repository, transactionId: transaction.transactionId, transaction: transaction)
+        
+        self.updatedTransactionOnNoteSubject.withUnretained(self).subscribe(onNext: { `self`,updatedTransaction in
+            self.transaction = updatedTransaction
+            self.generateTransactionCellViewModels()
+        }).disposed(by: disposeBag)
     }
     
    /* fileprivate func updateNotes(cdTransaction: TransactionResponse) {

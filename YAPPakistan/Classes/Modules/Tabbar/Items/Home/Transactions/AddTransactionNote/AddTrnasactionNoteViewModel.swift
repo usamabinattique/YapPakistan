@@ -23,6 +23,7 @@ protocol AddTransactionDetailViewModelOutput {
     var error: Observable<String> { get }
     var note: Observable<String?> { get }
     var back: Observable<Void> { get }
+    var success: Observable<TransactionResponse> { get }
 }
 
 protocol AddTransactionDetailViewModelType {
@@ -36,7 +37,7 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
     let disposeBag = DisposeBag()
     var inputs: AddTransactionDetailViewModelInput { return self }
     var outputs: AddTransactionDetailViewModelOutput { return self }
-    var transactionID : String
+    var transaction : TransactionResponse
     var transactionRepo : TransactionsRepositoryType
     var previousNote : String?
     
@@ -50,6 +51,7 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
     var error: Observable<String> { return errorSubject.asObservable() }
     var note: Observable<String?> { return noteSubject.asObservable() }
     var back: Observable<Void> { return backSubject.asObservable() }
+    var success: Observable<TransactionResponse> { return successSubject.asObservable() }
     
     // MARK: Subjects
     internal var noteTextViewSubject = BehaviorSubject<String>(value: "")
@@ -57,31 +59,41 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
     internal var saveNoteTappedSubject = PublishSubject<Void>()
     internal var errorSubject = PublishSubject<String>()
     internal var backSubject = PublishSubject<Void>()
-    internal var noteSubject = BehaviorSubject<String?>(value: "") //PublishSubject<String>()
+    internal var noteSubject = BehaviorSubject<String?>(value: "Type Something...") //PublishSubject<String>()
+    internal var successSubject = PublishSubject<TransactionResponse>()
     
     // MARK: - Init
-    init(transactionID: String, note: String?, transactionRepository: TransactionsRepositoryType) {
-        self.transactionID = transactionID
+    init(transaction: TransactionResponse, transactionRepository: TransactionsRepositoryType) {
+        self.transaction = transaction
         self.transactionRepo = transactionRepository
-        self.previousNote = note
+        self.previousNote = transaction.transactionNote
         
         saveNoteTapped()
         iSActiveSaveButtonBinding()
         
-        if let note = note {
-            noteSubject.onNext(note)
-        }
+        noteSubject.onNext(transaction.transactionNote)
     }
     
     func saveNoteTapped() {
-        let req = saveNoteTappedSubject.withLatestFrom(self.noteTextViewSubject).share()
+//        var theNote: String?
+//        let req = saveNoteTappedSubject
+//            .withLatestFrom(self.noteTextViewSubject)
+//            .flatMap { [unowned self] note in
+////                theNote = note
+//                transactionRepo.addTransactionNote(trnsactionID: self.transaction.transactionId, transactionNote: note, receiverTransactionNote: nil)
+//            }.share()
+        let req = saveNoteTappedSubject
+            .withLatestFrom(self.noteTextViewSubject).share()
         
         req.subscribe(onNext: { [unowned self] note in
             
-            let addNoteReq = transactionRepo.addTransactionNote(trnsactionID: self.transactionID, transactionNote: note, receiverTransactionNote: nil)
+            let addNoteReq = transactionRepo.addTransactionNote(trnsactionID: self.transaction.transactionId, transactionNote: note, receiverTransactionNote: nil)
             
-            addNoteReq.elements().subscribe(onNext: { data in
-                print(data)
+            addNoteReq.elements().subscribe(onNext: { [unowned self] date in
+                print(date)
+                self.transaction.transactionNoteDate = DateFormatter.transactionDateFormatter.date(from:   date.formattedDateString  )  //data
+                self.transaction.transactionNote = note
+                self.successSubject.onNext(self.transaction)
             }).disposed(by: disposeBag)
             
             let error = addNoteReq.errors().map{ $0.localizedDescription }

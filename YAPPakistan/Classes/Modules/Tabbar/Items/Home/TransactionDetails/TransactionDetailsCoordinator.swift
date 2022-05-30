@@ -42,7 +42,7 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.addNote.unwrap().withUnretained(self).subscribe(onNext:  { (`self`, _) in
-            self.navigateToAddNote()
+            self.navigateToAddNote(viewModel: viewModel)
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.totalTransactions.unwrap().withUnretained(self).subscribe(onNext: { `self`,model in
@@ -58,17 +58,25 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         return result
     }
     
-    private func navigateToAddNote() {
-        let noteTransactionViewModel = AddTransactionDetailViewModel(transactionID: "\(transaction.id)", note: transaction.remarks ?? "", transactionRepository: self.container.makeTransactionsRepository())
+    private func navigateToAddNote(viewModel: TransactionDetailsViewModelType) {
+        let noteTransactionViewModel = AddTransactionDetailViewModel(transaction: transaction, transactionRepository: self.container.makeTransactionsRepository())
         
         let noteTransactionViewController = AddTransactionNoteViewController(viewModel: noteTransactionViewModel, themeService: self.container.themeService)
         
         let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: noteTransactionViewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
         
-        noteTransactionViewModel.outputs.back.subscribe(onNext: { _ in
+        noteTransactionViewModel.outputs.back.subscribe(onNext: { updatedTransaction in
+            
+            
             
             navController.dismiss(animated: true, completion: nil)
+        }).disposed(by: rx.disposeBag)
+        
+        noteTransactionViewModel.outputs.success.subscribe(onNext: { updatedTransaction in
+            print("Note successfully update")
             
+            navController.dismiss(animated: true, completion: nil)
+            viewModel.inputs.updatedTransactionOnNoteObserver.onNext(updatedTransaction)
         }).disposed(by: rx.disposeBag)
         
         localNavRoot.present(navController, animated: true)

@@ -114,8 +114,8 @@ struct TransactionResponse: Codable, Transaction {
     var title: String?
     let merchant: String?
     let transactionId: String
-    let transactionNote: String?
-    let transactionNoteDate: Date?
+    var transactionNote: String?
+    var transactionNoteDate: Date?
     let card: String?
     var id: Int
     let productName: String?

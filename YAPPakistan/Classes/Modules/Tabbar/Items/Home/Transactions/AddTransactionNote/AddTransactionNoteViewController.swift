@@ -146,6 +146,12 @@ fileprivate extension AddTransactionNoteViewController {
         
         viewModel.outputs.note.subscribe(onNext: { [weak self] note in
             guard let self = self else { return }
+            if note == "Type Something..." {
+                self.noteTextView.textColor = UIColor(self.themeService.attrs.greyDark)
+            }
+            else {
+                self.noteTextView.textColor = UIColor(self.themeService.attrs.primary)
+            }
             self.noteTextView.text = note
             self.enableSaveBarButton()
             self.noteTextView.textColor = UIColor(self.themeService.attrs.primary)
@@ -165,7 +171,7 @@ fileprivate extension AddTransactionNoteViewController {
 
 extension AddTransactionNoteViewController : UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor(themeService.attrs.greyDark) {
+        if textView.text == "Type Something..." { //UIColor(themeService.attrs.greyDark) {
             textView.text = nil
             textView.textColor = UIColor(themeService.attrs.primary)
         }
