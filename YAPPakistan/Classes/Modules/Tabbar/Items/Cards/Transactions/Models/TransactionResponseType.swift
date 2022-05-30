@@ -146,7 +146,7 @@ struct TransactionResponse: Codable, Transaction {
     var customerId: String?
     var remarks: String?
     var receiverTransactionNote: String?
-    let receiverTransactionNoteDate: Date?
+    var receiverTransactionNoteDate: Date?
     let cardName1: String?
     let cardName2: String?
     let markupFee: Double?
