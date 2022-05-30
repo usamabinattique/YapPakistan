@@ -142,7 +142,7 @@ fileprivate extension ViewReceiptViewController {
 // MARK: - Bind
 fileprivate extension ViewReceiptViewController {
     func bind() {
-        
+        self.deleteBtn.rx.tap.bind(to: self.viewModel.inputs.deleteObserver).disposed(by: disposeBag)
     }
 }
 

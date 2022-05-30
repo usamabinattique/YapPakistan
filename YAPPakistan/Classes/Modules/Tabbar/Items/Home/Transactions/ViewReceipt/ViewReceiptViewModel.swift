@@ -14,6 +14,7 @@ import UIKit
 
 protocol ViewReceiptViewModelInput {
     var backObserver: AnyObserver<Void> { get }
+    var deleteObserver: AnyObserver<Void> { get }
 
 }
 
@@ -37,9 +38,11 @@ class ViewReceiptViewModel: ViewReceiptViewModelType, ViewReceiptViewModelInput,
     
     // MARK: Subjects
     var backSubject = PublishSubject<Void>()
+    var deleteSubject = PublishSubject<Void>()
     
     // MARK: Inputs
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
+    var deleteObserver: AnyObserver<Void> { deleteSubject.asObserver() }
     
     //MARK: Outputs
     var back: Observable<Void> { backSubject.asObservable() }
