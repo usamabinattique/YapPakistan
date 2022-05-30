@@ -49,6 +49,7 @@ protocol TransactionsServiceType {
     
     func uploadTransactionReceipt<T: Codable>(_ data: Data, name: String, fileName: String, mimeType: String, transactionID: String) -> Observable<T>
     func fetchTransactionReceipts<T: Codable>(_ transactionID: String) -> Observable<T>
+    func deleteReceipts<T: Codable>(_ transactionId: String, imageName: String) -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
@@ -367,6 +368,16 @@ class TransactionsService: BaseService, TransactionsServiceType {
                                         query: nil,
                                         body: nil,
                                         headers: authorizationProvider.authorizationHeaders)
+        
+        return self.request(apiClient: apiClient, route: route)
+    }
+    
+    func deleteReceipts<T: Codable>(_ transactionId: String, imageName: String) -> Observable<T> {
+        let query = ["transaction-id" : transactionId, "receipt-image": imageName]
+        let route = APIEndpoint<String>(.delete,
+                                apiConfig.transactionsURL,
+                                "/api/transaction-receipt", query: query,
+                                headers: authorizationProvider.authorizationHeaders)
         
         return self.request(apiClient: apiClient, route: route)
     }

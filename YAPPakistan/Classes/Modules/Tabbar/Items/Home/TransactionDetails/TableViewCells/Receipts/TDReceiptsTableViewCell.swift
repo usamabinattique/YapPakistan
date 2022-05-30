@@ -164,6 +164,7 @@ private extension TDReceiptsTableViewCell {
 extension TDReceiptsTableViewCell: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 96 , height: 32)
+//        return CGSize(width: 96 , height: 32)
+        return CGSize(width: 140 , height: 32)
     }
 }

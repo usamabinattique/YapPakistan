@@ -111,6 +111,8 @@ protocol TransactionDetailsViewModelInputs {
     var improveCategoryAttributeObserver: AnyObserver<Void> { get }
     var transactionTotalPurchaseObserver: AnyObserver<Void> { get }
     var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { get }
+    var showReceiptDeleteAlertObserver: AnyObserver<Void> { get }
+    var confirmDeleteReceiptObserver: AnyObserver<Void> { get }
 }
 
 protocol TransactionDetailsViewModelOutputs {
@@ -143,6 +145,10 @@ protocol TransactionDetailsViewModelOutputs {
     var transactionUserUrl: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
     var updatedTransactionOnNote: Observable<TransactionResponse> { get }
+    var receiptDelete: Observable<Int?> { get }
+    var showReceiptDeleteAlert: Observable<Void> { get }
+    var confirmDeleteReceipt: Observable<Void> { get }
+    
 }
 
 protocol TransactionDetailsViewModelType {
@@ -151,6 +157,7 @@ protocol TransactionDetailsViewModelType {
 }
 
 class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionDetailsViewModelInputs, TransactionDetailsViewModelOutputs {
+    
     
     
     // MARK: - Properties
@@ -193,6 +200,9 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let transactionUserUrlSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
     private let transactionUserBackgroundImageSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
     private let updatedTransactionOnNoteSubject = PublishSubject<TransactionResponse>()
+    private let receiptDeleteSubject = PublishSubject<Int?>()
+    private let showReceiptDeleteAlertSubject = PublishSubject<Void>()
+    private let confirmReceiptDeleteAlertSubject = PublishSubject<Void>()
     
     // MARK: - Inputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver()}
@@ -211,6 +221,8 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var totalTransactions: Observable<TotalTransactionModel?> {
         totalTransactionsSubject }
     var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { updatedTransactionOnNoteSubject.asObserver() }
+    var showReceiptDeleteAlertObserver: AnyObserver<Void> { showReceiptDeleteAlertSubject.asObserver() }
+    var confirmDeleteReceiptObserver: AnyObserver<Void> { confirmReceiptDeleteAlertSubject.asObserver() }
     
     // MARK: - Outputs
     var error: Observable<String> { return errorSubject.asObservable() }
@@ -241,6 +253,9 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var transactionUserUrl: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserUrlSubject.asObservable() }
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserBackgroundImageSubject.asObservable() }
     var updatedTransactionOnNote: Observable<TransactionResponse> { updatedTransactionOnNoteSubject.asObservable() }
+    var receiptDelete: Observable<Int?> { receiptDeleteSubject.asObservable() }
+    var showReceiptDeleteAlert: Observable<Void> { showReceiptDeleteAlertSubject.asObservable() }
+    var confirmDeleteReceipt: Observable<Void> { confirmReceiptDeleteAlertSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>
     
@@ -281,13 +296,6 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         
         
         
-        receipts.unwrap().subscribe(onNext: {[weak self] receipts in
-            self?.receiptsArray = receipts
-            self?.generateTransactionCellViewModels()
-        }).disposed(by: disposeBag)
-        
-        fetchReceiptsFromServerSubject.onNext(())
-        
         totalPurchase.unwrap().subscribe(onNext:{[weak self] in
             self?.transactionTotalPurchase = $0
             self?.totalSpentAmountSubject.onNext($0.totalSpendAmount)
@@ -318,7 +326,16 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             }
         }).disposed(by: disposeBag)
         
-        self.fetchReceiptPhotos()
+      
+        fetchAllReceipts()
+        receipts.unwrap().subscribe(onNext: {[weak self] receipts in
+            self?.receiptsArray = receipts
+            self?.generateTransactionCellViewModels()
+        }).disposed(by: disposeBag)
+        
+        fetchReceiptsFromServerSubject.onNext(())
+        deleteReceipt()
+        openReceipt()
     }
     
     fileprivate func uploadReceipt(receiptImage: UIImage, transactionID: String) {
@@ -356,17 +373,40 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     fileprivate func fetchReceiptPhotos() {
         
         YAPProgressHud.showProgressHud()
-        let fetchReq = repository.fetchReceiptPhotos(transactionID: self.transaction.transactionId)
+        let fetchReq = repository.fetchReceiptPhotos(transactionID: self.transaction.transactionId).share()
         
         fetchReq.elements().subscribe(onNext: { [unowned self] photos in
             YAPProgressHud.hideProgressHud()
-           // print(photos)
+            print("receipts are \(photos)")
+            self.receiptsSubject.onNext(photos)
         }).disposed(by: disposeBag)
         
         fetchReq.errors().subscribe(onNext: { [unowned self] error in
             self.errorSubject.onNext(error.localizedDescription)
         }).disposed(by: disposeBag)
     }
+    
+    func fetchAllReceipts() {
+          let request = fetchReceiptsFromServer
+            .flatMap { [unowned self] _ in self.repository.fetchReceiptPhotos(transactionID: self.transaction.transactionId) }
+              .share(replay: 1, scope: .whileConnected)
+          
+          request.elements()
+              .unwrap()
+              .map{ $0 }
+              .bind(to: receiptsSubject)
+              .disposed(by: disposeBag)
+          
+          request
+              .errors()
+              .map { $0.localizedDescription }
+              .bind(to: errorSubject).disposed(by: disposeBag)
+        
+        receiptsSubject.withUnretained(self).subscribe(onNext: {  `self`,receiptList in
+            print("receipts are \(receiptList)")
+        }).disposed(by: disposeBag)
+
+      }
     
     fileprivate func updateNotes() {
         updateTransactionNote
@@ -385,6 +425,47 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             })
             .disposed(by: disposeBag)
     }
+    
+//    fileprivate func deleteReceipt() {
+//        confirmReceiptDeleteAlertSubject.withLatestFrom(receiptDelete).subscribe(onNext: { receipt in
+//            print("call receipt delte api")
+//        }).disposed(by: disposeBag)
+//
+//
+//    }
+    
+    func deleteReceipt() {
+      let req =  confirmReceiptDeleteAlertSubject.withLatestFrom(receiptDelete)
+            .unwrap()
+            .filter{ (self.receiptsArray?.count ?? 0 )  >= $0 }
+            .map{ self.receiptsArray?[$0].components(separatedBy: "/").last }
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+                .flatMap { self.repository.deleteReceipt(self.transaction.transactionId, imageName: String($0 ?? "")) }
+            .share(replay: 1, scope: .whileConnected)
+        
+        req.elements()
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .subscribe(onNext:{[weak self] _ in
+                self?.fetchReceiptsFromServerSubject.onNext(())
+                print("receipt deleted")
+            }).disposed(by: disposeBag)
+        
+        req
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .errors()
+            .map { $0.localizedDescription }
+            .bind(to: errorSubject).disposed(by: disposeBag)
+    }
+    
+    func openReceipt() {
+        receiptsSelectedSubject.withUnretained(self).subscribe(onNext: { `self`,index in
+            guard let receipts = self.receiptsArray, !receipts.isEmpty, receipts.count > index.row else { return }
+            let selectedReceipt = receipts[index.row]
+            print("selected receipt is \(selectedReceipt)")
+        }).disposed(by: disposeBag)
+
+    }
+
 }
 
 private extension TransactionDetailsViewModel {
@@ -423,6 +504,18 @@ private extension TransactionDetailsViewModel {
                 .itemSelected
                 .unwrap()
                 .bind(to: receiptsSelectedSubject).disposed(by: disposeBag)
+            
+            let deleteReceipt = receiptVm
+                .outputs
+                .deleteReceipt.share()
+            
+            deleteReceipt
+                .map{ _ in () }
+                .bind(to: inputs.showReceiptDeleteAlertObserver)
+                .disposed(by: disposeBag)
+            
+            deleteReceipt
+                .bind(to: receiptDeleteSubject).disposed(by: disposeBag)
         }
         
         makeTotalPurchaseCellViewModels(self.transactionTotalPurchase, cellViewModels: &cellViewModels)

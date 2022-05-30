@@ -14,6 +14,7 @@ import RxDataSources
 
 protocol TDReceiptsTableViewCellViewModelInputs {
     var selectedModelObserver: AnyObserver<IndexPath> { get }
+    var deleteReceiptObserver: AnyObserver<Int?> { get }
 }
 
 protocol TDReceiptsTableViewCellViewModelOutputs {
@@ -22,6 +23,7 @@ protocol TDReceiptsTableViewCellViewModelOutputs {
     var isCollectionHidden: Observable<Bool> { get }
     var receiptsDataSource: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { get }
     var itemSelected: Observable<IndexPath?> { get }
+    var deleteReceipt: Observable<Int?> { get }
 }
 
 protocol TDReceiptsTableViewCellViewModelType {
@@ -30,6 +32,7 @@ protocol TDReceiptsTableViewCellViewModelType {
 }
 
 class TDReceiptsTableViewCellViewModel: TDReceiptsTableViewCellViewModelType, ReusableTableViewCellViewModelType, TDReceiptsTableViewCellViewModelInputs, TDReceiptsTableViewCellViewModelOutputs {
+    
     
     var reusableIdentifier: String { return TDReceiptsTableViewCell.defaultIdentifier }
     
@@ -43,12 +46,14 @@ class TDReceiptsTableViewCellViewModel: TDReceiptsTableViewCellViewModelType, Re
     private let isCollectionHiddenSubject = BehaviorSubject<Bool>(value: true)
     private let selectedModelSubject = PublishSubject<IndexPath>()
     private let itemSlectedSubject = PublishSubject<IndexPath?>()
+    private let deleteReceiptSubject = PublishSubject<Int?>()
     
     var inputs: TDReceiptsTableViewCellViewModelInputs { return self }
     var outputs: TDReceiptsTableViewCellViewModelOutputs { return self }
     
     // MARK: - Inputs
     var selectedModelObserver: AnyObserver<IndexPath> { return selectedModelSubject.asObserver() }
+    var deleteReceiptObserver: AnyObserver<Int?> { deleteReceiptSubject.asObserver() }
     
     // MARK: - Outputs
     var title: Observable<String> { return titleSubject.asObservable() }
@@ -56,6 +61,7 @@ class TDReceiptsTableViewCellViewModel: TDReceiptsTableViewCellViewModelType, Re
     var isCollectionHidden: Observable<Bool> { return isCollectionHiddenSubject.asObservable() }
     var itemSelected: Observable<IndexPath?> { return itemSlectedSubject.asObservable() }
     var receiptsDataSource: Observable<[SectionModel<Int, ReusableCollectionViewCellViewModelType>]> { return receiptsDataSourceSubject.asObservable() }
+    var deleteReceipt: Observable<Int?> { deleteReceiptSubject.asObservable() }
     
     // MARK: - Init
     init(receipts: [String]? = nil) {
@@ -80,8 +86,10 @@ class TDReceiptsTableViewCellViewModel: TDReceiptsTableViewCellViewModelType, Re
     
     func generateViewModels(receipts: [String]) {
     
-        for index in receipts.indices {
-            cellViewModels.append(TDReceiptCollectionViewCellViewModel(title:"Receipt \(index + 1)"))
+        for (index,_) in receipts.enumerated() {
+            let vm = TDReceiptCollectionViewCellViewModel(title:"Receipt \(index + 1)",receiptIndex: index)
+            vm.outputs.deleteReceipt.bind(to: inputs.deleteReceiptObserver).disposed(by: disposeBag)
+            cellViewModels.append(vm)
         }
         
         receiptsDataSourceSubject.onNext([SectionModel(model: 0, items: cellViewModels)])

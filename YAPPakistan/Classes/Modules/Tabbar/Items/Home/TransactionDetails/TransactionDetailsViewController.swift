@@ -229,6 +229,10 @@ extension TransactionDetailsViewController: ViewDesignable {
         btnHelp.rx.tap.withUnretained(self).subscribe(onNext: { (`self`, _) in
             self.showHelpAlert()
         }).disposed(by: disposeBag)
+        
+        viewModel.outputs.showReceiptDeleteAlert.withUnretained(self).subscribe(onNext: { `self`,_ in
+            self.showDeleteAlert()
+        }).disposed(by: disposeBag)
 
     }
     
@@ -313,6 +317,27 @@ extension TransactionDetailsViewController: ViewDesignable {
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
     
+    private func showDeleteAlert() {
+        let title = "Alert"
+        let details = "Are you sure you want to delete this receipt?"
+        let text = title + "\n\n\n" + details + "\n"
+        
+        let attributted = NSMutableAttributedString(string: text)
+        
+        attributted.addAttributes([.foregroundColor: UIColor(self.themeService.attrs.primaryDark), .font: UIFont.title3], range: NSRange(location: 0, length: title.count))
+        attributted.addAttributes([.foregroundColor: UIColor(self.themeService.attrs.greyDark), .font: UIFont.small], range: NSRange(location: text.count - details.count - 1, length: details.count))
+        
+        let alert = YAPAlertView(theme: self.themeService, icon: nil, text: attributted, primaryButtonTitle: "Delete", cancelButtonTitle: "Cancel")
+        
+        alert.show()
+        alert.rx.primaryTap.withUnretained(self).subscribe(onNext: { `self`,_ in
+           print("Delete now")
+            
+        }).disposed(by: disposeBag)
+        
+        alert.rx.primaryTap.bind(to: viewModel.inputs.confirmDeleteReceiptObserver).disposed(by: disposeBag)
+       
+    }
 }
 
 //MARK: // UIImagePickerDelegate
