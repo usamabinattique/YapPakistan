@@ -46,6 +46,9 @@ protocol TransactionsServiceType {
     func fetchTransactionReceipt<T: Codable>(transactionID: String) -> Observable<T>
     func getFEDFee<T: Codable>(for scheme: String) -> Observable<T>
     func fetchTotalPurchasesCount<T: Codable>(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<T>
+    
+    func uploadTransactionReceipt<T: Codable>(_ data: Data, name: String, fileName: String, mimeType: String, transactionID: String) -> Observable<T>
+    func fetchTransactionReceipts<T: Codable>(_ transactionID: String) -> Observable<T>
 }
 
 class TransactionsService: BaseService, TransactionsServiceType {
@@ -329,5 +332,42 @@ class TransactionsService: BaseService, TransactionsServiceType {
         
         let route = APIEndpoint<String>(.post, apiConfig.transactionsURL, "/api/total-purchases", pathVariables: nil, query: params, body: nil, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func uploadTransactionReceipt<T: Codable>(_ data: Data, name: String, fileName: String, mimeType: String, transactionID: String) -> Observable<T> {
+        let photoRequest = DocumentUploadRequest(data: data, name: name, fileName: fileName, mimeType: mimeType)
+        let documents = [photoRequest]
+        
+        var params = [String: String]()
+
+        params["transaction-id"] = String(transactionID)
+        
+//        let profilePhotoRequest = ProfilePhotoRequest.init(profilePicture: photoRequest.data)
+//        let input = RouterInput(body: profilePhotoRequest, query: nil, pathVariables: nil)
+//        let route = CustomersRouter.uploadPhoto(input)
+        
+        //let body : [String:String] = ["transaction-id": transactionID]
+        
+        let route = APIEndpoint(.post,
+                                apiConfig.transactionsURL,
+                                "/api/transaction-receipt", query: params,
+                                body: documents,
+                                headers: authorizationProvider.authorizationHeaders)
+        
+        return self.upload(apiClient: apiClient, documents: documents, route: route, progressObserver: nil, otherFormValues: [:])
+    }
+    
+    func fetchTransactionReceipts<T: Codable>(_ transactionID: String) -> Observable<T> {
+       
+
+        let route = APIEndpoint<String>(.get,
+                                        apiConfig.transactionsURL,
+                                        "/api/transaction-receipt/transaction-id/\(transactionID)",
+                                        pathVariables: nil,
+                                        query: nil,
+                                        body: nil,
+                                        headers: authorizationProvider.authorizationHeaders)
+        
+        return self.request(apiClient: apiClient, route: route)
     }
 }

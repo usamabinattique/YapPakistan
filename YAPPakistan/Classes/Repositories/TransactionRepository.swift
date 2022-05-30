@@ -50,6 +50,8 @@ protocol TransactionsRepositoryType {
     func fetchTransactionReceipt(transactionID : String) -> Observable<Event<[String]>>
     func getFEDFee(for scheme: String) -> Observable<Event<Double?>>
     func fetchTotalPurchasesCount(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<TotalPurchase>>
+    func uploadReceiptImage(_ data: Data, name: String, fileName: String, mimeType: String, transactionID: String) -> Observable<Event<String?>>
+    func fetchReceiptPhotos(transactionID: String) -> Observable<Event<[String]?>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryType {
@@ -183,5 +185,13 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
     
     public func fetchTotalPurchasesCount(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<TotalPurchase>> {
         return transactionService.fetchTotalPurchasesCount(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: merchantName).materialize()
+    }
+    
+    public func uploadReceiptImage(_ data: Data, name: String, fileName: String, mimeType: String, transactionID: String) -> Observable<Event<String?>> {
+        return transactionService.uploadTransactionReceipt(data, name: name, fileName: fileName, mimeType: mimeType, transactionID: transactionID).materialize() //transactionService.getFEDFee(for: "").materialize()
+    }
+    
+    public func fetchReceiptPhotos(transactionID: String) -> Observable<Event<[String]?>> {
+        return transactionService.fetchTransactionReceipts(transactionID).materialize()
     }
 }

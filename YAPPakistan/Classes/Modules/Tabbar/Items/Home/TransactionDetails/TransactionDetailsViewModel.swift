@@ -308,6 +308,61 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             self.transaction = updatedTransaction
             self.generateTransactionCellViewModels()
         }).disposed(by: disposeBag)
+        
+        self.receiptPhotoSubject.subscribe(onNext: { [unowned self] receiptPhoto in
+            if let receiptImage = receiptPhoto {
+                self.uploadReceipt(receiptImage: receiptImage, transactionID: self.transaction.transactionId)
+            }
+        }).disposed(by: disposeBag)
+        
+        self.fetchReceiptPhotos()
+    }
+    
+    fileprivate func uploadReceipt(receiptImage: UIImage, transactionID: String) {
+        let imageValidation = receiptPhotoSubject.unwrap().do( onNext: { [unowned self] _ in YAPProgressHud.showProgressHud() }  ).flatMap { (image: UIImage) -> Observable<Event<Data>> in
+            return Observable.create { observer in
+                let compressedImage = image.jpegData(compressionQuality: 0.5)!
+                do {
+                    try UploadingImageValiadtor(data: compressedImage).validate() //UploadingImageValiadtor(data: compressedImage).validate()
+                    YAPProgressHud.hideProgressHud()
+                } catch {
+                    observer.onError(error)
+                    YAPProgressHud.hideProgressHud()
+                }
+                observer.onNext(compressedImage)
+                return Disposables.create()
+            }.materialize()
+        }.share(replay: 1, scope: .whileConnected)
+        
+        let request = imageValidation.elements().do(onNext: { _ in YAPProgressHud.showProgressHud() }).flatMap { self.repository.uploadReceiptImage($0, name: "receipt-image", fileName: "receipt-image.jpg", mimeType: "image/jpg", transactionID: self.transaction.transactionId) }.share(replay: 1, scope: .whileConnected)
+        
+        request.elements().subscribe(onNext: { [unowned self] responseData in
+            YAPProgressHud.hideProgressHud()
+            
+            // Receipt Photo Upload Successfully
+            
+        }).disposed(by: disposeBag)
+        
+        request.errors().subscribe(onNext: { [unowned self] error in
+            YAPProgressHud.hideProgressHud()
+            print(error.localizedDescription)
+            self.errorSubject.onNext(error.localizedDescription)
+        }).disposed(by: disposeBag)
+    }
+    
+    fileprivate func fetchReceiptPhotos() {
+        
+        YAPProgressHud.showProgressHud()
+        let fetchReq = repository.fetchReceiptPhotos(transactionID: self.transaction.transactionId)
+        
+        fetchReq.elements().subscribe(onNext: { [unowned self] photos in
+            YAPProgressHud.hideProgressHud()
+            print(photos)
+        }).disposed(by: disposeBag)
+        
+        fetchReq.errors().subscribe(onNext: { [unowned self] error in
+            self.errorSubject.onNext(error.localizedDescription)
+        }).disposed(by: disposeBag)
     }
     
    /* fileprivate func updateNotes(cdTransaction: TransactionResponse) {

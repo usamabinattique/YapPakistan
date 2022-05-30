@@ -49,6 +49,7 @@ class TransactionDetailsViewController: UIViewController {
     
     // MARK: - Properties
     var viewModel: TransactionDetailsViewModel!
+    private lazy var imagePicker = UIImagePickerController()
     private var themeService: ThemeService<AppTheme>!
     private var disposeBag = DisposeBag()
     private var dataSource: RxTableViewSectionedReloadDataSource<SectionModel<Int, ReusableTableViewCellViewModelType>>!
@@ -245,6 +246,42 @@ extension TransactionDetailsViewController: ViewDesignable {
         actionSheet.addAction(photosAction)
         actionSheet.show() */
         
+        self.openActionSheet()
+    }
+    
+    func openActionSheet() {
+        let cameraAction = UIAlertAction(title: "Open Camera", style: .default) { [unowned self] _ in
+            self.pickImageFromCamera()
+        }
+        
+        let gelleryAction = UIAlertAction(title: "Choose photo", style: .default) { [unowned self] _ in
+            self.pickImageFromGallery()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+        let alertController = UIAlertController(title: "Upload your receipt", message: nil, preferredStyle: .actionSheet)
+        alertController.popoverPresentationController?.sourceView = self.view
+        alertController.popoverPresentationController?.sourceRect = self.view.frame
+        alertController.addAction(cameraAction)
+        alertController.addAction(gelleryAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func pickImageFromCamera() {
+        imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .camera
+        imagePicker.allowsEditing = true
+        imagePicker.delegate = self
+        self.present(imagePicker, animated: true, completion: nil)
+        
+    }
+    
+    func pickImageFromGallery() {
+        imagePicker = UIImagePickerController()
+        imagePicker.sourceType = .photoLibrary
+        imagePicker.allowsEditing = false
+        imagePicker.delegate = self
+        self.present(imagePicker, animated: true, completion: nil)
     }
     
     private func showHelpAlert() {
@@ -276,4 +313,16 @@ extension TransactionDetailsViewController: ViewDesignable {
     
 }
 
-
+//MARK: // UIImagePickerDelegate
+extension TransactionDetailsViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        imagePicker.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let image = info[.originalImage] as? UIImage else { return }
+        imagePicker.dismiss(animated: true) { [weak self] in
+            self?.viewModel.inputs.receiptPhotoObserver.onNext(image)
+        }
+    }
+}
