@@ -111,6 +111,8 @@ protocol TransactionDetailsViewModelInputs {
     var improveCategoryAttributeObserver: AnyObserver<Void> { get }
     var transactionTotalPurchaseObserver: AnyObserver<Void> { get }
     var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { get }
+    var shareObserver: AnyObserver<Void> { get }
+    var openReciptImagePicker: AnyObserver<Void> { get }
     var showReceiptDeleteAlertObserver: AnyObserver<Void> { get }
     var confirmDeleteReceiptObserver: AnyObserver<Void> { get }
 }
@@ -145,6 +147,9 @@ protocol TransactionDetailsViewModelOutputs {
     var transactionUserUrl: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
     var updatedTransactionOnNote: Observable<TransactionResponse> { get }
+    var receiptUploadSuccess: Observable<Void> { get }
+    var share: Observable<TransactionResponse> { get }
+    var openReceiptImagePicker: Observable<Void> { get }
     var receiptDelete: Observable<Int?> { get }
     var showReceiptDeleteAlert: Observable<Void> { get }
     var confirmDeleteReceipt: Observable<Void> { get }
@@ -166,7 +171,8 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private var globalNote: String?
     private var transaction: TransactionResponse //CDTransaction
     private var receiptsArray : [String]? = nil
-    private var transactionTotalPurchase : TotalPurchase? = nil
+    public var transactionTotalPurchase : TotalPurchase? = nil
+    //private var totalPurchaseObject: TotalPurchase
     
     var inputs: TransactionDetailsViewModelInputs {  self}
     var outputs: TransactionDetailsViewModelOutputs {  self }
@@ -200,6 +206,10 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let transactionUserUrlSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
     private let transactionUserBackgroundImageSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
     private let updatedTransactionOnNoteSubject = PublishSubject<TransactionResponse>()
+    private let receiptUploadSuccessSubject = PublishSubject<Void>()
+    private let shareObserverSubject = PublishSubject<Void>()
+    private let shareSubject = PublishSubject<TransactionResponse>()
+    private let openReceiptImagePickerSubject = PublishSubject<Void>()
     private let receiptDeleteSubject = PublishSubject<Int?>()
     private let showReceiptDeleteAlertSubject = PublishSubject<Void>()
     private let confirmReceiptDeleteAlertSubject = PublishSubject<Void>()
@@ -221,6 +231,8 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var totalTransactions: Observable<TotalTransactionModel?> {
         totalTransactionsSubject }
     var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { updatedTransactionOnNoteSubject.asObserver() }
+    var shareObserver: AnyObserver<Void> { shareObserverSubject.asObserver() }
+    var openReciptImagePicker: AnyObserver<Void> { openReceiptImagePickerSubject.asObserver() }
     var showReceiptDeleteAlertObserver: AnyObserver<Void> { showReceiptDeleteAlertSubject.asObserver() }
     var confirmDeleteReceiptObserver: AnyObserver<Void> { confirmReceiptDeleteAlertSubject.asObserver() }
     
@@ -253,6 +265,9 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var transactionUserUrl: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserUrlSubject.asObservable() }
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserBackgroundImageSubject.asObservable() }
     var updatedTransactionOnNote: Observable<TransactionResponse> { updatedTransactionOnNoteSubject.asObservable() }
+    var receiptUploadSuccess: Observable<Void> { receiptUploadSuccessSubject.asObservable() }
+    var share: Observable<TransactionResponse> { shareSubject.asObservable() }
+    var openReceiptImagePicker: Observable<Void> { openReceiptImagePickerSubject.asObservable() }
     var receiptDelete: Observable<Int?> { receiptDeleteSubject.asObservable() }
     var showReceiptDeleteAlert: Observable<Void> { showReceiptDeleteAlertSubject.asObservable() }
     var confirmDeleteReceipt: Observable<Void> { confirmReceiptDeleteAlertSubject.asObservable() }
@@ -325,7 +340,11 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
                 self.uploadReceipt(receiptImage: receiptImage, transactionID: self.transaction.transactionId)
             }
         }).disposed(by: disposeBag)
+        self.fetchReceiptPhotos()
         
+        self.shareObserverSubject.subscribe(onNext: { [unowned self] in
+            self.shareSubject.onNext(self.transaction)
+        }).disposed(by: disposeBag)
       
         fetchAllReceipts()
         receipts.unwrap().subscribe(onNext: {[weak self] receipts in
@@ -341,7 +360,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     fileprivate func uploadReceipt(receiptImage: UIImage, transactionID: String) {
         let imageValidation = receiptPhotoSubject.unwrap().do( onNext: { [unowned self] _ in YAPProgressHud.showProgressHud() }  ).flatMap { (image: UIImage) -> Observable<Event<Data>> in
             return Observable.create { observer in
-                let compressedImage = image.jpegData(compressionQuality: 0.5)!
+                let compressedImage = image.jpegData(compressionQuality: 0.3)!
                 do {
                     try UploadingImageValiadtor(data: compressedImage).validate() //UploadingImageValiadtor(data: compressedImage).validate()
                     YAPProgressHud.hideProgressHud()
@@ -354,12 +373,13 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             }.materialize()
         }.share(replay: 1, scope: .whileConnected)
         
-        let request = imageValidation.elements().do(onNext: { _ in YAPProgressHud.showProgressHud() }).flatMap { self.repository.uploadReceiptImage($0, name: "receipt-image", fileName: "receipt-image.jpg", mimeType: "image/jpg", transactionID: self.transaction.transactionId) }.share(replay: 1, scope: .whileConnected)
+        let request = imageValidation.elements().do(onNext: { [unowned self] _ in YAPProgressHud.showProgressHud() }).flatMap { self.repository.uploadReceiptImage($0, name: "receipt-image", fileName: "receipt-image.jpg", mimeType: "image/jpg", transactionID: self.transaction.transactionId) }.share(replay: 1, scope: .whileConnected)
         
         request.elements().subscribe(onNext: { [unowned self] responseData in
             YAPProgressHud.hideProgressHud()
             
             // Receipt Photo Upload Successfully
+            self.receiptUploadSuccessSubject.onNext(())
             
         }).disposed(by: disposeBag)
         

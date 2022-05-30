@@ -158,7 +158,7 @@ extension TransactionDetailsViewController: ViewDesignable {
         self.stackView.backgroundColor = .white
         
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
-        
+        headerShareBtn.rx.tap.bind(to: viewModel.inputs.shareObserver).disposed(by: disposeBag)
         viewModel.outputs.error.subscribe(onNext: { [weak self] errorMessage in
             self?.showAlert(title: "", message: errorMessage, defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: disposeBag)
@@ -169,6 +169,10 @@ extension TransactionDetailsViewController: ViewDesignable {
 //        }).disposed(by: disposeBag)
         
         bindTableView()
+        
+        self.viewModel.outputs.openReceiptImagePicker.subscribe(onNext: { [weak self] _ in
+            self?.bindImageSourceType()
+        }).disposed(by: disposeBag)
     }
     
     func setupTheme() {

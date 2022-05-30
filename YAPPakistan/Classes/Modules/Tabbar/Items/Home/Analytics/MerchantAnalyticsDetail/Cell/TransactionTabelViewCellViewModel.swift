@@ -75,10 +75,16 @@ class TransactionTabelViewCellViewModel: TransactionTabelViewCellViewModelType, 
         self.themeService = themeService
         colorSubject.onNext((UIColor(themeService.attrs.secondaryMagenta), .category))
         
-        let title = transaction.merchantName ?? "Unknown"
+        let title = transaction.merchantName ?? ""
         
         var icon: UIImage?
-        let logoUrl = transaction.merchantLogoUrl
+        var logoUrl = ""
+        if transaction.merchantLogoUrl == "" {
+            logoUrl = transaction.senderUrl ?? ""
+        }
+        else {
+            logoUrl = transaction.receiverUrl ?? ""
+        }
         icon = title.components(separatedBy: " ").first?.initialsImage(color: color)
         let categoryIcon = type == .category ? url : nil
         imageSubject.onNext(((logoUrl,categoryIcon, icon), type))
@@ -91,7 +97,13 @@ class TransactionTabelViewCellViewModel: TransactionTabelViewCellViewModelType, 
         let time = formatter.string(from: transaction.date)
         formatter.dateFormat = "MMM dd"
         let dayMonth = formatter.string(from: transaction.date)
-        titleSubject.onNext(title)
+        if title == "" {
+            titleSubject.onNext(transaction.receiverName ?? "Unknown")
+        }
+        else {
+            titleSubject.onNext(title)
+        }
+        
         if transaction.type == .debit {
             amountSubject.onNext("- " + CurrencyFormatter.format(amount: transaction.cardHolderBillingTotalAmount , in: transaction.cardHolderBillingCurrency ?? "AED").amountFromFormattedAmount)
         }

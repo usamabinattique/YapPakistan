@@ -18,9 +18,13 @@ protocol TotalTransactionsViewModelInput {
 
 protocol TotalTransactionsViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
-    var navigationTitle: Observable<String> { get }
+    
     var error: Observable<String> { get }
     var back: Observable<Void> { get }
+    var navigationTitle: Observable<String> { get }
+    var merchantName: Observable<String> { get }
+    var totalAmount: Observable<String> { get }
+    
 }
 
 protocol TotalTransactionsViewModelType {
@@ -46,19 +50,26 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
     var navigationTitle: Observable<String> { return navigationTitleSubject.asObservable()}
     var error: Observable<String> { return errorSubject.asObservable() }
     var back: Observable<Void> { return backSubject.asObservable() }
+    var merchantName: Observable<String> { merchantNameSubject.asObservable() }
+    var totalAmount: Observable<String> { totalAmountSubject.asObservable() }
     
     internal var navigationTitleSubject = BehaviorSubject<String>(value: "")
     
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
     private let errorSubject = PublishSubject<String>()
     private let backSubject = PublishSubject<Void>()
+    private let merchantNameSubject = BehaviorSubject<String>(value: "") // PublishSubject<String>()
+    private let totalAmountSubject = BehaviorSubject<String>(value: "") //PublishSubject<String>()
     
     // MARK: - Init
-    init(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?, transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>) {
+    init(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?, totalPurchase: String, transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>) {
         self.themeService = themeService
         self.transactionRepository = transactionRepository
-        //setNaviagtionTitle(withTransacationsCount: cellViewModels.count)
-        self.getTotalTransactions(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: merchantName)
+        
+        setNaviagtionTitle(withTransacationsCount: 5)
+        self.getTotalTransactions(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: nil, merchantName: nil)
+        self.merchantNameSubject.onNext("Sent to " + (merchantName ?? "Unknown"))
+        self.totalAmountSubject.onNext(totalPurchase)
     }
     
     private func setNaviagtionTitle(withTransacationsCount count : Int) {

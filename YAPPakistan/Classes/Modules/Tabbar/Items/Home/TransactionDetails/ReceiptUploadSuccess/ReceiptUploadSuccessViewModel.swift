@@ -13,11 +13,13 @@ import RxTheme
 import UIKit
 
 protocol ReceiptUploadSuccessViewModelInput {
-    
+    var doneObserver: AnyObserver<Void> { get }
+    var addAnotherReceiptObserver: AnyObserver<Void> { get }
 }
 
 protocol ReceiptUploadSuccessViewModelOutput {
-    
+    var done: Observable<Void> { get }
+    var addAnotherReceipt: Observable<Void> { get }
 }
 
 protocol ReceiptUploadSuccessViewModelType {
@@ -27,6 +29,19 @@ protocol ReceiptUploadSuccessViewModelType {
 
 class ReceiptUploadSuccessViewModel: ReceiptUploadSuccessViewModelType, ReceiptUploadSuccessViewModelInput, ReceiptUploadSuccessViewModelOutput {
 
+    
+    // MARK: Subjects
+    private let doneSubject = PublishSubject<Void>()
+    private let addAnotherReceiptSubject = PublishSubject<Void>()
+    
+    // MARK: Inputs
+    var doneObserver: AnyObserver<Void> { doneSubject.asObserver() }
+    var addAnotherReceiptObserver: AnyObserver<Void> { addAnotherReceiptSubject.asObserver() }
+    
+    // MARK: Outputs
+    var done: Observable<Void> { doneSubject.asObservable() }
+    var addAnotherReceipt: Observable<Void> { addAnotherReceiptSubject.asObservable() }
+    
     // MARK: - Properties
     let disposeBag = DisposeBag()
     var inputs: ReceiptUploadSuccessViewModelInput { return self }

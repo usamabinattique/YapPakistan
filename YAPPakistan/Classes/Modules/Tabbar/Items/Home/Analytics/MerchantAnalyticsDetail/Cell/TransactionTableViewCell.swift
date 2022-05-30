@@ -154,8 +154,8 @@ private extension TransactionTableViewCell {
     
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.secondaryMagenta) }, to: [title.rx.textColor])
-            .bind({ UIColor($0.greyDark) }, to: [timeDate.rx.textColor, currency.rx.textColor])
+            .bind({ UIColor($0.primaryDark) }, to: [title.rx.textColor])
+            .bind({ UIColor($0.grey) }, to: [timeDate.rx.textColor, currency.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [amount.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
