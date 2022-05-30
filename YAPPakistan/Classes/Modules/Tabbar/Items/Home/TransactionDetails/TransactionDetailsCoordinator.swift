@@ -66,7 +66,7 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.receiptUploadSuccess.subscribe(onNext: { [unowned self] _ in
-            self.navigateToReceiptSuccessUplaoded()
+            self.navigateToReceiptSuccessUplaoded(vm: viewModel)
         }).disposed(by: rx.disposeBag)
 
         root.present(self.localNavRoot, animated: true, completion: nil)
@@ -74,9 +74,19 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         return result
     }
     
-    private func navigateToReceiptSuccessUplaoded() {
+    private func navigateToReceiptSuccessUplaoded(vm: TransactionDetailsViewModelType) {
         let viewModel = ReceiptUploadSuccessViewModel()
         let viewController = ReceiptUploadSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
+        
+        viewModel.outputs.done.subscribe(onNext: { [unowned self] _ in
+            localNavRoot.dismiss(animated: true, completion: nil)
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.addAnotherReceipt.subscribe(onNext: { [unowned self] _ in
+            localNavRoot.dismiss(animated: true, completion: nil)
+            vm.inputs.openReciptImagePicker.onNext(())
+        }).disposed(by: rx.disposeBag)
+        
         localNavRoot.present(viewController, animated: true, completion: nil)
     }
     

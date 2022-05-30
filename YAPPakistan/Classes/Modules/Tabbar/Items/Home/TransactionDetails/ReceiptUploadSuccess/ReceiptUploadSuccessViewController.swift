@@ -168,6 +168,10 @@ fileprivate extension ReceiptUploadSuccessViewController {
 // MARK: - Bind
 fileprivate extension ReceiptUploadSuccessViewController {
     func bind() {
+        
+        doneBtn.rx.tap.bind(to: self.viewModel.inputs.doneObserver).disposed(by: disposeBag)
+        addAnotherReceiptButton.rx.tap.bind(to: self.viewModel.inputs.addAnotherReceiptObserver).disposed(by: disposeBag)
+        
 //        saveBarButton.rx.tap.bind(to: viewModel.inputs.saveNoteTappedObserver).disposed(by: disposeBag)
 //        noteTextView.rx.text.unwrap().bind(to: viewModel.inputs.noteTextViewObserver).disposed(by: disposeBag)
 //        viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)

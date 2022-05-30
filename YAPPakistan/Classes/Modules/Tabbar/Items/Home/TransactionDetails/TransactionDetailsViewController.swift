@@ -169,6 +169,10 @@ extension TransactionDetailsViewController: ViewDesignable {
 //        }).disposed(by: disposeBag)
         
         bindTableView()
+        
+        self.viewModel.outputs.openReceiptImagePicker.subscribe(onNext: { [weak self] _ in
+            self?.bindImageSourceType()
+        }).disposed(by: disposeBag)
     }
     
     func setupTheme() {

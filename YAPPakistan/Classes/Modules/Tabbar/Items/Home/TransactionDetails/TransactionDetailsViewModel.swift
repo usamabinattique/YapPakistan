@@ -112,6 +112,7 @@ protocol TransactionDetailsViewModelInputs {
     var transactionTotalPurchaseObserver: AnyObserver<Void> { get }
     var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { get }
     var shareObserver: AnyObserver<Void> { get }
+    var openReciptImagePicker: AnyObserver<Void> { get }
 }
 
 protocol TransactionDetailsViewModelOutputs {
@@ -146,6 +147,7 @@ protocol TransactionDetailsViewModelOutputs {
     var updatedTransactionOnNote: Observable<TransactionResponse> { get }
     var receiptUploadSuccess: Observable<Void> { get }
     var share: Observable<TransactionResponse> { get }
+    var openReceiptImagePicker: Observable<Void> { get }
 }
 
 protocol TransactionDetailsViewModelType {
@@ -199,6 +201,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let receiptUploadSuccessSubject = PublishSubject<Void>()
     private let shareObserverSubject = PublishSubject<Void>()
     private let shareSubject = PublishSubject<TransactionResponse>()
+    private let openReceiptImagePickerSubject = PublishSubject<Void>()
     
     // MARK: - Inputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver()}
@@ -218,6 +221,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         totalTransactionsSubject }
     var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { updatedTransactionOnNoteSubject.asObserver() }
     var shareObserver: AnyObserver<Void> { shareObserverSubject.asObserver() }
+    var openReciptImagePicker: AnyObserver<Void> { openReceiptImagePickerSubject.asObserver() }
     
     // MARK: - Outputs
     var error: Observable<String> { return errorSubject.asObservable() }
@@ -250,6 +254,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var updatedTransactionOnNote: Observable<TransactionResponse> { updatedTransactionOnNoteSubject.asObservable() }
     var receiptUploadSuccess: Observable<Void> { receiptUploadSuccessSubject.asObservable() }
     var share: Observable<TransactionResponse> { shareSubject.asObservable() }
+    var openReceiptImagePicker: Observable<Void> { openReceiptImagePickerSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>
     
@@ -337,7 +342,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     fileprivate func uploadReceipt(receiptImage: UIImage, transactionID: String) {
         let imageValidation = receiptPhotoSubject.unwrap().do( onNext: { [unowned self] _ in YAPProgressHud.showProgressHud() }  ).flatMap { (image: UIImage) -> Observable<Event<Data>> in
             return Observable.create { observer in
-                let compressedImage = image.jpegData(compressionQuality: 0.5)!
+                let compressedImage = image.jpegData(compressionQuality: 0.3)!
                 do {
                     try UploadingImageValiadtor(data: compressedImage).validate() //UploadingImageValiadtor(data: compressedImage).validate()
                     YAPProgressHud.hideProgressHud()
@@ -350,7 +355,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             }.materialize()
         }.share(replay: 1, scope: .whileConnected)
         
-        let request = imageValidation.elements().do(onNext: { _ in YAPProgressHud.showProgressHud() }).flatMap { self.repository.uploadReceiptImage($0, name: "receipt-image", fileName: "receipt-image.jpg", mimeType: "image/jpg", transactionID: self.transaction.transactionId) }.share(replay: 1, scope: .whileConnected)
+        let request = imageValidation.elements().do(onNext: { [unowned self] _ in YAPProgressHud.showProgressHud() }).flatMap { self.repository.uploadReceiptImage($0, name: "receipt-image", fileName: "receipt-image.jpg", mimeType: "image/jpg", transactionID: self.transaction.transactionId) }.share(replay: 1, scope: .whileConnected)
         
         request.elements().subscribe(onNext: { [unowned self] responseData in
             YAPProgressHud.hideProgressHud()
