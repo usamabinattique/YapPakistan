@@ -22,7 +22,7 @@ class Y2YTransferSuccessViewController: UIViewController {
     
     private lazy var amountLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
     
-    private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_y2y_funds_transfer_success_button_back".localized)
+    private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_y2y_funds_transfer_success_button_back".localized, font: .large)
     
     private lazy var referenceNumber =  UIFactory.makeLabel(font: .micro, alignment: .center) //UIFactory.ma.createUILabel(with: .primaryDark, textStyle: .large, alignment: .center)
     private lazy var phoneNumber = UIFactory.makeLabel(font: .micro,alignment: .center) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro, alignment: .center)

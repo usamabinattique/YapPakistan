@@ -49,7 +49,7 @@ open class AmountView: UIView {
 
     private let disposeBag = DisposeBag()
     private var viewModel: AmountViewModelType?
-    public var allowedDecimal: Int = 2 {
+    public var allowedDecimal: Int = 0 {
         didSet {
             amountTextField.placeholder = "custom_view_display_text_amount_view_initial_value".localized//CurrencyFormatter.defaultFormattedFee.split(separator: " ").last.map { String($0) }
         }
@@ -185,6 +185,12 @@ extension AmountView: UITextFieldDelegate {
             numberOfDecimalDigits = 0
         }
         
+        if string.count == 0 && range.length > 0 {
+                // Back pressed
+            return true
+        }
+        
+        print(isNumeric && numberOfDots <= 0 && numberOfDecimalDigits <= allowedDecimal)
         return isNumeric && numberOfDots <= 0 && numberOfDecimalDigits <= allowedDecimal
     }
 }

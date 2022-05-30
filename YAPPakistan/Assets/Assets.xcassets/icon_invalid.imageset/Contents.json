@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icon_invalid.png",
+      "filename" : "expire_card-1.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "expire_card@2x-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "expire_card@3x-1.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -64,7 +64,7 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
     
     private lazy var infoLabel = UIFactory.makeLabel(font: .small, alignment: .left, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     
-    private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton()
+    private lazy var doneButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(font: .large)
     
     private lazy var scrollView: UIScrollView = {
         let view = UIScrollView()

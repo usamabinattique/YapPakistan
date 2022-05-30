@@ -36,7 +36,7 @@ class SMFTAmountInputCell: RxUITableViewCell {
     var viewModel: SMFTAmountInputCellViewModelType!
     private var themeService: ThemeService<AppTheme>!
     
-    private var decimalPlaces: Int = 2 {
+    private var decimalPlaces: Int = 0 {
         didSet {
             amountView.allowedDecimal = decimalPlaces
         }

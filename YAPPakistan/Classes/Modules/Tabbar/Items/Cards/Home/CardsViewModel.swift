@@ -144,7 +144,7 @@ class CardsViewModel: CardsViewModelType,
     func resolveIfIncompleted(_ completionStatus: Observable<Bool>) {
         completionStatus.filter{ !$0 }.map{ _ in DeliveryStatus.ordering }.withUnretained(self)
             // .do(onNext: { $0.0.deliveryStatus = $0.1 })
-            .map { $0.0.makeLocalizableStrings($0.1) }
+            .map { $0.0.makeLocalizableStrings(PaymentCard.mock) }
             .bind(to: localizedStringsSubject)
             .disposed(by: disposeBag)
     }
@@ -163,8 +163,13 @@ class CardsViewModel: CardsViewModelType,
             .bind(to: isUserBlockedSubject).disposed(by: disposeBag)
 
         cardDetailsSubject
-            .map { $0?.deliveryStatus ?? .ordering }.withUnretained(self)
-            .map{ `self`, status in self.makeLocalizableStrings(status) }
+            .map { obj -> PaymentCard in
+                guard let paymentObj = obj else { return PaymentCard.mock }
+                return paymentObj
+            }.withUnretained(self)
+            .map{ `self`, cardObj in
+                self.makeLocalizableStrings(cardObj)
+            }
             .bind(to: localizedStringsSubject)
             .disposed(by: disposeBag)
 
@@ -191,12 +196,12 @@ extension CardsViewModel {
         var seeDetail: String = ""
         var count: String = ""
     }
-
-    fileprivate func makeLocalizableStrings(_ status: DeliveryStatus?) -> LocalizedStrings {
-        guard let message = status?.message else { return LocalizedStrings() }
+    
+    fileprivate func makeLocalizableStrings(_ paymentCard: PaymentCard) -> LocalizedStrings {
+        
         return LocalizedStrings(titleView: "Your cards",
-                                titleCard: "Primary Card",
-                                subTitle: message,
+                                titleCard: paymentCard.cardName ?? "",
+                                subTitle: (paymentCard.deliveryStatus ?? .ordering).rawValue,
                                 seeDetail: "See details",
                                 count: "1 of 1")
     }

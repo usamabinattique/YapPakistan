@@ -117,7 +117,7 @@ public extension ExternalPaymentCard {
 
 extension ExternalPaymentCard {
     var maskedNumber: String {
-        return "**** **** **** \(last4Digits)"
+        return "XXXX XXXX XXXX \(last4Digits)"
     }
     
     var expiryDate: Date? {
@@ -132,7 +132,7 @@ extension ExternalPaymentCard {
             return brokenDate
         }
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MM/yyyy"
+        dateFormatter.dateFormat = "MM/yy"
         return dateFormatter.string(from: expiry)
     }
     
@@ -204,6 +204,7 @@ extension ExternalPaymentCard {
         return roundedImage!
     }
     
+    //TODO: [UMAIR] - remove hardcoded Z from date formatter
     func checkIfCardExpired() -> Bool {
         
         let isoDate = "20\(self.expiry.subString(2, length: 4))-\(self.expiry.subString(0, length: 2))-01T00:00:00+0000"

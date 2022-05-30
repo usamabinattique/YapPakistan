@@ -35,7 +35,7 @@ protocol Y2YFundsTransferViewModelOutput {
     var isInputValid: Observable<Bool> { get }
     var fee: Observable<NSAttributedString?> { get }
     
-    var result: Observable<(YAPContact, Double)> { get }
+    var result: Observable<(YAPContact, Y2YTransactionResponse)> { get }
     
     var otpRequired: Observable<Y2YFundsTransferResult> { get }
     
@@ -81,7 +81,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
     private let feeSubject = BehaviorSubject<NSAttributedString?>(value: nil)
     private let showErrorSubject = PublishSubject<String>()
     private let confirmEnabledSubject = BehaviorSubject<Bool>(value: false)
-    private let resultSubject = PublishSubject<(YAPContact, Double)>()
+    private let resultSubject = PublishSubject<(YAPContact, Y2YTransactionResponse)>()
     private let backSubject = PublishSubject<Void>()
     private let otpRequiredSubject = PublishSubject<Y2YFundsTransferResult>()
     private let amountErrorSubject = PublishSubject<String?>()
@@ -115,7 +115,7 @@ class Y2YFundsTransferViewModel: Y2YFundsTransferViewModelType, Y2YFundsTransfer
     var flag: Observable<UIImage?> { return flagSubject.asObservable() }
     var showError: Observable<String> { return showErrorSubject.asObservable() }
     var confirmEnabled: Observable<Bool> { return confirmEnabledSubject.asObservable() }
-    var result: Observable<(YAPContact, Double)> { return resultSubject.asObservable() }
+    var result: Observable<(YAPContact, Y2YTransactionResponse)> { return resultSubject.asObservable() }
     var isInputValid: Observable<Bool> { return Observable.merge(amountSubject.map { _ in true }, showError.map { _ in false })}
     var fee: Observable<NSAttributedString?> { feeSubject.asObservable() }
     var otpRequired: Observable<Y2YFundsTransferResult> { otpRequiredSubject.asObservable() }
@@ -256,17 +256,30 @@ private extension Y2YFundsTransferViewModel {
 //        fundsTransferRequest.errors().subscribe(onNext: { [weak self] in self?.amountErrorSubject.onNext($0.localizedDescription) }).disposed(by: disposeBag)
 
 //                fundsTransferRequest.errors().subscribe(onNext: { [unowned self] _ in self.resultSubject.onNext((self.contact, 1.0)) }).disposed(by: disposeBag)
-                
-        Observable.combineLatest(fundsTransferRequest.elements().map { [unowned self] _ in self.contact }, amountSubject.map { Double($0 ?? "") ?? 0 })
-            .map { ($0.0, $0.1) }
+             
+        fundsTransferRequest.elements()
+            .map { [unowned self] obj -> (YAPContact, Y2YTransactionResponse) in
+                    return (self.contact, obj)
+                }
             .do(onNext: { [weak self] _ in
-                print("success funds transfer")
-               // self?.container.accountProvider.refreshAccount()
-             //   SessionManager.current.refreshBalance()
-             //   AppAnalytics.shared.logEvent(transferType == .qrCode ? SendMoneyEvent.sendMoneyViaQR() : SendMoneyEvent.yaptoyap())
+                    print("success funds transfer")
+                    // self?.container.accountProvider.refreshAccount()
+                    //   SessionManager.current.refreshBalance()
+                    //   AppAnalytics.shared.logEvent(transferType == .qrCode ? SendMoneyEvent.sendMoneyViaQR() : SendMoneyEvent.yaptoyap())
             })
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
+                
+//        Observable.combineLatest(fundsTransferRequest.elements().map { [unowned self] _ in self.contact }, amountSubject.map { Double($0 ?? "") ?? 0 })
+//            .map { ($0.0, $0.1) }
+//            .do(onNext: { [weak self] _ in
+//                print("success funds transfer")
+//               // self?.container.accountProvider.refreshAccount()
+//             //   SessionManager.current.refreshBalance()
+//             //   AppAnalytics.shared.logEvent(transferType == .qrCode ? SendMoneyEvent.sendMoneyViaQR() : SendMoneyEvent.yaptoyap())
+//            })
+//            .bind(to: resultSubject)
+//            .disposed(by: disposeBag)
     }
     
     func fetchData() {
