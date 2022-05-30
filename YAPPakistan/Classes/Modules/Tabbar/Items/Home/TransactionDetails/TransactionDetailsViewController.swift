@@ -158,7 +158,7 @@ extension TransactionDetailsViewController: ViewDesignable {
         self.stackView.backgroundColor = .white
         
         backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: disposeBag)
-        
+        headerShareBtn.rx.tap.bind(to: viewModel.inputs.shareObserver).disposed(by: disposeBag)
         viewModel.outputs.error.subscribe(onNext: { [weak self] errorMessage in
             self?.showAlert(title: "", message: errorMessage, defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: disposeBag)

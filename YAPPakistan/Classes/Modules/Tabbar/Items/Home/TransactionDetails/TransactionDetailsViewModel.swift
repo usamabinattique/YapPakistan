@@ -111,6 +111,7 @@ protocol TransactionDetailsViewModelInputs {
     var improveCategoryAttributeObserver: AnyObserver<Void> { get }
     var transactionTotalPurchaseObserver: AnyObserver<Void> { get }
     var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { get }
+    var shareObserver: AnyObserver<Void> { get }
 }
 
 protocol TransactionDetailsViewModelOutputs {
@@ -144,6 +145,7 @@ protocol TransactionDetailsViewModelOutputs {
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
     var updatedTransactionOnNote: Observable<TransactionResponse> { get }
     var receiptUploadSuccess: Observable<Void> { get }
+    var share: Observable<TransactionResponse> { get }
 }
 
 protocol TransactionDetailsViewModelType {
@@ -195,6 +197,8 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let transactionUserBackgroundImageSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
     private let updatedTransactionOnNoteSubject = PublishSubject<TransactionResponse>()
     private let receiptUploadSuccessSubject = PublishSubject<Void>()
+    private let shareObserverSubject = PublishSubject<Void>()
+    private let shareSubject = PublishSubject<TransactionResponse>()
     
     // MARK: - Inputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver()}
@@ -213,6 +217,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var totalTransactions: Observable<TotalTransactionModel?> {
         totalTransactionsSubject }
     var updatedTransactionOnNoteObserver: AnyObserver<TransactionResponse> { updatedTransactionOnNoteSubject.asObserver() }
+    var shareObserver: AnyObserver<Void> { shareObserverSubject.asObserver() }
     
     // MARK: - Outputs
     var error: Observable<String> { return errorSubject.asObservable() }
@@ -244,6 +249,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserBackgroundImageSubject.asObservable() }
     var updatedTransactionOnNote: Observable<TransactionResponse> { updatedTransactionOnNoteSubject.asObservable() }
     var receiptUploadSuccess: Observable<Void> { receiptUploadSuccessSubject.asObservable() }
+    var share: Observable<TransactionResponse> { shareSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>
     
@@ -322,6 +328,10 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         }).disposed(by: disposeBag)
         
         self.fetchReceiptPhotos()
+        
+        self.shareObserverSubject.subscribe(onNext: { [unowned self] in
+            self.shareSubject.onNext(self.transaction)
+        }).disposed(by: disposeBag)
     }
     
     fileprivate func uploadReceipt(receiptImage: UIImage, transactionID: String) {
