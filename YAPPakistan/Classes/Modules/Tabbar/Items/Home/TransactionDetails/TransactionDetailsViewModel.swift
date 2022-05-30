@@ -426,10 +426,6 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
               .errors()
               .map { $0.localizedDescription }
               .bind(to: errorSubject).disposed(by: disposeBag)
-        
-        receiptsSubject.withUnretained(self).subscribe(onNext: {  `self`,receiptList in
-            print("receipts are \(receiptList)")
-        }).disposed(by: disposeBag)
 
       }
     
