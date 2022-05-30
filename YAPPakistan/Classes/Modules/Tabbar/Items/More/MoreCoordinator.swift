@@ -92,7 +92,7 @@ extension MoreCoordinator {
     }
     
     func openHelpAndSupport() {
-        //coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
+        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
         
 //        let viewModel = AddTransactionDetailViewModel(transactionID: "1", note: "sdasdasdasd", transactionRepository: self.container.makeTransactionsRepository())
 //        let viewController = AddTransactionNoteViewController(viewModel: viewModel, themeService: self.container.themeService)
@@ -122,10 +122,10 @@ extension MoreCoordinator {
         //        navigationRoot.present(navController, animated: true)
         
         
-        let viewModel = ViewReceiptViewModel(imageURL: "", transcationID: "")
-        let viewController = ViewReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
-        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
-        navigationRoot.present(navController, animated: true)
+//        let viewModel = ViewReceiptViewModel(imageURL: "", transcationID: "")
+//        let viewController = ViewReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
+//        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+//        navigationRoot.present(navController, animated: true)
     }
     
     func openUserProfileSettings() {

@@ -143,6 +143,10 @@ fileprivate extension ViewReceiptViewController {
 fileprivate extension ViewReceiptViewController {
     func bind() {
         self.deleteBtn.rx.tap.bind(to: self.viewModel.inputs.deleteObserver).disposed(by: disposeBag)
+        
+        self.viewModel.outputs.loadImage.subscribe(onNext: { [weak self] imageURL in
+            self?.receiptImage.sd_setImage(with: URL(string: imageURL), completed: nil)
+        }).disposed(by: disposeBag)
     }
 }
 

@@ -20,6 +20,7 @@ protocol ViewReceiptViewModelInput {
 
 protocol ViewReceiptViewModelOutput {
     var back: Observable<Void> { get }
+    var loadImage: Observable<String> { get }
     
 }
 
@@ -40,6 +41,7 @@ class ViewReceiptViewModel: ViewReceiptViewModelType, ViewReceiptViewModelInput,
     // MARK: Subjects
     var backSubject = PublishSubject<Void>()
     var deleteSubject = PublishSubject<Void>()
+    var loadImageSubject = BehaviorSubject<String>(value: "") //PublishSubject<String>()
     
     // MARK: Inputs
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
@@ -47,12 +49,13 @@ class ViewReceiptViewModel: ViewReceiptViewModelType, ViewReceiptViewModelInput,
     
     //MARK: Outputs
     var back: Observable<Void> { backSubject.asObservable() }
+    var loadImage: Observable<String> { return loadImageSubject.asObservable() }
     
     // MARK: - Init
     init(imageURL: String, transcationID: String) {
         self.imageURL = imageURL
         self.transactionID = transcationID
+        self.loadImageSubject.onNext(imageURL)
     }
-    
 }
 

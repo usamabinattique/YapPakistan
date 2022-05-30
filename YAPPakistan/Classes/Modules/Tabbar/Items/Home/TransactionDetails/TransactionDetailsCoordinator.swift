@@ -41,6 +41,14 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)
         
+        viewModel.outputs.openReceipt.subscribe(onNext: { [unowned self] (imageURL, transactionId) in
+            
+            print("Image URL: \(imageURL)")
+            print("TransactionID: \(transactionId)")
+            self.navigateToViewReceipt(imageURL: imageURL, transactionID: transactionId)
+            
+        }).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.share.subscribe(onNext: { [unowned self] transaction in
             let viewModel = TransactionReceiptViewModel(transactionRepository: self.container.makeTransactionsRepository(), transaction: TransactionResponse())
             let viewController = TransactionReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
@@ -72,6 +80,13 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         root.present(self.localNavRoot, animated: true, completion: nil)
         
         return result
+    }
+    
+    private func navigateToViewReceipt(imageURL : String, transactionID: String) {
+        let viewModel = ViewReceiptViewModel(imageURL: imageURL, transcationID: transactionID)
+        let viewController = ViewReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
+        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        localNavRoot.present(navController, animated: true)
     }
     
     private func navigateToReceiptSuccessUplaoded(vm: TransactionDetailsViewModelType) {

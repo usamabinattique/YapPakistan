@@ -153,6 +153,7 @@ protocol TransactionDetailsViewModelOutputs {
     var receiptDelete: Observable<Int?> { get }
     var showReceiptDeleteAlert: Observable<Void> { get }
     var confirmDeleteReceipt: Observable<Void> { get }
+    var openReceipt: Observable<(String, String)> { get }
     
 }
 
@@ -213,6 +214,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let receiptDeleteSubject = PublishSubject<Int?>()
     private let showReceiptDeleteAlertSubject = PublishSubject<Void>()
     private let confirmReceiptDeleteAlertSubject = PublishSubject<Void>()
+    private let openReceiptSubject = PublishSubject<(String, String)>()
     
     // MARK: - Inputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver()}
@@ -271,6 +273,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var receiptDelete: Observable<Int?> { receiptDeleteSubject.asObservable() }
     var showReceiptDeleteAlert: Observable<Void> { showReceiptDeleteAlertSubject.asObservable() }
     var confirmDeleteReceipt: Observable<Void> { confirmReceiptDeleteAlertSubject.asObservable() }
+    var openReceipt: Observable<(String, String)> { openReceiptSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>
     
@@ -354,7 +357,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         
         fetchReceiptsFromServerSubject.onNext(())
         deleteReceipt()
-        openReceipt()
+        openReceiptFunction()
     }
     
     fileprivate func uploadReceipt(receiptImage: UIImage, transactionID: String) {
@@ -477,11 +480,14 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             .bind(to: errorSubject).disposed(by: disposeBag)
     }
     
-    func openReceipt() {
+    func openReceiptFunction() {
         receiptsSelectedSubject.withUnretained(self).subscribe(onNext: { `self`,index in
             guard let receipts = self.receiptsArray, !receipts.isEmpty, receipts.count > index.row else { return }
             let selectedReceipt = receipts[index.row]
             print("selected receipt is \(selectedReceipt)")
+            
+            self.openReceiptSubject.onNext((selectedReceipt, self.transaction.transactionId))
+            
         }).disposed(by: disposeBag)
 
     }
