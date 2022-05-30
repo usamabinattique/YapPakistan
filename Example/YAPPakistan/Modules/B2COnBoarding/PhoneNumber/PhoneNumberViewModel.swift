@@ -27,7 +27,7 @@ protocol PhoneNumberViewModelInput {
 protocol PhoneNumberViewModelOutput {
     var text: Observable<NSAttributedString?> { get }
     var inputValidation: Observable<AppRoundedTextFieldValidation> { get }
-    var icon: Observable<String?> { get }
+    var icon: Observable<String> { get }
     var iconTapped: Observable<Void> { get }
     var countries: Observable<[String]> { get }
     var shouldChange: Bool { get }
@@ -52,7 +52,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     private let textObserverSubject = PublishSubject<String?>()
     private let validationSubject = BehaviorSubject<AppRoundedTextFieldValidation>(value: .neutral)
     private let iconTapSubject = PublishSubject<Void>()
-    private let iconSubject = BehaviorSubject<String?>(value: nil)
+    private let iconSubject = BehaviorSubject<String>(value: "")
     private let countrySelectionSubject = PublishSubject<Int>()
     private let countriesSubject = BehaviorSubject<[String]>(value: [])
     private var shouldChangeSub = true
@@ -80,7 +80,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
     // outputs
     var text: Observable<NSAttributedString?> { return textSubject.asObservable() }
     var inputValidation: Observable<AppRoundedTextFieldValidation> { return validationSubject.asObservable() }
-    var icon: Observable<String?> { return iconSubject.asObservable() }
+    var icon: Observable<String> { return iconSubject.asObservable() }
     var iconTapped: Observable<Void> { return iconTapSubject.asObservable() }
     var countries: Observable<[String]> { return countriesSubject.asObservable() }
     var shouldChange: Bool { return shouldChangeSub }
@@ -109,7 +109,7 @@ class PhoneNumberViewModel: PhoneNumberViewModelInput, PhoneNumberViewModelOutpu
         self.countryListProvider = countryListProvider
         self.countryList = countryListProvider.list()
 
-        iconSubject.onNext(countryList.first?.flagIconImageName)
+        iconSubject.onNext(countryList.first?.flagIconImageName ?? "")
         textSubject.onNext(self.attributed(text: countryList.first?.callingCode ?? ""))
 
         countriesSubject.onNext(countryList.map { $0.name })
