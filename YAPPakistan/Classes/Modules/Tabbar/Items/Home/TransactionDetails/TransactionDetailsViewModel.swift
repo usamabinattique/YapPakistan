@@ -143,6 +143,7 @@ protocol TransactionDetailsViewModelOutputs {
     var transactionUserUrl: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ get }
     var updatedTransactionOnNote: Observable<TransactionResponse> { get }
+    var receiptUploadSuccess: Observable<Void> { get }
 }
 
 protocol TransactionDetailsViewModelType {
@@ -193,6 +194,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let transactionUserUrlSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
     private let transactionUserBackgroundImageSubject = ReplaySubject<(ImageWithURL, UIImageView.ContentMode)>.create(bufferSize: 1)
     private let updatedTransactionOnNoteSubject = PublishSubject<TransactionResponse>()
+    private let receiptUploadSuccessSubject = PublishSubject<Void>()
     
     // MARK: - Inputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver()}
@@ -241,6 +243,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     var transactionUserUrl: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserUrlSubject.asObservable() }
     var transactionUserBackgroundImage: Observable<(ImageWithURL, UIImageView.ContentMode)>{ transactionUserBackgroundImageSubject.asObservable() }
     var updatedTransactionOnNote: Observable<TransactionResponse> { updatedTransactionOnNoteSubject.asObservable() }
+    var receiptUploadSuccess: Observable<Void> { receiptUploadSuccessSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>
     
@@ -343,6 +346,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             YAPProgressHud.hideProgressHud()
             
             // Receipt Photo Upload Successfully
+            self.receiptUploadSuccessSubject.onNext(())
             
         }).disposed(by: disposeBag)
         
