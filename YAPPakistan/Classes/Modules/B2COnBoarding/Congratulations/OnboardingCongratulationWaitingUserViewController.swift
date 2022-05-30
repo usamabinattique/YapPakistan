@@ -15,8 +15,6 @@ class OnboardingCongratulationWaitingUserViewController: OnboardingCongratulatio
         constraint.isActive = true
         return constraint
     }()
-    
-    public var resumeAnimation: (() -> Void)?
 
     override func setup() {
         self.viewModel.inputs.progressObserver.onNext(1)

@@ -148,7 +148,7 @@
 "screen_onboarding_congratulations_display_text_sub_title" = "A YAP Personal Account has been created for you in less than %@ seconds!";
 "screen_onboarding_congratulations_display_text_sub_title_no_interval" = "A YAP Personal Account has been created for you!";
 "screen_onboarding_congratulations_display_text_iban" = "Here's your IBAN";
-"screen_onboarding_congratulations_display_text_meeting_note" = "\nMake sure you have your Emirates ID at hand before we proceed";
+"screen_onboarding_congratulations_display_text_meeting_note" = "\nMake sure you have your CNIC at hand before we proceed";
 "screen_onboarding_congratulations_waiting_user_display_text_meeting_note" = "Due to all the excitement of our official launch, we are gradually activating as many accounts as possible to keep the app running smoothly. In the meantime, until your account is ready to be fully activated you’ll be placed in a queue.";
 "screen_onboarding_congratulations_button_complete_verification" = "Complete verification";
 "screen_onboarding_congratulations_waiting_user_button_complete_verification" = "Queue up!";
