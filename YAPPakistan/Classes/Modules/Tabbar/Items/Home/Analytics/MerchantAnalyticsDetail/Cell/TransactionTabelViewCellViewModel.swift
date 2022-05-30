@@ -79,8 +79,8 @@ class TransactionTabelViewCellViewModel: TransactionTabelViewCellViewModelType, 
         
         var icon: UIImage?
         var logoUrl = ""
-        if transaction.merchantLogoUrl == "" {
-            logoUrl = transaction.senderUrl ?? ""
+        if transaction.merchantLogoUrl == "" || transaction.merchantLogoUrl == nil {
+            logoUrl = transaction.receiverUrl ?? ""
         }
         else {
             logoUrl = transaction.merchantLogoUrl ?? ""
