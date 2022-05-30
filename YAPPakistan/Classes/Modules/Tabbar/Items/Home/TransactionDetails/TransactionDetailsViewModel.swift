@@ -211,9 +211,9 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
     private let shareObserverSubject = PublishSubject<Void>()
     private let shareSubject = PublishSubject<TransactionResponse>()
     private let openReceiptImagePickerSubject = PublishSubject<Void>()
-    private let receiptDeleteSubject = PublishSubject<Int?>()
+    private let receiptDeleteSubject = ReplaySubject<Int?>.create(bufferSize: 1)
     private let showReceiptDeleteAlertSubject = PublishSubject<Void>()
-    private let confirmReceiptDeleteAlertSubject = PublishSubject<Void>()
+    private let confirmReceiptDeleteAlertSubject = PublishSubject<Void>()//.create(bufferSize: 1)
     private let openReceiptSubject = PublishSubject<(String, String)>()
     
     // MARK: - Inputs
@@ -454,7 +454,8 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
 //    }
     
     func deleteReceipt() {
-      let req =  confirmReceiptDeleteAlertSubject.withLatestFrom(receiptDelete)
+        
+      let req = confirmReceiptDeleteAlertSubject.withLatestFrom(receiptDeleteSubject)
             .unwrap()
             .filter{ (self.receiptsArray?.count ?? 0 )  >= $0 }
             .map{ self.receiptsArray?[$0].components(separatedBy: "/").last }
@@ -529,15 +530,16 @@ private extension TransactionDetailsViewModel {
             
             let deleteReceipt = receiptVm
                 .outputs
-                .deleteReceipt.share()
+                .deleteReceipt.share(replay: 1, scope: .whileConnected)
+            
+            deleteReceipt
+                .bind(to: receiptDeleteSubject).disposed(by: disposeBag)
             
             deleteReceipt
                 .map{ _ in () }
                 .bind(to: inputs.showReceiptDeleteAlertObserver)
                 .disposed(by: disposeBag)
-            
-            deleteReceipt
-                .bind(to: receiptDeleteSubject).disposed(by: disposeBag)
+           
         }
         
         makeTotalPurchaseCellViewModels(self.transactionTotalPurchase, cellViewModels: &cellViewModels)

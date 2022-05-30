@@ -336,12 +336,9 @@ extension TransactionDetailsViewController: ViewDesignable {
         
         alert.show()
         alert.rx.primaryTap.withUnretained(self).subscribe(onNext: { `self`,_ in
-           print("Delete now")
-            
+            self.viewModel.inputs.confirmDeleteReceiptObserver.onNext(())
         }).disposed(by: disposeBag)
-        
-        alert.rx.primaryTap.bind(to: viewModel.inputs.confirmDeleteReceiptObserver).disposed(by: disposeBag)
-       
+
     }
 }
 
