@@ -306,28 +306,30 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         
         self.updatedTransactionOnNoteSubject.withUnretained(self).subscribe(onNext: { `self`,updatedTransaction in
             self.transaction = updatedTransaction
-            self.generateTransactionCellViewModels()
+            self.updateTransactionNoteObserver.onNext(updatedTransaction.transactionNote)
+//            self.generateTransactionCellViewModels()
+           
         }).disposed(by: disposeBag)
+        updateNotes()
     }
     
-   /* fileprivate func updateNotes(cdTransaction: TransactionResponse) {
+    fileprivate func updateNotes() {
         updateTransactionNote
-            .do(onNext: {
+            .do(onNext: { [unowned self] in
                 if self.transaction.type == .debit {
-                    cdTransaction.transactionNote =  $0
-                    cdTransaction.transactionNoteDate = Date()
+                    self.transaction.transactionNote =  $0
+                    self.transaction.transactionNoteDate = Date()
                 }else{
-                    cdTransaction.receiverTransactionNote =  $0
-                    cdTransaction.receiverTransactionNoteDate = Date()
+                    self.transaction.receiverTransactionNote =  $0
+                    self.transaction.receiverTransactionNoteDate = Date()
                 }
-                try? cdTransaction.managedObjectContext?.save()
             })
             .subscribe(onNext: { [weak self] in
                 self?.globalNote = $0
                 self?.generateTransactionCellViewModels()
             })
             .disposed(by: disposeBag)
-    } */
+    }
 }
 
 private extension TransactionDetailsViewModel {
