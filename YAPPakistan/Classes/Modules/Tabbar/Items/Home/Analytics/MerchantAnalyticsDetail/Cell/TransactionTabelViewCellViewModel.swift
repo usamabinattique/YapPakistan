@@ -75,7 +75,7 @@ class TransactionTabelViewCellViewModel: TransactionTabelViewCellViewModelType, 
         self.themeService = themeService
         colorSubject.onNext((UIColor(themeService.attrs.secondaryMagenta), .category))
         
-        let title = transaction.merchantName ?? ""
+        let title = transaction.receiverName ?? ""
         
         var icon: UIImage?
         var logoUrl = ""
@@ -85,7 +85,7 @@ class TransactionTabelViewCellViewModel: TransactionTabelViewCellViewModelType, 
         else {
             logoUrl = transaction.merchantLogoUrl ?? ""
         }
-        icon = title.components(separatedBy: " ").first?.initialsImage(color: color)
+        icon = title.initialsImage(color: color)
         let categoryIcon = type == .category ? url : nil
         imageSubject.onNext(((logoUrl,categoryIcon, icon), type))
         self.modeSubject.onNext(.scaleAspectFit)
