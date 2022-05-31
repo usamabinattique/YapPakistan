@@ -23,9 +23,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
     fileprivate let transactionCategoryResult = PublishSubject<Void>()
     let widgetsEditCompleted = PublishSubject<Void>()
     private var contactsManager: ContactsManager!
+    private var isCompleteVerification: Bool!
     
     init(container: UserSessionContainer,
-         root: UITabBarController) {
+         root: UITabBarController, isCompleteVerification: Bool) {
+        self.isCompleteVerification = isCompleteVerification
         self.container = container
         self.root = root
         super.init()
@@ -93,7 +95,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             .withUnretained(self)
            .subscribe(onNext: {  $0.0.resultSuccess() })
             .disposed(by: rx.disposeBag)
-
+        
         viewController.viewModel.outputs.completeVerification
             .subscribe(onNext: { [weak self] isTrue in
                 self?.navigateToKYC(isTrue)
@@ -149,6 +151,13 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
                 self.navigateToTransactionDetails(transaction: obj)
             })
             .disposed(by: rx.disposeBag)
+        
+        //!!!: show complete verification flow directly, if coming from onBoarding first time
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+1.5) { [unowned self] in
+            if self.isCompleteVerification {
+                viewController.viewModel.inputs.completeVerificationObserver.onNext(())
+            }
+        }
     }
     
     func showCreditLimit() {

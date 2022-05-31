@@ -26,9 +26,12 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     fileprivate lazy var notifManager = NotificationManager()
     fileprivate lazy var username: String! = container.parent.credentialsStore.getUsername()
 
-    init(container: UserSessionContainer, window: UIWindow) {
+    private var showCompleteVerification: Bool
+    
+    init(container: UserSessionContainer, window: UIWindow, showCompleteVerification: Bool = false) {
         self.container = container
         self.window = window
+        self.showCompleteVerification = showCompleteVerification
         super.init()
         self.initializeRoot()
         self.contactsManager = ContactsManager(repository: container.makeY2YRepository())
@@ -125,7 +128,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
 
     fileprivate func home(root: UITabBarController) {
-        let homeCoordinator = HomeCoodinator(container: container, root: root)
+        let homeCoordinator = HomeCoodinator(container: container, root: root, isCompleteVerification: self.showCompleteVerification)
         self.widgetsEditedSubject.bind(to: homeCoordinator.widgetsEditCompleted).disposed(by: disposeBag)
         self.coordinate(to: homeCoordinator).subscribe(onNext: { [weak self] in
             if case ResultType.success = $0 {
