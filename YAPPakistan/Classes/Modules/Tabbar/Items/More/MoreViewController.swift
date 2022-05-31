@@ -144,7 +144,7 @@ extension MoreViewController: ViewDesignable {
                     if  err != nil {
                         self.headerView.profileImage.image = img
                     }
-                } //.sd_setImage(with: URL(string: imageURL), completed: nil)
+                } 
             }
             else {
                 self.headerView.profileImage.image = img
