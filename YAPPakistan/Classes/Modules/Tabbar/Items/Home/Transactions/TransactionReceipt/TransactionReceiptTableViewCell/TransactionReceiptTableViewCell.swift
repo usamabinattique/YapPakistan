@@ -123,17 +123,20 @@ private extension TransactionReceiptTableViewCell {
             .toBottomOf(icon, constant: 18)
         
         outerStackView
-            .alignEdgesWithSuperview([.left, .right, .bottom], constants: [20,20,20])
+            .alignEdgesWithSuperview([.left, .right, .bottom], constants: [10,10,20])
             .toBottomOf(titleLabel, constant: 40)
     }
     
     private func addTransactionDetail(withTitle title: String, withvalue value: String) {
         let titleLabel = UIFactory.makeLabel(font: .small, alignment: .left, numberOfLines: 0, text : title)
         let valueLabel = UIFactory.makeLabel(font: .small, alignment: .right, numberOfLines: 0, text : value)
+
+        titleLabel
+            .width(constant: 140)
         
         let innerStackName = UIFactory.makeStackView( axis: .horizontal,
-                                                                   alignment: .fill,
-                                                                   distribution: .fill,
+                                                      alignment: .fill,
+                                                      distribution: .fill,
                                                                    spacing: 3)
         
         innerStackName.addArrangedSubviews([titleLabel, valueLabel])
