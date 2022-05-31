@@ -206,30 +206,48 @@ fileprivate extension UserProfileViewController {
     
     
     func openActionSheet() {
-        let cameraAction = UIAlertAction(title: "Open camera", style: .default) { [unowned self] _ in
-            self.pickImageFromCamera()
+        
+        print("bindImagesource action sheet")
+        let actionSheet = YAPActionSheet(title: "Update profile photo", subTitle: nil, themeService: self.themeService)
+        let cameraAction = YAPActionSheetAction(title: "screen_user_profile_display_text_open_camera".localized, image: UIImage(named: "icon_camera", in: .yapPakistan)) { [weak self] _ in
+            self?.pickImageFromCamera()
         }
-        
-        let gelleryAction = UIAlertAction(title: "Choose photo", style: .default) { [unowned self] _ in
-            self.pickImageFromGallery()
+        let photosAction = YAPActionSheetAction(title: "Choose photo".localized, image: UIImage(named: "icon_photoLibrary", in: .yapPakistan)) { [weak self] _ in
+            self?.pickImageFromGallery()
         }
-        
-        let removeAction = UIAlertAction(title: "Remove photo", style: .default) { [unowned self] _ in
-            self.removePhoto()
+        let deleteAction = YAPActionSheetAction(title: "Remove photo".localized, image: UIImage(named: "icon_delete_purple", in: .yapPakistan)) { [weak self] _ in
+            self?.removePhoto()
         }
+        actionSheet.addAction(cameraAction)
+        actionSheet.addAction(photosAction)
+        actionSheet.addAction(deleteAction)
+        actionSheet.show()
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
         
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        alertController.popoverPresentationController?.sourceView = self.view
-        alertController.popoverPresentationController?.sourceRect = self.view.frame
-        
-        alertController.addAction(gelleryAction)
-        alertController.addAction(cameraAction)
-        alertController.addAction(removeAction)
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
+//        let cameraAction = UIAlertAction(title: "Open camera", style: .default) { [unowned self] _ in
+//            self.pickImageFromCamera()
+//        }
+//
+//        let gelleryAction = UIAlertAction(title: "Choose photo", style: .default) { [unowned self] _ in
+//            self.pickImageFromGallery()
+//        }
+//
+//        let removeAction = UIAlertAction(title: "Remove photo", style: .default) { [unowned self] _ in
+//            self.removePhoto()
+//        }
+//
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+//
+//        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+//
+//        alertController.popoverPresentationController?.sourceView = self.view
+//        alertController.popoverPresentationController?.sourceRect = self.view.frame
+//
+//        alertController.addAction(gelleryAction)
+//        alertController.addAction(cameraAction)
+//        alertController.addAction(removeAction)
+//        alertController.addAction(cancelAction)
+//        present(alertController, animated: true, completion: nil)
         
     }
     
