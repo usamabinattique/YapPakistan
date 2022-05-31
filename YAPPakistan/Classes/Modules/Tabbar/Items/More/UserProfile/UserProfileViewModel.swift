@@ -112,7 +112,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
 
     // MARK: - Properties
     let disposeBag = DisposeBag()
-    let biometricsManager: BiometricsManager
+    let biometricsManager: BiometricsManagerType
     var inputs: UserProfileViewModelInputs { return self }
     var outputs: UserProfileViewModelOutputs { return self }
     var credentialStore: CredentialsStoreType!
@@ -212,7 +212,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
 
     // MARK: - Init
     init(customer: Observable<Customer>,
-         biometricsManager: BiometricsManager = BiometricsManager(), credentialStore: CredentialsStoreType,
+         biometricsManager: BiometricsManagerType, credentialStore: CredentialsStoreType,
          repository: LoginRepository, notificationManager: NotificationManagerType, accountProvider : AccountProvider) {
 
         self.customer = customer
@@ -232,7 +232,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         }).disposed(by: disposeBag)
 
         Observable.combineLatest(customer,userNotificationPreferenceSubject).subscribe(onNext: { [unowned self] (user, _) in
-            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.email), actionObservers: [
+            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.mobileNo), actionObservers: [
                 self.personalDetailsTapObserver,
                 self.privacyTapObserver,
                 self.passcodeTapObserver,
