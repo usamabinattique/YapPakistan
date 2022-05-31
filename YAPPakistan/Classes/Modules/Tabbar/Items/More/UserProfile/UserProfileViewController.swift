@@ -215,7 +215,7 @@ fileprivate extension UserProfileViewController {
         let photosAction = YAPActionSheetAction(title: "Choose photo", image: UIImage(named: "icon_photoLibrary", in: .yapPakistan)) { [weak self] _ in
             self?.pickImageFromGallery()
         }
-        let deleteAction = YAPActionSheetAction(title: "Remove photo", image: UIImage(named: "icon_delete_purple", in: .yapPakistan)) { [weak self] _ in
+        let deleteAction = YAPActionSheetAction(title: "Remove photo", image: UIImage(named: "icon_remove_purple", in: .yapPakistan)) { [weak self] _ in
             self?.removePhoto()
         }
         actionSheet.addAction(cameraAction)
