@@ -70,7 +70,7 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
         self.transactionRepository = transactionRepository
         self.transaction = transaction
         setNaviagtionTitle(withTransacationsCount: 5)
-        self.getTotalTransactions(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: nil, merchantName: nil)
+        self.getTotalTransactions(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: nil)
         self.merchantNameSubject.onNext("Sent to " + (merchantName ?? "Unknown"))
         self.totalAmountSubject.onNext(totalPurchase)
         
