@@ -50,7 +50,7 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.share.subscribe(onNext: { [unowned self] transaction in
-            let viewModel = TransactionReceiptViewModel(transactionRepository: self.container.makeTransactionsRepository(), transaction: TransactionResponse())
+            let viewModel = TransactionReceiptViewModel(transactionRepository: self.container.makeTransactionsRepository(), transaction: transaction)
             let viewController = TransactionReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
             let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
             viewModel.outputs.back.subscribe(onNext: { _ in

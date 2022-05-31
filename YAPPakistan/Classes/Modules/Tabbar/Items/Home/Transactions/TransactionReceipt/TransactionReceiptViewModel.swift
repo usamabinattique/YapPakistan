@@ -55,13 +55,13 @@ class TransactionReceiptViewModel: TransactionReceiptViewModelType, TransactionR
         let cellViewModels: [ReusableTableViewCellViewModelType] = [TransactionReceiptTableViewCellViewModel(transaction: self.transaction)]
         
         dataSourceSubject.onNext([SectionModel(model: 0, items: cellViewModels)])
-        //getReceipt()
+        //getReceipt(transactionID: String(self.transaction.id))
     }
     
-    private func getReceipt() {
+    private func getReceipt(transactionID: String) {
         
         YAPProgressHud.showProgressHud()
-        let receiptRequest = transactionRepository.fetchTransactionReceipt(transactionID: "621951752857")
+        let receiptRequest = transactionRepository.fetchTransactionReceipt(transactionID: transactionID)
         
         receiptRequest.elements().subscribe(onNext: { data in
             YAPProgressHud.hideProgressHud()
