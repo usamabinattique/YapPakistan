@@ -43,8 +43,7 @@ class AddTransactionNoteViewController: UIViewController {
     let viewModel: AddTransactionDetailViewModelType
     let disposeBag: DisposeBag
     private var themeService: ThemeService<AppTheme>
-    
-    
+    private var placeHolderTextForNote = "Type Something..."
     
     // MARK: - View Life Cycle
     override func viewDidLoad() {
@@ -120,7 +119,7 @@ fileprivate extension AddTransactionNoteViewController {
     
     private func setupNoteTextView() {
         title = "Add a note"
-        noteTextView.text = "Type Something..."
+        noteTextView.text = self.placeHolderTextForNote
         noteTextView.textColor = UIColor(themeService.attrs.greyDark)
     }
     
@@ -144,17 +143,16 @@ fileprivate extension AddTransactionNoteViewController {
         noteTextView.rx.text.unwrap().bind(to: viewModel.inputs.noteTextViewObserver).disposed(by: disposeBag)
         viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
         
-        viewModel.outputs.note.subscribe(onNext: { [weak self] note in
-            guard let self = self else { return }
-            if note == "Type Something..." {
-                self.noteTextView.textColor = UIColor(self.themeService.attrs.greyDark)
+        viewModel.outputs.note.subscribe(onNext: { note in
+            if note == self.placeHolderTextForNote {
+                self.setPlaceHolderTextForNote()
+            }
+            else if note?.length == 0  || note == nil {
+                self.setPlaceHolderTextForNote()
             }
             else {
-                self.noteTextView.textColor = UIColor(self.themeService.attrs.primary)
+                self.setPreviousTextToNote(withPreviousText: note ?? "")
             }
-            self.noteTextView.text = note
-            self.enableSaveBarButton()
-            self.noteTextView.textColor = UIColor(self.themeService.attrs.primary)
         }).disposed(by: disposeBag)
         
         viewModel.outputs.isActiveSaveBtn.subscribe(onNext: { [weak self] isActive in
@@ -167,11 +165,24 @@ fileprivate extension AddTransactionNoteViewController {
             }
         }).disposed(by: disposeBag)
     }
+    
+    private func setPlaceHolderTextForNote() {
+        self.noteTextView.textColor = UIColor(self.themeService.attrs.greyDark)
+        self.noteTextView.text = placeHolderTextForNote
+        self.enableSaveBarButton()
+    }
+    
+    private func setPreviousTextToNote(withPreviousText text: String) {
+        self.noteTextView.textColor = UIColor(self.themeService.attrs.primary)
+        self.noteTextView.text = text
+        self.enableSaveBarButton()
+        self.noteTextView.textColor = UIColor(self.themeService.attrs.primary)
+    }
 }
 
 extension AddTransactionNoteViewController : UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == "Type Something..." { //UIColor(themeService.attrs.greyDark) {
+        if textView.text == placeHolderTextForNote { //UIColor(themeService.attrs.greyDark) {
             textView.text = nil
             textView.textColor = UIColor(themeService.attrs.primary)
         }
