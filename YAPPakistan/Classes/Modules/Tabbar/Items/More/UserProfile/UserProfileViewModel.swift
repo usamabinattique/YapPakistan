@@ -112,7 +112,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
 
     // MARK: - Properties
     let disposeBag = DisposeBag()
-    let biometricsManager: BiometricsManagerType
+    let biometricsManager: BiometricsManager
     var inputs: UserProfileViewModelInputs { return self }
     var outputs: UserProfileViewModelOutputs { return self }
     var credentialStore: CredentialsStoreType!
@@ -212,7 +212,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
 
     // MARK: - Init
     init(customer: Observable<Customer>,
-         biometricsManager: BiometricsManagerType, credentialStore: CredentialsStoreType,
+         biometricsManager: BiometricsManager, credentialStore: CredentialsStoreType,
          repository: LoginRepository, notificationManager: NotificationManagerType, accountProvider : AccountProvider) {
 
         self.customer = customer
@@ -232,7 +232,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         }).disposed(by: disposeBag)
 
         Observable.combineLatest(customer,userNotificationPreferenceSubject).subscribe(onNext: { [unowned self] (user, _) in
-            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.mobileNo), actionObservers: [
+            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: credentialStore.getUsername() ?? ""), actionObservers: [
                 self.personalDetailsTapObserver,
                 self.privacyTapObserver,
                 self.passcodeTapObserver,
@@ -250,8 +250,8 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
             self.faceIDDidChangeSubject
             .map { didChange -> Bool in if case let UserProfileTableViewAction.toggleSwitch(value) = didChange { return value }; return false }
             .subscribe(onNext: { [weak self] isOn in
-                self?.biometricsManager.setBiometry(isEnabled: isOn, phone: user.mobileNo)
-                self?.biometricsManager.setBiometryPermission(isPrompt: true, phone: user.mobileNo)
+                self?.biometricsManager.setBiometry(isEnabled: isOn, phone: credentialStore.getUsername() ?? "")
+                self?.biometricsManager.setBiometryPermission(isPrompt: true, phone: credentialStore.getUsername() ?? "")
             }).disposed(by: self.disposeBag)
             }).disposed(by: disposeBag)
 
