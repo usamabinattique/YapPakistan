@@ -139,8 +139,12 @@ extension MoreViewController: ViewDesignable {
         
         viewModel.outputs.profileImage.subscribe(onNext: { [weak self] imageURL, img in
             guard let self = self else { return }
-            if let imgURL = imageURL {
-                self.headerView.profileImage.sd_setImage(with: URL(string: imageURL), completed: nil)
+            if imageURL != "" && imageURL != nil {
+                self.headerView.profileImage.sd_setImage(with: URL(string: imageURL)) { imgObj, err, cache, url in
+                    if  err != nil {
+                        self.headerView.profileImage.image = img
+                    }
+                } //.sd_setImage(with: URL(string: imageURL), completed: nil)
             }
             else {
                 self.headerView.profileImage.image = img
