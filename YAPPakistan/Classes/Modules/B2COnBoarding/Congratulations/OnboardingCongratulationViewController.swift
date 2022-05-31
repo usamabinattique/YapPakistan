@@ -181,10 +181,6 @@ public class OnboardingCongratulationViewController: UIViewController {
     // MARK: - View Life Cycle
     override public func viewDidLoad() {
         super.viewDidLoad()
-
-        subheadingLabel.text = "screen_onboarding_congratulations_display_text_meeting_note".localized
-        subheadingLabel.sizeToFit()
-        subheadingLabel.isHidden = true
         
         setup()
         setupTheme()
@@ -200,7 +196,10 @@ public class OnboardingCongratulationViewController: UIViewController {
 
     func setup() {
         //!!! added here because in case waiting list removed show progress completion in this screen as well
-        self.viewModel.inputs.progressObserver.onNext(1)
+        
+        if viewModel.outputs.onBoardingUserObj.isWaiting == false {
+            self.viewModel.inputs.progressObserver.onNext(1)
+        }
         
         resumeAnimation = { [weak self] in
             _ = self?.rowHeight
@@ -212,9 +211,11 @@ public class OnboardingCongratulationViewController: UIViewController {
             self?.animateFootnote()
             self?.animateCompleteVerificationButton()
             
-            self?.animateCompleteVerificationCompleted = { [weak self] in
-                print("animation completed")
-                self?.bindTimeInterval()
+            if self?.viewModel.outputs.onBoardingUserObj.isWaiting == false {
+                self?.animateCompleteVerificationCompleted = { [weak self] in
+                    print("animation completed")
+                    self?.bindTimeInterval()
+                }
             }
         }
     }

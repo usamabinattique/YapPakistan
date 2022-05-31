@@ -64,7 +64,10 @@ public final class AppCoordinator: Coordinator<ResultType<Void>> {
             case .success:
                 ()
             case .cancel:
-                self?.result.onNext(result)
+                self?.result.onNext(.success(()))
+                self?.result.onCompleted()
+            default:
+                self?.result.onNext(.success(()))
                 self?.result.onCompleted()
             }
         })

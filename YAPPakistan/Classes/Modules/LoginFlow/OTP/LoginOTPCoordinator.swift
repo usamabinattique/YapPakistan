@@ -36,6 +36,14 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
 
     private var sessionContainer: UserSessionContainer!
 
+    fileprivate lazy var biometricManager = container.makeBiometricsManager()
+    fileprivate lazy var notifManager = NotificationManager()
+    fileprivate lazy var username: String! = container.credentialsStore.getUsername() ?? ""
+
+    fileprivate var isNeededBiometryPermissionPrompt: Bool {
+        return !biometricManager.isBiometryPermissionPrompt(for: username) && biometricManager.isBiometrySupported
+    }
+    
     init(root: UINavigationController,
          container: YAPPakistanMainContainer
     ){
@@ -74,19 +82,9 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
         }).disposed(by: rx.disposeBag)
 
         viewModel.outputs.loginResult.subscribe(onNext: { result in
-            switch result {
-            case .waiting:
-                self.waitingList()
-            case .allowed:
-                self.reachedQueueTop()
-            case .dashboard:
-                self.dashboard()
-            case .cancel:
-                self.root.popViewController()
-            default:
-                // FIXME: Handle other cases
-                break
-            }
+            
+            self.bioMetricPermission(result: result)
+            
         }).disposed(by: rx.disposeBag)
 
         return result
@@ -119,5 +117,64 @@ class LoginOTPCoordinator: Coordinator<LoginOTPVerificationResult>, LoginOTPCoor
             self.result.onNext(.logout)
             self.result.onCompleted()
         }).disposed(by: rx.disposeBag)
+    }
+    
+    func handleResult(result: LoginOTPVerificationResult) {
+        switch result {
+        case .waiting:
+            self.waitingList()
+        case .allowed:
+            self.reachedQueueTop()
+        case .dashboard:
+            self.dashboard()
+        case .cancel:
+            self.root.popViewController()
+        default:
+            // FIXME: Handle other cases
+            break
+        }
+    }
+}
+
+extension LoginOTPCoordinator {
+    
+    fileprivate func bioMetricPermission(result: LoginOTPVerificationResult) {
+        guard isNeededBiometryPermissionPrompt else {
+            notificationPermission(result: result)
+            return
+        }
+
+        let viewController = container.makeBiometricPermissionViewController()
+        viewController.modalPresentationStyle = .fullScreen
+
+        self.root.present(viewController, animated: true, completion: nil)
+
+        viewController.viewModel.outputs.thanks.merge(with: viewController.viewModel.outputs.success)
+            .subscribe(onNext: { [weak self] _ in
+                self?.root.dismiss(animated: true) { [weak self] in
+                    self?.notificationPermission(result: result)
+                }
+            })
+            .disposed(by: rx.disposeBag)
+    }
+
+    fileprivate func notificationPermission(result: LoginOTPVerificationResult) {
+        guard !self.notifManager.isNotificationPermissionPrompt else {
+            self.handleResult(result: result)
+            return
+        }
+
+        let viewController = container.makeNotificationPermissionViewController()
+        viewController.modalPresentationStyle = .fullScreen
+
+        self.root.present(viewController, animated: true, completion: nil)
+
+        viewController.viewModel.outputs.thanks.merge(with: viewController.viewModel.outputs.success)
+            .subscribe(onNext: { [weak self] _ in
+                self?.root.dismiss(animated: true, completion: {
+                    self?.handleResult(result: result)
+                })
+            })
+            .disposed(by: rx.disposeBag)
     }
 }

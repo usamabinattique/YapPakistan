@@ -23,6 +23,7 @@ protocol OnboardingCongratulationViewModelOutputs {
     var stage: Observable<OnboardingStage> { get }
     var completeVerification: Observable<Void> { get }
     var progress: Observable<Float> { get }
+    var onBoardingUserObj: OnBoardingUser { get }
 }
 
 protocol OnboardingCongratulationViewModelType {
@@ -57,9 +58,13 @@ class OnboardingCongratulationViewModel: OnboardingCongratulationViewModelType, 
     var stage: Observable<OnboardingStage> { return stageSubject.asObservable() }
     public var completeVerification: Observable<Void> { return completeVerificationSubject.asObservable() }
     public var  progress:  Observable<Float> { return progressSubject.asObservable() }
+    public var onBoardingUserObj: OnBoardingUser
 
     // MARK: - Init
     init(user: OnBoardingUser) {
+        
+        onBoardingUserObj = user
+        
         self.nameSubject = BehaviorSubject(value: user.firstName)
         self.onboardingIntervalSubject = BehaviorSubject(value: user.timeTaken)
         self.ibanSubject = BehaviorSubject(value: user.iban)
