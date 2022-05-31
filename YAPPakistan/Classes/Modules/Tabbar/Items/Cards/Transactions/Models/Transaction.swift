@@ -53,7 +53,8 @@ extension Transaction {
             return type == .debit ? (receiverName == nil ? nil :"Sent to \(receiverName!)") : type == .credit ? (senderName == nil ? nil :"Received from \(senderName!)") : nil ?? title
         case .topUpByExternalCard:
             guard let last4digit = maskedCardNumber?.suffix(4) else { return title }
-            return "Top up via *\(last4digit)"
+//            return "Top up via *\(last4digit)"
+            return "Top up"
         case .addFundsSupplementaryCard:
             return prepaidCardName.map { "Add to \($0)" } ?? "Add to Virtual Card"
         case .removeFundsSuplementaryCard:

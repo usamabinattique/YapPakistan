@@ -604,7 +604,9 @@ extension TransactionsViewModel {
                 self.sectionAmountSubject.onNext("\(self.latestBalance)")
             }
             else {
-                self.sectionAmountSubject.onNext(transactions[0].closingBalance?.twoDecimal() ?? "")
+                let amount = transactions[0].closingBalance?.twoDecimal() ?? ""
+                print("amount \(amount)")
+                self.sectionAmountSubject.onNext(amount)
             }
         }
     }
@@ -620,7 +622,28 @@ extension TransactionsViewModel {
                 self.sectionDateSubject.onNext(NSMutableAttributedString(string: "screen_home_todays_balance_title".localized))
             }
             else {
-                self.sectionDateSubject.onNext(date.transactionSectionReadableDate)
+               
+               // self.sectionDateSubject.onNext(date.transactionSectionReadableDate)
+                
+               
+                    if self.currentSection == 0 {
+                        let dateWithBalance = date.transactionSectionReadableDate //+ "was " + latestBalance
+                        let was = NSMutableAttributedString(string: " was ")
+                        let balance = NSMutableAttributedString(string: latestBalance)
+                        dateWithBalance.append(was)
+                        dateWithBalance.append(balance)
+                        self.sectionDateSubject.onNext(dateWithBalance)
+                    }
+                    else {
+                        let dateWithBalance = date.transactionSectionReadableDate //+ "was " + latestBalance
+                        let was = NSMutableAttributedString(string: " was PKR ")
+                        let balance = (transactions[0].closingBalance?.twoDecimal() ?? "").getCommaSeperatedTwoDecimalValue //NSMutableAttributedString(string: transactions[0].closingBalance?.twoDecimal() ?? "")
+                        dateWithBalance.append(was)
+                        dateWithBalance.append(balance)
+                        self.sectionDateSubject.onNext(dateWithBalance)
+                    }
+                
+                
             }
         }
     }

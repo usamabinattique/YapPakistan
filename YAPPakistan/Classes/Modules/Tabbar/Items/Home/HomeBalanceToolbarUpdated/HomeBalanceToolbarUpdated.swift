@@ -33,7 +33,7 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
     }()
     
     public var ammount: UILabel = {
-        let label = UIFactory.makeLabel(font: .title1, alignment: .left, numberOfLines: 1, lineBreakMode: .byWordWrapping) //UILabel()
+        let label = UIFactory.makeLabel(font: .large, alignment: .left, numberOfLines: 1, lineBreakMode: .byWordWrapping) //UILabel()
         //label.textColor = .primaryDark
        // label.font = .regular //UIFont.appFont(ofSize: 32, weigth: .regular, theme: .main)
         label.adjustsFontSizeToFitWidth = true
@@ -214,6 +214,7 @@ private extension HomeBalanceToolbarUpdated {
             .toRightOf(currency ,constant: 4)
             .centerVerticallyWith(currency)
             .alignEdgesWithSuperview([.right], .greaterThanOrEqualTo , constants: [12])
+            //.alignEdgesWithSuperview([.right], .equalTo , constants: [12])
         
         showButton
             .height(constant: 18)
@@ -371,14 +372,18 @@ public extension HomeBalanceToolbarUpdated {
     }
     
     func setBalance(balance: String) {
-        var finalBalance: Balance {
-            return Balance(balance: balance, currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
+    /*    var finalBalance: Balance {
+            return Balance(balance: String(format: "%.2f", Double(balance) ?? 0), currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
         }
-        let text = finalBalance.formattedBalance(showCurrencyCode: false, shortFormat: true)
+        let text = finalBalance.formattedBalance(showCurrencyCode: false, shortFormat: false)
         let attributedString = NSMutableAttributedString(string: text)
         guard let decimal = text.components(separatedBy: ".").last else { return }
-        attributedString.addAttribute(.font, value: UIFont.regular/*appFont(ofSize: 18, weigth: .regular, theme: .main) */, range: NSRange(location: text.count-decimal.count, length: decimal.count))
-        ammount.attributedText = attributedString
+        attributedString.addAttribute(.font, value: UIFont.large/*appFont(ofSize: 18, weigth: .regular, theme: .main) */, range: NSRange(location: text.count-decimal.count, length: decimal.count))
+        attributedString.addAttribute(.font, value: UIFont.large/*appFont(ofSize: 18, weigth: .regular, theme: .main) */, range: NSRange(location: 0, length: decimal.count))
+        
+        ammount.attributedText = attributedString */
+        
+        ammount.attributedText = balance.getCommaSeperatedTwoDecimalValue
     }
     
     func shrinkProgressView(_ shrink: Bool){
@@ -450,6 +455,7 @@ public extension Reactive where Base: HomeBalanceToolbarUpdated {
     
     var balance: Binder<String> {
         return Binder(self.base) { toolbar, balance in
+            print("toolbar balance \(balance)")
             toolbar.setBalance(balance: balance)
         }
     }
