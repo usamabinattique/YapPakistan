@@ -32,7 +32,7 @@ class KYCQuestionsCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         progressRoot.viewModel.outputs.backTap.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.popViewController(progress: 0.25) })
+            .subscribe(onNext: { `self`, _ in self.popViewController(progress: 0.50) })
             .disposed(by: rx.disposeBag)
 
         return result
@@ -40,14 +40,14 @@ class KYCQuestionsCoordinator: Coordinator<ResultType<Void>> {
 
     func motherNameQuestion() -> Observable<String> {
         let viewController = container.makeMotherQuestionViewController()
-        push(viewController: viewController, progress: 0.25)
+        push(viewController: viewController, progress: 0.65)
 
         return viewController.viewModel.outputs.next
     }
 
     func cityQuestion(_ name: String) -> Observable<String> {
         let viewController = self.container.makeCityQuestionViewController(motherName: name)
-        push(viewController: viewController, progress: 0.5)
+        push(viewController: viewController, progress: 0.80)
 
         return viewController.viewModel.outputs.next
     }
