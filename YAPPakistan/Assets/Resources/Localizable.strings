@@ -505,7 +505,7 @@
 
 // MARK: Change Email Address success Screen
 "screen_unverified_success_display_text_heading" = "Success!";
-"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed to\n%@";
+"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed\n%@";
 "screen_unverified_success_display_text_description" = "Please log in to your email address to validate your email and continue with\naccess to YAP!";
 "screen_unverified_display_button_mail" = "Open mail app";
 "screen_unverified_display_button_back_to_dashboard" = "Back to dashboard";
