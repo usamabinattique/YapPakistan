@@ -62,7 +62,7 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func navigateToChangeEmailSuccess(email: String) {
-        let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: email, descriptionText: "screen_unverified_success_display_text_sub_heading")
+        let viewModel = UnvarifiedEmailSuccessViewModel(changedEmailOrPhoneString: "", descriptionText: "screen_unverified_success_display_text_sub_heading")
         let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         
