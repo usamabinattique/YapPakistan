@@ -66,7 +66,7 @@ class TopUpAccountDetailsCellViewModel: TopUpAccountDetailsCellViewModelType, To
             self.isHideCopyButtonSubject.onNext(false)
             copySubject.subscribe(onNext: { _ in
                 print("Details = ", details)
-                UIPasteboard.general.string =  self.topupAcoountDetailsType == .iban ? "IBAN: " + details : self.topupAcoountDetailsType == .swiftCode ? "Swift/BIC: " + details : "Account number:" + details
+                UIPasteboard.general.string =  self.topupAcoountDetailsType == .iban ? "" + details : self.topupAcoountDetailsType == .swiftCode ? "" + details : "" + details
                 YAPToast.show("Copied to clipboard")
             }).disposed(by: disposeBag)
             
