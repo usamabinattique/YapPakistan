@@ -67,6 +67,7 @@ public class VerifyMobileOTPViewController: UIViewController {
         setupConstraints()
         bindViews()
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapAction)))
+        logoImageView.isHidden = true
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -124,7 +125,7 @@ extension VerifyMobileOTPViewController {
             .alignEdgesWithSuperview([.left, .safeAreaTop, .right], constants: [25, 18, 25])
 
         logoImageView
-            .height(constant: 60)
+            .height(constant: 0)
             .width(constant: 60)
 
         subHeadingLabel
@@ -286,7 +287,10 @@ extension VerifyMobileOTPViewController: UITextFieldDelegate {
                           shouldChangeCharactersIn range: NSRange,
                           replacementString string: String) -> Bool {
         if textField == codeTextField {
-            return range.location < codeTextField.numberOfTextFields
+            
+            let allowedCharacters = CharacterSet(charactersIn:"0123456789")
+            let characterSet = CharacterSet(charactersIn: string)
+            return (allowedCharacters.isSuperset(of: characterSet)) && (range.location < codeTextField.numberOfTextFields)
         }
         return true
     }
