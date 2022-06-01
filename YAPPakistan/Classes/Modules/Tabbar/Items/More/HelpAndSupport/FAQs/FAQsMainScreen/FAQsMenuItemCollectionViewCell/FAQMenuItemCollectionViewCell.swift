@@ -13,7 +13,7 @@ import RxCocoa
 
 final class FAQMenuItemCollectionViewCell: RxUICollectionViewCell {
     
-    var bgView: UIView = UIFactory.makeView(alpha: 0.1, cornerRadious: 15)
+    var bgView: UIView = UIFactory.makeView(alpha: 0.15, cornerRadious: 15)
     
     var menuTitle: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0)
     
@@ -105,7 +105,7 @@ extension FAQMenuItemCollectionViewCell {
             .disposed(by: disposeBag)
         
         //bgView.alpha = 0.1
-        menuTitle.textColor = UIColor(themeService.attrs.primaryDark)
+        menuTitle.textColor = UIColor(themeService.attrs.primary)
     }
     
     func render() {
