@@ -49,9 +49,9 @@ class MoreBankDetailsViewController: UIViewController {
         return view
     }()
     
-    private lazy var phone: MoreBankDetailsInfoView = {
+    private lazy var Account: MoreBankDetailsInfoView = {
         let view = MoreBankDetailsInfoView()
-        view.titleText = "screen_more_bank_details_display_text_phonenot".localized
+        view.titleText = "screen_more_bank_details_display_text_account".localized
         view.detailText = "Hello From World"
         view.canCopy = true
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -174,9 +174,9 @@ class MoreBankDetailsViewController: UIViewController {
 private extension MoreBankDetailsViewController {
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, phone.rx.titleColor, iban.rx.titleColor])
+            .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, Account.rx.titleColor, iban.rx.titleColor])
         themeService.rx
-            .bind({ UIColor($0.primary) }, to: [name.rx.detailsColor, phone.rx.detailsColor, shareButton.rx.backgroundColor])
+            .bind({ UIColor($0.primary) }, to: [name.rx.detailsColor, Account.rx.detailsColor, shareButton.rx.backgroundColor])
         themeService.rx
             .bind({ UIColor( $0.greyDark ) }, to: self.holder.rx.backgroundColor)
     }
@@ -188,7 +188,7 @@ private extension MoreBankDetailsViewController {
         sheetView.addSubview(headerTitle)
         stackView.addArrangedSubview(name)
         stackView.addArrangedSubview(iban)
-        stackView.addArrangedSubview(phone)
+        stackView.addArrangedSubview(Account)
         sheetView.addSubview(stackView)
         sheetView.addSubview(shareButton)
     }
@@ -236,7 +236,7 @@ private extension MoreBankDetailsViewController {
     func bindViews() {
         viewModel.outputs.name.bind(to: name.rx.details).disposed(by: disposeBag)
         viewModel.outputs.iban.bind(to: iban.rx.details).disposed(by: disposeBag)
-        viewModel.outputs.swift.bind(to: phone.rx.details).disposed(by: disposeBag)
+        viewModel.outputs.account.bind(to: Account.rx.details).disposed(by: disposeBag)
 //        viewModel.outputs.account.bind(to: account.rx.details).disposed(by: disposeBag)
 //        viewModel.outputs.bank.bind(to: bank.rx.details).disposed(by: disposeBag)
 //        viewModel.outputs.address.bind(to: address.rx.details).disposed(by: disposeBag)
