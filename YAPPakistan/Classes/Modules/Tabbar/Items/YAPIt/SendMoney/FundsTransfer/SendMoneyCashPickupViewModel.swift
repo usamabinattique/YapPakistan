@@ -19,7 +19,7 @@ class SendMoneyCashPickupViewModel: SendMoneyFundsTransferViewModel {
         
         var validations = [Observable<Bool>]()
         
-        let amount = SMFTAmountInputCellViewModel("AED")
+        let amount = SMFTAmountInputCellViewModel("PKR")
         self.amountErrorSubject.map{ $0 == nil }.bind(to: amount.inputs.isValidAmountObserver).disposed(by: disposeBag)
         amount.outputs.text.map { Double(convertWithLocale: $0 ?? "0") ?? 0.0 }.bind(to: enteredAmount).disposed(by: disposeBag)
         viewModels.append(amount)

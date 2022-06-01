@@ -129,7 +129,7 @@ open class AmountView: UIView {
         viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.amount.bind(to: amountTextField.rx.text).disposed(by: disposeBag)
         viewModel.outputs.heading.subscribe(onNext: { [weak self] in
-            self?.allowedDecimal = CurrencyFormatter.decimalPlaces(for: $0 ?? "AED")
+            self?.allowedDecimal = CurrencyFormatter.decimalPlaces(for: $0 ?? "PKR")
         }).disposed(by: disposeBag)
         bindAmountFieldFormatting()
     }

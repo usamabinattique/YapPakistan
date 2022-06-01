@@ -163,7 +163,7 @@ class CardAnalyticsViewModel: CardAnalyticsViewModelType, CardAnalyticsViewModel
         pieChartDataSubject = BehaviorSubject<[PieChartComponent]>(value: [PieChartComponent(number: 1, color: UIColor(themeService.attrs.greyLight))])
         
         formatter.dateFormat = "MMMM, yyyy"
-        currencySubject.onNext("AED")
+        currencySubject.onNext("PKR")
         
         months = analytics.withLatestFrom(accountCreatedDate) { data, accountCreatedDate in
             let startDate = accountCreatedDate
