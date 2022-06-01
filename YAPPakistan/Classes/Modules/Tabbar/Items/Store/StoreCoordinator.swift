@@ -28,7 +28,6 @@ public class StoreCoordinator: Coordinator<ResultType<Void>> {
         navigationRoot.tabBarItem = UITabBarItem(title: "Store",
                                                  image: UIImage(named: "icon_tabbar_store", in: .yapPakistan),
                                                  selectedImage: nil)
-
         if root.viewControllers == nil {
             root.viewControllers = [navigationRoot]
         } else {

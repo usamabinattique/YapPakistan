@@ -23,7 +23,7 @@ class StoreViewController: UIViewController {
     
     lazy var heading: UILabel = {
         let label = UILabel()
-        label.text = "screen_store_heading_label_text".localized
+        label.text = "screen_store_screen_title_text".localized
         label.font = .title3
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -77,7 +77,7 @@ extension StoreViewController: ViewDesignable {
         tableView.showsVerticalScrollIndicator = false
         
         tableView.register(StorePackageTableViewCell.self, forCellReuseIdentifier: StorePackageTableViewCell.defaultIdentifier)
-        title = "screen_store_screen_title_text".localized
+       // title = "Browse Upcoming Packages"//"screen_store_screen_title_text".localized
     }
     
     func setupConstraints(){
@@ -101,7 +101,7 @@ extension StoreViewController: ViewDesignable {
     
     func setupTheme(){
         self.themeService.rx
-            .bind({ UIColor($0.primaryDark) }, to: heading.rx.textColor)
+            .bind({ UIColor($0.primaryDark) }, to: heading.rx.textColor,navigationController!.navigationBar.rx.tintColor)
             .disposed(by: disposeBag)
     }
     
