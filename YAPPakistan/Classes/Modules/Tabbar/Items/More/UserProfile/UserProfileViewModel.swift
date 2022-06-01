@@ -190,6 +190,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     var changePasscodeTap: Observable<Void> { return passcodeTapSubject.map { _ in () }.asObservable() }
     var instagramTap: Observable<Void> { return instagramTapSubject.map { _ in () }.asObservable() }
     var twitterTap: Observable<Void> { return twitterTapSubject.map { _ in () }.asObservable() }
+    var termsAndConditionTap: Observable<Void> { return termsConditionsTapTapSubject.map { _ in () }.asObservable() }
     var facebookTap: Observable<Void> { return facebookTapSubject.map { _ in () }.asObservable() }
     var linkedInTap: Observable<Void> { return linkedinTapSubject.map { _ in () }.asObservable() }
     var logoutTap: Observable<Void> { return logoutTapSubject.map { _ in () }.asObservable() }
@@ -271,6 +272,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         openInstagram()
         openTwitter()
         openFacebook()
+        openTermsandConditions()
         openLinkedin()
         openPasscodechange()
         //notificationAuthorisationStatausChange()
@@ -460,6 +462,21 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         }).disposed(by: disposeBag)
     }
     
+    func openTermsandConditions() {
+        termsAndConditionTap.subscribe(onNext: { _ in
+            let username =  "YAP"
+            let appURL = URL(string: "https://www.yap.com/terms")!
+            let application = UIApplication.shared
+            
+            if application.canOpenURL(appURL) {
+                application.open(appURL)
+            } else {
+                let webURL = URL(string: "https://www.yap.com/terms")!
+                application.open(webURL)
+            }
+        }).disposed(by: disposeBag)
+    }
+    
     func openLinkedin() {
         linkedInTap.subscribe(onNext: { _ in
             let username =  "YAP"
@@ -570,7 +587,7 @@ class UserProfileItemFactory {
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_instagram_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_instagram".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[7])),
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_twitter_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_twitter".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[8])),
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_facebook_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_facebook".localized, accessory: .button( "screen_user_profile_button_facebook".localized), actionObserver: actionObservers[9])),
-                             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_facebook_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_linkedin".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[10])),
+                             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_linkedin", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_linkedin".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[10])),
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: nil, title:  "screen_user_profile_button_logout".localized, type: UserProfileItemType.logout, accessory: nil, actionObserver: actionObservers[11]))
                             ])
         ]
