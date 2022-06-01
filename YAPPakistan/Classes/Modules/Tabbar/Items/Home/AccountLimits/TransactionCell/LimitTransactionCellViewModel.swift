@@ -57,8 +57,8 @@ class LimitTransactionCellViewModel: LimitTransactionCellViewModelType, LimitTra
 
     init(_ limitDetail: TransactionLimitsDetail) {
         transactionTitleSubject.onNext(limitDetail.title)
-        limitConsumedValueSubject.onNext(String(limitDetail.consumedLimit))
-        limitAllocatedValueSubject.onNext(String(limitDetail.allocatedLimit))
+        limitConsumedValueSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(Double(limitDetail.consumedLimit)))
+        limitAllocatedValueSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(Double(limitDetail.allocatedLimit)))
         print(isLastElement)
         let progress = CGFloat(limitDetail.consumedLimit)/CGFloat(limitDetail.allocatedLimit)
         limitProgressSubject.onNext(progress)
