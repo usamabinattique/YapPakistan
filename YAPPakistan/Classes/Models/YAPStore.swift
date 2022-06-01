@@ -38,23 +38,23 @@ struct YAPStore {
 extension YAPStore {
     static var mock: [YAPStore] {
         [
-            YAPStore(coverImage: "image_cards_and_plans",
+            /*YAPStore(coverImage: "image_cards_and_plans",
                   packageLogo: "icon_prime_&_metal_card",
                   heading: StorePackageType.cardPlans.localize,
                   packageDescription: "Upgrade your plan to Prime or Metal to supercharge your YAP experience",
-                  commingSoonIsHeaden: true, storePackageType: .cardPlans),
+                  commingSoonIsHeaden: true, storePackageType: .cardPlans), */
          
          YAPStore(coverImage: "image_store_young",
                   packageLogo:"icon_yap_young",
                   heading: StorePackageType.yapYoung.localize,
                   packageDescription: "Open a bank account for your children and help empower them financially.",
-                  commingSoonIsHeaden: false, storePackageType: .yapYoung),
+                  commingSoonIsHeaden: true, storePackageType: .yapYoung),
          
          YAPStore(coverImage: "image_store_household",
                   packageLogo: "icon_yap_household",
                   heading: StorePackageType.yapHousehold.localize,
                   packageDescription: "Manage your household salaries digitally.",
-                  commingSoonIsHeaden: false, storePackageType: .yapHousehold)]
+                  commingSoonIsHeaden: true, storePackageType: .yapHousehold)]
     }
 }
 
