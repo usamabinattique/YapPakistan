@@ -52,9 +52,9 @@ class AddMoneyQRCodeCoordinator: Coordinator<ResultType<Void>> {
             }
         }).disposed(by: self.disposeBag)
         
-        viewModel.outputs.shareQr.subscribe(onNext: { [weak self] in
+        viewModel.outputs.shareQr.subscribe(onNext: { [weak self] image, description in
            // AppAnalytics.shared.logEvent(QRCodeEvent.shareQrCode())
-            self?.shareQRImage($0)
+            self?.shareQRImage(image!, descriptionText: description ?? "")
         }).disposed(by: disposeBag)
         
         return result.asObservable()
@@ -64,9 +64,9 @@ class AddMoneyQRCodeCoordinator: Coordinator<ResultType<Void>> {
 // MARK: - Navigation
 
 private extension AddMoneyQRCodeCoordinator {
-    func shareQRImage(_ image: UIImage) {
-        let activityItem: [AnyObject] = [image]
-        let avc = UIActivityViewController(activityItems: activityItem as [AnyObject], applicationActivities: nil)
+    func shareQRImage(_ image: UIImage, descriptionText: String) {
+        //let activityItem: [AnyObject] = [descriptionText, image]
+        let avc = UIActivityViewController(activityItems:  [image, descriptionText], applicationActivities: nil)
         localRoot.present(avc, animated: true, completion: nil)
     }
 

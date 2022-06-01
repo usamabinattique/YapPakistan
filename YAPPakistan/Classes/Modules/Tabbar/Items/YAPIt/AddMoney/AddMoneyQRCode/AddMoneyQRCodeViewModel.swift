@@ -14,7 +14,7 @@ import UIKit
 
 protocol AddMoneyQRCodeViewModelInput {
     var closeObserver: AnyObserver<Void> { get }
-    var shareQrObserver: AnyObserver<UIImage> { get }
+    var shareQrObserver: AnyObserver<(UIImage)> { get }
     var goToQRScanner: AnyObserver<Void> {get}
     
 }
@@ -24,7 +24,7 @@ protocol AddMoneyQRCodeViewModelOutput {
     var name: Observable<String?> { get }
     var qrCodeId: Observable<String> { get }
     var close: Observable<Void> { get }
-    var shareQr: Observable<UIImage> { get }
+    var shareQr: Observable<(UIImage?, String?)> { get }
     var scanQR: Observable<Void> {get}
     var isScanAllowed: BehaviorSubject<Bool> {get}
 }
@@ -43,13 +43,15 @@ class AddMoneyQRCodeViewModel: AddMoneyQRCodeViewModelInput, AddMoneyQRCodeViewM
     
     private let qrCodeIdSubject = BehaviorSubject<String>(value: "")
     private let closeSubject = PublishSubject<Void>()
-    private let shareQrSubject = PublishSubject<UIImage>()
+    private let shareQrSubject = PublishSubject<(UIImage?, String?)>()
+    private let shareQrInputSubject = PublishSubject<(UIImage)>()
+    
     private let goToQRScannerSubject = PublishSubject<Void>()
     var isScanAllowedSubject = BehaviorSubject<Bool>(value: false)
     
     // MARK: - Inputs
     var closeObserver: AnyObserver<Void> { closeSubject.asObserver() }
-    var shareQrObserver: AnyObserver<UIImage> { shareQrSubject.asObserver() }
+    var shareQrObserver: AnyObserver<(UIImage)> { shareQrInputSubject.asObserver() }
     var goToQRScanner: AnyObserver<Void> {goToQRScannerSubject.asObserver()}
     
     
@@ -59,7 +61,7 @@ class AddMoneyQRCodeViewModel: AddMoneyQRCodeViewModelInput, AddMoneyQRCodeViewM
     var name: Observable<String?> { accountProvider.currentAccount.map{ $0?.customer.fullName } }
     var qrCodeId: Observable<String> { qrCodeIdSubject.asObservable() }
     var close: Observable<Void> { closeSubject.asObservable() }
-    var shareQr: Observable<UIImage> { shareQrSubject.asObservable() }
+    var shareQr: Observable<(UIImage?, String?)> { shareQrSubject.asObservable() }
     var scanQR: Observable<Void> {goToQRScannerSubject.asObservable()}
     var isScanAllowed: BehaviorSubject<Bool> { isScanAllowedSubject.asObservable() as! BehaviorSubject<Bool>}
     
@@ -73,6 +75,13 @@ class AddMoneyQRCodeViewModel: AddMoneyQRCodeViewModelInput, AddMoneyQRCodeViewM
             .map{ "yap-app:\($0)" }
             .bind(to: qrCodeIdSubject).disposed(by: disposeBag)
         self.isScanAllowedSubject.onNext(scanAllowed)
+        
+        self.shareQrInputSubject.subscribe(onNext: { [unowned self] img in
+            
+            self.accountProvider.currentAccount.subscribe(onNext: { [unowned self] customer in
+                let descriptionText = "Hi! its \(customer?.customer.fullName ?? "")\n Here is my YAP QR Code, please scan it for money transactions."
+                self.shareQrSubject.onNext((img, descriptionText))
+            }).disposed(by: disposeBag)
+        }).disposed(by: disposeBag)
     }
-    
 }
