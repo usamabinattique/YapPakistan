@@ -178,11 +178,11 @@ public struct PaymentCardOnboardingStageModel {
     var actionTitle: String? {
         if !isCustom {
             switch (deliveryStatus, stage, isCardPinSet, partnerBankStatus) {
-            case (.shipping, .shipping, _, _):
-                return "view_payment_card_onboarding_stage_card_on_the_way_action_title".localized
             case (.ordered, .shipping, _, _):
                 return "view_payment_card_onboarding_stage_card_on_the_way_action_title".localized
-            case (.booked, .shipping, _, _):
+            case (.shipped, .shipping, _, _):
+                return "view_payment_card_onboarding_stage_card_on_the_way_action_title".localized
+            case (.delivered, .shipping, _, _):
                 return "view_payment_card_onboarding_stage_card_on_the_way_action_title".localized
             case (_, .additionalRequirement, _, .additionalRequirementsPending),
                 (_, .additionalRequirement, _, .additionalRequirementsRequired):
@@ -293,7 +293,8 @@ public struct PaymentCardOnboardingStageModel {
             case (_, .shipping, _, .signUpPending, _),
                 (_, .shipping, _, _, .fatcaGenerated):
                 return false
-            case (.booked, .shipping, _, _, _):
+            //case (.booked, .shipping, _, _, _):
+            case (.ordered, .shipping, _, _, _):
                 return false
             case (_, .shipping, _, .physicalCardPending,_):
                 return false

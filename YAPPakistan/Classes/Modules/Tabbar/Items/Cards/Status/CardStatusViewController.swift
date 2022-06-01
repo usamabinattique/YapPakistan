@@ -150,7 +150,9 @@ class CardStatusView: UIView {
     var strings: [String?] {
         get { statusLabels.map({ $0.text }) }
         set {
-            for index in 0..<newValue.count { statusLabels[index].text = newValue[index] }
+            for index in 0..<newValue.count {
+                statusLabels[index].text = newValue[index]
+            }
             updateProgress()
         }
     }

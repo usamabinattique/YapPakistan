@@ -216,7 +216,7 @@ public class PaymentCard: Codable {
         currentBalance = try? values?.decodeIfPresent(Double.self, forKey: .currentBalance)
         customerId = try? values?.decodeIfPresent(String.self, forKey: .customerId)
         delivered = try? values?.decodeIfPresent(Bool.self, forKey: .delivered)
-        deliveryStatus = (try? values?.decodeIfPresent(DeliveryStatus.self, forKey: .deliveryStatus)) ?? .ordering
+        deliveryStatus = (try? values?.decodeIfPresent(DeliveryStatus.self, forKey: .deliveryStatus)) ?? .ordered
         expiryDate = try? values?.decodeIfPresent(String.self, forKey: .expiryDate)
         frontImage = try? values?.decodeIfPresent(String.self, forKey: .frontImage)
         issuanceDate = try? values?.decodeIfPresent(String.self, forKey: .issuanceDate)
@@ -241,11 +241,10 @@ public class PaymentCard: Codable {
 
 extension PaymentCard {
     enum DeliveryStatus: String, Codable {
-        case shipped = "SHIPPED"    // 4
-        case shipping = "SHIPPING"  // 3 Not comming from backend? This is to represent statatus;
-        case booked = "BOOKED"      // 3
-        case ordered = "ORDERED"    // 2
-        case ordering = "ORDERING"  // 1 // Not comming from backend; This is to represent KYC incomplete statatus;
+        case ordered = "ORDERED"  // 3 Not comming from backend? This is to represent statatus;
+        case shipped = "SHIPPING"      // 3
+        case delivered = "DELIVERED"    // 2
+        case failed = "FAILED"          //
     }
 
     enum Status: String, Codable {

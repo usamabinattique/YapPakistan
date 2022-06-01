@@ -14,10 +14,14 @@ typealias DeliveryStatus = PaymentCard.DeliveryStatus
 extension PaymentCard.DeliveryStatus {
     var message: String {
         switch self {
-        case .ordering: return "Complete verification to get your card"
-        case .ordered: return "This card is on the way"
-        case .shipping, .booked: return "Your primary card is on its way"
-        case .shipped: return "Create a PIN to start using your card"
+        case .ordered: return "Your card is ordered"
+        case .shipped: return "Your primary card is on its way"
+        case .delivered: return "Create a PIN to start using your card"
+        default: return "Complete verification to get your card"
+//        case .ordering: return "Complete verification to get your card"
+//        case .ordered: return "This card is on the way"
+//        case .shipping, .booked: return "Your primary card is on its way"
+//        case .shipped: return "Create a PIN to start using your card"
         }
     }
 }
@@ -142,7 +146,7 @@ class CardsViewModel: CardsViewModelType,
     }
 
     func resolveIfIncompleted(_ completionStatus: Observable<Bool>) {
-        completionStatus.filter{ !$0 }.map{ _ in DeliveryStatus.ordering }.withUnretained(self)
+        completionStatus.filter{ !$0 }.map{ _ in DeliveryStatus.ordered }.withUnretained(self)
             // .do(onNext: { $0.0.deliveryStatus = $0.1 })
             .map { $0.0.makeLocalizableStrings(PaymentCard.mock) }
             .bind(to: localizedStringsSubject)
@@ -201,7 +205,7 @@ extension CardsViewModel {
         
         return LocalizedStrings(titleView: "Your cards",
                                 titleCard: paymentCard.cardName ?? "",
-                                subTitle: (paymentCard.deliveryStatus ?? .ordering).rawValue,
+                                subTitle: (paymentCard.deliveryStatus ?? .ordered).rawValue,
                                 seeDetail: "See details",
                                 count: "1 of 1")
     }
