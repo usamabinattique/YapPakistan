@@ -74,6 +74,34 @@ extension Date {
             dayName = "EEEE, "
         }
         
+        dateFormatter.dateFormat = dayName + "MMMM "
+        let superScripterDate = self.day().getSuperScript(superScript: self.daySuffix())
+        let dayAndMonth = NSMutableAttributedString(string:day + dateFormatter.string(from: self))
+        let year = NSMutableAttributedString(string: self.year())
+        let combination = NSMutableAttributedString()
+        let date = NSMutableAttributedString(string: self.day())
+        combination.append(dayAndMonth)
+      //  combination.append(date)
+        combination.append(superScripterDate)
+        combination.append(year)
+        return combination
+    }
+    
+    var transactionSectionReadableDateSecondary: NSMutableAttributedString {
+        let dateFormatter = DateFormatter()
+        let day: String
+        let dayName: String
+        if Date().startOfDay == self.startOfDay {
+            day = "Today, "
+            dayName = ""
+        } else if Date().startOfDay.addingTimeInterval(-1 * 24 * 60 * 60) == self.startOfDay {
+            day = "Yesterday, "
+            dayName = ""
+        } else {
+            day = ""
+            dayName = "EEEE, "
+        }
+        
        // dateFormatter.dateFormat = dayName + "MMMM "
         dateFormatter.dateFormat = "MMMM "
        // let superScripterDate = self.day().getSuperScript(superScript: self.daySuffix())
