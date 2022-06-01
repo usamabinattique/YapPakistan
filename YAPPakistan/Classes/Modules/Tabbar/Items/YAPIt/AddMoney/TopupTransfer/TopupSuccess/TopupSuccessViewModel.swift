@@ -80,7 +80,7 @@ class TopupSuccessViewModel: TopupSuccessViewModelType, TopupSuccessViewModelInp
 }
 
 extension TopupSuccessViewModel {
-    func makeSuccessMessage(balance: Double, currency: String = "AED") -> NSMutableAttributedString {
+    func makeSuccessMessage(balance: Double, currency: String = "PKR") -> NSMutableAttributedString {
         
         let currentyText = CurrencyFormatter.format(amount: balance, in: currency)
         let attributedString = NSMutableAttributedString(string: String(format: "screen_topup_success_display_text_success_transaction_message".localized, currentyText), attributes: [

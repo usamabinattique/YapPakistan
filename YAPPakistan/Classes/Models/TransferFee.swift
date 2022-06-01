@@ -88,9 +88,9 @@ private extension TransferFee {
         var fee = !tier.feeInPercentage ? tier.feeAmount : ((amount * tier.feePercentage) / 100)
         
         if !tier.feeInPercentage {
-            fee = feeCurrency == "AED" ? fee : fee * exchnageRate
+            fee = feeCurrency == "PKR" ? fee : fee * exchnageRate
         } else {
-            fee = slabCurrency == "AED" ? fee : fee * exchnageRate
+            fee = slabCurrency == "PKR" ? fee : fee * exchnageRate
         }
         
         return (fee + fixedAmount).rounded(toPlaces: 2)
@@ -153,6 +153,6 @@ public extension TransferFee {
 
 public extension TransferFee {
     static var mock: TransferFee {
-        TransferFee(feeType: TransferFeeType.flat, fixedAmount: 0, slabCurrency: "AED", feeCurrency: "AED", tiers: [TransferFeeTier.mocked(from: 0, to: 0, fee: 0, vatAmount: 0, feePercentage: 0, vatPercentage: 0, feeInPercentage: false,fixedAmount: 0, feeCurrency: "PKR")])
+        TransferFee(feeType: TransferFeeType.flat, fixedAmount: 0, slabCurrency: "PKR", feeCurrency: "PKR", tiers: [TransferFeeTier.mocked(from: 0, to: 0, fee: 0, vatAmount: 0, feePercentage: 0, vatPercentage: 0, feeInPercentage: false,fixedAmount: 0, feeCurrency: "PKR")])
     }
 }

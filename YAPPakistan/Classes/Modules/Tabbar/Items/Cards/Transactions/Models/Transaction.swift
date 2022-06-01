@@ -40,6 +40,7 @@ protocol Transaction {
     
     var customerId1: String? { get }
     var customerId2: String? { get }
+    var merchantCategoryName: String? { get }
 }
 
 extension Transaction {

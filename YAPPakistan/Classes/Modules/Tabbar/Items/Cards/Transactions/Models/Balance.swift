@@ -56,6 +56,6 @@ extension Balance {
 // Mocked
 extension Balance {
     public static var mockedBalance: Balance {
-        return Balance(balance: "103456", currencyCode: "AED", currencyDecimals: "2", accountNumber: "")
+        return Balance(balance: "103456", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
     }
 }

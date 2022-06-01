@@ -17,7 +17,7 @@ class SendMoneyLocalTransferViewModel: SendMoneyFundsTransferViewModel {
         
         viewModels.append(SMFTBeneficiaryCellViewModel(beneficiary, showsIban: true))
         
-        let amount = SMFTAmountInputCellViewModel(beneficiary.currency ?? "AED")
+        let amount = SMFTAmountInputCellViewModel(beneficiary.currency ?? "PKR")
         amount.outputs.text.map{ Double(convertWithLocale: $0 ?? "0") ?? 0.0 }.bind(to: enteredAmount).disposed(by: disposeBag)
         self.amountErrorSubject.map{ $0 == nil }.bind(to: amount.inputs.isValidAmountObserver).disposed(by: disposeBag)
         viewModels.append(amount)
