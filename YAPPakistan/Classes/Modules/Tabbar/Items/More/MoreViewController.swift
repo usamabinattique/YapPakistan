@@ -135,7 +135,22 @@ extension MoreViewController: ViewDesignable {
     }
     
     func setupBindings(){
-        viewModel.outputs.profileImage.bind(to: headerView.rx.profileImage).disposed(by: disposeBag)
+        //viewModel.outputs.profileImage.bind(to: headerView.rx.profileImage).disposed(by: disposeBag)
+        
+        viewModel.outputs.profileImage.subscribe(onNext: { [weak self] imageURL, img in
+            guard let self = self else { return }
+            if imageURL != "" && imageURL != nil {
+                self.headerView.profileImage.sd_setImage(with: URL(string: imageURL)) { imgObj, err, cache, url in
+                    if  err != nil {
+                        self.headerView.profileImage.image = img
+                    }
+                } 
+            }
+            else {
+                self.headerView.profileImage.image = img
+            }
+        }).disposed(by: disposeBag)
+        
         viewModel.outputs.name.bind(to: headerView.rx.name).disposed(by: disposeBag)
         viewModel.outputs.iban.bind(to: headerView.rx.iban).disposed(by: disposeBag)
         viewModel.outputs.accountNumber.bind(to: headerView.rx.accountNumber).disposed(by: disposeBag)

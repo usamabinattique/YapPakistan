@@ -187,8 +187,9 @@ fileprivate extension UserProfileViewController {
     func bindTableView() {
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
         viewModel.outputs.userProfileItems.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-        profilePhotoEditButton.imageView?.image = UIImage(named: "icon_edit_profile_photo", in: .yapPakistan)
-        viewModel.outputs.profilePhotoEditButtonImage.bind(to: profilePhotoEditButton.rx.image(for: .normal)).disposed(by: disposeBag)
+        //profilePhotoEditButton.imageView?.image = UIImage(named: "icon_add_profile_photo", in: .yapPakistan)
+        profilePhotoEditButton.setImage(UIImage(named: "icon_add_profile_photo", in: .yapPakistan), for: .normal)
+        //viewModel.outputs.profilePhotoEditButtonImage.bind(to: profilePhotoEditButton.rx.image(for: .normal)).disposed(by: disposeBag)
     }
     
     func bindProfileImageView() {
@@ -206,30 +207,48 @@ fileprivate extension UserProfileViewController {
     
     
     func openActionSheet() {
-        let cameraAction = UIAlertAction(title: "Open camera", style: .default) { [unowned self] _ in
-            self.pickImageFromCamera()
+        
+        print("bindImagesource action sheet")
+        let actionSheet = YAPActionSheet(title: "Update profile photo", subTitle: nil, themeService: self.themeService)
+        let cameraAction = YAPActionSheetAction(title: "Open camera", image: UIImage(named: "icon_camera", in: .yapPakistan)) { [weak self] _ in
+            self?.pickImageFromCamera()
         }
-        
-        let gelleryAction = UIAlertAction(title: "Choose photo", style: .default) { [unowned self] _ in
-            self.pickImageFromGallery()
+        let photosAction = YAPActionSheetAction(title: "Choose photo", image: UIImage(named: "icon_photoLibrary", in: .yapPakistan)) { [weak self] _ in
+            self?.pickImageFromGallery()
         }
-        
-        let removeAction = UIAlertAction(title: "Remove photo", style: .default) { [unowned self] _ in
-            self.removePhoto()
+        let deleteAction = YAPActionSheetAction(title: "Remove photo", image: UIImage(named: "icon_remove_purple", in: .yapPakistan)) { [weak self] _ in
+            self?.removePhoto()
         }
+        actionSheet.addAction(cameraAction)
+        actionSheet.addAction(photosAction)
+        actionSheet.addAction(deleteAction)
+        actionSheet.show()
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
         
-        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        alertController.popoverPresentationController?.sourceView = self.view
-        alertController.popoverPresentationController?.sourceRect = self.view.frame
-        
-        alertController.addAction(gelleryAction)
-        alertController.addAction(cameraAction)
-        alertController.addAction(removeAction)
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
+//        let cameraAction = UIAlertAction(title: "Open camera", style: .default) { [unowned self] _ in
+//            self.pickImageFromCamera()
+//        }
+//
+//        let gelleryAction = UIAlertAction(title: "Choose photo", style: .default) { [unowned self] _ in
+//            self.pickImageFromGallery()
+//        }
+//
+//        let removeAction = UIAlertAction(title: "Remove photo", style: .default) { [unowned self] _ in
+//            self.removePhoto()
+//        }
+//
+//        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+//
+//        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+//
+//        alertController.popoverPresentationController?.sourceView = self.view
+//        alertController.popoverPresentationController?.sourceRect = self.view.frame
+//
+//        alertController.addAction(gelleryAction)
+//        alertController.addAction(cameraAction)
+//        alertController.addAction(removeAction)
+//        alertController.addAction(cancelAction)
+//        present(alertController, animated: true, completion: nil)
         
     }
     

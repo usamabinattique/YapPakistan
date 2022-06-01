@@ -244,12 +244,12 @@ extension TransactionDetailsViewController: ViewDesignable {
     func bindImageSourceType() {
         //TODO: add YapActionSheet
         print("bindImagesource action sheet")
-        let actionSheet = YAPActionSheet(title: "Add a receipt", subTitle: "Take a photo or upload your receipt", themeService: self.themeService)
-        let cameraAction = YAPActionSheetAction(title: "screen_user_profile_display_text_open_camera".localized, image: UIImage(named: "icon_camera", in: .yapPakistan)) { [weak self] _ in
+        let actionSheet = YAPActionSheet(title: "Upload your receipt", subTitle: nil, themeService: self.themeService)
+        let cameraAction = YAPActionSheetAction(title: "Open Camera", image: UIImage(named: "icon_camera", in: .yapPakistan)) { [weak self] _ in
             //self?.viewModel.inputs.addReceiptViaCameraObserver.onNext(())
             self?.pickImageFromCamera()
         }
-        let photosAction = YAPActionSheetAction(title: "Upload from files".localized, image: UIImage(named: "icon_photoLibrary", in: .yapPakistan)) { [weak self] _ in
+        let photosAction = YAPActionSheetAction(title: "Choose photo", image: UIImage(named: "icon_photoLibrary", in: .yapPakistan)) { [weak self] _ in
             //self?.viewModel.inputs.photoTapObserver.onNext(())
             self?.pickImageFromGallery()
         }

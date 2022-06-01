@@ -70,8 +70,9 @@ class AddTransactionDetailViewModel: AddTransactionDetailViewModelType, AddTrans
         
         saveNoteTapped()
         iSActiveSaveButtonBinding()
-        
-        noteSubject.onNext(transaction.transactionNote)
+        // validationState == .invalid ? UIColor.red : UIColor(Color(hex: "#5E35B1"))
+        self.previousNote.map { $0.length != 0 ? noteSubject.onNext(self.previousNote) : noteSubject.onNext(nil) } 
+        //noteSubject.onNext(transaction.transactionNote)
     }
     
     func saveNoteTapped() {

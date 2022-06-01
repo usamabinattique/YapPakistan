@@ -11,19 +11,20 @@ import RxSwift
 import RxCocoa
 import PhoneNumberKit
 import RxTheme
+// Primary = #5E35B1
 
 open class PhoneNumberView: UIView {
-
+    
     fileprivate lazy var title: UILabel = {
         let label = UILabel()
         label.font = .small
         label.textAlignment = .left
-        label.textColor =  UIColor(Color(hex: "#272262")) //UIColor.darkGray //UIColor(themeService.attrs.primaryDark) //.primaryDark
+        label.textColor =  UIColor(Color(hex: "#5E35B1")) //UIColor.darkGray //UIColor(themeService.attrs.primaryDark) //.primaryDark
         label.backgroundColor = .clear
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     public lazy var textField: UITextField = {
         let textField = UITextField()
         textField.textAlignment = .left
@@ -33,7 +34,7 @@ open class PhoneNumberView: UIView {
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
-
+    
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
@@ -43,24 +44,24 @@ open class PhoneNumberView: UIView {
         stack.translatesAutoresizingMaskIntoConstraints = false
         return stack
     }()
-
+    
     private lazy var bottomBar: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(Color(hex: "#272262")) //UIColor.gray //UIColor(themeService.attrs.grey) //.grey
+        view.backgroundColor = UIColor(Color(hex: "#5E35B1"))
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-
+    
     fileprivate lazy var error: UILabel = {
         let label = UILabel()
         label.font = .micro
         label.textAlignment = .left
-        label.textColor = UIColor.gray // UIColor.gray //UIColor(themeService.attrs.grey) //.grey
+        label.textColor = UIColor.gray 
         label.isHidden = false
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
-
+    
     private lazy var stateImage: UIImageView = {
         let imageView = UIImageView()
         imageView.isHidden = true
@@ -68,23 +69,24 @@ open class PhoneNumberView: UIView {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
-
+    
     //MARK: Properties
     private let phoneNumberKit = PhoneNumberKit()
     public var currencyCode: Int = 0
-
+    
     // MAKR: - Control properties
     public var invalidInputImage: UIImage? = UIImage.init(named: "icon_invalid", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
     public var validInputImage: UIImage? = UIImage.init(named: "icon_check", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
-
+    
     public var validationState: PhoneNumberView .ValidationState = .normal {
         didSet {
             guard oldValue != validationState else { return }
             stateImage.isHidden = validationState == .normal
             stateImage.image = validationState == .valid ? validInputImage : validationState == .invalid ? invalidInputImage : nil
-            stateImage.tintColor = validationState == .valid ? UIColor(Color(hex: "#272262")) : validationState == .invalid ? UIColor.red : .clear
-            bottomBar.backgroundColor = validationState == .invalid ? UIColor.red : UIColor(Color(hex: "#272262")) //.primary
-            bottomBar.backgroundColor = validationState == .normal ? UIColor.red : UIColor(Color(hex: "#272262")) //.primary
+            stateImage.tintColor = validationState == .valid ? UIColor(Color(hex: "#5E35B1")) : validationState == .invalid ? UIColor.red : .clear
+            
+            bottomBar.backgroundColor = validationState == .invalid ? UIColor.red : UIColor(Color(hex: "#5E35B1")) //.primary
+            bottomBar.backgroundColor = validationState == .normal ? UIColor.red : UIColor(Color(hex: "#5E35B1")) //.primary
             
             error.isHidden = validationState != .invalid
         }
@@ -94,7 +96,7 @@ open class PhoneNumberView: UIView {
         get { return error.text }
         set (newValue) { error.text = newValue }
     }
-
+    
     public var titleText: String? {
         get { return title.text }
         set (newValue) { title.text = newValue }
@@ -106,12 +108,12 @@ open class PhoneNumberView: UIView {
         super.init(frame: frame)
         commonInit()
     }
-
+    
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
-
+    
     private func commonInit() {
         translatesAutoresizingMaskIntoConstraints = false
         setupViews()
@@ -126,33 +128,33 @@ private extension PhoneNumberView {
         stackView.addArrangedSubview(textField)
         stackView.addArrangedSubview(stateImage)
         addSubview(stackView)
-
+        
         addSubview(bottomBar)
         addSubview(error)
-
+        
     }
-
+    
     func setupConstraints() {
-
+        
         title
             .alignEdgeWithSuperview(.top)
             .alignEdgesWithSuperview([.left, .right], constants: [0, 0])
             .height(constant: 20)
-
+        
         stackView
             .toBottomOf(title, constant: 3)
             .alignEdgesWithSuperview([.left, .right])
             .height(constant: 26)
-
+        
         stateImage
             .alignEdgeWithSuperview(.right)
             .width(constant: 30)
-
+        
         bottomBar
             .alignEdgeWithSuperview(.bottom, constant: 3)
             .alignEdgesWithSuperview([.left, .right])
             .height(constant: 1)
-
+        
         error
             .toBottomOf(bottomBar, constant: 2)
             .alignEdgesWithSuperview([.left, .right])
@@ -161,23 +163,23 @@ private extension PhoneNumberView {
 }
 
 extension PhoneNumberView: UITextFieldDelegate {
-
+    
     public func textFieldDidBeginEditing(_ textField: UITextField) {
-        bottomBar.backgroundColor = UIColor.red //UIColor(Color(hex: "#272262"))  //UIColor(themeService.attrs.primary) //.primary
+        bottomBar.backgroundColor = UIColor.red //UIColor(Color(hex: "#5E35B1"))  //UIColor(themeService.attrs.primary) //.primary
         title.textColor = UIColor.red //UIColor.darkGray //UIColor(themeService.attrs.greyDark) //.greyDark
         animateFocus()
     }
-
+    
     public func textFieldDidEndEditing(_ textField: UITextField) {
-        bottomBar.backgroundColor = UIColor.lightGray //UIColor(Color(hex: "#272262")) //UIColor.darkGray //UIColor.gray //UIColor(themeService.attrs.grey) //.grey
-        title.textColor = (textField.text == nil || textField.text?.count ?? 0 == 0) ? UIColor(Color(hex: "#272262")) : UIColor.darkGray //.greyDark
+        bottomBar.backgroundColor = UIColor(Color(hex: "#5E35B1"))
+        title.textColor = (textField.text == nil || textField.text?.count ?? 0 == 0) ? UIColor(Color(hex: "#5E35B1")) : UIColor.darkGray //.greyDark
         if textField.text?.count ?? 0 == 0 {
             deanimateFocus()
         }
     }
-
+    
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-
+        
         if range.location < currencyCode {
             return false
         }
@@ -206,10 +208,10 @@ private extension PhoneNumberView {
             self.title.textColor = UIColor.darkGray //UIColor(themeService.attrs.greyDark) //.greyDark
         }
     }
-
+    
     func deanimateFocus() {
         UIView.animate(withDuration: 0.3, animations: { [unowned self] in
-            self.title.textColor = UIColor(Color(hex: "#272262")) // UIColor.gray //UIColor(themeService.attrs.primaryDark) //.primaryDark
+            self.title.textColor = UIColor(Color(hex: "#5E35B1"))
         })
     }
 }
@@ -224,32 +226,32 @@ extension PhoneNumberView {
 }
 // MARK: - Reactive
 public extension Reactive where Base: PhoneNumberView {
-
+    
     var validationState: Binder<PhoneNumberView.ValidationState> {
         return Binder(self.base) { textField, validation -> Void in
             textField.validationState = validation
         }
     }
-
+    
     var attributedText: Binder<NSAttributedString> {
         return Binder(self.base) { phoneNumberView, text -> Void in
             phoneNumberView.textField.attributedText = text
         }
     }
-
+    
     var errorText: Binder<String?> {
         return self.base.error.rx.text
     }
-
+    
     var titleText: Binder<String?> {
         return self.base.title.rx.text
     }
-
+    
     var countryCode: Binder<String?> {
         return Binder(self.base) { phoneNumberView, text -> Void in
             phoneNumberView.textField.text = text
             phoneNumberView.currencyCode = text?.count ?? 4
         }
     }
-
+    
 }

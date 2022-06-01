@@ -23,7 +23,7 @@ class MoreHeaderView: UIView {
         return view
     }()
     
-    fileprivate lazy var profileImage: UIImageView = {
+    public lazy var profileImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapped)))

@@ -212,7 +212,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
 
     // MARK: - Init
     init(customer: Observable<Customer>,
-         biometricsManager: BiometricsManager = BiometricsManager(), credentialStore: CredentialsStoreType,
+         biometricsManager: BiometricsManager, credentialStore: CredentialsStoreType,
          repository: LoginRepository, notificationManager: NotificationManagerType, accountProvider : AccountProvider) {
 
         self.customer = customer
@@ -232,7 +232,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         }).disposed(by: disposeBag)
 
         Observable.combineLatest(customer,userNotificationPreferenceSubject).subscribe(onNext: { [unowned self] (user, _) in
-            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.email), actionObservers: [
+            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: credentialStore.getUsername() ?? ""), actionObservers: [
                 self.personalDetailsTapObserver,
                 self.privacyTapObserver,
                 self.passcodeTapObserver,
@@ -243,15 +243,15 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
                 self.intagramTapObserver,
                 self.twitterTapObserver,
                 self.facebookTapObserver,
-                self.logoutTapObserver]))
+                self.logoutTapObserver], notifationManager: notificationManager))
         }).disposed(by: disposeBag)
 
         self.customer.subscribe(onNext: { [unowned self] (user) in
             self.faceIDDidChangeSubject
             .map { didChange -> Bool in if case let UserProfileTableViewAction.toggleSwitch(value) = didChange { return value }; return false }
             .subscribe(onNext: { [weak self] isOn in
-                self?.biometricsManager.setBiometry(isEnabled: isOn, phone: user.mobileNo)
-                self?.biometricsManager.setBiometryPermission(isPrompt: true, phone: user.mobileNo)
+                self?.biometricsManager.setBiometry(isEnabled: isOn, phone: credentialStore.getUsername() ?? "")
+                self?.biometricsManager.setBiometryPermission(isPrompt: true, phone: credentialStore.getUsername() ?? "")
             }).disposed(by: self.disposeBag)
             }).disposed(by: disposeBag)
 
@@ -266,7 +266,21 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         openTwitter()
         openFacebook()
         openPasscodechange()
-        notificationAuthorisationStatausChange()
+        //notificationAuthorisationStatausChange()
+        
+        Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
+            switch state {
+            case .toggleSwitch(true):
+                self.notificationManager.turnNotificationsOn()
+            case .toggleSwitch(false):
+                self.notificationManager.turnNotificationsOff()
+            case .button():
+                return
+            }
+
+        }).disposed(by: disposeBag)
+        
+        
 //        Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
 //            switch state {
 //            case .toggleSwitch(true):
@@ -403,16 +417,26 @@ func removeProfilePicture(repository: LoginRepositoryType){
         }).disposed(by: disposeBag)
     }
     
-    func notificationAuthorisationStatausChange() {
-        appNotificationsDidChangeSubject.subscribe(onNext: { [unowned self] notifValue in
-            if NotificationManager().isNotificationPermissionPrompt {
-                self.notificationManager.setNotificationPermission(isPrompt: false)
-            }
-            else {
-                self.notificationManager.setNotificationPermission(isPrompt: true)
-            }
-        }).disposed(by: disposeBag)
-    }
+//    func notificationAuthorisationStatausChange() {
+//
+////        var isNotificationPermissionPrompt: Bool { get }
+////        func setNotificationPermission(isPrompt: Bool)
+////        func deleteNotificationPermission()
+////        func turnNotificationsOn()
+////        func isNotificationAuthorised() -> Bool
+////        func turnNotificationsOff()
+////        func observeChangeInSettings()
+//
+//
+//        appNotificationsDidChangeSubject.subscribe(onNext: { [unowned self] notifValue in
+//            if NotificationManager().isNotificationPermissionPrompt {
+//                self.notificationManager.setNotificationPermission(isPrompt: false)
+//            }
+//            else {
+//                self.notificationManager.setNotificationPermission(isPrompt: true)
+//            }
+//        }).disposed(by: disposeBag)
+//    }
 
     func openFacebook() {
         facebookTap.subscribe(onNext: { _ in
@@ -450,6 +474,8 @@ func removeProfilePicture(repository: LoginRepositoryType){
                 let user = self?.credentialStore.getUsername() ?? ""
                 self?.biometricsManager.deleteBiometryForUser(phone: user)
                 self?.notificationManager.deleteNotificationPermission()
+                self?.notificationManager.setNotificationPermission(isPrompt: false)
+                //setNotificationPermission(isPrompt: Bool)
                 self?.credentialStore.setRemembersId(false)
                 self?.credentialStore.clearUsername()
                 let name = Notification.Name.init(.logout)
@@ -486,7 +512,7 @@ func removeProfilePicture(repository: LoginRepositoryType){
 
 // MARK: - User Profile Items Factory
 class UserProfileItemFactory {
-    class func makeUserProfileItems(isEmiratesIDExpired: Observable<Bool>, signInWithFaceId: Bool, actionObservers: [AnyObserver<UserProfileTableViewAction>]) -> [SectionModel<String, UserProfileTableViewCellViewModelType>] {
+    class func makeUserProfileItems(isEmiratesIDExpired: Observable<Bool>, signInWithFaceId: Bool, actionObservers: [AnyObserver<UserProfileTableViewAction>], notifationManager : NotificationManagerType) -> [SectionModel<String, UserProfileTableViewCellViewModelType>] {
 
         let biometricsManager = BiometricsManager()
 
@@ -494,7 +520,7 @@ class UserProfileItemFactory {
 
         cellViewModelSecuritySection.append(contentsOf: [UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_lock_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_privacy".localized, accessory: .button( "common_button_view".localized), actionObserver: actionObservers[1])),
             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_key_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_passcode".localized, accessory: .button( "common_button_change".localized), actionObserver: actionObservers[2])),
-                                                         UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_notification_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_notifications".localized, accessory: .toggleSwitch(NotificationManager().isNotificationPermissionPrompt), actionObserver: actionObservers[3])),
+                                                         UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_notification_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_notifications".localized, accessory: .toggleSwitch(notifationManager.isNotificationPermissionPrompt), actionObserver: actionObservers[3])),
             //UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_face_id", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_signinwithfaceID".localized, accessory: .toggleSwitch(NotificationManager().isNotificationAuthorised()), actionObserver: actionObservers[3]))
         ])
 

@@ -187,13 +187,19 @@ private extension TransactionTableViewCell {
         
         viewModel.outputs.type.subscribe(onNext: { [weak self] in self?.icon.contentMode = $0 == .category ? .center : .scaleAspectFill }).disposed(by: disposeBag)
         
-        viewModel.outputs.image.subscribe(onNext: {[weak self] args in
-            self?.icon.loadImage(with: args.0.0 ?? args.0.1, placeholder: args.0.2, showsIndicator: false, completion: { (image, error, url) in
-                self?.icon.image = image?.withRenderingMode(.alwaysOriginal)
-                if args.0.0 == nil {
-                self?.setupIconConstraint(type: args.1)
-                }
-            })
+        viewModel.outputs.image.subscribe(onNext: {[weak self] args in //(logoUrl,categoryIcon, icon)
+            
+            if args.0.0 == nil || args.0.0 == "" {
+                self?.icon.image = args.0.2
+            }
+            else {
+                self?.icon.loadImage(with: args.0.0 ?? args.0.1, placeholder: args.0.2, showsIndicator: false, completion: { (image, error, url) in
+                    self?.icon.image = image?.withRenderingMode(.alwaysOriginal)
+                    if args.0.0 == nil {
+                    self?.setupIconConstraint(type: args.1)
+                    }
+                })
+            }
         }).disposed(by: disposeBag)
         
         viewModel.outputs.mode.subscribe(onNext: { [weak self] (mode) in

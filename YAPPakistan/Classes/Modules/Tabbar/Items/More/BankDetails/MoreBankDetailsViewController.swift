@@ -29,13 +29,6 @@ class MoreBankDetailsViewController: UIViewController {
         return view
     }()
     
-//    private lazy var background: UIView = {
-//        let view = UIView()
-//        view.backgroundColor = UIColor.clear
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        return view
-//    }()
-    
     public lazy var headerTitle: UILabel = UIFactory.makeLabel(font: .title3, text: "Account details") //.primaryDark
     //public lazy var headerTitle: UILabel = UILabelFactory.createUILabel(with: .primaryDark, textStyle: .title3,text: "Account details")
     
@@ -73,33 +66,6 @@ class MoreBankDetailsViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
-//    private lazy var account: MoreBankDetailsInfoView = {
-//        let view = MoreBankDetailsInfoView()
-//        view.titleText = "screen_more_bank_details_display_text_account".localized
-//        view.detailText = "screen_more_bank_details_display_text_account".localized
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        view.canCopy = true
-//        return view
-//    }()
-    
-//    private lazy var bank: MoreBankDetailsInfoView = {
-//        let view = MoreBankDetailsInfoView()
-//        view.titleText = "screen_more_bank_details_display_text_bank".localized
-//        view.detailText = "Hello From World"
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        view.canCopy = true
-//        return view
-//    }()
-    
-//    private lazy var address: MoreBankDetailsInfoView = {
-//        let view = MoreBankDetailsInfoView()
-//        view.titleText = "screen_more_bank_details_display_text_address".localized
-//        view.detailText = "Hello From World"
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        view.canCopy = true
-//        return view
-//    }()
     
     private lazy var shareButton: AppRoundedButton = {
         let button = AppRoundedButtonFactory
@@ -210,7 +176,7 @@ private extension MoreBankDetailsViewController {
         themeService.rx
             .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, phone.rx.titleColor, iban.rx.titleColor])
         themeService.rx
-            .bind({ UIColor($0.primaryDark) }, to: [name.rx.detailsColor, phone.rx.detailsColor, shareButton.rx.backgroundColor])
+            .bind({ UIColor($0.primary) }, to: [name.rx.detailsColor, phone.rx.detailsColor, shareButton.rx.backgroundColor])
         themeService.rx
             .bind({ UIColor( $0.greyDark ) }, to: self.holder.rx.backgroundColor)
     }

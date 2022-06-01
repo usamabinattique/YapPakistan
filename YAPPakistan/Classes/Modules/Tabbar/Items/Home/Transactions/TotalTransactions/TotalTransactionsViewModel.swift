@@ -18,7 +18,7 @@ protocol TotalTransactionsViewModelInput {
 
 protocol TotalTransactionsViewModelOutput {
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { get }
-    var merchantLogo : Observable<String> { get }
+    var merchantLogo : Observable<(String?, UIImage?)> { get }
     var error: Observable<String> { get }
     var back: Observable<Void> { get }
     var navigationTitle: Observable<String> { get }
@@ -53,7 +53,7 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
     var back: Observable<Void> { return backSubject.asObservable() }
     var merchantName: Observable<String> { merchantNameSubject.asObservable() }
     var totalAmount: Observable<String> { totalAmountSubject.asObservable() }
-    var merchantLogo : Observable<String> { return merchantLogoSubject.asObservable() }
+    var merchantLogo : Observable<(String?, UIImage?)> { return merchantLogoSubject.asObservable() }
     
     internal var navigationTitleSubject = BehaviorSubject<String>(value: "")
     
@@ -62,7 +62,7 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
     private let backSubject = PublishSubject<Void>()
     private let merchantNameSubject = BehaviorSubject<String>(value: "") // PublishSubject<String>()
     private let totalAmountSubject = BehaviorSubject<String>(value: "") //PublishSubject<String>()
-    private let merchantLogoSubject = BehaviorSubject<String>(value: "")
+    private let merchantLogoSubject = BehaviorSubject<(String?, UIImage?)>(value: (nil, nil))
     
     // MARK: - Init
     init(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?, totalPurchase: String, transactionRepository: TransactionsRepositoryType ,themeService: ThemeService<AppTheme>, transaction: TransactionResponse) {
@@ -70,11 +70,19 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
         self.transactionRepository = transactionRepository
         self.transaction = transaction
         setNaviagtionTitle(withTransacationsCount: 5)
-        self.getTotalTransactions(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: nil, merchantName: nil)
+        self.getTotalTransactions(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: nil)
         self.merchantNameSubject.onNext("Sent to " + (merchantName ?? "Unknown"))
         self.totalAmountSubject.onNext(totalPurchase)
         
-        self.merchantLogoSubject.onNext(transaction.receiverUrl ?? "")
+        if transaction.receiverUrl == "" || transaction.receiverUrl == nil {
+            let icon = transaction.receiverName?.initialsImage(color: .systemPink)
+            self.merchantLogoSubject.onNext((nil, icon))
+        }
+        else {
+            self.merchantLogoSubject.onNext((transaction.receiverUrl ?? "", nil))
+        }
+        
+        
     }
     
     private func setNaviagtionTitle(withTransacationsCount count : Int) {
