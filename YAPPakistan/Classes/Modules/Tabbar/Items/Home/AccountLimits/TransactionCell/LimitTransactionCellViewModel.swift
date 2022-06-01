@@ -40,7 +40,6 @@ class LimitTransactionCellViewModel: LimitTransactionCellViewModelType, LimitTra
     fileprivate let limitAllocatedValueSubject = BehaviorSubject<String>(value: "")
     
     // Inputs
-    
 
     // Outputs
     var transactionTitle: Observable<String> { transactionTitleSubject.asObservable() }
@@ -62,7 +61,5 @@ class LimitTransactionCellViewModel: LimitTransactionCellViewModelType, LimitTra
         print(isLastElement)
         let progress = CGFloat(limitDetail.consumedLimit)/CGFloat(limitDetail.allocatedLimit)
         limitProgressSubject.onNext(progress)
-        
-        
     }
 }
