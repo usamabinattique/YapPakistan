@@ -135,13 +135,13 @@ private extension TDReceiptCollectionViewCell {
 }
 
 extension UIButton {
-    func addRightIcon(image: UIImage) {
+    func addRightIcon(image: UIImage, tintColor: UIColor) {
         let imageView = UIImageView(image: image)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-
+        imageView.tintColor = tintColor
         addSubview(imageView)
 
-        let length = CGFloat(15)
+        let length = CGFloat(24)
         titleEdgeInsets.right += length
 
         NSLayoutConstraint.activate([
