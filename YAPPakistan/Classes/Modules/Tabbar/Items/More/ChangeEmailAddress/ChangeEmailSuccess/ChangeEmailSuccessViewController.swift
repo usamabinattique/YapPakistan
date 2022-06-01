@@ -104,7 +104,8 @@ fileprivate extension UnvarifiedEmailSuccessViewController {
         
         successImageView
             .toBottomOf(subHeadingLabel, .lessThanOrEqualTo, constant: 60)
-            .height(.lessThanOrEqualTo, constant: 193)
+            .height(constant: 82)
+            .width(constant: 82)
             .alignEdgesWithSuperview([.left, .right], constants: [59, 59])
         
         //descriptionLabel

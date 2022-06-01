@@ -73,7 +73,7 @@ class TopupSuccessViewModel: TopupSuccessViewModelType, TopupSuccessViewModelInp
         successMessageSubject.onNext(makeSuccessMessage(balance: amount, currency: currency))
         accountBalanceTitleSubject.onNext("screen_topup_success_display_text_account_balance_title".localized)
         balanceSubject.onNext(newBalance)
-        successImageSubject.onNext(UIImage.sharedImage(named: "icon_completion"))
+        successImageSubject.onNext(UIImage(named: "icon_completion", in: .yapPakistan))
         dashboardButtonTitleSubject.onNext(doneButtonTitle ?? "screen_topup_success_display_text_dashboard_action_button_title".localized)
     }
     
