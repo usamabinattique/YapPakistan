@@ -49,7 +49,7 @@ extension Balance {
     }
     
     public static var defaultBalance: Balance {
-        return Balance(balance: "0", currencyCode: "AED", currencyDecimals: "2", accountNumber: "")
+        return Balance(balance: "0", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
     }
 }
 

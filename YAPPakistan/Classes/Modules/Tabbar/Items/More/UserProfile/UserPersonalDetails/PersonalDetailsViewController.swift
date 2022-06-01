@@ -31,7 +31,7 @@ class PersonalDetailsViewController: UIViewController {
     private lazy var phoneNumberField : StaticAppTextField = {
         let field = StaticAppTextField()
         field.titleLabel.text = "screen_personal_details_display_text_phone_number".localized
-        field.isEditable = true
+        field.isEditable = false
         field.titleColor = UIColor(themeService.attrs.greyDark)
         field.textColor = UIColor(themeService.attrs.primaryDark)
         return field
@@ -131,6 +131,7 @@ extension PersonalDetailsViewController: ViewDesignable {
 
         CNICView.rx.tap
             .subscribe(onNext: { [weak self] in
+                
                 self?.viewModel.inputs.cardTapObserver.onNext(())
             })
             .disposed(by: disposeBag)

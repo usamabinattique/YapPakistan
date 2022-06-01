@@ -120,6 +120,10 @@ extension ExternalPaymentCard {
         return "XXXX XXXX XXXX \(last4Digits)"
     }
     
+    var maskedNumberWithAesteric: String {
+        return "**** **** **** \(last4Digits)"
+    }
+    
     var expiryDate: Date? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MMyy"

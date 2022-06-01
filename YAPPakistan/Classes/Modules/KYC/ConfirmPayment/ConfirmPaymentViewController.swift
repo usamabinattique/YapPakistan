@@ -126,7 +126,8 @@ class ConfirmPaymentViewController: UIViewController {
             .bind({ UIColor($0.primary) }, to: [ actionButton.rx.backgroundColor ])
            // .bind({ UIColor($0.greyDark) }, to: [ actionButton.rx.disabledBackgroundColor ])
             .bind({ UIColor($0.primaryDark) }, to: [ cardMasksLabel.rx.textColor, cardFeeValueLabel.rx.textColor, fedValueLabel.rx.textColor, orderTotalValueLabel.rx.textColor, addressDescLabel.rx.textColor ])
-            .bind({ UIColor($0.greyDark) }, to: [ payWithLabel.rx.textColor, cardFeeLabel.rx.textColor, fedLabel.rx.textColor, orderTotalLabel.rx.textColor, addressDescLabel.rx.textColor ])
+            .bind({ UIColor($0.greyDark) }, to: [ payWithLabel.rx.textColor, cardFeeLabel.rx.textColor, fedLabel.rx.textColor, addressDescLabel.rx.textColor ])
+            .bind({ UIColor($0.primaryDark) }, to: [orderTotalLabel.rx.textColor])
             .bind({ UIColor($0.greyLight) }, to: /*[  addressContainerView.rx.borderColor ])*/ [addressContainerView.rx.borderColor ])
             .disposed(by: rx.disposeBag)
         
