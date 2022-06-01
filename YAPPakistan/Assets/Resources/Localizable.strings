@@ -81,8 +81,8 @@
 "screen_sign_in_display_text_heading_text" = "Sign in to your YAP account";
 "screen_sign_in_input_text_email_hint" = "Email address or phone number";
 "screen_sign_in_display_text_remember_id_text" = "Remember ID";
-"screen_sign_in_display_text_create_account" = "New to Yap?";
-"screen_sign_in_button_sign_up" = "Sign up now";
+"screen_sign_in_display_text_create_account" = "Create an account?";
+"screen_sign_in_button_sign_up" = "Sign up";
 "screen_sign_in_button_sign_in" = "Sign in";
 "screen_sign_in_button_verify" = "Verify";
 "screen_sign_in_button_sign_in_touch_id" = "Sign in with Touch ID";
@@ -107,7 +107,7 @@
 "screen_create_passcode_display_text_title" = "Create a 4 digit passcode to access your account​";
 "screen_create_passcode_display_text_terms_and_conditions" = "By creating a passcode you agree to our";
 "screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
-"screen_create_passcode_button_create_passcode" = "Create Passcode";
+"screen_create_passcode_button_create_passcode" = "Create passcode";
 "screen_create_passcode_button_create_new_passcode" = "Create new passcode";
 "screen_create_passcode_display_text_error_sequence" = "You cannot use consecutive digits.";
 "screen_create_passcode_display_text_error_same_digits" = "You cannot use repeat digits.";
@@ -308,8 +308,8 @@
 "screen_kyc_review_details_screen_subtitle" = "Your details should be accurate to your CNIC.";
 "screen_kyc_review_details_cnic_number" = "CNIC Number";
 "screen_kyc_review_details_full_name" = "Full name as per CNIC";
-"screen_kyc_review_details_father_spouse_name" = "Father/Spouse Name";
-"screen_kyc_review_details_father_spouse_name_placeholder" = "Enter your Father/Spouse name";
+"screen_kyc_review_details_father_spouse_name" = "Father / Spouse name";
+"screen_kyc_review_details_father_spouse_name_placeholder" = "Father / Spouse name";
 "screen_kyc_review_details_gender" = "Gender";
 "screen_kyc_review_details_dob" = "Date of birth";
 "screen_kyc_review_details_issue_date" = "Issue date";
