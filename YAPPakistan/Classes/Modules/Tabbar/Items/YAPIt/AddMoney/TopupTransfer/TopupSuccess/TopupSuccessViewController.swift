@@ -23,6 +23,7 @@ class TopupSuccessViewController: UIViewController {
     lazy var balance = UIFactory.makeLabel(font: .title2, alignment: .center)
     lazy var successImageView = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     lazy var dashboardActionButton = AppRoundedButtonFactory.createAppRoundedButton(font: .regular)
+    //lazy var tickIcon = UIFactory.makeImageView()
     
     // MARK: - Properties
     let viewModel: TopupSuccessViewModelType
@@ -49,7 +50,12 @@ class TopupSuccessViewController: UIViewController {
         setupConstraints()
         setupBindings()
         setupTheme()
+        //setupResources()
     }
+    
+//    func setupResources() {
+//        self.tickIcon.image = UIImage(named: "tickIcon", in: .yapPakistan)
+//    }
 }
 
 extension TopupSuccessViewController: ViewDesignable {
