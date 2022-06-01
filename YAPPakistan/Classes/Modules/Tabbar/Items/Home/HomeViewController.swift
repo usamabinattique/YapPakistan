@@ -151,6 +151,7 @@ class HomeViewController: UIViewController {
 
     lazy var barGraphView: BarGraphView = {
         let graph = BarGraphView()
+        graph.isUserInteractionEnabled = true
         graph.translatesAutoresizingMaskIntoConstraints = false
         graph.isHidden = true
         graph.barWidth = 8
@@ -161,7 +162,7 @@ class HomeViewController: UIViewController {
 
     private lazy var widgetView: DashboardWidgets = {
         let buttons = DashboardWidgets(theme: self.themeService)
-        buttons.viewModel.outputs.selectedWidget.bind(to: viewModel.inputs.selectedWidgetObserver).disposed(by: disposeBag)
+        buttons.viewModel.outputs.selectedWidget.skip(1).bind(to: viewModel.inputs.selectedWidgetObserver).disposed(by: disposeBag)
         buttons.translatesAutoresizingMaskIntoConstraints = false
         buttons.backgroundColor = .white
         return buttons
@@ -744,6 +745,12 @@ fileprivate extension HomeViewController {
             guard self?.transactionViewController.tableView.hasRowAtIndexPath(indexPath: indexPath) ?? false else { return }
             self?.transactionViewController.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .top)
         }).disposed(by: disposeBag)
+        
+        
+    }
+    
+    @objc func openAnalytics(_ sender: UITapGestureRecognizer? = nil) {
+        viewModel.inputs.didTapAnalytics.onNext(())
     }
 }
 

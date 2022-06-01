@@ -234,7 +234,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
     private var debitSearch: Bool = false
     var transactionsObj = [TransactionResponse]() {
         didSet {
-            if transactionsObj.isEmpty {
+            if transactionsObj.isEmpty && !self.isShimmering {
                 noTransFoundSubject.onNext("No transactions found")
             } else {
                 noTransFoundSubject.onNext("")
@@ -279,7 +279,7 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
             .disposed(by: rx.disposeBag)
 
         
-        showShimmeringSubject.debounce(RxTimeInterval.seconds(Int(1)), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
+        showShimmeringSubject.debounce(RxTimeInterval.seconds(Int(0)), scheduler: MainScheduler.instance).subscribe(onNext: { [weak self] IsLoading in
             self?.isShimmering = IsLoading
             self?._numberOfRows = IsLoading ? 10 : 0
             self?._numberOfSections = IsLoading ? 1 : 0
@@ -317,9 +317,8 @@ class TransactionsViewModel: NSObject, TransactionsViewModelType, TransactionsVi
         
         refreshSubject.withUnretained(self).subscribe(onNext: { `self`,_ in
             print("refresh in transactions")
-            self.transactionsObj = []
+           // self.transactionsObj = []
             transactionDataProvider.resetPage(0)
-           // self.showShimmeringSubject.onNext(true)
             self.fetchTransactionsObserver.onNext(())
             
         }).disposed(by: disposeBag)
@@ -601,6 +600,10 @@ extension TransactionsViewModel {
         let transactions = TransactionResponse.transactions(for: self.currentSection, allTransactions: transactionsObj) //entityHandler.transactions(for: self.currentSection)
         if transactions.count > 0 {
             if self.currentSection == 0 {
+                if latestBalance == "0.00" {
+                    let amount = transactions[0].closingBalance?.twoDecimal() ?? ""
+                    self.latestBalance = amount
+                }
                 self.sectionAmountSubject.onNext("\(self.latestBalance)")
             }
             else {
@@ -627,15 +630,15 @@ extension TransactionsViewModel {
                 
                
                     if self.currentSection == 0 {
-                        let dateWithBalance = date.transactionSectionReadableDate //+ "was " + latestBalance
-                        let was = NSMutableAttributedString(string: " was ")
+                        let dateWithBalance = date.transactionSectionReadableDateSecondary //+ "was " + latestBalance
+                        let was = NSMutableAttributedString(string: " was PKR ")
                         let balance = NSMutableAttributedString(string: latestBalance)
                         dateWithBalance.append(was)
                         dateWithBalance.append(balance)
                         self.sectionDateSubject.onNext(dateWithBalance)
                     }
                     else {
-                        let dateWithBalance = date.transactionSectionReadableDate //+ "was " + latestBalance
+                        let dateWithBalance = date.transactionSectionReadableDateSecondary //+ "was " + latestBalance
                         let was = NSMutableAttributedString(string: " was PKR ")
                         let balance = (transactions[0].closingBalance?.twoDecimal() ?? "").getCommaSeperatedTwoDecimalValue //NSMutableAttributedString(string: transactions[0].closingBalance?.twoDecimal() ?? "")
                         dateWithBalance.append(was)

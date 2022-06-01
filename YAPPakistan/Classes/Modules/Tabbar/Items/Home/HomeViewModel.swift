@@ -140,7 +140,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let showLoaderSubject = BehaviorSubject<Bool>(value: false)
     private var dashboardWidgetsSubject = ReplaySubject<[DashboardWidgetsResponse]>.create(bufferSize: 1)
     private let hideWidgetsSubject = BehaviorSubject<Bool>(value: false)
-    private let selectedWidgetSubject = BehaviorSubject<WidgetCode?>(value: nil)
+    private let selectedWidgetSubject = ReplaySubject<WidgetCode?>.create(bufferSize: 1) //BehaviorSubject<WidgetCode?>(value: nil)
     private let isCardActivatedSubject = BehaviorSubject<CardStatus?>(value: nil)
     private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let addCreditInfoSubject = ReplaySubject<Void>.create(bufferSize: 1)
@@ -237,7 +237,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var search: Observable<Void> { searchSubject.asObservable() }
     var categoryChanged: Observable<Void> { categoryChangedSubject.asObservable() }
     var refresh: Observable<Void> { refreshSubject.asObservable() }
-    var selectedWidget: Observable<WidgetCode?> { selectedWidgetSubject.asObservable() }
+    var selectedWidget: Observable<WidgetCode?> { selectedWidgetSubject.skip(1).asObservable() }
     var shrinkProgressView: Observable<Bool> { shrinkProgressViewSubject }
     
     var transactions: Observable<[SectionTransaction]> { return transactionsSubject.asObservable() }
@@ -357,14 +357,14 @@ extension HomeViewModel {
         let accountBalanceRequest = transactionRepository.fetchCustomerAccountBalance().share()
       //  accountBalanceRequest.map { _ in true }.bind(to: loadingSubject).disposed(by: disposeBag)
 
-        accountBalanceRequest
+     /*   accountBalanceRequest
             .errors()
             .do(onNext: { [unowned self] _ in
                 print("account balance api onNext called")
                 /*self.shimmeringSubject.onNext(false) */ })
             .map { $0.localizedDescription }
             .bind(to: errorSubject)
-            .disposed(by: disposeBag)
+            .disposed(by: disposeBag) */
         
         accountBalanceRequest.elements().subscribe(onNext: { [weak self] balance in
             let text = balance.formattedBalance(showCurrencyCode: false, shortFormat: true)
