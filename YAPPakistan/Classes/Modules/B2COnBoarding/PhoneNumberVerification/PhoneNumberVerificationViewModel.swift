@@ -50,7 +50,7 @@ final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelIn
     private let resultSubject = PublishSubject<OnBoardingUser>()
     private let phoneNumberSubject = BehaviorSubject<String>(value: "")
     private let sendSubject = PublishSubject<OnboardingStage>()
-    private let timerTextSubject = BehaviorSubject<String>(value: "00:10")
+    private let timerTextSubject = BehaviorSubject<String>(value: "00:30")//"00:10")
     private let resendActiveSubject = BehaviorSubject<Bool>(value: false)
     private let showErrorSubject = PublishSubject<String>()
     private let showAlertSubject = PublishSubject<String>()
@@ -87,14 +87,14 @@ final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelIn
     private var otpResendTime: TimeInterval
     private var user: OnBoardingUser!
     private var timer: Timer?
-    private let resendTimeSubject = BehaviorSubject<TimeInterval>(value: 300)
+    private let resendTimeSubject = BehaviorSubject<TimeInterval>(value: 30)//300)
     private let resendBlocked = BehaviorSubject<Bool>(value: false)
     private let repository: OnBoardingRepository
     private var otpForRequest: String?
 
     init(onBoardingRepository: OnBoardingRepository,
          user: OnBoardingUser,
-         otpTime: TimeInterval = 60) {
+         otpTime: TimeInterval = 30) { //60) {
         self.repository = onBoardingRepository
         self.user = user
         self.otpTime = otpTime
