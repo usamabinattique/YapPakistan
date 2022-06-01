@@ -101,7 +101,7 @@ public extension TransactionType {
 struct TransactionResponse: Codable, Transaction {
     
     
-    
+    let merchantCategoryName: String?
     let date: Date
     let updatedDate: Date?
     private let _type: String?
@@ -176,7 +176,7 @@ struct TransactionResponse: Codable, Transaction {
 
     var time: String {
         let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "HH:mm"
+        timeFormatter.dateFormat = "hh:mm a"//HH:mm"
         return timeFormatter.string(from: date)
     }
     
@@ -407,6 +407,7 @@ struct TransactionResponse: Codable, Transaction {
         case latitude = "latitude"
         case longitude = "longitude"
         case tapixCategory = "yapCategoryDTO"
+        case merchantCategoryName = "merchantCategoryName"
     }
    
 
@@ -483,6 +484,7 @@ struct TransactionResponse: Codable, Transaction {
         latitude = try container.decodeIfPresent(Double.self, forKey: .latitude) ?? 0.0
         longitude = try container.decodeIfPresent(Double.self, forKey: .longitude) ?? 0.0
         tapixCategory = try container.decodeIfPresent(TapixTransactionCategory.self, forKey: .tapixCategory)
+        merchantCategoryName = try container.decodeIfPresent(String.self, forKey: .merchantCategoryName)
     }
 
     init(withTransactionId id: String) {
@@ -541,6 +543,7 @@ struct TransactionResponse: Codable, Transaction {
         tapixCategory = nil
         latitude = 0.0
         longitude = 0.0
+        merchantCategoryName = nil
     }
 
     static let loadingId = "LOADINGTRANSACTIONS"
@@ -628,6 +631,7 @@ extension TransactionResponse {
         tapixCategory = nil
         latitude = 0.0
         longitude = 0.0
+        merchantCategoryName = nil
     }
 }
 
@@ -691,6 +695,7 @@ extension TransactionResponse {
         tapixCategory = transaction.tapixCategory
         latitude = transaction.latitude
         longitude = transaction.longitude
+        merchantCategoryName = transaction.merchantCategoryName
     }
 }
 
@@ -820,3 +825,40 @@ extension TransactionResponse {
     }*/
 }
 
+extension TransactionResponse {
+    var transactionTimeCategory: String? {
+     //  let category = formattedTime + " · " + ((productNameType != .unkonwn ? productNameType.type : merchantCategory ?? category))
+        
+        var title: String = time + " · "
+        
+        switch self.productName {
+        case "ECOM", "POS":
+           return title + (merchantCategoryName ?? "")
+        case "IBFT":
+            return title + "Bank transfer"
+        case "Y2Y_TRANSFER":
+            return title + "YAP to YAP"
+        case "TOP_UP_VIA_CARD":
+            return title + "Top up"
+        default:
+            return title + "Transaction"
+        }
+        
+      /*  return if (self.productName) {
+            TransactionCategory.ECOM.name, TransactionCategory.POS.name -> {
+                this.merchantCategory
+            }
+            TransactionCategory.IBFT.name -> {
+                resourcesProviders.getString(screen_add_money_dashboard_display_text_bank_transfer)
+            }
+            TransactionCategory.Y2Y_TRANSFER.name -> {
+                resourcesProviders.getString(screen_home_fragment_text_y2y)
+            }
+            TransactionCategory.TOP_UP_VIA_CARD.name -> {
+                resourcesProviders.getString(screen_home_fragment_text_top_up_label)
+            }
+            else -> "Transaction"
+
+        } */
+    }
+}

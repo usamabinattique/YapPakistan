@@ -110,9 +110,9 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
         let title = transaction.title ?? "Unknown"
        
         transactionTitleSubject = BehaviorSubject(value: transaction.finalizedTitle)
-        transactionTimeCategorySubject = BehaviorSubject(value: transaction.formattedTime + " · " + ((transaction.productNameType != .unkonwn ? transaction.productNameType.type : transaction.merchantCategory ?? transaction.category)))//transaction.category)
+        transactionTimeCategorySubject = BehaviorSubject(value: transaction.transactionTimeCategory) //BehaviorSubject(value: transaction.formattedTime + " · " + ((transaction.productNameType != .unkonwn ? transaction.productNameType.type : transaction.merchantCategory ?? transaction.category)))//transaction.category)
         
-        let amount = CurrencyFormatter.format(amount: transaction.amount, in: CurrencyType(rawValue: transaction.currency ?? "") ?? .pkr).amountFromFormattedAmount
+        let amount = CurrencyFormatter.format(amount: transaction.type == .debit ? (transaction.totalAmount ?? 0) : transaction.amount, in: CurrencyType(rawValue: transaction.currency ?? "") ?? .pkr).amountFromFormattedAmount
         transactionAmountSubject = BehaviorSubject(value: NSAttributedString(string: (transaction.type == .debit ? "-" : "+") + amount))
         currencySubject = BehaviorSubject(value: transaction.currency)
         
@@ -252,7 +252,7 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
         transactionTitleSubject = BehaviorSubject(value: title)
         transactionTimeCategorySubject = BehaviorSubject(value: "This is dummy data")
         
-        let amount = "AED 1000"
+        let amount = "PKR 1000"
         
         transactionImageUrlSubject = BehaviorSubject(value: ("icon.imageUrl", nil))
         //        remarksSubject.onNext(nil)

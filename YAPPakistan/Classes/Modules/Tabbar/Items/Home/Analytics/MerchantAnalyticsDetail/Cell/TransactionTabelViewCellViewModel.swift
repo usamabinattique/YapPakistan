@@ -105,10 +105,10 @@ class TransactionTabelViewCellViewModel: TransactionTabelViewCellViewModelType, 
         }
         
         if transaction.type == .debit {
-            amountSubject.onNext("- " + CurrencyFormatter.format(amount: transaction.cardHolderBillingTotalAmount , in: transaction.cardHolderBillingCurrency ?? "AED").amountFromFormattedAmount)
+            amountSubject.onNext("- " + CurrencyFormatter.format(amount: transaction.cardHolderBillingTotalAmount , in: transaction.cardHolderBillingCurrency ?? "PKR").amountFromFormattedAmount)
         }
         else {
-            amountSubject.onNext(CurrencyFormatter.format(amount: transaction.cardHolderBillingTotalAmount , in: transaction.cardHolderBillingCurrency ?? "AED").amountFromFormattedAmount)
+            amountSubject.onNext(CurrencyFormatter.format(amount: transaction.cardHolderBillingTotalAmount , in: transaction.cardHolderBillingCurrency ?? "PKR").amountFromFormattedAmount)
         }
         currencySubject.onNext(transaction.cardHolderBillingCurrency)
         timeDateSubject.onNext(time + "・" + dayMonth)

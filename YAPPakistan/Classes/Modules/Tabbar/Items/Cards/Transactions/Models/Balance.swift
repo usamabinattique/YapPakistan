@@ -49,13 +49,13 @@ extension Balance {
     }
     
     public static var defaultBalance: Balance {
-        return Balance(balance: "0", currencyCode: "AED", currencyDecimals: "2", accountNumber: "")
+        return Balance(balance: "0", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
     }
 }
 
 // Mocked
 extension Balance {
     public static var mockedBalance: Balance {
-        return Balance(balance: "103456", currencyCode: "AED", currencyDecimals: "2", accountNumber: "")
+        return Balance(balance: "103456", currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
     }
 }

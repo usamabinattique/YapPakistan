@@ -455,7 +455,7 @@ extension TopupTransferViewModel {
             guard let `self` = self else { return }
             guard let amount = try? self.enteredAmountSubject.value() else { return }
             guard let orderID = checkoutSession.order?.id else { return }
-            self.resultSubject.onNext((orderId: orderID, threeDSecureId: threeDSecureResult.threeDSecureId, amount: "\(amount)", currency: "AED", card: self.paymentCard))
+            self.resultSubject.onNext((orderId: orderID, threeDSecureId: threeDSecureResult.threeDSecureId, amount: "\(amount)", currency: "PKR", card: self.paymentCard))
         }).disposed(by: disposeBag)
     }
 }
