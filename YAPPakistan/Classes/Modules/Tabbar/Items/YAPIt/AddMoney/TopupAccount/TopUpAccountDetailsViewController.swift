@@ -23,8 +23,8 @@ class TopUpAccountDetailsViewController: UIViewController {
     }()
     
     private lazy var shareButton: UIButton = UIFactory.makeButton(with: .large, title: "screen_more_bank_details_button_share".localized)
-    private lazy var shareIcon: ImageView = UIFactory.makeImageView()
-    private lazy var shareStack: UIStackView = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 5, arrangedSubviews: [shareButton, shareIcon])
+    //private lazy var shareIcon: ImageView = UIFactory.makeImageView()
+    private lazy var shareStack: UIStackView = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 5, arrangedSubviews: [shareButton])
     
     private var backButton: UIButton!
     
@@ -94,7 +94,7 @@ extension TopUpAccountDetailsViewController: ViewDesignable {
             .centerHorizontallyInSuperview()
             .alignEdgeWithSuperviewSafeArea(.bottom, constant: bottomSafeArea)
             .height(constant: 52)
-//            .width(constant: 192)
+            .width(constant: 192)
     }
     
     func setupTheme() {
@@ -133,6 +133,10 @@ extension TopUpAccountDetailsViewController: ViewDesignable {
     }
     
     func setupResources() {
-        shareIcon.image = UIImage(named: "icon_share", in: .yapPakistan)
+        if let img = UIImage(named: "icon_share", in: .yapPakistan) {
+            self.shareButton.addRightIcon(image: img, tintColor: UIColor(self.themeService.attrs.primary))
+        }
+        
+        //shareIcon.image = UIImage(named: "icon_share", in: .yapPakistan)
     }
 }
