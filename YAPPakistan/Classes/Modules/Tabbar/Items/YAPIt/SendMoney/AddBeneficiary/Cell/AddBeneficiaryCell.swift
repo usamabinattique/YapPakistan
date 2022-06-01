@@ -107,7 +107,7 @@ private extension AddBeneficiaryCell {
 private extension AddBeneficiaryCell {
     func bindViews() {
         
-        viewModel.outputs.bankImage.bind(to: userImage.rx.loadImage()).disposed(by: disposeBag)
+        viewModel.outputs.bankImage.bind(to: userImage.rx.loadImage(isStringPath: true)).disposed(by: disposeBag)
         
         //userImage.rx.loadImage()
         

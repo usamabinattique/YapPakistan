@@ -276,6 +276,7 @@ class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = false
         self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.tabBarController?.tabBar.isHidden = false
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -588,6 +589,7 @@ fileprivate extension HomeViewController {
             self?.userBarButtonItem.button?.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
             self?.userBarButtonItem.button?.layer.cornerRadius = (self?.userBarButtonItem.button?.frame.size.height  ?? 30 )/2
             self?.userBarButtonItem.button?.clipsToBounds = true
+            self?.userBarButtonItem.button?.imageView?.contentMode = .scaleAspectFit
             
            // self?.userBarButtonItem.button?.setImage(placeholderImg, for: .normal)
             if let url = imageUrl {

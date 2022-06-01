@@ -138,6 +138,7 @@ private extension SearchSendMoneyBeneficiaryViewController {
             .map { $0.beneficiary }
             .bind(to: viewModel.inputs.beneficiaryObserver)
             .disposed(by: disposeBag)
+
     }
 }
 

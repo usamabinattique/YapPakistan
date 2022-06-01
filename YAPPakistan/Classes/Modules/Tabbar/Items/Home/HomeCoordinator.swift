@@ -539,9 +539,9 @@ extension HomeCoodinator {
     }
     
     func navigateToAddMoneyQRCode() {
-//        self.root.tabBar.isHidden = true
+        self.root.tabBar.isHidden = true
         coordinate(to: AddMoneyQRCodeCoordinator(root: navigationRoot, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
-//            self?.root.tabBar.isHidden = false
+            self?.root.tabBar.isHidden = false
         }).disposed(by: rx.disposeBag)
     }
     
