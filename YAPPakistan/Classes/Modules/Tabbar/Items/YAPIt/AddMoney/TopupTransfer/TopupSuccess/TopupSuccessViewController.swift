@@ -22,7 +22,7 @@ class TopupSuccessViewController: UIViewController {
     lazy var accountBalanceTitle = UIFactory.makeLabel(font: .small, alignment: .center)
     lazy var balance = UIFactory.makeLabel(font: .title2, alignment: .center)
     lazy var successImageView = UIFactory.makeImageView(contentMode: .scaleAspectFit)
-    lazy var dashboardActionButton = AppRoundedButtonFactory.createAppRoundedButton()
+    lazy var dashboardActionButton = AppRoundedButtonFactory.createAppRoundedButton(font: .regular)
     
     // MARK: - Properties
     let viewModel: TopupSuccessViewModelType
