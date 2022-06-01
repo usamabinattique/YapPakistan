@@ -61,7 +61,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             //center.delegate = AppManager.appDel()
             center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
                 if error == nil {
-                    UIApplication.shared.registerForRemoteNotifications()
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
                 }
             }
         } else {
