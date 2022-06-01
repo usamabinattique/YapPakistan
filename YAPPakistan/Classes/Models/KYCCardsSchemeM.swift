@@ -77,7 +77,8 @@ extension KYCCardsSchemeM {
         }
         
         if fee > 0.0 {
-            cardDescription = String(format: "screen_kyc_card_scheme_description_with_fee".localized, "\(fee)")
+            let newFee = String(format: "%.2f", fee)
+            cardDescription = String(format: "screen_kyc_card_scheme_description_with_fee".localized, "\(newFee)")
             cardButtonTitle = "screen_kyc_card_scheme_button_buy_now".localized
         } else {
             cardDescription = "screen_kyc_card_scheme_description_free".localized
