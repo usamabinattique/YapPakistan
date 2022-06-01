@@ -73,11 +73,15 @@ class TopupCardSelectionViewController: UIViewController {
         
         setup()
         bindView()
+        //viewModel.inputs.refreshCardsObserver.onNext(())
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         viewModel.inputs.refreshCardsObserver.onNext(())
+        UIView.animate(withDuration: 0.5, animations: {
+             self.cardsCollectionView.contentOffset.x = 0
+        })
     }
     
     // MARK: Actions
@@ -193,7 +197,10 @@ fileprivate extension TopupCardSelectionViewController {
         viewModel.outputs.cardCount.bind(to: headingLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.subHeading.bind(to: subheadingLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.cardNickName.map { $0 == nil }.bind(to: cardBankNameLabel.rx.isHidden).disposed(by: rx.disposeBag)
-        viewModel.outputs.cardNickName.map { $0 == nil }.bind(to: selectButton.rx.animateIsHidden).disposed(by: rx.disposeBag)
+        viewModel.outputs.cardNickName.subscribe(onNext: { [weak self] value in
+            guard let self = self else { return }
+            self.selectButton.isHidden = value == nil
+        }).disposed(by: rx.disposeBag) //.map { $0 == nil }.bind(to: selectButton.rx.animateIsHidden).disposed(by: rx.disposeBag)
         viewModel.outputs.cardNickName.bind(to: cardBankNameLabel.rx.text).disposed(by: rx.disposeBag)
         //TODO: handle following scenario in vm and uncomment it.
 //        viewModel.outputs.addCardEnabled.subscribe(onNext: { [weak self] in
