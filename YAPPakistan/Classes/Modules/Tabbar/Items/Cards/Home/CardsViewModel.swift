@@ -15,7 +15,7 @@ extension PaymentCard.DeliveryStatus {
     var message: String {
         switch self {
         case .ordered: return "Your card is ordered"
-        case .shipped: return "Your primary card is on its way"
+        case .shipped: return "Your primary card is shipped"
         case .delivered: return "Create a PIN to start using your card"
         default: return "Complete verification to get your card"
 //        case .ordering: return "Complete verification to get your card"

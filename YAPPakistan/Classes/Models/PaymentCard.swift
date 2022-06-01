@@ -242,7 +242,7 @@ public class PaymentCard: Codable {
 extension PaymentCard {
     enum DeliveryStatus: String, Codable {
         case ordered = "ORDERED"  // 3 Not comming from backend? This is to represent statatus;
-        case shipped = "SHIPPING"      // 3
+        case shipped = "SHIPPED"      // 3
         case delivered = "DELIVERED"    // 2
         case failed = "FAILED"          //
     }
