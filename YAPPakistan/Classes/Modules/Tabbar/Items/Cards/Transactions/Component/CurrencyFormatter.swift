@@ -46,7 +46,7 @@ class CurrencyFormatter {
     }
     
     static func decimalPlaces(for currency: String) -> Int {
-        currencies.filter{ $0.code == currency }.first?.allowedDecimals ?? 0
+        currencies.filter{ $0.code == currency }.first?.allowedDecimals ?? 2
     }
     
     static func amountString(for currency: String, _ amount: Double) -> String {
