@@ -176,7 +176,7 @@ private extension MoreBankDetailsViewController {
         themeService.rx
             .bind({ UIColor($0.primary) }, to: [name.rx.titleColor, Account.rx.titleColor, iban.rx.titleColor])
         themeService.rx
-            .bind({ UIColor($0.primary) }, to: [name.rx.detailsColor, Account.rx.detailsColor, shareButton.rx.backgroundColor])
+            .bind({ UIColor($0.primary) }, to: [shareButton.rx.backgroundColor])
         themeService.rx
             .bind({ UIColor( $0.greyDark ) }, to: self.holder.rx.backgroundColor)
     }
