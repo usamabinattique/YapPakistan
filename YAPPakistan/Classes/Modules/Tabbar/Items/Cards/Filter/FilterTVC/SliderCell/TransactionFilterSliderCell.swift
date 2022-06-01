@@ -139,7 +139,6 @@ private extension TransactionFilterSliderCell {
         viewModel.outputs.selectedRange.subscribe(onNext: { [unowned self] range in
             self.customSlider.selectedMinValue = range.lowerBound
             self.customSlider.selectedMaxValue = range.upperBound
-            
         }).disposed(by: rx.disposeBag) 
 
 //        viewModel.outputs.selectedRange.bind(to: customSlider.rx.did)
@@ -158,10 +157,11 @@ private extension TransactionFilterSliderCell {
                                NumberFormatter.formateAmount(Double($0), fractionDigits: 0),
                                NumberFormatter.formateAmount(Double($1), fractionDigits: 0))
             self.range.text = value
-            
         }).disposed(by: rx.disposeBag)
         viewModel.outputs.filterTotalRange.subscribe(onNext: { [unowned self]  in
             self.customSlider.changeRange(minValue: $0, maxValue: $1, selectedMinValue: $0, selectedMaxValue: $1)
+            let minimumDistance = CGFloat($1 * (30/100))
+            self.customSlider.minDistance = minimumDistance
         }).disposed(by: rx.disposeBag)
     }
 }
