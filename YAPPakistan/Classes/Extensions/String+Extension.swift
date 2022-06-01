@@ -28,3 +28,17 @@ public extension String {
         return attString
     }
 }
+
+public extension String {
+    
+    var getCommaSeperatedTwoDecimalValue: NSMutableAttributedString {
+        
+        let balanceValue = Double(self)
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.maximumFractionDigits = 2
+        let formattedNumber = numberFormatter.string(from: NSNumber(value:balanceValue ?? 0.0)) ?? ""
+        return NSMutableAttributedString(string: formattedNumber)
+    }
+}

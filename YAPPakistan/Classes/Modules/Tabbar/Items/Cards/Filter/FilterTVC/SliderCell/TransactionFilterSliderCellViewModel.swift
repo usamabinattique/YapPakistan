@@ -105,8 +105,9 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
     
     init(_ range: ClosedRange<Double>, _ selectedRange: ClosedRange<Double> = 0...0, isHomeSearch: Bool) {
         
-        var selectedRange = selectedRange
         
+        var selectedRange = selectedRange
+      //  selectedRange.upperBound = selectedRange.upperBound * 30/100)
        
 //        progressSubject.onNext((minValue: CGFloat(selectedRange.lowerBound), maxValue: CGFloat(range.upperBound)))
 

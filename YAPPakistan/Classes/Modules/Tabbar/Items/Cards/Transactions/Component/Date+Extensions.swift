@@ -74,14 +74,18 @@ extension Date {
             dayName = "EEEE, "
         }
         
-        dateFormatter.dateFormat = dayName + "MMMM "
-        let superScripterDate = self.day().getSuperScript(superScript: self.daySuffix())
-        let dayAndMonth = NSMutableAttributedString(string:day + dateFormatter.string(from: self))
-        let year = NSMutableAttributedString(string: self.year())
+       // dateFormatter.dateFormat = dayName + "MMMM "
+        dateFormatter.dateFormat = "MMMM "
+       // let superScripterDate = self.day().getSuperScript(superScript: self.daySuffix())
+       // let dayAndMonth = NSMutableAttributedString(string:day + dateFormatter.string(from: self))
+      //  let year = NSMutableAttributedString(string: self.year())
         let combination = NSMutableAttributedString()
+        let dayAndMonth = NSMutableAttributedString(string:dateFormatter.string(from: self))
+        let date = NSMutableAttributedString(string: self.day())
         combination.append(dayAndMonth)
-        combination.append(superScripterDate)
-        combination.append(year)
+        combination.append(date)
+        //combination.append(superScripterDate)
+      //  combination.append(year)
         return combination
     }
     
