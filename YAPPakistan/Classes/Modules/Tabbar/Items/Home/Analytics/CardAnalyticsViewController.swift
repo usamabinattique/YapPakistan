@@ -54,8 +54,8 @@ class MonthCollectionViewCell: RxUICollectionViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        backgroundColor = .clear
-        contentView.backgroundColor = .clear
+//        backgroundColor = .clear
+//        contentView.backgroundColor = .clear
         self.contentView.addSub(views: [title,year])
         
         title.alignEdgesWithSuperview([.left, .top, .right])
@@ -105,6 +105,8 @@ class CardAnalyticsViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(MonthCollectionViewCell.self, forCellWithReuseIdentifier: MonthCollectionViewCell.defaultIdentifier)
         collectionView.allowsMultipleSelection = false
+        collectionView.backgroundColor = .clear
+        
         return collectionView
     }()
     private lazy var monthsSelectionView = UIView(frame: .init(x: 0, y: 35, width: 34, height: 3))
@@ -356,6 +358,7 @@ private extension CardAnalyticsViewController {
         
         tableView
             .alignEdgesWithSuperview([.left, .safeAreaTop, .right, .bottom])
+            
         
         parallax
             .width(with: .width, ofView: tableView)
@@ -480,10 +483,10 @@ private extension CardAnalyticsViewController {
             .bind({ UIColor($0.greyDark       ) }, to: [amountHeaderLabel.rx.textColor,percentage.rx.textColor])
 //            .bind({ UIColor($0.primary        ) }, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
             .bind({ UIColor($0.primary        ) }, to: [selector.rx.backgroundColor])
-            .bind({ UIColor($0.primaryDark    ) }, to: [amountLabel.rx.textColor, categoryButton.rx.titleColor(for: .normal), merchantButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primaryDark    ) }, to: [amountLabel.rx.textColor, categoryButton.rx.titleColor(for: .normal), merchantButton.rx.titleColor(for: .normal),navigationController!.navigationBar.rx.tintColor])
             .bind({ UIColor($0.greyLight) }, to: [separator.rx.backgroundColor])
             .disposed(by: disposeBag)
-
+//        navigationController?.navigationBar.barTintColor = UIColor(themeService.attrs.primaryDark)
         guard backButton != nil else { return }
         themeService.rx
             .bind({ UIColor($0.primary) }, to: [backButton!.rx.tintColor])

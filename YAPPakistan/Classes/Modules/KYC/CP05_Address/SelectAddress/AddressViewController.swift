@@ -166,6 +166,7 @@ class AddressViewController: UIViewController {
         let image = UIImage(named: "icon_close", in: .yapPakistan)?.asTemplate
         addressTextField.setClearImage(image, for: .normal)
         flatTextField.setClearImage(image, for: .normal)
+        cityTextField.setClearImage(UIImage(named: "icon_next", in: .yapPakistan), for: .normal)
         currentLocationButton.setImage(UIImage(named: "current_location", in: .yapPakistan)?.asTemplate, for: .normal)
         locationImage.image = UIImage(named: "location_image", in: .yapPakistan)?.asTemplate
 
@@ -218,8 +219,8 @@ class AddressViewController: UIViewController {
         viewModel.outputs.location.withUnretained(self)
             .subscribe(onNext: { `self`, location in
 // <<<<<<< Updated upstream
-                self.addressTextField.text = location.address.last ?? ""
-                self.flatTextField.text = location.address.first ?? ""
+                self.addressTextField.text = location.address.first ?? ""
+                self.flatTextField.text = location.address.last ?? ""
 // =======
 //                self.addressTextField.text = location.formattAdaddress
 // >>>>>>> Stashed changes

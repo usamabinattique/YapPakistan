@@ -93,7 +93,7 @@ private extension B2COnBoardingCoordinator {
         let onBoardingRepository = OnBoardingRepository(customersService: container.parent.makeCustomersService(),
                                                         messagesService: container.parent.makeMessagesService())
         let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository: onBoardingRepository,
-                                                                     user: user)
+                                                                     user: user, otpTime: 30)
         let phoneVerificationController = PhoneNumberVerificationViewController(themeService: container.parent.themeService,
                                                                                 viewModel: verificationViewModel)
 

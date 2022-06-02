@@ -72,7 +72,8 @@ extension DashboardWidgets {
         
         collectionView
             .alignEdgesWithSuperview([.left,.right,.top,.bottom], constants: [24,10,15,0])//[25,10,15,0])
-            .height(constant: 120)
+           // .height(constant: 120)
+            .height(constant: 130)
     }
 }
 

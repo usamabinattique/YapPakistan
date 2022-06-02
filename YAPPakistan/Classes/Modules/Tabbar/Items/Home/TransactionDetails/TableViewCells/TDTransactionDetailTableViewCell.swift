@@ -125,6 +125,7 @@ private extension TDTransactionDetailTableViewCell {
         
         statusIcon.layer.cornerRadius = 8.5
         statusIcon.clipsToBounds = true
+        statusIcon.isHidden = true
         
         transactionLogo.isHidden = true
         transactionType.isHidden = true
@@ -187,8 +188,13 @@ private extension TDTransactionDetailTableViewCell {
 //            .toBottomOf(locationLabel)
 //            .alignEdge(.left, withView: transactionName)
         
-        categoryStack
+      /*  categoryStack
             .toBottomOf(transactionType, constant: 6)
+            .alignEdge(.left, withView: transactionType)
+            .alignEdgeWithSuperview(.bottom, constant: 35) */
+        
+        categoryStack
+            .toBottomOf(transactionTime, constant: 6)
             .alignEdge(.left, withView: transactionType)
             .alignEdgeWithSuperview(.bottom, constant: 35)
         
@@ -232,7 +238,11 @@ private extension TDTransactionDetailTableViewCell {
         viewModel.outputs.categoryName.map{ $0 == nil }.bind(to: categoryImageView.rx.isHidden).disposed(by: disposeBag)
         
         viewModel.outputs.location.map{ $0 == nil }.bind(to: locationLabel.rx.isHidden).disposed(by: disposeBag)
-        viewModel.outputs.location.bind(to: locationLabel.rx.text).disposed(by: disposeBag)
+//        viewModel.outputs.location.bind(to: locationLabel.rx.text).disposed(by: disposeBag)
+        viewModel.outputs.location.subscribe(onNext: { location in
+            print("location is \(location)")
+        }).disposed(by: disposeBag)
+
         
         viewModel.outputs.transactionType.bind(to: transactionType.rx.text).disposed(by: disposeBag)
         viewModel.outputs.transactionTime.bind(to: transactionTime.rx.text).disposed(by: disposeBag)
@@ -265,6 +275,7 @@ private extension TDTransactionDetailTableViewCell {
             .bind({ UIColor($0.backgroundColor) }, to: [statusIcon.rx.tintColor])
             .bind({ UIColor($0.primaryDark) }, to: [transactionName.rx.textColor,transactionType.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [currencySymbol.rx.textColor,transactionTime.rx.textColor])
+            .bind({ UIColor($0.greyLight) }, to: [sepratorView.rx.backgroundColor])
         
             .disposed(by: rx.disposeBag)
     }

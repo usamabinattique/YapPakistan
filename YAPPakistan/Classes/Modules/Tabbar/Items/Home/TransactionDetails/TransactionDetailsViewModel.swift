@@ -520,29 +520,28 @@ private extension TransactionDetailsViewModel {
         
         cellViewModels.append(TDTransactionOptionsTableViewModel(actionTitle: (self.globalNote?.isEmpty ?? true) ? TransactionDetailsLocalizations.addNote.localized : TransactionDetailsLocalizations.editNote.localized + transactionNoteDate, actionDescription: (self.globalNote?.isEmpty ?? true) ? TransactionDetailsLocalizations.noteDescription.localized : self.globalNote ?? "", actionLogo: UIImage.init(named: "icon_edit_primary_dark", in: .yapPakistan)!))
         
-        if /*self.transaction.productCode.isForReceipt && */ self.transaction.category == "TRANSACTION" {
-            let receiptVm = TDReceiptsTableViewCellViewModel(receipts: receiptsArray ?? nil)
-            cellViewModels.append(receiptVm)
-            
-            receiptVm
-                .outputs
-                .itemSelected
-                .unwrap()
-                .bind(to: receiptsSelectedSubject).disposed(by: disposeBag)
-            
-            let deleteReceipt = receiptVm
-                .outputs
-                .deleteReceipt.share(replay: 1, scope: .whileConnected)
-            
-            deleteReceipt
-                .bind(to: receiptDeleteSubject).disposed(by: disposeBag)
-            
-            deleteReceipt
-                .map{ _ in () }
-                .bind(to: inputs.showReceiptDeleteAlertObserver)
-                .disposed(by: disposeBag)
+        
+        let receiptVm = TDReceiptsTableViewCellViewModel(receipts: receiptsArray ?? nil)
+        cellViewModels.append(receiptVm)
+        
+        receiptVm
+            .outputs
+            .itemSelected
+            .unwrap()
+            .bind(to: receiptsSelectedSubject).disposed(by: disposeBag)
+        
+        let deleteReceipt = receiptVm
+            .outputs
+            .deleteReceipt.share(replay: 1, scope: .whileConnected)
+        
+        deleteReceipt
+            .bind(to: receiptDeleteSubject).disposed(by: disposeBag)
+        
+        deleteReceipt
+            .map{ _ in () }
+            .bind(to: inputs.showReceiptDeleteAlertObserver)
+            .disposed(by: disposeBag)
            
-        }
         
         makeTotalPurchaseCellViewModels(self.transactionTotalPurchase, cellViewModels: &cellViewModels)
         
@@ -590,6 +589,7 @@ private extension TransactionDetailsViewModel {
             .disposed(by: disposeBag)
         
         request
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .errors()
             .map { $0.localizedDescription }
             .bind(to: errorSubject).disposed(by: disposeBag)

@@ -76,7 +76,7 @@ public class ChangePhoneNumberCoordinator: Coordinator<ResultType<Void>> {
     func otp(_ action: OTPAction, mobileNo : String) {
         let formattedPhoneNumber = mobileNo.replacePrefix("+", with: "00").removeWhitespace()
         let subHeadingText = String(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, formattedPhoneNumber)
-        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , repository: container.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty)
+        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , otpTime: 30, repository: container.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty)
         let viewController = VerifyMobileOTPViewController(themeService: self.container.themeService, viewModel: viewModel)
         
         viewModel.outputs.back.subscribe(onNext: { [weak self] _ in

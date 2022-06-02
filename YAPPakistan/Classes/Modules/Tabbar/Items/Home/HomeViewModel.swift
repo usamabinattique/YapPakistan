@@ -333,7 +333,10 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             .subscribe(onNext: {[weak self] in
                 self?.currentSectionDate = $0
             }).disposed(by: disposeBag)
-        progressViewTappedSubject.subscribe(onNext: {[unowned self] in progressViewDateSubject.onNext(currentSectionDate) }).disposed(by: disposeBag)
+        progressViewTappedSubject.subscribe(onNext: {[unowned self] in
+            progressViewDateSubject.onNext(currentSectionDate)
+            self.didTapAnalytics.onNext(())
+        }).disposed(by: disposeBag)
         
     }
     

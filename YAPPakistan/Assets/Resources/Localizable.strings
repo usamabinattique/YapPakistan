@@ -84,7 +84,7 @@
 "screen_sign_in_display_text_create_account" = "Create an account?";
 "screen_sign_in_button_sign_up" = "Sign up";
 "screen_sign_in_button_sign_in" = "Sign in";
-"screen_sign_in_button_verify" = "Verify";
+"screen_sign_in_button_verify" = "Next";
 "screen_sign_in_button_sign_in_touch_id" = "Sign in with Touch ID";
 "screen_sign_in_display_text_error_text" = "That doesn't look right. Please try again";
 
@@ -256,7 +256,8 @@
 
 //MARK: Generic OTP
 "screen_device_registration_otp_button_resend_otp" = "Resend code";
-"screen_device_registration_otp_button_send" = "Send";
+"screen_device_registration_otp_button_send" = "Next";
+"screen_device_registration_otp_button_verify" = "Verify";
 "screen_device_registration_otp_display_header_message" = "Verify your mobile number";
 "screen_device_registration_otp_display_text_message" = "Enter the OTP sent to your registered mobile number to complete login";
 "screen_device_registration_otp_display_givn_text_message" = "We've sent a verification code to \n%@";
@@ -357,7 +358,7 @@
 "screen_invite_friend_display_text_share_url" = "Connect with me on YAP! An innovative digital banking app that gives you total control of your finances. \n\n%@";
 
 // MARK: Personal Details
-"screen_personal_details_display_text_personal_details_title" = "Personal Details";
+"screen_personal_details_display_text_personal_details_title" = "Personal details";
 "screen_personal_details_display_text_full_name" = "Full Name";
 "screen_personal_details_display_text_phone_number" = "Phone number";
 "screen_personal_details_display_text_email" = "Email";
@@ -408,7 +409,7 @@
 "screen_kyc_address_title" = "Your card is ready to be delivered!";
 "screen_kyc_address_subtitle" = "Confirm this is your address, you can change it anytime";
 "screen_kyc_address_taplocation" = "Tap map to confirm location";
-"screen_kyc_address_address" = "Company address";
+"screen_kyc_address_address" = "Address";
 "screen_kyc_address_flatbuilding" = "Flat number/ Building/ Landmark";
 "screen_kyc_address_city" = "City";
 
