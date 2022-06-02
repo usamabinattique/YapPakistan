@@ -115,7 +115,7 @@ private extension AddSendMoneyBeneficiaryCoordinator {
        
        
         let subHeadingText = String(format: "screen_add_beneificiary_otp_display_text_sub_heading".localized, formattedPhoneNumber)
-        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , repository: container.parent.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty, addBankBeneficiaryInput: input)
+        let viewModel = VerifyMobileOTPViewModel(action: action, heading: "screen_add_beneificiary_otp_display_text_heading".localized, subheading: subHeadingText , otpTime: 30, repository: container.parent.makeOTPRepository(), mobileNo: formattedPhoneNumber, passcode: "" , backButtonImage: .backEmpty, addBankBeneficiaryInput: input)
         let viewController = container.makeVerifyMobileOTPViewController(withViewModel: viewModel)
         root.pushViewController(viewController, completion: nil)
         

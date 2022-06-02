@@ -125,7 +125,7 @@ fileprivate extension TotalTransactionsViewController {
         merchantImageView.layer.cornerRadius = 32
         merchantImageView.contentMode = .scaleAspectFill
         
-        tableView.register(TransactionTableViewCell.self, forCellReuseIdentifier: TransactionTableViewCell.defaultIdentifier)
+        tableView.register(TransactionDetailTableViewCell.self, forCellReuseIdentifier: TransactionDetailTableViewCell.defaultIdentifier)
     }
     
     func setupConstraints() {
