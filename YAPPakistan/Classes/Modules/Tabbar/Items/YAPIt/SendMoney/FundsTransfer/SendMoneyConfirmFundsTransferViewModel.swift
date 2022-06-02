@@ -106,6 +106,7 @@ class SendMoneyConfirmFundsTransferViewModel: SendMoneyConfirmFundsTransferViewM
         
         request.elements().withUnretained(self)
             .subscribe(onNext: { `self`, bankTransferResponse in
+                YAPProgressHud.hideProgressHud()
                 self.resultSubject.onNext((beneficiary, bankTransferResponse))
             })
             .disposed(by: disposeBag)

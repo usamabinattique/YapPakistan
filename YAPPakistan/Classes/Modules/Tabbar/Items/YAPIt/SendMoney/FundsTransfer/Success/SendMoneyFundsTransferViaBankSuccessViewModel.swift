@@ -89,13 +89,19 @@ class SendMoneyFundsTransferViaBankSuccessViewModel: SendMoneyFundsTransferViaBa
         bankNameSubject.onNext(transaction.bankName)
         bankImageSubject.onNext((transaction.bankLogoURL, transaction.bankName.thumbnail))
         
-        let dateFormatterPrint = DateFormatter()
-        dateFormatterPrint.dateFormat = "MMM d, yyyy . h:mm a"
-        
-        if let date = transaction.date.date(withFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS") {
-            let stringDate = dateFormatterPrint.string(from: date)
-            dateSubject.onNext("\(stringDate)")
+//        let dateFormatterPrint = DateFormatter()
+//        dateFormatterPrint.dateFormat = "MMM d, yyyy . h:mm a"
+//
+//        if let date = transaction.date.date(withFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS") {
+//            let stringDate = dateFormatterPrint.string(from: date)
+//            dateSubject.onNext("\(stringDate)")
+//        }
+        //TODO: [UMAIR] - this is temporarily added format, remove once format corrected by server
+        guard let isoDate = Date(iso8601String: "\(transaction.date)Z") else {
+            dateSubject.onNext(Date().dateTimeString())
+            return
         }
+        dateSubject.onNext(isoDate.dateTimeString())
         
     }
 }

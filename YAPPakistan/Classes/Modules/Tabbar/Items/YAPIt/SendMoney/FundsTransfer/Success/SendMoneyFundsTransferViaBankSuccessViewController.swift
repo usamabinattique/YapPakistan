@@ -14,14 +14,14 @@ class SendMoneyFundsTransferViaBankSuccessViewController: UIViewController {
     
     // MARK: Views
     
-    private lazy var userImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private lazy var userImage = UIFactory.makeImageView(contentMode: .scaleAspectFill)
     private lazy var userName = UIFactory.makeLabel(font: .large, alignment: .center)
     private lazy var transferLabel = UIFactory.makeLabel(font: .micro, alignment: .center)
     private lazy var amountLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
-    private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_y2y_funds_transfer_success_button_back".localized)
+    private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_y2y_funds_transfer_success_button_back".localized, font: .large)
     
     private lazy var bankImageContainerView = UIFactory.makeCircularView(  borderColor: UIColor(Color(hex: "#F1F5FE")), borderWidth: 0.7)
-    private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFill)
     private lazy var bankName = UIFactory.makeLabel(font: .regular,alignment: .center)
     
     private lazy var referenceNumber =  UIFactory.makeLabel(font: .micro, alignment: .center)
