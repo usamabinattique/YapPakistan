@@ -97,7 +97,7 @@ class TotalTransactionsViewModel: TotalTransactionsViewModelType, TotalTransacti
             YAPProgressHud.hideProgressHud()
             
             for transaction in transactions {
-                self.cellViewModels.append(TransactionTabelViewCellViewModel(transaction: transaction, color: UIColor.gray, themeService: self.themeService))
+                self.cellViewModels.append(TransactionDetailsTableViewCellViewModel(transaction: transaction, color: UIColor.gray, themeService: self.themeService))
             }
             setNaviagtionTitle(withTransacationsCount: transactions.count)
             dataSourceSubject.onNext([SectionModel(model: 0, items: cellViewModels)])
