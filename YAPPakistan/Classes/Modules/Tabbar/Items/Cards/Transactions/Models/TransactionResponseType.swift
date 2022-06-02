@@ -194,6 +194,7 @@ struct TransactionResponse: Codable, Transaction {
         
         return timeFormatter.string(from: date)
     }
+    var selectedCurrentIndex: Int?
     
     public var calculatedTotalAmount: Double {
 //        guard !(productCode == .rmt || productCode == .swift || isNonAEDTransaction || productCode == .masterCardRefund ) else {

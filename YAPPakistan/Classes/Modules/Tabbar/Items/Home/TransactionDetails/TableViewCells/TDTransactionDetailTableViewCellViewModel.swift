@@ -32,6 +32,7 @@ protocol TDTransactionDetailTableViewCellViewModelOutputs {
     var addVirtualCardDesignGradient: Observable<[UIColor]?> { get }
     var shouldShowSeparator: Observable<Bool> { get }
     var transactionTime: Observable<String?>{ get }
+    var isCategoryStackHidden: Observable<Bool> { get }
 }
 
 protocol TDTransactionDetailTableViewCellViewModelType {
@@ -65,6 +66,7 @@ class TDTransactionDetailTableViewCellViewModel: TDTransactionDetailTableViewCel
     private let addVirtualCardDesignGradientSubject = BehaviorSubject<[UIColor]?>(value: nil)
     private let shouldShowSeparatorSubject = BehaviorSubject<Bool>(value: false)
     private let tranactionTimeSubject = ReplaySubject<String?>.create(bufferSize: 1)
+    private let isCategoryStackHiddenSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     
     
     var logo: Observable<(ImageWithURL, UIImageView.ContentMode)>{ return logoSubject.asObservable() }
@@ -82,6 +84,7 @@ class TDTransactionDetailTableViewCellViewModel: TDTransactionDetailTableViewCel
     var addVirtualCardDesignGradient: Observable<[UIColor]?> { addVirtualCardDesignGradientSubject }
     var shouldShowSeparator: Observable<Bool> { shouldShowSeparatorSubject }
     var transactionTime: Observable<String?>{ tranactionTimeSubject.asObservable() }
+    var isCategoryStackHidden: Observable<Bool> { isCategoryStackHiddenSubject.asObservable() }
     
     private var themeService: ThemeService<AppTheme>
     
@@ -106,12 +109,18 @@ class TDTransactionDetailTableViewCellViewModel: TDTransactionDetailTableViewCel
         
         if (transaction.productCode == .ibftTransaction || transaction.productCode == .y2yTransfer) {
             statusIconSubject.onNext(transaction.icon.identifierImage)
+            isCategoryStackHiddenSubject.onNext(false)
+            
+            categoryIconSubject.onNext(categoryImage?.asTemplate)
+            categoryNameSubject.onNext( category)
+        } else {
+            isCategoryStackHiddenSubject.onNext(true)
         }
         
         shouldShowSeparatorSubject.onNext(transaction.productCode.shouldDisplayCategory)
         transactionTypeTextColorSubject.onNext(transaction.transactionTypeTintColor() ?? transaction.color)//transaction.transactionTypeTextColor)
-        categoryIconSubject.onNext( transaction.productCode != .posPurchase ? categoryImage : nil)
-        categoryNameSubject.onNext( transaction.productCode != .posPurchase ? category : nil)
+     /*   categoryIconSubject.onNext( transaction.productCode != .posPurchase ? categoryImage : nil)
+        categoryNameSubject.onNext( transaction.productCode != .posPurchase ? category : nil) */
         //        cancelledSubject.onNext(transaction.transactionStatus == .cancelled || (transaction.transactionStatus == .pending && (transaction.transactionProductCode == .swift || transaction.transactionProductCode == .rmt)))
         
         bindCategories()
@@ -126,15 +135,22 @@ class TDTransactionDetailTableViewCellViewModel: TDTransactionDetailTableViewCel
         }
         else {
             symbolSubject.onNext("PKR")
-            let amountText = "\(transaction.type.rawValue == TransactionType.debit.rawValue ? "-" : "+") \(CurrencyFormatter.formatAmountInLocalCurrency(transaction.cardHolderBillingAmount/*cardHolderBillingTotalAmount*/).amountFromFormattedAmount)"
-            let attributed = NSMutableAttributedString(string: amountText)
+//            let amountText = "\(transaction.type == .debit  ? "-" : "+")\(CurrencyFormatter.formatAmountInLocalCurrency(transaction.cardHolderBillingAmount/*cardHolderBillingTotalAmount*/).amountFromFormattedAmount)"
+//            let attributed = NSMutableAttributedString(string: amountText)
+            
+            let amount = CurrencyFormatter.format(amount: transaction.type == .debit ? (transaction.totalAmount ?? 0) : transaction.amount, in: CurrencyType(rawValue: transaction.currency ?? "") ?? .pkr).amountFromFormattedAmount
+            let attributed = NSMutableAttributedString(string: (transaction.type == .debit ? "-" : "+") + amount)
             let range = NSRange(location: 0, length: attributed.length)
             if transaction.transactionStatus == .cancelled || transaction.transactionStatus == .failed {
                 attributed.addAttributes([.strikethroughStyle : 1], range: range)
-                attributed.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor(themeService.attrs.primary) /*UIColor.appColor(ofType: .primary)*/, range: range)
+                attributed.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor(themeService.attrs.primaryDark) /*UIColor.appColor(ofType: .primary)*/, range: range)
             }
             amountSubject.onNext(attributed)
         }
+
+//                let amount = CurrencyFormatter.format(amount: transaction.type == .debit ? (transaction.totalAmount ?? 0) : transaction.amount, in: CurrencyType(rawValue: transaction.currency ?? "") ?? .pkr).amountFromFormattedAmount
+             //   transactionAmountSubject = BehaviorSubject(value: NSAttributedString(string: (transaction.type == .debit ? "-" : "+") + amount))
+    
         
         switch transaction.transactionStatus {
         case .cancelled, .failed:
@@ -193,9 +209,8 @@ private extension TDTransactionDetailTableViewCellViewModel {
         case .debitCardReorder:
             return UIImage.init(named: "icon_fee_blue", in: .yapPakistan)?.asTemplate //UIImage.init(named: "icon_fee_blue", in: cardsBundle, compatibleWith: nil)?.asTemplate
             
-        case .atmWithdrawl, .cashDepositInBank, .chequeDepositInBank, .masterCardATMWithdrawl, .topUpByExternalCard, .inwardRemittance, .localInwardRemittance, .fundLoad, .atmDeposit:
+        case .atmWithdrawl, .cashDepositInBank, .chequeDepositInBank, .masterCardATMWithdrawl, .topUpByExternalCard, .inwardRemittance, .localInwardRemittance, .fundLoad, .atmDeposit, .ibftTransaction:
             return UIImage.init(named: "icon_topup_blue", in: .yapPakistan) //UIImage.init(named: "icon_topup_blue", in: cardsBundle, compatibleWith: nil)?.asTemplate
-            
         case .posPurchase:
             return (CategoryType(rawValue: self.transaction.merchantCategory ?? "") ?? .other).icon
             
@@ -213,7 +228,8 @@ private extension TDTransactionDetailTableViewCellViewModel {
         switch transaction.productCode {
         
         case .y2yTransfer:
-            if transaction.type == .credit { return "Incoming Transfer" } else { return "Outgoing Transfer" }
+          /*  if transaction.type == .credit { return "Incoming Transfer" } else { return "Outgoing Transfer" } */
+            return "YAP to YAP transfer"
             
         case .topUpByExternalCard, .inwardRemittance, .localInwardRemittance, .cashDepositInBank, .chequeDepositInBank:
             return "Incoming Transfer"
@@ -238,7 +254,8 @@ private extension TDTransactionDetailTableViewCellViewModel {
             
         case .posPurchase:
             return self.transaction.merchantCategory?.capitalized
-            
+        case .ibftTransaction:
+            return "Outgoing transfer"
         default:
             return nil
         }

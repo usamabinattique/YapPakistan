@@ -13,6 +13,7 @@ import RxCocoa
 import RxDataSources
 import RxTheme
 import Alamofire
+import UIKit
 /*
 protocol TransactionDetailsViewModelInput {
     var fetchDataObserver: AnyObserver<Void> { get }
@@ -305,16 +306,39 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         
         
         
-        let merchantNameImage = transaction.merchantName?.initialsImage(color: UIColor.colorFor(listItemIndex: 5))
-        if transaction.productCode == .posPurchase || transaction.productCode == .eCom /*|| transaction.productCode == .billPayments*/ {
+        let merchantNameImage = transaction.merchantName?.initialsImage(color: UIColor.colorFor(listItemIndex: transaction.selectedCurrentIndex ?? 0))
+      /*  if transaction.productCode == .posPurchase || transaction.productCode == .eCom /*|| transaction.productCode == .billPayments*/ {
             transactionUserUrlSubject.onNext(((transaction.merchantLogoUrl, merchantNameImage), transaction.icon.contentMode))
             let bgImage = transactionBackgroundImage != nil ? transactionBackgroundImage : "".initialsImage(color: UIColor.colorFor(listItemIndex: 5))
-            transactionUserBackgroundImageSubject.onNext(((transaction.merchantLogoUrl, bgImage  ), transaction.icon.contentMode))
+        /*    transactionUserBackgroundImageSubject.onNext(((transaction.merchantLogoUrl, bgImage  ), transaction.icon.contentMode)) */
         } else {
             transactionUserUrlSubject.onNext(((transaction.icon.imageUrl, transaction.icon.image), transaction.icon.contentMode))
             let bgImage = transactionBackgroundImage != nil ? transactionBackgroundImage : transaction.icon.emptyThumbnail
-            transactionUserBackgroundImageSubject.onNext(((transaction.icon.imageUrl,bgImage ), transaction.icon.contentMode))
+           /* transactionUserBackgroundImageSubject.onNext(((transaction.icon.imageUrl,bgImage ), transaction.icon.contentMode)) */
+        } */
+        
+        if transaction.productCode == .y2yTransfer  {
+            var theUrl: String?
+            if transaction.type == .debit {
+                theUrl = transaction.receiverUrl
+            } else if transaction.type == .credit {
+                theUrl = transaction.senderUrl
+            }
+            
+            let colour = UIColor.colorFor(listItemIndex: transaction.selectedCurrentIndex ?? 0)
+            
+            transactionUserBackgroundImageSubject.onNext(((theUrl,UIImage.make(size: CGSize(width: 1000, height: 300), color: colour.withAlphaComponent(0.15)) ), transaction.icon.contentMode))
+            let userImage = transaction.title?.initialsImage(color: colour)
+            transactionUserUrlSubject.onNext(((theUrl, userImage), transaction.icon.contentMode))
+        } else {
+            
+            let colour = UIColor.colorFor(listItemIndex: transaction.selectedCurrentIndex ?? 0)
+            
+            transactionUserBackgroundImageSubject.onNext(((nil,UIImage.make(size: CGSize(width: 1000, height: 300), color: colour.withAlphaComponent(0.15)) ), transaction.icon.contentMode))
+            let userImage = transaction.title?.initialsImage(color: colour)
+            transactionUserUrlSubject.onNext(((nil, userImage), transaction.icon.contentMode))
         }
+        
         
         
         

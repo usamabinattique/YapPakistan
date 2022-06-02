@@ -359,7 +359,7 @@
 
 // MARK: Personal Details
 "screen_personal_details_display_text_personal_details_title" = "Personal details";
-"screen_personal_details_display_text_full_name" = "Full Name";
+"screen_personal_details_display_text_full_name" = "Full name";
 "screen_personal_details_display_text_phone_number" = "Phone number";
 "screen_personal_details_display_text_email" = "Email";
 "screen_personal_details_display_text_address" = "Address";
@@ -667,8 +667,8 @@
 
 // MARK: Screen add beneficiary OTP
 
-"screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
-"screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
+"screen_add_beneificiary_otp_display_text_heading" = "Verify your One Time Passcode";
+"screen_add_beneificiary_otp_display_text_sub_heading" = "We've send a verification code to %@";
 
 
 "screen_domestic_funds_transfer_display_text_heading" = "Send money to";

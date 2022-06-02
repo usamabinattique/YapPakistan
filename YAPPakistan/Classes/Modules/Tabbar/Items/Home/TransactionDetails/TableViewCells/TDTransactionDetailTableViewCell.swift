@@ -267,6 +267,8 @@ private extension TDTransactionDetailTableViewCell {
             }
         })
             .disposed(by: disposeBag)
+        
+        viewModel.outputs.isCategoryStackHidden.bind(to: categoryStack.rx.isHidden).disposed(by: disposeBag)
     }
     
     func setupTheme() {
@@ -276,6 +278,7 @@ private extension TDTransactionDetailTableViewCell {
             .bind({ UIColor($0.primaryDark) }, to: [transactionName.rx.textColor,transactionType.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [currencySymbol.rx.textColor,transactionTime.rx.textColor])
             .bind({ UIColor($0.greyLight) }, to: [sepratorView.rx.backgroundColor])
+            .bind({ UIColor($0.secondaryOrange) }, to: [categoryImageView.rx.tintColor, categoryNameLabel.rx.textColor])
         
             .disposed(by: rx.disposeBag)
     }

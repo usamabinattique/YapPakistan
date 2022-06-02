@@ -340,8 +340,12 @@ extension TransactionsViewController: UITableViewDelegate {
 //        guard let transaction = ((cell as? TransactionsTableViewCell)?.viewModel as? TransactionsTableViewCellViewModel)?.cdTransaction else { return }
 
         let cellViewModel = viewModel.outputs.cellViewModel(for: indexPath) as? TransactionsTableViewCellViewModel
+        if let tranaction = cellViewModel?.transaction {
+            var transactionNew = tranaction
+            transactionNew.selectedCurrentIndex = indexPath.row
+            viewModel.inputs.transactionDetailsObserver.onNext(transactionNew)
+        }
         
-        viewModel.inputs.transactionDetailsObserver.onNext((cellViewModel?.transaction)!)
     }
     
 //    func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
