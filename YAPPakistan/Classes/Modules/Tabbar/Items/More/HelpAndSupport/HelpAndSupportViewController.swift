@@ -82,7 +82,7 @@ private extension HelpAndSupportViewController {
         view.addSubview(tableView)
         
         tableView.register(HelpAndSupportTableViewCell.self, forCellReuseIdentifier: HelpAndSupportTableViewCell.defaultIdentifier)
-        //tableView.register(HSCallUsTableViewCell.self, forCellReuseIdentifier: HSCallUsTableViewCell.reuseIdentifier)
+        tableView.register(HSCallUsTableViewCell.self, forCellReuseIdentifier: HSCallUsTableViewCell.defaultIdentifier)
     }
     
     func setupConstraints() {
