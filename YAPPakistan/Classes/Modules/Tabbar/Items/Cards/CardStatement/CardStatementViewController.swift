@@ -101,7 +101,7 @@ class CardStatementViewController: UIViewController {
         return imageView
     }()
     
-    private lazy var CDStatementTitle: UILabel = UIFactory.makeLabel(font: .regular, text: "Custom Date")
+    private lazy var CDStatementTitle: UILabel = UIFactory.makeLabel(font: .regular, text: "Choose a custom date range")
     private lazy var CDStatementDateText: UILabel = UIFactory.makeLabel(font: .micro, numberOfLines: 0)
     
     private lazy var CDViewButton: UIButton = {

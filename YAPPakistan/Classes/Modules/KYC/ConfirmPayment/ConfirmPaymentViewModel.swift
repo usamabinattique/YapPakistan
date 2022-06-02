@@ -275,13 +275,16 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         guard let checkoutSessionObj = self.checkoutSessionObject else { return }
         var sessionId = ""
         var beneficiaryID = ""
+        var _securityCode = ""
         if let benefId = self.paymentGatewayM.beneficiary?.id {
             beneficiaryID = String(benefId)
+            _securityCode = securityCode ?? ""
         } else {
             sessionId = self.paymentGatewayM.cardDetailObject?.sessionID ?? ""
+            _securityCode = checkoutSessionObj.securityCode
         }
         
-        let topupRequest = transactionRepository.paymentGatewayFirstCreditTopup(threeDSecureId: checkoutSessionObj.threeDSecureId, orderId: checkoutSessionObj.order?.id ?? "", currency: checkoutSessionObj.order?.currency ?? "", amount: checkoutSessionObj.order?.amount ?? "", sessionId: sessionId, securityCode: checkoutSessionObj.securityCode, beneficiaryId: beneficiaryID)
+        let topupRequest = transactionRepository.paymentGatewayFirstCreditTopup(threeDSecureId: checkoutSessionObj.threeDSecureId, orderId: checkoutSessionObj.order?.id ?? "", currency: checkoutSessionObj.order?.currency ?? "", amount: checkoutSessionObj.order?.amount ?? "", sessionId: sessionId, securityCode: _securityCode, beneficiaryId: beneficiaryID)
         
         topupRequest.elements().subscribe(onNext: { [weak self] responseObj in
             self?.fetchOrderCardHolderApi()

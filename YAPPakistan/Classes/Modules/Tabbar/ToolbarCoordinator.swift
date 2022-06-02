@@ -80,7 +80,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                         //self.helpAndSupport(viewController)
                     case .statements:
                         print("statements")
-                        //self.statements(viewController)
+                        self.statements(viewController)
                     case .referFriend:
                         self.inviteFriend(viewController)
                     case .housholdSalary:
