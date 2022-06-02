@@ -115,7 +115,7 @@ extension VerifyMobileOTPViewController {
 
     func setupLocalizedStrings() {
         resendButton.setTitle("screen_device_registration_otp_button_resend_otp".localized, for: .normal)
-        sendButton.setTitle("screen_device_registration_otp_button_send".localized, for: .normal)
+        sendButton.setTitle("screen_device_registration_otp_button_verify".localized, for: .normal)
         timerLabel.text = "5: 00"
     }
 
