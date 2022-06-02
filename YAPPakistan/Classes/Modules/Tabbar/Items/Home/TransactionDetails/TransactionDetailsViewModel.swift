@@ -476,7 +476,7 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .errors()
             .map { $0.localizedDescription }
-            .bind(to: errorSubject).disposed(by: disposeBag)
+            .bind(to: errorSubject).disposed(by: disposeBag) 
     }
     
     func openReceiptFunction() {
@@ -590,6 +590,7 @@ private extension TransactionDetailsViewModel {
             .disposed(by: disposeBag)
         
         request
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
             .errors()
             .map { $0.localizedDescription }
             .bind(to: errorSubject).disposed(by: disposeBag)

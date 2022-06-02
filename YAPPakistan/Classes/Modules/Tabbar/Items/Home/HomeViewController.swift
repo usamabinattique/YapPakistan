@@ -750,10 +750,6 @@ fileprivate extension HomeViewController {
         
         
     }
-    
-    @objc func openAnalytics(_ sender: UITapGestureRecognizer? = nil) {
-        viewModel.inputs.didTapAnalytics.onNext(())
-    }
 }
 
 
