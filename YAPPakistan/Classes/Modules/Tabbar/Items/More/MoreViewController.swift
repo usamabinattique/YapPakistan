@@ -143,7 +143,7 @@ extension MoreViewController: ViewDesignable {
                 self.headerView.profileImage.sd_setImage(with: URL(string: imageURL)) { imgObj, err, cache, url in
                     if  err != nil {
                         self.headerView.profileImage.image = img
-                        self.headerView.profileImage.contentMode = .scaleAspectFit
+                        self.headerView.profileImage.contentMode = .scaleAspectFill
                     }
                 } 
             }
