@@ -135,8 +135,11 @@ class TDTransactionDetailTableViewCellViewModel: TDTransactionDetailTableViewCel
         }
         else {
             symbolSubject.onNext("PKR")
-            let amountText = "\(transaction.type.rawValue == TransactionType.debit.rawValue ? "-" : "+") \(CurrencyFormatter.formatAmountInLocalCurrency(transaction.cardHolderBillingAmount/*cardHolderBillingTotalAmount*/).amountFromFormattedAmount)"
-            let attributed = NSMutableAttributedString(string: amountText)
+//            let amountText = "\(transaction.type == .debit  ? "-" : "+")\(CurrencyFormatter.formatAmountInLocalCurrency(transaction.cardHolderBillingAmount/*cardHolderBillingTotalAmount*/).amountFromFormattedAmount)"
+//            let attributed = NSMutableAttributedString(string: amountText)
+            
+            let amount = CurrencyFormatter.format(amount: transaction.type == .debit ? (transaction.totalAmount ?? 0) : transaction.amount, in: CurrencyType(rawValue: transaction.currency ?? "") ?? .pkr).amountFromFormattedAmount
+            let attributed = NSMutableAttributedString(string: (transaction.type == .debit ? "-" : "+") + amount)
             let range = NSRange(location: 0, length: attributed.length)
             if transaction.transactionStatus == .cancelled || transaction.transactionStatus == .failed {
                 attributed.addAttributes([.strikethroughStyle : 1], range: range)
@@ -145,7 +148,9 @@ class TDTransactionDetailTableViewCellViewModel: TDTransactionDetailTableViewCel
             amountSubject.onNext(attributed)
         }
 
-        
+//                let amount = CurrencyFormatter.format(amount: transaction.type == .debit ? (transaction.totalAmount ?? 0) : transaction.amount, in: CurrencyType(rawValue: transaction.currency ?? "") ?? .pkr).amountFromFormattedAmount
+             //   transactionAmountSubject = BehaviorSubject(value: NSAttributedString(string: (transaction.type == .debit ? "-" : "+") + amount))
+    
         
         switch transaction.transactionStatus {
         case .cancelled, .failed:
