@@ -21,6 +21,7 @@ protocol TransactionDetailsTableViewCellViewModelOutput {
     var image: Observable<((String?, String?,UIImage?), AnalyticsDataType)> { get }
     var title: Observable<String?> { get }
     var amount: Observable<String?> { get }
+    var amountColor: Observable<UIColor?> { get }
     var timeDate: Observable<String?> { get }
     var currency: Observable<String?> { get }
     var selected: Observable<Bool> { get }
@@ -53,6 +54,7 @@ class TransactionDetailsTableViewCellViewModel: TransactionDetailsTableViewCellV
     private let typeSubject = BehaviorSubject<AnalyticsDataType>(value: .category)
     private let modeSubject = BehaviorSubject<UIImageView.ContentMode>(value: .center)
     private let colorSubject = ReplaySubject<(UIColor, AnalyticsDataType)>.create(bufferSize: 1)
+    private let amountColorSubject = BehaviorSubject<UIColor?>(value: UIColor.green)
     
     // MARK: - Inputs
     var selectedObserver: AnyObserver<Bool> { return selectedSubject.asObserver() }
@@ -65,6 +67,7 @@ class TransactionDetailsTableViewCellViewModel: TransactionDetailsTableViewCellV
     var currency: Observable<String?> { return currencySubject.asObservable() }
     var selected: Observable<Bool> { return selectedSubject.asObservable() }
     var type: Observable<AnalyticsDataType> { return typeSubject.asObservable() }
+    var amountColor: Observable<UIColor?> { return amountColorSubject.asObservable() }
     var mode: Observable<UIView.ContentMode> { modeSubject.asObservable() }
     var color: Observable<(UIColor, AnalyticsDataType)> { return colorSubject.asObservable() }
     
@@ -95,7 +98,7 @@ class TransactionDetailsTableViewCellViewModel: TransactionDetailsTableViewCellV
         formatter.pmSymbol = "PM"
         formatter.dateFormat = "hh:mm a"
         let time = formatter.string(from: transaction.date)
-        formatter.dateFormat = "MMM dd"
+        formatter.dateFormat = "dd MMM yyyy"
         let dayMonth = formatter.string(from: transaction.date)
         if title == "" {
             titleSubject.onNext(transaction.receiverName ?? "Unknown")
@@ -106,9 +109,11 @@ class TransactionDetailsTableViewCellViewModel: TransactionDetailsTableViewCellV
         
         if transaction.type == .debit {
             amountSubject.onNext("- " + CurrencyFormatter.format(amount: transaction.cardHolderBillingTotalAmount , in: transaction.cardHolderBillingCurrency ?? "PKR").amountFromFormattedAmount)
+            amountColorSubject.onNext(UIColor(themeService.attrs.primaryDark))
         }
         else {
-            amountSubject.onNext(CurrencyFormatter.format(amount: transaction.cardHolderBillingTotalAmount , in: transaction.cardHolderBillingCurrency ?? "PKR").amountFromFormattedAmount)
+            amountSubject.onNext("+ " + CurrencyFormatter.format(amount: transaction.cardHolderBillingTotalAmount , in: transaction.cardHolderBillingCurrency ?? "PKR").amountFromFormattedAmount)
+            amountColorSubject.onNext(UIColor(themeService.attrs.secondaryGreen))
         }
         currencySubject.onNext(transaction.cardHolderBillingCurrency)
         timeDateSubject.onNext(time + "・" + dayMonth)

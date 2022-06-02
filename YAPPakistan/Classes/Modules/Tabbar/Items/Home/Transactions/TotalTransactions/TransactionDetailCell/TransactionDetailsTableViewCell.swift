@@ -155,7 +155,7 @@ private extension TransactionDetailTableViewCell {
         themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: [title.rx.textColor])
             .bind({ UIColor($0.grey) }, to: [timeDate.rx.textColor, currency.rx.textColor])
-            .bind({ UIColor($0.primaryDark) }, to: [amount.rx.textColor])
+            //.bind({ UIColor($0.primaryDark) }, to: [amount.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
 }
@@ -176,6 +176,11 @@ private extension TransactionDetailTableViewCell {
 
         viewModel.outputs.title.bind(to: title.rx.text).disposed(by: disposeBag)
         viewModel.outputs.amount.bind(to: amount.rx.text).disposed(by: disposeBag)
+        viewModel.outputs.amountColor.subscribe(onNext: { color in
+            self.amount.textColor = color
+            print(color)
+        }).disposed(by: disposeBag)
+        viewModel.outputs.amountColor.bind(to: amount.rx.textColor).disposed(by: disposeBag)
         viewModel.outputs.timeDate.bind(to: timeDate.rx.text).disposed(by: disposeBag)
         viewModel.outputs.currency.bind(to: currency.rx.text).disposed(by: disposeBag)
         viewModel.outputs.selected.subscribe(onNext: { [weak self] in
