@@ -320,7 +320,8 @@ extension HomeCoodinator {
         case .houseHold:
             YAPToast.show("coming soon")
         case .statements:
-            YAPToast.show("coming soon")
+           // YAPToast.show("coming soon")
+            statements(root)
         case .edit:
             self.openWidgets()
         case .unknown:
@@ -333,6 +334,12 @@ extension HomeCoodinator {
 //        DispatchQueue.main.async {
 //            self.coordinate(to: YAPForYouCoordinator(root: self.navigationRoot, repository: self.moreRepository)).subscribe().disposed(by: self.disposeBag)
 //        }
+    }
+    
+    private func statements(_ viewController: UIViewController) {
+        coordinate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
+            .subscribe()
+            .disposed(by: rx.disposeBag)
     }
     
     func openWidgets()  {
