@@ -59,13 +59,13 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
     
     // MARK: - Init
     init(cardsRepo : CardsRepositoryType) {
-        //let callUsViewModel = HSCallUsTableViewCellViewModel()
+        let callUsViewModel = HSCallUsTableViewCellViewModel()
         self.cardsRepository = cardsRepo
-        var cellViewModels: [ReusableTableViewCellViewModelType] = [HelpAndSupportTableViewCellViewModel(.faq), HelpAndSupportTableViewCellViewModel(.call)]
+        var cellViewModels: [ReusableTableViewCellViewModelType] = [HelpAndSupportTableViewCellViewModel(.faq), callUsViewModel]
         
         dataSourceSubject.onNext([SectionModel(model: 0, items: cellViewModels)])
         
-        let action = Observable.merge(cellSelectedSubject.filter { $0 is HelpAndSupportTableViewCellViewModelType }.map { ($0 as! HelpAndSupportTableViewCellViewModel).action }).unwrap().share()
+        let action = Observable.merge(cellSelectedSubject.filter { $0 is HelpAndSupportTableViewCellViewModelType }.map { ($0 as! HelpAndSupportTableViewCellViewModel).action }, cellSelectedSubject.filter { $0 is HSCallUsTableViewCellViewModelType }.map { ($0 as! HSCallUsTableViewCellViewModel).action }).unwrap().share()
         
         action.filter { $0 == .chat }
         .do(onNext:{ _ in  })
@@ -76,27 +76,27 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
             action.filter { $0 == .faq }.subscribe(onNext: { [unowned self] _ in self.openFAQs() }).disposed(by: disposeBag)
         
         
-        action.filter { $0 == .call }.subscribe(onNext: { [weak self] _ in
-            guard let self = self else { return }
-            YAPProgressHud.showProgressHud()
-            let helpLineNumberReq = self.cardsRepository.getHelpLineNumber()
-            helpLineNumberReq.elements().subscribe(onNext: { data in
-                YAPProgressHud.hideProgressHud()
-                print(data)
-                if let data = data {
-                    let phoneNumber = data.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: " ", with: "")
-                    self.dialNumber(number: phoneNumber)
-                }
-            }).disposed(by: self.disposeBag)
-            
-            helpLineNumberReq.errors().subscribe(onNext: { error in
-                YAPProgressHud.hideProgressHud()
-                print(error)
-            }).disposed(by: self.disposeBag)
-            
-        }).disposed(by: disposeBag)
+//        action.filter { $0 == .call }.subscribe(onNext: { [weak self] _ in
+//            guard let self = self else { return }
+//
+//
+//        }).disposed(by: disposeBag)
         
+        YAPProgressHud.showProgressHud()
+        let helpLineNumberReq = self.cardsRepository.getHelpLineNumber()
+        helpLineNumberReq.elements().subscribe(onNext: { data in
+            YAPProgressHud.hideProgressHud()
+            print(data)
+            if let data = data {
+                let phoneNumber = data.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: " ", with: "")
+                callUsViewModel.inputs.phoneNumberObserver.onNext(phoneNumber)
+            }
+        }).disposed(by: self.disposeBag)
         
+        helpLineNumberReq.errors().subscribe(onNext: { error in
+            YAPProgressHud.hideProgressHud()
+            print(error)
+        }).disposed(by: self.disposeBag)
         
         
         
@@ -107,12 +107,13 @@ class HelpAndSupportViewModel: HelpAndSupportViewModelType, HelpAndSupportViewMo
         
         //        helplineNumberRequest.elements().bind(to: callUsViewModel.inputs.phoneNumberObserver).disposed(by: disposeBag)
         
-        //        action.filter { $0 == .call }
-        //            .do(onNext:{ _ in  })
-        //            .withLatestFrom(helplineNumberRequest.elements().unwrap().map { $0.replacingOccurrences(of: "-", with: "").replacingOccurrences(of: " ", with: "")}).subscribe(onNext: {
-        //            guard let number = URL(string: "tel://" + $0 ) else { return }
-        //            UIApplication.shared.open(number)
-        //        }).disposed(by: disposeBag)
+                action.filter { $0 == .call }
+                    .do(onNext:{ _ in  })
+                    .withLatestFrom(helpLineNumberReq.elements().unwrap()).subscribe(onNext: {
+//                    guard let number = URL(string: "tel://" + $0 ) else { return }
+//                    UIApplication.shared.open(number)
+                        self.dialNumber(number: $0)
+                }).disposed(by: disposeBag)
         //
         //        helplineNumberRequest.errors().map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
         //
@@ -210,11 +211,11 @@ extension HelpAndSupportActionType {
         case .faq:
             return UIImage.init(named: "icon_support", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate).withAlignmentRectInsets(UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
         case .chat:
-            return UIImage.init(named: "icon_chat", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+            return UIImage.init(named: "icon_phone_more", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         case .call:
-            return UIImage.init(named: "icon_phone", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate).withAlignmentRectInsets(UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
+            return UIImage.init(named: "icon_phone_more", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate).withAlignmentRectInsets(UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
         case .whatsapp:
-            return UIImage.init(named: "icon_whats_app", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
+            return UIImage.init(named: "icon_phone_more", in: .yapPakistan, compatibleWith: nil)?.withRenderingMode(.alwaysTemplate)
         }
     }
 }

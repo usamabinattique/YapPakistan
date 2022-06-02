@@ -8,6 +8,7 @@
 
 import Foundation
 import YAPComponents
+import UIKit
 
 public class YAPToast: NSObject {
     
@@ -25,7 +26,7 @@ public class YAPToast: NSObject {
     private func show(_ text: String, duration: TimeInterval = 2.5, animated: Bool) {
         YAPToast.currentToast = self
         toast.text = text
-        toast.backgroundColor = UIColor.black.withAlphaComponent(0.85)
+        toast.backgroundColor = UIColor.black.withAlphaComponent(0.55)
         toast.alpha = 0
         
         let screenBounds = UIScreen.main.bounds

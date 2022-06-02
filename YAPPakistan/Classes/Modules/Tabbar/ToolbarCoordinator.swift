@@ -82,6 +82,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                         
                         self.openHelpAndSupport(theRoot: viewController)
                     case .statements:
+                        print("statements")
                         self.statements(viewController)
                     case .referFriend:
                         self.inviteFriend(viewController)

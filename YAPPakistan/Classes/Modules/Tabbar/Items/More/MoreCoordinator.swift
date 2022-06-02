@@ -28,7 +28,7 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
         
         let viewModel = MoreViewModel(accountProvider: container.accountProvider, repository: container.makeMoreRepository(), theme: container.themeService)
         let viewController = MoreViewController(viewModel: viewModel, themeService: container.themeService)
-        navigationRoot = UINavigationController(rootViewController: viewController)
+        navigationRoot = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController) //UINavigationController(rootViewController: viewController)
         navigationRoot.navigationBar.isHidden = false
         navigationRoot.tabBarItem = UITabBarItem(title: "More",
                                                  image: UIImage(named: "icon_tabbar_more", in: .yapPakistan),

@@ -359,7 +359,7 @@
 
 // MARK: Personal Details
 "screen_personal_details_display_text_personal_details_title" = "Personal details";
-"screen_personal_details_display_text_full_name" = "Full Name";
+"screen_personal_details_display_text_full_name" = "Full name";
 "screen_personal_details_display_text_phone_number" = "Phone number";
 "screen_personal_details_display_text_email" = "Email";
 "screen_personal_details_display_text_address" = "Address";
@@ -562,7 +562,7 @@
 "screen_kyc_card_scheme_button_free" = "Get it for free";
 "screen_kyc_card_scheme_description_free" = "Get Yap card and Enjoy Master Card benefits";//"Get YAP free card and enjoy mastercard benefits";
 "screen_kyc_card_scheme_description_with_fee" = "Get the local PayPak YAP card for PKR %@";
-"screen_kyc_card_scheme_description_with_fee_detail" = "Buy this card now for PKR %@ and enjoy all bebefits";
+"screen_kyc_card_scheme_description_with_fee_detail" = "Buy this card now for PKR %@ and enjoy all benefits";
 
 // MARK: KYC Card Benefits
 "screen_kyc_card_benefits_screen_coming_soon_next_button_title" = "Coming soon";
@@ -667,8 +667,8 @@
 
 // MARK: Screen add beneficiary OTP
 
-"screen_add_beneificiary_otp_display_text_heading" = "Verify your mobile number";
-"screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
+"screen_add_beneificiary_otp_display_text_heading" = "Verify your One Time Passcode";
+"screen_add_beneificiary_otp_display_text_sub_heading" = "We've send a verification code to %@";
 
 
 "screen_domestic_funds_transfer_display_text_heading" = "Send money to";

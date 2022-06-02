@@ -127,11 +127,13 @@ class CardStatementViewModel: CardStatementViewModelType, CardStatementViewModel
         let previousYear = currentYear - 1
         lastFinYearDescriptionSubject.onNext("July 01, \(previousYear) - June 30, \(currentYear)")
         
-        let currentDateFormatted = Date().dateString(ofStyle: .long)
+//        let currentDateFormatted = Date().dateString(ofStyle: .long)
+        let currentDateFormatted = Date().string(withFormat: "MMM dd, YYYY")
         yearToDateDescriptionSubject.onNext("January 01, \(currentYear) - \(currentDateFormatted)")
         customDateDescriptionSubject.onNext("Export a statement between specific dates")
         
-        titleSubject.onNext(statementFetchable?.statementType.viewTitle)
+        //titleSubject.onNext(statementFetchable?.statementType.viewTitle)
+        titleSubject.onNext("Account statements")
         
         let cardStatementRequest = viewWillAppearSubject
             .do(onNext: { YAPProgressHud.showProgressHud() })

@@ -251,7 +251,7 @@ open class ChangePasscodeViewModel: ChangePasscodeViewModelType,
                               
                               if newPassword != confirmNewPassword {
                                   self.shakeSubject.onNext(())
-                                  self.errorSubject.onNext("Passcode Mismatched")
+                                  self.errorSubject.onNext("This doesn't match the previously entered PIN")
                               }
                               else {
                                   

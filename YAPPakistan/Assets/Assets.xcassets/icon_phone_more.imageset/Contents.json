@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "icon_support@1x.png",
+      "filename" : "icon_phone_more@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "icon_support@2x.png",
+      "filename" : "icon_phone_more@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "icon_support@3x.png",
+      "filename" : "icon_phone_more@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
