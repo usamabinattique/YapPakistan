@@ -75,29 +75,37 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                     case .analytics:
                         print("analytics")
                         //self.analytics(viewController, paymentCard: paymentCard)
+                        self.analytics(.mock)
                     case .help, .contact:
                         print("help")
                         //self.helpAndSupport(viewController)
+                        
+                        self.openHelpAndSupport()
                     case .statements:
-                        print("statements")
-                        //self.statements(viewController)
+                        self.statements(viewController)
                     case .referFriend:
                         self.inviteFriend(viewController)
                     case .housholdSalary:
                         print("housholdSalary")
                         //self.householdSalary(viewController)
+                        YAPToast.show("coming soon")
                     case .chat:
                         print("chat")
                         //ChatManager.shared.openChat()
+                        YAPToast.show("coming soon")
                     case .notifications:
                         print("notifications")
+                        YAPToast.show("coming soon")
                     case .qrCode:
                         print("qrcode")
-                        //self.myQrCode(self.rootNavigationController)
+                       // self.myQrCode(self.rootNavigationController)
+                        self.navigateToAddMoneyQRCode()
                     case .dashboardWidget:
                         self.coordinateToEditWidgets()
                     case .accountLimits:
                         self.coordinateToAccountLimits(viewController)
+                    case .young:
+                        YAPToast.show("coming soon")
                     default:
                         break
                     }
@@ -137,6 +145,16 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
             }
         }).disposed(by: disposeBag)
     }
+    
+    func navigateToAddMoneyQRCode() {
+        coordinate(to: AddMoneyQRCodeCoordinator(root: root, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
+           
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    func analytics(_ paymentCard: PaymentCard, date: Date? = nil) {
+        coordinate(to: CardAnalyticsCoordinator(root: self.root, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
+    }
 
     fileprivate func store(root: UITabBarController) {
         self.coordinate(to: StoreCoordinator(root: root, container: container))
@@ -163,6 +181,10 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                 }
             }
         }).disposed(by: disposeBag)
+    }
+    
+    func openHelpAndSupport() {
+        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
     }
 
     fileprivate func cards(root: UITabBarController) {
