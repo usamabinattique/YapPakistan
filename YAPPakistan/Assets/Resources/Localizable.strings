@@ -359,7 +359,7 @@
 
 // MARK: Personal Details
 "screen_personal_details_display_text_personal_details_title" = "Personal details";
-"screen_personal_details_display_text_full_name" = "Full Name";
+"screen_personal_details_display_text_full_name" = "Full name";
 "screen_personal_details_display_text_phone_number" = "Phone number";
 "screen_personal_details_display_text_email" = "Email";
 "screen_personal_details_display_text_address" = "Address";
