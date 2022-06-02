@@ -88,7 +88,7 @@ private extension HSCallUsTableViewCell {
             .width(constant: 45)
         
         titleLabel
-            .toRightOf(icon, constant: 10)
+            .toRightOf(icon, constant: 5)
             .alignEdge(.centerY, withView: icon)
         
         detailLabel
