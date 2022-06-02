@@ -75,12 +75,12 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                     case .analytics:
                         print("analytics")
                         //self.analytics(viewController, paymentCard: paymentCard)
-                        self.analytics(.mock)
+                        self.analytics(.mock, date: Date(),theRoot: viewController)
                     case .help, .contact:
                         print("help")
                         //self.helpAndSupport(viewController)
                         
-                        self.openHelpAndSupport()
+                        self.openHelpAndSupport(theRoot: viewController)
                     case .statements:
                         self.statements(viewController)
                     case .referFriend:
@@ -147,13 +147,13 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
     
     func navigateToAddMoneyQRCode() {
-        coordinate(to: AddMoneyQRCodeCoordinator(root: root, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
+        coordinate(to: AddMoneyQRCodeCoordinator(root: rootNavigationController, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
            
         }).disposed(by: rx.disposeBag)
     }
     
-    func analytics(_ paymentCard: PaymentCard, date: Date? = nil) {
-        coordinate(to: CardAnalyticsCoordinator(root: self.root, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
+    func analytics(_ paymentCard: PaymentCard, date: Date? = nil, theRoot: UIViewController) {
+        coordinate(to: CardAnalyticsCoordinator(root: theRoot, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
     }
 
     fileprivate func store(root: UITabBarController) {
@@ -183,8 +183,8 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         }).disposed(by: disposeBag)
     }
     
-    func openHelpAndSupport() {
-        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
+    func openHelpAndSupport(theRoot: UIViewController) {
+        coordinate(to: HelpAndSupportCoordinator(root: theRoot, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
     }
 
     fileprivate func cards(root: UITabBarController) {
