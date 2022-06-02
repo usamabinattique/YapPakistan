@@ -58,9 +58,9 @@ class CardsViewController: UIViewController {
                 letsDoItButton.setTitle("Unfreeze card", for: .normal)
                 subTitleLabel.text = "This card is frozen"
                 if #available(iOS 13.0, *) {
-                    clockEyeIcon.image = UIImage(systemName: "eye")
+                    clockEyeIcon.image = UIImage(systemName: "lock")
                 }
-                clockEyeIcon.tintColor = UIColor(theme.primary)
+                clockEyeIcon.tintColor = .red
             } else {
                 letsDoItButton.isHidden = true
                 subTitleLabel.text = "Card balance"
@@ -149,6 +149,7 @@ fileprivate extension CardsViewController {
                 self.titleLabel.text = string.titleCard
                 self.subTitleLabel.text = self.isSetPinDoneFlow ? "Card balance": string.subTitle
                 self.detailsButton.setTitle(string.seeDetail, for: .normal)
+                self.cardImage.image = UIImage(named: string.cardImage, in: .yapPakistan)
                 self.pageNumberLabel.text = string.count
             })
             .disposed(by: rx.disposeBag)

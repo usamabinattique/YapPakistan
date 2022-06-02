@@ -10,6 +10,7 @@ import YAPComponents
 import RxSwift
 
 typealias DeliveryStatus = PaymentCard.DeliveryStatus
+typealias CardSchemeType = PaymentCard.CardSchemeType
 
 extension PaymentCard.DeliveryStatus {
     var message: String {
@@ -17,6 +18,7 @@ extension PaymentCard.DeliveryStatus {
         case .ordered: return "Your card is ordered"
         case .shipped: return "Your primary card is shipped"
         case .delivered: return "Create a PIN to start using your card"
+        case .notCreated: return "Complete verification to get your card"
         default: return "Complete verification to get your card"
         }
     }
@@ -26,7 +28,18 @@ extension PaymentCard.DeliveryStatus {
         case .ordered: return "This card is ordered"
         case .shipped: return "This card is on the way"
         case .delivered: return "Create a PIN to start using your card"
+        case .notCreated: return "Complete verification to get your card"
         default: return "Complete verification to get your card"
+        }
+    }
+}
+
+extension PaymentCard.CardSchemeType {
+    var cardImage: String {
+        switch self {
+        case .PayPak: return "image_payment_card_white_paypak"
+        case .Mastercard: return "image_payment_card_white"
+        case .NoScheme: return "card_image"
         }
     }
 }
@@ -189,12 +202,7 @@ class CardsViewModel: CardsViewModelType,
                 
         cardDetailsSubject
             .subscribe(onNext:{ [weak self] obj in
-                guard let scheme = obj?.cardScheme else { return }
-                if scheme == "PayPak" {
-                    self?.cardImageTypeSubject.onNext("image_payment_card_white_paypak")
-                } else if scheme == "Mastercard" {
-                    self?.cardImageTypeSubject.onNext("image_payment_card_white")
-                }
+                self?.cardImageTypeSubject.onNext((obj?.cardScheme)?.cardImage ?? "image_payment_card_white_paypak")
             })
             .disposed(by: disposeBag)
                 
@@ -202,7 +210,7 @@ class CardsViewModel: CardsViewModelType,
             .subscribe(onNext:{ [weak self] obj in
                 guard let deliveryStatus = obj?.deliveryStatus else { return }
                 guard let pinStatus = obj?.pinStatus else { return }
-                if deliveryStatus == .delivered && pinStatus == .inActive {
+                if (deliveryStatus == .delivered && pinStatus == .inActive) || obj?.status == .blocked {
                     self?.hideLetsDoItSubject.onNext(false)
                 } else {
                     self?.hideLetsDoItSubject.onNext(true)
@@ -254,6 +262,7 @@ extension CardsViewModel {
         var titleCard: String = ""
         var subTitle: String = ""
         var seeDetail: String = ""
+        var cardImage: String = ""
         var count: String = ""
     }
     
@@ -263,6 +272,7 @@ extension CardsViewModel {
                                 titleCard: (paymentCard.nameUpdated ?? false) ? (paymentCard.cardName ?? "") : "Primary card",
                                 subTitle: (paymentCard.deliveryStatus).mainScreenMessage,
                                 seeDetail: "See details",
+                                cardImage: (paymentCard.cardScheme).cardImage,
                                 count: "1 of 1")
     }
 }
