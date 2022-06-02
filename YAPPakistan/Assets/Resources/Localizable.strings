@@ -409,7 +409,7 @@
 "screen_kyc_address_title" = "Your card is ready to be delivered!";
 "screen_kyc_address_subtitle" = "Confirm this is your address, you can change it anytime";
 "screen_kyc_address_taplocation" = "Tap map to confirm location";
-"screen_kyc_address_address" = "Company address";
+"screen_kyc_address_address" = "Address";
 "screen_kyc_address_flatbuilding" = "Flat number/ Building/ Landmark";
 "screen_kyc_address_city" = "City";
 
