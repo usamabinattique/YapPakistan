@@ -357,7 +357,7 @@
 "screen_invite_friend_display_text_share_url" = "Connect with me on YAP! An innovative digital banking app that gives you total control of your finances. \n\n%@";
 
 // MARK: Personal Details
-"screen_personal_details_display_text_personal_details_title" = "Personal Details";
+"screen_personal_details_display_text_personal_details_title" = "Personal details";
 "screen_personal_details_display_text_full_name" = "Full Name";
 "screen_personal_details_display_text_phone_number" = "Phone number";
 "screen_personal_details_display_text_email" = "Email";
