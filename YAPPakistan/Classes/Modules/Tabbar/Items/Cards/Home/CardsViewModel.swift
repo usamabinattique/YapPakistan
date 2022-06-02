@@ -24,7 +24,7 @@ extension PaymentCard.DeliveryStatus {
     var mainScreenMessage: String {
         switch self {
         case .ordered: return "This card is ordered"
-        case .shipped: return "This primary card is shipped"
+        case .shipped: return "This card is on the way"
         case .delivered: return "Create a PIN to start using your card"
         default: return "Complete verification to get your card"
         }
@@ -191,9 +191,21 @@ class CardsViewModel: CardsViewModelType,
             .subscribe(onNext:{ [weak self] obj in
                 guard let scheme = obj?.cardScheme else { return }
                 if scheme == "PayPak" {
-                    self?.cardBalanceSubject.onNext(obj?.cardBalance?.formattedAmount ?? "PKR 0.00")
+                    self?.cardImageTypeSubject.onNext("image_payment_card_white_paypak")
+                } else if scheme == "Mastercard" {
+                    self?.cardImageTypeSubject.onNext("image_payment_card_white")
+                }
+            })
+            .disposed(by: disposeBag)
+                
+        cardDetailsSubject
+            .subscribe(onNext:{ [weak self] obj in
+                guard let deliveryStatus = obj?.deliveryStatus else { return }
+                guard let pinStatus = obj?.pinStatus else { return }
+                if deliveryStatus == .delivered && pinStatus == .inActive {
+                    self?.hideLetsDoItSubject.onNext(false)
                 } else {
-                    self?.cardBalanceSubject.onNext("PKR 0.00")
+                    self?.hideLetsDoItSubject.onNext(true)
                 }
             })
             .disposed(by: disposeBag)
@@ -248,7 +260,7 @@ extension CardsViewModel {
     fileprivate func makeLocalizableStrings(_ paymentCard: PaymentCard) -> LocalizedStrings {
         
         return LocalizedStrings(titleView: "Your cards",
-                                titleCard: paymentCard.cardName ?? "",
+                                titleCard: (paymentCard.nameUpdated ?? false) ? (paymentCard.cardName ?? "") : "Primary card",
                                 subTitle: (paymentCard.deliveryStatus).mainScreenMessage,
                                 seeDetail: "See details",
                                 count: "1 of 1")
