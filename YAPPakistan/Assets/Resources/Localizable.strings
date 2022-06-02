@@ -505,7 +505,7 @@
 
 // MARK: Change Email Address success Screen
 "screen_unverified_success_display_text_heading" = "Success!";
-"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed to\n%@";
+"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed\n%@";
 "screen_unverified_success_display_text_description" = "Please log in to your email address to validate your email and continue with\naccess to YAP!";
 "screen_unverified_display_button_mail" = "Open mail app";
 "screen_unverified_display_button_back_to_dashboard" = "Back to dashboard";
@@ -542,10 +542,10 @@
 "screen_kyc_setpinintro_craete" = "Create PIN code";
 "screen_kyc_setpinintro_doitlater" = "Do it later";
 
-"screen_kyc_setpintsuccess_title" = "You're all set!\nTime to top up";
+"screen_kyc_setpintsuccess_title" = "You're all set!";
 "screen_kyc_setpintsuccess_subtitle" = "Begin using your YAP card by topping up your card with PKR 100 or more";
 "screen_kyc_setpintsuccess_topupnow" = "Top up now";
-"screen_kyc_setpintsuccess_doitlater" = "Do it later";
+"screen_kyc_setpintsuccess_doitlater" = "Go to dashboard";
 
 "screen_setpincode_title" = "Set your PIN code";
 "screen_setpincode_title_confirm" = "Re-enter your PIN code to confirm";
