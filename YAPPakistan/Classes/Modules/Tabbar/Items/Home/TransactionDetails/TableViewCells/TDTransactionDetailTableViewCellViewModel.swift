@@ -99,8 +99,12 @@ class TDTransactionDetailTableViewCellViewModel: TDTransactionDetailTableViewCel
         } else {
             logoSubject.onNext(((transaction.icon.imageUrl, transaction.icon.image), transaction.icon.contentMode))
         }
-        // This ticket fix by Ahmer(https://digitify.atlassian.net/browse/YM-15289)
-        if (transaction.productCode == .atmDeposit || transaction.productCode == .atmWithdrawl) {
+       
+      /*  if (transaction.productCode == .atmDeposit || transaction.productCode == .atmWithdrawl) {
+            statusIconSubject.onNext(transaction.icon.identifierImage)
+        } */
+        
+        if (transaction.productCode == .ibftTransaction || transaction.productCode == .y2yTransfer) {
             statusIconSubject.onNext(transaction.icon.identifierImage)
         }
         
