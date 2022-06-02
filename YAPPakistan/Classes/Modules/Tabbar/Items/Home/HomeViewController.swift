@@ -404,7 +404,7 @@ fileprivate extension HomeViewController {
 
         widgetView
             .alignEdgesWithSuperview([.left, .right])
-        widgetViewHeightConstraints = widgetView.heightAnchor.constraint(equalToConstant: 115)
+        widgetViewHeightConstraints = widgetView.heightAnchor.constraint(equalToConstant: 130)//115)
         widgetViewHeightConstraints.isActive = true
         
         containerViewHeightConstraint = transactionContainer.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
@@ -473,7 +473,7 @@ fileprivate extension HomeViewController {
         var height: CGFloat = 0
         height += 0
 //        height += !notificationsView.isHidden ? 150 : 0
-        height += widgetView.isHidden ? 5 : 120
+        height += widgetView.isHidden ? 5 : 130//120
         return height
     }
 
