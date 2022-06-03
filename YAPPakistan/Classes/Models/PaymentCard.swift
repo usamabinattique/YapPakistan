@@ -127,7 +127,7 @@ public class PaymentCard: Codable {
     var blocked: Bool?
     let cardBalance: Double?
     var cardName: String?
-    let cardScheme: String?
+    let cardScheme: CardSchemeType
     let cardSerialNumber: String?
     let cardType: PaymentCardType
     let currentBalance: Double?
@@ -154,7 +154,7 @@ public class PaymentCard: Codable {
     var setPinDate: Date?
     var pinSet: Bool?
    
-    internal init(accountNumber: String?, accountType: String?, active: Bool?, atmAllowed: Bool? = nil, availableBalance: Double?, backImage: String? = nil, blocked: Bool? = nil, cardBalance: Double?, cardName: String? = nil, cardScheme: String?, cardSerialNumber: String?, cardType: PaymentCardType, currentBalance: Double?, customerId: String?, delivered: Bool?, deliveryStatus: PaymentCard.DeliveryStatus, expiryDate: String?, frontImage: String?, issuanceDate: String?, maskedCardNo: String?, nameUpdated: Bool?, onlineBankingAllowed: Bool?, paymentAbroadAllowed: Bool?, physical: Bool, pinCreated: Bool?, pinStatus: PaymentCard.PinStatus?, productCode: String?, retailPaymentAllowed: Bool? = nil, shipmentStatus: String?, status: CardStatus?, uuid: String?, cardDetails: CardDetails? = nil) {
+    internal init(accountNumber: String?, accountType: String?, active: Bool?, atmAllowed: Bool? = nil, availableBalance: Double?, backImage: String? = nil, blocked: Bool? = nil, cardBalance: Double?, cardName: String? = nil, cardScheme: PaymentCard.CardSchemeType, cardSerialNumber: String?, cardType: PaymentCardType, currentBalance: Double?, customerId: String?, delivered: Bool?, deliveryStatus: PaymentCard.DeliveryStatus, expiryDate: String?, frontImage: String?, issuanceDate: String?, maskedCardNo: String?, nameUpdated: Bool?, onlineBankingAllowed: Bool?, paymentAbroadAllowed: Bool?, physical: Bool, pinCreated: Bool?, pinStatus: PaymentCard.PinStatus?, productCode: String?, retailPaymentAllowed: Bool? = nil, shipmentStatus: String?, status: CardStatus?, uuid: String?, cardDetails: CardDetails? = nil) {
         self.accountNumber = accountNumber
         self.accountType = accountType
         self.active = active
@@ -209,7 +209,7 @@ public class PaymentCard: Codable {
         blocked = try? values?.decodeIfPresent(Bool.self, forKey: .blocked)
         cardBalance = try? values?.decodeIfPresent(Double.self, forKey: .cardBalance)
         cardName = try? values?.decodeIfPresent(String.self, forKey: .cardName)
-        cardScheme = try? values?.decodeIfPresent(String.self, forKey: .cardScheme)
+        cardScheme = (try? values?.decodeIfPresent(CardSchemeType.self, forKey: .cardScheme)) ?? .PayPak
         cardSerialNumber = try? values?.decodeIfPresent(String.self, forKey: .cardSerialNumber)
         cardType = (try? values?.decodeIfPresent(PaymentCardType.self, forKey: .cardType)) ?? .debit
         currentBalance = try? values?.decodeIfPresent(Double.self, forKey: .currentBalance)
@@ -243,6 +243,7 @@ extension PaymentCard {
         case ordered = "ORDERED"  // 3 Not comming from backend? This is to represent statatus;
         case shipped = "SHIPPED"      // 3
         case delivered = "DELIVERED"    // 2
+        case notCreated = "NOT-CREATED"    // 2
         case failed = "FAILED"          //
     }
 
@@ -258,6 +259,12 @@ extension PaymentCard {
         case inActive = "INACTIVE"
         case blocked = "BLOCKED"
         case active = "ACTIVE"
+    }
+    
+    enum CardSchemeType: String, Codable {
+        case PayPak = "PayPak"
+        case Mastercard = "Mastercard"
+        case NoScheme = ""
     }
 }
 
@@ -394,13 +401,13 @@ extension PaymentCard {
                     blocked: nil,
                     cardBalance: nil,
                     cardName: nil,
-                    cardScheme: nil,
+                    cardScheme: .PayPak,
                     cardSerialNumber: nil,
                     cardType: PaymentCardType.debit,
                     currentBalance: nil,
                     customerId: nil,
                     delivered: nil,
-                    deliveryStatus: .ordered,
+                    deliveryStatus: .notCreated,
                     expiryDate: nil,
                     frontImage: nil,
                     issuanceDate: nil,
