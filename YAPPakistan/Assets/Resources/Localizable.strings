@@ -773,7 +773,7 @@ and click on Quick Access Widgets.";
 
 //MARK: Store
 "screen_store_screen_title_text" = "YAP Store";
-"screen_store_heading_label_text" = "Browse YAP packages\nand add-ons";
+"screen_store_heading_label_text" = "Browse Upcoming Packages";
 "screen_store_package_cell_coming_soon_text" = "Coming soon";
 
 //Mark: - Card statement Screen

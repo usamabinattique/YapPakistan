@@ -16,7 +16,6 @@
 		0DC3881F271691910003A60F /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC3881E271691910003A60F /* WelcomeViewController.swift */; };
 		0DC38826271691B70003A60F /* WelcomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC38825271691B70003A60F /* WelcomeViewModel.swift */; };
 		0DC38842271693640003A60F /* WelcomeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC38841271693640003A60F /* WelcomeCoordinator.swift */; };
-		0DC38846271694520003A60F /* get_started.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 0DC38845271694520003A60F /* get_started.mp4 */; };
 		0DC3884A27169C500003A60F /* UserDefaultPropertyWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC3884927169C500003A60F /* UserDefaultPropertyWrapper.swift */; };
 		0DC3884E2716A5FF0003A60F /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC3884D2716A5FF0003A60F /* LoginViewController.swift */; };
 		0DC388522716A6340003A60F /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DC388512716A6340003A60F /* LoginViewModel.swift */; };
@@ -50,6 +49,7 @@
 		0DEEE13B26FC63D600BABB41 /* FeatureFlagResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE13A26FC63D600BABB41 /* FeatureFlagResponse.swift */; };
 		0DEEE19526FDBC5800BABB41 /* FeatureFlagFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19426FDBC5800BABB41 /* FeatureFlagFileManager.swift */; };
 		0DEEE19926FDE28100BABB41 /* DefaultFeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */; };
+		45E3D8362849D60E0039C44E /* get_started.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 45E3D8352849D60E0039C44E /* get_started.mp4 */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -82,7 +82,6 @@
 		0DC3881E271691910003A60F /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		0DC38825271691B70003A60F /* WelcomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewModel.swift; sourceTree = "<group>"; };
 		0DC38841271693640003A60F /* WelcomeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeCoordinator.swift; sourceTree = "<group>"; };
-		0DC38845271694520003A60F /* get_started.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = get_started.mp4; sourceTree = "<group>"; };
 		0DC3884927169C500003A60F /* UserDefaultPropertyWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultPropertyWrapper.swift; sourceTree = "<group>"; };
 		0DC3884D2716A5FF0003A60F /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		0DC388512716A6340003A60F /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -118,6 +117,7 @@
 		0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultFeatureFlagProvider.swift; sourceTree = "<group>"; };
 		104557EF81E3374A8AEBE811 /* Pods-YAPPakistan_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YAPPakistan_Tests.debug.xcconfig"; path = "Target Support Files/Pods-YAPPakistan_Tests/Pods-YAPPakistan_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		2F1F7EC3BC2E8660EC391263 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		45E3D8352849D60E0039C44E /* get_started.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = get_started.mp4; sourceTree = "<group>"; };
 		4E2F3A4320599AD33E9B3A27 /* YAPPakistan.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = YAPPakistan.podspec; path = ../YAPPakistan.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		607FACD01AFB9204008FA782 /* YAP PK Dev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "YAP PK Dev.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -336,7 +336,7 @@
 		5680335826E7E32F00D5C183 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				0DC38845271694520003A60F /* get_started.mp4 */,
+				45E3D8352849D60E0039C44E /* get_started.mp4 */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 			);
 			name = Resources;
@@ -520,7 +520,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0DC38846271694520003A60F /* get_started.mp4 in Resources */,
+				45E3D8362849D60E0039C44E /* get_started.mp4 in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				0DEEE12226F9CC4500BABB41 /* DefaultFeatureFlags.json in Resources */,
 				0D51950826E1FA5000B81639 /* LaunchScreen.storyboard in Resources */,
@@ -874,7 +874,7 @@
 				CODE_SIGN_ENTITLEMENTS = "YAP PK Dev.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEVELOPMENT_TEAM = J459F5C925;
 				INFOPLIST_FILE = YAPPakistan/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
@@ -898,7 +898,7 @@
 				CODE_SIGN_IDENTITY = "Apple Distribution";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 73;
+				CURRENT_PROJECT_VERSION = 74;
 				DEVELOPMENT_TEAM = J459F5C925;
 				INFOPLIST_FILE = YAPPakistan/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
