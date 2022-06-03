@@ -195,7 +195,7 @@ fileprivate extension ChangeEmailAddressViewController {
         }).disposed(by: disposeBag)
         
         //viewModel.outputs.error.bind(to: view.rx.showAlert(ofType: .error)).disposed(by: disposeBag)
-        
+        viewModel.outputs.error.bind(to: confirmEmailTextfield.rx.errorText).disposed(by: disposeBag)
         emailTextfield.rx.controlEvent([.editingDidEndOnExit]).subscribe { [weak self] _ in
             _ = self?.confirmEmailTextfield.becomeFirstResponder()
         }.disposed(by: disposeBag)

@@ -248,6 +248,7 @@ private extension TDTransactionDetailTableViewCell {
         viewModel.outputs.transactionTime.bind(to: transactionTime.rx.text).disposed(by: disposeBag)
         viewModel.outputs.transactionTypeTextColor.subscribe(onNext:  {[weak self] in
             self?.transactionType.textColor = $0
+            self?.transactionAmount.textColor = $0
         }).disposed(by: disposeBag)
         
         viewModel.outputs.cancelled.subscribe(onNext: { [weak self] in
