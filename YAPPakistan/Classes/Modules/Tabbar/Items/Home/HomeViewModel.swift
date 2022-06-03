@@ -431,8 +431,7 @@ extension HomeViewModel {
     
     func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
         
-        self.shimmeringSubject.onNext(true)
-        let request = self.transactionDataProvider.fetchTransactions().share()
+        self.callFetchTransactions(card: card)
 
         debitCard.subscribe(onNext: { [weak self] card in
             
@@ -458,8 +457,19 @@ extension HomeViewModel {
                     }
                 }
             } */
+            
+//            if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false) {
+//                self?.callFetchTransactions(card: card)
+//            }
 
        }).disposed(by: disposeBag)
+        
+        
+    }
+    
+    fileprivate func callFetchTransactions(card: PaymentCard?) {
+        self.shimmeringSubject.onNext(true)
+        let request = self.transactionDataProvider.fetchTransactions().share()
         
         let params = Observable.combineLatest(request.elements().map { $0.content },
                                               debitCard.unwrap(),
