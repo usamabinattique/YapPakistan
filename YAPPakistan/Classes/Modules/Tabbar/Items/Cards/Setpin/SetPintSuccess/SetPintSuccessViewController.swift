@@ -35,6 +35,7 @@ class SetPintSuccessViewController: UIViewController {
         setupLanguageStrings()
         setupBindings()
         setupConstraints()
+        self.navigationController?.isNavigationBarHidden = true
     }
 
     func setupViews() {
@@ -76,9 +77,8 @@ class SetPintSuccessViewController: UIViewController {
     }
 
     func setupConstraints() {
-        
         titleLabel
-            .alignEdgesWithSuperview([.top, .left, .right], constants: [10, 25, 25])
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right], constants: [20, 25, 25])
 
         successImage
             .toBottomOf(titleLabel, constant: 44)
