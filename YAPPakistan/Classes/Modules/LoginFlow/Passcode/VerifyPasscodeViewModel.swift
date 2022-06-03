@@ -156,8 +156,10 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
             self?.biometricsManager.deleteBiometryForUser(phone: user)
             self?.notificationManager.deleteNotificationPermission()
 
-            self?.credentialsManager.setRemembersId(false)
-            self?.credentialsManager.clearUsername()
+            if !(self?.credentialsManager.remembersId ?? false) {
+                self?.credentialsManager.setRemembersId(false)
+                self?.credentialsManager.clearUsername()
+            }
         }).flatMap({ [unowned self] _ in
             self.repository.logout(deviceUUID: UIDevice.deviceID)
         })

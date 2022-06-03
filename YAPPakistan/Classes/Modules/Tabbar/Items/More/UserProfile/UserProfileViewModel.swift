@@ -515,8 +515,14 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
                         self?.notificationManager.deleteNotificationPermission()
                         self?.notificationManager.setNotificationPermission(isPrompt: false)
                         //setNotificationPermission(isPrompt: Bool)
-                        self?.credentialStore.setRemembersId(false)
-                        self?.credentialStore.clearUsername()
+                        
+                        //self?.credentialStore.setRemembersId(false)
+                        //self?.credentialStore.clearUsername()
+                        
+                        if ((!(self?.credentialStore.remembersId ?? false)))  {
+                            self?.credentialStore.clearUsername()
+                        }
+                        
                         let name = Notification.Name.init(.logout)
                         NotificationCenter.default.post(name: name,object: nil)
                     })
