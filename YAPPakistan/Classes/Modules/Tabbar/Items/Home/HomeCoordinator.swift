@@ -324,6 +324,8 @@ extension HomeCoodinator {
             statements(root)
         case .edit:
             self.openWidgets()
+        case .bankTransfer:
+            YAPToast.show("Coming soon")
         case .unknown:
             YAPToast.show("coming soon")
             break
