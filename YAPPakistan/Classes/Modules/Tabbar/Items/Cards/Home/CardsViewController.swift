@@ -34,7 +34,7 @@ class CardsViewController: UIViewController {
     private lazy var clockEyeIcon = UIFactory.makeImageView()   // FIXME
 
     fileprivate func updateButton() {
-        #warning("FIXME")
+        
         let theme = themeService.attrs
         iconContainer.backgroundColor = .white
         if isCardBlocked {
@@ -51,16 +51,16 @@ class CardsViewController: UIViewController {
             detailsButton.isHidden = true
             return
         }
-        if isForSetPinFlow {
+        if isSetPinDoneFlow {
             if isUserBlocked {
                 letsDoItButton.backgroundColor = UIColor(theme.primary)
                 letsDoItButton.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
                 letsDoItButton.setTitle("Unfreeze card", for: .normal)
                 subTitleLabel.text = "This card is frozen"
                 if #available(iOS 13.0, *) {
-                    clockEyeIcon.image = UIImage(systemName: "eye")
+                    clockEyeIcon.image = UIImage(systemName: "lock")
                 }
-                clockEyeIcon.tintColor = UIColor(theme.primary)
+                clockEyeIcon.tintColor = .red
             } else {
                 letsDoItButton.isHidden = true
                 subTitleLabel.text = "Card balance"
@@ -74,13 +74,13 @@ class CardsViewController: UIViewController {
             letsDoItButton.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
             letsDoItButton.setTitle("Let's do it", for: .normal)
             if #available(iOS 13.0, *) {
-                clockEyeIcon.image = UIImage(systemName: "clock")
+                clockEyeIcon.image = UIImage(systemName: "exclamationmark")
             }
-            clockEyeIcon.tintColor = UIColor(theme.secondaryOrange)
+            clockEyeIcon.tintColor = UIColor(theme.secondaryBlue)
         }
     }
     var isUserBlocked = false { didSet { updateButton() }}
-    var isForSetPinFlow = false { didSet { updateButton() }}
+    var isSetPinDoneFlow = false { didSet { updateButton() }}
     var isCardBlocked = false { didSet { updateButton() }}
 
     // MARK: - Properties
@@ -139,7 +139,7 @@ fileprivate extension CardsViewController {
         cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
         detailsIcon.image = UIImage(named: "arrow_up_purple", in: .yapPakistan)
         //addButton.button?.setImage(UIImage(named: "icon_home_add", in: .yapPakistan), for: .normal)
-        sideMenuButton.button?.setImage(UIImage(named: "icon_menu", in: .yapPakistan), for: .normal)
+        //sideMenuButton.button?.setImage(UIImage(named: "icon_menu", in: .yapPakistan), for: .normal)
     }
 
     func setupLocalization() {
@@ -147,8 +147,9 @@ fileprivate extension CardsViewController {
             .subscribe(onNext: { `self`, string in
                 self.titleLabelVC.text = string.titleView
                 self.titleLabel.text = string.titleCard
-                self.subTitleLabel.text = self.isForSetPinFlow ? "Card balance": string.subTitle
+                self.subTitleLabel.text = self.isSetPinDoneFlow ? "Card balance": string.subTitle
                 self.detailsButton.setTitle(string.seeDetail, for: .normal)
+                self.cardImage.image = UIImage(named: string.cardImage, in: .yapPakistan)
                 self.pageNumberLabel.text = string.count
             })
             .disposed(by: rx.disposeBag)
@@ -182,13 +183,18 @@ fileprivate extension CardsViewController {
         cardInfoStack
             .toBottomOf(cardImage, constant: 16)
             .alignEdgesWithSuperview([.left, .right], constant: 22)
-            .setCustomSpacing(12, after: balanceLabel)
         
         subTitleLabel
             .height(constant: 18)
+        
+        cardInfoStack
+            .setCustomSpacing(12, after: subTitleLabel)
 
         balanceLabel
             .height(constant: 20)
+        
+        cardInfoStack
+            .setCustomSpacing(12, after: balanceLabel)
         
         letsDoItButton
             .height(constant: 24)
@@ -235,21 +241,20 @@ fileprivate extension CardsViewController {
             .disposed(by: rx.disposeBag)
         
         viewModel.outputs.cardImageType
-            .subscribe(onNext: { _ in
-                
+            .subscribe(onNext: {  imageName in
+                self.cardImage.image = UIImage(named: imageName, in: .yapPakistan)
             })
             .disposed(by: rx.disposeBag)
-//            .subscrib
         
         viewModel.outputs.cardBalance
             .bind(to: balanceLabel.rx.text)
             .disposed(by: rx.disposeBag)
         
-//        viewModel.outputs.hideLetsDoIt
-//            .bind(to: letsDoItLabel.rx.isHidden).disposed(by: rx.disposeBag)
+        viewModel.outputs.hideLetsDoIt
+            .bind(to: letsDoItButton.rx.isHidden).disposed(by: rx.disposeBag)
 
         viewModel.outputs.isForSetPinFlow.withUnretained(self)
-            .subscribe(onNext: { `self`, value in self.isForSetPinFlow = value })
+            .subscribe(onNext: { `self`, value in self.isSetPinDoneFlow = value })
             .disposed(by: rx.disposeBag)
         viewModel.outputs.isCardBLocked.withUnretained(self)
             .subscribe(onNext: { `self`, value in self.isCardBlocked = value })

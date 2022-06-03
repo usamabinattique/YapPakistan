@@ -53,7 +53,7 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
         
         if accountStatus == .addressCaptured || accountStatus == .onboarded || accountStatus == .cardSchemeExternalCardPending || accountStatus == .cardSchemePending || partnerBankStatus == .signUpPending {
             
-            if (paymentCard.active == false && paymentCard.cardScheme == "Mastercard" ) || (paymentCard.active == nil && paymentCard.cardScheme == nil && accountStatus == .cardSchemeExternalCardPending && (partnerBankStatus != .signUpPending && partnerBankStatus != .physicalCardPending )) {
+            if (paymentCard.active == false && paymentCard.cardScheme == .Mastercard ) || (paymentCard.active == nil && paymentCard.cardScheme == .NoScheme && accountStatus == .cardSchemeExternalCardPending && (partnerBankStatus != .signUpPending && partnerBankStatus != .physicalCardPending )) {
                 //  stages.append(.init(paymentCard: paymentCard, stage: .topUp, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus))
                 let customData1 =  PaymentCardOnboardingStageModelCustomData(title: "view_payment_card_onboarding_stage_four_title".localized, subHeading: "view_payment_card_onboarding_stage_four_subheading".localized, actionTitle: "view_payment_card_onboarding_stage_four_action_title".localized, icon: UIImage.init(named: "icon_stage_top_up", in: .yapPakistan)?.asTemplate, showVerticleBreadcrum: true, completed: false, inProcess: false, isEnabled: true)
                 

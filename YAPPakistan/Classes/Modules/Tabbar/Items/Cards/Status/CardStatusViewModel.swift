@@ -66,25 +66,29 @@ class CardStatusViewModel: CardStatusViewModelType, CardStatusViewModelInputs, C
         let message: String
         let status: (order: String, build: String, ship: String)
         let action: String
+        let image: String
 
         init() {
             self.init(title: "",
                       subTitle: "",
                       message: "",
                       status: ("", "", ""),
-                      action: "")
+                      action: "",
+                      image: "")
         }
 
         init(title: String,
              subTitle: String,
              message: String,
              status: (order: String, build: String, ship: String),
-             action: String) {
+             action: String,
+             image: String) {
             self.title = title
             self.subTitle = subTitle
             self.message = message
             self.status = status
             self.action = action
+            self.image = image
         }
     }
 }

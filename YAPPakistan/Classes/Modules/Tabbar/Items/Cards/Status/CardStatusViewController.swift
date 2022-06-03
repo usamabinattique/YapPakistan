@@ -75,6 +75,7 @@ class CardStatusViewController: UIViewController {
                 self.statusLabel.text = strings.message
                 self.statusView.strings = [strings.status.order, strings.status.build, strings.status.ship]
                 self.actionButton.setTitle(strings.action, for: .normal)
+                self.cardImage.image = UIImage(named: strings.image, in: .yapPakistan)
             })
             .disposed(by: rx.disposeBag)
     }
@@ -82,7 +83,7 @@ class CardStatusViewController: UIViewController {
     func setupBindings() {
         viewModel.outputs.completedSteps.bind(to: statusView.rx.progress).disposed(by: rx.disposeBag)
         viewModel.outputs.isEnabled.bind(to: actionButton.rx.isEnabled).disposed(by: rx.disposeBag)
-
+        
         actionButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
     }

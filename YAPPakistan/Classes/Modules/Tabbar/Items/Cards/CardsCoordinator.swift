@@ -307,10 +307,11 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func deleveryStatusScreen(_ card: PaymentCard?) {
-        let status = card?.deliveryStatus ?? .ordered
+        let status = card?.deliveryStatus ?? .notCreated
         let cardSerial = card?.cardSerialNumber ?? ""
+        let schemeType = card?.cardScheme ?? .PayPak
 
-        let viewController = CardStatusModuleBuilder(container: self.container, status: status).viewController()
+        let viewController = CardStatusModuleBuilder(container: self.container, status: status, schemeImage: schemeType).viewController()
         viewController.hidesBottomBarWhenPushed = true
         self.navigationRoot.pushViewController(viewController)
 
