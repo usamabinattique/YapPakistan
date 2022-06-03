@@ -21,9 +21,11 @@ class StoreViewController: UIViewController {
         return tableView
     }()
     
+    lazy var screenTitle = UIFactory.makeLabel(font: .regular, text: "screen_store_screen_title_text".localized)
+    
     lazy var heading: UILabel = {
         let label = UILabel()
-        label.text = "screen_store_screen_title_text".localized
+        label.text = "screen_store_heading_label_text".localized
         label.font = .title3
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -51,6 +53,8 @@ class StoreViewController: UIViewController {
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationItem.titleView = screenTitle
         
         setupSubViews()
         setupConstraints()
@@ -101,7 +105,8 @@ extension StoreViewController: ViewDesignable {
     
     func setupTheme(){
         self.themeService.rx
-            .bind({ UIColor($0.primaryDark) }, to: heading.rx.textColor,navigationController!.navigationBar.rx.tintColor)
+            .bind({ UIColor($0.primaryDark) }, to: [heading.rx.textColor,
+                                                    navigationController!.navigationBar.rx.tintColor, screenTitle.rx.textColor])
             .disposed(by: disposeBag)
     }
     
