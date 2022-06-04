@@ -34,7 +34,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'Adjust', '~> 4.0'
 
   #MARK: Networking
-  spec.dependency 'Alamofire', '~> 5.0'
+  spec.dependency 'Alamofire', '5.6.1'
 
   #MARK: Private
   spec.dependency 'YAPCardScanner', '1.2.17'
@@ -42,25 +42,25 @@ Pod::Spec.new do |spec|
   spec.dependency 'YAPComponents', '~> 0'
 
   #MARK: Reactive
-  spec.dependency 'RxCocoa', '~> 6.0'
-  spec.dependency 'RxDataSources', '~> 5.0'
-  spec.dependency 'RxGesture', '~> 4.0'
-  spec.dependency 'RxOptional', '~> 5.0'
-  spec.dependency 'RxSwift', '~> 6.0'
-  spec.dependency 'RxSwiftExt', '~> 6.0'
-  spec.dependency 'RxTheme', '~> 5.0'
+  spec.dependency 'RxCocoa', '6.5.0'
+  spec.dependency 'RxDataSources', '5.0.0'
+  spec.dependency 'RxGesture', '4.0.4'
+  spec.dependency 'RxOptional', '5.0.2'
+  spec.dependency 'RxSwift', '6.5.0'
+  spec.dependency 'RxSwiftExt', '6.0.1'
+  spec.dependency 'RxTheme', '5.0.4'
 
   #MARK: UI
+  spec.dependency 'SwiftyGif', '5.4.3'
+  spec.dependency 'SDWebImage', '5.12.5'
   spec.dependency 'HWPanModal', '~> 0'
-  spec.dependency 'SDWebImage', '~> 5.0'
-  spec.dependency 'SwiftyGif', '~> 5.0'
   spec.dependency 'FSPagerView', '~> 0.8.3'
   spec.dependency 'SwipeCellKit'
   spec.dependency 'MXParallaxHeader'
 
   #MARK: Utilities
-  spec.dependency 'PhoneNumberKit', '~> 3.0'
   spec.dependency 'SwifterSwift', '~> 5.0'
+  spec.dependency 'PhoneNumberKit', '3.3.4'
 
   #MARK: Google
   spec.dependency 'GoogleMaps'
