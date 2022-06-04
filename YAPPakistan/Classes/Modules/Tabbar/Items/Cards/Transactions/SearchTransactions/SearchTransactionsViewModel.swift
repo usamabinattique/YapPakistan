@@ -10,6 +10,7 @@ import RxSwift
 import YAPCore
 import YAPComponents
 import RxDataSources
+import RxTheme
 
 
 protocol SearchTransactionsViewModelInput {
@@ -21,7 +22,8 @@ protocol SearchTransactionsViewModelOutput {
     var searchText: Observable<String?> { get }
     var transactionsViewModel: TransactionsViewModelType { get }
     var close: Observable<Void> { get }
-    var transactionDetails: Observable<CDTransaction> { get }
+    var transactionDetails: Observable<TransactionResponse> { get }
+    var noTransFound: Observable<String> { get }
 }
 
 protocol SearchTransactionsViewModelType {
@@ -39,10 +41,11 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     
     private let searchTextSubject = PublishSubject<String?>()
     private let closeSubject = PublishSubject<Void>()
-    private let transactionDetailsSubject = PublishSubject<CDTransaction>()
+    private let transactionDetailsSubject = PublishSubject<TransactionResponse>()
+    private let noTransFoundSubject = ReplaySubject<String>.create(bufferSize: 1)
     
     lazy var transactionsViewModelSubject: TransactionsViewModelType = {
-        let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(cardSerialNumber: card?.cardSerialNumber)
+        let transactionViewModel: TransactionsViewModelType = TransactionsViewModel(transactionDataProvider: transactionDataProvider, repository: repository, cardSerialNumber: card?.cardSerialNumber, themService: themeService, showFilter: false)
 
         return transactionViewModel
     }()
@@ -61,13 +64,27 @@ class SearchTransactionsViewModel: SearchTransactionsViewModelInput, SearchTrans
     var searchText: Observable<String?> { searchTextSubject.asObservable() }
     var transactionsViewModel: TransactionsViewModelType { transactionsViewModelSubject }
     var close: Observable<Void> { closeSubject.asObservable() }
-    var transactionDetails: Observable<CDTransaction> { transactionDetailsSubject.asObservable() }
+    var transactionDetails: Observable<TransactionResponse> { transactionDetailsSubject.asObservable() }
+    var noTransFound: Observable<String> { noTransFoundSubject.asObservable() }
     
-    init(card: PaymentCard? = nil) {
+    private var themeService: ThemeService<AppTheme>!
+    private var transactionDataProvider: PaymentCardTransactionProvider!
+    private var repository: TransactionsRepositoryType
+    
+    init(card: PaymentCard? = nil, themeService: ThemeService<AppTheme>!, transactionDataProvider: PaymentCardTransactionProvider, repository: TransactionsRepositoryType) {
+        self.repository = repository
         self.card = card
+        self.themeService = themeService
+        self.transactionDataProvider = transactionDataProvider
+        
+        searchTextSubject.subscribe(onNext: { text in
+            print("search text in searchTranVM \(text)")
+        }).disposed(by: disposeBag)
         
         searchTextSubject.bind(to: transactionsViewModelSubject.inputs.searchTextObserver).disposed(by: disposeBag)
         transactionsViewModelSubject.outputs.transactionDetails.bind(to: transactionDetailsSubject).disposed(by: disposeBag)
+        
+        transactionsViewModelSubject.inputs.fetchTransactionsObserver.onNext(())
     }
     
 }

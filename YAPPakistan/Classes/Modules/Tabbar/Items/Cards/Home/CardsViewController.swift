@@ -14,53 +14,55 @@ class CardsViewController: UIViewController {
     private lazy var titleLabelVC = UIFactory.makeLabel(font: .large, alignment: .center)
     private lazy var titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
     private lazy var cardImage = UIFactory.makeImageView()
+    
     private lazy var subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
+    private lazy var balanceLabel = UIFactory.makeLabel(font: .regular, alignment: .center)
+    private lazy var letsDoItButton = UIFactory.makeButton(with: .regular).setHidden(true)
+    
+    private lazy var cardInfoStack = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fill, spacing: 2, arrangedSubviews: [subTitleLabel, balanceLabel, letsDoItButton])
+    
     private lazy var detailsIcon = UIFactory.makeImageView()
     private lazy var detailsButton = UIFactory.makeButton(with: .regular)
     private lazy var pageNumberLabel = UIFactory.makeLabel(font: .small, alignment: .center)
-    private lazy var spacers = [ UIFactory.makeView(), UIFactory.makeView(),
-                                 UIFactory.makeView(), UIFactory.makeView(),
-                                 UIFactory.makeView() ]
-    private lazy var addButton = barButtonItem(image: nil, insectBy: .zero)
+//    private lazy var spacers = [ UIFactory.makeView(), UIFactory.makeView(),
+//                                 UIFactory.makeView(), UIFactory.makeView(),
+//                                 UIFactory.makeView() ]
+    //private lazy var addButton = barButtonItem(image: nil, insectBy: .zero)
     private lazy var sideMenuButton = barButtonItem(image: nil, insectBy: .zero)
 
     private lazy var iconContainer = UIFactory.makeImageView().shaddow()  // FIXME
     private lazy var clockEyeIcon = UIFactory.makeImageView()   // FIXME
 
-    private lazy var letsDoItLabel = UIFactory.makeButton(with: .regular).setHidden(true)
-
     fileprivate func updateButton() {
-        #warning("FIXME")
+        
         let theme = themeService.attrs
         iconContainer.backgroundColor = .white
         if isCardBlocked {
-            letsDoItLabel.backgroundColor = UIColor(theme.primary)
-            letsDoItLabel.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
-            letsDoItLabel.setTitle("Order new card", for: .normal)
+            letsDoItButton.backgroundColor = UIColor(theme.primary)
+            letsDoItButton.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
+            letsDoItButton.setTitle("Order new card", for: .normal)
             subTitleLabel.text = "This card is blocked"
             if #available(iOS 13.0, *) {
                 clockEyeIcon.image = UIImage(systemName: "eye")
             }
             clockEyeIcon.tintColor = UIColor(theme.primary)
-            letsDoItLabel.isHidden = false
+            letsDoItButton.isHidden = false
             detailsIcon.isHidden = true
             detailsButton.isHidden = true
             return
         }
-        if isForSetPinFlow {
+        if isSetPinDoneFlow {
             if isUserBlocked {
-                letsDoItLabel.backgroundColor = UIColor(theme.primary)
-                letsDoItLabel.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
-                letsDoItLabel.setTitle("Unfreeze card", for: .normal)
+                letsDoItButton.backgroundColor = UIColor(theme.primary)
+                letsDoItButton.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
+                letsDoItButton.setTitle("Unfreeze card", for: .normal)
                 subTitleLabel.text = "This card is frozen"
                 if #available(iOS 13.0, *) {
-                    clockEyeIcon.image = UIImage(systemName: "eye")
+                    clockEyeIcon.image = UIImage(systemName: "lock")
                 }
-                clockEyeIcon.tintColor = UIColor(theme.primary)
+                clockEyeIcon.tintColor = .red
             } else {
-                letsDoItLabel.backgroundColor = .clear
-                letsDoItLabel.setTitleColor(UIColor(theme.primaryDark), for: .normal)
-                letsDoItLabel.setTitle("PKR 0.0", for: .normal)
+                letsDoItButton.isHidden = true
                 subTitleLabel.text = "Card balance"
                 if #available(iOS 13.0, *) {
                     clockEyeIcon.image = UIImage(systemName: "eye")
@@ -68,17 +70,17 @@ class CardsViewController: UIViewController {
                 clockEyeIcon.tintColor = UIColor(theme.primary)
             }
         } else {
-            letsDoItLabel.backgroundColor = UIColor(theme.primary)
-            letsDoItLabel.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
-            letsDoItLabel.setTitle("Let's do it", for: .normal)
+            letsDoItButton.backgroundColor = UIColor(theme.primary)
+            letsDoItButton.setTitleColor(UIColor(theme.backgroundColor), for: .normal)
+            letsDoItButton.setTitle("Let's do it", for: .normal)
             if #available(iOS 13.0, *) {
-                clockEyeIcon.image = UIImage(systemName: "clock")
+                clockEyeIcon.image = UIImage(systemName: "exclamationmark")
             }
-            clockEyeIcon.tintColor = UIColor(theme.secondaryOrange)
+            clockEyeIcon.tintColor = UIColor(theme.secondaryBlue)
         }
     }
     var isUserBlocked = false { didSet { updateButton() }}
-    var isForSetPinFlow = false { didSet { updateButton() }}
+    var isSetPinDoneFlow = false { didSet { updateButton() }}
     var isCardBlocked = false { didSet { updateButton() }}
 
     // MARK: - Properties
@@ -110,7 +112,7 @@ class CardsViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        letsDoItLabel.layer.cornerRadius = letsDoItLabel.frame.size.height / 2
+        letsDoItButton.layer.cornerRadius = letsDoItButton.frame.size.height / 2
         iconContainer.layer.cornerRadius = iconContainer.frame.size.height / 2
     }
 }
@@ -120,15 +122,13 @@ fileprivate extension CardsViewController {
     func setupViews() {
         view.addSub(views: [ titleLabel,
                              cardImage,
-                             subTitleLabel,
+                             cardInfoStack,
                              detailsIcon,
                              detailsButton,
                              pageNumberLabel,
-                             letsDoItLabel,
                              iconContainer ])
         iconContainer.addSub(view: clockEyeIcon)
-        view.addSub(views: spacers)
-        navigationItem.rightBarButtonItem = addButton.barItem
+        //navigationItem.rightBarButtonItem = addButton.barItem
         navigationItem.leftBarButtonItem = sideMenuButton.barItem
         navigationItem.titleView = titleLabelVC
 
@@ -138,8 +138,8 @@ fileprivate extension CardsViewController {
     func setupResources() {
         cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
         detailsIcon.image = UIImage(named: "arrow_up_purple", in: .yapPakistan)
-        addButton.button?.setImage(UIImage(named: "icon_home_add", in: .yapPakistan), for: .normal)
-        sideMenuButton.button?.setImage(UIImage(named: "icon_menu", in: .yapPakistan), for: .normal)
+        //addButton.button?.setImage(UIImage(named: "icon_home_add", in: .yapPakistan), for: .normal)
+        //sideMenuButton.button?.setImage(UIImage(named: "icon_menu", in: .yapPakistan), for: .normal)
     }
 
     func setupLocalization() {
@@ -147,8 +147,9 @@ fileprivate extension CardsViewController {
             .subscribe(onNext: { `self`, string in
                 self.titleLabelVC.text = string.titleView
                 self.titleLabel.text = string.titleCard
-                self.subTitleLabel.text = self.isForSetPinFlow ? "Card balance": string.subTitle
+                self.subTitleLabel.text = self.isSetPinDoneFlow ? "Card balance": string.subTitle
                 self.detailsButton.setTitle(string.seeDetail, for: .normal)
+                self.cardImage.image = UIImage(named: string.cardImage, in: .yapPakistan)
                 self.pageNumberLabel.text = string.count
             })
             .disposed(by: rx.disposeBag)
@@ -160,71 +161,58 @@ fileprivate extension CardsViewController {
             .bind({ UIColor($0.primaryDark) }, to: [titleLabelVC.rx.textColor])
             .bind({ UIColor($0.primaryDark) }, to: [titleLabel.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [subTitleLabel.rx.textColor])
+            .bind({ UIColor($0.primaryDark) }, to: [balanceLabel.rx.textColor])
             .bind({ UIColor($0.primary) }, to: [detailsIcon.rx.tintColor])
             .bind({ UIColor($0.primary) }, to: [detailsButton.rx.titleColor(for: .normal)])
-//            .bind({ UIColor($0.primary) }, to: [letsDoItLabel.rx.backgroundColor])
-//            .bind({ UIColor($0.backgroundColor) }, to: [letsDoItLabel.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.primary) }, to: [letsDoItButton.rx.backgroundColor])
+            .bind({ UIColor($0.backgroundColor) }, to: [letsDoItButton.rx.titleColor(for: .normal)])
             .bind({ UIColor($0.greyDark) }, to: [pageNumberLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {
-        spacers[0]
-            .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
-
+        
         titleLabel
-            .toBottomOf(spacers[0], constant: -5)
-            .alignEdgesWithSuperview([.left, .right], constant: 22)
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right], constants: [0, 22, 22])
         cardImage
             .toBottomOf(titleLabel, constant: 16)
             .centerHorizontallyInSuperview()
             .widthEqualToSuperView(multiplier: 205 / 375)
             .aspectRatio(325 / 204)
-        subTitleLabel
+        
+        cardInfoStack
             .toBottomOf(cardImage, constant: 16)
             .alignEdgesWithSuperview([.left, .right], constant: 22)
+        
+        subTitleLabel
+            .height(constant: 18)
+        
+        cardInfoStack
+            .setCustomSpacing(12, after: subTitleLabel)
 
-        spacers[1]
-            .toBottomOf(subTitleLabel)
-            .alignEdgesWithSuperview([.left, .right])
-
-        letsDoItLabel
-            .toBottomOf(spacers[1])
-            .centerHorizontallyInSuperview()
-            .height(constant: 32)
+        balanceLabel
+            .height(constant: 20)
+        
+        cardInfoStack
+            .setCustomSpacing(12, after: balanceLabel)
+        
+        letsDoItButton
+            .height(constant: 24)
             .width(constant: 135)
 
-        spacers[2]
-            .toBottomOf(letsDoItLabel)
-            .alignEdgesWithSuperview([.left, .right])
-
         detailsIcon
-            .toBottomOf(spacers[2])
+            .toBottomOf(cardInfoStack, constant: 30)
             .centerHorizontallyInSuperview()
             .height(constant: 22)
             .aspectRatio()
         detailsButton
             .toBottomOf(detailsIcon)
             .centerHorizontallyInSuperview()
-
-        spacers[3]
-            .toBottomOf(detailsButton)
-            .alignEdgesWithSuperview([.left, .right])
-
+        
         pageNumberLabel
-            .toBottomOf(spacers[3], constant: -5)
+            .toBottomOf(detailsButton, constant: 41)
             .centerHorizontallyInSuperview()
-
-        spacers[4]
-            .toBottomOf(pageNumberLabel)
-            .alignEdgesWithSuperview([.left, .right, .safeAreaBottom])
-
-        spacers[0]
-            .heightEqualTo(view: spacers[1], multiplier: 2)
-            .heightEqualTo(view: spacers[2], multiplier: 2)
-            .heightEqualTo(view: spacers[3], multiplier: 1)
-            .heightEqualTo(view: spacers[4], multiplier: 1)
-
+        
         clockEyeIcon
             .alignEdgesWithSuperview([.top, .bottom, .left, .right], constant: 8)
             .height(constant: 25)
@@ -240,11 +228,33 @@ fileprivate extension CardsViewController {
             self?.showAlert(title: "", message: error, defaultButtonTitle: "common_button_ok".localized)
         }).disposed(by: rx.disposeBag)
 
+        viewModel.outputs.isCardActive
+            .subscribe(onNext:{ isActive in
+                if isActive {
+                    self.balanceLabel.isHidden = false
+                    self.letsDoItButton.isHidden = true
+                } else {
+                    self.balanceLabel.isHidden = true
+                    self.letsDoItButton.isHidden = false
+                }
+            })
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.cardImageType
+            .subscribe(onNext: {  imageName in
+                self.cardImage.image = UIImage(named: imageName, in: .yapPakistan)
+            })
+            .disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.cardBalance
+            .bind(to: balanceLabel.rx.text)
+            .disposed(by: rx.disposeBag)
+        
         viewModel.outputs.hideLetsDoIt
-            .bind(to: letsDoItLabel.rx.isHidden).disposed(by: rx.disposeBag)
+            .bind(to: letsDoItButton.rx.isHidden).disposed(by: rx.disposeBag)
 
         viewModel.outputs.isForSetPinFlow.withUnretained(self)
-            .subscribe(onNext: { `self`, value in self.isForSetPinFlow = value })
+            .subscribe(onNext: { `self`, value in self.isSetPinDoneFlow = value })
             .disposed(by: rx.disposeBag)
         viewModel.outputs.isCardBLocked.withUnretained(self)
             .subscribe(onNext: { `self`, value in self.isCardBlocked = value })
@@ -258,7 +268,7 @@ fileprivate extension CardsViewController {
             .disposed(by: rx.disposeBag)
 
         detailsButton.rx.tap.map{ _ in () }
-            .merge(with: letsDoItLabel.rx.tap.map{ _ in () }.filter({[unowned self] _ in !self.isUserBlocked }) )
+            .merge(with: letsDoItButton.rx.tap.map{ _ in () }.filter({[unowned self] _ in !self.isUserBlocked }) )
             .merge(with: cardImage.rx.tapGesture().skip(1).map{ _ in () })
             .merge(with: detailsIcon.rx.tapGesture().skip(1).map{ _ in () })
             .merge(with: view.rx.swipeGesture(.up).skip(1).map{ _ in () })
@@ -266,11 +276,11 @@ fileprivate extension CardsViewController {
             .bind(to: viewModel.inputs.detailsObservers)
             .disposed(by: rx.disposeBag)
 
-        letsDoItLabel.rx.tap.map{ _ in () }
+        letsDoItButton.rx.tap.map{ _ in () }
             .filter({[unowned self] _ in self.isUserBlocked })
             .bind(to: viewModel.inputs.unfreezObserver).disposed(by: rx.disposeBag)
 
-        letsDoItLabel.rx.tap.map{ _ in () }
+        letsDoItButton.rx.tap.map{ _ in () }
             .filter({[unowned self] _ in self.isCardBlocked })
             .bind(to: viewModel.inputs.orderNewObserver).disposed(by: rx.disposeBag)
     }

@@ -8,6 +8,7 @@
 
 import Foundation
 import PhoneNumberKit
+import UIKit
 
 public extension String {
     subscript(i: Int) -> String {
@@ -158,6 +159,10 @@ public extension String {
         let color = UIColor.randomColor()
         return self.initialsImage(color: color)
     }
+    
+//    func thumbnail(for colour: UIColor) {
+//        return initialsImage(color: <#T##UIColor#>)
+//    }
 }
 
 public extension String {

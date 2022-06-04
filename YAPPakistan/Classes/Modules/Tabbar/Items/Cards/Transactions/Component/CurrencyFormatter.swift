@@ -57,6 +57,6 @@ class CurrencyFormatter {
 }
 
 extension String {
-    var amountFromFormattedAmount: String { components(separatedBy: " ").last ?? "0.00" }
+    var amountFromFormattedAmount: String { components(separatedBy: " ").last ?? "" }
     var currencyFromFormattedAmount: String? { components(separatedBy: " ").first }
 }

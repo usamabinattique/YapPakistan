@@ -34,6 +34,12 @@ class ReachedQueueTopViewController: UIViewController {
         return playerLayer
     }()
 
+    private lazy var ibanTitleLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "Here's your IBAN")
+    
+    private lazy var ibanNumberLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping, text: "AE35 0400 0001 8800 **** ***")
+    
+    private lazy var ibanNumberView = UIFactory.makeView()
+    
     private lazy var infoLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
 
     private lazy var completeVerificationButton = UIFactory.makeAppRoundedButton(with: .large)
@@ -68,11 +74,8 @@ class ReachedQueueTopViewController: UIViewController {
         setupConstraints()
         setupVideo()
         bindViewModel()
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.setPlayerViewBounds()
-            self?.startVideo()
-        }
+        
+        viewModel.inputs.createIBAN.onNext(())
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -84,10 +87,16 @@ class ReachedQueueTopViewController: UIViewController {
     private func setupViews() {
         view.addSubview(heading)
         view.addSubview(subHeading)
+        view.addSubview(ibanTitleLabel)
+        ibanNumberView.addSubview(ibanNumberLabel)
+        view.addSubview(ibanNumberView)
         view.addSubview(infoLabel)
         view.addSubview(completeVerificationButton)
         playerView.layer.addSublayer(playerLayer)
         view.addSubview(playerView)
+        
+        ibanNumberView.layer.cornerRadius = 22.0
+        ibanNumberView.clipsToBounds = true
     }
 
     private func setupTheme() {
@@ -96,6 +105,9 @@ class ReachedQueueTopViewController: UIViewController {
             .bind({ UIColor($0.primaryDark) }, to: heading.rx.textColor)
             .bind({ UIColor($0.greyDark) }, to: subHeading.rx.textColor)
             .bind({ UIColor($0.backgroundColor) }, to: playerView.rx.backgroundColor)
+            .bind({ UIColor($0.greyDark) }, to: ibanTitleLabel.rx.textColor)
+            .bind({ UIColor($0.primaryDark) }, to: ibanNumberLabel.rx.textColor)
+            .bind({ UIColor($0.greyLight).withAlphaComponent(0.5) }, to: ibanNumberView.rx.backgroundColor)
             .bind({ UIColor($0.greyDark) }, to: infoLabel.rx.textColor)
             .bind({ UIColor($0.primary) }, to: completeVerificationButton.rx.backgroundColor)
             .disposed(by: disposeBag)
@@ -114,9 +126,24 @@ class ReachedQueueTopViewController: UIViewController {
         playerView
             .toBottomOf(subHeading)
             .alignEdgesWithSuperview([.left, .right])
-            .toTopOf(infoLabel)
+            .toTopOf(ibanTitleLabel)
 
+        ibanTitleLabel
+            .toBottomOf(playerView, constant: 29)
+            .alignEdgesWithSuperview([.left, .right], constants: [25, 25])
+            .height(constant: 20)
+        
+        ibanNumberView
+            .toBottomOf(ibanTitleLabel, constant: 14)
+            .alignEdgesWithSuperview([.left, .right], constants: [40, 40])
+            .height(constant: 44)
+        
+        ibanNumberLabel
+            .alignAllEdgesWithSuperview()
+            .centerHorizontallyInSuperview()
+        
         infoLabel
+            .toBottomOf(ibanNumberLabel, constant: 42)
             .alignEdgesWithSuperview([.left, .right], constants: [40, 40])
             .toTopOf(completeVerificationButton, .greaterThanOrEqualTo, constant: 10)
             .toTopOf(completeVerificationButton, .lessThanOrEqualTo, constant: 30)
@@ -181,5 +208,16 @@ class ReachedQueueTopViewController: UIViewController {
                             secondaryButtonHandler: nil,
                             completion: nil)
         }).disposed(by: disposeBag)
+        
+        viewModel.outputs.ibanNumber.bind(to: ibanNumberLabel.rx.text).disposed(by: disposeBag)
+        
+        viewModel.outputs.ibanCreated
+            .subscribe(onNext: { [weak self] _ in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                    self?.setPlayerViewBounds()
+                    self?.startVideo()
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }

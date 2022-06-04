@@ -48,7 +48,7 @@ class TopUpAccountDetailsViewModel: TopUpAccountDetailsViewModelType, TopUpAccou
     var shareInfo: Observable<String> {
         
         shareSubject.withLatestFrom(self.accountProvider.currentAccount.unwrap()).map({
-            String.init(format: "Pay to: %@\nIBAN: %@\nAccount number: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.accountNumber ?? "")
+            String.init(format: "Account title: %@\nIBAN: %@\nAccount number: %@", $0.customer.fullName ?? "", $0.formattedIBAN ?? "", $0.accountNumber ?? "")
         })
     }
     var close: Observable<Void> { closeSubject.asObservable() }

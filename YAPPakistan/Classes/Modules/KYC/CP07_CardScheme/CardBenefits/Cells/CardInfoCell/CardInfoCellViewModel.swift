@@ -58,7 +58,8 @@ class CardInfoCellViewModel: CardInfoCellViewModelType, CardInfoCellViewModelInp
         self.schemeModel = schemeModel
         
         cardTitleSubject.onNext(schemeModel.cardTitle ?? "")
-        cardDescriptionSubject.onNext(schemeModel.cardDescription ?? "")
+        let fee = String(format: "%.2f", schemeModel.fee)
+        cardDescriptionSubject.onNext(String(format: "screen_kyc_card_scheme_description_with_fee_detail".localized, "\(fee)"))//(schemeModel.cardDescription ?? "")
         cardImageIconSubject.onNext(schemeModel.scheme == .Mastercard ? "mastercard-icon" : schemeModel.scheme == .PayPak ? "paypak-icon" : "")
     }
     

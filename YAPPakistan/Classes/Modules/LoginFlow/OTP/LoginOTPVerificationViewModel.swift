@@ -28,7 +28,7 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
          subheading: String,
          image: UIImage? = nil,
          badge: UIImage? = nil,
-         otpTime: TimeInterval = 60,
+         otpTime: TimeInterval = 30,
          otpLength: Int = 6,
          resendTries: Int = 4,
          repository: OTPRepositoryType,

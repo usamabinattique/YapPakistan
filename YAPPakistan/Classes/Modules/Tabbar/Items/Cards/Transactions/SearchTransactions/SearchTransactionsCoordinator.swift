@@ -31,8 +31,8 @@ public class SearchTransactionsCoordinator: Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        
-        let viewModel = SearchTransactionsViewModel(card: card)
+        let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository())
+        let viewModel = SearchTransactionsViewModel(themeService: container.themeService, transactionDataProvider: tProvider, repository: container.makeTransactionsRepository())
         
 //        guard let tVM = viewModel else {
 //            return result.do(onNext: { [weak self] _ in self?.localRoot.dismiss(animated: true, completion: nil) })
@@ -64,7 +64,7 @@ public class SearchTransactionsCoordinator: Coordinator<ResultType<Void>> {
 // MARK: Navigation
 
 private extension SearchTransactionsCoordinator {
-    func navigateToDetails(_ transaction: CDTransaction) {
+    func navigateToDetails(_ transaction: TransactionResponse) {
        /* coordinate(to: TransactionDetailsCoordinator(cdTransaction: transaction, root: localRoot)).subscribe(onNext: {[weak self] result in
             if !(result.isCancel) {
                 self?.categoryChangedResult = true

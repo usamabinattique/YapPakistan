@@ -21,6 +21,7 @@ public enum TransactionType: String, Codable {
 public enum ProductNameType: String {
     case yapToYap = "Y2Y_TRANSFER"
     case topup = "TOP_UP_VIA_CARD"
+    case ibft = "IBFT"
     case unkonwn
     
     var type: String {
@@ -29,6 +30,8 @@ public enum ProductNameType: String {
             return "YAP to YAP"
         case .topup:
             return "Top Up"
+        case .ibft:
+            return "IBFT"
         case .unkonwn:
             return ""
         }
@@ -98,12 +101,12 @@ public extension TransactionType {
 struct TransactionResponse: Codable, Transaction {
     
     
-    
+    let merchantCategoryName: String?
     let date: Date
     let updatedDate: Date?
     private let _type: String?
     let amount: Double
-    let currency: String
+    let currency: String?
     let category: String
     let paymentMode: String?
     let closingBalance: Double?
@@ -111,8 +114,8 @@ struct TransactionResponse: Codable, Transaction {
     var title: String?
     let merchant: String?
     let transactionId: String
-    let transactionNote: String?
-    let transactionNoteDate: Date?
+    var transactionNote: String?
+    var transactionNoteDate: Date?
     let card: String?
     var id: Int
     let productName: String?
@@ -143,7 +146,7 @@ struct TransactionResponse: Codable, Transaction {
     var customerId: String?
     var remarks: String?
     var receiverTransactionNote: String?
-    let receiverTransactionNoteDate: Date?
+    var receiverTransactionNoteDate: Date?
     let cardName1: String?
     let cardName2: String?
     let markupFee: Double?
@@ -157,9 +160,11 @@ struct TransactionResponse: Codable, Transaction {
     var cardHolderBillingTotalAmount: Double
     var latitude: Double
     var longitude: Double
-    let tapixCategory: TapixTransactionCategory?
+    var tapixCategory: TapixTransactionCategory?
 //    let senderProfilePictureUrl: String?
 //    let receiverProfilePictureUrl: String?
+    var customerId1: String?
+    var customerId2: String?
     
     var sectionDate: Date {
         return date.startOfDay
@@ -171,9 +176,25 @@ struct TransactionResponse: Codable, Transaction {
 
     var time: String {
         let timeFormatter = DateFormatter()
-        timeFormatter.dateFormat = "HH:mm"
+        timeFormatter.dateFormat = "hh:mm a"//HH:mm"
         return timeFormatter.string(from: date)
     }
+    
+    var transactionDetailTime: String {
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "MMM d, yyyy . h:mm a"
+        
+//        let dateFormatterPrint = DateFormatter()
+//        dateFormatterPrint.dateFormat = "MMM d, yyyy . h:mm a"
+//
+//        if let date = transaction.date.date(withFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS") {
+//            let stringDate = dateFormatterPrint.string(from: date)
+//            dateSubject.onNext("\(stringDate)")
+//        }
+        
+        return timeFormatter.string(from: date)
+    }
+    var selectedCurrentIndex: Int?
     
     public var calculatedTotalAmount: Double {
 //        guard !(productCode == .rmt || productCode == .swift || isNonAEDTransaction || productCode == .masterCardRefund ) else {
@@ -194,9 +215,40 @@ struct TransactionResponse: Codable, Transaction {
 //        return TransactionProductCode(rawValue: productCode ?? "") ?? .unknown
 //    }
     
-    public var icon: (image: UIImage?, contentMode: UIView.ContentMode, imageUrl: String?, identifierImage: UIImage?) {
+    public var isNonPKRTransaction: Bool {
+        (productCode == .posPurchase || productCode == .atmDeposit || productCode == .atmWithdrawl || productCode == .eCom) && currency != "PKR"
+    }
+    
+    public var isInternationaleComAndPos: Bool {
+        (productCode == .posPurchase || productCode == .eCom) && currency != "PKR"
+    }
+    
+    public var transactionUserUrl: String? {
+        switch type {
+        case .credit:
+            return receiverUrl
+        case .debit:
+            return senderUrl
+        default:
+            return nil
+        }
+    }
+    
+    public var transactionUserName: String? {
+        switch type {
+        case .credit:
+            return receiverName
+        case .debit:
+            return senderName
+        default:
+            return nil
+        }
+    }
+    
+    public var icon: (image: UIImage?, contentMode: UIView.ContentMode, imageUrl: String?, identifierImage: UIImage?, emptyThumbnail: UIImage?) {
         let title = self.title ?? "Unknown Transaction"
         var icon: UIImage? = nil
+        var emptyThumbnail: UIImage? = nil
         var contentMode: UIView.ContentMode = .scaleAspectFill
         var url: String? = nil
         var identifierImage: UIImage?
@@ -268,8 +320,10 @@ struct TransactionResponse: Codable, Transaction {
         if transactionStatus == .cancelled {
             contentMode = .scaleAspectFill
         }
-
-        return (icon, contentMode, url, identifierImage)
+        
+        emptyThumbnail = "".thumbnail
+        
+        return (icon, contentMode, url, identifierImage,emptyThumbnail)
     }
     
     func flipImageLeftRight(_ image: UIImage) -> UIImage? {
@@ -346,7 +400,7 @@ struct TransactionResponse: Codable, Transaction {
         case markupFee = "markupFees"
         case cardHolderBillingAmount = "cardHolderBillingAmount"
         case virtualCardDesignCode = "designCodesDTO"
-        case beneficiaryId = "beneficiaryId"
+        case beneficiaryId = "beneficiaryId" 
         case _txnState = "txnState"
         case senderCustomerId = "customerId1"
         case cardHolderBillingCurrency
@@ -354,13 +408,14 @@ struct TransactionResponse: Codable, Transaction {
         case latitude = "latitude"
         case longitude = "longitude"
         case tapixCategory = "yapCategoryDTO"
+        case merchantCategoryName = "merchantCategoryName"
     }
    
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         _type = try container.decodeIfPresent(String?.self, forKey: ._type) ?? ""
-        title = try? container.decode(String?.self, forKey: .title)
+        title = try? container.decodeIfPresent(String?.self, forKey: .title) ?? ""
         
         if let am = try? container.decodeIfPresent(Double.self, forKey: .amount) ?? 0 {
             amount = am
@@ -373,7 +428,7 @@ struct TransactionResponse: Codable, Transaction {
        // amount = try container.decodeIfPresent(Double.self, forKey: .amount) ?? 0
         fee = try container.decodeIfPresent(Double.self, forKey: .fee) ?? 0
         vat = try container.decodeIfPresent(Double.self, forKey: .vat) ?? 0
-        currency = try container.decode(String.self, forKey: .currency)
+        currency = try container.decodeIfPresent(String.self, forKey: .currency) ?? ""
         closingBalance = try? container.decodeIfPresent(Double?.self, forKey: .closingBalance) ?? 0
         openingBalance = try? container.decodeIfPresent(Double?.self, forKey: .openingBalance) ?? 0
         category = try container.decodeIfPresent(String.self, forKey: .category) ?? ""
@@ -381,55 +436,56 @@ struct TransactionResponse: Codable, Transaction {
         merchant = try container.decodeIfPresent(String?.self, forKey: .merchant) ?? ""
         transactionNote = try? container.decodeIfPresent(String?.self, forKey: .transactionNote) ?? ""
         let dateString = try container.decodeIfPresent(String.self, forKey: .date) ?? ""
-        let updatedDateString = (try? container.decode(String?.self, forKey: .updatedDate)) ?? ""
+        let updatedDateString = (try? container.decodeIfPresent(String?.self, forKey: .updatedDate)) ?? ""
         let creationDate = DateFormatter.transactionDateFormatter.date(from: dateString.formattedDateString)
         self.date = creationDate ?? Date()
-        self.updatedDate = DateFormatter.transactionDateFormatter.date(from: updatedDateString.formattedDateString) ?? creationDate
-        let transactionNoteDateString = try? container.decode(String?.self, forKey: .transactionNoteDate)
-        transactionNoteDate = DateFormatter.transactionDateFormatter.date(from: transactionNoteDateString != nil ? transactionNoteDateString!.formattedDateString : "")
-        transactionId = try container.decode(String.self, forKey: .transactionId)
+        self.updatedDate = DateFormatter.transactionDateFormatter.date(from: updatedDateString?.formattedDateString ?? "") ?? creationDate
+        let transactionNoteDateString = try? container.decodeIfPresent(String.self, forKey: .transactionNoteDate)
+        transactionNoteDate = DateFormatter.transactionDateFormatter.date(from: transactionNoteDateString != nil ? (transactionNoteDateString?.formattedDateString ?? "") : "")
+        transactionId = try container.decodeIfPresent(String.self, forKey: .transactionId) ?? ""
         id = try container.decodeIfPresent(Int.self, forKey: .id) ?? 0
-        card = try? container.decode(String?.self, forKey: .card)
+        card = try? container.decodeIfPresent(String.self, forKey: .card)
         productName = try? container.decodeIfPresent(String?.self, forKey: .productName) ?? ""
         _productCode = try container.decodeIfPresent(String?.self, forKey: ._productCode) ?? ""
-        totalAmount = try? container.decode(Double?.self, forKey: .totalAmount)
-        status = try? container.decode(String?.self, forKey: .status)
-        senderName = try? container.decode(String?.self, forKey: .senderName)
-        receiverName = try? container.decode(String?.self, forKey: .receiverName)
-        merchantName = try? container.decode(String?.self, forKey: .merchantName)
-        merchantCategory = try? container.decode(String?.self, forKey: .merchantCategory)
-        merchantLogoUrl = try? container.decode(String?.self, forKey: .merchantLogoUrl)
-        location = try? container.decode(String?.self, forKey: .location)
-        senderUrl = try? container.decode(String?.self, forKey: .senderUrl)
-        receiverUrl = try? container.decode(String?.self, forKey: .receiverUrl)
-        maskedCardNumber = try? container.decode(String?.self, forKey: .maskedCardNumber)
-        cancelReason = try? container.decode(String?.self, forKey: .cancelReason)
-        cardType = try? container.decode(String?.self, forKey: .cardType)
-        otherBankName = try? container.decode(String?.self, forKey: .otherBankName)
-        otherBankCurrency = try? container.decode(String?.self, forKey: .otherBankCurrency)
-        otherBankCountry = try? container.decode(String?.self, forKey: .otherBankCountry)
-        otherBankBranch = try? container.decode(String?.self, forKey: .otherBankBranch)
-        otherBankBIC = try? container.decode(String?.self, forKey: .otherBankBIC)
-        fxRate = try? container.decode(String?.self, forKey: .fxRate)
+        totalAmount = try? container.decodeIfPresent(Double.self, forKey: .totalAmount)
+        status = try? container.decodeIfPresent(String.self, forKey: .status)
+        senderName = try? container.decodeIfPresent(String?.self, forKey: .senderName) ?? ""
+        receiverName = try? container.decodeIfPresent(String.self, forKey: .receiverName)
+        merchantName = try? container.decodeIfPresent(String.self, forKey: .merchantName)
+        merchantCategory = try? container.decodeIfPresent(String.self, forKey: .merchantCategory)
+        merchantLogoUrl = try? container.decodeIfPresent(String.self, forKey: .merchantLogoUrl)
+        location = try? container.decodeIfPresent(String.self, forKey: .location)
+        senderUrl = try? container.decodeIfPresent(String.self, forKey: .senderUrl)
+        receiverUrl = try? container.decodeIfPresent(String.self, forKey: .receiverUrl)
+        maskedCardNumber = try? container.decodeIfPresent(String.self, forKey: .maskedCardNumber)
+        cancelReason = try? container.decodeIfPresent(String.self, forKey: .cancelReason)
+        cardType = try? container.decodeIfPresent(String.self, forKey: .cardType)
+        otherBankName = try? container.decodeIfPresent(String.self, forKey: .otherBankName)
+        otherBankCurrency = try? container.decodeIfPresent(String.self, forKey: .otherBankCurrency)
+        otherBankCountry = try? container.decodeIfPresent(String.self, forKey: .otherBankCountry)
+        otherBankBranch = try? container.decodeIfPresent(String.self, forKey: .otherBankBranch)
+        otherBankBIC = try? container.decodeIfPresent(String.self, forKey: .otherBankBIC)
+        fxRate = try? container.decodeIfPresent(String.self, forKey: .fxRate)
         settlementAmount = try container.decodeIfPresent(Double.self, forKey: .settlementAmount) ?? 0
-        customerId = try? container.decode(String?.self, forKey: .customerId)
-        remarks = try? container.decode(String?.self, forKey: .remarks)
-        receiverTransactionNote = try? container.decode(String?.self, forKey: .receiverTransactionNote)
-        let receiverTransactionNoteDateString = try? container.decode(String?.self, forKey: .transactionNoteDate)
+        customerId = try? container.decodeIfPresent(String.self, forKey: .customerId)
+        remarks = try? container.decodeIfPresent(String.self, forKey: .remarks)
+        receiverTransactionNote = try? container.decodeIfPresent(String.self, forKey: .receiverTransactionNote)
+        let receiverTransactionNoteDateString = try? container.decodeIfPresent(String.self, forKey: .transactionNoteDate)
         receiverTransactionNoteDate = DateFormatter.transactionDateFormatter.date(from: receiverTransactionNoteDateString != nil ? receiverTransactionNoteDateString!.formattedDateString : "")
-        cardName1 = try? container.decode(String?.self, forKey: .cardName1)
-        cardName2 = try? container.decode(String?.self, forKey: .cardName2)
+        cardName1 = try? container.decodeIfPresent(String.self, forKey: .cardName1)
+        cardName2 = try? container.decodeIfPresent(String.self, forKey: .cardName2)
         markupFee = try? container.decodeIfPresent(Double?.self, forKey: .markupFee) ?? 0
         cardHolderBillingAmount = try container.decodeIfPresent(Double.self, forKey: .cardHolderBillingAmount) ?? 0
-        virtualCardDesignCode = try? container.decode(CardDesign?.self, forKey: .virtualCardDesignCode)
-        beneficiaryId = try? container.decode(String?.self, forKey: .beneficiaryId)
-        senderCustomerId = try? container.decode(String?.self, forKey: .senderCustomerId)
+        virtualCardDesignCode = try? container.decodeIfPresent(CardDesign.self, forKey: .virtualCardDesignCode)
+        beneficiaryId = try? container.decodeIfPresent(String.self, forKey: .beneficiaryId)
+        senderCustomerId = try? container.decodeIfPresent(String.self, forKey: .senderCustomerId)
         _txnState = try container.decodeIfPresent(String.self, forKey: ._txnState)
         cardHolderBillingCurrency = try? container.decodeIfPresent(String.self, forKey: .cardHolderBillingCurrency)
         cardHolderBillingTotalAmount = try container.decodeIfPresent(Double.self, forKey: .cardHolderBillingTotalAmount) ?? 0
         latitude = try container.decodeIfPresent(Double.self, forKey: .latitude) ?? 0.0
         longitude = try container.decodeIfPresent(Double.self, forKey: .longitude) ?? 0.0
         tapixCategory = try container.decodeIfPresent(TapixTransactionCategory.self, forKey: .tapixCategory)
+        merchantCategoryName = try container.decodeIfPresent(String.self, forKey: .merchantCategoryName)
     }
 
     init(withTransactionId id: String) {
@@ -488,6 +544,7 @@ struct TransactionResponse: Codable, Transaction {
         tapixCategory = nil
         latitude = 0.0
         longitude = 0.0
+        merchantCategoryName = nil
     }
 
     static let loadingId = "LOADINGTRANSACTIONS"
@@ -575,6 +632,7 @@ extension TransactionResponse {
         tapixCategory = nil
         latitude = 0.0
         longitude = 0.0
+        merchantCategoryName = nil
     }
 }
 
@@ -638,6 +696,7 @@ extension TransactionResponse {
         tapixCategory = transaction.tapixCategory
         latitude = transaction.latitude
         longitude = transaction.longitude
+        merchantCategoryName = transaction.merchantCategoryName
     }
 }
 
@@ -668,7 +727,7 @@ extension TransactionResponse {
     
     struct Section {
         let date: Date
-        let transactions: [TransactionResponse]
+        var transactions: [TransactionResponse]
         
         init(date: Date, transactions: [TransactionResponse]) {
             self.date = date
@@ -676,7 +735,7 @@ extension TransactionResponse {
         }
     }
     
-    public static func getNumberOfSections(allTransactions transactions: [TransactionResponse]) -> [Section] {
+    public static func getNumberOfSections(allTransactions transactions: [TransactionResponse], searchText:String? = nil) -> [Section] {
         // var unique = Set<DateComponents>()
         var dictionary = [Date:[TransactionResponse]]()
         
@@ -686,6 +745,7 @@ extension TransactionResponse {
             dictionary[transaction.sectionDate] = [transaction] + existingItems
             return ()
         })
+        
         
         var sections = dictionary.sorted(by: {$0.key.timeIntervalSince1970 > $1.key.timeIntervalSince1970}).map{
             Section.init(date: $0.key, transactions: $0.value.sorted(by: {$0.date.timeIntervalSince1970 > $1.date.timeIntervalSince1970}))
@@ -701,6 +761,21 @@ extension TransactionResponse {
                 print($0.id)
             }
         } */
+        /*
+        if let text = searchText {
+            var newSections = [Section]()
+            for section in sections {
+                var newTransactions = [TransactionResponse]()
+                for transaction in section.transactions {
+                    if transaction.title?.lowercased() == text.lowercased() {
+                        newTransactions.append(transaction)
+                    }
+                }
+                newSections.append(section)
+            }
+            sections = newSections
+        } */
+        
         return sections
     }
 
@@ -751,3 +826,40 @@ extension TransactionResponse {
     }*/
 }
 
+extension TransactionResponse {
+    var transactionTimeCategory: String? {
+     //  let category = formattedTime + " · " + ((productNameType != .unkonwn ? productNameType.type : merchantCategory ?? category))
+        
+        var title: String = time + " · "
+        
+        switch self.productName {
+        case "ECOM", "POS":
+           return title + (merchantCategoryName ?? "")
+        case "IBFT":
+            return title + "Bank transfer"
+        case "Y2Y_TRANSFER":
+            return title + "YAP to YAP"
+        case "TOP_UP_VIA_CARD":
+            return title + "Top up"
+        default:
+            return title + "Transaction"
+        }
+        
+      /*  return if (self.productName) {
+            TransactionCategory.ECOM.name, TransactionCategory.POS.name -> {
+                this.merchantCategory
+            }
+            TransactionCategory.IBFT.name -> {
+                resourcesProviders.getString(screen_add_money_dashboard_display_text_bank_transfer)
+            }
+            TransactionCategory.Y2Y_TRANSFER.name -> {
+                resourcesProviders.getString(screen_home_fragment_text_y2y)
+            }
+            TransactionCategory.TOP_UP_VIA_CARD.name -> {
+                resourcesProviders.getString(screen_home_fragment_text_top_up_label)
+            }
+            else -> "Transaction"
+
+        } */
+    }
+}

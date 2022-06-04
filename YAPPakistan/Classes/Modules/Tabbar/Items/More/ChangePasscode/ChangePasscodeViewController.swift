@@ -62,7 +62,7 @@ fileprivate extension ChangePasscodeViewController {
         view.addSubview(pinKeyboard)
         view.addSubview(nextButton)
         //view.addSubview(forgotButton)
-        backButton = self.addBackButton(of: .closeCircled)
+        backButton = self.addBackButton(of: .backCircled)
     }
 
     func setupResources() {

@@ -15,6 +15,10 @@ extension DateFormatter {
     }
 
     public static var serverReadableDateFormat: String {
+        return "yyyy-MM-dd"
+    }
+    
+    public static var statementReadableDateFormat: String {
         return "dd-MM-yyyy"
     }
 

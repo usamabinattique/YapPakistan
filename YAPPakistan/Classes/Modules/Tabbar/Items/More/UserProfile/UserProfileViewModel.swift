@@ -36,7 +36,7 @@ struct UserProfileTableViewItem {
     let type: UserProfileItemType
     let accessory: UserProfileTableViewAccessory?
     let actionObserver: AnyObserver<UserProfileTableViewAction>
-
+    
     init(icon: UIImage? = nil,
          title: String = "",
          warning: Observable<Bool> = Observable.of(false),
@@ -69,6 +69,7 @@ protocol UserProfileViewModelInputs {
     var intagramTapObserver: AnyObserver<UserProfileTableViewAction> { get }
     var twitterTapObserver: AnyObserver<UserProfileTableViewAction> { get }
     var facebookTapObserver: AnyObserver<UserProfileTableViewAction> { get }
+    var linkedInTapObserver: AnyObserver<UserProfileTableViewAction> { get }
     var logoutTapObserver: AnyObserver<UserProfileTableViewAction> { get }
     var backObserver: AnyObserver<Void> { get }
     var logoutConfirmObserver: AnyObserver<Void>{ get }
@@ -109,7 +110,7 @@ protocol UserProfileViewModelType {
 }
 
 class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs, UserProfileViewModelOutputs {
-
+    
     // MARK: - Properties
     let disposeBag = DisposeBag()
     let biometricsManager: BiometricsManager
@@ -117,7 +118,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     var outputs: UserProfileViewModelOutputs { return self }
     var credentialStore: CredentialsStoreType!
     var notificationManager: NotificationManagerType!
-
+    
     private let customer: Observable<Customer>
     private let viewWillAppearSubject = PublishSubject<Void>()
     private let emiratesIDSubject = PublishSubject<Document?>()
@@ -137,6 +138,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     private let instagramTapSubject = PublishSubject<UserProfileTableViewAction>()
     private let twitterTapSubject = PublishSubject<UserProfileTableViewAction>()
     private let facebookTapSubject = PublishSubject<UserProfileTableViewAction>()
+    private let linkedinTapSubject = PublishSubject<UserProfileTableViewAction>()
     private let logoutTapSubject = PublishSubject<UserProfileTableViewAction>()
     private let errorSubject = PublishSubject<Error>()
     private let backSubject = PublishSubject<Void>()
@@ -149,7 +151,8 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     private let accentColorSubject = BehaviorSubject<UIColor> (value: UIColor.red) //SessionManager.current.currentProfile?.customer.accentColor ?? .primary)
     private let userNotificationPreferenceSubject = BehaviorSubject<Bool>(value: YAPUserDefaults.isNotificationOn())
     private let dismissSubject = PublishSubject<Void>()
-
+    
+    
     // MARK: - Inputs
     var viewWillAppearObserver: AnyObserver<Void> { return viewWillAppearSubject.asObserver() }
     var profilePhotoEditObserver: AnyObserver<Void> { return profilePhotoEditSubject.asObserver() }
@@ -170,7 +173,8 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     var backObserver: AnyObserver<Void> { return backSubject.asObserver() }
     var logoutConfirmObserver: AnyObserver<Void>{ return logoutConfirmSubject.asObserver() }
     var removePhotoTapObserver: AnyObserver<Void>{ return removePhotoTapSubject.asObserver() }
-
+    var linkedInTapObserver: AnyObserver<UserProfileTableViewAction> { return linkedinTapSubject.asObserver() }
+    
     // MARK: - Outputs
     var logoutConfirm: Observable<Void>{ return logoutConfirmSubject.asObservable() }
     var fullName: Observable<String?> { return customer.map { $0.fullName } }
@@ -186,7 +190,9 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     var changePasscodeTap: Observable<Void> { return passcodeTapSubject.map { _ in () }.asObservable() }
     var instagramTap: Observable<Void> { return instagramTapSubject.map { _ in () }.asObservable() }
     var twitterTap: Observable<Void> { return twitterTapSubject.map { _ in () }.asObservable() }
+    var termsAndConditionTap: Observable<Void> { return termsConditionsTapTapSubject.map { _ in () }.asObservable() }
     var facebookTap: Observable<Void> { return facebookTapSubject.map { _ in () }.asObservable() }
+    var linkedInTap: Observable<Void> { return linkedinTapSubject.map { _ in () }.asObservable() }
     var logoutTap: Observable<Void> { return logoutTapSubject.map { _ in () }.asObservable() }
     var error: Observable<Error> { return errorSubject.asObservable() }
     var back: Observable<Void> { return backSubject.asObservable() }
@@ -199,7 +205,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     var accentColor: Observable<UIColor> { return accentColorSubject.map{$0}.asObservable() }
     var userNotificationPreference: Observable<Bool> { userNotificationPreferenceSubject.asObservable() }
     var dismiss: Observable<Void> { dismissSubject.asObservable() }
-
+    
     var isRunning: Observable<Bool> {
         return Observable.from([
             viewWillAppearSubject.map { _ in true },
@@ -209,12 +215,12 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         ]).merge().startWith(true)
     }
     private var accountProvider: AccountProvider
-
+    
     // MARK: - Init
     init(customer: Observable<Customer>,
-         biometricsManager: BiometricsManager = BiometricsManager(), credentialStore: CredentialsStoreType,
+         biometricsManager: BiometricsManager, credentialStore: CredentialsStoreType,
          repository: LoginRepository, notificationManager: NotificationManagerType, accountProvider : AccountProvider) {
-
+        
         self.customer = customer
         self.accountProvider = accountProvider
         self.credentialStore = credentialStore
@@ -230,9 +236,9 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
                 self?.removeProfilePhotoFlagSubject.onNext(true)
             }
         }).disposed(by: disposeBag)
-
+        
         Observable.combineLatest(customer,userNotificationPreferenceSubject).subscribe(onNext: { [unowned self] (user, _) in
-            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: user.email), actionObservers: [
+            self.userProfileItemsSubject.onNext(UserProfileItemFactory.makeUserProfileItems(isEmiratesIDExpired: self.isEmiratesIDExpired.map { $0.isExpired }, signInWithFaceId: BiometricsManager().isBiometryEnabled(for: credentialStore.getUsername() ?? ""), actionObservers: [
                 self.personalDetailsTapObserver,
                 self.privacyTapObserver,
                 self.passcodeTapObserver,
@@ -243,44 +249,61 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
                 self.intagramTapObserver,
                 self.twitterTapObserver,
                 self.facebookTapObserver,
-                self.logoutTapObserver]))
+                self.linkedInTapObserver,
+                self.logoutTapObserver], notifationManager: notificationManager))
         }).disposed(by: disposeBag)
-
+        
         self.customer.subscribe(onNext: { [unowned self] (user) in
             self.faceIDDidChangeSubject
-            .map { didChange -> Bool in if case let UserProfileTableViewAction.toggleSwitch(value) = didChange { return value }; return false }
-            .subscribe(onNext: { [weak self] isOn in
-                self?.biometricsManager.setBiometry(isEnabled: isOn, phone: user.mobileNo)
-                self?.biometricsManager.setBiometryPermission(isPrompt: true, phone: user.mobileNo)
-            }).disposed(by: self.disposeBag)
-            }).disposed(by: disposeBag)
-
-
+                .map { didChange -> Bool in if case let UserProfileTableViewAction.toggleSwitch(value) = didChange { return value }; return false }
+                .subscribe(onNext: { [weak self] isOn in
+                    self?.biometricsManager.setBiometry(isEnabled: isOn, phone: credentialStore.getUsername() ?? "")
+                    self?.biometricsManager.setBiometryPermission(isPrompt: true, phone: credentialStore.getUsername() ?? "")
+                }).disposed(by: self.disposeBag)
+        }).disposed(by: disposeBag)
+        
+        
         emiratesIDSubject.map { EmiratesIDStatus(isExpired: $0?.isExpired) }.bind(to: emiratedIdExpiredSbuject).disposed(by: disposeBag)
         
-//        fetchEmiratesID(repository: repository)
+        //        fetchEmiratesID(repository: repository)
         uploadProfilePhoto(repository: repository)
         removeProfilePicture(repository: repository)
         logout(repository: repository)
         openInstagram()
         openTwitter()
         openFacebook()
+        openTermsandConditions()
+        openLinkedin()
         openPasscodechange()
-        notificationAuthorisationStatausChange()
-//        Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
-//            switch state {
-//            case .toggleSwitch(true):
-//                NotificationManager().turnNotificationsOn()
-//            case .toggleSwitch(false):
-//                NotificationManager().turnNotificationsOff()
-//            case .button():
-//                return
-//            }
-//
-//        }).disposed(by: disposeBag)
-
+        //notificationAuthorisationStatausChange()
+        
+        Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
+            switch state {
+            case .toggleSwitch(true):
+                self.notificationManager.turnNotificationsOn()
+            case .toggleSwitch(false):
+                self.notificationManager.turnNotificationsOff()
+            case .button():
+                return
+            }
+            
+        }).disposed(by: disposeBag)
+        
+        
+        //        Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
+        //            switch state {
+        //            case .toggleSwitch(true):
+        //                NotificationManager().turnNotificationsOn()
+        //            case .toggleSwitch(false):
+        //                NotificationManager().turnNotificationsOff()
+        //            case .button():
+        //                return
+        //            }
+        //
+        //        }).disposed(by: disposeBag)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(checkingNotifs), name: .checkUserNotificationPreference, object: nil)
-
+        
         backSubject.subscribe(onNext:{ [weak self] _ in
             guard let self = self else { return }
             self.personalDetailsTapSubject.onCompleted()
@@ -292,27 +315,29 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
             self.resultSubject.onCompleted()
             self.dismissSubject.onNext(())
             self.dismissSubject.onCompleted()
-
+            
         }).disposed(by: disposeBag)
+        
+        print("Notifications Permission \(NotificationManager().isNotificationPermissionPrompt)")
     }
-
+    
     deinit {
         NotificationCenter.default.removeObserver(self, name: .checkUserNotificationPreference, object: nil)
     }
-
-
+    
+    
     @objc
     func checkingNotifs() {
         self.userNotificationPreferenceSubject.onNext(NotificationManager().isNotificationAuthorised())
     }
-
-//    func fetchEmiratesID(repository: ProfileRepository) {
-//        let request = viewWillAppearSubject.flatMap { _ in repository.fetchDocument(forType: DocumentType.emiratesId.rawValue) }.share(replay: 1, scope: .whileConnected)
-//
-//        request.do(onNext: { _ in YAPProgressHud.hideProgressHud() }).elements().bind(to: emiratesIDSubject).disposed(by: disposeBag)
-//        request.errors().map { _ in EmiratesIDStatus(isExpired: Bool?.none) }.bind(to: emiratedIdExpiredSbuject).disposed(by: disposeBag)
-//    }
-
+    
+    //    func fetchEmiratesID(repository: ProfileRepository) {
+    //        let request = viewWillAppearSubject.flatMap { _ in repository.fetchDocument(forType: DocumentType.emiratesId.rawValue) }.share(replay: 1, scope: .whileConnected)
+    //
+    //        request.do(onNext: { _ in YAPProgressHud.hideProgressHud() }).elements().bind(to: emiratesIDSubject).disposed(by: disposeBag)
+    //        request.errors().map { _ in EmiratesIDStatus(isExpired: Bool?.none) }.bind(to: emiratedIdExpiredSbuject).disposed(by: disposeBag)
+    //    }
+    
     func uploadProfilePhoto(repository: LoginRepositoryType) {
         let imageValidation = changedProfilePhoto.unwrap().do( onNext: { _ in YAPProgressHud.showProgressHud() }  ).flatMap { (image: UIImage) -> Observable<Event<Data>> in
             return Observable.create { observer in
@@ -328,26 +353,26 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
                 return Disposables.create()
             }.materialize()
         }.share(replay: 1, scope: .whileConnected)
-
+        
         let request = imageValidation.elements().do(onNext: { _ in YAPProgressHud.showProgressHud() }).flatMap { repository.changeProfilePhoto($0, name: "profile-picture", fileName: "profile_photo.jpg", mimeType: "image/jpg") }.share(replay: 1, scope: .whileConnected)
-
+        
         request.elements().map { $0.imageUrl }.do(onNext: { [weak self] _ in
             self?.accountProvider.refreshAccount()
             YAPProgressHud.hideProgressHud()
         }).bind(to: profilePhotoURLSubject).disposed(by: disposeBag)
-
+        
             Observable.merge(imageValidation.errors(),
-                         request.errors()).debug("Error").delaySubscription(RxTimeInterval.milliseconds(500), scheduler: MainScheduler.instance).do(onNext: { _ in YAPProgressHud.hideProgressHud() }).bind(to: errorSubject).disposed(by: disposeBag)
-    }
+                             request.errors()).debug("Error").delaySubscription(RxTimeInterval.milliseconds(500), scheduler: MainScheduler.instance).do(onNext: { _ in YAPProgressHud.hideProgressHud() }).bind(to: errorSubject).disposed(by: disposeBag)
+            }
     
-func removeProfilePicture(repository: LoginRepositoryType){
-
+    func removeProfilePicture(repository: LoginRepositoryType){
+        
         let result = removePhotoTapSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
             .flatMap {_ -> Observable<Event<String?>> in
                 return repository.removeProfilePhoto()
-        }.share()
-
+            }.share()
+        
         result.elements()
             .do(onNext: { [weak self] _ in YAPProgressHud.hideProgressHud() })
             .subscribe(onNext: { [weak self] _ in
@@ -361,13 +386,13 @@ func removeProfilePicture(repository: LoginRepositoryType){
             .bind(to: errorSubject)
             .disposed(by: disposeBag)
     }
-
+    
     func openInstagram() {
         instagramTap.subscribe(onNext: { _ in
             let username =  "yap"
             let appURL = URL(string: "instagram://user?username=\(username)")!
             let application = UIApplication.shared
-
+            
             if application.canOpenURL(appURL) {
                 application.open(appURL)
             } else {
@@ -376,13 +401,13 @@ func removeProfilePicture(repository: LoginRepositoryType){
             }
         }).disposed(by: disposeBag)
     }
-
+    
     func openTwitter() {
         twitterTap.subscribe(onNext: { _ in
             let username =  "yap"
             let appURL = URL(string: "https://twitter.com/yappakistan?s=11")!
             let application = UIApplication.shared
-
+            
             if application.canOpenURL(appURL) {
                 application.open(appURL)
             } else {
@@ -401,24 +426,33 @@ func removeProfilePicture(repository: LoginRepositoryType){
         }).disposed(by: disposeBag)
     }
     
-    func notificationAuthorisationStatausChange() {
-        appNotificationsDidChangeSubject.subscribe(onNext: { [weak self] notifValue in
-            guard let self = self else { return }
-            if self.notificationManager.isNotificationAuthorised() {
-                self.notificationManager.setNotificationPermission(isPrompt: false)
-            }
-            else {
-                self.notificationManager.setNotificationPermission(isPrompt: true)
-            }
-        }).disposed(by: disposeBag)
-    }
-
+    //    func notificationAuthorisationStatausChange() {
+    //
+    ////        var isNotificationPermissionPrompt: Bool { get }
+    ////        func setNotificationPermission(isPrompt: Bool)
+    ////        func deleteNotificationPermission()
+    ////        func turnNotificationsOn()
+    ////        func isNotificationAuthorised() -> Bool
+    ////        func turnNotificationsOff()
+    ////        func observeChangeInSettings()
+    //
+    //
+    //        appNotificationsDidChangeSubject.subscribe(onNext: { [unowned self] notifValue in
+    //            if NotificationManager().isNotificationPermissionPrompt {
+    //                self.notificationManager.setNotificationPermission(isPrompt: false)
+    //            }
+    //            else {
+    //                self.notificationManager.setNotificationPermission(isPrompt: true)
+    //            }
+    //        }).disposed(by: disposeBag)
+    //    }
+    
     func openFacebook() {
         facebookTap.subscribe(onNext: { _ in
             let username =  "YAP"
             let appURL = URL(string: "https://m.facebook.com/YAPPakistan/")!
             let application = UIApplication.shared
-
+            
             if application.canOpenURL(appURL) {
                 application.open(appURL)
             } else {
@@ -427,7 +461,37 @@ func removeProfilePicture(repository: LoginRepositoryType){
             }
         }).disposed(by: disposeBag)
     }
-
+    
+    func openTermsandConditions() {
+        termsAndConditionTap.subscribe(onNext: { _ in
+            let username =  "YAP"
+            let appURL = URL(string: "https://www.yap.com/terms")!
+            let application = UIApplication.shared
+            
+            if application.canOpenURL(appURL) {
+                application.open(appURL)
+            } else {
+                let webURL = URL(string: "https://www.yap.com/terms")!
+                application.open(webURL)
+            }
+        }).disposed(by: disposeBag)
+    }
+    
+    func openLinkedin() {
+        linkedInTap.subscribe(onNext: { _ in
+            let username =  "YAP"
+            let appURL = URL(string: "https://www.linkedin.com/company/yap-pakistan/")!
+            let application = UIApplication.shared
+            
+            if application.canOpenURL(appURL) {
+                application.open(appURL)
+            } else {
+                let webURL = URL(string: "https://www.linkedin.com/company/yap-pakistan/mycompany/")!
+                application.open(webURL)
+            }
+        }).disposed(by: disposeBag)
+    }
+    
     func logout(repository: LoginRepository) {
         
         
@@ -436,85 +500,92 @@ func removeProfilePicture(repository: LoginRepositoryType){
                 self.biometricsManager.deleteBiometryForUser(phone: credentialStore.getUsername() ?? "")
                 YAPProgressHud.showProgressHud()
             })
-            .flatMap { _ -> Observable<Event<[String: String]?>> in
-                return repository.logout(deviceUUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
-            }
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-            .share()
-
-        //logoutRequest.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
-
-        logoutRequest.elements()
-            .do(onNext: { [weak self] _ in
-                let user = self?.credentialStore.getUsername() ?? ""
-                self?.biometricsManager.deleteBiometryForUser(phone: user)
-                self?.notificationManager.deleteNotificationPermission()
-                self?.credentialStore.setRemembersId(false)
-                self?.credentialStore.clearUsername()
-                let name = Notification.Name.init(.logout)
-                NotificationCenter.default.post(name: name,object: nil)
-            })
-            .map { _ in () }
-            .bind(to: resultSubject)
-            .disposed(by: disposeBag)
+                .flatMap { _ -> Observable<Event<[String: String]?>> in
+                    return repository.logout(deviceUUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
+                }
+                .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+                    .share()
+                    
+                    //logoutRequest.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
+                    
+                    logoutRequest.elements()
+                    .do(onNext: { [weak self] _ in
+                        let user = self?.credentialStore.getUsername() ?? ""
+                        self?.biometricsManager.deleteBiometryForUser(phone: user)
+                        self?.notificationManager.deleteNotificationPermission()
+                        self?.notificationManager.setNotificationPermission(isPrompt: false)
+                        //setNotificationPermission(isPrompt: Bool)
+                        
+                        //self?.credentialStore.setRemembersId(false)
+                        //self?.credentialStore.clearUsername()
+                        
+                        if ((!(self?.credentialStore.remembersId ?? false)))  {
+                            self?.credentialStore.clearUsername()
+                        }
+                        
+                        let name = Notification.Name.init(.logout)
+                        NotificationCenter.default.post(name: name,object: nil)
+                    })
+                        .map { _ in () }
+                        .bind(to: resultSubject)
+                        .disposed(by: disposeBag)
         
         
         
-//        let logoutRequest = logoutConfirm
-//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-//            .flatMap { _ -> Observable<Event<[String: String]?>> in
-//
-//                return repository.logout(deviceUUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
-//        }
-//        .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
-//        .share(replay: 1, scope: .whileConnected)
-//
-//        logoutRequest.errors()
-//            .subscribe(onNext: { [unowned self] in
-//                self.errorSubject.onNext($0) })
-//            .disposed(by: disposeBag)
-//
-//        logoutRequest.elements()
-////            .do(onNext: {_ in logoutYAPUser() })
-//            .map {_ in ()}
-//            .subscribe(onNext: { [weak self] in
-//                self?.resultSubject.onNext(()) })
-//            .disposed(by: disposeBag)
+        //        let logoutRequest = logoutConfirm
+        //            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+        //            .flatMap { _ -> Observable<Event<[String: String]?>> in
+        //
+        //                return repository.logout(deviceUUID: UIDevice.current.identifierForVendor?.uuidString ?? "")
+        //        }
+        //        .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
+        //        .share(replay: 1, scope: .whileConnected)
+        //
+        //        logoutRequest.errors()
+        //            .subscribe(onNext: { [unowned self] in
+        //                self.errorSubject.onNext($0) })
+        //            .disposed(by: disposeBag)
+        //
+        //        logoutRequest.elements()
+        ////            .do(onNext: {_ in logoutYAPUser() })
+        //            .map {_ in ()}
+        //            .subscribe(onNext: { [weak self] in
+        //                self?.resultSubject.onNext(()) })
+        //            .disposed(by: disposeBag)
     }
 }
 
 // MARK: - User Profile Items Factory
 class UserProfileItemFactory {
-    class func makeUserProfileItems(isEmiratesIDExpired: Observable<Bool>, signInWithFaceId: Bool, actionObservers: [AnyObserver<UserProfileTableViewAction>]) -> [SectionModel<String, UserProfileTableViewCellViewModelType>] {
-
+    class func makeUserProfileItems(isEmiratesIDExpired: Observable<Bool>, signInWithFaceId: Bool, actionObservers: [AnyObserver<UserProfileTableViewAction>], notifationManager : NotificationManagerType) -> [SectionModel<String, UserProfileTableViewCellViewModelType>] {
+        
         let biometricsManager = BiometricsManager()
-
+        
         var cellViewModelSecuritySection = [UserProfileTableViewCellViewModelType]()
-
-        cellViewModelSecuritySection.append(contentsOf: [UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_lock_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_privacy".localized, accessory: .button( "common_button_view".localized), actionObserver: actionObservers[1])),
-            UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_key_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_passcode".localized, accessory: .button( "common_button_change".localized), actionObserver: actionObservers[2])),
-                                                         UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_notification_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_notifications".localized, accessory: .toggleSwitch(NotificationManager().isNotificationPermissionPrompt), actionObserver: actionObservers[3])),
-            UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_face_id", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_signinwithfaceID".localized, accessory: .toggleSwitch(NotificationManager().isNotificationAuthorised()), actionObserver: actionObservers[3]))
-        ])
-
+        
+        cellViewModelSecuritySection.append(contentsOf: [UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_key_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_passcode".localized, accessory: .button( "common_button_change".localized), actionObserver: actionObservers[2])),
+                                                         UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_notification_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_notifications".localized, accessory: .toggleSwitch(notifationManager.isNotificationPermissionPrompt), actionObserver: actionObservers[3])),
+                                                         //UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_face_id", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_app_signinwithfaceID".localized, accessory: .toggleSwitch(NotificationManager().isNotificationAuthorised()), actionObserver: actionObservers[3]))
+                                                        ])
+        
         if biometricsManager.deviceBiometryType != .none {
             var icon: UIImage? = biometricsManager.deviceBiometryType == .faceID ? UIImage(named: "icon_faceId", in: .yapPakistan, compatibleWith: nil) : UIImage.sharedImage(named: "icon_touch_id")
-
+            
             //icon = SessionManager.current.currentAccountType == .b2cAccount ? icon : icon?.asTemplate
-
-
+            
+            
             let biometry = biometricsManager.deviceBiometryType == .faceID ?
-
-                UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: icon, title:  "screen_user_profile_display_text_face_id".localized, accessory: .toggleSwitch(signInWithFaceId), actionObserver: actionObservers[4])) :
-
-                UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: icon, title:  "screen_user_profile_display_text_touch_id".localized, accessory: .toggleSwitch(signInWithFaceId), actionObserver: actionObservers[4]))
-
+            
+            UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: icon, title:  "screen_user_profile_display_text_face_id".localized, accessory: .toggleSwitch(signInWithFaceId), actionObserver: actionObservers[4])) :
+            
+            UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: icon, title:  "screen_user_profile_display_text_touch_id".localized, accessory: .toggleSwitch(signInWithFaceId), actionObserver: actionObservers[4]))
+            
             cellViewModelSecuritySection.append(biometry)
         }
-
+        
         return [
             SectionModel(model:  "screen_user_profile_display_text_profile".localized, items: [ UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_profile_primary_dark", in: .yapPakistan), title:  "screen_user_profile_display_text_personal_details".localized, warning: isEmiratesIDExpired, accessory: .button( "common_button_view".localized), actionObserver: actionObservers[0]))]),
-
+            
             SectionModel(model:  "screen_user_profile_display_text_security".localized, items: cellViewModelSecuritySection),
             
             SectionModel(model:  "screen_user_profile_display_text_about_us".localized, items:
@@ -522,8 +593,9 @@ class UserProfileItemFactory {
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_instagram_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_instagram".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[7])),
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_twitter_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_twitter".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[8])),
                              UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_facebook_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_facebook".localized, accessory: .button( "screen_user_profile_button_facebook".localized), actionObserver: actionObservers[9])),
-                 UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: nil, title:  "screen_user_profile_button_logout".localized, type: UserProfileItemType.logout, accessory: nil, actionObserver: actionObservers[10]))
-            ])
+                             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: UIImage(named: "icon_linkedin_primary_dark", in: .yapPakistan, compatibleWith: nil)?.asTemplate, title:  "screen_user_profile_display_text_linkedin".localized, accessory: .button( "screen_user_profile_button_follow_us".localized), actionObserver: actionObservers[10])),
+                             UserProfileTableViewCellViewModel(UserProfileTableViewItem(icon: nil, title:  "screen_user_profile_button_logout".localized, type: UserProfileItemType.logout, accessory: nil, actionObserver: actionObservers[11]))
+                            ])
         ]
     }
 }
@@ -535,7 +607,7 @@ extension UserProfileViewModel {
         case expired
         case notSet
         case none
-
+        
         var isExpired: Bool {
             switch self {
             case .valid:
@@ -546,7 +618,7 @@ extension UserProfileViewModel {
                 return false
             }
         }
-
+        
         var eidViewDetail: String {
             switch self {
             case .valid:
@@ -559,7 +631,7 @@ extension UserProfileViewModel {
                 return ""
             }
         }
-
+        
         init(isExpired: Bool?) {
             if let isExpired = isExpired {
                 self = isExpired ? .expired : .valid

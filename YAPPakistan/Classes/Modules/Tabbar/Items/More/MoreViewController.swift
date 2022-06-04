@@ -69,8 +69,8 @@ class MoreViewController: UIViewController {
         //settingsButton.addTarget(self, action: #selector(self.openSettings(_:)), for: .touchUpInside)
         let settingsBarButtonItem = UIBarButtonItem(customView: settingsButton)
         
-        self.navigationItem.rightBarButtonItems = [settingsBarButtonItem, notificationBarButtonItem]
-
+        self.navigationItem.rightBarButtonItems = [settingsBarButtonItem]
+        
         setupSubViews()
         setupConstraints()
         setupBindings()
@@ -89,10 +89,10 @@ class MoreViewController: UIViewController {
         self.navigationController?.navigationBar.tintColor = UIColor(self.themeService.attrs.primary)
     }
     
-//    @objc
-//    private func openSettings(_ sender: UIButton) {
-//        viewModel.inputs.settingsObserver.onNext(())
-//    }
+    //    @objc
+    //    private func openSettings(_ sender: UIButton) {
+    //        viewModel.inputs.settingsObserver.onNext(())
+    //    }
     
     
 }
@@ -135,7 +135,23 @@ extension MoreViewController: ViewDesignable {
     }
     
     func setupBindings(){
-        viewModel.outputs.profileImage.bind(to: headerView.rx.profileImage).disposed(by: disposeBag)
+        //viewModel.outputs.profileImage.bind(to: headerView.rx.profileImage).disposed(by: disposeBag)
+        
+        viewModel.outputs.profileImage.subscribe(onNext: { [weak self] imageURL, img in
+            guard let self = self else { return }
+            if imageURL != "" && imageURL != nil {
+                self.headerView.profileImage.sd_setImage(with: URL(string: imageURL)) { imgObj, err, cache, url in
+                    if  err != nil {
+                        self.headerView.profileImage.image = img
+                        self.headerView.profileImage.contentMode = .scaleAspectFill
+                    }
+                } 
+            }
+            else {
+                self.headerView.profileImage.image = img
+            }
+        }).disposed(by: disposeBag)
+        
         viewModel.outputs.name.bind(to: headerView.rx.name).disposed(by: disposeBag)
         viewModel.outputs.iban.bind(to: headerView.rx.iban).disposed(by: disposeBag)
         viewModel.outputs.accountNumber.bind(to: headerView.rx.accountNumber).disposed(by: disposeBag)
@@ -184,12 +200,12 @@ private extension MoreViewController {
     }
     
     private func presentTourGuide() {
-//        guidedTour = []
-//        let accountDetailCenterPoint = headerView.bankDetailsButton.centerInWindow
-//        let accountDetailTour = GuidedTour(title: "screen_more_tour_guide_bank_detail_title".localized, tourDescription: "screen_more_tour_guide_bank_detail_description".localized, circle: GuidedCircle(centerPointX: Int(accountDetailCenterPoint.x), centerPointY: Int(accountDetailCenterPoint.y), radius: 70))
-//        guidedTour.append(accountDetailTour)
-//
-//        self.viewModel.inputs.moreHelpTourObserver.onNext(guidedTour)
+        //        guidedTour = []
+        //        let accountDetailCenterPoint = headerView.bankDetailsButton.centerInWindow
+        //        let accountDetailTour = GuidedTour(title: "screen_more_tour_guide_bank_detail_title".localized, tourDescription: "screen_more_tour_guide_bank_detail_description".localized, circle: GuidedCircle(centerPointX: Int(accountDetailCenterPoint.x), centerPointY: Int(accountDetailCenterPoint.y), radius: 70))
+        //        guidedTour.append(accountDetailTour)
+        //
+        //        self.viewModel.inputs.moreHelpTourObserver.onNext(guidedTour)
     }
 }
 
@@ -198,11 +214,11 @@ private extension MoreViewController {
 extension MoreViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let noOfCellsInRow = 3
-
+        
         let flowLayout = collectionViewLayout as! UICollectionViewFlowLayout
         let totalSpace = flowLayout.sectionInset.left
-            + flowLayout.sectionInset.right
-            + (flowLayout.minimumInteritemSpacing * CGFloat(noOfCellsInRow - 1))
+        + flowLayout.sectionInset.right
+        + (flowLayout.minimumInteritemSpacing * CGFloat(noOfCellsInRow - 1))
         let size = Int((collectionView.bounds.width - totalSpace) / CGFloat(noOfCellsInRow))
         return CGSize(width: size, height: 130)
     }

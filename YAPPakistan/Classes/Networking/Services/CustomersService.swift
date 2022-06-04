@@ -93,10 +93,17 @@ public protocol CustomerServiceType {
     func fetchCustomerPersonalDetails<T: Codable>() -> Observable<T>
     func getDashboardWidgets<T: Codable> () -> Observable<T>
     func updateDashboardWidgets<T:Codable>(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String)-> Observable<T>
+    func fetchFAQs<T: Codable>() -> Observable<T>
 }
 
     
 public class CustomersService: BaseService, CustomerServiceType {
+    
+    
+    public func fetchFAQs<T>() -> Observable<T> where T : Decodable, T : Encodable {
+        let route = APIEndpoint<String>(.get, apiConfig.messagesURL, "/api/fetch-faqs-list", headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
+    }
     
     public func updateEmail<T: Codable>(input email: String) -> Observable<T> {
         let pathVariables = [email]

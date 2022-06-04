@@ -10,14 +10,36 @@ import YAPComponents
 import RxSwift
 
 typealias DeliveryStatus = PaymentCard.DeliveryStatus
+typealias CardSchemeType = PaymentCard.CardSchemeType
 
 extension PaymentCard.DeliveryStatus {
     var message: String {
         switch self {
-        case .ordering: return "Complete verification to get your card"
-        case .ordered: return "This card is on the way"
-        case .shipping, .booked: return "Your primary card is on its way"
-        case .shipped: return "Create a PIN to start using your card"
+        case .ordered: return "Your card is ordered"
+        case .shipped: return "Your primary card is shipped"
+        case .delivered: return "Create a PIN to start using your card"
+        case .notCreated: return "Complete verification to get your card"
+        default: return "Complete verification to get your card"
+        }
+    }
+    
+    var mainScreenMessage: String {
+        switch self {
+        case .ordered: return "This card is ordered"
+        case .shipped: return "This card is on the way"
+        case .delivered: return "Create a PIN to start using your card"
+        case .notCreated: return "Complete verification to get your card"
+        default: return "Complete verification to get your card"
+        }
+    }
+}
+
+extension PaymentCard.CardSchemeType {
+    var cardImage: String {
+        switch self {
+        case .PayPak: return "image_payment_card_white_paypak"
+        case .Mastercard: return "image_payment_card_white"
+        case .NoScheme: return "card_image"
         }
     }
 }
@@ -43,6 +65,9 @@ protocol CardsViewModelOutputs {
     var isUserBlocked: Observable<Bool> { get }
     var isCardBLocked: Observable<Bool> { get }
     var orderNew: Observable<PaymentCard?> { get }
+    var isCardActive: Observable<Bool> { get }
+    var cardBalance: Observable<String> { get }
+    var cardImageType: Observable<String> { get }
 }
 
 protocol CardsViewModelType {
@@ -78,6 +103,10 @@ class CardsViewModel: CardsViewModelType,
 
     var orderNew: Observable<PaymentCard?> { orderNewSubject.withLatestFrom(cardDetailsSubject).asObservable() }
     var isCardBLocked: Observable<Bool> { isCardBLockedSubject.asObservable() }
+    
+    var isCardActive: Observable<Bool> { isCardActiveSubject.asObservable() }
+    var cardBalance: Observable<String> { cardBalanceSubject.asObservable() }
+    var cardImageType: Observable<String> { cardImageTypeSubject.asObservable() }
 
     // MARK: Subjects
     var unfreezSubject = PublishSubject<Void>()
@@ -95,6 +124,9 @@ class CardsViewModel: CardsViewModelType,
     var isUserBlockedSubject = PublishSubject<Bool>()
     var isCardBLockedSubject = BehaviorSubject<Bool>(value: false)
     var orderNewSubject = PublishSubject<Void>()
+    var isCardActiveSubject = BehaviorSubject<Bool>(value: true)
+    var cardBalanceSubject = PublishSubject<String>()
+    var cardImageTypeSubject = PublishSubject<String>()
 
     // MARK: - Properties
     private var accountProvider: AccountProvider!
@@ -142,9 +174,10 @@ class CardsViewModel: CardsViewModelType,
     }
 
     func resolveIfIncompleted(_ completionStatus: Observable<Bool>) {
-        completionStatus.filter{ !$0 }.map{ _ in DeliveryStatus.ordering }.withUnretained(self)
+        completionStatus.filter{ !$0 }
+            .map{ _ in DeliveryStatus.ordered }.withUnretained(self)
             // .do(onNext: { $0.0.deliveryStatus = $0.1 })
-            .map { $0.0.makeLocalizableStrings($0.1) }
+            .map { $0.0.makeLocalizableStrings(PaymentCard.mock) }
             .bind(to: localizedStringsSubject)
             .disposed(by: disposeBag)
     }
@@ -160,11 +193,50 @@ class CardsViewModel: CardsViewModelType,
         cardElements.bind(to: cardDetailsSubject).disposed(by: disposeBag)
 
         cardDetailsSubject.map({ $0?.blocked }).unwrap()
-            .bind(to: isUserBlockedSubject).disposed(by: disposeBag)
-
+            .bind(to: isUserBlockedSubject)
+            .disposed(by: disposeBag)
+            
+        cardDetailsSubject.map({ $0?.active ?? false }).unwrap()
+            .bind(to: isCardActiveSubject)
+            .disposed(by: disposeBag)
+                
         cardDetailsSubject
-            .map { $0?.deliveryStatus ?? .ordering }.withUnretained(self)
-            .map{ `self`, status in self.makeLocalizableStrings(status) }
+            .subscribe(onNext:{ [weak self] obj in
+                self?.cardImageTypeSubject.onNext((obj?.cardScheme)?.cardImage ?? "image_payment_card_white_paypak")
+            })
+            .disposed(by: disposeBag)
+                
+        cardDetailsSubject
+            .subscribe(onNext:{ [weak self] obj in
+                guard let deliveryStatus = obj?.deliveryStatus else { return }
+                guard let pinStatus = obj?.pinStatus else { return }
+                if (deliveryStatus == .delivered && pinStatus == .inActive) || obj?.status == .blocked {
+                    self?.hideLetsDoItSubject.onNext(false)
+                } else {
+                    self?.hideLetsDoItSubject.onNext(true)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        cardDetailsSubject
+                .subscribe(onNext:{ [weak self] obj in
+                    guard let isActive = obj?.active else { return }
+                    if isActive {
+                        self?.cardBalanceSubject.onNext(obj?.cardBalance?.formattedAmount ?? "PKR 0.00")
+                    } else {
+                        self?.cardBalanceSubject.onNext("PKR 0.00")
+                    }
+                })
+                .disposed(by: disposeBag)
+                
+        cardDetailsSubject
+            .map { obj -> PaymentCard in
+                guard let paymentObj = obj else { return PaymentCard.mock }
+                return paymentObj
+            }.withUnretained(self)
+            .map{ `self`, cardObj in
+                self.makeLocalizableStrings(cardObj)
+            }
             .bind(to: localizedStringsSubject)
             .disposed(by: disposeBag)
 
@@ -174,9 +246,10 @@ class CardsViewModel: CardsViewModelType,
 
         cardDetailsSubject.map { $0?.pinCreated == true }
             .bind(to: setPinSubject).disposed(by: disposeBag)
-//      detailsResultSubject.subscribe {
-//      print($0)
-//      }.disposed(by: disposeBag)
+        
+        cardDetailsSubject.subscribe {
+            print($0)
+        }.disposed(by: disposeBag)
 
         cardsFetched.errors().map({ $0.localizedDescription }).bind(to: errorSubject).disposed(by: disposeBag)
     }
@@ -189,15 +262,17 @@ extension CardsViewModel {
         var titleCard: String = ""
         var subTitle: String = ""
         var seeDetail: String = ""
+        var cardImage: String = ""
         var count: String = ""
     }
-
-    fileprivate func makeLocalizableStrings(_ status: DeliveryStatus?) -> LocalizedStrings {
-        guard let message = status?.message else { return LocalizedStrings() }
+    
+    fileprivate func makeLocalizableStrings(_ paymentCard: PaymentCard) -> LocalizedStrings {
+        
         return LocalizedStrings(titleView: "Your cards",
-                                titleCard: "Primary Card",
-                                subTitle: message,
+                                titleCard: (paymentCard.nameUpdated ?? false) ? (paymentCard.cardName ?? "") : "Primary card",
+                                subTitle: (paymentCard.deliveryStatus).mainScreenMessage,
                                 seeDetail: "See details",
+                                cardImage: (paymentCard.cardScheme).cardImage,
                                 count: "1 of 1")
     }
 }

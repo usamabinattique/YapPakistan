@@ -183,7 +183,7 @@ extension CustomDateStatementViewController: ViewDesignable {
             .disposed(by: disposeBag)
 
         startDatePicker.rx
-            .controlEvent(.valueChanged)
+            .controlEvent([.valueChanged, .touchCancel])
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
 
@@ -201,6 +201,26 @@ extension CustomDateStatementViewController: ViewDesignable {
                 self.viewModel.inputs.endDateObserver.onNext(date)
             })
             .disposed(by: disposeBag)
+        
+        startDateTextField.rx
+            .controlEvent(.editingDidEnd)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                if self.startDateTextField.text?.length == 0 {
+                    let date = self.startDatePicker.date
+                    self.viewModel.inputs.startDateObserver.onNext(date)
+                }
+            }).disposed(by: disposeBag)
+        
+        endDateTextField.rx
+            .controlEvent(.editingDidEnd)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                if self.endDateTextField.text?.length == 0 {
+                    let date = self.endDatePicker.date
+                    self.viewModel.inputs.endDateObserver.onNext(date)
+                }
+            }).disposed(by: disposeBag)
         
         viewModel.outputs.isDateValid.bind(to: generateStatementButton.rx.isEnabled).disposed(by: rx.disposeBag)
         generateStatementButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)

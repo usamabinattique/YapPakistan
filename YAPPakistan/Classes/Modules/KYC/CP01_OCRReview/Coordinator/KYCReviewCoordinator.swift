@@ -83,7 +83,7 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
 
         let progressViewController = container.makeKYCProgressViewController(navigationController: navigationController)
         let progressViewModel: KYCProgressViewModelType! = progressViewController.viewModel
-        progressViewModel.inputs.progressObserver.onNext(0.25)
+        progressViewModel.inputs.progressObserver.onNext(0.50)
 
         root.pushViewController(progressViewController, animated: true)
 

@@ -49,6 +49,7 @@ public enum WidgetCode: String, Codable {
     case sendMoney = "Send money"
     case qrCode = "QR code"
     case bills = "Bills"
+    case bankTransfer = "Bank transfer"
     case offers = "Offers"
     case coins = "Coins"
     case young = "Young"

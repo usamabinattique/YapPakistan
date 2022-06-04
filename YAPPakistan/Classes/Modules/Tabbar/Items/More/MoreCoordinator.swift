@@ -11,7 +11,7 @@ import YAPCore
 import UIKit
 
 public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
-
+    
     private let root: UITabBarController
     private var localRoot: UINavigationController!
     private var navigationRoot: UINavigationController!
@@ -23,17 +23,17 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
         self.root = root
         self.container = container
     }
-
+    
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<UserProfileResult>> {
-
+        
         let viewModel = MoreViewModel(accountProvider: container.accountProvider, repository: container.makeMoreRepository(), theme: container.themeService)
         let viewController = MoreViewController(viewModel: viewModel, themeService: container.themeService)
-        navigationRoot = UINavigationController(rootViewController: viewController)
+        navigationRoot = UINavigationControllerFactory.createTransparentNavigationBarNavigationController(rootViewController: viewController) //UINavigationController(rootViewController: viewController)
         navigationRoot.navigationBar.isHidden = false
         navigationRoot.tabBarItem = UITabBarItem(title: "More",
                                                  image: UIImage(named: "icon_tabbar_more", in: .yapPakistan),
                                                  selectedImage: nil)
-
+        
         if root.viewControllers == nil {
             root.viewControllers = [navigationRoot]
         } else {
@@ -47,13 +47,27 @@ public class MoreCoordinator: Coordinator<ResultType<UserProfileResult>> {
             openUserProfileSettings()
         }).disposed(by: disposeBag)
         
+        viewModel.outputs.helpAndSupport.subscribe(onNext: { [unowned self] in
+            
+            openHelpAndSupport()
+            
+            //            print("Open Help and Support")
+            //
+            //            let viewModel = HelpAndSupportViewModel()
+            //            let viewController = HelpAndSupportViewController(viewModel: viewModel, themeService: self.container.themeService)
+            //            let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+            //
+            //            root.present(viewController, animated: true)
+            
+        }).disposed(by: disposeBag)
+        
         viewModel.outputs.bankDetails.subscribe(onNext: { [unowned self] in
             openAccountDetails()
         }).disposed(by: disposeBag)
-
+        
         return result
     }
-
+    
 }
 
 extension MoreCoordinator {
@@ -69,12 +83,58 @@ extension MoreCoordinator {
         alertWindow.windowLevel = .alert + 1
         alertWindow.makeKeyAndVisible()
         let nav = UINavigationController(rootViewController: viewController)
-
+        
         nav.navigationBar.isHidden = true
         nav.modalPresentationStyle = .overCurrentContext
         alertWindow.rootViewController?.present(nav, animated: false, completion: nil)
-
+        
         viewController.window = alertWindow
+    }
+    
+    func openHelpAndSupport() {
+        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
+        
+//        let themeService = container.themeService
+//        let viewModel = SetPintSuccessViewModel()
+//        return SetPintSuccessViewController(themeService: themeService, viewModel: viewModel)
+        
+//        let viewModel = SetPintSuccessViewModel()
+//        let viewController = SetPintSuccessViewController(themeService: self.container.themeService, viewModel: viewModel)
+        //navigationRoot.present(viewController, animated: true, completion: nil)
+//        navigationRoot.pushViewController(viewController)
+        
+//        let viewModel = AddTransactionDetailViewModel(transactionID: "1", note: "sdasdasdasd", transactionRepository: self.container.makeTransactionsRepository())
+//        let viewController = AddTransactionNoteViewController(viewModel: viewModel, themeService: self.container.themeService)
+//        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+//        viewModel.outputs.back.subscribe(onNext: { _ in
+//            print("Back Pressed on Note")
+//        }).disposed(by: disposeBag)
+//        navigationRoot.present(navController, animated: true)
+        
+        
+        //        let viewModel = TotalTransactionsViewModel(txnType: "", productCode: "", receiverCustomerId: nil, senderCustomerId: nil, beneficiaryId: nil, merchantName: nil, transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
+        //        let viewController = TotalTransactionsViewController(viewModel: viewModel, themeService: self.container.themeService)
+        //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        //        viewModel.outputs.back.subscribe(onNext: { _ in
+        //            print("Back Pressed")
+        //            navController.dismiss(animated: true, completion: nil)
+        //        }).disposed(by: disposeBag)
+        //        navigationRoot.present(navController, animated: true)
+        
+        //        let viewModel = TransactionReceiptViewModel(transactionRepository: self.container.makeTransactionsRepository(), transaction: TransactionResponse())
+        //        let viewController = TransactionReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
+        //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+        //        viewModel.outputs.back.subscribe(onNext: { _ in
+        //            print("Back Pressed")
+        //            navController.dismiss(animated: true, completion: nil)
+        //        }).disposed(by: disposeBag)
+        //        navigationRoot.present(navController, animated: true)
+        
+        
+//        let viewModel = ViewReceiptViewModel(imageURL: "", transcationID: "")
+//        let viewController = ViewReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
+//        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
+//        navigationRoot.present(navController, animated: true)
     }
     
     func openUserProfileSettings() {
@@ -82,8 +142,6 @@ extension MoreCoordinator {
             .subscribe(onNext:{ _ in
             })
             .disposed(by: rx.disposeBag)
-
-        
     }
     
     func openMoreItem(_ item: MoreCollectionViewCellViewModel.CellType) {

@@ -19,7 +19,8 @@ protocol TransactionsRepositoryType {
         maxAmount: Double?,
         creditSearch: Bool?,
         debitSearch: Bool?,
-        yapYoungTransfer: Bool?
+        yapYoungTransfer: Bool?,
+        searchText: String?
     ) -> Observable<Event<PagableResponse<TransactionResponse>>>
 
     func fetchCardTransactions(
@@ -42,6 +43,16 @@ protocol TransactionsRepositoryType {
     func getThresholdLimits() -> Observable<Event<TransactionThreshold>>
     func getDenominationAmount(productCode: String) -> Observable<Event<[DenominationResponse]>>
     func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>
+    func getAccountLimits() -> Observable<Event<[AccountLimits]?>>
+    func getTransactionCategories() -> Observable<Event<TransactionBarCategoriesResponse>>
+    func addTransactionNote(trnsactionID: String, transactionNote: String, receiverTransactionNote: String?) -> Observable<Event<String>>
+    func fetchTotalPurchases(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<[TransactionResponse]>>
+    func fetchTransactionReceipt(transactionID : String) -> Observable<Event<[String]>>
+    func getFEDFee(for scheme: String) -> Observable<Event<Double?>>
+    func fetchTotalPurchasesCount(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<TotalPurchase>>
+    func uploadReceiptImage(_ data: Data, name: String, fileName: String, mimeType: String, transactionID: String) -> Observable<Event<String?>>
+    func fetchReceiptPhotos(transactionID: String) -> Observable<Event<[String]?>>
+    func deleteReceipt(_ transactionId: String, imageName: String) -> Observable<Event<String?>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryType {
@@ -61,7 +72,8 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
         maxAmount: Double?,
         creditSearch: Bool?,
         debitSearch: Bool?,
-        yapYoungTransfer: Bool?
+        yapYoungTransfer: Bool?,
+        searchText: String? = nil
     ) -> Observable<Event<PagableResponse<TransactionResponse>>> {
         return transactionService.fetchTransactions(
             pageNumber: pageNumber,
@@ -70,7 +82,8 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
             maxAmount: maxAmount,
             creditSearch: creditSearch,
             debitSearch: debitSearch,
-            yapYoungTransfer: yapYoungTransfer
+            yapYoungTransfer: yapYoungTransfer,
+            searchText: searchText
         ).materialize()
     }
 
@@ -135,6 +148,10 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
         return transactionService.getDenominationAmount(productCode: productCode).materialize()
     }
     
+    public func getAccountLimits() -> Observable<Event<[AccountLimits]?>> {
+        return transactionService.accountLimits().materialize()
+    }
+    
     public func getCardStatement(serialNumber: String) -> Observable<Event<[Statement]?>> {
         return self.transactionService.cardStatement(serialNumber).materialize()
     }
@@ -145,5 +162,41 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
     
     public func emailStatement(request: EmailStatement ) -> Observable<Event<String?>>{
         transactionService.emailStatement(url: request.url?.absoluteString ?? "", month: request.month ?? "", year: request.year ?? "", statementType: request.statementType ?? "", cardType: request.cardType).materialize()
+    }
+    
+    public func getTransactionCategories() -> Observable<Event<TransactionBarCategoriesResponse>> {
+        return transactionService.getTransactionCategories().materialize()
+    }
+    
+    public func addTransactionNote(trnsactionID: String, transactionNote: String, receiverTransactionNote: String?)  -> Observable<Event<String>> {
+        return transactionService.addTransactionNote(transactionID: trnsactionID, transactionNote: transactionNote, receiverTransactionNote: receiverTransactionNote).materialize()
+    }
+    
+    public func fetchTotalPurchases(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<[TransactionResponse]>> {
+        return transactionService.fetchTotalPurchases(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: merchantName).materialize()
+    }
+    
+    public func fetchTransactionReceipt(transactionID: String) -> Observable<Event<[String]>> {
+        return transactionService.fetchTransactionReceipt(transactionID: transactionID).materialize()
+    }
+    
+    public func getFEDFee(for scheme: String) -> Observable<Event<Double?>> {
+        return transactionService.getFEDFee(for: scheme).materialize()
+    }
+    
+    public func fetchTotalPurchasesCount(txnType: String, productCode: String, receiverCustomerId: String?, senderCustomerId: String?, beneficiaryId: String?, merchantName: String?) -> Observable<Event<TotalPurchase>> {
+        return transactionService.fetchTotalPurchasesCount(txnType: txnType, productCode: productCode, receiverCustomerId: receiverCustomerId, senderCustomerId: senderCustomerId, beneficiaryId: beneficiaryId, merchantName: merchantName).materialize()
+    }
+    
+    public func uploadReceiptImage(_ data: Data, name: String, fileName: String, mimeType: String, transactionID: String) -> Observable<Event<String?>> {
+        return transactionService.uploadTransactionReceipt(data, name: name, fileName: fileName, mimeType: mimeType, transactionID: transactionID).materialize() //transactionService.getFEDFee(for: "").materialize()
+    }
+    
+    public func fetchReceiptPhotos(transactionID: String) -> Observable<Event<[String]?>> {
+        return transactionService.fetchTransactionReceipts(transactionID).materialize()
+    }
+    
+    public func deleteReceipt(_ transactionId: String, imageName: String) -> Observable<Event<String?>> {
+        return transactionService.deleteReceipts(transactionId, imageName: imageName).materialize()
     }
 }

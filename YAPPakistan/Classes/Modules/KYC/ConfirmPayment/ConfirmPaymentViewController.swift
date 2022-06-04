@@ -15,9 +15,13 @@ class ConfirmPaymentViewController: UIViewController {
     private lazy var cardImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var cardTypeLabel = UIFactory.makeLabel(font: .small, alignment: .center).setCornerRadius(15)
     
-    private lazy var cardFeeLabel = UIFactory.makeLabel(font: .micro, alignment: .center)
-    private lazy var cardFeeValueLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
-    private lazy var cardFeeStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 2, arrangedSubviews: [cardFeeLabel,cardFeeValueLabel])
+    private lazy var cardFeeLabel = UIFactory.makeLabel(font: .small, alignment: .left)
+    private lazy var cardFeeValueLabel = UIFactory.makeLabel(font: .regular, alignment: .right)
+    private lazy var cardFeeStack = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 2, arrangedSubviews: [cardFeeLabel,cardFeeValueLabel])
+    
+    private lazy var fedLabel = UIFactory.makeLabel(font: .small, alignment: .left)
+    private lazy var fedValueLabel = UIFactory.makeLabel(font: .regular, alignment: .right)
+    private lazy var fedStack = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 2, arrangedSubviews: [fedLabel,fedValueLabel])
     
     private lazy var spacer : UIView = {
         let view = UIView()
@@ -25,6 +29,12 @@ class ConfirmPaymentViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
+    private lazy var orderTotalLabel = UIFactory.makeLabel(font: .small, alignment: .left)
+    private lazy var orderTotalValueLabel = UIFactory.makeLabel(font: .regular, alignment: .right)
+    private lazy var orderTotalStack = UIFactory.makeStackView(axis: .horizontal, alignment: .center, distribution: .fill, spacing: 2, arrangedSubviews: [orderTotalLabel,orderTotalValueLabel])
+    
+    private lazy var cardFEDFeeStack = UIFactory.makeStackView(axis: .vertical, alignment: .fill, distribution: .fill, spacing: 7, arrangedSubviews: [cardFeeStack, fedStack, spacer, orderTotalStack])
     
     private lazy var payWithLabel = UIFactory.makeLabel(font: .micro, alignment: .center)
     
@@ -45,7 +55,7 @@ class ConfirmPaymentViewController: UIViewController {
     
     private lazy var addressContainerView: UIView = UIFactory.makeView()
     
-    private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_yap_confirm_payment_display_text_place_order_for".localized)
+    private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_yap_confirm_payment_display_text_place_order_for".localized, font: .large)
     
     private lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
@@ -88,11 +98,13 @@ class ConfirmPaymentViewController: UIViewController {
         scrollView.addSubview(contentView)
         
         addressContainerView.addSubview(addressContainerStack)
-        contentView.addSubviews([cardImage, cardTypeLabel, cardFeeStack, spacer, payWithContainerStack, addressContainerView, actionButton])
+        contentView.addSubviews([cardImage, cardTypeLabel, cardFEDFeeStack, payWithContainerStack, addressContainerView, actionButton])
         
         backButton = addBackButton(of: .closeCircled)
         editButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
         cardFeeLabel.text = "screen_yap_confirm_payment_display_text_Card_fee".localized
+        fedLabel.text = "screen_yap_confirm_payment_display_text_fed_fee".localized
+        orderTotalLabel.text = "screen_yap_confirm_payment_display_text_order_total_fee".localized
         payWithLabel.text = "screen_yap_confirm_payment_display_text_pay_with".localized
         
         addressContainerView.layer.borderWidth = 1
@@ -113,8 +125,9 @@ class ConfirmPaymentViewController: UIViewController {
             .bind({ UIColor($0.primary) }, to: [ cardTypeLabel.rx.textColor, editButton.rx.titleColor(for: .normal) ])
             .bind({ UIColor($0.primary) }, to: [ actionButton.rx.backgroundColor ])
            // .bind({ UIColor($0.greyDark) }, to: [ actionButton.rx.disabledBackgroundColor ])
-            .bind({ UIColor($0.primaryDark) }, to: [ cardMasksLabel.rx.textColor, cardFeeValueLabel.rx.textColor, addressDescLabel.rx.textColor ])
-            .bind({ UIColor($0.greyDark) }, to: [ payWithLabel.rx.textColor, cardFeeLabel.rx.textColor, addressDescLabel.rx.textColor ])
+            .bind({ UIColor($0.primaryDark) }, to: [ cardMasksLabel.rx.textColor, cardFeeValueLabel.rx.textColor, fedValueLabel.rx.textColor, orderTotalValueLabel.rx.textColor, addressDescLabel.rx.textColor ])
+            .bind({ UIColor($0.greyDark) }, to: [ payWithLabel.rx.textColor, cardFeeLabel.rx.textColor, fedLabel.rx.textColor, addressDescLabel.rx.textColor ])
+            .bind({ UIColor($0.primaryDark) }, to: [orderTotalLabel.rx.textColor])
             .bind({ UIColor($0.greyLight) }, to: /*[  addressContainerView.rx.borderColor ])*/ [addressContainerView.rx.borderColor ])
             .disposed(by: rx.disposeBag)
         
@@ -149,8 +162,11 @@ class ConfirmPaymentViewController: UIViewController {
                 
             })
             .disposed(by: rx.disposeBag) */
-        viewModel.outputs.isPaid.bind(to: cardFeeStack.rx.isHidden,payWithContainerStack.rx.isHidden).disposed(by: rx.disposeBag)
+        viewModel.outputs.isPaid.bind(to: cardFEDFeeStack.rx.isHidden,payWithContainerStack.rx.isHidden).disposed(by: rx.disposeBag)
         viewModel.outputs.cardFee.bind(to: cardFeeValueLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.fedFee.bind(to: fedValueLabel.rx.text).disposed(by: rx.disposeBag)
+        viewModel.outputs.orderTotalFee.bind(to: orderTotalValueLabel.rx.text).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.cardNumber.bind(to: cardMasksLabel.rx.text).disposed(by: rx.disposeBag)
         viewModel.outputs.address.withUnretained(self)
             .subscribe(onNext: { `self`, address in
@@ -190,18 +206,35 @@ class ConfirmPaymentViewController: UIViewController {
             .width(constant: 150)
             .height(constant: 30)
         
-        cardFeeStack
-            .toBottomOf(cardTypeLabel, constant: 20)
-            .centerHorizontallyInSuperview()
-            
+        cardFeeLabel
+            .height(constant: 24)
+        cardFeeValueLabel
+            .height(constant: 24)
+        
+        fedLabel
+            .height(constant: 24)
+        fedValueLabel
+            .height(constant: 24)
+        
+        orderTotalLabel
+            .height(constant: 24)
+        orderTotalValueLabel
+            .height(constant: 24)
         
         spacer
-            .toBottomOf(cardFeeStack, constant: 26)
-            .alignEdgesWithSuperview([.left,.right], constant: 28)
             .height(constant: 1)
         
+        cardFEDFeeStack
+            .alignEdgesWithSuperview([.left, .right], constants: [28, 28])
+            .toBottomOf(cardTypeLabel, constant: 20)
+            .centerHorizontallyInSuperview()
+            .setCustomSpacing(9, after: fedValueLabel)
+        
+        cardFEDFeeStack
+            .setCustomSpacing(17, after: spacer)
+        
         payWithContainerStack
-            .toBottomOf(spacer, constant: 20)
+            .toBottomOf(cardFEDFeeStack, constant: 47)
             .centerHorizontallyInSuperview()
         
         addressContainerStack

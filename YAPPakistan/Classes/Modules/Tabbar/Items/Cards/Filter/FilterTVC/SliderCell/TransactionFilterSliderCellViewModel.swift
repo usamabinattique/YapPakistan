@@ -12,6 +12,7 @@ import RxSwift
 protocol TransactionFilterSliderCellViewModelInput {
     var progressObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { get }
 //    var progressObserver: AnyObserver<CGFloat> { get }
+    var resetRangeObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { get }
 }
 
 protocol TransactionFilterSliderCellViewModelOutput {
@@ -25,6 +26,7 @@ protocol TransactionFilterSliderCellViewModelOutput {
 //    var progress: Observable<CGFloat> { get }
     var progress: Observable<(minValue: CGFloat, maxValue: CGFloat)> { get }
     var selectedRange: Observable<ClosedRange<Double>> { get }
+    var filterTotalRange: Observable<(minValue: CGFloat, maxValue: CGFloat)> { get }
 }
 
 protocol TransactionFilterSliderCellViewModelType {
@@ -54,7 +56,7 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
     
     // MARK: - Inputs
     var progressObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { return progressSubject.asObserver() }
-    
+    var resetRangeObserver: AnyObserver<(minValue: CGFloat, maxValue: CGFloat)> { rangeSubject.asObserver() }
     // MARK: - Outputs
     
     
@@ -66,8 +68,12 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
         return String(format: "%@ — %@",
                       NumberFormatter.formateAmount(Double($0), fractionDigits: 0),
                       NumberFormatter.formateAmount(Double($1), fractionDigits: 0))} }
-
+//    var range: Observable<String?> { return selectedRangeSubject.asObservable().map {
+//         return String(format: "%@ — %@",
+//                       NumberFormatter.formateAmount(Double($0), fractionDigits: 0),
+//                       NumberFormatter.formateAmount(Double($1), fractionDigits: 0))} }
     var selectedRange: Observable<ClosedRange<Double>> { return selectedRangeSubject.asObservable() }
+    var filterTotalRange: Observable<(minValue: CGFloat, maxValue: CGFloat)> { rangeSubject.asObservable() }
     
     // MARK: - Init
     init(_ range: ClosedRange<Double>, _ selectedRange: ClosedRange<Double> = 0...0) {
@@ -95,5 +101,68 @@ class TransactionFilterSliderCellViewModel: TransactionFilterSliderCellViewModel
         
         progressSubjectShare.bind(to: rangeSubject).disposed(by: disposeBag)
         
+    }
+    
+    init(_ range: ClosedRange<Double>, _ selectedRange: ClosedRange<Double> = 0...0, isHomeSearch: Bool) {
+        
+        
+        var selectedRange = selectedRange
+      //  selectedRange.upperBound = selectedRange.upperBound * 30/100)
+       
+//        progressSubject.onNext((minValue: CGFloat(selectedRange.lowerBound), maxValue: CGFloat(range.upperBound)))
+
+       // let progressSubjectShare = progressSubject.share()
+//        progressSubjectShare.skip(while: { (minValue: CGFloat, maxValue: CGFloat) in
+//            maxValue <= minValue
+//        }).map { (minValue: CGFloat, maxValue: CGFloat) in
+//            return  Double(minValue)...Double(maxValue > 0 ? maxValue : 0)
+//
+//        }.bind(to: selectedRangeSubject).disposed(by: disposeBag)
+        
+//        progressSubjectShare.map { (minValue: CGFloat, maxValue: CGFloat) in
+//            return  Double(minValue)...Double(maxValue > 0 ? maxValue : 0)
+//
+//        }.bind(to: selectedRangeSubject).disposed(by: disposeBag)
+        
+        
+       // progressSubjectShare.bind(to: rangeSubject).disposed(by: disposeBag)
+        
+        if selectedRange.upperBound > range.upperBound {
+                selectedRange = selectedRange.lowerBound...range.upperBound
+            }
+            
+            if selectedRange.lowerBound < range.lowerBound {
+                selectedRange = range.lowerBound...selectedRange.upperBound
+            }
+        
+       rangeSubject.onNext((minValue: CGFloat(selectedRange.lowerBound), maxValue: CGFloat(selectedRange.upperBound)))
+        
+        progressSubject.map { (minValue: CGFloat, maxValue: CGFloat) in
+            guard minValue < maxValue else { return Double(selectedRange.lowerBound)...Double(selectedRange.upperBound) }
+            return  Double(minValue)...Double(maxValue > 0 ? maxValue : 0)
+        }.bind(to: selectedRangeSubject).disposed(by: disposeBag)
+        
+        selectedRangeSubject.subscribe(onNext: { [weak self] closedRange in
+            print("range: selected closed range \(closedRange)")
+        }).disposed(by: disposeBag)
+        
+        progressSubject.subscribe(onNext: { [weak self] closedRange in
+            print("range: progress range \(closedRange)")
+        }).disposed(by: disposeBag)
+        
+        
+    /*    if selectedRange.upperBound > range.upperBound {
+            selectedRange = selectedRange.lowerBound...range.upperBound
+        }
+        
+        if selectedRange.lowerBound < range.lowerBound {
+            selectedRange = range.lowerBound...selectedRange.upperBound
+        }
+        
+      //  progressSubject.onNext(CGFloat((selectedRange.upperBound - range.lowerBound)/(range.upperBound - range.lowerBound)))
+        progressSubject.onNext((minValue: CGFloat(range.lowerBound), maxValue: CGFloat(range.upperBound)))
+        
+        
+        progressSubject.map { range.lowerBound...((Double($0)*(range.upperBound-range.lowerBound))+range.lowerBound) }.bind(to: selectedRangeSubject).disposed(by: disposeBag) */
     }
 }

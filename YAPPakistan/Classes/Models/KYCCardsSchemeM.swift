@@ -18,10 +18,16 @@ public struct KYCCardsSchemeM: Codable {
     public var schemeCode: String
     public var isActive: Bool
     public var fee: Double
+    public var fedFee: Double?
     
     public var isPaidScheme: Bool {
          return fee > 0
     }
+    
+    public var totalFee: Double {
+        return fee+(fedFee ?? 0)
+    }
+    
     public var scheme: SchemeType? { SchemeType(rawValue: schemeName ) }
     public var cardTitle: String?
     public var cardDescription: String?
@@ -71,7 +77,8 @@ extension KYCCardsSchemeM {
         }
         
         if fee > 0.0 {
-            cardDescription = String(format: "screen_kyc_card_scheme_description_with_fee".localized, "\(fee)")
+            let newFee = String(format: "%.2f", fee)
+            cardDescription = String(format: "screen_kyc_card_scheme_description_with_fee".localized, "\(newFee)")
             cardButtonTitle = "screen_kyc_card_scheme_button_buy_now".localized
         } else {
             cardDescription = "screen_kyc_card_scheme_description_free".localized

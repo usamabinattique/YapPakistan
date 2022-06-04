@@ -87,7 +87,7 @@ fileprivate extension FPNewPinConfirmViewController {
             .bind({ UIColor($0.greyDark       ) }, to: [createPINButton.rx.disabledBackgroundColor])
             .bind({ UIColor($0.primaryDark    ) }, to: [headingLabel.rx.textColor])
             .bind({ UIColor($0.error          ) }, to: [pincodeView.errorLabel.rx.textColor])
-            .bind({ UIColor($0.primaryDark    ) }, to: [pincodeView.codeLabel.rx.textColor])
+            .bind({ UIColor($0.primary    ) }, to: [pincodeView.codeLabel.rx.textColor])
             .bind({ UIColor($0.primaryDark    ) }, to: [titleLabel.rx.textColor])
             .bind({ UIColor($0.primary        ) }, to: [pinKeyboard.rx.themeColor])
             .disposed(by: rx.disposeBag)

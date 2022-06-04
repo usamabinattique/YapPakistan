@@ -12,8 +12,18 @@ import RxSwiftExt
 import YAPCore
 import YAPComponents
 
+public enum OnBoardingVerificationResult: Hashable {
+    case waiting
+    case allowed
+    case onboarding
+    case blocked
+    case dashboard
+    case success
+    case cancel
+    case logout
+}
 
-final class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
+final class B2COnBoardingCoordinator: Coordinator<OnBoardingVerificationResult> {
 
     private let container: OnboardingContainer
     weak var root: UINavigationController!
@@ -22,9 +32,11 @@ final class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
     private var containerViewModel: OnBoardingContainerViewModel!
     private var viewModel: OnBoardingViewModel!
 
-    private let result = PublishSubject<ResultType<Void>>()
+    private let result = PublishSubject<OnBoardingVerificationResult>()
     private let demographicsResultSubject = PublishSubject<Void>()
     private let disposeBag = DisposeBag()
+    
+    private var sessionContainer: UserSessionContainer!
 
     public init(container: OnboardingContainer,
                 navigationController: UINavigationController) {
@@ -36,7 +48,7 @@ final class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
         print("B2COnBoardingCoordinator")
     }
 
-    public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
+    override func start(with option: DeepLinkOptionType?) -> Observable<OnBoardingVerificationResult> {
         viewModel = OnBoardingViewModel()
         containerViewModel = OnBoardingContainerViewModel()
 
@@ -64,7 +76,7 @@ final class B2COnBoardingCoordinator: Coordinator<ResultType<Void>> {
                 self?.containerNavigation.popViewController(animated: true)
             } else {
                 self?.root.popViewController(animated: true)?.didPopFromNavigationController()
-                self?.result.onNext(ResultType.cancel)
+                self?.result.onNext(.cancel)
                 self?.result.onCompleted()
             }
         }).subscribe().disposed(by: disposeBag)
@@ -81,7 +93,7 @@ private extension B2COnBoardingCoordinator {
         let onBoardingRepository = OnBoardingRepository(customersService: container.parent.makeCustomersService(),
                                                         messagesService: container.parent.makeMessagesService())
         let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository: onBoardingRepository,
-                                                                     user: user)
+                                                                     user: user, otpTime: 30)
         let phoneVerificationController = PhoneNumberVerificationViewController(themeService: container.parent.themeService,
                                                                                 viewModel: verificationViewModel)
 
@@ -198,10 +210,13 @@ private extension B2COnBoardingCoordinator {
 
         enterEmailViewModel.outputs.result.subscribe(onNext: { [unowned self] result in
             var user = result.user
+            
+            self.sessionContainer = UserSessionContainer(parent: self.container.parent, session: result.session)
+            
             user.timeTaken = self.viewModel.time
-            //user.isWaiting == true ?
+            user.isWaiting == true ?
             self.navigateToWaitingUserCongratulation(user: user, session: result.session)
-            //: self.navigateToCongratulation(user: user)
+            : self.navigateToCongratulation(user: user)
                 // AppAnalytics.shared.logEvent(OnBoardingEvent.signupEmailSuccess())
         }).disposed(by: disposeBag)
     }
@@ -214,8 +229,17 @@ private extension B2COnBoardingCoordinator {
 
         containerNavigation.pushViewController(congratulationViewController, animated: true)
 
+        congratulationViewModel.outputs.progress.subscribe(onNext: { [weak self] progress in
+            self?.viewModel.inputs.progressObserver.onNext(progress)
+        }).disposed(by: disposeBag)
+        
+        self.viewModel.outputs.animationCompleted.subscribe(onNext: {  _ in
+            print("animation completed call in B@COn")
+            congratulationViewController.resumeAnimation?()
+        }).disposed(by: disposeBag)
+        
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
-            /// self?.b2cKyc()
+            self?.dashboard()
             // AppAnalytics.shared.logEvent(OnBoardingEvent.completeVerification())
         }).disposed(by: disposeBag)
     }
@@ -264,6 +288,16 @@ private extension B2COnBoardingCoordinator {
         coordinate(to: coordinator).subscribe(onNext: { _ in
             print("Moved to on boarding")
         }).disposed(by: disposeBag)
+    }
+    
+    func dashboard() {
+        let window = root.view.window ?? UIWindow()
+        let coordinator = TabbarCoodinator(container: self.sessionContainer, window: window, showCompleteVerification: true)
+
+        coordinate(to: coordinator).subscribe(onNext: { _ in
+            self.result.onNext(.logout)
+            self.result.onCompleted()
+        }).disposed(by: rx.disposeBag)
     }
 
     /*

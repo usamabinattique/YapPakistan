@@ -60,17 +60,22 @@ class Y2YTransferSuccessViewModel: Y2YTransferSuccessViewModelType, Y2YTransferS
     var date: Observable<String> { return dateSubject.asObservable() }
     
     // MARK: - Init
-    init(_ contact: YAPContact, _ amount: Double) {
+    init(_ contact: YAPContact, y2yResponse: Y2YTransactionResponse) {
         
         //TODO: {YASIR} utilize this contact.name.initialsImage color in your VC
         userImageSubject.onNext((contact.photoUrl, contact.thumbnailImage ?? contact.name.initialsImage(color: UIColor.green.withAlphaComponent(0.5))))
         userNameSubject.onNext(contact.name)
-        amountSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(amount))
+        amountSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(y2yResponse.amountTransferred.doubleValue))
         
         phoneSubject.onNext("Mobile number: \(contact.phoneNumber)")
        
         //TODO: add refence number and date
-        refernceSubject.onNext("Refernce number: ")
-        dateSubject.onNext("Jan 29, 2021・10:35 AM")
+        refernceSubject.onNext("Refernce number: \(y2yResponse.transactionId)")
+        //TODO: [UMAIR] - this is temporarily added format, remove once format corrected by server
+        guard let isoDate = Date(iso8601String: "\(y2yResponse.date)Z") else {
+            dateSubject.onNext(Date().dateTimeString())
+            return
+        }
+        dateSubject.onNext(isoDate.dateTimeString())
     }
 }

@@ -23,9 +23,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
     fileprivate let transactionCategoryResult = PublishSubject<Void>()
     let widgetsEditCompleted = PublishSubject<Void>()
     private var contactsManager: ContactsManager!
+    private var isCompleteVerification: Bool!
     
     init(container: UserSessionContainer,
-         root: UITabBarController) {
+         root: UITabBarController, isCompleteVerification: Bool) {
+        self.isCompleteVerification = isCompleteVerification
         self.container = container
         self.root = root
         super.init()
@@ -93,7 +95,7 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             .withUnretained(self)
            .subscribe(onNext: {  $0.0.resultSuccess() })
             .disposed(by: rx.disposeBag)
-
+        
         viewController.viewModel.outputs.completeVerification
             .subscribe(onNext: { [weak self] isTrue in
                 self?.navigateToKYC(isTrue)
@@ -109,9 +111,18 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         }).disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.search.withLatestFrom(viewController.viewModel.outputs.debitCard).subscribe(onNext: { [weak self] card in
-            
             self?.navigateToSearch(card: card)
         }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.profileTap.subscribe(onNext: { [weak self] _ in
+            self?.navigateToProfile()
+        }).disposed(by: rx.disposeBag)
+        
+        // show analytics
+        viewController.viewModel.outputs.showAnalytics
+            .withLatestFrom(viewController.viewModel.outputs.debitCard).compactMap{$0}
+            .subscribe(onNext: { [weak self] in self?.analytics($0) })
+            .disposed(by: rx.disposeBag)
         
         transactionCategoryResult.bind(to: viewController.viewModel.inputs.categoryChangedObserver).disposed(by: rx.disposeBag)
         
@@ -123,7 +134,30 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             guard let widget = $0 else { return }
             self?.navigateFromWidgets(selectedWidget: widget)
         }).disposed(by: rx.disposeBag)
-
+        
+        viewController.viewModel.outputs.openFilter.subscribe(onNext: { [weak self] in
+            //AppAnalytics.shared.logEvent(DashboardEvent.tapFilterTransactions())
+            self?.navigateToFilterSelection(selectedFilter: $0, resultObserver: viewController.viewModel.inputs.filterSelectedObserver)
+        }).disposed(by: rx.disposeBag)
+        
+        
+        viewController.viewModel.outputs.topUp.withUnretained(self).subscribe(onNext: { `self`, card in
+            self.topup(self.root)
+        }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.transactionDetails
+            .subscribe(onNext: { obj in
+                print(obj)
+                self.navigateToTransactionDetails(transaction: obj)
+            })
+            .disposed(by: rx.disposeBag)
+        
+        //!!!: show complete verification flow directly, if coming from onBoarding first time
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now()+1.5) { [unowned self] in
+            if self.isCompleteVerification {
+                viewController.viewModel.inputs.completeVerificationObserver.onNext(())
+            }
+        }
     }
     
     func showCreditLimit() {
@@ -196,14 +230,14 @@ extension HomeCoodinator {
 //MARK: Search
 extension HomeCoodinator {
     func navigateToSearch(card: PaymentCard?, viewModel: TransactionsViewModel? = nil) {
-     /*   let coordinator = SearchTransactionsCoordinator(card: card, root: root,container: container)
+        let coordinator = SearchTransactionsCoordinator(card: card, root: root,container: container)
         //coordinator.viewModel = viewModel
         
         coordinate(to: coordinator).subscribe(onNext: {[weak self] result in
             if !(result.isCancel) {
                 self?.transactionCategoryResult.onNext(())
             }
-        }).disposed(by: rx.disposeBag) */
+        }).disposed(by: rx.disposeBag) 
     }
 }
 
@@ -286,9 +320,12 @@ extension HomeCoodinator {
         case .houseHold:
             YAPToast.show("coming soon")
         case .statements:
-            YAPToast.show("coming soon")
+           // YAPToast.show("coming soon")
+            statements(root)
         case .edit:
             self.openWidgets()
+        case .bankTransfer:
+            YAPToast.show("Coming soon")
         case .unknown:
             YAPToast.show("coming soon")
             break
@@ -299,6 +336,12 @@ extension HomeCoodinator {
 //        DispatchQueue.main.async {
 //            self.coordinate(to: YAPForYouCoordinator(root: self.navigationRoot, repository: self.moreRepository)).subscribe().disposed(by: self.disposeBag)
 //        }
+    }
+    
+    private func statements(_ viewController: UIViewController) {
+        coordinate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
+            .subscribe()
+            .disposed(by: rx.disposeBag)
     }
     
     func openWidgets()  {
@@ -352,27 +395,27 @@ extension HomeCoodinator {
 //        }).disposed(by: disposeBag)
     }
 
-    func navigateToTransactionDetails(cdTransaction: CDTransaction) {
-//        self.coordinate(to: TransactionDetailsCoordinator(cdTransaction: cdTransaction, root: root))
-//            .subscribe(onNext: {[weak self] result in
-//                if !(result.isCancel) {
-//                    self?.transactionCategoryResult.onNext(())
-//                }
-//            }).disposed(by: disposeBag)
+    func navigateToTransactionDetails(transaction: TransactionResponse) {
+        self.coordinate(to: TransactionDetailsCoordinator(root: root, container: container, repository: container.makeTransactionsRepository(), transaction: transaction))
+            .subscribe(onNext: {[weak self] result in
+                if !(result.isCancel) {
+                    self?.transactionCategoryResult.onNext(())
+                }
+            }).disposed(by: rx.disposeBag)
     }
 
     func navigateToFilterSelection(selectedFilter: TransactionFilter?, resultObserver: AnyObserver<TransactionFilter?>) {
-//        let viewModel = TransactionFilterViewModel(selectedFilter)
-//        let viewController = TransactionFilterViewController(viewModel: viewModel)
-//        let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
-//
-//        root.present(nav, animated: true, completion: nil)
-//
-//        viewModel.outputs.result.subscribe(onNext: { resultObserver.onNext($0) }).disposed(by: disposeBag)
+        let viewModel = TransactionFilterViewModel(selectedFilter, repository: container.makeTransactionsRepository(),isHomeTransactions: true)
+        let viewController = TransactionFilterViewController(viewModel: viewModel, themeService: container.themeService)
+        let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+
+        root.present(nav, animated: true, completion: nil)
+
+        viewModel.outputs.result.subscribe(onNext: { resultObserver.onNext($0) }).disposed(by: rx.disposeBag)
     }
 
     func analytics(_ paymentCard: PaymentCard, date: Date? = nil) {
-//        coordinate(to: CardAnalyticsCoordinator(root: self.root, card: paymentCard, date: date)).subscribe().disposed(by: self.disposeBag)
+        coordinate(to: CardAnalyticsCoordinator(root: self.root, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
     }
 
     func topUp() {
@@ -467,8 +510,22 @@ extension HomeCoodinator {
     }
     
     func navigateToProfile() {
-//        coordinate(to: UserProfileCoordinator(navigationController: root, customer: SessionManager.current.currentAccount.map{ $0?.customer }.unwrap()))
-//            .subscribe().disposed(by: disposeBag)
+       
+//        coordinate(to: UserProfileCoordinator(navigationController: root, customer: container.accountProvider.current.map{ $0?.customer }.unwrap()))
+//            .subscribe(onNext: { result in
+//
+//            }).disposed(by: rx.disposeBag)
+        
+        coordinate(to: UserProfileCoordinator(root: root, container: self.container))
+            .subscribe()
+            .disposed(by: rx.disposeBag)
+        
+//        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+//            if case ResultType.success = result {
+//                root.dismiss(animated: true, completion: nil)
+//                (root as? UITabBarController)?.selectedIndex = 0
+//            }
+//        }).disposed(by: rx.disposeBag)
 
     }
     
@@ -491,9 +548,9 @@ extension HomeCoodinator {
     }
     
     func navigateToAddMoneyQRCode() {
-//        self.root.tabBar.isHidden = true
+        self.root.tabBar.isHidden = true
         coordinate(to: AddMoneyQRCodeCoordinator(root: navigationRoot, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
-//            self?.root.tabBar.isHidden = false
+            self?.root.tabBar.isHidden = false
         }).disposed(by: rx.disposeBag)
     }
     

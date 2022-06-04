@@ -48,7 +48,9 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
         let navigationRoot = makeNavigationController()
         
         viewModel.outputs.close.subscribe(onNext: { _ in
+            
             viewController.dismiss(animated: true, completion: nil)
+            
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.confirm.subscribe(onNext: { [weak self] model in

@@ -16,7 +16,7 @@ class OnBoardingContainerViewController: KeyboardAvoidingViewController {
 
     private lazy var sendButton = UIFactory.makeAppRoundedButton(
         with: .large,
-        title: "common_button_next".localized
+        title: "screen_sign_in_button_verify".localized
     )
     
     

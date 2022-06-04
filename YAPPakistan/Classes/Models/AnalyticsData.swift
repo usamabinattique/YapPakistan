@@ -1,11 +1,9 @@
 //
 //  AnalyticsCategory.swift
-//  YAP
+//  YAPPakistan
 //
-//  Created by Zain on 20/11/2019.
-//  Copyright © 2019 YAP. All rights reserved.
+//  Created by Yasir on 16/05/2022.
 //
-// swiftlint:disable identifier_name
 
 import Foundation
 import UIKit
@@ -82,6 +80,7 @@ struct AnalyticsData: Codable {
     var title: String { _title?.capitalized ?? "Other"}
     var categories: [String]?
     var categoryId: Int?
+    var categoryColor: String?
     
     enum CodingKeys: String, CodingKey {
         case transactions = "txnCount"
@@ -91,6 +90,7 @@ struct AnalyticsData: Codable {
         case logoUrl = "logoUrl"
         case categories = "categories"
         case categoryId = "yapCategoryId"
+        case categoryColor = "categoryColor"
     }
 }
 

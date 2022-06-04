@@ -71,6 +71,7 @@ class MenuUserTableViewCell: RxUITableViewCell {
         
         setupViews()
         setupConstraints()
+        packageIndicator.isHidden = true
     }
     
     // MARK: Actions

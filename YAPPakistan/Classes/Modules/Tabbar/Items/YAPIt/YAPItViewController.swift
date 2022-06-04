@@ -197,12 +197,12 @@ private extension YAPItViewController {
 
 private extension YAPItViewController {
     func showAnimation() {
-        UIView.animate(withDuration: 0.5, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 8, options: .curveEaseInOut, animations: {
+        UIView.animate(withDuration: 0.33, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 8, options: .curveEaseInOut, animations: {
             self.view.backgroundColor = UIColor.white.withAlphaComponent(1)
             self.yapItButton.transform = CGAffineTransform(rotationAngle: CGFloat(-Double.pi))
         })
         
-        UIView.animate(withDuration: 0.5, delay: 0.3, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.7, options: .curveEaseInOut, animations: {
+        UIView.animate(withDuration: 0.33, delay: 0.3, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.7, options: .curveEaseInOut, animations: {
             var frame = self.addMoney.frame
             frame.origin.y = self.yapItButton.frame.origin.y - 40 - frame.size.height
             self.addMoney.frame = frame
@@ -214,7 +214,7 @@ private extension YAPItViewController {
             self.addMoneyLabel.alpha = 1
         })
         
-        UIView.animate(withDuration: 0.5, delay: 0.4, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.7, options: .curveEaseInOut, animations: {
+        UIView.animate(withDuration: 0.33, delay: 0.4, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.7, options: .curveEaseInOut, animations: {
             var frame = self.payBillsButton.frame
             frame.origin.y = self.yapItButton.frame.origin.y - 125 - frame.size.height
             self.payBillsButton.frame = frame
@@ -226,7 +226,7 @@ private extension YAPItViewController {
             self.payBillsLabel.alpha = 1
         })
         
-        UIView.animate(withDuration: 0.5, delay: 0.5, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.7, options: .curveEaseInOut, animations: {
+        UIView.animate(withDuration: 0.33, delay: 0.5, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.7, options: .curveEaseInOut, animations: {
             var frame = self.sendMoneyButton.frame
             frame.origin.y = self.yapItButton.frame.origin.y - 40 - frame.size.height
             self.sendMoneyButton.frame = frame

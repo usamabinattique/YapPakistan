@@ -49,7 +49,7 @@ open class AmountView: UIView {
 
     private let disposeBag = DisposeBag()
     private var viewModel: AmountViewModelType?
-    public var allowedDecimal: Int = 2 {
+    public var allowedDecimal: Int = 0 {
         didSet {
             amountTextField.placeholder = "custom_view_display_text_amount_view_initial_value".localized//CurrencyFormatter.defaultFormattedFee.split(separator: " ").last.map { String($0) }
         }
@@ -129,7 +129,7 @@ open class AmountView: UIView {
         viewModel.outputs.heading.bind(to: headingLabel.rx.text).disposed(by: disposeBag)
         viewModel.outputs.amount.bind(to: amountTextField.rx.text).disposed(by: disposeBag)
         viewModel.outputs.heading.subscribe(onNext: { [weak self] in
-            self?.allowedDecimal = CurrencyFormatter.decimalPlaces(for: $0 ?? "AED")
+            self?.allowedDecimal = CurrencyFormatter.decimalPlaces(for: $0 ?? "PKR")
         }).disposed(by: disposeBag)
         bindAmountFieldFormatting()
     }
@@ -183,6 +183,11 @@ extension AmountView: UITextFieldDelegate {
             numberOfDecimalDigits = newText.distance(from: dotIndex, to: newText.endIndex) - 1
         } else {
             numberOfDecimalDigits = 0
+        }
+        
+        if string.count == 0 && range.length > 0 {
+                // Back pressed
+            return true
         }
         
         return isNumeric && numberOfDots <= 0 && numberOfDecimalDigits <= allowedDecimal

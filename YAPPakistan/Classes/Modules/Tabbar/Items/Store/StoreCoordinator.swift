@@ -24,11 +24,10 @@ public class StoreCoordinator: Coordinator<ResultType<Void>> {
         let viewModel = StoreViewModel()
         let viewController = StoreViewController(viewModel: viewModel, themeService: container.themeService)
         navigationRoot = UINavigationController(rootViewController: viewController)
-        navigationRoot.navigationBar.isHidden = true
+//        navigationRoot.navigationBar.isHidden = false
         navigationRoot.tabBarItem = UITabBarItem(title: "Store",
                                                  image: UIImage(named: "icon_tabbar_store", in: .yapPakistan),
                                                  selectedImage: nil)
-
         if root.viewControllers == nil {
             root.viewControllers = [navigationRoot]
         } else {

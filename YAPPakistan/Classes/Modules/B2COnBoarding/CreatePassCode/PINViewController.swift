@@ -44,7 +44,7 @@ public class PINViewController: UIViewController {
     private lazy var termsAndCondtionsLabel = UIFactory.makeLabel(font: .micro, alignment: .center, numberOfLines: 0, lineBreakMode: .byWordWrapping)
     private lazy var termsAndCondtionsButton = UIFactory.makeButton(with: .micro, title: "screen_create_passcode_display_button_terms_and_conditions".localized)
 
-    private lazy var createPINButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton()
+    private lazy var createPINButton: AppRoundedButton = AppRoundedButtonFactory.createAppRoundedButton(font: .large)
 
     // MARK: - Properties
     let themeService: ThemeService<AppTheme>

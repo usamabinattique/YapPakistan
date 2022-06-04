@@ -11,11 +11,12 @@ import RxCocoa
 import UIKit
 import YAPCore
 import YAPComponents
+import RxTheme
 
 public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate {
     
     private var currency: UILabel = {
-        let label = UILabel()
+        let label =  UIFactory.makeLabel(font: .title1, alignment: .left, numberOfLines: 1, lineBreakMode: .byWordWrapping)
         label.backgroundColor = .clear
         label.text = "PKR"
       //  label.font = UIFont.appFont(ofSize: 32, weigth: .regular, theme: .main)
@@ -32,13 +33,13 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
     }()
     
     public var ammount: UILabel = {
-        let label = UILabel()
+        let label = UIFactory.makeLabel(font: .large, alignment: .left, numberOfLines: 1, lineBreakMode: .byWordWrapping) //UILabel()
         //label.textColor = .primaryDark
-        label.font = .regular //UIFont.appFont(ofSize: 32, weigth: .regular, theme: .main)
-        label.textAlignment = .left
+       // label.font = .regular //UIFont.appFont(ofSize: 32, weigth: .regular, theme: .main)
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 0.4
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "0.00"
         return label
     }()
     
@@ -54,18 +55,37 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
     fileprivate var sectionColor = [String]()
 
     private lazy var stack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fillProportionally, spacing: 4, arrangedSubviews: [currency, ammount])
+    
+    private lazy var balanceView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private lazy var showButton = UIFactory.makeButton(with: .regular)
+    private lazy var hideButton = UIFactory.makeButton(with: .regular)
+    private lazy var separtorView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private var balanceHeight: NSLayoutConstraint!
+    private var balanceLabelHeight: NSLayoutConstraint!
+    
     private var isLoadingForFirstTime = true
+    private var themeService: ThemeService<AppTheme>!
+    private let disposeBag = DisposeBag()
     
     fileprivate lazy var progressView: MultiProgressView = {
         let progress = MultiProgressView()
         progress.trackBackgroundColor = .white
         progress.lineCap = .round
-        //progress.cornerRadius = progressViewHeight / 4
         progress.cornerRadiusProperty = progressViewHeight / 4
         return progress
     }()
     
-    let todaysBalanceTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .left, numberOfLines: 0, lineBreakMode: .byClipping, text: "screen_home_todays_balance_title".localized, alpha: 1, adjustFontSize: true) //UILabelFactory.createUILabel(with: .greyDark, textStyle: .regular, alignment: .left, numberOfLines: 0, lineBreakMode: .byClipping, text: "screen_home_todays_balance_title".localized, alpha: 1.0, adjustFontSize: true)
+    let todaysBalanceTitleLabel = UIFactory.makeLabel(font: .micro, alignment: .left, numberOfLines: 0, lineBreakMode: .byClipping, text: "screen_home_todays_balance_title".localized, alpha: 1, adjustFontSize: true)
     
     // MARK: Initialization
     
@@ -77,6 +97,13 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
+    }
+    
+    init(theme:ThemeService<AppTheme>) {
+        super.init(frame: .zero)
+        self.themeService = theme
+        commonInit()
+        setupTheme()
     }
     
     func commonInit() {
@@ -108,11 +135,33 @@ public final class HomeBalanceToolbarUpdated: UIView, MultiProgressViewDelegate 
 
 private extension HomeBalanceToolbarUpdated {
     func setupViews() {
-        addSubview(stack)
+      //  addSubview(stack)
+        addSubview(balanceView)
         addSubview(todaysBalanceTitleLabel)
         addSubview(backgroundView)
         backgroundView.addSubview(progressView)
         progressView.backgroundColor = .white
+        
+        balanceView.addSubviews([currency,ammount,showButton,hideButton,todaysBalanceTitleLabel,separtorView])
+        
+        showButton.imageView?.contentMode = .scaleAspectFit
+        showButton.setImage(UIImage.init(named: "icon_view_cell", in: .yapPakistan)?.asTemplate, for: .normal)
+        hideButton.setImage(UIImage.init(named: "eye_close", in: .yapPakistan), for: .normal)
+        hideButton.isHidden = true
+        separtorView.alpha = 0
+        separtorView.backgroundColor = UIColor(themeService.attrs.primaryDark)
+        
+        showButton.rx.tap.withUnretained(self).subscribe(onNext: { `self`, _ in
+           // guard !isShimmering else { return }
+            print("button show")
+            self.animateView(balanceShown: false)
+        }).disposed(by: disposeBag)
+        
+        hideButton.rx.tap.withUnretained(self).subscribe(onNext: { `self`, _ in
+//            guard !isShimmering else { return }
+            self.animateView(balanceShown: true)
+            print("button hide")
+        }).disposed(by: disposeBag)
     }
     
     @objc
@@ -121,13 +170,13 @@ private extension HomeBalanceToolbarUpdated {
     }
     
     func setupConstraints() {
-        stack
-            .alignEdgesWithSuperview([.left, .top], constants: [19, 19])
-            .height(constant: 38)
-        
-        todaysBalanceTitleLabel
-            .toBottomOf(stack)
-            .alignEdgeWithSuperview(.left, constant: 19)
+//        stack
+//            .alignEdgesWithSuperview([.left, .top], constants: [19, 19])
+//            .height(constant: 38)
+//
+//        todaysBalanceTitleLabel
+//            .toBottomOf(stack)
+//            .alignEdgeWithSuperview(.left, constant: 19)
         
         backgroundView.anchor(top: todaysBalanceTitleLabel.bottomAnchor,
                               left: safeAreaLayoutGuide.leftAnchor,
@@ -135,6 +184,9 @@ private extension HomeBalanceToolbarUpdated {
                               paddingTop: 20,
                               paddingLeft: 25,
                               paddingRight: 25
+//                              paddingTop: 0,
+//                              paddingLeft: 0,
+//                              paddingRight: 0
         )
         
         progressView.anchor(top: backgroundView.topAnchor,
@@ -150,6 +202,61 @@ private extension HomeBalanceToolbarUpdated {
         
         progressViewHeightConstraint = progressView.heightAnchor.constraint(equalToConstant: 24)
         progressViewHeightConstraint.isActive = true
+        
+        balanceView
+            .height(constant: 70)
+            .alignEdgesWithSuperview([.left, .top, .right], constants: [0, 0, 0])
+        
+        currency
+            .alignEdgesWithSuperview([.left, .top], constants: [24, 12])
+        
+        ammount
+            .toRightOf(currency ,constant: 4)
+            .centerVerticallyWith(currency)
+            .alignEdgesWithSuperview([.right], .greaterThanOrEqualTo , constants: [12])
+            //.alignEdgesWithSuperview([.right], .equalTo , constants: [12])
+        
+        showButton
+            .height(constant: 18)
+            .width(constant: 20)
+            .toBottomOf(ammount,constant: 8)
+            .alignEdgesWithSuperview([.left], constants: [24])
+        
+        hideButton
+            .height(constant: 18)
+            .width(constant: 20)
+            .toBottomOf(ammount,constant: 8)
+            .alignEdgesWithSuperview([.left], constants: [24])
+        
+        separtorView
+            .height(constant: 1)
+            .width(constant: 134)
+            .toBottomOf(ammount,constant: 4)
+            .alignEdgesWithSuperview([.left], constants: [24])
+        
+       todaysBalanceTitleLabel
+//            .height(constant: 18)
+            .toRightOf(showButton,constant: 8)
+           // .toBottomOf(ammount,constant: 8)//12)
+            .centerVerticallyWith(showButton,constant: -2)
+            
+        
+        balanceHeight = ammount.heightAnchor.constraint(equalToConstant: 24)
+        balanceHeight.priority = .required
+        balanceHeight.isActive = true
+        
+        
+        balanceLabelHeight = currency.heightAnchor.constraint(equalToConstant: 24)
+        balanceLabelHeight.priority = .required
+        balanceLabelHeight.isActive = true
+    }
+    
+    func setupTheme() {
+        themeService.rx
+            .bind({ UIColor($0.primaryDark) }, to: [currency.rx.textColor,ammount.rx.textColor])
+            .bind({ UIColor($0.greyDark) }, to: [todaysBalanceTitleLabel.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [showButton.rx.tintColor, separtorView.rx.backgroundColor])
+            .disposed(by: rx.disposeBag)
     }
     
     func animateMonthlyAnalytics(monthData: MonthData) {
@@ -202,6 +309,17 @@ private extension HomeBalanceToolbarUpdated {
                         
                         (0..<categorySections.count).forEach {[weak self] index in
                             self?.categorySections[index].backgroundColor = hexStringToUIColor(hex: self?.sectionColor[index] ?? "")
+                            
+//                            self?.categorySections[index].backgroundColor = index == 0 ? .purple : .yellow
+                            
+                          /*  switch index {
+                            case 0:
+                                self?.categorySections[index].backgroundColor = UIColor.StorageExample.progressGreen
+                            case 1:
+                                self?.categorySections[index].backgroundColor = UIColor.StorageExample.progressBlue
+                            default:
+                                self?.categorySections[index].backgroundColor = UIColor.StorageExample.progressPurple
+                            }*/
                         }
                         
                        })
@@ -209,6 +327,21 @@ private extension HomeBalanceToolbarUpdated {
     
     func setupCategoryImage(_ url: String) {
         self.progressViewSection?.setImage(url)
+    }
+    
+    func animateView(balanceShown: Bool) {
+        balanceHeight.constant = balanceShown ? 24 : 0
+        balanceLabelHeight.constant = balanceShown ? 24 : 0
+        UIView.animate(withDuration: 0.3, animations: {
+            self.layoutAllSubviews()
+            self.separtorView.alpha = !balanceShown ? 1 : 0
+        }) { (completion) in
+            guard completion else { return }
+            self.ammount.isHidden = !balanceShown
+            self.currency.isHidden = !balanceShown
+            self.showButton.isHidden = !balanceShown
+            self.hideButton.isHidden = balanceShown
+        }
     }
 }
 
@@ -239,14 +372,18 @@ public extension HomeBalanceToolbarUpdated {
     }
     
     func setBalance(balance: String) {
-        var finalBalance: Balance {
-            return Balance(balance: balance, currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
+    /*    var finalBalance: Balance {
+            return Balance(balance: String(format: "%.2f", Double(balance) ?? 0), currencyCode: "PKR", currencyDecimals: "2", accountNumber: "")
         }
-        let text = finalBalance.formattedBalance(showCurrencyCode: false, shortFormat: true)
+        let text = finalBalance.formattedBalance(showCurrencyCode: false, shortFormat: false)
         let attributedString = NSMutableAttributedString(string: text)
         guard let decimal = text.components(separatedBy: ".").last else { return }
-        attributedString.addAttribute(.font, value: UIFont.regular/*appFont(ofSize: 18, weigth: .regular, theme: .main) */, range: NSRange(location: text.count-decimal.count, length: decimal.count))
-        ammount.attributedText = attributedString
+        attributedString.addAttribute(.font, value: UIFont.large/*appFont(ofSize: 18, weigth: .regular, theme: .main) */, range: NSRange(location: text.count-decimal.count, length: decimal.count))
+        attributedString.addAttribute(.font, value: UIFont.large/*appFont(ofSize: 18, weigth: .regular, theme: .main) */, range: NSRange(location: 0, length: decimal.count))
+        
+        ammount.attributedText = attributedString */
+        
+        ammount.attributedText = balance.getCommaSeperatedTwoDecimalValue
     }
     
     func shrinkProgressView(_ shrink: Bool){
@@ -318,6 +455,7 @@ public extension Reactive where Base: HomeBalanceToolbarUpdated {
     
     var balance: Binder<String> {
         return Binder(self.base) { toolbar, balance in
+            print("toolbar balance \(balance)")
             toolbar.setBalance(balance: balance)
         }
     }
@@ -337,6 +475,7 @@ public extension Reactive where Base: HomeBalanceToolbarUpdated {
     
     var monthData: Binder<(MonthData?, Int?)> {
         return Binder(self.base) { toolBar,monthData in
+            print("toolbar monthData \(monthData.0)")
             if let monthlyAnalytics = monthData.0 {
                 toolBar.progressView.isHidden = false
                 toolBar.animateMonthlyAnalytics(monthData: monthlyAnalytics)

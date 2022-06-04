@@ -28,7 +28,7 @@ public class CardStatementCoordinator: Coordinator<ResultType<Void>> {
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
-        let viewModel = CardStatementViewModel(statementFetchable: card, repository: repository)
+        let viewModel = CardStatementViewModel(statementFetchable: card, repository: repository, cardsRepository: container.makeCardsRepository())
         let viewController = CardStatementViewController(themeService: container.themeService, viewModel: viewModel)
         
         self.localNavRoot = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
@@ -74,7 +74,7 @@ public class CardStatementCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func showStatementDetail(webModel: WebContentType) {
-        coordinate(to: CardStatementWebViewCoordinator(root: self.localNavRoot, container: self.container, repository: self.repository, url: webModel.url?.absoluteString ?? ""))
+        coordinate(to: CardStatementWebViewCoordinator(root: self.localNavRoot, container: self.container, repository: self.repository, statementModel: webModel))
             .subscribe(onNext: { [weak self] result in
                 switch result {
                 case .success:

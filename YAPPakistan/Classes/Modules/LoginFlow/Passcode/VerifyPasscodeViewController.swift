@@ -44,6 +44,11 @@ public class VerifyPasscodeViewController: UIViewController {
     // MARK: - View Life Cycle
     override public func viewDidLoad() {
         super.viewDidLoad()
+        
+        let logo = UIImage(named: "icon_app_logo", in: .yapPakistan)
+        let imageView = UIImageView(image:logo)
+        self.navigationItem.titleView = imageView
+        
         setupSubViews()
         setupResources()
         setupTheme()

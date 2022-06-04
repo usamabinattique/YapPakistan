@@ -104,8 +104,8 @@ class CustomDateStatementViewModel: CustomDateStatementViewModelType, CustomDate
         
         nextSubject
             .subscribe(onNext: { [weak self] _ in
-                let startDateString = self!.startDate.string(withFormat: DateFormatter.serverReadableDateFormat)
-                let endDateString = self!.endDate.string(withFormat: DateFormatter.serverReadableDateFormat)
+                let startDateString = self!.startDate.string(withFormat: DateFormatter.statementReadableDateFormat)
+                let endDateString = self!.endDate.string(withFormat: DateFormatter.statementReadableDateFormat)
                 
                 self?.generateStatementSubject.onNext((startDate: startDateString, endDate: endDateString))
             })

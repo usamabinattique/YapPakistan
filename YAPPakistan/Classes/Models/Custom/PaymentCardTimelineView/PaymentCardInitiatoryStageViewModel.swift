@@ -24,6 +24,11 @@ public class PaymentCardInitiatoryStageViewModel {
     public init(paymentCard: PaymentCard, account: Account) {
         stagesSubject.onNext(makeStages(paymentCard: paymentCard, partnerBankStatus: account.parnterBankStatus ?? .signUpPending, partnerBankApprovalDate: account.partnerBankApprovalDate, documentSubmissionDate: account.documentSubmissionDate, accountStatus: account.accountStatus))
     }
+    
+    // in case debit card is nil
+    public init( account: Account) {
+        stagesSubject.onNext(makeStages(paymentCard: .mock, partnerBankStatus: account.parnterBankStatus ?? .signUpPending, partnerBankApprovalDate: account.partnerBankApprovalDate, documentSubmissionDate: account.documentSubmissionDate, accountStatus: account.accountStatus))
+    }
 }
 
 fileprivate extension PaymentCardInitiatoryStageViewModel {
@@ -46,13 +51,41 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
         
         var stages: [PaymentCardOnboardingStageModel] = []
         
-        if accountStatus == .addressCaptured {
-            stages.append(.init(paymentCard: paymentCard, stage: .additionalRequirement, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
-            if partnerBankStatus == .physicalCardSuccess && paymentCard.deliveryStatus == .shipped , let pinSet = paymentCard.pinSet, pinSet == false {
+        if accountStatus == .addressCaptured || accountStatus == .onboarded || accountStatus == .cardSchemeExternalCardPending || accountStatus == .cardSchemePending || partnerBankStatus == .signUpPending {
+            
+            if (paymentCard.active == false && paymentCard.cardScheme == .Mastercard ) || (paymentCard.active == nil && paymentCard.cardScheme == .NoScheme && accountStatus == .cardSchemeExternalCardPending && (partnerBankStatus != .signUpPending && partnerBankStatus != .physicalCardPending )) {
+                //  stages.append(.init(paymentCard: paymentCard, stage: .topUp, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus))
+                let customData1 =  PaymentCardOnboardingStageModelCustomData(title: "view_payment_card_onboarding_stage_four_title".localized, subHeading: "view_payment_card_onboarding_stage_four_subheading".localized, actionTitle: "view_payment_card_onboarding_stage_four_action_title".localized, icon: UIImage.init(named: "icon_stage_top_up", in: .yapPakistan)?.asTemplate, showVerticleBreadcrum: true, completed: false, inProcess: false, isEnabled: true)
+                
+                stages.append(.init(paymentCard: paymentCard, stage: .topUp, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus, customData: customData1))
+                
+//                stages.append(.init(paymentCard: paymentCard, stage: .applicationInProcess, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
+                let customData2 =  PaymentCardOnboardingStageModelCustomData(title: "view_payment_card_onboarding_stage_account_verification_label_title".localized, subHeading: "view_payment_card_onboarding_stage_initial_in_process_subtitle".localized, actionTitle: nil, icon: UIImage.init(named: "timeline_account_verification", in: .yapPakistan), showVerticleBreadcrum: true, completed: false, inProcess: true, isEnabled: false)
+                stages.append(.init(paymentCard: paymentCard, stage: .applicationInProcess, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured,customData: customData2))
+               
+                // for card is on the way/disabled
+                let customData = PaymentCardOnboardingStageModelCustomData(title: "view_payment_card_onboarding_stage_card_on_the_way_title".localized, subHeading: "view_payment_card_onboarding_stage_card_on_the_way_subheading".localized, actionTitle: "view_payment_card_onboarding_stage_card_on_the_way_action_title".localized, icon: UIImage.init(named: "icon_stage_shipping_in_progress", in: .yapPakistan), showVerticleBreadcrum: true, completed: false, inProcess: false, isEnabled: false)
+                let stageVM: PaymentCardOnboardingStageModel = .init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: .physicalCardPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured,customData: customData)
+                
+                stages.append(stageVM)
+                
+            } else {
+                stages.append(.init(paymentCard: paymentCard, stage: .additionalRequirement, partnerBankStatus: .additionalRequirementsPending, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
+            }
+            
+           
+            if partnerBankStatus == .physicalCardSuccess && paymentCard.deliveryStatus == .shipped , let pinSet = paymentCard.pinSet, pinSet == false  {
                 // so it won't append in list
                 stages.append(.init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
-            } else {
-              
+            } else if accountStatus == .onboarded || accountStatus == .cardSchemeExternalCardPending || accountStatus == .cardSchemePending || accountStatus == .secretQuestionPending {
+                
+                if (paymentCard.active == nil && paymentCard.cardScheme == nil && accountStatus == .cardSchemeExternalCardPending && (partnerBankStatus != .signUpPending && partnerBankStatus != .physicalCardPending )) {
+                    
+                } else {
+                    stages.append(.init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: .addressCaptured))
+                }
+                
+                
             }
             
             
@@ -72,5 +105,20 @@ fileprivate extension PaymentCardInitiatoryStageViewModel {
         }
         
         return stages
+        
+      /*  var stages: [PaymentCardOnboardingStageModel] = [
+            .init(paymentCard: paymentCard, stage: .shipping, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus),
+            .init(paymentCard: paymentCard, stage: .delivery, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus)
+        ]
+        
+        if partnerBankStatus == .additionalRequirementsRequired || partnerBankStatus == .additionalRequirementsPending || partnerBankStatus == .additionalRequirementsProvided || partnerBankStatus == .additionalRequirementsSubmitted || documentSubmissionDate != nil {
+            stages.append(.init(paymentCard: paymentCard, stage: .additionalRequirement, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus))
+        }
+        
+        stages.append(contentsOf: [
+            .init(paymentCard: paymentCard, stage: .setPIN, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus),
+            .init(paymentCard: paymentCard, stage: .topUp, partnerBankStatus: partnerBankStatus, partnerBankApprovalDate: partnerBankApprovalDate, documentSubmissionDate: documentSubmissionDate, accountStatus: accountStatus)
+        ])
+        return stages */
     }
 }

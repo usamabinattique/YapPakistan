@@ -205,13 +205,19 @@ private extension KYCDocumentView {
             .alignEdge(.centerY, withView: iconImage)
             .width(constant: 32)
             .height(constant: 32)
-
+        
         horizontalStack
             .toRightOf(iconImage, constant: 23)
             .alignEdgesWithSuperview([.right], constants: [20])
-            .alignEdgesWithSuperview([.top, .bottom], constants: [33, 33])
+            .alignEdgesWithSuperview([.top, .bottom], .lessThanOrEqualTo, constants: [33, 33])
+            .alignEdgesWithSuperview([.top, .bottom], .greaterThanOrEqualTo, constants: [10, 10])
             .centerVerticallyInSuperview()
 
+        titleLabel
+            .height(constant: 28)
+        detailsLabel
+            .height(.greaterThanOrEqualTo, constant: 20)
+        
         editButton
             .alignEdge(.centerX, withView: validationImage)
             .alignEdge(.centerY, withView: bottomStack)

@@ -105,34 +105,36 @@ private extension WelcomeViewController {
 
     @objc
     func resetVideo() {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(animationCaption), object: nil)
+      /*  NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(animationCaption), object: nil) */
         stopped = true
         player.pause()
         player.seek(to: .zero)
         currentCaption = 0
         captionLabel.text = ""
-        getStartedButton.isHidden = true
-        getStartedButton.alpha = 0
-        getStartedButton.isEnabled = false
-        signInContainer.isHidden = true
-        signInContainer.alpha = 0
-        signInContainer.isUserInteractionEnabled = false
+      //  getStartedButton.isHidden = true
+    //    getStartedButton.alpha = 0
+     //   getStartedButton.isEnabled = false
+     //   signInContainer.isHidden = true
+     //   signInContainer.alpha = 0
+      //  signInContainer.isUserInteractionEnabled = false
     }
 
     @objc
     func startVideo() {
         player.play()
         stopped = false
-        self.perform(#selector(animationCaption), with: nil, afterDelay: captionDelays[self.currentCaption])
+      /*  self.perform(#selector(animationCaption), with: nil, afterDelay: captionDelays[self.currentCaption]) */
         getStartedButton.isHidden = false
         signInContainer.isHidden = false
-        UIView.animate(withDuration: 0.5, delay: captionDelays[0], animations: {
+        self.getStartedButton.alpha = 1
+        self.signInContainer.alpha = 1
+    /*    UIView.animate(withDuration: 0.5, delay: captionDelays[0], animations: {
             self.getStartedButton.alpha = 1
             self.signInContainer.alpha = 1
         }, completion: { _ in
             self.getStartedButton.isEnabled = true
             self.signInContainer.isUserInteractionEnabled = true
-        })
+        }) */
     }
 }
 
@@ -156,8 +158,11 @@ private extension WelcomeViewController {
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor   ) }, to: [view.rx.backgroundColor])
-            .bind({ UIColor($0.greyLight         ) }, to: [signInLabel.rx.textColor])
-            .bind({ UIColor($0.primaryExtraLight ) }, to: [signInButton.rx.titleColor(for: .normal)])
+           /* .bind({ UIColor($0.greyLight         ) }, to: [signInLabel.rx.textColor])
+            .bind({ UIColor($0.primaryExtraLight ) }, to: [signInButton.rx.titleColor(for: .normal)]) */
+            .bind({ UIColor($0.primaryDark         ) }, to: [signInLabel.rx.textColor])
+            .bind({ UIColor($0.primaryDark ) }, to: [signInButton.rx.titleColor(for: .normal)])
+        
             .bind({ UIColor($0.primary           ) }, to: [getStartedButton.rx.backgroundColor])
             .bind({ UIColor($0.primaryExtraLight ) }, to: [captionLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
@@ -208,11 +213,11 @@ private extension WelcomeViewController {
     }
 
     func render() {
-        signInLabel.layer.shadowColor = UIColor.black.cgColor
+      /*  signInLabel.layer.shadowColor = UIColor.black.cgColor
         signInLabel.layer.shadowRadius = 3
         signInLabel.layer.shadowOpacity = 0.7
         signInLabel.layer.shadowOffset = .zero
-        signInLabel.layer.masksToBounds = false
+        signInLabel.layer.masksToBounds = false */
 
         captionLabel.layer.shadowColor = UIColor.black.cgColor
         captionLabel.layer.shadowRadius = 3

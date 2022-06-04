@@ -81,6 +81,7 @@ private extension MoreBankDetailsInfoView {
     func bindViews() {
         copyButton.rx.tap.subscribe(onNext: {
             UIPasteboard.general.string = self.details.text
+            YAPToast.show("Copied to clipboard")
         }).disposed(by: rx.disposeBag)
     }
     

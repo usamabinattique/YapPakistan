@@ -43,3 +43,33 @@ extension TransactionFilterType {
                 .atmWithdrawl(filter: filter)]
     }
 }
+
+public enum HomeTransactionFilterType {
+    case incoming ( filter: TransactionFilter)
+    case outgoing ( filter: TransactionFilter)
+}
+
+extension HomeTransactionFilterType {
+    var title: String? {
+        switch self {
+        case .incoming:
+            return "screen_transaction_filter_display_text_incoming_transactions".localized
+        case .outgoing:
+            return "screen_transaction_filter_display_text_outgoing_transactions".localized
+        }
+    }
+    
+    var isChecked: Bool {
+        switch self {
+        case .incoming(let filter):
+            return filter.creditSearch ?? false
+        case .outgoing(let filter):
+        return filter.debitSearch ?? false
+        }
+    }
+    
+    static func allCases(filter:TransactionFilter)-> [Self] {
+        return [.incoming(filter: filter),
+                .outgoing(filter: filter)]
+    }
+}

@@ -26,9 +26,12 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     fileprivate lazy var notifManager = NotificationManager()
     fileprivate lazy var username: String! = container.parent.credentialsStore.getUsername()
 
-    init(container: UserSessionContainer, window: UIWindow) {
+    private var showCompleteVerification: Bool
+    
+    init(container: UserSessionContainer, window: UIWindow, showCompleteVerification: Bool = false) {
         self.container = container
         self.window = window
+        self.showCompleteVerification = showCompleteVerification
         super.init()
         self.initializeRoot()
         self.contactsManager = ContactsManager(repository: container.makeY2YRepository())
@@ -65,33 +68,45 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         menuViewModel.outputs.menuItemSelected
             .subscribe(onNext: { [weak self] menuItem in
                 guard let self = self else { return }
+                //viewController.view.generateSelectionImpact()
                 viewController.hideMenu()
                         DispatchQueue.main.async { [self] in
                     switch menuItem {
                     case .analytics:
                         print("analytics")
                         //self.analytics(viewController, paymentCard: paymentCard)
+                        self.analytics(.mock, date: Date(),theRoot: viewController)
                     case .help, .contact:
                         print("help")
                         //self.helpAndSupport(viewController)
+                        
+                        self.openHelpAndSupport(theRoot: viewController)
                     case .statements:
                         print("statements")
-                        //self.statements(viewController)
+                        self.statements(viewController)
                     case .referFriend:
                         self.inviteFriend(viewController)
                     case .housholdSalary:
                         print("housholdSalary")
                         //self.householdSalary(viewController)
+                        YAPToast.show("coming soon")
                     case .chat:
                         print("chat")
                         //ChatManager.shared.openChat()
+                        YAPToast.show("coming soon")
                     case .notifications:
                         print("notifications")
+                        YAPToast.show("coming soon")
                     case .qrCode:
                         print("qrcode")
-                        //self.myQrCode(self.rootNavigationController)
+                       // self.myQrCode(self.rootNavigationController)
+                        self.navigateToAddMoneyQRCode()
                     case .dashboardWidget:
                         self.coordinateToEditWidgets()
+                    case .accountLimits:
+                        self.coordinateToAccountLimits(viewController)
+                    case .young:
+                        YAPToast.show("coming soon")
                     default:
                         break
                     }
@@ -122,7 +137,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
 
     fileprivate func home(root: UITabBarController) {
-        let homeCoordinator = HomeCoodinator(container: container, root: root)
+        let homeCoordinator = HomeCoodinator(container: container, root: root, isCompleteVerification: self.showCompleteVerification)
         self.widgetsEditedSubject.bind(to: homeCoordinator.widgetsEditCompleted).disposed(by: disposeBag)
         self.coordinate(to: homeCoordinator).subscribe(onNext: { [weak self] in
             if case ResultType.success = $0 {
@@ -130,6 +145,16 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                 // self?.result.onCompleted()
             }
         }).disposed(by: disposeBag)
+    }
+    
+    func navigateToAddMoneyQRCode() {
+        coordinate(to: AddMoneyQRCodeCoordinator(root: rootNavigationController, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
+           
+        }).disposed(by: rx.disposeBag)
+    }
+    
+    func analytics(_ paymentCard: PaymentCard, date: Date? = nil, theRoot: UIViewController) {
+        coordinate(to: CardAnalyticsCoordinator(root: theRoot, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
     }
 
     fileprivate func store(root: UITabBarController) {
@@ -145,6 +170,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
         root.viewControllers?.append(yapit)
     }
     fileprivate func yapIt(root: UITabBarController, height: CGFloat) {
+        root.view.generateImpact(.light)
         coordinate(to: YAPItCoordinator(root: root, container: container, tabBarHeight: height))
             .withUnretained(self)
             .subscribe(onNext: { `self`, value in
@@ -156,6 +182,10 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                 }
             }
         }).disposed(by: disposeBag)
+    }
+    
+    func openHelpAndSupport(theRoot: UIViewController) {
+        coordinate(to: HelpAndSupportCoordinator(root: theRoot, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
     }
 
     fileprivate func cards(root: UITabBarController) {
@@ -197,6 +227,18 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     
     private func settings(_ root: UIViewController) {
         coordinate(to: UserProfileCoordinator(root: root, container: self.container))
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
+    
+    private func statements(_ viewController: UIViewController) {
+        coordinate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
+            .subscribe()
+            .disposed(by: disposeBag)
+    }
+    
+    private func coordinateToAccountLimits(_ viewController: UIViewController){
+        coordinate(to: AccountLimitsCoordinator(root: viewController, container: self.container, repository: container.makeTransactionsRepository()))
             .subscribe()
             .disposed(by: disposeBag)
     }

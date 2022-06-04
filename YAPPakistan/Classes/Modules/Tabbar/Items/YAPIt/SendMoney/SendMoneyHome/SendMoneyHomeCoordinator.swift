@@ -147,6 +147,13 @@ private extension SendMoneyHomeCoordinator {
         let viewModel = SearchSendMoneyBeneficiaryViewModel(allBeneficiaries, repository: container.makeYapItRepository())
         let viewController = SearchSendMoneyBeneficiaryViewController(themeService: container.themeService, viewModel: viewModel)
         localRoot.pushViewController(viewController, animated: true)
+        
+        viewModel.outputs.beneficiarySelected.subscribe(onNext: { [weak self] in
+            self?.localRoot.popViewController()
+            self?.sendMoney($0)
+        }).disposed(by: disposeBag)
+
+        
         refreshBeneficiaries.bind(to: viewModel.inputs.refreshObserver).disposed(by: disposeBag)
         cancelFromSendMoneyFundTransfer.take(1).subscribe(onNext: {[weak self] _ in
             if self?.sendOnlyOneEvent == 0 {

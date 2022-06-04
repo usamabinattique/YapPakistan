@@ -16,6 +16,7 @@ public protocol Theme {
     var primaryDark: Color        { get }
     var primarySoft: Color        { get }
     var primaryAlt: Color         { get }
+    var primaryDiffuse: Color     { get }
     var grey: Color               { get }
     var greyDark: Color           { get }
     var greyLight: Color          { get }
@@ -37,6 +38,10 @@ public protocol Theme {
     var separatorColor: Color     { get }
     var paleLilac: Color          { get }
     var clear: UIColor            { get }
+    
+    var categoryGradientFirst: Color { get }
+    var categoryGradientSecond: Color { get }
+    var categoryGradientThird: Color { get }
 }
 
 struct LightTheme: Theme {
@@ -47,6 +52,7 @@ struct LightTheme: Theme {
     var primaryDark: Color          { Color(hex: "#272262") }
     var primarySoft: Color          { Color(hex: "#A682FF") }
     var primaryAlt: Color           { Color(hex: "#BB42EB") }
+    var primaryDiffuse: Color       { Color(hex: "#EDE6FF") }
     var grey: Color                 { Color(hex: "#C9C8D8") }
     var greyDark: Color             { Color(hex: "#9391B1") }
     var greyLight: Color            { Color(hex: "#DAE0F0") }
@@ -68,6 +74,10 @@ struct LightTheme: Theme {
     var separatorColor: Color       { Color(hex: "#979797") }
     var paleLilac: Color            { Color(hex: "#F1EDFF") }
     var clear: UIColor                { UIColor.clear }
+    
+    var categoryGradientFirst: Color { Color(hex: "#DAE8FD") }
+    var categoryGradientSecond: Color { Color(hex: "#64D5CF") }
+    var categoryGradientThird: Color { Color(hex: "#EF6A90") }
 
 }
 
@@ -79,6 +89,7 @@ struct DarkTheme: Theme {
     var primaryDark: Color          { Color(hex: "#272262") }
     var primarySoft: Color          { Color(hex: "#A682FF") }
     var primaryAlt: Color           { Color(hex: "#BB42EB") }
+    var primaryDiffuse: Color       { Color(hex: "#EDE6FF") }
     var grey: Color                 { Color(hex: "#C9C8D8") }
     var greyDark: Color             { Color(hex: "#9391B1") }
     var greyLight: Color            { Color(hex: "#DAE0F0") }
@@ -100,6 +111,10 @@ struct DarkTheme: Theme {
     var separatorColor: Color       { Color(hex: "#979797") }
     var paleLilac: Color            { Color(hex: "#F1EDFF") }
     var clear: UIColor              { UIColor.clear }
+    
+    var categoryGradientFirst: Color { Color(hex: "#DAE8FD") }
+    var categoryGradientSecond: Color { Color(hex: "#64D5CF") }
+    var categoryGradientThird: Color { Color(hex: "#EF6A90") }
 }
 
 public enum AppTheme: ThemeProvider {

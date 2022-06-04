@@ -13,11 +13,9 @@ class SetPintSuccessViewController: UIViewController {
 
     private let successImage = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private let titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
-    private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
-    private let topupButton = UIFactory.makeAppRoundedButton(with: .regular)
-    private let doitLaterButton = UIFactory.makeButton(with: .regular)
-    let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView()]
-    private var backButton: UIButton?
+    //private let subTitleLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0)
+    //private let topupButton = UIFactory.makeAppRoundedButton(with: .regular)
+    private let goToDashboardBtn = UIFactory.makeAppRoundedButton(with: .regular)
 
     private var themeService: ThemeService<AppTheme>!
     var viewModel: SetPintSuccessViewModelType!
@@ -37,31 +35,25 @@ class SetPintSuccessViewController: UIViewController {
         setupLanguageStrings()
         setupBindings()
         setupConstraints()
+        self.navigationController?.isNavigationBarHidden = true
     }
 
     func setupViews() {
         view
             .addSub(view: successImage)
             .addSub(view: titleLabel)
-            .addSub(view: subTitleLabel)
-            .addSub(view: topupButton)
-            .addSub(view: doitLaterButton)
-            .addSub(views: spacers)
-        backButton = addBackButton(of: .backEmpty)
+            //.addSub(view: subTitleLabel)
+            //.addSub(view: topupButton)
+            .addSub(view: goToDashboardBtn)
     }
 
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [ view.rx.backgroundColor ])
             .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
-            .bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
-            .bind({ UIColor($0.primary) }, to: topupButton.rx.backgroundColor)
-            .bind({ UIColor($0.primary) }, to: doitLaterButton.rx.titleColor(for: .normal))
-            .disposed(by: rx.disposeBag)
-
-        guard let backButton = backButton else { return }
-        themeService.rx
-            .bind({ UIColor($0.primary) }, to: [ backButton.rx.tintColor ])
+            //.bind({ UIColor($0.greyDark) }, to: subTitleLabel.rx.textColor)
+            .bind({ UIColor($0.primary) }, to: goToDashboardBtn.rx.backgroundColor)
+            //.bind({ UIColor($0.primary) }, to: goToDashboardBtn.rx.titleColor(for: .normal))
             .disposed(by: rx.disposeBag)
     }
 
@@ -73,61 +65,29 @@ class SetPintSuccessViewController: UIViewController {
         viewModel.outputs.languageStrings.withUnretained(self)
             .subscribe(onNext: { `self`, strings in
                 self.titleLabel.text = strings.title
-                self.subTitleLabel.text = strings.subTitle
-                self.topupButton.setTitle(strings.topupNow, for: .normal)
-                self.doitLaterButton.setTitle(strings.doItLater, for: .normal)
+                //self.subTitleLabel.text = strings.subTitle
+                //self.topupButton.setTitle(strings.topupNow, for: .normal)
+                self.goToDashboardBtn.setTitle(strings.doItLater, for: .normal)
             })
             .disposed(by: rx.disposeBag)
     }
 
     func setupBindings() {
-        doitLaterButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
-        backButton?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        goToDashboardBtn.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
     }
 
     func setupConstraints() {
-
-        spacers[3]
-            .alignEdgesWithSuperview([.safeAreaTop, .left, .right])
-
         titleLabel
-            .toBottomOf(spacers[3])
-            .alignEdgesWithSuperview([.left, .right], constant: 25)
-
-        spacers[0]
-            .toBottomOf(titleLabel)
-            .alignEdgesWithSuperview([.left, .right])
+            .alignEdgesWithSuperview([.safeAreaTop, .left, .right], constants: [20, 25, 25])
 
         successImage
-            .toBottomOf(spacers[0])
-            .alignEdgesWithSuperview([.left, .right], constant: 25)
-
-        spacers[1]
-            .toBottomOf(successImage)
-            .alignEdgesWithSuperview([.left, .right])
-
-        subTitleLabel
-            .toBottomOf(spacers[1])
-            .alignEdgesWithSuperview([.left, .right], constants: [22, 22])
-
-        spacers[2]
-            .toBottomOf(subTitleLabel)
-            .alignEdgesWithSuperview([.left, .right])
-
-        topupButton
-            .toBottomOf(spacers[2])
-            .centerHorizontallyInSuperview()
-            .width(constant: 250)
-            .height(constant: 52)
-
-        doitLaterButton
-            .toBottomOf(topupButton, constant: 10)
-            .centerHorizontallyInSuperview()
+            .toBottomOf(titleLabel, constant: 44)
+            .alignEdgesWithSuperview([.left, .right], constant: 16)
+        
+        goToDashboardBtn
             .alignEdgeWithSuperview(.safeAreaBottom, constant: 10)
-
-        spacers[0]
-            .heightEqualTo(view: spacers[1], multiplier: 1)
-            .heightEqualTo(view: spacers[2], multiplier: 1)
-            .heightEqualTo(view: spacers[3], multiplier: 1)
+            .centerHorizontallyInSuperview()
+            .height(constant: 50)
+            .width(constant: 170)
     }
 }

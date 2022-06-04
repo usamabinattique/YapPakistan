@@ -29,6 +29,8 @@ protocol ConfirmPaymentViewModelOutputs {
     var cardImage: Observable<UIImage?> { get }
     var isPaid: Observable<Bool> { get }
     var cardFee: Observable<String> { get }
+    var fedFee: Observable<String> { get }
+    var orderTotalFee: Observable<String> { get }
     var cardNumber: Observable<String> { get }
     var address: Observable<LocationModel> { get }
     var buttonTitle: Observable<String> { get }
@@ -67,6 +69,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     var cardImage: Observable<UIImage?> { cardImageSubject.asObservable() }
     var isPaid: Observable<Bool> { isPaidSubject.asObservable() }
     var cardFee: Observable<String> { feeSubject.asObservable() }
+    var fedFee: Observable<String> { fedFeeSubject.asObservable() }
+    var orderTotalFee: Observable<String> { orderTotalFeeSubject.asObservable() }
     var cardNumber: Observable<String> { cardNumberSubject.asObservable() }
     var address: Observable<LocationModel> { addressSubject.asObservable() }
     var buttonTitle: Observable<String> { buttonTitleSubject.asObservable() }
@@ -87,6 +91,8 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     private let cardImageSubject = ReplaySubject<UIImage?>.create(bufferSize: 1)
     private let isPaidSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     private let feeSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let fedFeeSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let orderTotalFeeSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let cardNumberSubject = ReplaySubject<String>.create(bufferSize: 1)
     private let addressSubject = ReplaySubject<LocationModel>.create(bufferSize: 1)
     private let buttonTitleSubject = ReplaySubject<String>.create(bufferSize: 1)
@@ -125,16 +131,18 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
                 addressSubject.onNext(location)
             }
             
-            let blnceFormatted = String(format: "%.2f", payment.cardSchemeObject?.fee ?? 0.0)
-            let balance = "PKR \(blnceFormatted)"
-            let text = String.init(format: "screen_yap_confirm_payment_display_text_place_order_for".localized, balance)
+            fedFeeSubject.onNext(String(format: "PKR %.2f", payment.cardSchemeObject?.fedFee ?? 0.0))
+            orderTotalFeeSubject.onNext(String(format: "PKR %.2f", payment.cardSchemeObject?.totalFee ?? 0.0))
             
+            let text = String.init(format: "screen_yap_confirm_payment_display_text_place_order_for".localized)
             buttonTitleSubject.onNext(text)
             //let attributed = NSMutableAttributedString(string: text)
             //            attributed.addAttributes([.foregroundColor: UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
         }
         if let cardDetail =  paymentGatewayM.cardDetailObject {
             cardNumberSubject.onNext(cardDetail.cardNumber ?? "")
+        } else {
+            cardNumberSubject.onNext(paymentGatewayM.beneficiary?.maskedNumberWithAesteric ?? "")
         }
         localizedStringsSubject.onNext(theStrings)
         
@@ -198,7 +206,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         let sessionID = self.paymentGatewayM.cardDetailObject?.sessionID ?? ""
         let beneficiaryID = String(self.paymentGatewayM.beneficiary?.id ?? 0)
         
-        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(beneficiaryId: beneficiaryID, amount: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0), currency: "PKR", sessionId: sessionID)
+        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(beneficiaryId: beneficiaryID, amount: String(self.paymentGatewayM.cardSchemeObject?.totalFee ?? 0), currency: "PKR", sessionId: sessionID)
         
         let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
             self.checkoutSessionObject = paymentGatewayCheckoutSession
@@ -267,13 +275,16 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         guard let checkoutSessionObj = self.checkoutSessionObject else { return }
         var sessionId = ""
         var beneficiaryID = ""
+        var _securityCode = ""
         if let benefId = self.paymentGatewayM.beneficiary?.id {
             beneficiaryID = String(benefId)
+            _securityCode = securityCode ?? ""
         } else {
             sessionId = self.paymentGatewayM.cardDetailObject?.sessionID ?? ""
+            _securityCode = checkoutSessionObj.securityCode
         }
         
-        let topupRequest = transactionRepository.paymentGatewayFirstCreditTopup(threeDSecureId: checkoutSessionObj.threeDSecureId, orderId: checkoutSessionObj.order?.id ?? "", currency: checkoutSessionObj.order?.currency ?? "", amount: checkoutSessionObj.order?.amount ?? "", sessionId: sessionId, securityCode: checkoutSessionObj.securityCode, beneficiaryId: beneficiaryID)
+        let topupRequest = transactionRepository.paymentGatewayFirstCreditTopup(threeDSecureId: checkoutSessionObj.threeDSecureId, orderId: checkoutSessionObj.order?.id ?? "", currency: checkoutSessionObj.order?.currency ?? "", amount: checkoutSessionObj.order?.amount ?? "", sessionId: sessionId, securityCode: _securityCode, beneficiaryId: beneficiaryID)
         
         topupRequest.elements().subscribe(onNext: { [weak self] responseObj in
             self?.fetchOrderCardHolderApi()

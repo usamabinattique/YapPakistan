@@ -20,6 +20,10 @@ public extension UIImageView {
     func loadImage(with urlString: String?, placeholder: UIImage? = nil, showsIndicator: Bool = false, refreshCachedImage: Bool = false, completion: @escaping ImageLoadingCompletion) {
         loadImage(with: URL(addingPercentEncodingInString: urlString ?? ""), placeholder: placeholder, showsIndicator: showsIndicator, refreshCachedImage: refreshCachedImage, completion: completion)
     }
+    
+    func loadImage(with urlString: String?, placeholder: UIImage? = nil, showsIndicator: Bool = false, refreshCachedImage: Bool = false, isStringPath: Bool ,completion: @escaping ImageLoadingCompletion) {
+        loadImage(with: URL(string: urlString ?? ""), placeholder: placeholder, showsIndicator: showsIndicator, refreshCachedImage: refreshCachedImage, completion: completion)
+    }
 
     func loadImage(with url: URL?, placeholder: UIImage? = nil, showsIndicator: Bool = false, loop: Int = 1, refreshCachedImage: Bool = false) {
 

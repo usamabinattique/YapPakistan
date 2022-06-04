@@ -41,8 +41,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         GMSServices.provideAPIKey(googleMapsAPIKey)
         GMSPlacesClient.provideAPIKey(googleMapsAPIKey)
-        
+        registerNotification()
         return true
+    }
+    
+    func registerNotification() {
+        if #available(iOS 10.0, *) {
+            // push notifications
+            UNUserNotificationCenter.current().requestAuthorization(options: [.sound, .alert, .badge]) {
+                (granted, error) in
+                if (granted) {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                }
+            }
+
+            let center  = UNUserNotificationCenter.current()
+            //center.delegate = AppManager.appDel()
+            center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
+                if error == nil {
+                    DispatchQueue.main.async {
+                        UIApplication.shared.registerForRemoteNotifications()
+                    }
+                }
+            }
+        } else {
+            UIApplication.shared.registerUserNotificationSettings(UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: nil))
+            UIApplication.shared.registerForRemoteNotifications()
+        }
     }
 
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {

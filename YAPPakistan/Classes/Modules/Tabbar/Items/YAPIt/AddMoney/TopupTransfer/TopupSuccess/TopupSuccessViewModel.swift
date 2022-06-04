@@ -73,14 +73,14 @@ class TopupSuccessViewModel: TopupSuccessViewModelType, TopupSuccessViewModelInp
         successMessageSubject.onNext(makeSuccessMessage(balance: amount, currency: currency))
         accountBalanceTitleSubject.onNext("screen_topup_success_display_text_account_balance_title".localized)
         balanceSubject.onNext(newBalance)
-        successImageSubject.onNext(UIImage.sharedImage(named: "icon_completion"))
+        successImageSubject.onNext(UIImage(named: "icon_completion", in: .yapPakistan))
         dashboardButtonTitleSubject.onNext(doneButtonTitle ?? "screen_topup_success_display_text_dashboard_action_button_title".localized)
     }
     
 }
 
 extension TopupSuccessViewModel {
-    func makeSuccessMessage(balance: Double, currency: String = "AED") -> NSMutableAttributedString {
+    func makeSuccessMessage(balance: Double, currency: String = "PKR") -> NSMutableAttributedString {
         
         let currentyText = CurrencyFormatter.format(amount: balance, in: currency)
         let attributedString = NSMutableAttributedString(string: String(format: "screen_topup_success_display_text_success_transaction_message".localized, currentyText), attributes: [

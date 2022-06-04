@@ -22,7 +22,7 @@ final class CustomWidgetsCollectionViewCell: RxUICollectionViewCell {
     
     var cateogryImage: UIImageView = UIFactory.makeImageView(contentMode: .scaleAspectFit)
     var editImage: UIImageView = UIFactory.makeImageView(contentMode: .scaleAspectFit) //UIImageViewFactory.createImageView(mode: .scaleAspectFit, image: UIImage.init(named: "icon_edit", in: yapKitBundle, compatibleWith: nil))
-    var categoryName: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center) //UILabelFactory.createUILabel(with: .primary, textStyle: .micro, alignment: .center)
+    var categoryName: UILabel = UIFactory.makeLabel(font: .micro, alignment: .center,numberOfLines: 2) //UILabelFactory.createUILabel(with: .primary, textStyle: .micro, alignment: .center)
     private var stack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 10)
     private var viewModel: CustomWidgetsCollectionViewCellViewModelType!
     private var themeService: ThemeService<AppTheme>!

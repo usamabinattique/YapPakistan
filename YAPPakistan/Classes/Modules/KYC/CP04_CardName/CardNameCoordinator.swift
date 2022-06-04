@@ -85,7 +85,9 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     
     private func cardDetailWeb() {
         let apiConfig = self.container.mainContainer.makeAPIConfiguration()
-        _ = coordinate(to: CommonWebViewCoordinator(root: root, container: container, commonWebType: .onBoardingAddCardWeb, paymentGatewayM: self.paymentGatewayM, html: apiConfig.onBoardingCardDetailWebURL))
+        coordinate(to: CommonWebViewCoordinator(root: root, container: container, commonWebType: .onBoardingAddCardWeb, paymentGatewayM: self.paymentGatewayM, html: apiConfig.onBoardingCardDetailWebURL))
+            .subscribe()
+            .disposed(by: disposeBag)
     }
     
     private func addressPending() {

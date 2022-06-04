@@ -10,6 +10,7 @@ import Foundation
 struct CardStatusModuleBuilder {
     var container: UserSessionContainer
     var status: DeliveryStatus
+    var schemeImage: CardSchemeType
 
     typealias Strings = CardStatusViewModel.LocalizedStrings
     func viewController() -> CardStatusViewController {
@@ -17,7 +18,8 @@ struct CardStatusModuleBuilder {
                                subTitle: "Primary card",
                                message: status.message,
                                status: status.status,
-                               action: status.action.title)
+                               action: status.action.title,
+                              image: schemeImage.cardImage)
         let viewModel = CardStatusViewModel(strings, completedSteps: status.action.completedSteps)
         let viewController = CardStatusViewController(themeService: container.themeService, viewModel: viewModel)
         return viewController
@@ -27,21 +29,21 @@ struct CardStatusModuleBuilder {
 fileprivate extension DeliveryStatus {
     var status: (order: String, build: String, ship: String) {
         switch self {
-        case .ordering: return ("Ordering", "Building", "Shipping")
-        case .ordered: return ("Ordered", "Building", "Shipping")
-        case .booked: return ("Ordered", "Building", "Shipping")
-        case .shipping: return ("Ordered", "Built", "Shipping")
-        case .shipped: return ("Ordered", "Built", "Shipped")
+        case .ordered: return ("Ordered", "Shipped", "Delivered")
+        case .shipped: return ("Ordered", "Shipped", "Delivered")
+        case .delivered: return ("Ordered", "Shipped", "Delivered")
+        case .notCreated: return ("Ordered", "Shipped", "Delivered")
+        case .failed: return ("Ordered", "Shipped", "Delivered")
         }
     }
 
     var action: (title: String, completedSteps: Int) {
         switch self {
-        case .ordering: return ("Activate Card", 0) // ("Complete verification", 0)
-        case .ordered: return ("Activate Card", 1)
-        case .booked: return ("Activate Card", 3)
-        case .shipping: return ("Activate Card", 4)
-        case .shipped: return ("Activate Card", 5)
+        case .ordered: return ("Activate card", 2)
+        case .shipped: return ("Activate card", 4)
+        case .delivered: return ("Activate card", 5)
+        case .notCreated: return ("Activate card", 0)
+        case .failed: return ("Activate card", 0)
         }
     }
 }

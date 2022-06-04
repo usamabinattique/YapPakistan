@@ -164,6 +164,7 @@ public class OnboardingCongratulationViewController: UIViewController {
     var viewModel: OnboardingCongratulationViewModelType!
     var themeService: ThemeService<AppTheme>!
     var animateCompleteVerificationCompleted: (() -> Void)?
+    public var resumeAnimation: (() -> Void)?
 
     // MARK: - Initialization
 
@@ -180,7 +181,7 @@ public class OnboardingCongratulationViewController: UIViewController {
     // MARK: - View Life Cycle
     override public func viewDidLoad() {
         super.viewDidLoad()
-
+        
         setup()
         setupTheme()
         style()
@@ -194,14 +195,29 @@ public class OnboardingCongratulationViewController: UIViewController {
     }
 
     func setup() {
-        _ = rowHeight
-        animateHeading()
-        animateSubheading()
-        animatePaymentCard()
-        animateIBANHeader()
-        animateIBANView()
-        animateFootnote()
-        animateCompleteVerificationButton()
+        //!!! added here because in case waiting list removed show progress completion in this screen as well
+        
+        if viewModel.outputs.onBoardingUserObj.isWaiting == false {
+            self.viewModel.inputs.progressObserver.onNext(1)
+        }
+        
+        resumeAnimation = { [weak self] in
+            _ = self?.rowHeight
+            self?.animateHeading()
+            self?.animateSubheading()
+            self?.animatePaymentCard()
+            self?.animateIBANHeader()
+            self?.animateIBANView()
+            self?.animateFootnote()
+            self?.animateCompleteVerificationButton()
+            
+            if self?.viewModel.outputs.onBoardingUserObj.isWaiting == false {
+                self?.animateCompleteVerificationCompleted = { [weak self] in
+                    print("animation completed")
+                    self?.bindTimeInterval()
+                }
+            }
+        }
     }
 
     func setupTheme() {
@@ -441,6 +457,7 @@ extension OnboardingCongratulationViewController {
 
      func bindTimeInterval() {
          viewModel.outputs.onboardingInterval.subscribe(onNext: { [weak self] interval in
+             self?.subheadingLabel.isHidden = false
             if interval > 60 || interval <= 0 {
                 self?.subheadingLabel.text = "screen_onboarding_congratulations_display_text_sub_title_no_interval".localized
                 self?.subheadingLabel.sizeToFit()

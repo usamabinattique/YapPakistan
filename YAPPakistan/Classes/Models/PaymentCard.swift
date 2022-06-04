@@ -118,7 +118,43 @@ struct CardDetails: Codable {
 
 public class PaymentCard: Codable {
     
-    internal init(accountNumber: String?, accountType: String?, active: Bool?, atmAllowed: Bool? = nil, availableBalance: Double?, backImage: String? = nil, blocked: Bool? = nil, cardBalance: Double?, cardName: String? = nil, cardScheme: String?, cardSerialNumber: String?, cardType: PaymentCardType, currentBalance: Double?, customerId: String?, delivered: Bool?, deliveryStatus: PaymentCard.DeliveryStatus, expiryDate: String?, frontImage: String?, issuanceDate: String?, maskedCardNo: String?, nameUpdated: Bool?, onlineBankingAllowed: Bool?, paymentAbroadAllowed: Bool?, physical: Bool, pinCreated: Bool?, pinStatus: PaymentCard.PinStatus?, productCode: String?, retailPaymentAllowed: Bool? = nil, shipmentStatus: String?, status: CardStatus?, uuid: String?, cardDetails: CardDetails? = nil) {
+    let accountNumber: String?
+    let accountType: String?
+    let active: Bool?
+    var atmAllowed: Bool?
+    let availableBalance: Double?
+    var backImage: String?
+    var blocked: Bool?
+    let cardBalance: Double?
+    var cardName: String?
+    let cardScheme: CardSchemeType
+    let cardSerialNumber: String?
+    let cardType: PaymentCardType
+    let currentBalance: Double?
+    let customerId: String?
+    let delivered: Bool?
+    var deliveryStatus: DeliveryStatus
+    let expiryDate: String?
+    let frontImage: String?
+    let issuanceDate: String?
+    let maskedCardNo: String?
+    let nameUpdated: Bool?
+    let onlineBankingAllowed: Bool?
+    let paymentAbroadAllowed: Bool?
+    let physical: Bool
+    let pinCreated: Bool?
+    var pinStatus: PinStatus?
+    let productCode: String?
+    var retailPaymentAllowed: Bool?
+    let shipmentStatus: String?
+    let status: CardStatus?
+    let uuid: String?
+    var cardDetails: CardDetails?
+    var deliveryDate: Date?
+    var setPinDate: Date?
+    var pinSet: Bool?
+   
+    internal init(accountNumber: String?, accountType: String?, active: Bool?, atmAllowed: Bool? = nil, availableBalance: Double?, backImage: String? = nil, blocked: Bool? = nil, cardBalance: Double?, cardName: String? = nil, cardScheme: PaymentCard.CardSchemeType, cardSerialNumber: String?, cardType: PaymentCardType, currentBalance: Double?, customerId: String?, delivered: Bool?, deliveryStatus: PaymentCard.DeliveryStatus, expiryDate: String?, frontImage: String?, issuanceDate: String?, maskedCardNo: String?, nameUpdated: Bool?, onlineBankingAllowed: Bool?, paymentAbroadAllowed: Bool?, physical: Bool, pinCreated: Bool?, pinStatus: PaymentCard.PinStatus?, productCode: String?, retailPaymentAllowed: Bool? = nil, shipmentStatus: String?, status: CardStatus?, uuid: String?, cardDetails: CardDetails? = nil) {
         self.accountNumber = accountNumber
         self.accountType = accountType
         self.active = active
@@ -153,43 +189,6 @@ public class PaymentCard: Codable {
         self.cardDetails = cardDetails
     }
     
-    let accountNumber: String?
-    let accountType: String?
-    let active: Bool?
-    var atmAllowed: Bool?
-    let availableBalance: Double?
-    var backImage: String?
-    var blocked: Bool?
-    let cardBalance: Double?
-    var cardName: String?
-    let cardScheme: String?
-    let cardSerialNumber: String?
-    let cardType: PaymentCardType
-    let currentBalance: Double?
-    let customerId: String?
-    let delivered: Bool?
-    var deliveryStatus: DeliveryStatus
-    let expiryDate: String?
-    let frontImage: String?
-    let issuanceDate: String?
-    let maskedCardNo: String?
-    let nameUpdated: Bool?
-    let onlineBankingAllowed: Bool?
-    let paymentAbroadAllowed: Bool?
-    let physical: Bool
-    let pinCreated: Bool?
-    var pinStatus: PinStatus?
-    let productCode: String?
-    var retailPaymentAllowed: Bool?
-    let shipmentStatus: String?
-    let status: CardStatus?
-    let uuid: String?
-    var cardDetails: CardDetails?
-    var deliveryDate: Date?
-    var setPinDate: Date?
-    var pinSet: Bool?
-   
-
     enum CodingKeys: String, CodingKey {
         case accountNumber, accountType, active, atmAllowed, availableBalance, backImage, blocked, cardBalance,
              cardName, cardScheme, cardSerialNumber, cardType, currentBalance, customerId, delivered, deliveryStatus,
@@ -210,13 +209,13 @@ public class PaymentCard: Codable {
         blocked = try? values?.decodeIfPresent(Bool.self, forKey: .blocked)
         cardBalance = try? values?.decodeIfPresent(Double.self, forKey: .cardBalance)
         cardName = try? values?.decodeIfPresent(String.self, forKey: .cardName)
-        cardScheme = try? values?.decodeIfPresent(String.self, forKey: .cardScheme)
+        cardScheme = (try? values?.decodeIfPresent(CardSchemeType.self, forKey: .cardScheme)) ?? .PayPak
         cardSerialNumber = try? values?.decodeIfPresent(String.self, forKey: .cardSerialNumber)
         cardType = (try? values?.decodeIfPresent(PaymentCardType.self, forKey: .cardType)) ?? .debit
         currentBalance = try? values?.decodeIfPresent(Double.self, forKey: .currentBalance)
         customerId = try? values?.decodeIfPresent(String.self, forKey: .customerId)
         delivered = try? values?.decodeIfPresent(Bool.self, forKey: .delivered)
-        deliveryStatus = (try? values?.decodeIfPresent(DeliveryStatus.self, forKey: .deliveryStatus)) ?? .ordering
+        deliveryStatus = (try? values?.decodeIfPresent(DeliveryStatus.self, forKey: .deliveryStatus)) ?? .ordered
         expiryDate = try? values?.decodeIfPresent(String.self, forKey: .expiryDate)
         frontImage = try? values?.decodeIfPresent(String.self, forKey: .frontImage)
         issuanceDate = try? values?.decodeIfPresent(String.self, forKey: .issuanceDate)
@@ -241,11 +240,11 @@ public class PaymentCard: Codable {
 
 extension PaymentCard {
     enum DeliveryStatus: String, Codable {
-        case shipped = "SHIPPED"    // 4
-        case shipping = "SHIPPING"  // 3 Not comming from backend? This is to represent statatus;
-        case booked = "BOOKED"      // 3
-        case ordered = "ORDERED"    // 2
-        case ordering = "ORDERING"  // 1 // Not comming from backend; This is to represent KYC incomplete statatus;
+        case ordered = "ORDERED"  // 3 Not comming from backend? This is to represent statatus;
+        case shipped = "SHIPPED"      // 3
+        case delivered = "DELIVERED"    // 2
+        case notCreated = "NOT-CREATED"    // 2
+        case failed = "FAILED"          //
     }
 
     enum Status: String, Codable {
@@ -260,6 +259,12 @@ extension PaymentCard {
         case inActive = "INACTIVE"
         case blocked = "BLOCKED"
         case active = "ACTIVE"
+    }
+    
+    enum CardSchemeType: String, Codable {
+        case PayPak = "PayPak"
+        case Mastercard = "Mastercard"
+        case NoScheme = ""
     }
 }
 
@@ -387,7 +392,38 @@ extension PaymentCard: StatementFetchable {
 
 extension PaymentCard {
     public static var mock: PaymentCard {
-        PaymentCard(accountNumber: nil, accountType: nil, active: nil, atmAllowed: nil, availableBalance: nil, backImage: nil, blocked: nil, cardBalance: nil, cardName: nil, cardScheme: nil, cardSerialNumber: nil, cardType: PaymentCardType.debit, currentBalance: nil, customerId: nil, delivered: nil, deliveryStatus: .ordered, expiryDate: nil, frontImage: nil, issuanceDate: nil, maskedCardNo: nil, nameUpdated: nil, onlineBankingAllowed: nil, paymentAbroadAllowed: nil, physical: false, pinCreated: nil, pinStatus: nil, productCode: nil, retailPaymentAllowed: nil, shipmentStatus: nil, status: nil, uuid: nil, cardDetails: nil)
+        PaymentCard(accountNumber: nil,
+                    accountType: nil,
+                    active: nil,
+                    atmAllowed: nil,
+                    availableBalance: nil,
+                    backImage: nil,
+                    blocked: nil,
+                    cardBalance: nil,
+                    cardName: nil,
+                    cardScheme: .PayPak,
+                    cardSerialNumber: nil,
+                    cardType: PaymentCardType.debit,
+                    currentBalance: nil,
+                    customerId: nil,
+                    delivered: nil,
+                    deliveryStatus: .notCreated,
+                    expiryDate: nil,
+                    frontImage: nil,
+                    issuanceDate: nil,
+                    maskedCardNo: nil,
+                    nameUpdated: nil,
+                    onlineBankingAllowed: nil,
+                    paymentAbroadAllowed: nil,
+                    physical: false,
+                    pinCreated: nil,
+                    pinStatus: nil,
+                    productCode: nil,
+                    retailPaymentAllowed: nil,
+                    shipmentStatus: nil,
+                    status: nil,
+                    uuid: nil,
+                    cardDetails: nil)
     }
     
 }

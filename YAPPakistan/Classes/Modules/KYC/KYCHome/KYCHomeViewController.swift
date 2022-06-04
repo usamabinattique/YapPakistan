@@ -92,6 +92,10 @@ class KYCHomeViewController: UIViewController {
         setupConstraints()
         bindViewModel()
 
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         viewModel.inputs.documentsUploadObserver.onNext(())
     }
 

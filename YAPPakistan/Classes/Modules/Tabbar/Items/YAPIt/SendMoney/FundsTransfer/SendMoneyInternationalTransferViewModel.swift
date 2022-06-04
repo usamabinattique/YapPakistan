@@ -18,7 +18,7 @@ class SendMoneyInternationalTransferViewModel: SendMoneyFundsTransferViewModel {
         
         viewModels.append(SMFTBeneficiaryCellViewModel(beneficiary, showsFlag: true))
         
-        let amountViewModel = SMFTAmountInputCellViewModel(beneficiary.currency ?? "AED")
+        let amountViewModel = SMFTAmountInputCellViewModel(beneficiary.currency ?? "PKR")
         self.amountErrorSubject.map{ $0 == nil }.bind(to: amountViewModel.inputs.isValidAmountObserver).disposed(by: disposeBag)
         let amount = amountViewModel.outputs.text
             .map { $0 ?? "0" }
@@ -28,13 +28,13 @@ class SendMoneyInternationalTransferViewModel: SendMoneyFundsTransferViewModel {
         Observable.combineLatest(amount, conversionRate.map{ $0.doubleValue })
             .map{ [unowned self] in
                 let value = $0.0 * $0.1
-                return self.beneficiary.type == .rmt ? value.roundedHalfEvenUp(toPlaces: CurrencyFormatter.decimalPlaces(for: "AED")) : value.rounded(toPlaces: CurrencyFormatter.decimalPlaces(for: "AED")) }
+                return self.beneficiary.type == .rmt ? value.roundedHalfEvenUp(toPlaces: CurrencyFormatter.decimalPlaces(for: "PKR")) : value.rounded(toPlaces: CurrencyFormatter.decimalPlaces(for: "PKR")) }
             .bind(to: enteredAmount).disposed(by: disposeBag)
         viewModels.append(amountViewModel)
         validations.append(Observable.combineLatest(enteredAmount, amountErrorSubject).map{ $0.0 > 0 && $0.1 == nil })
                 
-        if beneficiary.currency ?? "AED" != "AED" {
-            let convertedAmountViewModel = SMFTConvertedAmountInputCellViewModel(currency: "AED", convertedCurrency: beneficiary.currency ?? "AED")
+        if beneficiary.currency ?? "PKR" != "AED" {
+            let convertedAmountViewModel = SMFTConvertedAmountInputCellViewModel(currency: "PKR", convertedCurrency: beneficiary.currency ?? "PKR")
             viewModels.append(convertedAmountViewModel)
             
             conversionRate.bind(to: convertedAmountViewModel.inputs.conversionRate).disposed(by: disposeBag)
@@ -56,7 +56,7 @@ class SendMoneyInternationalTransferViewModel: SendMoneyFundsTransferViewModel {
             viewModels.append(charges)
         }
         
-        viewModels.append(SMFTAvailableBalanceCellViewModel(CustomerBalanceResponse.mock,beneficiary.currency ?? "AED" == "AED"))
+        viewModels.append(SMFTAvailableBalanceCellViewModel(CustomerBalanceResponse.mock,beneficiary.currency ?? "PKR" == "PKR"))
 
         let reason = SMFTReasonCellViewModel()
         viewModels.append(reason)

@@ -97,6 +97,7 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
                 self.repository.paymentGatewayTopup(threeDSecureId: threeDSecureId, orderId: orderID, currency: currency, amount: String(amount), sessionId: "", securityCode: $0, beneficiaryId: String(card.id)) }
             .share()
         
+        #warning("[UMAIR] - uncomment following error block and remove current error block")
         paymentRequest.errors()
             .do(onNext: { _ in
                 YAPProgressHud.hideProgressHud()
@@ -106,6 +107,13 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
             })
             .disposed(by: disposeBag)
         
+//                paymentRequest.errors()
+//                        .flatMap{ _ in self.getCustomerAccountBalance() }
+//                    .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
+//                    .subscribe(onNext: { [weak self] _ in
+//                        self?.resultSubject.onNext((amount: amount, currency: currency, card: card, newBalance: self?.accountBalance ?? "")) })
+//                    .disposed(by: disposeBag)
+                
         paymentRequest.elements()
                 .flatMap{ _ in self.getCustomerAccountBalance() }
             .do(onNext: { _ in YAPProgressHud.hideProgressHud()})

@@ -14,7 +14,7 @@ protocol Transaction {
     var type: TransactionType { get }
     var date: Date { get }
     var status: String? { get }
-    var currency: String { get }
+    var currency: String? { get }
     var amount: Double { get }
     var totalAmount: Double? { get }
     var productCode: TransactionProductCode { get }
@@ -37,6 +37,10 @@ protocol Transaction {
     var cardHolderBillingAmount: Double { get }
     var cardHolderBillingCurrency: String? { get }
     var cardHolderBillingTotalAmount: Double { get }
+    
+    var customerId1: String? { get }
+    var customerId2: String? { get }
+    var merchantCategoryName: String? { get }
 }
 
 extension Transaction {
@@ -50,7 +54,8 @@ extension Transaction {
             return type == .debit ? (receiverName == nil ? nil :"Sent to \(receiverName!)") : type == .credit ? (senderName == nil ? nil :"Received from \(senderName!)") : nil ?? title
         case .topUpByExternalCard:
             guard let last4digit = maskedCardNumber?.suffix(4) else { return title }
-            return "Top up via *\(last4digit)"
+//            return "Top up via *\(last4digit)"
+            return "Top up"
         case .addFundsSupplementaryCard:
             return prepaidCardName.map { "Add to \($0)" } ?? "Add to Virtual Card"
         case .removeFundsSuplementaryCard:
@@ -128,7 +133,7 @@ extension Transaction {
             return "Transfer rejected"
         }
         
-        if productCode == .y2yTransfer { return "YTY Transfer" }
+        if productCode == .y2yTransfer { return "YAP to YAP transfer" }
         return transferType
     }
     
@@ -171,7 +176,7 @@ extension Transaction {
         }
         
         if productCode.isBank {
-            return "icon_send_money"
+            return "icon_trans_send_money"
         }
         
         if productCode == .virtualCardIssuanceFee {
@@ -183,7 +188,7 @@ extension Transaction {
             return "icon_virtual_card_transaction"
         }
         
-        guard !productCode.isIncoming else { return "icon_send_money" }
+        guard !productCode.isIncoming else { return "icon_trans_send_money" }
         
         guard !productCode.isCash else { return "icon_cash_payout" }
         

@@ -64,7 +64,7 @@ class Y2YFundsTransferViewController: UIViewController {
         return textField
     }()
 
-    private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_confirm".localized)
+    private lazy var confirmButton = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_confirm".localized, font: .large)
 
     // MARK: Properties
     private var themeService: ThemeService<AppTheme>!
@@ -174,12 +174,10 @@ class Y2YFundsTransferViewController: UIViewController {
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
           // .bind({ UIColor( $0.greyLightSecondary ).withAlphaComponent(0.36)}, to: [amountView.rx.backgroundColor])
             .bind({ UIColor($0.greyDark) }, to: [feeLabel.rx.textColor,phoneNumber.rx.textColor])
-            .bind({ UIColor($0.primaryExtraLight) }, to: [balance.rx.textColor])
+            .bind({ UIColor($0.greyLight) }, to: [balance.rx.textColor])
             .bind({ UIColor($0.primaryDark)}, to: [backButton.rx.tintColor])
             .bind({ UIColor($0.primary)}, to: [confirmButton.rx.backgroundColor])
             .disposed(by: rx.disposeBag)
-
-
 
     }
     

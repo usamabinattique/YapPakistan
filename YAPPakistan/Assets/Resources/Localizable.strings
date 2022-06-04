@@ -81,10 +81,10 @@
 "screen_sign_in_display_text_heading_text" = "Sign in to your YAP account";
 "screen_sign_in_input_text_email_hint" = "Email address or phone number";
 "screen_sign_in_display_text_remember_id_text" = "Remember ID";
-"screen_sign_in_display_text_create_account" = "New to Yap?";
-"screen_sign_in_button_sign_up" = "Sign up now";
+"screen_sign_in_display_text_create_account" = "Create an account?";
+"screen_sign_in_button_sign_up" = "Sign up";
 "screen_sign_in_button_sign_in" = "Sign in";
-"screen_sign_in_button_verify" = "Verify";
+"screen_sign_in_button_verify" = "Next";
 "screen_sign_in_button_sign_in_touch_id" = "Sign in with Touch ID";
 "screen_sign_in_display_text_error_text" = "That doesn't look right. Please try again";
 
@@ -98,7 +98,7 @@
 "screen_phone_number_display_text_title" = "What's your mobile number?";
 
 // MARK: Phone number verification screen
-"screen_verify_phone_number_display_text_title" = "Verify your phone number";
+"screen_verify_phone_number_display_text_title" = "Verify your mobile number";
 "screen_verify_phone_number_display_text_sub_title" = "We've sent a verification code to";
 "screen_verify_phone_number_button_resend_otp" = "Resend code";
 "screen_verify_phone_number_display_text_resend_otp_success" = "New OTP has been generated successfully";
@@ -109,8 +109,8 @@
 "screen_create_passcode_display_button_terms_and_conditions" = "Terms & Conditions";
 "screen_create_passcode_button_create_passcode" = "Create passcode";
 "screen_create_passcode_button_create_new_passcode" = "Create new passcode";
-"screen_create_passcode_display_text_error_sequence" = "Sequential numbers are not allowed";
-"screen_create_passcode_display_text_error_same_digits" = "Repetitive numbers are not allowed";
+"screen_create_passcode_display_text_error_sequence" = "You cannot use consecutive digits.";
+"screen_create_passcode_display_text_error_same_digits" = "You cannot use repeat digits.";
 
 //MARK: Waiting list screen
 "screen_waiting_list_dispaly_text_heading" = "You’re on our waiting list";
@@ -148,7 +148,7 @@
 "screen_onboarding_congratulations_display_text_sub_title" = "A YAP Personal Account has been created for you in less than %@ seconds!";
 "screen_onboarding_congratulations_display_text_sub_title_no_interval" = "A YAP Personal Account has been created for you!";
 "screen_onboarding_congratulations_display_text_iban" = "Here's your IBAN";
-"screen_onboarding_congratulations_display_text_meeting_note" = "\nMake sure you have your Emirates ID at hand before we proceed";
+"screen_onboarding_congratulations_display_text_meeting_note" = "\nMake sure you have your CNIC at hand before we proceed";
 "screen_onboarding_congratulations_waiting_user_display_text_meeting_note" = "Due to all the excitement of our official launch, we are gradually activating as many accounts as possible to keep the app running smoothly. In the meantime, until your account is ready to be fully activated you’ll be placed in a queue.";
 "screen_onboarding_congratulations_button_complete_verification" = "Complete verification";
 "screen_onboarding_congratulations_waiting_user_button_complete_verification" = "Queue up!";
@@ -256,8 +256,9 @@
 
 //MARK: Generic OTP
 "screen_device_registration_otp_button_resend_otp" = "Resend code";
-"screen_device_registration_otp_button_send" = "Send";
-"screen_device_registration_otp_display_header_message" = "Verify your phone number";
+"screen_device_registration_otp_button_send" = "Next";
+"screen_device_registration_otp_button_verify" = "Verify";
+"screen_device_registration_otp_display_header_message" = "Verify your mobile number";
 "screen_device_registration_otp_display_text_message" = "Enter the OTP sent to your registered mobile number to complete login";
 "screen_device_registration_otp_display_givn_text_message" = "We've sent a verification code to \n%@";
 "screen_otp_genration_success" = "New OTP has been generated successfully";
@@ -308,8 +309,8 @@
 "screen_kyc_review_details_screen_subtitle" = "Your details should be accurate to your CNIC.";
 "screen_kyc_review_details_cnic_number" = "CNIC Number";
 "screen_kyc_review_details_full_name" = "Full name as per CNIC";
-"screen_kyc_review_details_father_spouse_name" = "Father/Spouse Name";
-"screen_kyc_review_details_father_spouse_name_placeholder" = "Enter your Father/Spouse name";
+"screen_kyc_review_details_father_spouse_name" = "Father / Spouse name";
+"screen_kyc_review_details_father_spouse_name_placeholder" = "Father / Spouse name";
 "screen_kyc_review_details_gender" = "Gender";
 "screen_kyc_review_details_dob" = "Date of birth";
 "screen_kyc_review_details_issue_date" = "Issue date";
@@ -341,7 +342,7 @@
 "screen_more_home_display_text_yap_for_you" = "YAP for you";
 "screen_more_home_display_text_tile_notification" = "Notifications";
 "screen_more_home_display_text_tile_locate_atm" = "Locate ATM and CDM";
-"screen_more_home_display_text_atm_cdm" = "ATM and CDM";
+"screen_more_home_display_text_atm_cdm" = "ATM & CDM";
 "screen_more_home_display_text_tile_invite_friend" = "Invite a friend";
 "screen_more_home_display_text_tile_help" = "Help and support";
 "screen_more_home_display_text_tile_subscriptions" = "Subscriptions";
@@ -357,8 +358,8 @@
 "screen_invite_friend_display_text_share_url" = "Connect with me on YAP! An innovative digital banking app that gives you total control of your finances. \n\n%@";
 
 // MARK: Personal Details
-"screen_personal_details_display_text_personal_details_title" = "Personal Details";
-"screen_personal_details_display_text_full_name" = "Full Name";
+"screen_personal_details_display_text_personal_details_title" = "Personal details";
+"screen_personal_details_display_text_full_name" = "Full name";
 "screen_personal_details_display_text_phone_number" = "Phone number";
 "screen_personal_details_display_text_email" = "Email";
 "screen_personal_details_display_text_address" = "Address";
@@ -408,8 +409,8 @@
 "screen_kyc_address_title" = "Your card is ready to be delivered!";
 "screen_kyc_address_subtitle" = "Confirm this is your address, you can change it anytime";
 "screen_kyc_address_taplocation" = "Tap map to confirm location";
-"screen_kyc_address_address" = "Company address";
-"screen_kyc_address_flatbuilding" = "Flat number/ Building/ Landmark";
+"screen_kyc_address_address" = "Address";
+"screen_kyc_address_flatbuilding" = "Flat number/ Building name";
 "screen_kyc_address_city" = "City";
 
 // MARK: KYC CARD ON WAY
@@ -483,9 +484,11 @@
 "screen_remove_funds_display_text_max_limit_error" = "You cannot move an amount more than %@";
 
 // MARK: Confirm Payment
-"screen_yap_confirm_payment_display_text_toolbar_title" = "Confirm payment";
+"screen_yap_confirm_payment_display_text_toolbar_title" = "Confirm card order";
 "screen_yap_confirm_payment_display_text_toolbar_subtitle" = "PayPak Card";
 "screen_yap_confirm_payment_display_text_Card_fee" = "Card fees";
+"screen_yap_confirm_payment_display_text_fed_fee" = "FED";
+"screen_yap_confirm_payment_display_text_order_total_fee" = "Order total";
 "screen_yap_confirm_payment_display_text_pay_with" = "Pay with";
 "screen_yap_confirm_payment_display_text_place_order_for" = "Place order";
 
@@ -503,7 +506,7 @@
 
 // MARK: Change Email Address success Screen
 "screen_unverified_success_display_text_heading" = "Success!";
-"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed to\n%@";
+"screen_unverified_success_display_text_sub_heading" = "Your email address has been changed\n%@";
 "screen_unverified_success_display_text_description" = "Please log in to your email address to validate your email and continue with\naccess to YAP!";
 "screen_unverified_display_button_mail" = "Open mail app";
 "screen_unverified_display_button_back_to_dashboard" = "Back to dashboard";
@@ -512,7 +515,7 @@
 "screen_change_email_display_text_heading" = "Change email";
 "screen_change_email_placeholder_email_address" = "Email address";
 "screen_change_email_placeholder_confirm_email_address" = "Email address";
-"screen_change_email_display_text_description" = "A verification email will now be sent to this address";
+"screen_change_email_display_text_description" = "An email will be sent to your email address for verification";
 "screen_change_email_display_text_email_title" = "Enter your new email address";
 "screen_change_email_display_text_confirm_email_title" = "Re-enter your new email address";
 "screen_change_email_display_text_confirm_email_diff_error" = "This email doesn’t match what you first entered.";
@@ -540,10 +543,10 @@
 "screen_kyc_setpinintro_craete" = "Create PIN code";
 "screen_kyc_setpinintro_doitlater" = "Do it later";
 
-"screen_kyc_setpintsuccess_title" = "You're all set!\nTime to top up";
+"screen_kyc_setpintsuccess_title" = "You're all set!";
 "screen_kyc_setpintsuccess_subtitle" = "Begin using your YAP card by topping up your card with PKR 100 or more";
 "screen_kyc_setpintsuccess_topupnow" = "Top up now";
-"screen_kyc_setpintsuccess_doitlater" = "Do it later";
+"screen_kyc_setpintsuccess_doitlater" = "Go to dashboard";
 
 "screen_setpincode_title" = "Set your PIN code";
 "screen_setpincode_title_confirm" = "Re-enter your PIN code to confirm";
@@ -557,8 +560,9 @@
 "screen_kyc_card_scheme_title_paypak" = "PayPak";
 "screen_kyc_card_scheme_button_buy_now" = "Buy now";
 "screen_kyc_card_scheme_button_free" = "Get it for free";
-"screen_kyc_card_scheme_description_free" = "Card description here";//"Get YAP free card and enjoy mastercard benefits";
-"screen_kyc_card_scheme_description_with_fee" = "Card description here.\nBuy this card now for PKR %@ and enjoy all bebefits";
+"screen_kyc_card_scheme_description_free" = "Get Yap card and Enjoy Master Card benefits";//"Get YAP free card and enjoy mastercard benefits";
+"screen_kyc_card_scheme_description_with_fee" = "Get the local PayPak YAP card for PKR %@";
+"screen_kyc_card_scheme_description_with_fee_detail" = "Buy this card now for PKR %@ and enjoy all benefits";
 
 // MARK: KYC Card Benefits
 "screen_kyc_card_benefits_screen_coming_soon_next_button_title" = "Coming soon";
@@ -625,6 +629,9 @@
 "screen_home_button_business" = "Business";
 "screen_home_button_filter" = "Filter";
 "screen_home_display_text_sign_in" = "Already have an account? Sign in";
+"screen_home_todays_balance_title" = "Today’s balance";
+
+"screen_home_display_text_nothing_to_report_search" = "No results found.";
 
 // MARK: Transaction filter screen
 "screen_transaction_filter_display_text_title" = "Filters";
@@ -660,8 +667,8 @@
 
 // MARK: Screen add beneficiary OTP
 
-"screen_add_beneificiary_otp_display_text_heading" = "Verify your phone number";
-"screen_add_beneificiary_otp_display_text_sub_heading" = "Enter the OTP sent to your registered mobile number %@";
+"screen_add_beneificiary_otp_display_text_heading" = "Verify your One Time Passcode";
+"screen_add_beneificiary_otp_display_text_sub_heading" = "We've send a verification code to %@";
 
 
 "screen_domestic_funds_transfer_display_text_heading" = "Send money to";
@@ -766,11 +773,17 @@ and click on Quick Access Widgets.";
 
 //MARK: Store
 "screen_store_screen_title_text" = "YAP Store";
-"screen_store_heading_label_text" = "Browse YAP packages\nand add-ons";
+"screen_store_heading_label_text" = "Browse Upcoming Packages";
 "screen_store_package_cell_coming_soon_text" = "Coming soon";
 
 //Mark: - Card statement Screen
 "screen_card_statements_display_text_title" = "Card statements";
 "screen_card_statements_display_text_view" = "View";
 
-
+// MARK: Screen card analytics
+"screen_card_analytics_display_text_category" = "Category";
+"screen_card_analytics_display_text_merchant" = "Merchant";
+"screen_card_analytics_display_text_monthly_average" = "Monthly average is %@";
+"screen_card_analytics_display_text_title" = "Analytics";
+"screen_card_analytics_display_text_transaction" = "transaction";
+"screen_card_analytics_display_text_transactions" = "transactions";

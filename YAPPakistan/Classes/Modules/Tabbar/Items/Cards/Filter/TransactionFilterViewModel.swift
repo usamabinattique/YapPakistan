@@ -58,9 +58,10 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
     public var result: Observable<TransactionFilter?> { return resultSubject.asObservable() }
     public var error: Observable<String> { return errorSubject.asObservable() }
     public var close: Observable<Void> { closeSubject.asObservable() }
+    private var responseRange:  ClosedRange<Double> = 0...100
     
     // MARK: - Init
-    init(_ filter: TransactionFilter? = nil, repository: TransactionsRepositoryType) {
+    init(_ filter: TransactionFilter? = nil, repository: TransactionsRepositoryType, isHomeTransactionsSearch:Bool = false) {
         self.filter = filter ?? TransactionFilter()
         self.repository = repository
         
@@ -105,6 +106,37 @@ public class TransactionFilterViewModel: TransactionFilterViewModelType, Transac
         
         addViewModels()
     }
+    
+    init(_ filter: TransactionFilter? = nil, repository: TransactionsRepositoryType, isHomeTransactions: Bool) {
+        self.filter = filter ?? TransactionFilter()
+        self.repository = repository
+        
+        applySubject.map { [unowned self] in self.filter }
+            .subscribe(onNext: { [unowned self] in
+                self.resultSubject.onNext($0?.getFiltersCount() ?? 0 > 0 ? $0 : nil)
+                self.resultSubject.onCompleted()
+            })
+            .disposed(by: disposeBag)
+        
+        
+        clearSubject.map { _ in }
+            .subscribe(onNext: { [unowned self] in
+                self.resultSubject.onNext(nil)
+            })
+            .disposed(by: disposeBag)
+        
+        closeSubject
+            .filter{ [unowned self] in self.filter.getFiltersCount() > 0 }
+            .subscribe(onNext: { [weak self] _ in self?.resultSubject.onCompleted() }).disposed(by: disposeBag)
+        
+        closeSubject
+            .filter{ [unowned self] in self.filter.getFiltersCount() <= 0 }
+            .map{ _ in }
+            .bind(to: applySubject)
+            .disposed(by: disposeBag)
+        
+        addHomeViewModels(isHomeSearch: isHomeTransactions)
+    }
 }
 
 private extension TransactionFilterViewModel {
@@ -134,47 +166,64 @@ private extension TransactionFilterViewModel {
         
     }
     
+    func addHomeViewModels(isHomeSearch: Bool) {
+        
+        HomeTransactionFilterType.allCases(filter: filter).forEach { (transectionType) in
+            let transactions = TransactionFilterCheckBoxCellViewModel(transectionType)
+                   transactions.outputs.check.subscribe(onNext: { [unowned self] in self.filter.assignValueAcordingToFilterType(type: transectionType, value: $0)  }).disposed(by: disposeBag)
+                   viewModels.append(transactions)
+            
+            let shareClear = clearSubject.share()
+            shareClear.map{ _ in false }.bind(to: transactions.inputs.checkObserver).disposed(by: disposeBag)
+            
+            shareClear.subscribe(onNext: { [unowned self] in
+                guard self.filter != nil else { return }
+//                self.filter.minAmount = 0
+//                self.filter.maxAmount = 20000.0000
+//                self.filter.maxAllowedAmount = 20000.0000
+            }).disposed(by: disposeBag)
+
+        }
+        
+        fetchLimit(isHomeSearch: isHomeSearch)
+        
+    }
+    
     func loadCells() {
         dataSourceSubject.onNext([SectionModel(model: 0, items: viewModels)])
     }
     
-    func fetchLimit() {
+    func fetchLimit(isHomeSearch:Bool = false) {
         
-        //TODO: uncomment following
+       
         YAPProgressHud.showProgressHud()
 
         let request = repository.getTransactionLimit().share().do(onNext: { _ in YAPProgressHud.hideProgressHud() })
         let requestShare = request.share()
-//        request.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
         
         requestShare.errors().map { $0.localizedDescription }.bind(to: errorSubject).disposed(by: disposeBag)
         requestShare.errors().subscribe(onNext: { [unowned self] error in
-            self.addMockSlider()
-            self.loadCells()
+            if !isHomeSearch {
+                self.addMockSlider()
+                self.loadCells()
+            }
+            
         }).disposed(by: disposeBag)
         
         
         requestShare.elements().subscribe(onNext: { [unowned self] in
             let range = $0.minAmount...$0.maxAmount
+            self.responseRange = range
          //   self.filter.maxAllowedAmount = $0.maxAmount
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
-            self.addSlider(range: range, selectedRange: selectedRange)
+            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount <= $0.maxAmount ? self.filter.maxAmount : self.filter.maxAmount-1) //self.filter.minAmount...(self.filter.maxAmount-1)
+            if isHomeSearch {
+                self.addSlider(range: range, selectedRange: selectedRange,isHomeSearch: isHomeSearch)
+            } else {
+                self.addSlider(range: range, selectedRange: selectedRange)
+            }
+            self.filter.minAmount = $0.minAmount
+            self.filter.maxAmount = $0.maxAmount
         }).disposed(by: disposeBag)
-        
-        //TODO: remove following lines
-     /*   if self.filter != nil {
-            let range = filter.minAmount...(filter.maxAmount <= 0 ? 20000 : filter.maxAmount)
-          //  self.filter.maxAllowedAmount = filter.maxAmount
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount-1)
-            self.addSlider(range: range, selectedRange: selectedRange)
-        } else {
-            let range = 0...20000.0000
-
-            self.filter.maxAllowedAmount = 80.0000
-            let selectedRange = self.filter.minAmount < 0 || self.filter.maxAmount < 0 ? range : self.filter.minAmount...(self.filter.maxAmount > 0 ? (self.filter.maxAmount - 1.0) : 0.0)
-            self.addSlider(range: range, selectedRange: selectedRange)
-        } */
-        
        
     }
     
@@ -194,12 +243,19 @@ private extension TransactionFilterViewModel {
            }
     }
     
-    func addSlider(range: ClosedRange<Double>, selectedRange: ClosedRange<Double>) {
+    func addSlider(range: ClosedRange<Double>, selectedRange: ClosedRange<Double>,isHomeSearch:Bool = false) {
         if viewModels.last is TransactionFilterSliderCellViewModelType {
             viewModels.removeLast()
         }
         
-        let slider = TransactionFilterSliderCellViewModel(range, selectedRange)
+        let slider: TransactionFilterSliderCellViewModel
+        
+        if isHomeSearch {
+            slider = TransactionFilterSliderCellViewModel(range, selectedRange, isHomeSearch: isHomeSearch)
+        } else {
+            slider = TransactionFilterSliderCellViewModel(range, selectedRange)
+        }
+        
         self.viewModels.append(slider)
         
         slider.outputs.selectedRange.subscribe(onNext: { [unowned self] in
@@ -208,22 +264,26 @@ private extension TransactionFilterViewModel {
             
         }).disposed(by: self.disposeBag)
         
-       // clearSubject.map{ _ in 1.0 }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
+//        clearSubject.map{ _ in (minValue: CGFloat, maxValue: CGFloat) }.bind(to: slider.inputs.progressObserver).disposed(by: disposeBag)
         
+        clearSubject.map { [unowned self] _ -> (minValue: CGFloat, maxValue: CGFloat)  in
+            //return (minValue: CGFloat(self.filter.minAmount), maxValue: CGFloat(self.filter.maxAmount))
+            return (minValue: CGFloat(self.responseRange.lowerBound), maxValue: CGFloat(self.responseRange.upperBound))
+        }.bind(to: slider.inputs.progressObserver, slider.inputs.resetRangeObserver).disposed(by: disposeBag)
 
         self.loadCells()
     }
     
-    func addCheckboxCells() {
-//        self.filter.minAmount = 0.0
-//        self.filter.maxAmount = 100.0
-        TransactionFilterType.allCases(filter: filter).forEach { (transectionType) in
-            let transactions = TransactionFilterCheckBoxCellViewModel(transectionType)
-                   transactions.outputs.check.subscribe(onNext: { [unowned self] in self.filter.assignValueAcordingToFilterType(type: transectionType, value: $0)  }).disposed(by: disposeBag)
-                   viewModels.append(transactions)
-            print(viewModels.count)
-            let shareClear = clearSubject.share()
-            shareClear.map{ _ in false }.bind(to: transactions.inputs.checkObserver).disposed(by: disposeBag)
-        }
-    }
+//    func addCheckboxCells() {
+////        self.filter.minAmount = 0.0
+////        self.filter.maxAmount = 100.0
+//        TransactionFilterType.allCases(filter: filter).forEach { (transectionType) in
+//            let transactions = TransactionFilterCheckBoxCellViewModel(transectionType)
+//                   transactions.outputs.check.subscribe(onNext: { [unowned self] in self.filter.assignValueAcordingToFilterType(type: transectionType, value: $0)  }).disposed(by: disposeBag)
+//                   viewModels.append(transactions)
+//            print(viewModels.count)
+//            let shareClear = clearSubject.share()
+//            shareClear.map{ _ in false }.bind(to: transactions.inputs.checkObserver).disposed(by: disposeBag)
+//        }
+//    }
 }

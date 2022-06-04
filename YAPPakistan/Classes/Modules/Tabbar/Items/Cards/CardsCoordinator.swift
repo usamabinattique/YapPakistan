@@ -88,7 +88,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
 
         let tProvider = DebitCardTransactionsProvider(repository: container.makeTransactionsRepository(),cardSerialNumber: paymentCard?.cardSerialNumber)
     
-        let tviewModel = TransactionsViewModel.init(transactionDataProvider: tProvider,
+        let tviewModel = TransactionsViewModel.init(transactionDataProvider: tProvider, repository: container.makeTransactionsRepository(),
                                                cardSerialNumber: paymentCard?.cardSerialNumber ?? "",
                                                     debitSearch: true, themService: container.themeService)
         // let tviewModel = TransactionsViewModel(cardSerialNumber: paymentCard?.cardSerialNumber)
@@ -307,10 +307,11 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func deleveryStatusScreen(_ card: PaymentCard?) {
-        let status = card?.deliveryStatus ?? .ordering
+        let status = card?.deliveryStatus ?? .notCreated
         let cardSerial = card?.cardSerialNumber ?? ""
+        let schemeType = card?.cardScheme ?? .PayPak
 
-        let viewController = CardStatusModuleBuilder(container: self.container, status: status).viewController()
+        let viewController = CardStatusModuleBuilder(container: self.container, status: status, schemeImage: schemeType).viewController()
         viewController.hidesBottomBarWhenPushed = true
         self.navigationRoot.pushViewController(viewController)
 

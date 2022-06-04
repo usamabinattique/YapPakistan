@@ -128,10 +128,10 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                 let dob = self.cnicInfo.dob
                 let dateIssue = self.cnicInfo.issueDate
                 let dateExpiry = self.cnicInfo.expiryDate
-
+                
                 return kycRepository.saveDocuments(documents, documentType: documentType,
                                                    identityNo: identityNo, nationality: nationality,
-                                                   fullName: fullName, fatherName: fatherName, gender: gender, dob: dob,
+                                                   fullName: fullName, fatherName: fatherName, gender: "\(gender.charactersArray[0])", dob: dob,
                                                    dateIssue: dateIssue, dateExpiry: dateExpiry)
             }
             .share()
