@@ -132,7 +132,8 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
           notificationManager: NotificationManagerType,
           sessionCreator: SessionProviderType,
           pinRange: ClosedRange<Int> = 4...4,
-          onLogin: @escaping OnLoginClosure) {
+          onLogin: @escaping OnLoginClosure,
+          configuration: YAPPakistanConfiguration) {
 
         self.username = username
         self.isUserBlocked = isUserBlocked
@@ -163,7 +164,9 @@ open class VerifyPasscodeViewModel: VerifyPasscodeViewModelType,
         }).flatMap({ [unowned self] _ in
             self.repository.logout(deviceUUID: UIDevice.deviceID)
         })
-        .subscribe()
+        .subscribe(onNext:  { _ in
+            configuration.eventCallback?(.cancel)
+        })
         .disposed(by: disposeBag)
 
         let pinText = pinTextSubject.distinctUntilChanged().share()

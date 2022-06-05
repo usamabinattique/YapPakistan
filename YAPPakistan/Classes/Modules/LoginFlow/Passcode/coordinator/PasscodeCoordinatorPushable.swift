@@ -113,6 +113,8 @@ class PasscodeCoordinatorPushable: Coordinator<PasscodeVerificationResult>, Pass
         let window = root.view.window ?? UIWindow()
         let coordinator = TabbarCoodinator(container: sessionContainer, window: window)
 
+        container.configuration.eventCallback?(.loggedIn)
+        
         coordinate(to: coordinator).subscribe(onNext: { result in
             self.result.onNext(.logout)
             self.result.onCompleted()

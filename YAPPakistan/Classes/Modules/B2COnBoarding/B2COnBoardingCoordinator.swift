@@ -213,6 +213,8 @@ private extension B2COnBoardingCoordinator {
             
             self.sessionContainer = UserSessionContainer(parent: self.container.parent, session: result.session)
             
+            self.container.parent.configuration.eventCallback?(.onBoardSuccess(user: user.mobileNo.serverFormattedValue ?? ""))
+            
             user.timeTaken = self.viewModel.time
             user.isWaiting == true ?
             self.navigateToWaitingUserCongratulation(user: user, session: result.session)

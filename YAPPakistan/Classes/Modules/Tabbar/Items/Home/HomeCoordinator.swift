@@ -224,6 +224,7 @@ extension HomeCoodinator {
         self.container.parent.credentialsStore.clearCredentials()
         let name = Notification.Name.init(.logout)
         NotificationCenter.default.post(name: name,object: nil)
+        self.container.parent.configuration.eventCallback?(.logout)
     }
 }
 
