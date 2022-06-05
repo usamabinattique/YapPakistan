@@ -175,7 +175,7 @@ private extension TransactionsTableViewCell {
         currency.setContentHuggingPriority(.required, for: .vertical)
         
         transactionAmount
-            .height(YAPLayoutConstantModifiers.equalTo, constant: 40, priority: .defaultLow)
+            .height(.equalTo, constant: 40, priority: .defaultLow)
         
         iconContainerView
             .alignEdgeWithSuperview(.left, constant: 25)
