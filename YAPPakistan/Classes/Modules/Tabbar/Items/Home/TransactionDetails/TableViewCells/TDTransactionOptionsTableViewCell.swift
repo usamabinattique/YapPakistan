@@ -114,7 +114,8 @@ private extension TDTransactionOptionsTableViewCell {
         
         stackView
             .toRightOf(actionImageContainerView, constant: 16)
-            .verticallyCenterWith(actionImageContainerView)
+            .centerVerticallyWith(actionImageContainerView, .equalTo, constant: 0, priority: .defaultHigh)
+            //.verticallyCenterWith(actionImageContainerView)
             .alignEdgeWithSuperview(.right, constant: 20)
         
         bottomPaddingView
