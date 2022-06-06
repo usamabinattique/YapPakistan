@@ -27,7 +27,8 @@ struct VerifyPasscodeModuleBuilder {
                                                 credentialsManager: credentialsStore,
                                                 notificationManager: notificationManager,
                                                 sessionCreator: sessionProvider,
-                                                onLogin: onLogin)
+                                                onLogin: onLogin,
+                                                configuration: container.configuration)
 
         return VerifyPasscodeViewController(themeService: container.themeService,
                                             viewModel: viewModel,
