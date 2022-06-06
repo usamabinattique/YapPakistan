@@ -118,7 +118,7 @@ private extension FAQsViewController {
 
 private extension FAQsViewController {
     func bindCollectionView() {
-        dataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { [unowned self] (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
+        dataSource = RxCollectionViewSectionedReloadDataSource(configureCell: {  [unowned self] (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: indexPath) as! RxUICollectionViewCell
             
             cell.configure(with: viewModel, theme: self.themeService)
@@ -135,7 +135,7 @@ private extension FAQsViewController {
     }
     
     func bindTableView() {
-        tableViewDataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
+        tableViewDataSource = RxTableViewSectionedReloadDataSource(configureCell: { [unowned self] (_, tableView, _, viewModel) in
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell //tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
             return cell

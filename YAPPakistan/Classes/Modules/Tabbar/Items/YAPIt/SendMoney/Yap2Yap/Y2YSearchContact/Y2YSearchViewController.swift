@@ -182,7 +182,7 @@ extension Y2YSearchViewController: ViewDesignable {
         
         viewModel.outputs.showError.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
         
-        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, indexPath, model) in
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { [unowned self] (_, tableView, indexPath, model) in
             let cell = tableView.dequeueReusableCell(withIdentifier: model.reusableIdentifier) as! ConfigurableTableViewCell
             cell.setIndexPath(indexPath)
             cell.configure(with: self.themeService, viewModel: model)

@@ -175,7 +175,7 @@ extension MoreViewController: ViewDesignable {
 private extension MoreViewController {
     
     func bindCollectionView() {
-        cardDataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { (_, collectionView, indexPath, viewModel) in
+        cardDataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { [unowned self] (_, collectionView, indexPath, viewModel) in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MoreCollectionViewCell.defaultIdentifier, for: indexPath) as! RxUICollectionViewCell
             cell.configure(with: viewModel, theme: self.themeService)
             return cell
