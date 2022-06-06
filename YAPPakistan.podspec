@@ -37,7 +37,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'Alamofire', '5.6.1'
 
   #MARK: Private
-  spec.dependency 'YAPCardScanner', '1.2.17'
+  spec.dependency 'YAPCardScanner', '1.2.18'
   spec.dependency 'YAPCore', '~> 0'
   spec.dependency 'YAPComponents', '~> 0'
 

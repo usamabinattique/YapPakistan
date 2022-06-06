@@ -102,13 +102,16 @@ class ReorderAddressViewModel: ReorderAddressViewModelType, ReorderAddressViewMo
     private var locationService: LocationService!
     private var kycRepository: KYCRepository!
     private var accountProvider: AccountProvider!
+    private let configuration: YAPPakistanConfiguration
 
-    init(locationService: LocationService, kycRepository: KYCRepository, accountProvider: AccountProvider) {
+    init(locationService: LocationService, kycRepository: KYCRepository, accountProvider: AccountProvider, configuration: YAPPakistanConfiguration) {
 
         self.locationService = locationService
         self.kycRepository = kycRepository
         self.accountProvider = accountProvider
+        self.configuration = configuration
 
+        setupGoogleMap()
         languageSetup()
 
         Observable.just(()).delay(.seconds(1), scheduler: MainScheduler.instance).withUnretained(self)
@@ -179,6 +182,11 @@ class ReorderAddressViewModel: ReorderAddressViewModelType, ReorderAddressViewMo
             .map({ $0.localizedDescription })
             .bind(to: errorSubject )
             .disposed(by: disposeBag)
+    }
+    
+    func setupGoogleMap() {
+        GMSServices.provideAPIKey(configuration.googleMapsAPIKey)
+        GMSPlacesClient.provideAPIKey(configuration.googleMapsAPIKey)
     }
 
     struct LanguageStrings {
