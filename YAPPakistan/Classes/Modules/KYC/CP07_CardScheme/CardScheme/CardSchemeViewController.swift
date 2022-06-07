@@ -79,8 +79,19 @@ extension CardSchemeViewController: ViewDesignable {
                 cell.configure(with: self.themeService, viewModel: data)
                 
             }.disposed(by: rx.disposeBag)
+        
+//        tableView.rx.modelSelected(CardSchemeCellViewModel.self).filter { $0 is CardSchemeCellViewModel }.map { ($0 as! CardSchemeCellViewModel).cardScheme }.bind(to: self.viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
             
-        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
+            
+            
+//            .subscribe(onNext: { [unowned self] data in
+//            print(data)
+//            data.map { $0 as CardSchemeCellViewModel }
+//
+//            //self.viewModel.inputs.nextObserver.onNext(data)
+//        }).disposed(by: rx.disposeBag)
+//
+//        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }
     
     func setupTheme() {

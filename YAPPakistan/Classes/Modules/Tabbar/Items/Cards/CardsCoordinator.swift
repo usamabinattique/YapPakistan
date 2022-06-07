@@ -68,6 +68,34 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
                 }
             })
             .disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.addCard.subscribe(onNext: { [unowned self] _ in
+            
+            
+            coordinate(to: CardSchemeCoordinator(root: navigationRoot, container: KYCFeatureContainer(parent: self.container)))
+                .subscribe()
+                .disposed(by: rx.disposeBag)
+            
+//            let viewModel = CardSchemeViewModel(self.container.makeKYCRepository(), accountProvider: self.container.accountProvider)
+//            let viewController = CardSchemeViewController(themeService: self.container.themeService, viewModel: viewModel)
+//
+//            viewController.hidesBottomBarWhenPushed = true
+//
+//            let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primary), font: .regular)
+//
+//            viewModel.outputs.next.subscribe(onNext: { [unowned self] data in
+//
+//
+//
+//            }).disposed(by: rx.disposeBag)
+//
+//            viewController.viewModel.outputs.back.subscribe(onNext : { [unowned self] in
+//                navController.dismiss(animated: true, completion: nil)
+//            }).disposed(by: rx.disposeBag)
+//
+//            navigationRoot.present(navController, animated: true, completion: nil) //.pushViewController(viewController, animated: true)
+            
+        }).disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.orderNew.unwrap().withUnretained(self)
             .subscribe(onNext: { `self`, card in self.orderNew(cardDetaild: card) })

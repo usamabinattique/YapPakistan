@@ -64,7 +64,7 @@ public final class KYCFeatureContainer {
     }
     
     func makeCardSchemeCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> CardSchemeCoordinator {
-        CardSchemeCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM)
+        CardSchemeCoordinator(root: root, container: self)
     }
     
     func makeTopupCardSelectionCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> TopupCardSelectionCoordinator {

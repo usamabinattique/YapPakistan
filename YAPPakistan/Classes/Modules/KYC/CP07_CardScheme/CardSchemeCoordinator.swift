@@ -8,6 +8,8 @@
 import Foundation
 import RxSwift
 import YAPCore
+import YAPComponents
+import UIKit
 
 class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
@@ -16,12 +18,13 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     private var navigationRoot: UINavigationController!
     private let container: KYCFeatureContainer
     private var paymentGatewayM: PaymentGatewayLocalModel!
+    private var cardSchemeModel: KYCCardsSchemeM!
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer, paymentGatewayM: PaymentGatewayLocalModel) {
+         container: KYCFeatureContainer) {
         self.container = container
         self.root = root
-        self.paymentGatewayM = paymentGatewayM
+        //self.paymentGatewayM = paymentGatewayM
         
         super.init()
         
@@ -29,16 +32,16 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         self.navigationRoot.modalPresentationStyle = .fullScreen
     }
 
-    override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
+    override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
-        let progressRoot = container.makeKYCProgressViewController()
-        root.pushViewController(progressRoot)
-        
+//        let progressRoot = container.makeKYCProgressViewController()
+//        root.present(progressRoot, animated: true) //.pushViewController(progressRoot)
+      
         cardScheme()
             .subscribe(onNext:{ [weak self] cardSchemeObj in
                 guard let `self` = self else { return }
-                self.paymentGatewayM.cardSchemeObject = cardSchemeObj
-                switch cardSchemeObj.scheme{
+                self.cardSchemeModel = cardSchemeObj
+                switch cardSchemeObj.scheme {
                 case .Mastercard:
                     self.cardBenefits(cardSchemeObj)
                 case .PayPak:
@@ -49,16 +52,20 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
-        progressRoot.viewModel.outputs.backTap.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.popViewController(progress: 0.60) })
-            .disposed(by: rx.disposeBag)
+//        progressRoot.viewModel.outputs.backTap.withUnretained(self)
+//            .subscribe(onNext: { `self`, _ in self.popViewController(progress: 0.60) })
+//            .disposed(by: rx.disposeBag)
         
         return result
     }
 
     func cardScheme() -> Observable<KYCCardsSchemeM> {
         let viewController = container.makeCardSchemeViewController()
-        push(viewController: viewController, progress: 0.75)
+        
+        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(self.container.parent.themeService.attrs.primary), font: .regular)
+        
+        root.present(navController, animated: true, completion: nil)
+        //push(viewController: viewController, progress: 0.75)
         return viewController.viewModel.outputs.next
     }
     
