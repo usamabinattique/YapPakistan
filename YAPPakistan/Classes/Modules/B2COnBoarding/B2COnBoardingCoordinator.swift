@@ -141,9 +141,8 @@ private extension B2COnBoardingCoordinator {
         }).disposed(by: disposeBag)
 
         createPasscodeViewModel.outputs.back.subscribe { [weak nav, weak self]_ in
-            nav?.dismiss(animated: true, completion: {
-                self?.childContainerNavigation.popViewController(animated: true)
-            })
+            self?.root.popViewController(animated: false)
+            nav?.dismiss(animated: true, completion:nil)
         }.disposed(by: disposeBag)
 
         createPasscodeViewModel.result.subscribe(onNext: { [unowned self] result in
