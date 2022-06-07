@@ -121,7 +121,7 @@ private extension SearchSendMoneyBeneficiaryViewController {
     }
     
     func bindTableView() {
-        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { [unowned self] (_, tableView, _, viewModel) in
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! ConfigurableTableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
             //(cell as? SwipeTableViewCell)?.delegate = self

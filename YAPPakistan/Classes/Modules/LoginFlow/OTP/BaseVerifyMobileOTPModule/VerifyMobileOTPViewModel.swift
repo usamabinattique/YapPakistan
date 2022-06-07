@@ -211,8 +211,14 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .bind(to: resendActiveSubject)
             .disposed(by: disposeBag)
 
+//        timerSubject.filter { $0 >= 0 }
+//            .map(timeString)
+//            .bind(to: timerTextSubject)
+//            .disposed(by: disposeBag)
+        
+        //UZAIR asked me to do this
         timerSubject.filter { $0 >= 0 }
-            .map(timeString)
+            .map {[unowned self] time in timeString(timeInterval: time)}
             .bind(to: timerTextSubject)
             .disposed(by: disposeBag)
 

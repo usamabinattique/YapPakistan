@@ -83,11 +83,12 @@ private extension CNICReScanCoordinator {
     func openScanner() {
         let theme = LightTheme()
 
-        scanner = IdentityScanner(withParentController: root, documentType: .twoSided, reviewInfo: false)
+        scanner = IdentityScanner(withParentController: root, documentType: .twoSided, region: .pakistan, reviewInfo: false)
         scanner.ui.primaryTextColor = UIColor(theme.primaryDark)
         scanner.ui.secondaryTextColor = UIColor(theme.greyDark)
         scanner.ui.tintColor = UIColor(theme.primary)
-        scanner.expectedObservation = .emiratesId
+        scanner.expectedObservation = .cnic
+        scanner.appRegion = .pakistan
         scanner.delegate = self
         scanner.scan { [weak self] in
             self?.presentationCompletion.onNext(())

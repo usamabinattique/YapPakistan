@@ -16,7 +16,7 @@ struct ReorderAddressModuleBuilder {
         let kycRepository = container.makeKYCRepository()
         let viewModel = ReorderAddressViewModel(locationService: locationService,
                                          kycRepository: kycRepository,
-                                         accountProvider: container.accountProvider )
+                                                accountProvider: container.accountProvider, configuration: container.mainContainer.configuration)
         return ReorderAddressViewController(themeService: themeService, viewModel: viewModel)
     }
 }

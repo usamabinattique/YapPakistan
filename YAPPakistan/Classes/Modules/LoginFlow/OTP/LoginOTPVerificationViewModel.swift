@@ -117,7 +117,7 @@ class LoginOTPVerificationViewModel: VerifyMobileOTPViewModel {
             self.refreshAccount()
         }).disposed(by: disposeBag)
 
-        saveDeviceSubject.flatMap { _ in
+        saveDeviceSubject.flatMap { [unowned self] _ in
             return self.demographicsRepository.saveDemographics(action: "LOGIN", token: nil)
         }.subscribe().disposed(by: disposeBag)
     }

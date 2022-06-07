@@ -110,7 +110,7 @@ private extension AddMoneyViewController {
 
 fileprivate extension AddMoneyViewController {
     func bindViews(_ viewModel: AddMoneyViewModelType) {
-        dataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
+        dataSource = RxCollectionViewSectionedReloadDataSource(configureCell: { [unowned self] (_, collectionView, indexPath, viewModel) -> UICollectionViewCell in
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: viewModel.reusableIdentifier, for: indexPath) as! RxUICollectionViewCell
             cell.configure(with: viewModel, theme: self.themeService)
             return cell

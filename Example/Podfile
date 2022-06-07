@@ -12,18 +12,18 @@ target 'YAPPakistan_Example' do
   pod 'YAPCore', :path => '../YAPCore'
   pod 'YAPComponents', :path => '../YAPComponents'
 
-  #MARK: Reactive
-  pod 'RxCocoa', '~> 6.0'
-  pod 'RxDataSources', '~> 5.0'
-  pod 'RxGesture', '~> 4.0'
-  pod 'RxOptional', '~> 5.0'
-  pod 'RxSwift', '~> 6.0'
-  pod 'RxSwiftExt', '~> 6.0'
-  pod 'RxTheme', '~> 5.0'
-
-  #MARK: Utilities
-  pod 'PhoneNumberKit', '~> 3.0'
-  pod 'MXParallaxHeader'
+#  #MARK: Reactive
+#  pod 'RxCocoa', '~> 6.0'
+#  pod 'RxDataSources', '~> 5.0'
+#  pod 'RxGesture', '~> 4.0'
+#  pod 'RxOptional', '~> 5.0'
+#  pod 'RxSwift', '~> 6.0'
+#  pod 'RxSwiftExt', '~> 6.0'
+#  pod 'RxTheme', '~> 5.0'
+#
+#  #MARK: Utilities
+#  pod 'PhoneNumberKit', '~> 3.0'
+#  pod 'MXParallaxHeader'
 
   target 'YAPPakistan_Tests' do
     inherit! :search_paths

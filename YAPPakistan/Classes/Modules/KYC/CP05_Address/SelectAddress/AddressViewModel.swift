@@ -90,16 +90,12 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     private var currentLocationResultSubject = BehaviorSubject<LocationModel>(value: LocationModel())
     private var confirmLocationResultSubject = PublishSubject<LocationModel>()
     private var willMoveSubject = PublishSubject<Bool>()
-    // <<<<<<< Updated upstream
+    
     private var loaderSubject = BehaviorSubject<Bool>(value: false)
     private var didIdleAtSubject = PublishSubject<GMSCameraPosition>()
     private var errorSubject = PublishSubject<String>()
     private var addressObserverSubject = BehaviorSubject<String>(value: "")
-    // =======
-    //    private var loaderSubject = BehaviorSubject<Bool>.init(value: false)
-    //    private var didIdleAtSubject = PublishSubject<GMSCameraPosition>()
-    //    private var errorSubject = PublishSubject<String>()
-    // >>>>>>> Stashed changes
+    
 
     var inputs: AddressViewModelInput { return self }
     var outputs: AddressViewModelOutput { return self }
@@ -108,13 +104,16 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
     private var locationService: LocationService!
     private var kycRepository: KYCRepository!
     private var accountProvider: AccountProvider!
+    private let configuration: YAPPakistanConfiguration
 
-    init(locationService: LocationService, kycRepository: KYCRepository, accountProvider: AccountProvider) {
+    init(locationService: LocationService, kycRepository: KYCRepository, accountProvider: AccountProvider, configuration: YAPPakistanConfiguration) {
 
         self.locationService = locationService
         self.kycRepository = kycRepository
         self.accountProvider = accountProvider
-
+        self.configuration = configuration
+        
+        setupGoogleMap()
         languageSetup()
 
         Observable.just(()).delay(.seconds(1), scheduler: MainScheduler.instance).withUnretained(self)
@@ -171,6 +170,11 @@ class AddressViewModel: AddressViewModelType, AddressViewModelInput, AddressView
                 }
                 return location
             }).bind(to: nextResultSubject).disposed(by: disposeBag)
+    }
+    
+    func setupGoogleMap() {
+        GMSServices.provideAPIKey(configuration.googleMapsAPIKey)
+        GMSPlacesClient.provideAPIKey(configuration.googleMapsAPIKey)
     }
 
     struct LanguageStrings {

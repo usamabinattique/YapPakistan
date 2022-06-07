@@ -360,7 +360,7 @@ private extension CardStatementViewController {
     func bindTableView() {
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
         
-        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
+        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { [unowned self] (_, tableView, _, viewModel) in
             let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! RxUITableViewCell
             cell.configure(with: self.themeService, viewModel: viewModel)
             return cell

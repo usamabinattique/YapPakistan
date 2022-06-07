@@ -18,7 +18,7 @@ public class YAPPakistanConfiguration {
     private(set) var deeplinkHandler: DeepLinkHandlerDelegate?
 
     public init(environment: AppEnvironment = .qa,
-                googleMapsAPIKey: String = "",
+                googleMapsAPIKey: String = "AIzaSyCy_1KJ3iHy2SSQDo3Q35YS96vNDx4xZuI",
                 analytics: AnalyticsTracker? = nil,
                 buildConfig: (version: String, build: String) = ("", ""),
                 notificationHandler: NotificationHandlerDelegate? = nil,
