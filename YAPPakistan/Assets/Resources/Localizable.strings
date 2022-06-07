@@ -683,6 +683,7 @@
 "screen_dashboard_credit_limit_display_text" = "Credit limit: %@";
 
 
+
 // MARK: - Profile Screen
 "screen_user_profile_display_text_profile" = "Profile";
 "screen_user_profile_display_text_update_profile_photo" = "Update profile photo";

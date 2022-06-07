@@ -75,6 +75,7 @@ public struct Account: Codable {
     public var _isWaiting: Bool?
     public let isSecretQuestionVerified: Bool?
     public let paidCard: Bool?
+    public let isAmendment: Bool?
 
     public var freezeCode: AccountFreezeCode? { AccountFreezeCode(rawValue: _freezeCode ?? "") ?? AccountFreezeCode.none }
     public var freezeInitiator: AccountFreezeInitiator? { AccountFreezeInitiator(rawValue: _freezeInitiator ?? "") ?? AccountFreezeInitiator.none }
@@ -112,7 +113,7 @@ public struct Account: Codable {
     private enum CodingKeys: String, CodingKey {
         case uuid, iban, accountType, defaultProfile, companyName, packageName, status, active,
              documentsVerified, companyType, soleProprietary, customer, bank, parentAccount,
-             otpBlocked, isSecretQuestionVerified, isFirstCredit, firstCreditLimit, paidCard
+             otpBlocked, isSecretQuestionVerified, isFirstCredit, firstCreditLimit, paidCard, isAmendment
         case cardName
         case cnicName
         case isDocumentsVerified
@@ -173,6 +174,7 @@ public extension Account {
         self.isActive = account.isActive
         self.firstCreditLimit = account.firstCreditLimit
         self.paidCard = account.paidCard
+        self.isAmendment = account.isAmendment
     }
 
     init(account: Account, updatedEmail: String) {
@@ -211,6 +213,7 @@ public extension Account {
         self.isActive = account.isActive
         self.firstCreditLimit = account.firstCreditLimit
         self.paidCard = account.paidCard
+        self.isAmendment = account.isAmendment
     }
 
     init(account: Account, soleProprietary: Bool) {
@@ -249,6 +252,7 @@ public extension Account {
         self.isActive = account.isActive
         self.firstCreditLimit = account.firstCreditLimit
         self.paidCard = account.paidCard
+        self.isAmendment = account.isAmendment
     }
 
     init(account: Account, accountStatus: AccountStatus) {
@@ -287,6 +291,7 @@ public extension Account {
         self.isActive = account.isActive
         self.firstCreditLimit = account.firstCreditLimit
         self.paidCard = account.paidCard
+        self.isAmendment = account.isAmendment
     }
 }
 
@@ -310,6 +315,10 @@ public enum AccountStatus: String, Hashable, Codable {
     case verificationSucceed = "MEETING_SUCCESS"    // FIXME is this in in use ?
     case employmentInfoCompleted = "EMP_INFO_COMPLETED"
     case fatcaGenerated = "FATCA_GENERATED"
+    case eDDRequired = "EDD_REQUIRED"
+    case benchmetricFailed = "SCREENING_FAILED"
+    case kycPending = "KYC_PENDING"
+    case kycFailed = "KYC_FAILED"
 
     var stepValue: Int {
         switch self {
@@ -325,6 +334,10 @@ public enum AccountStatus: String, Hashable, Codable {
         case .cardActivated: return 9
         case .employmentInfoCompleted: return 10
         case .fatcaGenerated: return 11
+        case .eDDRequired: return 12
+        case .benchmetricFailed: return 13
+        case .kycPending: return 14
+        case .kycFailed: return 15
         }
     }
 
@@ -361,6 +374,7 @@ public enum PartnerBankStatus: String, Codable {
     case additionalRequirementsRequired = "ADD_INFO_NOTIFICATION_DONE"
     case additionalRequirementsProvided = "ADDITIONAL_COMPLIANCE_INFO_PROVIDED"
     case additionalRequirementsSubmitted = "ADD_COMPLIANCE_INFO_SUBMITTED_BY_ADMIN"
+    case inActive = "INACTIVE"
 }
 
 public enum AccountFreezeCode: String, Codable {
