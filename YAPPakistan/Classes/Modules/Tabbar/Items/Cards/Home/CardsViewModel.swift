@@ -50,6 +50,7 @@ protocol CardsViewModelInputs {
     var detailsObservers: AnyObserver<Void> { get }
     var unfreezObserver: AnyObserver<Void> { get }
     var orderNewObserver: AnyObserver<Void> { get }
+    var addCardObserver: AnyObserver<Void> { get }
 }
 
 protocol CardsViewModelOutputs {
@@ -68,6 +69,7 @@ protocol CardsViewModelOutputs {
     var isCardActive: Observable<Bool> { get }
     var cardBalance: Observable<String> { get }
     var cardImageType: Observable<String> { get }
+    var addCard: Observable<Void> { get }
 }
 
 protocol CardsViewModelType {
@@ -88,6 +90,7 @@ class CardsViewModel: CardsViewModelType,
     var viewDidAppear: AnyObserver<Void> { viewDidAppearSubject.asObserver() }
     var unfreezObserver: AnyObserver<Void> { unfreezSubject.asObserver() }
     var orderNewObserver: AnyObserver<Void> { orderNewSubject.asObserver() }
+    var addCardObserver: AnyObserver<Void> { return addCardSubject.asObserver() }
 
     // MARK: Outputs
     var eyeInfo: Observable<PaymentCard> {
@@ -107,12 +110,14 @@ class CardsViewModel: CardsViewModelType,
     var isCardActive: Observable<Bool> { isCardActiveSubject.asObservable() }
     var cardBalance: Observable<String> { cardBalanceSubject.asObservable() }
     var cardImageType: Observable<String> { cardImageTypeSubject.asObservable() }
+    var addCard: Observable<Void> { return addCardSubject.asObservable() }
 
     // MARK: Subjects
     var unfreezSubject = PublishSubject<Void>()
     var eyeInfoDidTapSubject = PublishSubject<Void>()
     var detailsDidTapSubject = PublishSubject<Void>()
     var viewDidAppearSubject = PublishSubject<Void>()
+    var addCardSubject = PublishSubject<Void>()
 
     var cardDetailsSubject = BehaviorSubject<PaymentCard?>(value: nil)
 

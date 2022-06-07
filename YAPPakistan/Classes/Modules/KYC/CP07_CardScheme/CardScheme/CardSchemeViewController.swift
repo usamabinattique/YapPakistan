@@ -17,6 +17,7 @@ class CardSchemeViewController: UIViewController {
 
     private lazy var titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
     private lazy var tableView = UIFactory.makeTableView(allowsSelection: true)
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
     
     //MARK: Properties
     private let themeService: ThemeService<AppTheme>
@@ -53,7 +54,7 @@ extension CardSchemeViewController: ViewDesignable {
     func setupSubViews() {
         view.addSubview(titleLabel)
         view.addSubview(tableView)
-        
+        navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         tableView.register(CardSchemeCell.self, forCellReuseIdentifier: CardSchemeCell.defaultIdentifier)
     }
     
@@ -68,7 +69,7 @@ extension CardSchemeViewController: ViewDesignable {
     }
     
     func setupBindings() {
-        
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.heading.bind(to: self.titleLabel.rx.text)
             .disposed(by: rx.disposeBag)
         

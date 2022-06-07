@@ -268,6 +268,8 @@ fileprivate extension CardsViewController {
         iconContainer.rx.tapGesture().skip(1).map({ _ in () })
             .bind(to: viewModel.inputs.eyeInfoObserver)
             .disposed(by: rx.disposeBag)
+        
+        addBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.addCardObserver).disposed(by: rx.disposeBag)
 
         detailsButton.rx.tap.map{ _ in () }
             .merge(with: letsDoItButton.rx.tap.map{ _ in () }.filter({[unowned self] _ in !self.isUserBlocked }) )
