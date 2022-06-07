@@ -25,10 +25,11 @@ protocol CardBenefitsViewModelOutput {
     var coverImage: Observable<String?> { get }
     var buttonTitle: Observable<String?> { get }
     var isNextButtonEnabled: Observable<Bool> { get }
-    var next: Observable<Void> { get }
+    var next: Observable<Bool> { get }
     var back: Observable<Void> { get }
     var error: Observable<String> { get }
     var fedValue: Observable<Double> { get }
+    var userBalance: Observable<String> { get }
 }
 
 protocol CardBenefitsViewModelType{
@@ -41,6 +42,7 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     
     // MARK: Subjects
     private let dataSourceSubject = BehaviorSubject<[SectionModel<Int, ReusableTableViewCellViewModelType>]>(value: [])
+    private var nextOutputSubject = PublishSubject<Bool>()
     private var nextSubject = PublishSubject<Void>()
     private var backSubject = PublishSubject<Void>()
     private var fetchBenefitsSubject = PublishSubject<Void>()
@@ -52,6 +54,7 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     private var viewModels = [ReusableTableViewCellViewModelType]()
     private var fetchFEDFeeSubject = PublishSubject<Void>()
     private var fedValueSubject = PublishSubject<Double>()
+    private var userBalanceSubject = BehaviorSubject<String>(value: "") //PublishSubject<String>()
     
     var inputs: CardBenefitsViewModelInput { self }
     var outputs: CardBenefitsViewModelOutput { self }
@@ -66,18 +69,25 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     // MARK: Outputs
     var dataSource: Observable<[SectionModel<Int, ReusableTableViewCellViewModelType>]> { return dataSourceSubject.asObservable() }
     var heading: Observable<String?> { Observable.just("screen_kyc_card_scheme_screen_title".localized) }
-    var next: Observable<Void> { nextSubject.asObservable() }
+    var next: Observable<Bool> { nextOutputSubject.asObservable() }
     var back: Observable<Void> { backSubject.asObservable() }
     var error: Observable<String> { errorSubject.asObservable() }
     var coverImage: Observable<String?> { coverImageSubject.asObservable() }
     var buttonTitle: Observable<String?> { nextButtonTitleSubject.asObservable() }
     var isNextButtonEnabled: Observable<Bool> { isNextButtonEnabledSubject.asObservable() }
     var fedValue: Observable<Double> { fedValueSubject.asObservable() }
+    var userBalance: Observable<String> { self.userBalanceSubject.asObservable() }
     
     let disposeBag = DisposeBag()
+    private var accountProvider: AccountProvider!
+    private var transactionRepo : TransactionsRepositoryType
+    private var userAccountBalance : Double = 0.0
+    private var isTopupNeeded : Bool = false
     
-    init(_ repository: KYCRepository, transactionRepo: TransactionsRepository) {
+    init(_ repository: KYCRepository, transactionRepo: TransactionsRepository, accountProvider: AccountProvider) {
         
+        self.accountProvider = accountProvider
+        self.transactionRepo = transactionRepo
         cardSchemeSubject
             .subscribe(onNext:{ [weak self] obj in
                 if obj.scheme == .Mastercard {
@@ -95,8 +105,54 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
                 self?.fetchFEDFee(transactionRepo, cardObj: obj)
             })
             .disposed(by: disposeBag)
+        
+        
+        checkCustomerBalance()
+        
+        self.nextSubject.subscribe(onNext: { [unowned self] _ in
+           if isTopupNeeded {
+                self.nextOutputSubject.onNext(true)
+            }
+            else {
+                self.nextOutputSubject.onNext(false)
+            }
+        }).disposed(by: disposeBag)
+        
+        
+//        self.accountProvider.currentAccount.subscribe(onNext: { [unowned self] account in
+//            print(account)
+//        }).disposed(by: self.disposeBag)
+        
     }
     
+    private func checkCustomerBalance() {
+//        let req = self.transactionRepo.fetchCustomerAccountBalance().share()
+//
+//        req.elements().subscribe(onNext: { [unowned self] balance in
+//            print(balance)
+//        }).disposed(by: disposeBag)
+//
+//        req.errors().subscribe(onNext: { [unowned self] error in
+//            self.errorSubject.onNext(error.localizedDescription)
+//        }).disposed(by: disposeBag)
+        
+        let balance = 300
+        self.userAccountBalance = Double(balance)
+        self.cardSchemeSubject.subscribe(onNext: { [unowned self] card in
+            
+            if card.fee > Double(balance) {
+                self.nextButtonTitleSubject.onNext("Top up")
+                self.isTopupNeeded = true
+            }
+            else {
+                self.nextButtonTitleSubject.onNext("Next")
+                self.isTopupNeeded = false
+            }
+            
+        }).disposed(by: disposeBag)
+        
+        self.userBalanceSubject.onNext("Your available balance is PKR \(balance)")
+    }
 }
 
 extension CardBenefitsViewModel {

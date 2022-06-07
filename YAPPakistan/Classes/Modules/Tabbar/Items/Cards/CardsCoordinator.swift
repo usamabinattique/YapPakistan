@@ -72,7 +72,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.addCard.subscribe(onNext: { [unowned self] _ in
             
             
-            coordinate(to: CardSchemeCoordinator(root: navigationRoot, container: KYCFeatureContainer(parent: self.container)))
+            coordinate(to: CardSchemeCoordinator(root: navigationRoot, container: self.container))
                 .subscribe()
                 .disposed(by: rx.disposeBag)
             

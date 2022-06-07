@@ -15,13 +15,15 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController
+    private var localRoot: UINavigationController!
     private var navigationRoot: UINavigationController!
-    private let container: KYCFeatureContainer
+    private let container: UserSessionContainer
     private var paymentGatewayM: PaymentGatewayLocalModel!
     private var cardSchemeModel: KYCCardsSchemeM!
+    private var contactsManager: ContactsManager!
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer) {
+         container: UserSessionContainer) {
         self.container = container
         self.root = root
         //self.paymentGatewayM = paymentGatewayM
@@ -29,6 +31,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         super.init()
         
         self.navigationRoot = makeNavigationController()
+        self.contactsManager = ContactsManager(repository: container.makeY2YRepository())
         self.navigationRoot.modalPresentationStyle = .fullScreen
     }
 
@@ -64,6 +67,12 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(self.container.parent.themeService.attrs.primary), font: .regular)
         
+        
+        viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
+            navController.dismiss(animated: true, completion: nil)
+        }).disposed(by: rx.disposeBag)
+        
+        self.localRoot = navController
         root.present(navController, animated: true, completion: nil)
         //push(viewController: viewController, progress: 0.75)
         return viewController.viewModel.outputs.next
@@ -73,9 +82,13 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         let viewController = container.makeCardBenefitsViewController()
         viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
         
-        self.navigationRoot.pushViewController(viewController, completion: nil)
-        self.navigationRoot.navigationBar.isHidden = true
-        self.root.present(self.navigationRoot, animated: true, completion: nil)
+        self.localRoot.navigationBar.isHidden = true
+//        self.navigationRoot.pushViewController(viewController, completion: nil)
+//        self.navigationRoot.navigationBar.isHidden = true
+//        self.root.present(self.navigationRoot, animated: true, completion: nil)
+        
+        
+        self.localRoot.pushViewController(viewController, completion: nil)
 
         viewController.viewModel.outputs.fedValue
             .subscribe(onNext:{ fed in
@@ -83,40 +96,52 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
         
-        viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] isPaid in
-            self?.cardNamePending(schemeObj: schemeObj)
+        viewController.viewModel.outputs.next.subscribe(onNext: { [unowned self] isTopupNeeded in
+
+            
+            
+            if isTopupNeeded {
+                coordinate(to: AddMoneyCoordinator(root: localRoot, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+                    
+                }).disposed(by: rx.disposeBag)
+            }
+            else {
+                self.cardNamePending(schemeObj: schemeObj)
+            }
         }).disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
             print("back button tap masterCard Benefits")
+            self.localRoot.popViewController(animated: true, nil)
+            self.localRoot.navigationBar.isHidden = false
         }).disposed(by: rx.disposeBag)
     }
     
     func cardNamePending(schemeObj: KYCCardsSchemeM) {
-        coordinate(to: container.makeCardNameCoordinator(root: root ,schemeObj: schemeObj, paymentGatewayM: self.paymentGatewayM))
-            .subscribe(onNext: { [weak self] result in
-                switch result {
-                case .success:
-                    break
-                case .cancel:
-                    //self?.navigationRoot.popToRootViewController(animated: true)
-                    print("go back from Name")
-                    break
-                }
-            }).disposed(by: rx.disposeBag)
+//        coordinate(to: container.makeCardNameCoordinator(root: root ,schemeObj: schemeObj, paymentGatewayM: self.paymentGatewayM))
+//            .subscribe(onNext: { [weak self] result in
+//                switch result {
+//                case .success:
+//                    break
+//                case .cancel:
+//                    //self?.navigationRoot.popToRootViewController(animated: true)
+//                    print("go back from Name")
+//                    break
+//                }
+//            }).disposed(by: rx.disposeBag)
     }
     
     func addressPending() {
-        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
-            .subscribe(onNext: { [weak self] result in
-                switch result {
-                case .success:
-                    print("go next from address")
-                case .cancel:
-                    print("go back from address")
-                    break
-                }
-            }).disposed(by: rx.disposeBag)
+//        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
+//            .subscribe(onNext: { [weak self] result in
+//                switch result {
+//                case .success:
+//                    print("go next from address")
+//                case .cancel:
+//                    print("go back from address")
+//                    break
+//                }
+//            }).disposed(by: rx.disposeBag)
         
     }
 }

@@ -29,6 +29,8 @@ class CardsViewController: UIViewController {
 //                                 UIFactory.makeView() ]
     //private lazy var addButton = barButtonItem(image: nil, insectBy: .zero)
     private lazy var sideMenuButton = barButtonItem(image: nil, insectBy: .zero)
+    
+    private lazy var addBarButtonItem = barButtonItem(image: UIImage(named: "icon_home_add", in: .yapPakistan), insectBy:.zero)
 
     private lazy var iconContainer = UIFactory.makeImageView().shaddow()  // FIXME
     private lazy var clockEyeIcon = UIFactory.makeImageView()   // FIXME
@@ -131,7 +133,7 @@ fileprivate extension CardsViewController {
         //navigationItem.rightBarButtonItem = addButton.barItem
         navigationItem.leftBarButtonItem = sideMenuButton.barItem
         navigationItem.titleView = titleLabelVC
-
+        navigationItem.rightBarButtonItem = addBarButtonItem.barItem
         // addButton.button?.isUserInteractionEnabled = false
     }
 
@@ -266,6 +268,8 @@ fileprivate extension CardsViewController {
         iconContainer.rx.tapGesture().skip(1).map({ _ in () })
             .bind(to: viewModel.inputs.eyeInfoObserver)
             .disposed(by: rx.disposeBag)
+        
+        addBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.addCardObserver).disposed(by: rx.disposeBag)
 
         detailsButton.rx.tap.map{ _ in () }
             .merge(with: letsDoItButton.rx.tap.map{ _ in () }.filter({[unowned self] _ in !self.isUserBlocked }) )

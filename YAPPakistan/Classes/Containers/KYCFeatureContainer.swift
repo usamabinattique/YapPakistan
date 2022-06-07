@@ -63,9 +63,9 @@ public final class KYCFeatureContainer {
         SelfieCoordinator(root: root, container: self)
     }
     
-    func makeCardSchemeCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> CardSchemeCoordinator {
-        CardSchemeCoordinator(root: root, container: self)
-    }
+//    func makeCardSchemeCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> CardSchemeCoordinator {
+//        CardSchemeCoordinator(root: root, container: self)
+//    }
     
     func makeTopupCardSelectionCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> TopupCardSelectionCoordinator {
         TopupCardSelectionCoordinator(root: root, container: self, repository: self.makeY2YRepository(), cardsRepository: self.parent.makeCardsRepository(), paymentGatewayM: paymentGatewayM )
@@ -182,15 +182,5 @@ extension KYCFeatureContainer {
 
     func makeManualVerificationViewController() -> ManualVerificationViewController {
         ManualVerificationModuleBuilder(container: self).viewController()
-    }
-    
-    func makeCardSchemeViewController() -> CardSchemeViewController {
-        let viewModel = CardSchemeViewModel(self.parent.makeKYCRepository(), accountProvider: self.accountProvider)
-        return CardSchemeViewController(themeService: self.themeService, viewModel: viewModel)
-    }
-    
-    func makeCardBenefitsViewController() -> CardBenefitsViewController {
-        let viewModel = CardBenefitsViewModel(self.parent.makeKYCRepository(), transactionRepo: self.parent.makeTransactionsRepository())
-        return CardBenefitsViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }
