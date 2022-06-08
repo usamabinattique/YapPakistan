@@ -33,39 +33,39 @@ class CardNameCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func cardName() {
-        let viewController = container.makeCardNameViewController(paymentGatewayM: paymentGatewayM)
-        self.navigation.childNavigation.pushViewController(viewController, animated: false)
-
-        viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
-                self.root.popViewController()
-                self.goBack()
-            })
-            .disposed(by: disposeBag)
-
-        viewController.viewModel.outputs.next.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
-                guard let cardScheme = self.paymentGatewayM.cardSchemeObject else { return }
-                if cardScheme.isPaidScheme {
-                    if self.container.parent.accountProvider.currentAccountValue.value?.accountStatus == .cardSchemeExternalCardPending {
-                        self.topupCardSelection()
-                            .subscribe(onNext: { _ in
-                                print("In cardName -> TopupCardSelection is subscribed")
-                            }).disposed(by: self.disposeBag)
-                    } else {
-                        self.cardDetailWeb()
-                    }
-                    
-                } else {
-                    self.addressPending()
-                }
-            })
-            .disposed(by: disposeBag)
-
-        viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.editNameForEditNameScreen).withUnretained(self)
-            .flatMap({ `self`, name in self.editName(name: name) })
-            .bind(to: viewController.viewModel.inputs.nameObserver)
-            .disposed(by: disposeBag)
+//        let viewController = container.makeCardNameViewController(paymentGatewayM: paymentGatewayM)
+//        self.navigation.childNavigation.pushViewController(viewController, animated: false)
+//
+//        viewController.viewModel.outputs.back.withUnretained(self)
+//            .subscribe(onNext: { `self`, _ in
+//                self.root.popViewController()
+//                self.goBack()
+//            })
+//            .disposed(by: disposeBag)
+//
+//        viewController.viewModel.outputs.next.withUnretained(self)
+//            .subscribe(onNext: { `self`, _ in
+//                guard let cardScheme = self.paymentGatewayM.cardSchemeObject else { return }
+//                if cardScheme.isPaidScheme {
+//                    if self.container.parent.accountProvider.currentAccountValue.value?.accountStatus == .cardSchemeExternalCardPending {
+//                        self.topupCardSelection()
+//                            .subscribe(onNext: { _ in
+//                                print("In cardName -> TopupCardSelection is subscribed")
+//                            }).disposed(by: self.disposeBag)
+//                    } else {
+//                        self.cardDetailWeb()
+//                    }
+//
+//                } else {
+//                    self.addressPending()
+//                }
+//            })
+//            .disposed(by: disposeBag)
+//
+//        viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.editNameForEditNameScreen).withUnretained(self)
+//            .flatMap({ `self`, name in self.editName(name: name) })
+//            .bind(to: viewController.viewModel.inputs.nameObserver)
+//            .disposed(by: disposeBag)
         
         
     }

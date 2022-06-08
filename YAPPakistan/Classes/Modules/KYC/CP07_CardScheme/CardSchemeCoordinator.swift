@@ -20,6 +20,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     private let container: UserSessionContainer
     private var paymentGatewayM: PaymentGatewayLocalModel!
     private var cardSchemeModel: KYCCardsSchemeM!
+    var locationData: LocationModel?
     private var contactsManager: ContactsManager!
 
     init(root: UINavigationController,
@@ -37,7 +38,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
-//        let progressRoot = container.makeKYCProgressViewController()
+        let progressRoot = container.makeKYCProgressViewController()
 //        root.present(progressRoot, animated: true) //.pushViewController(progressRoot)
       
         cardScheme()
@@ -129,6 +130,49 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 //                    break
 //                }
 //            }).disposed(by: rx.disposeBag)
+        
+        
+        let kycRepository = container.makeKYCRepository() //container.makeKYCRepository()
+        let accountProvider = container.accountProvider
+        let themeService = container.themeService
+
+        let viewModel = CardNameViewModel(kycRepository: kycRepository, accountProvider: accountProvider, schemeObj: schemeObj)
+        let viewController =  CardNameViewController(themeService: themeService, viewModel: viewModel)
+        self.localRoot.pushViewController(viewController, animated: false)
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.localRoot.popViewController()
+                //self.goBack()
+            })
+            .disposed(by: rx.disposeBag)
+
+        viewController.viewModel.outputs.next.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                guard let cardScheme = self.cardSchemeModel else { return }
+//                if cardScheme.isPaidScheme {
+//                    if self.container.parent.accountProvider.currentAccountValue.value?.accountStatus == .cardSchemeExternalCardPending {
+//                        self.topupCardSelection()
+//                            .subscribe(onNext: { _ in
+//                                print("In cardName -> TopupCardSelection is subscribed")
+//                            }).disposed(by: self.disposeBag)
+//                    } else {
+//                        self.cardDetailWeb()
+//                    }
+//
+//                } else {
+                    self.addressPending()
+                //}
+            })
+            .disposed(by: rx.disposeBag)
+
+//        viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.editNameForEditNameScreen)
+//            .flatMap({ [unowned self] name in
+//                //self.editName(name: name)
+//
+//            }).bind(to: viewController.viewModel.inputs.nameObserver)
+//            .disposed(by: rx.disposeBag)
+        
     }
     
     func addressPending() {
@@ -143,6 +187,163 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 //                }
 //            }).disposed(by: rx.disposeBag)
         
+        let progressRoot = container.makeKYCProgressViewController()
+       // root.pushViewController(progressRoot)
+//        localRoot = UINavigationControllerFactory.createAppThemedNavigationController(themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
+//        localRoot.setNavigationBarHidden(true, animated: false)
+        localRoot.pushViewController(progressRoot)
+        
+        //localRoot.present(progressRoot, animated: true)
+        
+        progressRoot.viewModel.outputs.backTap.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+//                self.goBack()
+//                if self.isPresented {
+//                    self.localRoot.dismiss(animated: true, completion: nil)
+//                } else {
+//                    self.root.popViewController()
+//                }
+                
+                self.localRoot.dismiss(animated: true, completion: nil)
+            })
+            .disposed(by: rx.disposeBag)
+        progressRoot.hidesBottomBarWhenPushed = true
+        
+        let themeService = container.themeService
+        let locationService = LocationService()
+        let kycRepository = container.makeKYCRepository()
+        let viewModel = AddressViewModel(locationService: locationService,
+                                         kycRepository: kycRepository,
+                                         accountProvider: container.accountProvider,
+                                         configuration: container.parent.configuration)
+        let viewController =  AddressViewController(themeService: themeService, viewModel: viewModel)
+        
+
+        // Copied for referecnce from Push Function
+//        self.progressRoot.viewModel.inputs.progressObserver.onNext(progress)
+//        self.progressRoot.childNavigation.pushViewController(viewController, animated: true)
+        
+        progressRoot.viewModel.inputs.progressObserver.onNext(0.90)
+        progressRoot.childNavigation.pushViewController(viewController, completion: nil)
+        //push(viewController: viewController, progress: 0.90)
+        
+        //localRoot.present(localRoot, animated: true, completion: nil)
+        
+        viewController.viewModel.outputs.city.withUnretained(self)
+            .flatMap{ `self`, _ in self.selectCityName() }
+            .bind(to: viewController.viewModel.inputs.citySelectObserver)
+            .disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] location in
+            guard let `self` = self else { return }
+            self.locationData = location
+            print("next called in address")
+            self.confirmPayment()
+        })
+                
+                
+//                .subscribe(onNext: { [weak self] value in
+//                guard let `self` = self else { return }
+//                print("confirm called in address")
+//                switch value {
+//                case .cancel:
+//                    print("confirm payment cancel ")
+//                case .success(_):
+////                    if self.isPresented {
+////                        self.localRoot.dismiss(animated: true) {
+////                            self.kycResult()
+////                        }
+////                    } else {
+////                        self.root.popViewController()
+////                        self.kycResult()
+////                    }
+//                    print("success")
+//                }
+//            }).disposed(by: self.rx.disposeBag)
+//        }).disposed(by: rx.disposeBag)
+    }
+    
+    func confirmPayment() {
+       /* return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM)) */
+//        return coordinate(to: ConfirmPaymentCoordinator(root: localRoot, container: container, repository: container.makeY2YRepository(), shouldPresent: true, paymentGatewayM: paymentGatewayM))
+        
+        let viewModel = ConfirmPaymentViewModel(accountProvider: container.accountProvider, kycRepository: container.makeKYCRepository(), transactionRepository: container.makeTransactionsRepository(), paymentGatewayObj: self.cardSchemeModel, locationData: self.locationData)
+        let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
+//        if self.shouldPresent {
+//            self.presentConfirmPaymentController(present:viewController)
+//        }
+//        else {
+//            root.pushViewController(viewController, animated: true)
+//        }
+        
+        self.localRoot.pushViewController(viewController, completion: nil)
+        
+        
+        viewModel.outputs.showCVV.withUnretained(self).subscribe(onNext: { `self`,_ in
+//            guard let card = self.paymentGatewayM.beneficiary, let amount = self.paymentGatewayM.cardSchemeObject?.fee, !self.isCVVPushed else { return }
+        }).disposed(by: rx.disposeBag)
+
+        
+        viewModel.outputs.close.subscribe(onNext: { [weak self] in
+            guard let self = self else { return }
+            //self.finishCoordinator(.cancel)
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.edit.subscribe(onNext: { [weak self] in
+            guard let self = self else { return }
+            //self.finishCoordinator(.cancel)
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            //self.finishCoordinator(.success(()))
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.html.withUnretained(self).subscribe(onNext:{ `self`, htmlString in
+//            self.cardDetailWeb(html: htmlString, viewModel: viewModel)
+//                .subscribe(onNext: { [weak self] _ in
+//                    guard let `self` = self else { return }
+//                    print("confirm payment subscription for webview")
+//                }).disposed(by: self.rx.disposeBag)
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.topupComplete.withUnretained(self).subscribe(onNext: { `self`, _ in
+//            if self.shouldPresent {
+//
+//                self.root.dismiss(animated: true) {
+//                    self.moveNext()
+//                }
+//            }
+//            else {
+//                self.root.popViewController(animated: true) {
+//                    self.moveNext()
+//                }
+//            }
+        }).disposed(by: rx.disposeBag)
+        
+        
+        
+    }
+    
+    func selectCityName() -> Observable<String>  {
+        let viewController = container.makeCityListViewController()
+        let navigation = container.makeNavigationController(root: viewController)
+       // root.present(navigation, animated: true)
+        localRoot.present(navigation, animated: true)
+
+       /* viewController.viewModel.outputs.back
+            .subscribe(onNext: { [weak self] _ in self?.root.dismiss(animated: true) })
+            .disposed(by: rx.disposeBag)
+
+        return viewController.viewModel.outputs.next
+            .do(onNext: { [weak self] _ in self?.root.dismiss(animated: true) }) */
+        
+        viewController.viewModel.outputs.back
+             .subscribe(onNext: { [weak self] _ in viewController.dismiss(animated: true) })
+             .disposed(by: rx.disposeBag)
+
+         return viewController.viewModel.outputs.next
+             .do(onNext: { [weak self] _ in viewController.dismiss(animated: true) })
     }
 }
 

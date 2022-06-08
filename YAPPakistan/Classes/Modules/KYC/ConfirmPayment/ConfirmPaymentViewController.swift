@@ -94,6 +94,9 @@ class ConfirmPaymentViewController: UIViewController {
     }
 
     func setupViews() {
+        
+        self.navigationController?.isNavigationBarHidden = false
+        
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         

@@ -36,59 +36,59 @@ public class ConfirmPaymentCoordinator: Coordinator<ResultType<Void>> {
     }
     
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let viewModel = ConfirmPaymentViewModel(accountProvider: container.accountProvider, kycRepository: container.makeKYCRepository(), transactionRepository: container.parent.makeTransactionsRepository(), paymentGatewayObj: self.paymentGatewayM)
-        let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
-        if self.shouldPresent {
-            self.presentConfirmPaymentController(present:viewController)
-        }
-        else {
-            root.pushViewController(viewController, animated: true)
-        }
-        
-        
-        viewModel.outputs.showCVV.withUnretained(self).subscribe(onNext: { `self`,_ in
-            guard let card = self.paymentGatewayM.beneficiary, let amount = self.paymentGatewayM.cardSchemeObject?.fee, !self.isCVVPushed else { return }
-            self.isCVVPushed = true
-            self.navigateToCVV(card: card, amount: amount, currency: "PKR",viewModel: viewModel)
-        }).disposed(by: rx.disposeBag)
-
-        
-        viewModel.outputs.close.subscribe(onNext: { [weak self] in
-            guard let self = self else { return }
-            self.finishCoordinator(.cancel)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.edit.subscribe(onNext: { [weak self] in
-            guard let self = self else { return }
-            self.finishCoordinator(.cancel)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
-            guard let self = self else { return }
-            self.finishCoordinator(.success(()))
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.html.withUnretained(self).subscribe(onNext:{ `self`, htmlString in
-            self.cardDetailWeb(html: htmlString, viewModel: viewModel)
-                .subscribe(onNext: { [weak self] _ in
-                    guard let `self` = self else { return }
-                    print("confirm payment subscription for webview")
-                }).disposed(by: self.rx.disposeBag)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.topupComplete.withUnretained(self).subscribe(onNext: { `self`, _ in
-            if self.shouldPresent {
-                
-                self.root.dismiss(animated: true) {
-                    self.moveNext()
-                }
-            }
-            else {
-                self.root.popViewController(animated: true) {
-                    self.moveNext()
-                }
-            }
-        }).disposed(by: rx.disposeBag)
+//        let viewModel = ConfirmPaymentViewModel(accountProvider: container.accountProvider, kycRepository: container.makeKYCRepository(), transactionRepository: container.parent.makeTransactionsRepository(), paymentGatewayObj: self.paymentGatewayM, locationData: <#LocationModel?#>)
+//        let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
+//        if self.shouldPresent {
+//            self.presentConfirmPaymentController(present:viewController)
+//        }
+//        else {
+//            root.pushViewController(viewController, animated: true)
+//        }
+//        
+//        
+//        viewModel.outputs.showCVV.withUnretained(self).subscribe(onNext: { `self`,_ in
+//            guard let card = self.paymentGatewayM.beneficiary, let amount = self.paymentGatewayM.cardSchemeObject?.fee, !self.isCVVPushed else { return }
+//            self.isCVVPushed = true
+//            self.navigateToCVV(card: card, amount: amount, currency: "PKR",viewModel: viewModel)
+//        }).disposed(by: rx.disposeBag)
+//
+//        
+//        viewModel.outputs.close.subscribe(onNext: { [weak self] in
+//            guard let self = self else { return }
+//            self.finishCoordinator(.cancel)
+//        }).disposed(by: rx.disposeBag)
+//        
+//        viewModel.outputs.edit.subscribe(onNext: { [weak self] in
+//            guard let self = self else { return }
+//            self.finishCoordinator(.cancel)
+//        }).disposed(by: rx.disposeBag)
+//        
+//        viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
+//            guard let self = self else { return }
+//            self.finishCoordinator(.success(()))
+//        }).disposed(by: rx.disposeBag)
+//        
+//        viewModel.outputs.html.withUnretained(self).subscribe(onNext:{ `self`, htmlString in
+//            self.cardDetailWeb(html: htmlString, viewModel: viewModel)
+//                .subscribe(onNext: { [weak self] _ in
+//                    guard let `self` = self else { return }
+//                    print("confirm payment subscription for webview")
+//                }).disposed(by: self.rx.disposeBag)
+//        }).disposed(by: rx.disposeBag)
+//        
+//        viewModel.outputs.topupComplete.withUnretained(self).subscribe(onNext: { `self`, _ in
+//            if self.shouldPresent {
+//                
+//                self.root.dismiss(animated: true) {
+//                    self.moveNext()
+//                }
+//            }
+//            else {
+//                self.root.popViewController(animated: true) {
+//                    self.moveNext()
+//                }
+//            }
+//        }).disposed(by: rx.disposeBag)
         
         return result.asObservable()
     }

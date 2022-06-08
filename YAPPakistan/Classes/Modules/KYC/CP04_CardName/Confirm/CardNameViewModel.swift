@@ -71,11 +71,11 @@ class CardNameViewModel: CardNameViewModelType, CardNameViewModelInput, CardName
     private let kycRepository: KYCRepositoryType
     private let accountProvider: AccountProvider
 
-    init(kycRepository: KYCRepositoryType, accountProvider: AccountProvider, paymentGatewayM: PaymentGatewayLocalModel) {
+    init(kycRepository: KYCRepositoryType, accountProvider: AccountProvider, schemeObj: KYCCardsSchemeM) {
 
         self.kycRepository = kycRepository
         self.accountProvider = accountProvider
-        if paymentGatewayM.cardSchemeObject?.scheme == .Mastercard {
+        if schemeObj.scheme == .Mastercard {
             cardImageSubject.onNext("image_payment_card_white")
         } else {
             cardImageSubject.onNext("image_payment_card_white_paypak")

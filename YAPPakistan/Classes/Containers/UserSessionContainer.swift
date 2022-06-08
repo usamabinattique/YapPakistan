@@ -305,4 +305,32 @@ public final class UserSessionContainer {
 //    func makeManualVerificationViewController() -> ManualVerificationViewController {
 //        ManualVerificationModuleBuilder(container: self).viewController()
 //    }
+    
+    
+    func makeKYCProgressViewController(navigationController: UINavigationController) -> KYCProgressViewController {
+        let viewModel = KYCProgressViewModel()
+        let viewController = KYCProgressViewController(themeService: themeService,
+                                                       viewModel: viewModel,
+                                                       withChildNavigation: navigationController)
+        return viewController
+    }
+    func makeKYCProgressViewController() -> KYCProgressViewController {
+        let childNav: UINavigationController = makeNavigationController()
+        childNav.setNavigationBarHidden(true, animated: false)
+        return makeKYCProgressViewController(navigationController: childNav)
+    }
+    
+    func makeCityListViewController() -> CityListViewController {
+        let kycRepository = self.makeKYCRepository()
+        let themeService = self.themeService
+        let viewModel = CityListViewModel(kycRepository: kycRepository)
+        return CityListViewController(themeService: themeService, viewModel: viewModel)
+        
+        //CityListModuleBuilder(container: self).viewController()
+    }
+    
+    func makeNavigationController(root: UIViewController? = nil) -> UINavigationController {
+        return parent.makeNavigationController(root: root)
+    }
+
 }

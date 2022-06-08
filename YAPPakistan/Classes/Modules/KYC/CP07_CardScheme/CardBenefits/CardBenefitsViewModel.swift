@@ -126,17 +126,17 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
     }
     
     private func checkCustomerBalance() {
-//        let req = self.transactionRepo.fetchCustomerAccountBalance().share()
-//
-//        req.elements().subscribe(onNext: { [unowned self] balance in
-//            print(balance)
-//        }).disposed(by: disposeBag)
-//
-//        req.errors().subscribe(onNext: { [unowned self] error in
-//            self.errorSubject.onNext(error.localizedDescription)
-//        }).disposed(by: disposeBag)
+        let req = self.transactionRepo.fetchCustomerAccountBalance().share()
+
+        req.elements().subscribe(onNext: { [unowned self] balance in
+            print(balance)
+        }).disposed(by: disposeBag)
+
+        req.errors().subscribe(onNext: { [unowned self] error in
+            self.errorSubject.onNext(error.localizedDescription)
+        }).disposed(by: disposeBag)
         
-        let balance = 300
+        let balance = 600
         self.userAccountBalance = Double(balance)
         self.cardSchemeSubject.subscribe(onNext: { [unowned self] card in
             
