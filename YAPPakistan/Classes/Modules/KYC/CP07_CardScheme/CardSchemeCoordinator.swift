@@ -166,13 +166,39 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
             })
             .disposed(by: rx.disposeBag)
 
-//        viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.editNameForEditNameScreen)
-//            .flatMap({ [unowned self] name in
-//                //self.editName(name: name)
-//
-//            }).bind(to: viewController.viewModel.inputs.nameObserver)
-//            .disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.edit.withLatestFrom(viewController.viewModel.outputs.editNameForEditNameScreen)
+            .flatMap({ [unowned self] name in
+                self.editName(name: name)
+
+            }).bind(to: viewController.viewModel.inputs.nameObserver)
+            .disposed(by: rx.disposeBag)
         
+    }
+    
+    func editName(name: String) -> Observable<String> {
+        
+        
+        let themeService = self.container.themeService
+        let viewModel = EditNameViewModel(name: name)
+        let viewController =  EditCardNameViewController(themeService: themeService, viewModel: viewModel)
+        //navigation.childNavigation.pushViewController(viewController, animated: true)
+
+        self.localRoot.pushViewController(viewController, completion: nil)
+        
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _
+                in
+                //self.navigation.childNavigation.popViewController(animated: true)
+                
+            })
+            .disposed(by: rx.disposeBag)
+
+        let next = viewController.viewModel.outputs.next
+            .do(onNext: { [weak self] _ in
+                //self?.navigation.childNavigation.popViewController(animated: true)
+                
+            })
+        return next
     }
     
     func addressPending() {
