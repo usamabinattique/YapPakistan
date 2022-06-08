@@ -681,6 +681,10 @@
 //MARK: Dashboard
 // MARK: - CustomView AmounView
 "screen_dashboard_credit_limit_display_text" = "Credit limit: %@";
+"screen_dashboard_missing_document_title_display_text" = "Hey %@";
+"screen_dashboard_missing_document_description_display_text" = "Looks like we’re having some trouble with the details you provided during onboarding. Please review the below list and make the updates where applicable to get your YAP account activated.";
+
+
 
 
 

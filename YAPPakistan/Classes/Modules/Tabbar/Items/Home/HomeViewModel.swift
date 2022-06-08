@@ -40,6 +40,7 @@ protocol HomeViewModelInputs {
     var progressViewTappedObserver: AnyObserver<Void> { get }
     
     var transactionDetailsObserver: AnyObserver<TransactionResponse> { get }
+    var missingDocumentObserver: AnyObserver<Void> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -100,6 +101,7 @@ protocol HomeViewModelOutputs {
     var transactionDetails: Observable<TransactionResponse> { get }
     func getTimelineViewModel() -> DashboardTimelineViewModel
     var addTimelineViewModel: Observable<DashboardTimelineViewModel> { get }
+    var missingDocument: Observable<Void> { get }
 }
 
 protocol HomeViewModelType {
@@ -163,6 +165,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let progressViewDateSubject = BehaviorSubject<Date>(value: Date())
     private let profileTapSubject = PublishSubject<Void>()
     private let addTimelineViewModelSubject = ReplaySubject<DashboardTimelineViewModel>.create(bufferSize: 1)
+    private let showMissingDocumentSubject = PublishSubject<Void>()
     
     private var transactionDetailsSubject = PublishSubject<TransactionResponse>()
     
@@ -198,6 +201,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var profileTapObserver: AnyObserver<Void> { profileTapSubject.asObserver() }
     
     var transactionDetailsObserver: AnyObserver<TransactionResponse> { transactionDetailsSubject.asObserver() }
+    var missingDocumentObserver: AnyObserver<Void> { showMissingDocumentSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -250,6 +254,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var progressViewTapped: Observable<Date> { progressViewDateSubject }
     var transactionDetails: Observable<TransactionResponse> { transactionDetailsSubject.asObservable() }
     var addTimelineViewModel: Observable<DashboardTimelineViewModel> { addTimelineViewModelSubject.asObservable() }
+    var missingDocument: Observable<Void> { showMissingDocumentSubject.asObservable() }
 
     // MARK: Init
 
@@ -324,7 +329,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         }).disposed(by: disposeBag)
         
         //TODO: uncomment following
-       /* generateCellViewModels()
+      /*  generateCellViewModels()
         getCustomerAccountBalance()
         getWidgets(repository: cardsRepository)
         getCards() */
@@ -365,10 +370,16 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private func verifyUserStatus() {
         accountProvider.fetchAccounts().elements().subscribe(onNext: { [weak self] in
             guard let `self` = self else { return }
+            
+            
             if let account = $0.first {
                 self.generateCellViewModels()
                 
-                /// KYC | CNIC Verified User
+                let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: true))
+                vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
+                self.addTimelineViewModelSubject.onNext(vm)
+                
+               /* /// KYC | CNIC Verified User
                 if account.parnterBankStatus == .activated && account.accountStatus == .onboarded {
                     self.getCards()
                 }
@@ -400,7 +411,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
                     self.addTimelineViewModelSubject.onNext(vm)
                 } else {
                     self.getCards()
-                }
+                } */
             }
         }).disposed(by: disposeBag)
     }
