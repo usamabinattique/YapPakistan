@@ -168,6 +168,10 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     
     private func fetchApis() {
         
+        //self.nextSubject.onNext(())
+        
+        self.nextResultSubject.onNext(1)
+        
         YAPProgressHud.showProgressHud()
         
         //!!!: check if user isFirstCredit is True then don't call saveAddress api

@@ -490,7 +490,7 @@
 "screen_yap_confirm_payment_display_text_fed_fee" = "FED";
 "screen_yap_confirm_payment_display_text_order_total_fee" = "Order total";
 "screen_yap_confirm_payment_display_text_pay_with" = "Pay with";
-"screen_yap_confirm_payment_display_text_place_order_for" = "Place order";
+"screen_yap_confirm_payment_display_text_place_order_for" = "Confirm purchase";
 
 // MARK: Screend topup card cvv
 "screen_topup_card_cvv_display_text_title" = "Top up confirmation";

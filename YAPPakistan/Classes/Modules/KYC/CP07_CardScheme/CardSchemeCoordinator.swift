@@ -93,7 +93,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.fedValue
             .subscribe(onNext:{ fed in
-                self.paymentGatewayM.cardSchemeObject?.fedFee = fed
+                self.cardSchemeModel?.fedFee = fed
             })
             .disposed(by: rx.disposeBag)
         
@@ -276,8 +276,10 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 //            root.pushViewController(viewController, animated: true)
 //        }
         
-        self.localRoot.pushViewController(viewController, completion: nil)
-        
+        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(self.container.themeService.attrs.primary), font: .regular)
+        self.localRoot.present(navController, animated: true) //.pushViewController(viewController, completion: nil)
+            
+        //self.localRoot.pushViewController(viewController, completion: nil)
         
         viewModel.outputs.showCVV.withUnretained(self).subscribe(onNext: { `self`,_ in
 //            guard let card = self.paymentGatewayM.beneficiary, let amount = self.paymentGatewayM.cardSchemeObject?.fee, !self.isCVVPushed else { return }
@@ -286,6 +288,14 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
             guard let self = self else { return }
+            navController.dismiss(animated: true, completion: nil)
+            
+            self.localRoot.dismiss(animated: true, completion: nil)
+//            navController.dismiss(animated: true)
+//            self.progressRoot.dismiss(animated: true, completion: nil)
+//            self.localRoot.dismiss(animated: true, completion: nil)
+            //navController.dismiss(animated: true, completion: nil)
+            
             //self.finishCoordinator(.cancel)
         }).disposed(by: rx.disposeBag)
         
@@ -296,6 +306,10 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
+            
+            navController.dismiss(animated: true, completion: nil)
+            //progressRoot.dismiss(animated: true, completion: nil)
+            self.localRoot.dismiss(animated: true, completion: nil)
             //self.finishCoordinator(.success(()))
         }).disposed(by: rx.disposeBag)
         

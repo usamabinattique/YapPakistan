@@ -96,7 +96,7 @@ class ConfirmPaymentViewController: UIViewController {
     func setupViews() {
         
         self.navigationController?.isNavigationBarHidden = false
-        
+        self.title = "Order card"
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         
