@@ -172,8 +172,8 @@ extension AddBeneficiaryConfirmViewController {
         view.addSubview(doneButton)
         view.addSubview(titleField)
         doneButton.setTitle("Add", for: .normal)
-        titleField.text = "Nickname"
-        textField.placeholder = "Dad"
+        titleField.text = "screen_add_beneficiary_detail_display_text_transfer_nick_name".localized
+        textField.placeholder = "screen_add_beneficiary_detail_input_text_nick_name_hint".localized
         infoLabel.text = "The beneficiary found:"
         
         userImage.roundView()

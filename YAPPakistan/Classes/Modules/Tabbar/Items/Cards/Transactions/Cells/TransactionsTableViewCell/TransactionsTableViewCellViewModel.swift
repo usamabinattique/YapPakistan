@@ -145,7 +145,12 @@ class TransactionsTableViewCellViewModel: TransactionsTableViewCellViewModelType
             }).disposed(by: disposeBag)
         
         if let remarks = transaction.remarks {
-            remarksSubject.onNext(remarks)
+            
+            if (remarks.count > 0 && (transaction.productCode == .y2yTransfer || (transaction.productCode == .ibftTransaction && transaction.type == .debit))) {
+                remarksSubject.onNext(remarks)
+            } else {
+                remarksSubject.onNext("")
+            }
         }
         
         shimmeringSubject.onNext(false)

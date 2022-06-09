@@ -62,6 +62,10 @@ class YapContactCellViewModel: YapContactCellViewModelType, YapContactCellViewMo
         self.profilePhoto = profilePhoto
         imageSubject.onNext(profilePhoto)
         nameSubject.onNext(name)
-        ibanSubject.onNext("IBAN: \(iban)")
+        if iban.contains("PK") {
+            ibanSubject.onNext("IBAN: \(iban)")
+        } else {
+            ibanSubject.onNext("Account number: \(iban)")
+        }
     }
 }

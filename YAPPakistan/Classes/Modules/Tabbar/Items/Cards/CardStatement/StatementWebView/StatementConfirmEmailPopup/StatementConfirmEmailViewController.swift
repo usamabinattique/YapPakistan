@@ -33,9 +33,10 @@ class StatementConfirmEmailViewController: UIViewController {
     private lazy var descriptionLabel: UILabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0, text: "We’ll be sending your statment to the following email address")
     private lazy var currentEmail = UIFactory.makeAppRoundedButton(with: .regular)
     private lazy var sendButton = UIFactory.makeAppRoundedButton(with: .large, title: "Send now")
-    private lazy var editEmailButton = UIFactory.makeButton(with: .large, backgroundColor: .clear, title: "I’d like to change my email")
+    //TODO: change email flow removed in UAT, also remove its navigation flow from coordinator
+    //private lazy var editEmailButton = UIFactory.makeButton(with: .large, backgroundColor: .clear, title: "I’d like to change my email")
     
-    private lazy var stackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fill, spacing: 6, arrangedSubviews: [headerTitle, descriptionLabel, currentEmail, sendButton, editEmailButton])
+    private lazy var stackView = UIFactory.makeStackView(axis: .vertical, alignment: .center, distribution: .fill, spacing: 6, arrangedSubviews: [headerTitle, descriptionLabel, currentEmail, sendButton])
     
     // MARK: Properties
     public var window: UIWindow?
@@ -163,10 +164,10 @@ extension StatementConfirmEmailViewController: ViewDesignable {
             .width(constant: 294)
             .height(constant: 52)
         
-        editEmailButton
-            .alignEdgesWithSuperview([.left, .right], constants: [28, 28])
-            //.width(constant: 325)
-            .height(constant: 28)
+//        editEmailButton
+//            .alignEdgesWithSuperview([.left, .right], constants: [28, 28])
+//            //.width(constant: 325)
+//            .height(constant: 28)
         
         stackView
             .setCustomSpacing(22, after: descriptionLabel)
@@ -183,7 +184,7 @@ extension StatementConfirmEmailViewController: ViewDesignable {
     func setupBindings() {
         viewModel.outputs.currentEmail.bind(to: currentEmail.rx.title(for: .normal)).disposed(by: disposeBag)
         sendButton.rx.tap.bind(to: viewModel.inputs.sendObserver).disposed(by: disposeBag)
-        editEmailButton.rx.tap.bind(to: viewModel.inputs.editEmailObserver).disposed(by: disposeBag)
+//        editEmailButton.rx.tap.bind(to: viewModel.inputs.editEmailObserver).disposed(by: disposeBag)
     }
     
     func setupTheme() {
@@ -191,10 +192,10 @@ extension StatementConfirmEmailViewController: ViewDesignable {
             .bind({ UIColor($0.primaryDark) }, to: headerTitle.rx.textColor)
             .bind({ UIColor($0.greyDark) }, to: descriptionLabel.rx.textColor)
             .bind({ UIColor($0.greyLight).withAlphaComponent(0.5) }, to: currentEmail.rx.disabledBackgroundColor)
-            .bind({ UIColor($0.greyDark) }, to: currentEmail.rx.titleColor(for: .normal))
+            .bind({ UIColor($0.greyDark) }, to: currentEmail.rx.titleColor(for: .disabled))
             .bind({ UIColor($0.primary) }, to: sendButton.rx.enabledBackgroundColor)
             .bind({ UIColor($0.backgroundColor) }, to: sendButton.rx.titleColor(for: .normal))
-            .bind({ UIColor($0.primary) }, to: editEmailButton.rx.titleColor(for: .normal))
+//            .bind({ UIColor($0.primary) }, to: editEmailButton.rx.titleColor(for: .normal))
             .disposed(by: disposeBag)
     }
 }

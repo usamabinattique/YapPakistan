@@ -13,6 +13,7 @@ import SDWebImage
 import YAPComponents
 import RxTheme
 import UIKit
+import CryptoKit
 
 class TransactionsTableViewCell: RxUITableViewCell {
     
@@ -252,7 +253,17 @@ private extension TransactionsTableViewCell {
             self?.transactionMerchantIconImageView.contentMode = $0
         }).disposed(by: disposeBag)
         
-        viewModel.outputs.remarks.bind(to: noteLabel.rx.text).disposed(by: disposeBag)
+        viewModel.outputs.remarks
+            .subscribe(onNext: { [weak self] remarks in
+                if let remarks = remarks, remarks.count > 0 {
+                    self?.noteLabel.text = remarks
+                    self?.noteLabel.isHidden = false
+                } else {
+                    self?.noteLabel.isHidden = true
+                }
+            })
+            .disposed(by: disposeBag)
+            //.bind(to: noteLabel.rx.text)
         
         viewModel.outputs.transactionTypeIcon.subscribe(onNext: { [weak self] in
             self?.transactionTypeIcon.image = $0

@@ -121,6 +121,7 @@ extension PhoneNumberVerificationViewController {
             .bind({ UIColor($0.greyDark       ) }, to: [subHeadingLabel.rx.textColor])
             .bind({ UIColor($0.greyDark       ) }, to: [timerLabel.rx.textColor])
             .bind({ UIColor($0.primary        ) }, to: [resendButton.rx.titleColor(for: .normal)])
+            .bind({ UIColor($0.greyDark        ) }, to: [resendButton.rx.titleColorForDisabled])
             .disposed(by: rx.disposeBag)
     }
 
@@ -176,7 +177,12 @@ private extension PhoneNumberVerificationViewController {
                             completion: nil )
         }).subscribe().disposed(by: rx.disposeBag)
 
-        viewModel.outputs.resendActive.bind(to: resendButton.rx.isEnabled).disposed(by: rx.disposeBag)
+        viewModel.outputs.resendActive
+            .subscribe(onNext:{ [weak self] isEnabled in
+                self?.resendButton.isEnabled = isEnabled
+                
+            })
+            .disposed(by: rx.disposeBag)
         viewModel.outputs.resendActive.map { $0 ? 1.0 : 0.3 }.bind(to: resendButton.rx.alpha).disposed(by: rx.disposeBag)
         resendButton.rx.tap.bind(to: viewModel.inputs.resendObserver).disposed(by: rx.disposeBag)
     }
@@ -186,6 +192,9 @@ private extension PhoneNumberVerificationViewController {
 
 extension PhoneNumberVerificationViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return range.location < codeTextField.numberOfTextFields
+        
+        let allowedCharacters = CharacterSet.decimalDigits
+        let characterSet = CharacterSet(charactersIn: string)
+        return (range.location < codeTextField.numberOfTextFields) && allowedCharacters.isSuperset(of: characterSet)
     }
 }

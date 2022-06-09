@@ -74,7 +74,8 @@ class TDReceiptsTableViewCellViewModel: TDReceiptsTableViewCellViewModelType, Re
             return
         }
     
-        titleSubject.onNext(receipts.count > 0 ? (receipts.count == 1 ? "\(receipts.count) receipt added" : "\(receipts.count) receipts added") : "screen_transaction_details_display_text_add_receipt".localized)
+        titleSubject.onNext("screen_transaction_details_display_text_add_receipt".localized)
+        //titleSubject.onNext(receipts.count > 0 ? (receipts.count == 1 ? "\(receipts.count) receipt added" : "\(receipts.count) receipts added") : "screen_transaction_details_display_text_add_receipt".localized)
         isCollectionHiddenSubject.onNext(receipts.count > 0 ? false : true )
         
         generateViewModels(receipts: receipts)

@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Prime Card - Silver.png",
+      "filename" : "image_payment_card_white_paypak.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Prime Card - Silver@2x.png",
+      "filename" : "image_payment_card_white_paypak@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "Prime Card - Silver@3x.png",
+      "filename" : "image_payment_card_white_paypak@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

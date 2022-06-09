@@ -163,7 +163,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
          subheading: String,
          image: UIImage? = nil,
          badge: UIImage? = nil,
-         otpTime: TimeInterval = 60,
+         otpTime: TimeInterval = 30,
          otpLength: Int = 6,
          resendTries: Int = 4,
          repository: OTPRepositoryType,
@@ -210,13 +210,7 @@ open class VerifyMobileOTPViewModel: VerifyMobileOTPViewModelInput,
             .map{ !$0.0 && $0.1 }
             .bind(to: resendActiveSubject)
             .disposed(by: disposeBag)
-
-//        timerSubject.filter { $0 >= 0 }
-//            .map(timeString)
-//            .bind(to: timerTextSubject)
-//            .disposed(by: disposeBag)
         
-        //UZAIR asked me to do this
         timerSubject.filter { $0 >= 0 }
             .map {[unowned self] time in timeString(timeInterval: time)}
             .bind(to: timerTextSubject)
@@ -483,7 +477,9 @@ public extension VerifyMobileOTPViewModel {
                                                 period: RxTimeInterval.seconds(1),
                                                 scheduler: MainScheduler.instance)
         return Observable.combineLatest(timer, resendTimeSubject)
-            .map { $0.1 - TimeInterval($0.0) }
+            .map {
+                return $0.1 - TimeInterval($0.0)
+            }
             .bind(to: timerSubject)
     }
 }

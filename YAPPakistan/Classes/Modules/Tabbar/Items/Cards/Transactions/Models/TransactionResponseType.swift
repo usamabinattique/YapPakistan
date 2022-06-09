@@ -830,16 +830,16 @@ extension TransactionResponse {
     var transactionTimeCategory: String? {
      //  let category = formattedTime + " · " + ((productNameType != .unkonwn ? productNameType.type : merchantCategory ?? category))
         
-        var title: String = time + " · "
+        let title: String = time + " · "
         
-        switch self.productName {
-        case "ECOM", "POS":
-           return title + (merchantCategoryName ?? "")
-        case "IBFT":
+        switch self.productCode {
+        case .eCom, .posPurchase:
+           return title + "In-store purchase"//(merchantCategoryName ?? "")
+        case .ibftTransaction:
             return title + "Bank transfer"
-        case "Y2Y_TRANSFER":
+        case .y2yTransfer:
             return title + "YAP to YAP"
-        case "TOP_UP_VIA_CARD":
+        case .topUpByExternalCard:
             return title + "Top up"
         default:
             return title + "Transaction"
