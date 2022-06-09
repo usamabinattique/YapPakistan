@@ -48,9 +48,9 @@ public class SearchTransactionsCoordinator: Coordinator<ResultType<Void>> {
         
         root.present(localRoot, animated: true, completion: nil)
         
-        viewModel.outputs.close.subscribe(onNext: { [unowned self] in
-            self.result.onNext(categoryChangedResult ? .success(()) : .cancel)
-            self.result.onCompleted()
+        viewModel.outputs.close.subscribe(onNext: { [weak self] in
+            self?.result.onNext((self?.categoryChangedResult ?? false) ? .success(()) : .cancel)
+            self?.result.onCompleted()
         }).disposed(by: disposeBag)
         
         viewModel.outputs.transactionDetails.subscribe(onNext: { [weak self] in

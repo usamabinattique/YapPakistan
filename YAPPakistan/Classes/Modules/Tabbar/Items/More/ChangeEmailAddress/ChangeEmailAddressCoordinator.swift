@@ -66,10 +66,10 @@ public class ChangeEmailAddressCoordinator: Coordinator<ResultType<Void>> {
         let viewController = UnvarifiedEmailSuccessViewController(viewModel: viewModel, themeService: self.container.themeService)
         
         
-        viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
-            self.localRoot.dismiss(animated: true, completion: nil)
-            self.result.onNext(.success(()))
-            self.result.onCompleted()
+        viewModel.outputs.back.subscribe(onNext: { [weak self] _ in
+            self?.localRoot.dismiss(animated: true, completion: nil)
+            self?.result.onNext(.success(()))
+            self?.result.onCompleted()
         }).disposed(by: disposeBag)
         
         localRoot.pushViewController(viewController, completion: nil)
