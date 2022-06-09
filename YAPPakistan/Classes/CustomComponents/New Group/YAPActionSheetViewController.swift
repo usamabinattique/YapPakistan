@@ -34,11 +34,11 @@ class YAPActionSheetViewController: UIViewController {
     private lazy var titleLabel: UILabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0) //UILabelFactory.createUILabel(with: .primaryBlue0, textStyle: .large, numberOfLines: 0)
     //private lazy var subTitleLabel: UILabel = UIFactory.makeLabel(font: .small, alignment: .left, numberOfLines: 0) //UILabelFactory.createUILabel(with: .secondaryGrey2, textStyle: .small, numberOfLines: 0)
     
-    private lazy var titleStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 5, arrangedSubviews: [titleLabel])
+    private lazy var titleStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .leading, distribution: .fill, spacing: 5, arrangedSubviews: [titleLabel])
     
     private lazy var saperator: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(themeService.attrs.grey)
+        view.backgroundColor = UIColor(themeService.attrs.greyLight)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

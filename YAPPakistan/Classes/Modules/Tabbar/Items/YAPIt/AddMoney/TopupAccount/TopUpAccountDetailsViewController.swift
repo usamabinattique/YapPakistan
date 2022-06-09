@@ -17,7 +17,8 @@ class TopUpAccountDetailsViewController: UIViewController {
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
-        tableView.separatorStyle = .none
+        tableView.separatorStyle = .singleLine
+        tableView.separatorColor = UIColor(self.themeService.attrs.separatorColor)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
@@ -54,6 +55,8 @@ class TopUpAccountDetailsViewController: UIViewController {
         
         backButton = makeAndAddBackButton(of:.backEmpty)
         title = "screen_more_bank_details_display_text_for_top_up_title".localized
+        
+        self.tableView.tableFooterView = UIView()
         
         setupSubViews()
         setupConstraints()

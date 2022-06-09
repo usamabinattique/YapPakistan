@@ -27,7 +27,7 @@ class PasscodeViewController: UIViewController {
                                                                   numberOfLines: 0,
                                                                   lineBreakMode: .byWordWrapping)
     private lazy var termsAndCondtionsButton = UIFactory.makeButton(with: .micro)
-    private lazy var createPINButton = AppRoundedButtonFactory.createAppRoundedButton()
+    private lazy var createPINButton = AppRoundedButtonFactory.createAppRoundedButton(font: .large)
     private var backButton: UIButton?
 
     // MARK: - Properties
@@ -111,7 +111,7 @@ fileprivate extension PasscodeViewController {
             .bind({ UIColor($0.greyDark       ) }, to: [termsAndCondtionsLabel.rx.textColor])
             .bind({ UIColor($0.primary        ) }, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
             .bind({ UIColor($0.primary        ) }, to: [pinKeyboard.rx.themeColor])
-            .bind({ UIColor($0.primaryDark    ) }, to: [codeLabel.rx.textColor])
+            .bind({ UIColor($0.primary    ) }, to: [codeLabel.rx.textColor])
             .disposed(by: rx.disposeBag)
 
         guard backButton != nil else { return }
