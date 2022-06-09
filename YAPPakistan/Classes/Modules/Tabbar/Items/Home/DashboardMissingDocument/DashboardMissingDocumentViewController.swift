@@ -41,11 +41,13 @@ final class DashboardMissingDocumentViewController: UIViewController {
                          spacing: 8,
                          arrangedSubviews: [screenTitle,heading])
     
-    lazy var tableView: UITableView = {
-        let tableView = UITableView()
+    lazy var tableView: DynamicSizeTableView = {
+        let tableView = DynamicSizeTableView()
+        tableView.delegate = self
         tableView.separatorStyle = .none
         tableView.tableFooterView = UIView()
         tableView.backgroundColor = .clear
+        tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.showsVerticalScrollIndicator = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
@@ -117,6 +119,12 @@ final class DashboardMissingDocumentViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel.inputs.viewDidAppearObserver.onNext(())
+        scrollToFirstRow()
+    }
+    
+    private func scrollToFirstRow() {
+        let indexPath = IndexPath(row: 0, section: 0)
+        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }
 }
 
@@ -128,7 +136,8 @@ extension DashboardMissingDocumentViewController: ViewDesignable {
         view.addSubview(briefStack)
         view.addSubview(tableView)
         view.addSubview(bottomStack)
-      //  tableView.register(StorePackageTableViewCell.self, forCellReuseIdentifier: StorePackageTableViewCell.defaultIdentifier)
+        tableView.register(DocumentMissingHeaderCell.self, forCellReuseIdentifier: DocumentMissingHeaderCell.defaultIdentifier)
+        tableView.register(MissingDocumentNameCell.self, forCellReuseIdentifier: MissingDocumentNameCell.defaultIdentifier)
         
     }
     
@@ -143,9 +152,9 @@ extension DashboardMissingDocumentViewController: ViewDesignable {
             .alignEdgesWithSuperview([.left,.right], constants: [24,24])
         
         tableView
-            .toBottomOf(briefStack)
-            .alignEdgesWithSuperview([.left,.right])
-            .toTopOf(bottomStack,constant: 12)
+            .toBottomOf(briefStack,constant: 20)
+            .alignEdgesWithSuperview([.left,.right],constants: [24,24])
+            .toTopOf(bottomStack,.greaterThanOrEqualTo,constant: 12)
         
         bottomStack
             .alignEdgesWithSuperview([.left, .right], constants: [24, 24])
@@ -158,10 +167,25 @@ extension DashboardMissingDocumentViewController: ViewDesignable {
         doItLaterButton
             .height(constant: 30)
         
-        tableView.contentInset = UIEdgeInsets(top: 20, left: 24, bottom: 0, right: 24)
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
+        tableView.layer.cornerRadius = 10
+        tableView.clipsToBounds = true
+       
     }
     
     func setupBindings(){
+        viewModel.outputs.cellViewModels.bind(to: tableView.rx.items) { tableView, index, viewModel in
+            let cell = tableView.dequeueReusableCell(withIdentifier: MissingDocumentNameCell.defaultIdentifier) as! MissingDocumentNameCell
+            cell.configure(with: self.themeService, viewModel: viewModel)
+            return cell
+        }.disposed(by: disposeBag)
+        
+//        tableView.rx
+//            .modelSelected(MissingDocumentNameCellViewModel.self)
+//            .flatMap{ $0.data }
+//            .bind(to: viewModel.inputs.selectStorePackageObserver)
+//            .disposed(by: disposeBag)
+        viewModel.outputs.titleName.bind(to: screenTitle.rx.text).disposed(by: disposeBag)
         doItLaterButton.rx.tap.bind(to: viewModel.inputs.doItLaterObserver).disposed(by: disposeBag)
     }
     
@@ -178,3 +202,32 @@ extension DashboardMissingDocumentViewController: ViewDesignable {
     }
 }
 
+//MARK: UITableViewDelegate
+extension DashboardMissingDocumentViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: DocumentMissingHeaderCell.defaultIdentifier) as! DocumentMissingHeaderCell
+        cell.configure(with: self.themeService, viewModel: viewModel.outputs.sectionViewModel(for: section))
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 44
+    }
+    
+    
+}
+
+public class DynamicSizeTableView: UITableView
+{
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        if bounds.size != intrinsicContentSize {
+            invalidateIntrinsicContentSize()
+        }
+    }
+
+    override public var intrinsicContentSize: CGSize {
+        return contentSize
+    }
+}

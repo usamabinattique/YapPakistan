@@ -360,29 +360,3 @@ extension TransactionsViewController: UITableViewDelegate {
     }
 }
 
-class FooterLoadingView: UIView {
-
-    let indicator = UIActivityIndicatorView(frame: .zero)
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        customizeUI(frame: frame)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func customizeUI(frame: CGRect) {
-        indicator.frame = CGRect(x: (frame.size.width/2) - 12, y: 10, width: 24, height: 24)
-        self.addSubview(indicator)
-    }
-}
-
-public extension UITableView {
-    var scrollPercentage: CGFloat {
-        let height = self.contentSize.height - self.frame.size.height
-            let scrolledPercentage = self.contentOffset.y / height
-            return scrolledPercentage
-    }
-}
