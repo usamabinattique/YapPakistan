@@ -163,46 +163,22 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func editName(name: String) -> Observable<String> {
-        
-//        let progressRoot = container.makeKYCProgressViewController()
-//        localRoot.pushViewController(progressRoot)
-//
-//
-//        progressRoot.viewModel.outputs.backTap.withUnretained(self)
-//            .subscribe(onNext: { `self`, _ in
-////                self.goBack()
-////                if self.isPresented {
-////                    self.localRoot.dismiss(animated: true, completion: nil)
-////                } else {
-////                    self.root.popViewController()
-////                }
-//
-//                self.localRoot.dismiss(animated: true, completion: nil)
-//            })
-//            .disposed(by: rx.disposeBag)
-//        progressRoot.hidesBottomBarWhenPushed = true
-        
-        
         let themeService = self.container.themeService
         let viewModel = EditNameViewModel(name: name)
         let viewController =  EditCardNameViewController(themeService: themeService, viewModel: viewModel)
-        
-        //navigation.childNavigation.pushViewController(viewController, animated: true)
-        //progressRoot.viewModel.inputs.progressObserver.onNext(0.25)
-        //progressRoot.childNavigation.pushViewController(viewController, completion: nil)
-        
         self.localRoot.pushViewController(viewController, completion: nil)
         
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _
                 in
                 //self.navigation.childNavigation.popViewController(animated: true)
-                
+                self.localRoot.popViewController()
             })
             .disposed(by: rx.disposeBag)
 
         let next = viewController.viewModel.outputs.next
             .do(onNext: { [weak self] _ in
+                self?.addressPending()
                 //self?.navigation.childNavigation.popViewController(animated: true)
                 
             })
@@ -210,22 +186,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func addressPending() {
-//        let progressRoot = container.makeKYCProgressViewController()
-//        localRoot.pushViewController(progressRoot)
-//        progressRoot.viewModel.outputs.backTap.withUnretained(self)
-//            .subscribe(onNext: { `self`, _ in
-//                //                self.goBack()
-//                //                if self.isPresented {
-//                //                    self.localRoot.dismiss(animated: true, completion: nil)
-//                //                } else {
-//                //                    self.root.popViewController()
-//                //                }
-//
-//                self.localRoot.dismiss(animated: true, completion: nil)
-//            })
-//            .disposed(by: rx.disposeBag)
-//        progressRoot.hidesBottomBarWhenPushed = true
-        
         let themeService = container.themeService
         let locationService = LocationService()
         let kycRepository = container.makeKYCRepository()
@@ -248,6 +208,10 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
             print("next called in address")
             self.confirmPayment()
         })
+        
+        viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
+            self.localRoot.popViewController()
+        }).disposed(by: rx.disposeBag)
                 
                 
 //                .subscribe(onNext: { [weak self] value in
@@ -283,15 +247,8 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
             guard let self = self else { return }
-            //navController.dismiss(animated: true, completion: nil)
-            
-            self.localRoot.dismiss(animated: true, completion: nil)
-//            navController.dismiss(animated: true)
-//            self.progressRoot.dismiss(animated: true, completion: nil)
-//            self.localRoot.dismiss(animated: true, completion: nil)
-            //navController.dismiss(animated: true, completion: nil)
-            
-            //self.finishCoordinator(.cancel)
+            //self.localRoot.dismiss(animated: true, completion: nil)
+            self.localRoot.popViewController()
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.edit.subscribe(onNext: { [weak self] in

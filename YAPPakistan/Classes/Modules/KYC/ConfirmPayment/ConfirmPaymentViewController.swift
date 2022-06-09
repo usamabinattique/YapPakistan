@@ -54,6 +54,7 @@ class ConfirmPaymentViewController: UIViewController {
     private lazy var addressContainerStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fillProportionally, spacing: 20, arrangedSubviews: [addressImage,addressStack,editButton])
     
     private lazy var addressContainerView: UIView = UIFactory.makeView()
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
     
     private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_yap_confirm_payment_display_text_place_order_for".localized, font: .large)
     
@@ -72,7 +73,7 @@ class ConfirmPaymentViewController: UIViewController {
         return view
     }()
     
-    private var backButton: UIButton!
+    //private var backButton: UIButton!
 
     private var themeService: ThemeService<AppTheme>!
     var viewModel: ConfirmPaymentViewModelType!
@@ -96,6 +97,7 @@ class ConfirmPaymentViewController: UIViewController {
     func setupViews() {
         
         self.navigationController?.isNavigationBarHidden = false
+        self.navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         self.title = "Order card"
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
@@ -103,7 +105,7 @@ class ConfirmPaymentViewController: UIViewController {
         addressContainerView.addSubview(addressContainerStack)
         contentView.addSubviews([cardImage, cardTypeLabel, cardFEDFeeStack, payWithContainerStack, addressContainerView, actionButton])
         
-        backButton = addBackButton(of: .closeCircled)
+       // backButton = addBackButton(of: .closeCircled)
         editButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
         cardFeeLabel.text = "screen_yap_confirm_payment_display_text_Card_fee".localized
         fedLabel.text = "screen_yap_confirm_payment_display_text_fed_fee".localized
@@ -134,10 +136,10 @@ class ConfirmPaymentViewController: UIViewController {
             .bind({ UIColor($0.greyLight) }, to: /*[  addressContainerView.rx.borderColor ])*/ [addressContainerView.rx.borderColor ])
             .disposed(by: rx.disposeBag)
         
-        guard let backButton = backButton else { return }
-        themeService.rx
-            .bind({ UIColor($0.primary) }, to: [ backButton.rx.tintColor ])
-            .disposed(by: rx.disposeBag)
+//        guard let backButton = backButton else { return }
+//        themeService.rx
+//            .bind({ UIColor($0.primary) }, to: [ backButton.rx.tintColor ])
+//            .disposed(by: rx.disposeBag)
     }
 
     func setupLanguageStrings() {
@@ -155,8 +157,8 @@ class ConfirmPaymentViewController: UIViewController {
 
         actionButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         editButton.rx.tap.bind(to: viewModel.inputs.editObserver).disposed(by: rx.disposeBag)
-        backButton?.rx.tap.bind(to: viewModel.inputs.closeObserver).disposed(by: rx.disposeBag)
-        
+        //backButton?.rx.tap.bind(to: viewModel.inputs.closeObserver).disposed(by: rx.disposeBag)
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.closeObserver).disposed(by: rx.disposeBag)
         viewModel.outputs.cardImage.bind(to: cardImage.rx.image).disposed(by: rx.disposeBag)
         /*viewModel.outputs.isPaid.withUnretained(self)
             .subscribe(onNext: { `self`, isPaid in

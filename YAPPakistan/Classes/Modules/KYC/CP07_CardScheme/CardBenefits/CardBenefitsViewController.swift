@@ -59,7 +59,7 @@ class CardBenefitsViewController: UIViewController {
         setupTheme()
         setupConstraints()
         setupResources()
-        
+        self.navigationController?.isNavigationBarHidden = true
         crossButton.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
         //Fetch cards
         viewModel.inputs.fetchBenefitsObserver.onNext(())

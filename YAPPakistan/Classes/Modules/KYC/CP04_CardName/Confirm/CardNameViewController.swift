@@ -44,6 +44,7 @@ class CardNameViewController: UIViewController {
         setupLanguageStrings()
         setupBindings()
         setupConstraints()
+        self.navigationController?.isNavigationBarHidden = false
     }
 
     func setupViews() {

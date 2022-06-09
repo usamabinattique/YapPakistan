@@ -50,6 +50,8 @@ class AddressViewController: UIViewController {
                                                                      fontPlaceholder: .small,
                                                                      capitalization: .words,
                                                                      keyboardType: nil)
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back_witCircle", in: .yapPakistan), insectBy:.zero)
+    
 
     private let nextButton = UIFactory.makeAppRoundedButton(with: .regular)
 
@@ -113,6 +115,8 @@ class AddressViewController: UIViewController {
         let barItem = barButtonItem(image: UIImage(named: "icon_search", in: .yapPakistan)?.asTemplate,
                                     insectBy: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 2))
         self.navigationItem.rightBarButtonItem = barItem.barItem
+        self.title = "Address VC"
+        self.navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         searchButton = barItem.button
         searchButton.isEnabled = false
         searchButton.alpha = 0
@@ -194,21 +198,18 @@ class AddressViewController: UIViewController {
         // viewModel.outputs.search
         let currentLocation = viewModel.outputs.location.withUnretained(self).share()
         currentLocation.subscribe(onNext: { `self`, location in
- // <<<<<<< Updated upstream
-                //let subTitle = "\(location.city), \(location.state), \(location.country)"
+ 
             self.locationTitle.text = location.address.first ?? "" // location.formattAdaddress.replacingOccurrences(of: subTitle, with: "")
             self.locationSubTitle.text = location.address.last ?? "" // subTitle
-// =======
-//                let subTitle = "\(location.city), \(location.state), \(location.country)"
-//                self.locationTitle.text = location.formattAdaddress.replacingOccurrences(of: subTitle, with: "")
-//                self.locationSubTitle.text = subTitle
-//// >>>>>>> Stashed changes
+
                 self.mapView.animate(toLocation: location.coordinates)
             }).disposed(by: rx.disposeBag)
         currentLocation.element(at: 0).subscribe(onNext: { `self`, location in
                 self.mapView.animate(toZoom: 15)
             }).disposed(by: rx.disposeBag)
 
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        
         // viewModel.outputs.confirm
         viewModel.outputs.isMapMarker.withUnretained(self)
             .subscribe(onNext: { `self`, isMarker in
@@ -418,7 +419,7 @@ extension AddressViewController {
             self.confirmContainer.alpha = isMapView ? 1: 0
             self.currentLocationButton.alpha = isMapView ? 1: 0
             self.searchButton.alpha = isMapView ? 1: 0
-            let image = UIImage(named: isMapView ? "icon_close": "icon_back",
+            let image = UIImage(named: isMapView ? "icon_back_witCircle": "icon_back",
                                 in: .yapPakistan)?.withRenderingMode(.alwaysTemplate)
             self.backButton.setImage(image, for: .normal)
             self.backButton.tintColor = isMapView ? UIColor(self.themeService.attrs.backgroundColor):
