@@ -58,6 +58,13 @@ class EditCardNameViewController: UIViewController {
         setupLanguageStrings()
         setupBindings()
         setupConstraints()
+        
+        self.navigationController?.isNavigationBarHidden = false
+        self.title = "saa"
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = false
     }
 
     func setupViews() {

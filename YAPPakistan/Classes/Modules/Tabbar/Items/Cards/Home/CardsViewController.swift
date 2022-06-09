@@ -153,7 +153,7 @@ fileprivate extension CardsViewController {
         navigationItem.rightBarButtonItem = addBarButtonItem.barItem
         
         innerCardView.layer.cornerRadius = 20
-        innerCardView.layer.borderColor = UIColor(self.themeService.attrs.grey).cgColor //.gray.cgColor
+        innerCardView.layer.borderColor = UIColor(self.themeService.attrs.greyLight).cgColor //.gray.cgColor
         innerCardView.layer.borderWidth = 1
         innerCardView.layer.masksToBounds = true
         // addButton.button?.isUserInteractionEnabled = false

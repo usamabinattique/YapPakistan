@@ -83,7 +83,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         let viewController = container.makeCardBenefitsViewController()
         viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
         
-        self.localRoot.navigationBar.isHidden = true
+        //self.localRoot.navigationBar.isHidden = true
 //        self.navigationRoot.pushViewController(viewController, completion: nil)
 //        self.navigationRoot.navigationBar.isHidden = true
 //        self.root.present(self.navigationRoot, animated: true, completion: nil)
@@ -119,20 +119,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func cardNamePending(schemeObj: KYCCardsSchemeM) {
-//        coordinate(to: container.makeCardNameCoordinator(root: root ,schemeObj: schemeObj, paymentGatewayM: self.paymentGatewayM))
-//            .subscribe(onNext: { [weak self] result in
-//                switch result {
-//                case .success:
-//                    break
-//                case .cancel:
-//                    //self?.navigationRoot.popToRootViewController(animated: true)
-//                    print("go back from Name")
-//                    break
-//                }
-//            }).disposed(by: rx.disposeBag)
-        
-        
-        let kycRepository = container.makeKYCRepository() //container.makeKYCRepository()
+        let kycRepository = container.makeKYCRepository()
         let accountProvider = container.accountProvider
         let themeService = container.themeService
 
@@ -177,12 +164,33 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     
     func editName(name: String) -> Observable<String> {
         
+//        let progressRoot = container.makeKYCProgressViewController()
+//        localRoot.pushViewController(progressRoot)
+//
+//
+//        progressRoot.viewModel.outputs.backTap.withUnretained(self)
+//            .subscribe(onNext: { `self`, _ in
+////                self.goBack()
+////                if self.isPresented {
+////                    self.localRoot.dismiss(animated: true, completion: nil)
+////                } else {
+////                    self.root.popViewController()
+////                }
+//
+//                self.localRoot.dismiss(animated: true, completion: nil)
+//            })
+//            .disposed(by: rx.disposeBag)
+//        progressRoot.hidesBottomBarWhenPushed = true
+        
         
         let themeService = self.container.themeService
         let viewModel = EditNameViewModel(name: name)
         let viewController =  EditCardNameViewController(themeService: themeService, viewModel: viewModel)
+        
         //navigation.childNavigation.pushViewController(viewController, animated: true)
-
+        //progressRoot.viewModel.inputs.progressObserver.onNext(0.25)
+        //progressRoot.childNavigation.pushViewController(viewController, completion: nil)
+        
         self.localRoot.pushViewController(viewController, completion: nil)
         
         viewController.viewModel.outputs.back.withUnretained(self)
@@ -202,38 +210,21 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func addressPending() {
-//        coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
-//            .subscribe(onNext: { [weak self] result in
-//                switch result {
-//                case .success:
-//                    print("go next from address")
-//                case .cancel:
-//                    print("go back from address")
-//                    break
-//                }
-//            }).disposed(by: rx.disposeBag)
-        
-        let progressRoot = container.makeKYCProgressViewController()
-       // root.pushViewController(progressRoot)
-//        localRoot = UINavigationControllerFactory.createAppThemedNavigationController(themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
-//        localRoot.setNavigationBarHidden(true, animated: false)
-        localRoot.pushViewController(progressRoot)
-        
-        //localRoot.present(progressRoot, animated: true)
-        
-        progressRoot.viewModel.outputs.backTap.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
-//                self.goBack()
-//                if self.isPresented {
-//                    self.localRoot.dismiss(animated: true, completion: nil)
-//                } else {
-//                    self.root.popViewController()
-//                }
-                
-                self.localRoot.dismiss(animated: true, completion: nil)
-            })
-            .disposed(by: rx.disposeBag)
-        progressRoot.hidesBottomBarWhenPushed = true
+//        let progressRoot = container.makeKYCProgressViewController()
+//        localRoot.pushViewController(progressRoot)
+//        progressRoot.viewModel.outputs.backTap.withUnretained(self)
+//            .subscribe(onNext: { `self`, _ in
+//                //                self.goBack()
+//                //                if self.isPresented {
+//                //                    self.localRoot.dismiss(animated: true, completion: nil)
+//                //                } else {
+//                //                    self.root.popViewController()
+//                //                }
+//
+//                self.localRoot.dismiss(animated: true, completion: nil)
+//            })
+//            .disposed(by: rx.disposeBag)
+//        progressRoot.hidesBottomBarWhenPushed = true
         
         let themeService = container.themeService
         let locationService = LocationService()
@@ -243,17 +234,8 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
                                          accountProvider: container.accountProvider,
                                          configuration: container.parent.configuration)
         let viewController =  AddressViewController(themeService: themeService, viewModel: viewModel)
-        
 
-        // Copied for referecnce from Push Function
-//        self.progressRoot.viewModel.inputs.progressObserver.onNext(progress)
-//        self.progressRoot.childNavigation.pushViewController(viewController, animated: true)
-        
-        progressRoot.viewModel.inputs.progressObserver.onNext(0.90)
-        progressRoot.childNavigation.pushViewController(viewController, completion: nil)
-        //push(viewController: viewController, progress: 0.90)
-        
-        //localRoot.present(localRoot, animated: true, completion: nil)
+        self.localRoot.pushViewController(viewController, completion: nil)
         
         viewController.viewModel.outputs.city.withUnretained(self)
             .flatMap{ `self`, _ in self.selectCityName() }
@@ -290,22 +272,9 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func confirmPayment() {
-       /* return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM)) */
-//        return coordinate(to: ConfirmPaymentCoordinator(root: localRoot, container: container, repository: container.makeY2YRepository(), shouldPresent: true, paymentGatewayM: paymentGatewayM))
-        
         let viewModel = ConfirmPaymentViewModel(accountProvider: container.accountProvider, kycRepository: container.makeKYCRepository(), transactionRepository: container.makeTransactionsRepository(), paymentGatewayObj: self.cardSchemeModel, locationData: self.locationData)
         let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
-//        if self.shouldPresent {
-//            self.presentConfirmPaymentController(present:viewController)
-//        }
-//        else {
-//            root.pushViewController(viewController, animated: true)
-//        }
-        
-        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(self.container.themeService.attrs.primary), font: .regular)
-        self.localRoot.present(navController, animated: true) //.pushViewController(viewController, completion: nil)
-            
-        //self.localRoot.pushViewController(viewController, completion: nil)
+        self.localRoot.pushViewController(viewController, completion: nil)
         
         viewModel.outputs.showCVV.withUnretained(self).subscribe(onNext: { `self`,_ in
 //            guard let card = self.paymentGatewayM.beneficiary, let amount = self.paymentGatewayM.cardSchemeObject?.fee, !self.isCVVPushed else { return }
@@ -314,7 +283,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
             guard let self = self else { return }
-            navController.dismiss(animated: true, completion: nil)
+            //navController.dismiss(animated: true, completion: nil)
             
             self.localRoot.dismiss(animated: true, completion: nil)
 //            navController.dismiss(animated: true)
@@ -333,7 +302,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
             
-            navController.dismiss(animated: true, completion: nil)
+            //navController.dismiss(animated: true, completion: nil)
             //progressRoot.dismiss(animated: true, completion: nil)
             self.localRoot.dismiss(animated: true, completion: nil)
             //self.finishCoordinator(.success(()))
