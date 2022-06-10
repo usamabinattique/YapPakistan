@@ -58,6 +58,8 @@ class ConfirmPaymentViewController: UIViewController {
     
     private lazy var actionButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_yap_confirm_payment_display_text_place_order_for".localized, font: .large)
     
+    private lazy var doItLaterBtn = UIFactory.makeButton(with: .large, backgroundColor: .clear, title: "Do it later")
+    
     private lazy var scrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = .clear
@@ -103,7 +105,7 @@ class ConfirmPaymentViewController: UIViewController {
         scrollView.addSubview(contentView)
         
         addressContainerView.addSubview(addressContainerStack)
-        contentView.addSubviews([cardImage, cardTypeLabel, cardFEDFeeStack, payWithContainerStack, addressContainerView, actionButton])
+        contentView.addSubviews([cardImage, cardTypeLabel, cardFEDFeeStack, payWithContainerStack, addressContainerView, doItLaterBtn ,actionButton])
         
        // backButton = addBackButton(of: .closeCircled)
         editButton.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
@@ -136,10 +138,9 @@ class ConfirmPaymentViewController: UIViewController {
             .bind({ UIColor($0.greyLight) }, to: /*[  addressContainerView.rx.borderColor ])*/ [addressContainerView.rx.borderColor ])
             .disposed(by: rx.disposeBag)
         
-//        guard let backButton = backButton else { return }
-//        themeService.rx
-//            .bind({ UIColor($0.primary) }, to: [ backButton.rx.tintColor ])
-//            .disposed(by: rx.disposeBag)
+        themeService.rx
+            .bind({ UIColor($0.primary) }, to: [doItLaterBtn.rx.titleColor(for: .normal)])
+            .disposed(by: rx.disposeBag)
     }
 
     func setupLanguageStrings() {
@@ -262,7 +263,13 @@ class ConfirmPaymentViewController: UIViewController {
             .height(constant: 52)
             .toBottomOf(addressContainerStack , constant: 40)
 //            .toBottomOf(addressContainerView , constant: 40)
-            .alignEdgeWithSuperview(.safeAreaBottom, .greaterThanOrEqualTo ,constant: 40)
+//            .alignEdgeWithSuperview(.safeAreaBottom, .greaterThanOrEqualTo ,constant: 40)
+        
+        doItLaterBtn
+            .alignEdgesWithSuperview([.left, .right], constant: 28)
+            .height(constant: 52)
+            .toBottomOf(actionButton, constant: 25)
+            .alignEdgeWithSuperview(.safeAreaBottom, .greaterThanOrEqualTo, constant: 40)
     }
 }
 

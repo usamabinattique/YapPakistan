@@ -113,8 +113,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
             print("back button tap masterCard Benefits")
-            self.localRoot.popViewController(animated: true, nil)
-            self.localRoot.navigationBar.isHidden = false
+            self.localRoot.popViewController()
         }).disposed(by: rx.disposeBag)
     }
     

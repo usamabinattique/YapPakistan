@@ -65,6 +65,10 @@ class CardBenefitsViewController: UIViewController {
         viewModel.inputs.fetchBenefitsObserver.onNext(())
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = true
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setupBindings()
