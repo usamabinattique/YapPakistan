@@ -136,11 +136,12 @@ class ConfirmPaymentViewController: UIViewController {
             .bind({ UIColor($0.greyDark) }, to: [ payWithLabel.rx.textColor, cardFeeLabel.rx.textColor, fedLabel.rx.textColor, addressDescLabel.rx.textColor ])
             .bind({ UIColor($0.primaryDark) }, to: [orderTotalLabel.rx.textColor])
             .bind({ UIColor($0.greyLight) }, to: /*[  addressContainerView.rx.borderColor ])*/ [addressContainerView.rx.borderColor ])
-            .disposed(by: rx.disposeBag)
-        
-        themeService.rx
             .bind({ UIColor($0.primary) }, to: [doItLaterBtn.rx.titleColor(for: .normal)])
             .disposed(by: rx.disposeBag)
+        
+//        themeService.rx
+//            .bind({ UIColor($0.primary) }, to: [doItLaterBtn.rx.titleColor(for: .normal)])
+//            .disposed(by: rx.disposeBag)
     }
 
     func setupLanguageStrings() {
