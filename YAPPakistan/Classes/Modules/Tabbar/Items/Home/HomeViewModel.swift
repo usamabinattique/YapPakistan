@@ -329,12 +329,12 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         }).disposed(by: disposeBag)
         
         //TODO: uncomment following
-      /*  generateCellViewModels()
+        generateCellViewModels()
         getCustomerAccountBalance()
         getWidgets(repository: cardsRepository)
-        getCards() */
+        getCards()
         
-        verifyUserStatus()
+       // verifyUserStatus()
         
         refreshSubject.subscribe(onNext: { [weak self] _ in
             self?.getCustomerAccountBalance()

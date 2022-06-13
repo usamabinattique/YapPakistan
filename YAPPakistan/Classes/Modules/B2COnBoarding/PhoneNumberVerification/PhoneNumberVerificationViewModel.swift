@@ -148,10 +148,14 @@ final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelIn
             YAPProgressHud.hideProgressHud()
         }).share()
 
-        resendReqeust.elements().do(onNext: { [unowned self] _ in
+       /* resendReqeust.elements().do(onNext: { [unowned self] _ in
             self.startTimer()
             // AppAnalytics.shared.logEvent(OnBoardingEvent.resendOtp())
-        }).map { _ in  "screen_verify_phone_number_display_text_resend_otp_success".localized }.bind(to: showAlertSubject).disposed(by: disposeBag)
+        }).map { _ in  "screen_verify_phone_number_display_text_resend_otp_success".localized }.bind(to: showAlertSubject).disposed(by: disposeBag) */
+        
+        resendReqeust.elements().subscribe(onNext: { [unowned self] _ in
+            self.startTimer()
+        }).disposed(by: disposeBag)
 
         Observable.merge(request.errors(), resendReqeust.errors()).map { $0.localizedDescription }.bind(to: showErrorSubject).disposed(by: disposeBag)
 

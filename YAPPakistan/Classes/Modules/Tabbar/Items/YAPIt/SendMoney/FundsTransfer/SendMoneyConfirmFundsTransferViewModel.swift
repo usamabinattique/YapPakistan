@@ -77,7 +77,7 @@ class SendMoneyConfirmFundsTransferViewModel: SendMoneyConfirmFundsTransferViewM
         nameSubject.onNext(name)
         if let amount = beneficiary.bankTransferReq?.amount {
             let balance = formattedBalance(amount: Double(amount) ?? 0)
-            let text = "\(name.firstLetter) will recieve \(balance)"
+            let text = "\(name.firstLetter) will receive \(balance)"
             let attributed = NSMutableAttributedString(string: text)
             attributed.addAttributes([.foregroundColor : UIColor(Color(hex: "#272262"))], range: NSRange(location: text.count - balance.count, length: balance.count))
             balanceSubject.onNext(attributed)

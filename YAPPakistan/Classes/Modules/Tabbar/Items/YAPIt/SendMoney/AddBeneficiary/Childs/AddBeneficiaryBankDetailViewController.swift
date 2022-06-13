@@ -25,7 +25,14 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
     }()
     
     private lazy var bankImageContainerView = UIFactory.makeCircularView(  borderColor: UIColor(Color(hex: "#F1F5FE")), borderWidth: 0.7)
-    private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private lazy var bankImage: UIImageView = {
+        let image = UIImageView(frame: CGRect(x: 0, y: 0, width: 32, height: 32))
+        image.contentMode = .scaleAspectFit
+        image.translatesAutoresizingMaskIntoConstraints = false
+        image.clipsToBounds = true
+//        image.roundView()
+        return image
+    }() //UIFactory.makeImageView(contentMode: .scaleAspectFit)
     private lazy var bankName = UIFactory.makeLabel(font: .regular,alignment: .center)
     private lazy var accountNumber = UIFactory.makeLabel(font: .micro,alignment: .center)
     
@@ -173,7 +180,7 @@ extension AddBeneficiaryBankDetailViewController {
        scrollView.addSubview(doneButton)
        scrollView.addSubview(titleField)
         
-        bankImage.clipsToBounds = true
+//        bankImage.clipsToBounds = true
         bankImage.layer.cornerRadius = bankImage.frame.size.height / 2
         
     }
@@ -267,7 +274,7 @@ private extension AddBeneficiaryBankDetailViewController {
     func bindViews() {
         guard let viewModel = viewModel else { return }
         
-        viewModel.outputs.bankImage.bind(to: bankImage.rx.loadImage()).disposed(by: rx.disposeBag)
+        viewModel.outputs.bankImage.bind(to: bankImage.rx.loadImage(isStringPath: true)).disposed(by: rx.disposeBag)
         viewModel.outputs.name.bind(to: bankName.rx.text).disposed(by: rx.disposeBag)
         
         bindAccountInfo()
