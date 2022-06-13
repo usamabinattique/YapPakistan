@@ -44,7 +44,7 @@ class ViewReceiptViewController: UIViewController {
         super.viewDidLoad()
         
         self.title = "Receipt"
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_back",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_close",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
         
         setup()
         bind()
