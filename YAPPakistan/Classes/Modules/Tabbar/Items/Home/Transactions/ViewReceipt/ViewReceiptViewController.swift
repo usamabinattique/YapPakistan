@@ -133,7 +133,9 @@ fileprivate extension ViewReceiptViewController {
             .toTopOf(stack, constant: 24)
         
         stack
-            .alignEdgesWithSuperview([.left, .right, .bottom], constants: [24,24,24])
+            .alignEdgesWithSuperview([.bottom], constants: [24,24,24])
+            .centerHorizontallyInSuperview()
+            .width(constant: 100)
             .height(constant: 70)
     }
 }
