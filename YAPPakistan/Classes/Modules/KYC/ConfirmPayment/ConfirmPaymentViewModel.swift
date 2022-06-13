@@ -16,6 +16,7 @@ protocol ConfirmPaymentViewModelInputs {
     var editObserver: AnyObserver<Void> { get }
     var pollACSResultObserver: AnyObserver<Void> { get }
     var enteredCVV: AnyObserver<String> { get }
+    var doitLaterObserver: AnyObserver<Void> { get }
 }
 
 protocol ConfirmPaymentViewModelOutputs {
@@ -38,6 +39,7 @@ protocol ConfirmPaymentViewModelOutputs {
     var pollACSResult: Observable<Void> { get }
     var topupComplete: Observable<Void> { get }
     var showCVV: Observable<Void> { get }
+    var doItLater: Observable<Void> { get }
 }
 
 protocol ConfirmPaymentViewModelType {
@@ -57,6 +59,7 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     var editObserver: AnyObserver<Void> { editSubject.asObserver() }
     var pollACSResultObserver: AnyObserver<Void> { return pollACSResultSubject.asObserver() }
     var enteredCVV: AnyObserver<String> { enteredCVVSubject.asObserver() }
+    var doitLaterObserver: AnyObserver<Void> { return doItLaterSubject.asObserver() }
     
     // MARK: Outputs
     var close: Observable<Void> { backSubject.asObservable() }
@@ -78,8 +81,10 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     var pollACSResult: Observable<Void> { return pollACSResultSubject.asObservable() }
     var topupComplete: Observable<Void> { return topupCompleteSubject.asObservable() }
     var showCVV: Observable<Void> { showCVVSubject.asObservable() }
+    var doItLater: Observable<Void> { doItLaterSubject.asObservable() }
     
     // MARK: Subjects
+    private let doItLaterSubject = PublishSubject<Void>()
     private let backSubject = PublishSubject<Void>()
     private let nextSubject = PublishSubject<Void>()
     private let nextResultSubject = PublishSubject<Int>()

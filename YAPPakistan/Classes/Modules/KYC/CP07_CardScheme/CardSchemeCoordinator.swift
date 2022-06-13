@@ -250,6 +250,12 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
             self.localRoot.popViewController()
         }).disposed(by: rx.disposeBag)
         
+        
+        viewModel.outputs.doItLater.subscribe(onNext: { [unowned self] _ in
+            
+            self.localRoot.dismiss(animated: true, completion: nil)
+        }).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.edit.subscribe(onNext: { [weak self] in
             guard let self = self else { return }
             //self.finishCoordinator(.cancel)

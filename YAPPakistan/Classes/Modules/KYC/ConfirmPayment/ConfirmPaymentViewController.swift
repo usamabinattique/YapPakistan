@@ -157,6 +157,7 @@ class ConfirmPaymentViewController: UIViewController {
 //        viewModel.outputs.completedSteps.bind(to: statusView.rx.progress).disposed(by: rx.disposeBag)
 //        viewModel.outputs.isEnabled.bind(to: actionButton.rx.isEnabled).disposed(by: rx.disposeBag)
 
+        doItLaterBtn.rx.tap.bind(to: viewModel.inputs.doitLaterObserver).disposed(by: rx.disposeBag)
         actionButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
         editButton.rx.tap.bind(to: viewModel.inputs.editObserver).disposed(by: rx.disposeBag)
         //backButton?.rx.tap.bind(to: viewModel.inputs.closeObserver).disposed(by: rx.disposeBag)
