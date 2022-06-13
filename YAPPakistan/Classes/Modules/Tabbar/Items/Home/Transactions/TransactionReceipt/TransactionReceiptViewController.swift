@@ -46,7 +46,7 @@ class TransactionReceiptViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Transcation receipt"
+        self.title = "Transaction receipt"
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_back",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
         
         shareBtn.addTarget(self, action: #selector(shareScreenShotAction), for: .touchUpInside)
