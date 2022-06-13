@@ -46,6 +46,8 @@ class ViewReceiptViewController: UIViewController {
         self.title = "Receipt"
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage.init(named: "icon_close",in: .yapPakistan), style: .plain, target: self, action: #selector(backAction))
         
+        self.deleteBtn.addTarget(self, action: #selector(deleteAction), for: .touchUpInside)
+        
         setup()
         bind()
     }
@@ -56,7 +58,21 @@ class ViewReceiptViewController: UIViewController {
         self.navigationController?.dismiss(animated: true, completion: nil)
     }
     
-    
+    @objc
+    private func deleteAction() {
+        let deletePhotoAction = UIAlertAction(title: "Delete Photo", style: .default) { [unowned self] _ in
+            self.viewModel.inputs.deleteObserver.onNext(())
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        alertController.popoverPresentationController?.sourceView = self.view
+        alertController.popoverPresentationController?.sourceRect = self.view.frame
+        
+        alertController.addAction(deletePhotoAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -144,7 +160,7 @@ fileprivate extension ViewReceiptViewController {
 // MARK: - Bind
 fileprivate extension ViewReceiptViewController {
     func bind() {
-        self.deleteBtn.rx.tap.bind(to: self.viewModel.inputs.deleteObserver).disposed(by: disposeBag)
+        //self.deleteBtn.rx.tap.bind(to: self.viewModel.inputs.deleteObserver).disposed(by: disposeBag)
         
         self.viewModel.outputs.loadImage.subscribe(onNext: { [weak self] imageURL in
             self?.receiptImage.sd_setImage(with: URL(string: imageURL), completed: nil)
