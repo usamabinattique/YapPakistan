@@ -54,6 +54,7 @@ class UserProfileViewController: UIViewController {
     let viewModel: UserProfileViewModelType
     let disposeBag: DisposeBag
     var removeProfilePhotoFlag: Bool? = nil
+    var isUserProfilePhotoAvailble: Bool? = true
     private var themeService: ThemeService<AppTheme>
     
     lazy var dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, UserProfileTableViewCellViewModelType>>(
@@ -199,7 +200,12 @@ fileprivate extension UserProfileViewController {
                 let initialsImage = fullName?.initialsImage(color: accentColor)
                 self?.profileImageView.loadImage(with: photoUrl, placeholder: initialsImage, showsIndicator: true, refreshCachedImage: true, completion: { (image, error, url) in
                     if error == nil {
+                        self?.isUserProfilePhotoAvailble = true
                         self?.profileImageView.image = image
+                    }
+                    else {
+                        self?.isUserProfilePhotoAvailble = false
+                        print("Error in downloading profile photo")
                     }
                 })
             }).disposed(by: disposeBag)
@@ -216,12 +222,20 @@ fileprivate extension UserProfileViewController {
         let photosAction = YAPActionSheetAction(title: "Choose photo", image: UIImage(named: "icon_photoLibrary", in: .yapPakistan)) { [weak self] _ in
             self?.pickImageFromGallery()
         }
-        let deleteAction = YAPActionSheetAction(title: "Remove photo", image: UIImage(named: "icon_remove_purple", in: .yapPakistan)) { [weak self] _ in
-            self?.removePhoto()
-        }
+        
+        
+        
+        
         actionSheet.addAction(cameraAction)
         actionSheet.addAction(photosAction)
-        actionSheet.addAction(deleteAction)
+        
+        if self.isUserProfilePhotoAvailble ?? true {
+            let deleteAction = YAPActionSheetAction(title: "Remove photo", image: UIImage(named: "icon_remove_purple", in: .yapPakistan)) { [weak self] _ in
+                self?.removePhoto()
+            }
+            actionSheet.addAction(deleteAction)
+        }
+        
         actionSheet.show()
         
         
