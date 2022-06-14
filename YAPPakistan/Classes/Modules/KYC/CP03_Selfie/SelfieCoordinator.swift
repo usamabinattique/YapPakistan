@@ -66,8 +66,18 @@ class SelfieCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.navigator.childNavigation.popViewController(animated: true) })
             .disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.next.subscribe(onNext: { [unowned self] _ in
+            self.GotoKYCResult()
+        }).disposed(by: rx.disposeBag)
 
         return viewController.viewModel.outputs.next
+    }
+    
+    func GotoKYCResult() {
+        coordinate(to: KYCResultCoordinator(root: self.root, container: self.container)).subscribe(onNext: { [unowned self] _ in
+            print("Coordinator Result Subscriber called")
+        }).disposed(by: rx.disposeBag)
     }
 }
 

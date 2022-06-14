@@ -413,9 +413,9 @@
 "screen_kyc_address_flatbuilding" = "Flat number/ Building name";
 "screen_kyc_address_city" = "City";
 
-// MARK: KYC CARD ON WAY
+// MARK: KYC Success
 
-"screen_kyc_cardonway_title" = "Your card is on it's way!";
+"screen_kyc_success_title" = "Congratulations! Your account has been opened successfully. Start using YAP now!";
 "screen_kyc_cardonway_subtitle" = "You will receive a message from our designated delivery company to confirm the date and time of delivery. Please make sure you have CNIC with you at the time of delivery.";
 
 // MARK: Manual Verification

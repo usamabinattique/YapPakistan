@@ -176,8 +176,8 @@ extension KYCFeatureContainer {
     }
 
 
-    func makeCardOnItsWayViewController() -> CardOnItsWayViewController {
-        CardOnItsWayModuleBuilder(container: self).viewController()
+    func makeAccountOpenSuccessViewController() -> AccountOpenSuccessViewController {
+        AccountOpenSuccessModuleBuilder(container: self).viewController()
     }
 
     func makeManualVerificationViewController() -> ManualVerificationViewController {
