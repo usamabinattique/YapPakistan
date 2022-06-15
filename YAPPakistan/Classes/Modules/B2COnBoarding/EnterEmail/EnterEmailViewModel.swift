@@ -115,6 +115,7 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
          sessionProvider: SessionProviderType,
          onBoardingRepository: OnBoardingRepository,
          user: OnBoardingUser,
+         analyticsTracker: AnalyticsTracker,
          onAuthenticate: @escaping OnAuthenticateClosure) {
         self.credentialsStore = credentialsStore
         self.sessionProvider = sessionProvider
@@ -147,8 +148,12 @@ class EnterEmailViewModel: EnterEmailViewModelInput, EnterEmailViewModelOutput, 
             .do(onNext: {[unowned self] _ in
                 self.endEdittingSubject.onNext(true)
                 self.emailValidationSubject.onNext(.valid)
-
                 YAPProgressHud.showProgressHud()
+                
+                analyticsTracker.trackAdjustEventWithToken("x8f5mb", customerId: nil, andParameters: nil)
+                analyticsTracker.trackFirebaseEvent("pk_signup_email", withParameters: [:])
+                analyticsTracker.trackLeanplumEvent("pk_signup_email", withParameters: [:])
+                
             })
             .withLatestFrom(validSubject)
             .filter { $0 }

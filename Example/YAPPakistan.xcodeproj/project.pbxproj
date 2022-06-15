@@ -51,13 +51,17 @@
 		0DEEE19926FDE28100BABB41 /* DefaultFeatureFlagProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DEEE19826FDE28100BABB41 /* DefaultFeatureFlagProvider.swift */; };
 		45E3D8362849D60E0039C44E /* get_started.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 45E3D8352849D60E0039C44E /* get_started.mp4 */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACDB1AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		607FACDB1AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
-		607FACE01AFB9204008FA782 /* (null) in Resources */ = {isa = PBXBuildFile; };
+		607FACE01AFB9204008FA782 /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		7D7A880526F45FD1004CAEE3 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7A880426F45FD1004CAEE3 /* AppConstants.swift */; };
 		7D7BA3FD26EF65590007074C /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D7BA3FC26EF65590007074C /* AppEnvironment.swift */; };
 		7DE3AA74271D9DE800A62E3F /* UIView+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE3AA73271D9DE800A62E3F /* UIView+Rx.swift */; };
+		80167BA42859C1F0006FB3E2 /* LeanplumAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80167BA02859C1F0006FB3E2 /* LeanplumAnalytics.swift */; };
+		80167BA52859C1F0006FB3E2 /* AnalyticsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80167BA12859C1F0006FB3E2 /* AnalyticsHandler.swift */; };
+		80167BA62859C1F0006FB3E2 /* FirebaseAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80167BA22859C1F0006FB3E2 /* FirebaseAnalytics.swift */; };
+		80167BA72859C1F0006FB3E2 /* AdjustAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80167BA32859C1F0006FB3E2 /* AdjustAnalytics.swift */; };
 		80C9811E284C99B300E02C38 /* YAPPakistan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C9811D284C99B300E02C38 /* YAPPakistan.swift */; };
 		9EB86386FE4EDBA38952F7DD /* Pods_YAPPakistan_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 861F77AB2702806C8679AE20 /* Pods_YAPPakistan_Example.framework */; };
 		CA19FA007DD6CBC56A5643F9 /* Pods_YAPPakistan_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F906C2EBEE9DE0E157C53C9D /* Pods_YAPPakistan_Tests.framework */; };
@@ -133,6 +137,10 @@
 		7D7A880426F45FD1004CAEE3 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		7D7BA3FC26EF65590007074C /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		7DE3AA73271D9DE800A62E3F /* UIView+Rx.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Rx.swift"; sourceTree = "<group>"; };
+		80167BA02859C1F0006FB3E2 /* LeanplumAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LeanplumAnalytics.swift; sourceTree = "<group>"; };
+		80167BA12859C1F0006FB3E2 /* AnalyticsHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnalyticsHandler.swift; sourceTree = "<group>"; };
+		80167BA22859C1F0006FB3E2 /* FirebaseAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseAnalytics.swift; sourceTree = "<group>"; };
+		80167BA32859C1F0006FB3E2 /* AdjustAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdjustAnalytics.swift; sourceTree = "<group>"; };
 		80C9811D284C99B300E02C38 /* YAPPakistan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YAPPakistan.swift; sourceTree = "<group>"; };
 		861F77AB2702806C8679AE20 /* Pods_YAPPakistan_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YAPPakistan_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D491B7F23B2F59C1E7CD9D34 /* Pods-YAPPakistan_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YAPPakistan_Tests.release.xcconfig"; path = "Target Support Files/Pods-YAPPakistan_Tests/Pods-YAPPakistan_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -173,6 +181,7 @@
 		0D51948126E1ECC300B81639 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				80167B9F2859C1EF006FB3E2 /* Analytics */,
 				0D51950626E1FA5000B81639 /* LaunchScreen.storyboard */,
 				0DD2D05A270AD63100DB2B00 /* B2COnBoarding */,
 				0DC38824271691A70003A60F /* Login */,
@@ -421,6 +430,17 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
+		80167B9F2859C1EF006FB3E2 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				80167BA02859C1F0006FB3E2 /* LeanplumAnalytics.swift */,
+				80167BA12859C1F0006FB3E2 /* AnalyticsHandler.swift */,
+				80167BA22859C1F0006FB3E2 /* FirebaseAnalytics.swift */,
+				80167BA32859C1F0006FB3E2 /* AdjustAnalytics.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
 		D4D9FA92B68BF369BA0C92FA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -527,8 +547,8 @@
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
 				0DEEE12226F9CC4500BABB41 /* DefaultFeatureFlags.json in Resources */,
 				0D51950826E1FA5000B81639 /* LaunchScreen.storyboard in Resources */,
-				607FACDB1AFB9204008FA782 /* (null) in Resources */,
-				607FACE01AFB9204008FA782 /* (null) in Resources */,
+				607FACDB1AFB9204008FA782 /* BuildFile in Resources */,
+				607FACE01AFB9204008FA782 /* BuildFile in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -593,9 +613,17 @@
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
 				"${BUILT_PRODUCTS_DIR}/Differentiator/Differentiator.framework",
 				"${BUILT_PRODUCTS_DIR}/FSPagerView/FSPagerView.framework",
+				"${BUILT_PRODUCTS_DIR}/FirebaseCore/FirebaseCore.framework",
+				"${BUILT_PRODUCTS_DIR}/FirebaseCoreDiagnostics/FirebaseCoreDiagnostics.framework",
+				"${BUILT_PRODUCTS_DIR}/FirebaseCoreInternal/FirebaseCoreInternal.framework",
+				"${BUILT_PRODUCTS_DIR}/FirebaseInstallations/FirebaseInstallations.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleDataTransport/GoogleDataTransport.framework",
+				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/HWPanModal/HWPanModal.framework",
+				"${BUILT_PRODUCTS_DIR}/Leanplum-iOS-SDK/Leanplum.framework",
 				"${BUILT_PRODUCTS_DIR}/MXParallaxHeader/MXParallaxHeader.framework",
 				"${BUILT_PRODUCTS_DIR}/PhoneNumberKit/PhoneNumberKit.framework",
+				"${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework",
 				"${BUILT_PRODUCTS_DIR}/RxCocoa/RxCocoa.framework",
 				"${BUILT_PRODUCTS_DIR}/RxDataSources/RxDataSources.framework",
 				"${BUILT_PRODUCTS_DIR}/RxGesture/RxGesture.framework",
@@ -610,6 +638,10 @@
 				"${BUILT_PRODUCTS_DIR}/SwipeCellKit/SwipeCellKit.framework",
 				"${BUILT_PRODUCTS_DIR}/YAPComponents/YAPComponents.framework",
 				"${BUILT_PRODUCTS_DIR}/YAPCore/YAPCore.framework",
+				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBAEMKit/FBAEMKit.framework/FBAEMKit",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework/FBSDKCoreKit",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/FBSDKCoreKit_Basics/FBSDKCoreKit_Basics.framework/FBSDKCoreKit_Basics",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
@@ -617,9 +649,17 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Differentiator.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FSPagerView.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FirebaseCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FirebaseCoreDiagnostics.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FirebaseCoreInternal.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FirebaseInstallations.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleDataTransport.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HWPanModal.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Leanplum.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MXParallaxHeader.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PhoneNumberKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBLPromises.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxCocoa.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxDataSources.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxGesture.framework",
@@ -634,6 +674,10 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwipeCellKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YAPComponents.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YAPCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBAEMKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit_Basics.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -719,7 +763,10 @@
 				0DD2D106270B098A00DB2B00 /* UIColor+Extension.swift in Sources */,
 				0DC3884A27169C500003A60F /* UserDefaultPropertyWrapper.swift in Sources */,
 				0DE2437C270C535D009343D1 /* OnBoardingRepository.swift in Sources */,
+				80167BA52859C1F0006FB3E2 /* AnalyticsHandler.swift in Sources */,
+				80167BA62859C1F0006FB3E2 /* FirebaseAnalytics.swift in Sources */,
 				0DC3889B2716DD670003A60F /* LoginCoordinator.swift in Sources */,
+				80167BA72859C1F0006FB3E2 /* AdjustAnalytics.swift in Sources */,
 				0DC3884E2716A5FF0003A60F /* LoginViewController.swift in Sources */,
 				0DC388932716AC110003A60F /* YAPProgressHud+Rx.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
@@ -731,6 +778,7 @@
 				0DD2D083270AD63100DB2B00 /* OnBoardingViewController.swift in Sources */,
 				7D7A880526F45FD1004CAEE3 /* AppConstants.swift in Sources */,
 				0DD2D086270AD63100DB2B00 /* OnBoardingContainerNavigationController.swift in Sources */,
+				80167BA42859C1F0006FB3E2 /* LeanplumAnalytics.swift in Sources */,
 				0DC388972716AC6F0003A60F /* AppSwitch+Rx.swift in Sources */,
 				0DEEE12926FC635000BABB41 /* FeatureFlagProvider.swift in Sources */,
 				0D5194A126E1ED3800B81639 /* SplashViewModel.swift in Sources */,

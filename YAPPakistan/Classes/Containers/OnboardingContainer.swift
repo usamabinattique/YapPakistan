@@ -25,13 +25,14 @@ final class OnboardingContainer {
     func makeEnterEmailController(user: OnBoardingUser) -> EnterEmailViewController {
         let sessionProvider = parent.makeSessionProvider()
         let onBoardingRepository = parent.makeOnBoardingRepository()
-
+        
         let enterEmailViewModel = EnterEmailViewModel(
             credentialsStore: parent.credentialsStore,
             referralManager: parent.referralManager,
             sessionProvider: sessionProvider,
             onBoardingRepository: onBoardingRepository,
-            user: user
+            user: user,
+            analyticsTracker: self.parent.configuration.analytics!
         ) { session, accountProvider, onBoardingRepository, demographicsRepository in
             let sessionContainer = UserSessionContainer(parent: self.parent, session: session)
             accountProvider = sessionContainer.accountProvider
