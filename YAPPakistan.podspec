@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name                  = 'YAPPakistan'
-  spec.version               = '1.0.0'
+  spec.version               = '1.0.1'
   spec.summary               = 'YAP Pakistan Module'
 
   spec.homepage              = 'https://bitbucket.org/yap-technology/ios-b2c-pk/'
