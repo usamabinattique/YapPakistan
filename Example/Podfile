@@ -7,6 +7,7 @@ install! 'cocoapods', :deterministic_uuids => false
 source 'https://bitbucket.org/yap-technology/cardscanner-ios.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
+
 def app_analytics_pods
   pod 'Leanplum-iOS-SDK', '3.2.1'
   pod 'Adjust', '~> 4.29.2'
@@ -17,8 +18,9 @@ end
 target 'YAPPakistan_Example' do
   app_analytics_pods
   pod 'YAPPakistan', :path => '../'
-  pod 'YAPCore', :path => '../YAPCore'
-  pod 'YAPComponents', :path => '../YAPComponents'
+  pod 'YAPComponents', :git => 'https://bitbucket.org/mb28/ios-yap-ui-kit.git', :tag => '1.0.0'
+  pod 'YAPCore', :git => 'https://bitbucket.org/mb28/ios-yap-core.git', :tag => '1.0.0'
+  pod 'YAPCardScanner', '1.2.18'
 
 #  #MARK: Reactive
 #  pod 'RxCocoa', '~> 6.0'

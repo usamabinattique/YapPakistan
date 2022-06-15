@@ -35,8 +35,8 @@ Pod::Spec.new do |spec|
 
   #MARK: Private
   spec.dependency 'YAPCardScanner', '1.2.18'
-  spec.dependency 'YAPCore', '~> 0'
-  spec.dependency 'YAPComponents', '~> 0'
+  spec.dependency 'YAPCore'
+  spec.dependency 'YAPComponents'
 
   #MARK: Reactive
   spec.dependency 'RxCocoa', '6.5.0'
