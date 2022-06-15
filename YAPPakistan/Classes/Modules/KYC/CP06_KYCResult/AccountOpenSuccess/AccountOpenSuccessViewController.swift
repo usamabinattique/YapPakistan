@@ -64,8 +64,7 @@ class AccountOpenSuccessViewController: UIViewController {
     }
     
     func setupBindings() {
-        self.dashboardButton.rx.tap.bind(to: viewModel.inputs.gotoDashboardObserver).disposed(by: rx.disposeBag)
-        //dashboardButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        self.dashboardButton.rx.tap.bind(to: self.viewModel.inputs.gotoDashboardObserver).disposed(by: rx.disposeBag)
     }
     
     func setupConstraints() {

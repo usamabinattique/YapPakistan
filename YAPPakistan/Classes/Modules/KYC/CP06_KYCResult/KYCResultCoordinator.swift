@@ -52,25 +52,15 @@ fileprivate extension KYCResultCoordinator {
 
 extension KYCResultCoordinator {
     func cardOnItsWay() {
-        let viewController = container.makeAccountOpenSuccessViewController()
-        self.root.pushViewController(viewController)
-
-//        viewController.viewModel.outputs.back.debug("back button from result").withUnretained(self)
-//            .subscribe(onNext: { `self`, _ in
-//                print("back from card on its way")
-//                self.root.popViewController(animated: true) {
-//                    self.goToHome()
-//                }
-//            })
-//            .disposed(by: rx.disposeBag)
+        let viewModel = AccountOpenSuccessViewModel()
+        let viewController = AccountOpenSuccessViewController(themeService: self.container.themeService, viewModel: viewModel)
         
-        viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
-            print("Go to Back pressed")
+        viewModel.outputs.gotoDashboard.subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            print("Goto Dashboard button pressed")
         }).disposed(by: rx.disposeBag)
         
-        viewController.viewModel.outputs.gotoDashboard.subscribe(onNext: { [unowned self] _ in
-            print("Go to Dashboard button pressend")
-        }).disposed(by: rx.disposeBag)
+        self.root.pushViewController(viewController, completion: nil)
     }
 
     func manualVerification() {

@@ -93,15 +93,19 @@ extension MoreCoordinator {
     
     func openHelpAndSupport() {
         
-//        let viewModel = AccountOpenSuccessViewModel()
-//        let viewController = AccountOpenSuccessViewController(themeService: self.container.themeService, viewModel: viewModel)
-//        self.navigationRoot.present(viewController, animated: true)
+        let viewModel = AccountOpenSuccessViewModel()
+        let viewController = AccountOpenSuccessViewController(themeService: self.container.themeService, viewModel: viewModel)
+        viewModel.outputs.gotoDashboard.debug().subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            print("Go to dashboard function called")
+        }).disposed(by: disposeBag)
+        self.navigationRoot.present(viewController, animated: true)
         
 //        let viewModel = ManualVerificationViewModel()
 //        let viewController = ManualVerificationViewController(themeService: self.container.themeService, viewModel: viewModel)
 //        self.navigationRoot.present(viewController, animated: true)
         
-        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
+//        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
     }
     
     func openUserProfileSettings() {

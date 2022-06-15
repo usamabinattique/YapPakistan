@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import RxRelay
 
 protocol AccountOpenSuccessViewModelInputs {
     var gotoDashboardObserver: AnyObserver<Void> { get }
@@ -62,5 +63,6 @@ fileprivate extension AccountOpenSuccessViewModel {
                                       cinc: "common_display_text_cnic".localized,
                                       goToDashboard: "common_button_go_to_dashbaord".localized)
         languageStringsSubject = BehaviorSubject<LanguageStrings>(value: strings)
+        
     }
 }
