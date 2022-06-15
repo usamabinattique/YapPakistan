@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import YAPCore
 
 protocol OnboardingCongratulationViewModelInputs {
     var completeVerificationObserver: AnyObserver<Void> { get }
@@ -61,7 +62,7 @@ class OnboardingCongratulationViewModel: OnboardingCongratulationViewModelType, 
     public var onBoardingUserObj: OnBoardingUser
 
     // MARK: - Init
-    init(user: OnBoardingUser) {
+    init(user: OnBoardingUser, analyticsTracker: AnalyticsTracker) {
         
         onBoardingUserObj = user
         
@@ -71,8 +72,11 @@ class OnboardingCongratulationViewModel: OnboardingCongratulationViewModelType, 
 
         let seconds = Int(user.timeTaken.truncatingRemainder(dividingBy: 60.0))
         let minutes = Int(user.timeTaken / 60)
-        // AppAnalytics.shared.logEvent(OnBoardingEvent.signUpEnded())
-        // AppAnalytics.shared.logEvent(OnBoardingEvent.signUpLength(["signup_length" : String.init(format: "%02d:%02d", minutes, seconds)]), saveAttribute: true)
+        
+        analyticsTracker.trackAdjustEventWithToken("92ou1s", customerId: nil, andParameters: nil)
+        analyticsTracker.trackFirebaseEvent("pk_signup_end", withParameters: [:])
+        analyticsTracker.trackLeanplumEvent("pk_signup_end", withParameters: [:])
+        
         UserDefaults.standard.set(true, forKey: "SHOWS_APPLICATION_STATUS_ON_DASHBOARD")
     }
 }

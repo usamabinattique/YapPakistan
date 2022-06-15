@@ -92,8 +92,10 @@ private extension B2COnBoardingCoordinator {
     func navigateToPhoneNumberVerification(user: OnBoardingUser) {
         let onBoardingRepository = OnBoardingRepository(customersService: container.parent.makeCustomersService(),
                                                         messagesService: container.parent.makeMessagesService())
-        let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository: onBoardingRepository,
-                                                                     user: user, otpTime: 30)
+        let verificationViewModel = PhoneNumberVerificationViewModel(onBoardingRepository:onBoardingRepository,
+                                                                     user: user,
+                                                                     otpTime:30,
+                                                                     analyticsTracker: container.parent.configuration.analytics!)
         let phoneVerificationController = PhoneNumberVerificationViewController(themeService: container.parent.themeService,
                                                                                 viewModel: verificationViewModel)
 
@@ -128,7 +130,7 @@ private extension B2COnBoardingCoordinator {
     }
 
     func navigateToCreatePasscode(user: OnBoardingUser) {
-        let createPasscodeViewModel = CreatePasscodeViewModel()
+        let createPasscodeViewModel = CreatePasscodeViewModel(analyticsTracker: container.parent.configuration.analytics!)
         let createPasscodeViewController = PINViewController(themeService: container.parent.themeService, viewModel: createPasscodeViewModel)
         let nav = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: createPasscodeViewController)
         nav.modalPresentationStyle = .fullScreen
@@ -156,7 +158,7 @@ private extension B2COnBoardingCoordinator {
     }
 
     func navigateToEnterName(user: OnBoardingUser) {
-        let enterNameViewModel = EnterNameViewModel(user: user)
+        let enterNameViewModel = EnterNameViewModel(user: user, analyticsTracker: container.parent.configuration.analytics!)
         childContainerNavigation.popViewController(animated: false)?.didPopFromNavigationController()
         childContainerNavigation.pushViewController(EnterNameViewController(themeService: container.parent.themeService, viewModel: enterNameViewModel), animated: false)
 
@@ -224,7 +226,7 @@ private extension B2COnBoardingCoordinator {
     }
 
     func navigateToCongratulation(user: OnBoardingUser) {
-        let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
+        let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user, analyticsTracker: container.parent.configuration.analytics!)
         let congratulationViewController = OnboardingCongratulationViewController(themeService: container.parent.themeService,
                                                                                   viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: disposeBag)
@@ -242,12 +244,12 @@ private extension B2COnBoardingCoordinator {
         
         congratulationViewModel.outputs.completeVerification.subscribe(onNext: { [weak self] _ in
             self?.dashboard()
-            // AppAnalytics.shared.logEvent(OnBoardingEvent.completeVerification())
+            
         }).disposed(by: disposeBag)
     }
     
     func navigateToWaitingUserCongratulation(user: OnBoardingUser, session: Session) {
-        let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user)
+        let congratulationViewModel: OnboardingCongratulationViewModelType = OnboardingCongratulationViewModel(user: user, analyticsTracker: container.parent.configuration.analytics!)
         let congratulationViewController = OnboardingCongratulationWaitingUserViewController(themeService: container.parent.themeService, viewModel: congratulationViewModel)
         congratulationViewModel.outputs.stage.bind(to: containerViewModel.inputs.activeStageObserver).disposed(by: disposeBag)
 

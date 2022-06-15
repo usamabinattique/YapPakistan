@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import YAPCore
 
 protocol EnterNameViewModelInput {
     var firstNameObserver: AnyObserver<String?> { get }
@@ -92,7 +93,7 @@ class EnterNameViewModel: EnterNameViewModelInput, EnterNameViewModelOutput, Ent
     private var isValidInput = false
     private let whiteListCharacterSet = NSCharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ")
 
-    init(user: OnBoardingUser) {
+    init(user: OnBoardingUser, analyticsTracker: AnalyticsTracker) {
         self.user = user
         let isFirstNameValid = firstNameSubject.map { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
             .do(onNext: { [unowned self] in
@@ -134,7 +135,18 @@ class EnterNameViewModel: EnterNameViewModelInput, EnterNameViewModelOutput, Ent
             .bind(to: sendSubject)
             .disposed(by: disposeBag)
 
-        sendSubject.filter { $0 == .name }.map { [unowned self] _ in self.user }.bind(to: resultSubject).disposed(by: disposeBag)
+        sendSubject
+            .do(onNext: { [weak self] _ in
+                analyticsTracker.trackAdjustEventWithToken("dsjkrd", customerId: nil, andParameters: nil)
+                analyticsTracker.trackFirebaseEvent("pk_signup_name", withParameters: [:])
+                analyticsTracker.trackLeanplumEvent("pk_signup_name", withParameters: [:])
+            })
+            .filter {
+                $0 == .name
+            }
+            .map { [unowned self] _ in
+                self.user
+            }.bind(to: resultSubject).disposed(by: disposeBag)
 
         poppedSubject.subscribe(onNext: { [unowned self] in
             self.resultSubject.onCompleted()

@@ -9,6 +9,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import YAPCore
 
 protocol PhoneNumberVerificationViewModelInput {
     var textObserver: AnyObserver<String?> { get }
@@ -94,7 +95,8 @@ final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelIn
 
     init(onBoardingRepository: OnBoardingRepository,
          user: OnBoardingUser,
-         otpTime: TimeInterval = 30) { //60) {
+         otpTime: TimeInterval = 30,
+         analyticsTracker: AnalyticsTracker) { //60) {
         self.repository = onBoardingRepository
         self.user = user
         self.otpTime = otpTime
@@ -141,15 +143,24 @@ final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelIn
             .bind(to: resultSubject)
             .disposed(by: disposeBag)
 
-        let resendReqeust = resendSubject.do(onNext: { self.endEdittingSubject.onNext(true) }).flatMap { [unowned self] _ -> Observable<Event<String?>> in
-            YAPProgressHud.showProgressHud()
-            return self.repository.resendOTP(countryCode: self.user.mobileNo.countryCode ?? "", mobileNo: self.user.mobileNo.number ?? "", accountType: user.accountType.rawValue)
-        }.do(onNext: {_ in
-            YAPProgressHud.hideProgressHud()
-        }).share()
+        let resendReqeust = resendSubject
+            .do(onNext: {
+                self.endEdittingSubject.onNext(true)
+                analyticsTracker.trackAdjustEventWithToken("jpazk0", customerId: nil, andParameters: nil)
+                analyticsTracker.trackFirebaseEvent("pk_signup_otpresend", withParameters: [:])
+                analyticsTracker.trackLeanplumEvent("pk_signup_otpresend", withParameters: [:])
+            }).flatMap { [unowned self] _ -> Observable<Event<String?>> in
+                YAPProgressHud.showProgressHud()
+                return self.repository.resendOTP(countryCode: self.user.mobileNo.countryCode ?? "", mobileNo: self.user.mobileNo.number ?? "", accountType: user.accountType.rawValue)
+            }.do(onNext: {_ in
+                YAPProgressHud.hideProgressHud()
+            }).share()
 
         resendReqeust.elements().do(onNext: { [unowned self] _ in
             self.startTimer()
+            analyticsTracker.trackAdjustEventWithToken("5hkelk", customerId: nil, andParameters: nil)
+            analyticsTracker.trackFirebaseEvent("pk_signup_otpcorrect", withParameters: [:])
+            analyticsTracker.trackLeanplumEvent("pk_signup_otpcorrect", withParameters: [:])
             // AppAnalytics.shared.logEvent(OnBoardingEvent.resendOtp())
         }).map { _ in  "screen_verify_phone_number_display_text_resend_otp_success".localized }.bind(to: showAlertSubject).disposed(by: disposeBag)
 
@@ -164,7 +175,12 @@ final class PhoneNumberVerificationViewModel: PhoneNumberVerificationViewModelIn
         .disposed(by: disposeBag)
 
         request.errors().map{ _ in nil }
-            .do(onNext: { [unowned self] in self.otpForRequest = $0 })
+            .do(onNext: { [unowned self] in
+                self.otpForRequest = $0
+                analyticsTracker.trackAdjustEventWithToken("osdb05", customerId: nil, andParameters: nil)
+                analyticsTracker.trackFirebaseEvent("pk_signup_otpincorrect", withParameters: [:])
+                analyticsTracker.trackLeanplumEvent("pk_signup_otpincorrect", withParameters: [:])
+            })
             .bind(to: textSubject).disposed(by: disposeBag)
 
         startTimer()

@@ -7,6 +7,8 @@
 //
 
 import RxSwift
+import YAPCore
+
 public typealias OTPVerificationResult = (token: String?, phoneNumber: String?)
 
 public protocol PINViewModelInputs {
@@ -117,7 +119,7 @@ open class PINViewModel: PINViewModelType, PINViewModelInputs, PINViewModelOutpu
     private let pinRange: ClosedRange<Int>
 
     // MARK: - Init
-    public init(pinRange: ClosedRange<Int>) {
+    public init(pinRange: ClosedRange<Int>, analyticsTracker: AnalyticsTracker) {
         print("range is \(pinRange)")
         self.pinRange = pinRange
 

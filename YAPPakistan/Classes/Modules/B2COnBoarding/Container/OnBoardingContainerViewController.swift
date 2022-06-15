@@ -101,6 +101,7 @@ fileprivate extension OnBoardingContainerViewController {
         sendButton.rx.tap.withLatestFrom(viewModel.outputs.activeStage)
             .do(onNext: { value in
                 print(value)
+                
             }).bind(to: viewModel.inputs.sendObserver).disposed(by: disposeBag)
         viewModel.outputs.valid.bind(to: sendButton.rx.isEnabled).disposed(by: disposeBag)
               
