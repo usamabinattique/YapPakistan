@@ -63,9 +63,9 @@ public final class KYCFeatureContainer {
         SelfieCoordinator(root: root, container: self)
     }
     
-    func makeCardSchemeCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> CardSchemeCoordinator {
-        CardSchemeCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM)
-    }
+//    func makeCardSchemeCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> CardSchemeCoordinator {
+//        CardSchemeCoordinator(root: root, container: self)
+//    }
     
     func makeTopupCardSelectionCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> TopupCardSelectionCoordinator {
         TopupCardSelectionCoordinator(root: root, container: self, repository: self.makeY2YRepository(), cardsRepository: self.parent.makeCardsRepository(), paymentGatewayM: paymentGatewayM )
@@ -159,9 +159,9 @@ extension KYCFeatureContainer {
         ReviewSelfieModuleBuilder(container: self, image: image).viewController()
     }
 
-    func makeCardNameViewController(paymentGatewayM: PaymentGatewayLocalModel) -> CardNameViewController {
-        CardNameModuleBuilder(container: self, paymentGatewayM: paymentGatewayM).viewController()
-    }
+//    func makeCardNameViewController(paymentGatewayM: PaymentGatewayLocalModel) -> CardNameViewController {
+//        CardNameModuleBuilder(container: self, paymentGatewayM: paymentGatewayM).viewController()
+//    }
 
     func makeEditCardNameViewController(name: String) -> EditCardNameViewController {
         EditCardNameModuleBuilder(container: self).viewController(name: name)
@@ -176,21 +176,11 @@ extension KYCFeatureContainer {
     }
 
 
-    func makeCardOnItsWayViewController() -> CardOnItsWayViewController {
-        CardOnItsWayModuleBuilder(container: self).viewController()
+    func makeAccountOpenSuccessViewController() -> AccountOpenSuccessViewController {
+        AccountOpenSuccessModuleBuilder(container: self).viewController()
     }
 
     func makeManualVerificationViewController() -> ManualVerificationViewController {
         ManualVerificationModuleBuilder(container: self).viewController()
-    }
-    
-    func makeCardSchemeViewController() -> CardSchemeViewController {
-        let viewModel = CardSchemeViewModel(self.parent.makeKYCRepository(), accountProvider: self.accountProvider)
-        return CardSchemeViewController(themeService: self.themeService, viewModel: viewModel)
-    }
-    
-    func makeCardBenefitsViewController() -> CardBenefitsViewController {
-        let viewModel = CardBenefitsViewModel(self.parent.makeKYCRepository(), transactionRepo: self.parent.makeTransactionsRepository())
-        return CardBenefitsViewController(themeService: self.themeService, viewModel: viewModel)
     }
 }

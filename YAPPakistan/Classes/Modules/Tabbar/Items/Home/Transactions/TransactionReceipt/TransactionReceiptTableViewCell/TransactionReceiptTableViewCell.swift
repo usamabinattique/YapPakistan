@@ -141,7 +141,7 @@ private extension TransactionReceiptTableViewCell {
         
         innerStackName.addArrangedSubviews([titleLabel, valueLabel])
         titleLabel.textColor = UIColor(themeService.attrs.greyDark)
-        valueLabel.textColor = UIColor(themeService.attrs.primary)
+        valueLabel.textColor = UIColor(themeService.attrs.primaryDark)
         self.outerStackView.addArrangedSubview(innerStackName)
     }
 }

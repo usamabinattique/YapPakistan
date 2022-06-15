@@ -92,49 +92,20 @@ extension MoreCoordinator {
     }
     
     func openHelpAndSupport() {
-        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
         
-//        let themeService = container.themeService
-//        let viewModel = SetPintSuccessViewModel()
-//        return SetPintSuccessViewController(themeService: themeService, viewModel: viewModel)
+        let viewModel = AccountOpenSuccessViewModel()
+        let viewController = AccountOpenSuccessViewController(themeService: self.container.themeService, viewModel: viewModel)
+        viewModel.outputs.gotoDashboard.debug().subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            print("Go to dashboard function called")
+        }).disposed(by: disposeBag)
+        self.navigationRoot.present(viewController, animated: true)
         
-//        let viewModel = SetPintSuccessViewModel()
-//        let viewController = SetPintSuccessViewController(themeService: self.container.themeService, viewModel: viewModel)
-        //navigationRoot.present(viewController, animated: true, completion: nil)
-//        navigationRoot.pushViewController(viewController)
+//        let viewModel = ManualVerificationViewModel()
+//        let viewController = ManualVerificationViewController(themeService: self.container.themeService, viewModel: viewModel)
+//        self.navigationRoot.present(viewController, animated: true)
         
-//        let viewModel = AddTransactionDetailViewModel(transactionID: "1", note: "sdasdasdasd", transactionRepository: self.container.makeTransactionsRepository())
-//        let viewController = AddTransactionNoteViewController(viewModel: viewModel, themeService: self.container.themeService)
-//        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
-//        viewModel.outputs.back.subscribe(onNext: { _ in
-//            print("Back Pressed on Note")
-//        }).disposed(by: disposeBag)
-//        navigationRoot.present(navController, animated: true)
-        
-        
-        //        let viewModel = TotalTransactionsViewModel(txnType: "", productCode: "", receiverCustomerId: nil, senderCustomerId: nil, beneficiaryId: nil, merchantName: nil, transactionRepository: self.container.makeTransactionsRepository(), themeService: self.container.themeService)
-        //        let viewController = TotalTransactionsViewController(viewModel: viewModel, themeService: self.container.themeService)
-        //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
-        //        viewModel.outputs.back.subscribe(onNext: { _ in
-        //            print("Back Pressed")
-        //            navController.dismiss(animated: true, completion: nil)
-        //        }).disposed(by: disposeBag)
-        //        navigationRoot.present(navController, animated: true)
-        
-        //        let viewModel = TransactionReceiptViewModel(transactionRepository: self.container.makeTransactionsRepository(), transaction: TransactionResponse())
-        //        let viewController = TransactionReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
-        //        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
-        //        viewModel.outputs.back.subscribe(onNext: { _ in
-        //            print("Back Pressed")
-        //            navController.dismiss(animated: true, completion: nil)
-        //        }).disposed(by: disposeBag)
-        //        navigationRoot.present(navController, animated: true)
-        
-        
-//        let viewModel = ViewReceiptViewModel(imageURL: "", transcationID: "")
-//        let viewController = ViewReceiptViewController(viewModel: viewModel, themeService: self.container.themeService)
-//        let navController = UINavigationControllerFactory.createAppThemedNavigationController(root: viewController, themeColor: UIColor(container.themeService.attrs.primaryDark), font: UIFont.regular)
-//        navigationRoot.present(navController, animated: true)
+//        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
     }
     
     func openUserProfileSettings() {

@@ -50,6 +50,7 @@ protocol CardsViewModelInputs {
     var detailsObservers: AnyObserver<Void> { get }
     var unfreezObserver: AnyObserver<Void> { get }
     var orderNewObserver: AnyObserver<Void> { get }
+    var addCardObserver: AnyObserver<Void> { get }
 }
 
 protocol CardsViewModelOutputs {
@@ -68,6 +69,8 @@ protocol CardsViewModelOutputs {
     var isCardActive: Observable<Bool> { get }
     var cardBalance: Observable<String> { get }
     var cardImageType: Observable<String> { get }
+    var addCard: Observable<Void> { get }
+    var noCardFound: Observable<Bool> { get }
 }
 
 protocol CardsViewModelType {
@@ -88,6 +91,7 @@ class CardsViewModel: CardsViewModelType,
     var viewDidAppear: AnyObserver<Void> { viewDidAppearSubject.asObserver() }
     var unfreezObserver: AnyObserver<Void> { unfreezSubject.asObserver() }
     var orderNewObserver: AnyObserver<Void> { orderNewSubject.asObserver() }
+    var addCardObserver: AnyObserver<Void> { return addCardSubject.asObserver() }
 
     // MARK: Outputs
     var eyeInfo: Observable<PaymentCard> {
@@ -100,19 +104,23 @@ class CardsViewModel: CardsViewModelType,
     var localizedStrings: Observable<LocalizedStrings> { localizedStringsSubject.asObservable() }
     var isForSetPinFlow: Observable<Bool> { setPinSubject.asObservable() }
     var isUserBlocked: Observable<Bool> { isUserBlockedSubject.asObservable() }
-
+    var noCardFound: Observable<Bool> { return noCardFoundSubject.asObservable() }
+    
     var orderNew: Observable<PaymentCard?> { orderNewSubject.withLatestFrom(cardDetailsSubject).asObservable() }
     var isCardBLocked: Observable<Bool> { isCardBLockedSubject.asObservable() }
     
     var isCardActive: Observable<Bool> { isCardActiveSubject.asObservable() }
     var cardBalance: Observable<String> { cardBalanceSubject.asObservable() }
     var cardImageType: Observable<String> { cardImageTypeSubject.asObservable() }
+    var addCard: Observable<Void> { return addCardSubject.asObservable() }
 
     // MARK: Subjects
+    var noCardFoundSubject = BehaviorSubject<Bool>(value: true)
     var unfreezSubject = PublishSubject<Void>()
     var eyeInfoDidTapSubject = PublishSubject<Void>()
     var detailsDidTapSubject = PublishSubject<Void>()
     var viewDidAppearSubject = PublishSubject<Void>()
+    var addCardSubject = PublishSubject<Void>()
 
     var cardDetailsSubject = BehaviorSubject<PaymentCard?>(value: nil)
 
@@ -189,6 +197,18 @@ class CardsViewModel: CardsViewModelType,
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
 
+                cardsFetched.elements().subscribe(onNext: { [unowned self] cards in
+                    print(cards?.count)
+                    
+                    if (cards?.count ?? 0) > 0 {
+                        self.noCardFoundSubject.onNext(false)
+                    }
+                    else {
+                        self.noCardFoundSubject.onNext(true)
+                    }
+                    
+                }).disposed(by: disposeBag)
+                
         let cardElements = cardsFetched.elements().map({ $0?.first }).share()
         cardElements.bind(to: cardDetailsSubject).disposed(by: disposeBag)
 

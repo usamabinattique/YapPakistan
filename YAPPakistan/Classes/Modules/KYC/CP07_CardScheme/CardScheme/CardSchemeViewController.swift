@@ -15,8 +15,9 @@ class CardSchemeViewController: UIViewController {
     
     // MARK: Views
 
-    private lazy var titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
+    //private lazy var titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center, numberOfLines: 0)
     private lazy var tableView = UIFactory.makeTableView(allowsSelection: true)
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back", in: .yapPakistan), insectBy:.zero)
     
     //MARK: Properties
     private let themeService: ThemeService<AppTheme>
@@ -51,26 +52,25 @@ class CardSchemeViewController: UIViewController {
 
 extension CardSchemeViewController: ViewDesignable {
     func setupSubViews() {
-        view.addSubview(titleLabel)
+        self.title = "Get Cards"
+        //view.addSubview(titleLabel)
         view.addSubview(tableView)
-        
+        navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         tableView.register(CardSchemeCell.self, forCellReuseIdentifier: CardSchemeCell.defaultIdentifier)
     }
     
     func setupConstraints() {
-        titleLabel
-            .alignEdgesWithSuperview([.top, .left, .right], constants: [20, 20, 20])
-            .height(constant: 32)
+//        titleLabel
+//            .alignEdgesWithSuperview([.top, .left, .right], constants: [20, 20, 20])
+//            .height(constant: 32)
         
         tableView
-            .toBottomOf(titleLabel, constant: 8)
-            .alignEdgesWithSuperview([.left, .right, .bottom])
+            //.toBottomOf(titleLabel, constant: 8)
+            .alignEdgesWithSuperview([.safeAreaTop , .left, .right, .bottom])
     }
     
     func setupBindings() {
-        
-        viewModel.outputs.heading.bind(to: self.titleLabel.rx.text)
-            .disposed(by: rx.disposeBag)
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
         
         viewModel.outputs.optionsViewModel
             .bind(to: tableView.rx.items(cellIdentifier: CardSchemeCell.defaultIdentifier, cellType: CardSchemeCell.self)){ [weak self] (index,data,cell) in
@@ -79,14 +79,25 @@ extension CardSchemeViewController: ViewDesignable {
                 cell.configure(with: self.themeService, viewModel: data)
                 
             }.disposed(by: rx.disposeBag)
+        
+//        tableView.rx.modelSelected(CardSchemeCellViewModel.self).filter { $0 is CardSchemeCellViewModel }.map { ($0 as! CardSchemeCellViewModel).cardScheme }.bind(to: self.viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
             
-        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
+            
+            
+//            .subscribe(onNext: { [unowned self] data in
+//            print(data)
+//            data.map { $0 as CardSchemeCellViewModel }
+//
+//            //self.viewModel.inputs.nextObserver.onNext(data)
+//        }).disposed(by: rx.disposeBag)
+//
+//        viewModel.outputs.error.bind(to: rx.showErrorMessage).disposed(by: rx.disposeBag)
     }
     
     func setupTheme() {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: view.rx.backgroundColor)
-            .bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
+            //.bind({ UIColor($0.primaryDark) }, to: titleLabel.rx.textColor)
             .disposed(by: rx.disposeBag)
     }
     

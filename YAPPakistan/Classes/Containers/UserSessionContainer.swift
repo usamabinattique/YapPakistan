@@ -243,4 +243,94 @@ public final class UserSessionContainer {
         self.biometricsManager.deleteBiometryForUser(phone: self.parent.credentialsStore.getUsername() ?? "")
         self.parent.credentialsStore.clearCredentials()
     }
+    
+    // MARK -: Card Scheme
+    
+    func makeCardSchemeViewController() -> CardSchemeViewController {
+        let viewModel = CardSchemeViewModel(self.makeKYCRepository(), accountProvider: self.accountProvider)
+        return CardSchemeViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+    
+    
+//    func makeCardNameCoordinator(root: UINavigationController,  schemeObj: KYCCardsSchemeM, paymentGatewayM: PaymentGatewayLocalModel) -> CardNameCoordinator {
+//        CardNameCoordinator(root: root, container: self ,schemeObj: schemeObj, paymentGatewayM: paymentGatewayM)
+//    }
+    
+    func makeCardBenefitsViewController() -> CardBenefitsViewController {
+        let viewModel = CardBenefitsViewModel(self.makeKYCRepository(), transactionRepo: self.makeTransactionsRepository(), accountProvider: self.accountProvider)
+        return CardBenefitsViewController(themeService: self.themeService, viewModel: viewModel)
+    }
+    
+//    func makeMotherQuestionViewController() -> KYCQuestionsViewController {
+//        return MotherQuestionModuleBuilder(container: self).viewController()
+//    }
+//
+//    func makeCityQuestionViewController(motherName: String) -> KYCQuestionsViewController {
+//        return CityQuestionModuleBuilder(container: self, motherName: motherName).viewController()
+//    }
+//
+//    func makeSelfieGuidelineViewController() -> SelfieGuidelineViewController {
+//        SelfieGuidelineModuleBuilder(container: self).viewController()
+//    }
+//
+//    func makeCaptureViewController() -> CaptureViewController {
+//        CaptureSelfieModuleBuilder(container: self).viewController()
+//    }
+//
+//    func makeReviewSelfieViewController(image: UIImage) -> ReviewSelfieViewController {
+//        ReviewSelfieModuleBuilder(container: self, image: image).viewController()
+//    }
+//
+//    func makeCardNameViewController(paymentGatewayM: PaymentGatewayLocalModel) -> CardNameViewController {
+//        CardNameModuleBuilder(container: self, paymentGatewayM: paymentGatewayM).viewController()
+//    }
+//
+//    func makeEditCardNameViewController(name: String) -> EditCardNameViewController {
+//        EditCardNameModuleBuilder(container: self).viewController(name: name)
+//    }
+//
+//    func makeAddressViewController() -> AddressViewController {
+//        AddressModuleBuilder(container: self).viewController()
+//    }
+//
+//    func makeCityListViewController() -> CityListViewController {
+//        CityListModuleBuilder(container: self).viewController()
+//    }
+//
+//
+//    func makeAccountOpenSuccessViewController() -> AccountOpenSuccessViewController {
+//        AccountOpenSuccessModuleBuilder(container: self).viewController()
+//    }
+//
+//    func makeManualVerificationViewController() -> ManualVerificationViewController {
+//        ManualVerificationModuleBuilder(container: self).viewController()
+//    }
+    
+    
+    func makeKYCProgressViewController(navigationController: UINavigationController) -> KYCProgressViewController {
+        let viewModel = KYCProgressViewModel()
+        let viewController = KYCProgressViewController(themeService: themeService,
+                                                       viewModel: viewModel,
+                                                       withChildNavigation: navigationController)
+        return viewController
+    }
+    func makeKYCProgressViewController() -> KYCProgressViewController {
+        let childNav: UINavigationController = makeNavigationController()
+        childNav.setNavigationBarHidden(true, animated: false)
+        return makeKYCProgressViewController(navigationController: childNav)
+    }
+    
+    func makeCityListViewController() -> CityListViewController {
+        let kycRepository = self.makeKYCRepository()
+        let themeService = self.themeService
+        let viewModel = CityListViewModel(kycRepository: kycRepository)
+        return CityListViewController(themeService: themeService, viewModel: viewModel)
+        
+        //CityListModuleBuilder(container: self).viewController()
+    }
+    
+    func makeNavigationController(root: UIViewController? = nil) -> UINavigationController {
+        return parent.makeNavigationController(root: root)
+    }
+
 }

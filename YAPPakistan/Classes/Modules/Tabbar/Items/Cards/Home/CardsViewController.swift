@@ -8,8 +8,17 @@
 import RxSwift
 import YAPComponents
 import RxTheme
+import UIKit
 
 class CardsViewController: UIViewController {
+    
+    private lazy var cardsView = UIFactory.makeView()
+    
+    // No Card View
+    private lazy var noCardsView = UIFactory.makeView()
+    private lazy var innerCardView = UIFactory.makeView()
+    private lazy var addCardLabel = UIFactory.makeLabel(font: .regular, alignment: .center, numberOfLines: 0, text: "Add card")
+    private lazy var addCardImage = UIFactory.makeButton(with: .regular, backgroundColor: nil, title: nil) //.makeImageView(name: "icon_check_fill_purple")
 
     private lazy var titleLabelVC = UIFactory.makeLabel(font: .large, alignment: .center)
     private lazy var titleLabel = UIFactory.makeLabel(font: .title2, alignment: .center)
@@ -29,6 +38,8 @@ class CardsViewController: UIViewController {
 //                                 UIFactory.makeView() ]
     //private lazy var addButton = barButtonItem(image: nil, insectBy: .zero)
     private lazy var sideMenuButton = barButtonItem(image: nil, insectBy: .zero)
+    
+    private lazy var addBarButtonItem = barButtonItem(image: UIImage(named: "icon_home_add", in: .yapPakistan), insectBy:.zero)
 
     private lazy var iconContainer = UIFactory.makeImageView().shaddow()  // FIXME
     private lazy var clockEyeIcon = UIFactory.makeImageView()   // FIXME
@@ -120,7 +131,15 @@ class CardsViewController: UIViewController {
 // MARK: - Setup
 fileprivate extension CardsViewController {
     func setupViews() {
-        view.addSub(views: [ titleLabel,
+        
+        view.addSubview(cardsView)
+        
+        view.addSubview(noCardsView)
+        noCardsView.addSub(views: [innerCardView, addCardImage, addCardLabel])
+        //noCardsView.backgroundColor = UIColor.yellow
+        //innerCardView.backgroundColor = UIColor.red
+        
+        cardsView.addSub(views: [ titleLabel,
                              cardImage,
                              cardInfoStack,
                              detailsIcon,
@@ -131,13 +150,23 @@ fileprivate extension CardsViewController {
         //navigationItem.rightBarButtonItem = addButton.barItem
         navigationItem.leftBarButtonItem = sideMenuButton.barItem
         navigationItem.titleView = titleLabelVC
-
+        navigationItem.rightBarButtonItem = addBarButtonItem.barItem
+        
+        innerCardView.layer.cornerRadius = 20
+        innerCardView.layer.borderColor = UIColor(self.themeService.attrs.greyLight).cgColor //.gray.cgColor
+        innerCardView.layer.borderWidth = 1
+        innerCardView.layer.masksToBounds = true
         // addButton.button?.isUserInteractionEnabled = false
     }
 
     func setupResources() {
+        addCardImage.setImage(UIImage(named: "icon_add_button", in: .yapPakistan), for: .normal) 
         cardImage.image = UIImage(named: "payment_card", in: .yapPakistan)
         detailsIcon.image = UIImage(named: "arrow_up_purple", in: .yapPakistan)
+        
+        //noCardsView.backgroundColor = UIColor(hexString: "#F1F1F1") //UIColor(self.themeService.attrs.greyLight)
+        innerCardView.backgroundColor = UIColor(hexString: "#F1F1F1") //UIColor.white
+        addCardLabel.text = "Add Card"
         //addButton.button?.setImage(UIImage(named: "icon_home_add", in: .yapPakistan), for: .normal)
         //sideMenuButton.button?.setImage(UIImage(named: "icon_menu", in: .yapPakistan), for: .normal)
     }
@@ -171,6 +200,27 @@ fileprivate extension CardsViewController {
     }
 
     func setupConstraints() {
+        
+        noCardsView.alignEdgesWithSuperview([.safeAreaTop, .safeAreaLeft, .safeAreaRight, .safeAreaBottom])
+        
+        innerCardView
+            .centerHorizontallyInSuperview()
+            .alignEdgesWithSuperview([.safeAreaTop], constant: 104)
+            .width(constant: 221)
+            .height(constant: 324)
+        
+        addCardImage
+            .centerHorizontallyWith(innerCardView)
+            .centerVerticallyWith(innerCardView)
+            .height(constant: 48)
+            .width(constant: 48)
+        
+        addCardLabel
+            .centerHorizontallyWith(addCardImage)
+            .toBottomOf(addCardImage, constant: 20)
+        
+        cardsView
+            .alignEdgesWithSuperview([.safeAreaTop, .safeAreaBottom, .safeAreaLeft, .safeAreaRight])
         
         titleLabel
             .alignEdgesWithSuperview([.safeAreaTop, .left, .right], constants: [0, 22, 22])
@@ -240,6 +290,18 @@ fileprivate extension CardsViewController {
             })
             .disposed(by: rx.disposeBag)
         
+        viewModel.outputs.noCardFound.subscribe(onNext: { [weak self] isNoCardFound in
+            guard let self = self else { return }
+            if isNoCardFound {
+                self.noCardsView.isHidden = false
+                self.cardsView.isHidden = true
+            }
+            else {
+                self.noCardsView.isHidden = true
+                self.cardsView.isHidden = false
+            }
+        }).disposed(by: rx.disposeBag)
+        
         viewModel.outputs.cardImageType
             .subscribe(onNext: {  imageName in
                 self.cardImage.image = UIImage(named: imageName, in: .yapPakistan)
@@ -266,6 +328,9 @@ fileprivate extension CardsViewController {
         iconContainer.rx.tapGesture().skip(1).map({ _ in () })
             .bind(to: viewModel.inputs.eyeInfoObserver)
             .disposed(by: rx.disposeBag)
+        
+        addBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.addCardObserver).disposed(by: rx.disposeBag)
+        addCardImage.rx.tap.bind(to: viewModel.inputs.addCardObserver).disposed(by: rx.disposeBag)
 
         detailsButton.rx.tap.map{ _ in () }
             .merge(with: letsDoItButton.rx.tap.map{ _ in () }.filter({[unowned self] _ in !self.isUserBlocked }) )

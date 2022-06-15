@@ -32,7 +32,8 @@ class EditCardNameViewController: UIViewController {
         tableView.isUserInteractionEnabled = true
         return tableView
     }()
-
+    private lazy var backBarButtonItem = barButtonItem(image: UIImage(named: "icon_back_witCircle", in: .yapPakistan), insectBy:.zero)
+    
     let spacers = [UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(), UIFactory.makeView(),
                    UIFactory.makeView()]
 
@@ -58,6 +59,13 @@ class EditCardNameViewController: UIViewController {
         setupLanguageStrings()
         setupBindings()
         setupConstraints()
+        
+        self.navigationController?.isNavigationBarHidden = false
+        self.title = "saa"
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = false
     }
 
     func setupViews() {
@@ -82,6 +90,8 @@ class EditCardNameViewController: UIViewController {
         backButton = addBackButton(of: .backEmpty)
         
         tableView.register(NameLettersSequenceSelectionCell.self, forCellReuseIdentifier: NameLettersSequenceSelectionCell.defaultIdentifier)
+        
+        self.navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         
        // tableView.rx.setDelegate(self).disposed(by: rx.disposeBag)
         //TODO: remove subtitle if it's not required
@@ -137,8 +147,9 @@ class EditCardNameViewController: UIViewController {
 
         nextButton.rx.tap.bind(to: viewModel.inputs.nextObserver).disposed(by: rx.disposeBag)
 //        textField.rx.text.unwrap().bind(to: viewModel.inputs.nameObserver).disposed(by: rx.disposeBag)
-        backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
+        //backButton.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
 
+        backBarButtonItem.button?.rx.tap.bind(to: viewModel.inputs.backObserver).disposed(by: rx.disposeBag)
 //        view.rx.tapGesture().withUnretained(self)
 //            .subscribe(onNext: { `self`, _ in self.view.endEditing(true) })
 //            .disposed(by: rx.disposeBag)

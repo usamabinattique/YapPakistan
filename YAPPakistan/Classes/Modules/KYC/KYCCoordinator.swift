@@ -53,13 +53,13 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
 //            .filter({ $0 == .cardNamePending }).withUnretained(self)
 //            .flatMap({ `self`, _ in self.cardNamePending().materialize() })
         // CP05 Card Scheme
-        let cp5 = viewController.viewModel.outputs.next
-            .filter({ $0 == .cardSchemePending }).withUnretained(self)
-            .flatMap({ `self`, _ in self.cardOrderSchemePending().materialize() })
-        // CP06 Card Scheme External Card
-        let cp6 = viewController.viewModel.outputs.next
-            .filter({ $0 == .cardSchemeExternalCardPending }).withUnretained(self)
-            .flatMap({ `self`, _ in  self.cardOrderSchemePending().materialize() }) //self.carTopupCardSelection(isPresented: true).materialize() })
+//        let cp5 = viewController.viewModel.outputs.next
+//            .filter({ $0 == .cardSchemePending }).withUnretained(self)
+//            .flatMap({ `self`, _ in self.cardOrderSchemePending().materialize() })
+//        // CP06 Card Scheme External Card
+//        let cp6 = viewController.viewModel.outputs.next
+//            .filter({ $0 == .cardSchemeExternalCardPending }).withUnretained(self)
+//            .flatMap({ `self`, _ in  self.cardOrderSchemePending().materialize() }) //self.carTopupCardSelection(isPresented: true).materialize() })
         // CP07 address
         let cp7 = viewController.viewModel.outputs.next
             .filter({ $0 == .addressPending }).withUnretained(self)
@@ -72,7 +72,7 @@ class KYCCoordinator: Coordinator<ResultType<Void>> {
             .subscribe(onNext: { `self`, _ in self.goToHome() })
             .disposed(by: rx.disposeBag)
         
-        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp5, cp6, cp7).elements().share()
+        let sharedCPs = Observable.merge(cp1, cp2, cp3, cp7).elements().share()
 
         sharedCPs.filter({ $0.isCancel }).withUnretained(self) // moved back with completing
             .subscribe(onNext: { `self`, _ in
@@ -151,9 +151,9 @@ extension KYCCoordinator {
         return coordinate(to: container.makeSelfieCoordinator(root: root))
     }
     
-    func cardOrderSchemePending() -> Observable<ResultType<Void>>  {
-        return coordinate(to: container.makeCardSchemeCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
-    }
+//    func cardOrderSchemePending() -> Observable<ResultType<Void>>  {
+//        return coordinate(to: container.makeCardSchemeCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
+//    }
     
     func confirmPayment() -> Observable<ResultType<Void>>  {
         return coordinate(to: container.makeConfirmPaymentCoordinator(root: root, paymentGatewayM: paymentGatewayM))

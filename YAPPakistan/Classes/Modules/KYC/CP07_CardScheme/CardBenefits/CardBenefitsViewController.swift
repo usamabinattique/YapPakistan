@@ -19,6 +19,7 @@ class CardBenefitsViewController: UIViewController {
     private lazy var crossImage = UIFactory.makeImageView()
     private lazy var crossButton = UIFactory.makeButton(with: .regular)
     private lazy var coverImage = UIFactory.makeImageView(contentMode: .scaleAspectFill)
+    private lazy var balanceLabel = UIFactory.makeLabel(font: .small, alignment: .center, numberOfLines: 0)
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -58,10 +59,14 @@ class CardBenefitsViewController: UIViewController {
         setupTheme()
         setupConstraints()
         setupResources()
-        
+        self.navigationController?.isNavigationBarHidden = true
         crossButton.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
         //Fetch cards
         viewModel.inputs.fetchBenefitsObserver.onNext(())
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -70,9 +75,11 @@ class CardBenefitsViewController: UIViewController {
     }
     
     @objc internal override func onTapBackButton() {
-        self.dismiss(animated: true, completion: {
-            self.viewModel.inputs.backObserver.onNext(())
-        })
+//        self.dismiss(animated: true, completion: {
+//            self.viewModel.inputs.backObserver.onNext(())
+//        })
+        
+        self.viewModel.inputs.backObserver.onNext(())
     }
     
 }
@@ -81,9 +88,12 @@ extension CardBenefitsViewController: ViewDesignable {
     func setupSubViews() {
         view.addSubview(coverImage)
         view.addSubview(tableView)
+        view.addSubview(balanceLabel)
         crossButton.addSubview(crossImage)
         view.addSubview(crossButton)
         view.addSubview(nextButton)
+        
+        balanceLabel.text = "Your available balance is PKR XXX"
         
         tableView.register(CardBenefitsCell.self, forCellReuseIdentifier: CardBenefitsCell.defaultIdentifier)
         tableView.register(CardInfoCell.self, forCellReuseIdentifier: CardInfoCell.defaultIdentifier)
@@ -109,9 +119,14 @@ extension CardBenefitsViewController: ViewDesignable {
             .toBottomOf(coverImage, constant: 0)
             .alignEdgesWithSuperview([.left, .right])
         
+        balanceLabel
+            .alignEdgesWithSuperview([.left, .right], constants: [0, 0])
+            .height(constant: 40)
+            .toBottomOf(tableView)
+        
         let bottomSafeArea: CGFloat = (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0) == 0 ? 33 : 0
         nextButton
-            .toBottomOf(tableView, constant: 10)
+            .toBottomOf(balanceLabel, constant: 10)
             .alignEdgeWithSuperviewSafeArea(.bottom, constant: bottomSafeArea)
             .centerHorizontallyInSuperview()
             .width(constant: 192)
@@ -132,11 +147,17 @@ extension CardBenefitsViewController: ViewDesignable {
         viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: rx.disposeBag)
         
         nextButton.rx.tap.subscribe(onNext: { [weak self] _ in
-            self?.dismiss(animated: true
-                                                , completion: {
-                self?.viewModel.inputs.nextObserver.onNext(())
-            })
+//            self?.dismiss(animated: true
+//                                                , completion: {
+//                self?.viewModel.inputs.nextObserver.onNext(())
+//            })
+            
+            self?.viewModel.inputs.nextObserver.onNext(())
         }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.userBalance.subscribe(onNext: { [weak self] balanceText in
+            self?.balanceLabel.text = balanceText
+        }).disposed(by: rx.disposeBag) //.bind(to: self.balanceLabel.text).disposed(by: rx.disposeBag)
         
         viewModel.outputs.buttonTitle.bind(to: nextButton.rx.title(for: .normal)).disposed(by: rx.disposeBag)
 #warning("[UMAIR] - Todo: disable button for master card")
@@ -153,6 +174,7 @@ extension CardBenefitsViewController: ViewDesignable {
         themeService.rx
             .bind({ UIColor($0.backgroundColor) }, to: [view.rx.backgroundColor])
             .bind({ UIColor($0.primary) }, to: [nextButton.rx.enabledBackgroundColor])
+            .bind({ UIColor($0.greyDark) }, to: [balanceLabel.rx.textColor])
             .bind({ UIColor($0.greyDark) }, to: [nextButton.rx.disabledBackgroundColor])
             .disposed(by: rx.disposeBag)
     }

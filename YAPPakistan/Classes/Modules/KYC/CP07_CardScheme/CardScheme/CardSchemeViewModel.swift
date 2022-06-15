@@ -66,6 +66,10 @@ class CardSchemeViewModel: CardSchemeViewModelType, CardSchemeViewModelInput, Ca
             guard let `self` = self else { return }
             for scheme in schemeObjs {
                 scheme.outputs.selected.bind(to: self.nextSubject).disposed(by: self.disposeBag)
+                
+//                KYCCardsSchemeM(schemeName: "PayPak", schemeCode: "02", isActive: true, fee: 500.0, fedFee: nil, cardTitle: Optional("PayPak"), cardDescription: Optional("Get the local PayPak YAP card for PKR 500.00"), cardButtonTitle: Optional("Buy now"), cardImage: Optional("yap-paypak-card"), cardBackgroundColor: nil)
+                
+                
             }
         })
             .disposed(by: disposeBag)
