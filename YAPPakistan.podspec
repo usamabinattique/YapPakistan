@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name                  = 'YAPPakistan'
-  spec.version               = '0.1.0'
+  spec.version               = '1.0.0'
   spec.summary               = 'YAP Pakistan Module'
 
   spec.homepage              = 'https://bitbucket.org/yap-technology/ios-b2c-pk/'
@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
   spec.author                = { 'Tayyab Akram' => 'tayyab.akram@digitify.com' }
 
   spec.platform              = :ios
-  spec.ios.deployment_target = '11.4'
+  spec.ios.deployment_target = '13.0'
   spec.swift_version         = '5.0'
 
   spec.source_files          = 'YAPPakistan/Classes/**/*'
