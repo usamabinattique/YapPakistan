@@ -10,7 +10,7 @@ import RxSwift
 import YAPComponents
 import RxDataSources
 import YAPCore
-import Adjust
+
 //import Authentication
 //import Networking
 

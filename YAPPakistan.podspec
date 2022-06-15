@@ -30,9 +30,6 @@ Pod::Spec.new do |spec|
       'YAPPakistan/Assets/Resources/**/*.strings']
   }
 
-  #MARK: Analytics
-  spec.dependency 'Adjust', '~> 4.0'
-
   #MARK: Networking
   spec.dependency 'Alamofire', '5.6.1'
 

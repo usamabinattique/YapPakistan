@@ -7,7 +7,15 @@ install! 'cocoapods', :deterministic_uuids => false
 source 'https://bitbucket.org/yap-technology/cardscanner-ios.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
+def app_analytics_pods
+  pod 'Leanplum-iOS-SDK', '3.2.1'
+  pod 'Adjust', '~> 4.29.2'
+  pod 'FBSDKCoreKit', '12.3.2'
+  pod 'Firebase/Analytics'
+end
+
 target 'YAPPakistan_Example' do
+  app_analytics_pods
   pod 'YAPPakistan', :path => '../'
   pod 'YAPCore', :path => '../YAPCore'
   pod 'YAPComponents', :path => '../YAPComponents'
