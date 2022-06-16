@@ -158,6 +158,11 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
                 viewController.viewModel.inputs.completeVerificationObserver.onNext(())
             }
         }
+        
+        viewController.viewModel.outputs.missingDocument.withUnretained(self).subscribe(onNext: { `self` , _ in
+            self.missingDocument()
+        }).disposed(by: rx.disposeBag)
+
     }
     
     func showCreditLimit() {
@@ -417,6 +422,10 @@ extension HomeCoodinator {
 
     func analytics(_ paymentCard: PaymentCard, date: Date? = nil) {
         coordinate(to: CardAnalyticsCoordinator(root: self.root, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
+    }
+    
+    func missingDocument() {
+        coordinate(to: DashboardMissingDocumentCoordinator(root: self.root, container: container)).subscribe().disposed(by: rx.disposeBag)
     }
 
     func topUp() {

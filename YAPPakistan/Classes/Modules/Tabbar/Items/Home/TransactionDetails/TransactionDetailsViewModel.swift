@@ -290,20 +290,6 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         self.globalNote = self.transaction.type == .credit ? self.transaction.receiverTransactionNote ?? nil : nil != nil ? self.transaction.receiverTransactionNote ?? nil : self.transaction.transactionNote ?? nil
         generateTransactionCellViewModels()
         addNoteAction.map { transaction }.bind(to: addNoteSubject).disposed(by: disposeBag)
-//        updateNotes(cdTransaction: cdTransaction)
-        
-//        uploadReceiptPhoto(repository: self.repository, transactionId: self.transaction.transactionId )
-        
-//        if self.transaction.productCode.isForReceipt && self.transaction.category == "TRANSACTION" {
-//            fetchAllReceipts(repository: self.repository, transactionId: self.transaction.transactionId)
-//        }
-        
-//        if let transactionUserUrlPath = transaction.transactionUserUrl {
-//            transactionUserUrlSubject.onNext((transactionUserUrlPath, transaction.transactionUserName?.thumbnail))
-//        } else {
-//            transactionUserBackgroundImageSubject.onNext((nil, transactionBackgroundImage))
-//        }
-        
         
         
         let merchantNameImage = transaction.merchantName?.initialsImage(color: UIColor.colorFor(listItemIndex: transaction.selectedCurrentIndex ?? 0))
@@ -372,8 +358,6 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
             }
         }).disposed(by: disposeBag)
         
-        self.fetchReceiptPhotos()
-        
         self.shareObserverSubject.subscribe(onNext: { [unowned self] in
             self.shareSubject.onNext(self.transaction)
         }).disposed(by: disposeBag)
@@ -419,34 +403,21 @@ class TransactionDetailsViewModel: TransactionDetailsViewModelType, TransactionD
         }).disposed(by: disposeBag)
     }
     
-    fileprivate func fetchReceiptPhotos() {
-        
-        YAPProgressHud.showProgressHud()
-        let fetchReq = repository.fetchReceiptPhotos(transactionID: self.transaction.transactionId).share()
-        
-        fetchReq.elements().subscribe(onNext: { [unowned self] photos in
-            YAPProgressHud.hideProgressHud()
-            print("receipts are \(photos)")
-            self.receiptsSubject.onNext(photos)
-        }).disposed(by: disposeBag)
-        
-        fetchReq.errors().subscribe(onNext: { [unowned self] error in
-            self.errorSubject.onNext(error.localizedDescription)
-        }).disposed(by: disposeBag)
-    }
-    
     func fetchAllReceipts() {
-          let request = fetchReceiptsFromServer
+        let request = fetchReceiptsFromServer.do(onNext: { YAPProgressHud.showProgressHud()  })
+                            
             .flatMap { [unowned self] _ in self.repository.fetchReceiptPhotos(transactionID: self.transaction.transactionId) }
               .share(replay: 1, scope: .whileConnected)
           
           request.elements()
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud()  })
               .unwrap()
               .map{ $0 }
               .bind(to: receiptsSubject)
               .disposed(by: disposeBag)
           
           request
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud()  })
               .errors()
               .map { $0.localizedDescription }
               .bind(to: errorSubject).disposed(by: disposeBag)

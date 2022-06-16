@@ -13,36 +13,19 @@ import UIKit
 
 class DashboardTimelineView: UIView {
     
-    // MARK: Views
-    private lazy var containerView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+   
     
-    private lazy var title = UIFactory.makeLabel(font: .regular,alignment: .left)
+    private lazy var title = UIFactory.makeLabel(font: .micro,alignment: .left)
     private lazy var icon = UIFactory.makeImageView(contentMode: .scaleAspectFit)
-    private lazy var leftSeparator: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    private lazy var descriptionLabel = UIFactory.makeLabel(font: .small,alignment: .left, numberOfLines: 2)
     private lazy var button = UIFactory.makeButton(with: .micro, backgroundColor: .clear, title: "")
-    
-    private lazy var statusVeiw: UIView = {
-        let view = UIView(frame: CGRect(x: 0, y: 0, width: 78, height: 20))
-        view.clipsToBounds = true
-        view.layer.cornerRadius = view.frame.size.height / 2
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private lazy var status = UIFactory.makeLabel(font: .micro,alignment: .center)
     
     // MARK: Properties
     
-    var viewModel: DashboardTimelineViewModelType!
+    var viewModel: DashboardTimelineViewModelType! {
+        didSet {
+            self.bindViews()
+        }
+    }
 //    var viewModel = DashboardTimelineViewModel()
     private var themeService: ThemeService<AppTheme>!
     private let disposeBag = DisposeBag()
@@ -66,16 +49,7 @@ class DashboardTimelineView: UIView {
         setupTheme()
         setupResources()
     }
-    
-//    init(theme:ThemeService<AppTheme>) {
-//        super.init(frame: .zero)
-//        self.themeService = theme
-//        commonInit()
-//        bindViews()
-//        setupTheme()
-//        setupResources()
-//    }
-//
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         commonInit()
@@ -100,72 +74,26 @@ class DashboardTimelineView: UIView {
 
 private extension DashboardTimelineView {
     func setupViews() {
-        addSubview(containerView)
-        containerView.addSubview(icon)
-        containerView.addSubview(leftSeparator)
-        containerView.addSubview(title)
-        containerView.addSubview(descriptionLabel)
-        containerView.addSubview(button)
-        containerView.addSubview(statusVeiw)
-        statusVeiw.addSubview(status)
+        addSubview(title)
+        addSubview(icon)
+        addSubview(button)
     }
     
     func setupConstraints() {
-        containerView
-            .alignEdgesWithSuperview([.top, .left, .right ,.bottom], constants: [16, 32, 32, 16])
-            .height(constant: 150)
         icon
-            .alignEdgesWithSuperview([.top, .left])
-            .width(constant: 32)
-            .height(constant: 32)
-       // icon.backgroundColor = .blue
-//        icon.translatesAutoresizingMaskIntoConstraints = false
-//
-//        title.translatesAutoresizingMaskIntoConstraints = false
-        title
-            .toRightOf(icon,constant: 20)
-            //.alignEdgeWithSuperview(.top)
-           // .alignEdge(.top, withView: icon)
-            .centerVerticallyWith(icon)
-            .toLeftOf(statusVeiw)
-            .height(constant: 16)
-        
-     //   title.backgroundColor = .purple
-        
-        statusVeiw
-            .alignEdgesWithSuperview([.top,.right])
-            .width(constant: 78)
-            .height(constant: 20)
-        
-//        status.translatesAutoresizingMaskIntoConstraints = false
-        status
+            .alignEdgeWithSuperview(.left,constant: 28)
+            .width(constant: 22)
+            .height(constant: 22)
             .centerVerticallyInSuperview()
-            .centerHorizontallyInSuperview()
-        
-//        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel
-            .toBottomOf(title,constant: 4)
-            .toRightOf(icon,constant: 20)
-            .alignEdgeWithSuperview(.right)
+        title
+            .toRightOf(icon,constant: 8)
+            .centerVerticallyWith(icon)
+            .toLeftOf(button)
         
         button
-            .toBottomOf(descriptionLabel,constant: 8)
-            .toRightOf(icon,constant: 20)
-            .alignEdgeWithSuperview(.bottom,.greaterThanOrEqualTo, constant: 0)
-            .height(constant: 34)
-        
-        leftSeparator
-            .toBottomOf(icon,constant: 12)
-            .width(constant: 1)
-            .centerHorizontallyWith(icon)
-            .alignEdge(.bottom, withView: button)
-        
-//        title.text = "Account verification"
-//        descriptionLabel.text = "We noticed a mistake in your application. Please re-take a new a selfie."
-//        status.text = "in process"
-//        button.setTitle("Re-upload now", for: .normal)
-        
-        statusVeiw.backgroundColor = UIColor(Color(hex: "#FEEDDF"))
+            .alignEdgesWithSuperview([.right], constants: [20])
+            .centerVerticallyWith(icon)
+            
     }
     
     func render() {
@@ -175,9 +103,9 @@ private extension DashboardTimelineView {
     func setupTheme() {
         themeService.rx
         
-            .bind({ UIColor($0.greyDark) }, to: [descriptionLabel.rx.textColor])
-            .bind({ UIColor($0.primaryDark) }, to: [leftSeparator.rx.backgroundColor,title.rx.textColor])
-            .bind({ UIColor($0.primary) }, to: [button.rx.titleColor(for: .normal),status.rx.textColor])
+            .bind({ UIColor($0.primaryDiffuse) }, to: [self.rx.backgroundColor])
+            .bind({ UIColor($0.primaryDark) }, to: [title.rx.textColor])
+            .bind({ UIColor($0.primary) }, to: [icon.rx.tintColor,button.rx.titleColor(for: .normal)])
             
         
             .disposed(by: rx.disposeBag)
@@ -192,27 +120,11 @@ private extension DashboardTimelineView {
 
 private extension DashboardTimelineView {
     func bindViews() {
-        
-//        viewModel.outputs.credit.bind(to: limitLabel.rx.attributedText).disposed(by: disposeBag)
-//        infoButton.rx.tap.bind(to: viewModel.inputs.creditInfo).disposed(by: disposeBag)
         viewModel.outputs.model.withUnretained(self).subscribe(onNext: { `self`, model in
             self.title.text = model.title
-            self.descriptionLabel.text = model.description
             self.icon.image = model.leftIcon
-            self.statusVeiw.isHidden = !model.isProgress
-            self.status.text = model.progressStatus
-            self.leftSeparator.isHidden = !model.isSeparator
             self.button.setTitle(model.btnTitle, for: .normal)
-            self.button.isHidden = model.isBtnHidden
-            self.leftSeparator.alpha = model.isSeparatorVague ? 0.5 : 1
-            
-            self.containerView.alpha = model.isWholeContainerVague ? 0.5 : 1
-            
-            
-            self.descriptionLabel.alpha = model.isWholeContainerVague ? 0.5 : 1
-            self.icon.alpha = model.isWholeContainerVague ? 0.5 : 1
-            self.statusVeiw.alpha = model.isWholeContainerVague ? 0.5 : 1
-            self.status.alpha = model.isWholeContainerVague ? 0.5 : 1
+            self.button.isEnabled = model.isBtnEnabled
         }).disposed(by: disposeBag)
         
         button.rx.tap.bind(to: viewModel.inputs.btnObserver).disposed(by: disposeBag)

@@ -53,4 +53,9 @@ public class AccountProvider {
 
         return request.map { _ in }
     }
+    
+    public func fetchAccounts() -> Observable<Event<[Account]>> {
+        let request = repository.fetchAccounts().share()
+        return request
+    }
 }
