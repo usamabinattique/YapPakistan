@@ -40,6 +40,7 @@ protocol HomeViewModelInputs {
     var progressViewTappedObserver: AnyObserver<Void> { get }
     
     var transactionDetailsObserver: AnyObserver<TransactionResponse> { get }
+    var missingDocumentObserver: AnyObserver<Void> { get }
 }
 
 protocol HomeViewModelOutputs {
@@ -98,6 +99,9 @@ protocol HomeViewModelOutputs {
     var selectedTransactionIndex: Observable<Int> { get }
     var progressViewTapped: Observable<Date> { get }
     var transactionDetails: Observable<TransactionResponse> { get }
+    func getTimelineViewModel() -> DashboardTimelineViewModel
+    var addTimelineViewModel: Observable<DashboardTimelineViewModel> { get }
+    var missingDocument: Observable<Void> { get }
 }
 
 protocol HomeViewModelType {
@@ -127,7 +131,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let shimmeringSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     private let cardsSubject = ReplaySubject<[PaymentCard]>.create(bufferSize: 1)
     private let debitCardOnboardingStageViewModelSubject = BehaviorSubject<PaymentCardInitiatoryStageViewModel?>(value: nil)
-    private let viewDidAppearSubject = BehaviorSubject<Void>(value: ())
+    private let viewDidAppearSubject = ReplaySubject<Void>.create(bufferSize: 1)
     private let setPinSubject = PublishSubject<PaymentCard>()
     private let trackCardDeliverySubject = PublishSubject<PaymentCard>()
     private let additionalRequirementsSubject = PublishSubject<Void>()
@@ -160,6 +164,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let progressViewTappedSubject = PublishSubject<Void>()
     private let progressViewDateSubject = BehaviorSubject<Date>(value: Date())
     private let profileTapSubject = PublishSubject<Void>()
+    private let addTimelineViewModelSubject = ReplaySubject<DashboardTimelineViewModel>.create(bufferSize: 1)
+    private let showMissingDocumentSubject = PublishSubject<Void>()
     
     private var transactionDetailsSubject = PublishSubject<TransactionResponse>()
     
@@ -195,6 +201,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var profileTapObserver: AnyObserver<Void> { profileTapSubject.asObserver() }
     
     var transactionDetailsObserver: AnyObserver<TransactionResponse> { transactionDetailsSubject.asObserver() }
+    var missingDocumentObserver: AnyObserver<Void> { showMissingDocumentSubject.asObserver() }
     
     // MARK: Outputs
 
@@ -246,6 +253,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     var selectedTransactionIndex: Observable<Int> { return selectedTransactionIndexSubject.unwrap().distinctUntilChanged() }
     var progressViewTapped: Observable<Date> { progressViewDateSubject }
     var transactionDetails: Observable<TransactionResponse> { transactionDetailsSubject.asObservable() }
+    var addTimelineViewModel: Observable<DashboardTimelineViewModel> { addTimelineViewModelSubject.asObservable() }
+    var missingDocument: Observable<Void> { showMissingDocumentSubject.asObservable() }
 
     // MARK: Init
 
@@ -261,6 +270,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private var themeService: ThemeService<AppTheme>!
     private var transactionRepository: TransactionsRepositoryType
     var currentSectionDate = Date()
+    private var isViewDidAppear = false
 
     init(accountProvider: AccountProvider,
          biometricsManager: BiometricsManagerType,
@@ -306,6 +316,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         viewDidAppearSubject.subscribe(onNext: { [weak self] _ in
             accountProvider.refreshAccount()
             self?.getWidgets(repository: cardsRepository)
+            self?.getCustomerAccountBalance()
         }).disposed(by: disposeBag)
         
         profilePicSubject.onNext((accountProvider.currentAccountValue.value?.customer.imageURL?.absoluteString, accountProvider.currentAccountValue.value?.customer.fullName?.thumbnail ))
@@ -317,15 +328,18 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
                 shrinkProgressViewSubject.onNext(true)
         }).disposed(by: disposeBag)
         
-        generateCellViewModels()
+        //TODO: uncomment following
+       /* generateCellViewModels()
         getCustomerAccountBalance()
         getWidgets(repository: cardsRepository)
-        getCards()
+        getCards() */
+        
+        generateCellViewModels()
+        getWidgets(repository: cardsRepository)
+        verifyUserStatus()
         
         refreshSubject.subscribe(onNext: { [weak self] _ in
             self?.getCustomerAccountBalance()
-//            self?.getCards()
-            
             self?.transactionsViewModel.inputs.refreshObserver.onNext(())
         }).disposed(by: disposeBag)
         
@@ -352,6 +366,81 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         let limitVM = CreditLimitCellViewModel(accountProvider.currentAccountValue.value?.firstCreditLimit ?? 0)
         limitVM.outputs.info.bind(to: showCreditLimitSubject).disposed(by: disposeBag)
         return limitVM
+    }
+    
+    private func verifyUserStatus() {
+        
+        accountProvider.fetchAccounts().elements().subscribe(onNext: { [weak self] in
+            guard let `self` = self else { return }
+            
+            // verification required
+            let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: true))
+            vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
+            self.addTimelineViewModelSubject.onNext(vm)
+           /*
+            if let account = $0.first {
+                self.generateCellViewModels()
+                
+                if account.accountStatus == .onboarded || account.accountStatus == .secretQuestionPending || account.accountStatus == .selfiePending
+                    || account.accountStatus == .cardNamePending || account.accountStatus == .addressPending || account.accountStatus == .cardSchemePending || account.accountStatus == .cardSchemeExternalCardPending {
+                    if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == false {
+                        // verification required
+                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: true))
+                        vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
+                        self.addTimelineViewModelSubject.onNext(vm)
+                    } else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == true {
+                        // verification required
+                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "Re-upload", isBtnEnabled: true))
+                        vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
+                        self.addTimelineViewModelSubject.onNext(vm)
+                    }
+                    else {
+                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "Tap to continue", isBtnEnabled: true))
+                        vm.outputs.btn.map{ true }.bind(to: self.completeVerificationResultSubject).disposed(by: self.disposeBag)
+                        self.addTimelineViewModelSubject.onNext(vm)
+                    }
+                    
+                } else {
+                    // show transactions
+                    self.getCustomerAccountBalance()
+                    self.getCards()
+                }
+                
+               /* /// KYC | CNIC Verified User
+                if account.parnterBankStatus == .activated && account.accountStatus == .onboarded {
+                    self.getCards()
+                }
+                /// BM | FAILED | Activated USER
+                else if account.parnterBankStatus == .activated && account.accountStatus == .eDDRequired {
+                    self.getCards()
+                }
+                
+                /// BM failed after user onboarded
+                else if account.parnterBankStatus == .inActive && account.accountStatus == .benchmetricFailed {
+                    self.getCards()
+                }
+                
+                /// KYC | CNIC Unverified user, (show in process and disable action)
+                else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == nil {
+                    
+                    let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: false))
+                    self.addTimelineViewModelSubject.onNext(vm)
+                }
+                
+                /// In-process variant (Unverified user)
+                else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == false {
+                    
+                }
+                /// Tap to continue variant (Unverified user), New API required: BE | reupload documents list API
+                else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == true {
+                    let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "Tap to continue", isBtnEnabled: true))
+                    vm.outputs.btn.map{ true }.bind(to: self.completeVerificationResultSubject).disposed(by: self.disposeBag)
+                    self.addTimelineViewModelSubject.onNext(vm)
+                } else {
+                    self.getCards()
+                } */
+            } */
+        }).disposed(by: disposeBag)
     }
 }
 
@@ -390,25 +479,20 @@ extension HomeViewModel {
             self?.shimmeringSubject.onNext(false)
             self?.errorSubject.onNext($0)
             
-            if let account = self?.accountProvider.currentAccountValue.value {
+          /*  if let account = self?.accountProvider.currentAccountValue.value {
 //                self?.errorSubject.onNext("Card not found")
                 self?.shimmeringSubject.onNext(false)
                 let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
                 self?.dashobarStatusActions(viewModel: initioaryModel)
                 self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
-            }
-            
+            } */
+            self?.bindPaymentCardOnboardingStagesViewModel(card: nil)
         }).disposed(by: disposeBag)
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
             print("success \(list)")
             self?.shimmeringSubject.onNext(false)
             self?.cardsSubject.onNext(list ?? [])
-           /* if !(list?.isEmpty ?? false), let serialNumber =  list?.first?.cardSerialNumber {
-                self?.cardStatus = list?.first?.status ?? .inActive
-                self?.transactionDataProvider.cardSerialNumber = serialNumber
-                self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
-            } */
             
             self?.cardStatus = list?.first?.status ?? .inActive
             self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
@@ -434,10 +518,10 @@ extension HomeViewModel {
         self.callFetchTransactions(card: card)
 
         debitCard.subscribe(onNext: { [weak self] card in
-            
-            if let account = self?.accountProvider.currentAccountValue.value, (account.paidCard ?? false), account.parnterBankStatus != .physicalCardPending {
+            //TODO: uncomment following line
+           /* if let account = self?.accountProvider.currentAccountValue.value, (account.paidCard ?? false), account.parnterBankStatus != .physicalCardPending {
                 self?.addCreditInfoSubject.onNext(())
-            }
+            } */
             
             if card == nil, let account = self?.accountProvider.currentAccountValue.value {
                 self?.shimmeringSubject.onNext(false)
@@ -479,6 +563,12 @@ extension HomeViewModel {
         request.elements().withUnretained(self).subscribe(onNext: { `self`, respon in
             self.shimmeringSubject.onNext(false)
             self.transactionsViewModel.pageInfo = respon
+            if (self.transactionsViewModel.transactionsObj.isEmpty  ) {
+                print("response is \(respon.content?.count ?? 0)")
+                self.transactionsViewModel.transactionsObj = respon.content ?? []
+                self.transactionsViewModel.updateContent()
+            }
+            
         }).disposed(by: disposeBag)
 
         
@@ -499,10 +589,10 @@ extension HomeViewModel {
             .subscribe(onNext: { [weak self] res in
                 self?.shimmeringSubject.onNext(false)
                 // set transactions if they are empty
-                if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false ) {
+               /* if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false ) {
                     self?.transactionsViewModel.transactionsObj = res.0 ?? []
                     self?.transactionsViewModel.updateContent()
-                }
+                }*/
                 self?.debitCardOnboardingStageViewModelSubject.onCompleted()
                 
             }).disposed(by: disposeBag)
@@ -541,7 +631,7 @@ extension HomeViewModel {
             .disposed(by: dashboardStatusActionDisposeBag)
     }
     
-    private func dashboardTimelineStatus(accountStatus: AccountStatus) {
+   /* private func dashboardTimelineStatus(accountStatus: AccountStatus) {
         
         var vms = [DashboardTimelineModel]()
         if accountStatus == .addressCaptured {
@@ -549,6 +639,10 @@ extension HomeViewModel {
             vms.append(vm)
         }
         self.resumeKYCSubject.onNext(vms)
+    } */
+    
+    func getTimelineViewModel() -> DashboardTimelineViewModel {
+        return DashboardTimelineViewModel(DashboardTimelineModel(title: "view_payment_card_onboarding_stage_account_verification_label_title".localized,  btnTitle: "Re-upload now", isBtnEnabled: true))
     }
 }
 
