@@ -168,7 +168,7 @@ class CardAnalyticsViewController: UIViewController {
     }()
     
     
-    private lazy var amountHeaderLabel = UIFactory.makeLabel(font: .micro, alignment: .center, text: "Total spent") //UILabelFactory.createUILabel(with: .greyDark, textStyle: .micro , alignment: .center, text: "Total spent")
+    //private lazy var amountHeaderLabel = UIFactory.makeLabel(font: .micro, alignment: .center, text: "Total spent")
     
     private lazy var navStack = UIStackViewFactory.createStackView(with: .horizontal, alignment: .center, distribution: .fill, spacing: 10, arrangedSubviews: [backArrow, monthAmountStack, nextArrow])
     
@@ -330,7 +330,7 @@ private extension CardAnalyticsViewController {
         theSeparator.height(constant: 1)
         themeService.rx.bind({ UIColor($0.greyLight) }, to: theSeparator.rx.backgroundColor).disposed(by: disposeBag)
         
-        parallax.addSubview(amountHeaderLabel)
+        //parallax.addSubview(amountHeaderLabel)
         parallax.addSubview(navStack)
         parallax.addSubview(pieChart)
         parallax.addSubview(averageLabel)
@@ -406,9 +406,9 @@ private extension CardAnalyticsViewController {
             .width(constant: 26)
             .height(constant: 26)
         
-        amountHeaderLabel
-            .toTopOf(monthAmountStack)
-            .centerHorizontallyInSuperview()
+//        amountHeaderLabel
+//            .toTopOf(monthAmountStack)
+//            .centerHorizontallyInSuperview()
         
         navStack
             .height(constant: 50)
@@ -480,7 +480,7 @@ private extension CardAnalyticsViewController {
     
     func setupTheme() {
         themeService.rx
-            .bind({ UIColor($0.greyDark       ) }, to: [amountHeaderLabel.rx.textColor,percentage.rx.textColor])
+//            .bind({ UIColor($0.greyDark       ) }, to: [amountHeaderLabel.rx.textColor,percentage.rx.textColor])
 //            .bind({ UIColor($0.primary        ) }, to: [termsAndCondtionsButton.rx.titleColor(for: .normal)])
             .bind({ UIColor($0.primary        ) }, to: [selector.rx.backgroundColor])
             .bind({ UIColor($0.primaryDark    ) }, to: [amountLabel.rx.textColor, categoryButton.rx.titleColor(for: .normal), merchantButton.rx.titleColor(for: .normal),navigationController!.navigationBar.rx.tintColor])
@@ -645,7 +645,7 @@ extension CardAnalyticsViewController: MXParallaxHeaderDelegate {
         amountLabel.alpha = progress
         nextArrow.alpha = progress
         backArrow.alpha = progress
-        amountHeaderLabel.alpha = progress
+//        amountHeaderLabel.alpha = progress
         pieChartTop.constant = 30 + (95 * progress)
     }
 }

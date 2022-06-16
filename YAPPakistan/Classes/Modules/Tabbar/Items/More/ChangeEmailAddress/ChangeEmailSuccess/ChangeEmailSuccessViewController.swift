@@ -40,7 +40,7 @@ class UnvarifiedEmailSuccessViewController: UIViewController {
         return imageView
     }()
     
-    private lazy var back = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized, isEnable: true)
+    private lazy var back = AppRoundedButtonFactory.createAppRoundedButton(title: "common_button_next".localized, font: .large, isEnable: true)
     
     // MARK: - Properties
     private var themeService: ThemeService<AppTheme>
@@ -103,9 +103,10 @@ fileprivate extension UnvarifiedEmailSuccessViewController {
             .alignEdgesWithSuperview([.left, .right], constants: [29, 29])
         
         successImageView
-            .toBottomOf(subHeadingLabel, .lessThanOrEqualTo, constant: 60)
+            .toBottomOf(subHeadingLabel, .greaterThanOrEqualTo, constant: 60)
             .height(constant: 82)
             .width(constant: 82)
+            .centerVerticallyInSuperview()
             .alignEdgesWithSuperview([.left, .right], constants: [59, 59])
         
         //descriptionLabel

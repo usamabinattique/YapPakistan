@@ -25,7 +25,7 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
     }()
     
     private lazy var bankImageContainerView = UIFactory.makeCircularView(  borderColor: UIColor(Color(hex: "#F1F5FE")), borderWidth: 0.7)
-    private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFit)
+    private lazy var bankImage =  UIFactory.makeImageView(contentMode: .scaleAspectFill)
     private lazy var bankName = UIFactory.makeLabel(font: .regular,alignment: .center)
     private lazy var accountNumber = UIFactory.makeLabel(font: .micro,alignment: .center)
     
@@ -43,6 +43,7 @@ class AddBeneficiaryBankDetailViewController: AddBeneficiaryBankListContainerChi
         let textField = AppTextField()
         textField.delegate = self
         textField.returnKeyType = .next
+        textField.isValidationErrorShow = false
         textField.autocorrectionType = .no
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.bottomBarColor = UIColor(themeService.attrs.greyLight) // greyLight
@@ -267,7 +268,11 @@ private extension AddBeneficiaryBankDetailViewController {
     func bindViews() {
         guard let viewModel = viewModel else { return }
         
-        viewModel.outputs.bankImage.bind(to: bankImage.rx.loadImage()).disposed(by: rx.disposeBag)
+        viewModel.outputs.bankImage
+            .subscribe(onNext:{ [weak self] url, img in
+                self?.bankImage.loadImage(with: url, placeholder: img, showsIndicator: true, refreshCachedImage: true)
+            })
+            .disposed(by: rx.disposeBag)
         viewModel.outputs.name.bind(to: bankName.rx.text).disposed(by: rx.disposeBag)
         
         bindAccountInfo()
@@ -304,8 +309,8 @@ private extension AddBeneficiaryBankDetailViewController {
         viewModel.outputs.becomeResponder.filter { $0 }.subscribe(onNext: { [weak self] _ in _ = self?.textField.becomeFirstResponder() }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.inputError.subscribe(onNext: { [unowned self] isOkay in
-            self.textField.bottomBarColor = isOkay ?  UIColor(self.themeService.attrs.greyLight) : .red
-            self.infoButton.setTintColor(isOkay ? UIColor(self.themeService.attrs.primaryDark) : .red)
+            self.textField.bottomBarColor = UIColor(self.themeService.attrs.greyLight)
+            self.infoButton.setTintColor(UIColor(self.themeService.attrs.primaryDark))
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.inputError.bind(to: doneButton.rx.isEnabled).disposed(by: rx.disposeBag)

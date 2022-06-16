@@ -56,11 +56,17 @@ class StatementConfirmEmailViewModel: StatementConfirmEmailViewModelType, Statem
         print(account.customer.email)
         currentEmailSubject.onNext(account.customer.email)
         
+        
         let emailRequest = sendEmailSubject.do(onNext:{ YAPProgressHud.showProgressHud() })
-                .flatMap({ _ -> Observable<Event<String?>> in
+            .flatMap({ _ -> Observable<Event<String?>> in
+                if let isEmailVerified = accountProvider.currentAccountValue.value?.customer.emailVerified, isEmailVerified == true {
                     return repository.emailStatement(request: statementModel as! EmailStatement)
-                })
-                .share()
+                } else {
+                    YAPToast.show("Please verify your email and then try again!")
+                    return Observable.just("").materialize()
+                }
+            })
+            .share()
         emailRequest.errors()
             .subscribe(onNext:{ error in
                 YAPProgressHud.hideProgressHud()
@@ -71,7 +77,7 @@ class StatementConfirmEmailViewModel: StatementConfirmEmailViewModelType, Statem
             .subscribe(onNext:{ [weak self] _ in
                 YAPProgressHud.hideProgressHud()
                 print("statement sent successfully")
-                //YAPToast.show("Statement sent successfully, please check your email")
+                YAPToast.show("Statement sent successfully, please check your email")
                 self?.sendSubject.onNext(())
             })
             .disposed(by: disposeBag)

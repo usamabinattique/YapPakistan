@@ -461,7 +461,7 @@
 
 // MARK: - Topup transfer screen
 "screen_topup_transfer_display_text_screen_title" = "Top up using card";
-"screen_topup_transfer_display_text_amount_title" = "Enter the top up amount";
+"screen_topup_transfer_display_text_amount_title" = "Enter top up amount";
 "screen_topup_transfer_display_text_available_balance" = "Your available YAP balance is %@";
 "screen_topup_transfer_display_text_transaction_fee" = "Fee: %@";
 
@@ -583,7 +583,7 @@
 "screen_send_money_edit_beneficiary_delete_message_popup" = "Are you sure you want to delete this beneficiary?";
 "screen_send_money_edit_beneficiary_display_text_iban" = "IBAN: ";
 "screen_send_money_edit_beneficiary_display_text_transfer_type" = "Transfer type";
-"screen_add_beneficiary_detail_input_text_nick_name_hint" = "Add nickname";
+"screen_add_beneficiary_detail_input_text_nick_name_hint" = "Enter nickname";
 "screen_add_beneficiary_detail_display_text_transfer_nick_name" = "Nickname";
 "screen_send_money_edit_beneficiary_title" = "View beneficiary";
 "screen_send_money_save_beneficiary_button_title" = "Save";

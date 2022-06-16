@@ -108,11 +108,11 @@ private extension SideMenuViewModel {
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .analytics))
         menuViewModels.append(MenuSeparatorTableViewCellViewModel())
         
-        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .young))
-        menuViewModels.append(MenuSeparatorTableViewCellViewModel())
+//        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .young))
+//        menuViewModels.append(MenuSeparatorTableViewCellViewModel())
         
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .referFriend))
-        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .notifications))
+//        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .notifications))
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .statements))
         
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .qrCode))
@@ -120,7 +120,7 @@ private extension SideMenuViewModel {
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .accountLimits))
         menuViewModels.append(MenuSeparatorTableViewCellViewModel())
         
-        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .chat))
+//        menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .chat))
         menuViewModels.append(MenuItemTableViewCellViewModel(menuItemType: .help))
         menuCellViewModelsSubject.onNext([SectionModel(model: 0, items: menuViewModels)])
     }

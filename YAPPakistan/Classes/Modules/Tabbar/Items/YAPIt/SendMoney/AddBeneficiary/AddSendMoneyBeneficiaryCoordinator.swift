@@ -40,7 +40,7 @@ class AddSendMoneyBeneficiaryCoordinator: Coordinator<ResultType<SendMoneyBenefi
         case .local:
             var beneficiary = SendMoneyBeneficiary()
             beneficiary.country = "Pakistan"
-            beneficiary.currency = "PkR"
+            beneficiary.currency = "PKR"
             beneficiary.type = .domestic
             localBankTransfer(beneficiary)
         case .international:

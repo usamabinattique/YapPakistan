@@ -41,7 +41,6 @@ class YAPActionSheetTableViewCell: RxUITableViewCell {
     
     private lazy var separator: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.gray //(themeService.attrs.grey) //.greyLight
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -76,6 +75,7 @@ class YAPActionSheetTableViewCell: RxUITableViewCell {
         self.viewModel = viewModel
         self.themeService = themeService
         bindViews()
+        setupTheme()
     }
     
     
@@ -103,6 +103,8 @@ extension YAPActionSheetTableViewCell {
         self.themeService.rx
             .bind({ UIColor($0.primaryDark) }, to: title.rx.textColor)
             .bind({ UIColor($0.primaryDark) }, to: subtitle.rx.textColor)
+            .bind({ UIColor($0.greyLight) }, to: separator.rx.backgroundColor)
+            .disposed(by: disposeBag)
         
     }
     
