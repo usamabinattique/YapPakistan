@@ -143,7 +143,7 @@ class HomeViewController: UIViewController {
     }()
     
     private lazy var timelineView: DashboardTimelineView = {
-        let view = DashboardTimelineView(theme: self.themeService, viewModel: DashboardTimelineViewModel(DashboardTimelineModel(title: "Account verification", description: "We noticed a mistake in your application. Please re-take a new a selfie.", isSeparator: true, isSeparatorVague: false, isProgress: true, progressStatus: "in process", isWholeContainerVague: false, btnTitle: "Re-upload now", isBtnHidden: false)))
+        let view = DashboardTimelineView(theme: self.themeService, viewModel: viewModel.outputs.getTimelineViewModel())
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
