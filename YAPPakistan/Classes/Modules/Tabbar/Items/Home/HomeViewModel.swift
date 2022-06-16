@@ -370,7 +370,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     
     private func verifyUserStatus() {
         
-        accountProvider.fetchAccounts().elements().subscribe(onNext: { [weak self] in
+        accountProvider.fetchAccounts().elements().subscribe(onNext: {  [weak self] _ in
             guard let `self` = self else { return }
             
             // verification required
