@@ -96,7 +96,7 @@ extension TransactionDetailsViewController: ViewDesignable {
         view.addSubview(stackView)
         view.addSubview(btnHelp)
         
-        headerShareBtn.setImage(UIImage(named: "icon_share", in: .yapPakistan), for: .normal)
+        headerShareBtn.setImage(UIImage(named: "icon_share_white_bg", in: .yapPakistan), for: .normal)
         headerCloseBtn.setImage(UIImage(named: "icon_close", in: .yapPakistan), for: .normal)
         
        
@@ -242,7 +242,6 @@ extension TransactionDetailsViewController: ViewDesignable {
     }
     
     func bindImageSourceType() {
-        //TODO: add YapActionSheet
         print("bindImagesource action sheet")
         let actionSheet = YAPActionSheet(title: "Upload your receipt", subTitle: nil, themeService: self.themeService)
         let cameraAction = YAPActionSheetAction(title: "Open Camera", image: UIImage(named: "icon_camera", in: .yapPakistan)) { [weak self] _ in

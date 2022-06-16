@@ -20,6 +20,7 @@ class SearchSendMoneyBeneficiaryViewController: UIViewController {
         let searchBar = AppSearchBar()
         searchBar.autoHidesCancelButton = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.becomeFirstResponder()
         return searchBar
     }()
     
@@ -60,7 +61,8 @@ class SearchSendMoneyBeneficiaryViewController: UIViewController {
         setupConstraints()
         bindViews()
         bindTableView()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { self.searchBar.becomeFirstResponder() }
+        //DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { self.searchBar.becomeFirstResponder() }
+       // DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { self.searchBar.becomeFirstResponder() }
     }
     
     override func viewWillAppear(_ animated: Bool) {

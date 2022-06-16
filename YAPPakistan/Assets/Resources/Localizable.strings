@@ -668,7 +668,7 @@
 // MARK: Screen add beneficiary OTP
 
 "screen_add_beneificiary_otp_display_text_heading" = "Verify your One Time Passcode";
-"screen_add_beneificiary_otp_display_text_sub_heading" = "We've send a verification code to %@";
+"screen_add_beneificiary_otp_display_text_sub_heading" = "We've sent a verification code to %@";
 
 
 "screen_domestic_funds_transfer_display_text_heading" = "Send money to";
@@ -681,6 +681,11 @@
 //MARK: Dashboard
 // MARK: - CustomView AmounView
 "screen_dashboard_credit_limit_display_text" = "Credit limit: %@";
+"screen_dashboard_missing_document_title_display_text" = "Hey %@";
+"screen_dashboard_missing_document_description_display_text" = "Looks like we’re having some trouble with the details you provided during onboarding. Please review the below list and make the updates where applicable to get your YAP account activated.";
+
+
+
 
 
 // MARK: - Profile Screen

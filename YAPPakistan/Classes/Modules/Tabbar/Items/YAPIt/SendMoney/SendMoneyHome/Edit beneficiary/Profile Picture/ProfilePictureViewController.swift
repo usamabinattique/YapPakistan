@@ -32,7 +32,7 @@ class ProfilePictureViewController: KeyboardAvoidingViewController {
     
     private lazy var bottomView = UIFactory.makeView()
     
-    private lazy var usePhotoButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_send_money_edit_beneficiary_use_photo".localized)
+    private lazy var usePhotoButton = AppRoundedButtonFactory.createAppRoundedButton(title: "screen_send_money_edit_beneficiary_use_photo".localized, font: UIFont.large)
     private lazy var retakePhotoButton = UIButtonFactory.createButton(title: "screen_send_money_edit_beneficiary_retake_photo".localized, backgroundColor: .clear)
     
     private lazy var buttonStack = UIStackViewFactory.createStackView(with: .vertical, alignment: .center, distribution: .fill, spacing: 23, arrangedSubviews: [usePhotoButton, retakePhotoButton])

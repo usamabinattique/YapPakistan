@@ -48,7 +48,7 @@ class SMFTPOPSelectionViewController: ListViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        listTitle = "Select reason for transfer"
+        listTitle = "screen_international_funds_transfer_display_text_reson".localized //"Select reason for transfer"
         
         setupViews()
         setupConstraints()

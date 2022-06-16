@@ -64,13 +64,7 @@ public class DashboardTimelineViewModel: DashboardTimelineViewModelType, Dashboa
 
 public struct DashboardTimelineModel {
     var title: String
-    var description: String
     var leftIcon: UIImage?
-    var isSeparator: Bool
-    var isSeparatorVague: Bool
-    var isProgress: Bool
-    var progressStatus: String
-    var isWholeContainerVague: Bool
     var btnTitle: String
-    var isBtnHidden: Bool
+    var isBtnEnabled: Bool
 }

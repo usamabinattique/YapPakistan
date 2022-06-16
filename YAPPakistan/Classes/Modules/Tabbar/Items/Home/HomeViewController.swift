@@ -143,7 +143,7 @@ class HomeViewController: UIViewController {
     }()
     
     private lazy var timelineView: DashboardTimelineView = {
-        let view = DashboardTimelineView(theme: self.themeService, viewModel: DashboardTimelineViewModel(DashboardTimelineModel(title: "Account verification", description: "We noticed a mistake in your application. Please re-take a new a selfie.", isSeparator: true, isSeparatorVague: false, isProgress: true, progressStatus: "in process", isWholeContainerVague: false, btnTitle: "Re-upload now", isBtnHidden: false)))
+        let view = DashboardTimelineView(theme: self.themeService, viewModel: viewModel.outputs.getTimelineViewModel())
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -372,6 +372,7 @@ fileprivate extension HomeViewController {
         balanceLabel.text = "PKR"
         balanceValueLabel.text = "0.00"
         balanceDateLabel.text = "Today's balance"
+        
     }
 
     private func setupTheme() {
@@ -409,60 +410,15 @@ fileprivate extension HomeViewController {
         
         containerViewHeightConstraint = transactionContainer.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
         containerViewHeightConstraint.isActive = true
-//        containerViewHeightConstraint = bottomContainerView.heightAnchor.constraint(equalTo: scrollView.heightAnchor, multiplier: 1, constant: -1 * scrollView.parallaxHeader.minimumHeight)
-//        containerViewHeightConstraint.isActive = true
+
         
         transactionContainer
             .alignEdgesWithSuperview([.left, .top, .bottom])
             .width(with: .width, ofView: scrollView)
         
-//        balanceView
-//            .height(constant: 70)
-//            .alignEdgesWithSuperview([.left, .top, .right], constants: [0, 0, 0])
-        
-     /*   balanceLabel
-            .alignEdgesWithSuperview([.left, .top], constants: [24, 12])
-        
-        balanceValueLabel
-            .toRightOf(balanceLabel ,constant: 4)
-            .centerVerticallyWith(balanceLabel)
-            .alignEdgesWithSuperview([.right], .greaterThanOrEqualTo , constants: [12])
-        
-        showButton
-            .height(constant: 18)
-            .width(constant: 20)
-            .toBottomOf(balanceValueLabel,constant: 12)
-            .alignEdgesWithSuperview([.left], constants: [24])
-        
-        hideButton
-            .height(constant: 18)
-            .width(constant: 20)
-            .toBottomOf(balanceValueLabel,constant: 12)
-            .alignEdgesWithSuperview([.left], constants: [24])
-        
-        separtorView
-            .height(constant: 1)
-            .width(constant: 134)
-            .toBottomOf(balanceValueLabel,constant: 4)
-            .alignEdgesWithSuperview([.left], constants: [24])
-        
-       balanceDateLabel
-            .height(constant: 14)
-            .toRightOf(showButton,constant: 8)
-            .toBottomOf(balanceValueLabel,constant: 12)
-        
-        balanceHeight = balanceValueLabel.heightAnchor.constraint(equalToConstant: 24)
-        balanceHeight.priority = .required
-        balanceHeight.isActive = true
-        
-        
-        balanceLabelHeight = balanceLabel.heightAnchor.constraint(equalToConstant: 24)
-        balanceLabelHeight.priority = .required
-        balanceLabelHeight.isActive = true */
-        
         toolBar
             .alignEdgesWithSuperview([.left, .right])
-            .alignEdgeWithSuperview(.top, constant: 0)//(self.navigationController?.navigationBar.frame.size.height ?? 0.0) + UIApplication.shared.statusBarFrame.size.height)
+            .alignEdgeWithSuperview(.top, constant: 0)
 
         toolBarHeightConstraint = toolBar.heightAnchor.constraint(equalToConstant: 80)
         toolBarHeightConstraint.isActive = true
@@ -527,6 +483,14 @@ fileprivate extension HomeViewController {
         self.addChild(self.transactionViewController)
         self.transactionContainer.addSubview(self.transactionViewController.view)
         self.transactionViewController.view.alignAllEdgesWithSuperview()
+    }
+    
+    private func addTimeLine(vm: DashboardTimelineViewModel) {
+        //TODO: add proper checks here for this view
+        timelineView.viewModel = vm
+        transactionContainer.addSubview(timelineView)
+        timelineView.alignEdgesWithSuperview([.top,.left,.right], constants: [28,0,0])
+        timelineView.height(constant: 56)
     }
     
     func addDebitCardTimelineIfNeeded() {
@@ -650,6 +614,14 @@ fileprivate extension HomeViewController {
         
         bindTransactions()
         bindTransactionSelection()
+        bindTimeline()
+    }
+    
+    func bindTimeline() {
+        viewModel.outputs.addTimelineViewModel.withUnretained(self).subscribe(onNext: { (`self`, vm) in
+            self.addTimeLine(vm: vm)
+        }).disposed(by: disposeBag)
+
     }
     
     func bindTransactions() {
