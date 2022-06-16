@@ -43,7 +43,7 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
         reviewViewModel.outputs.cnicInfo
             .subscribe(onNext: { [weak self] cnicInfo in
                 guard let self = self else { return }
-                self.navigateToReviewDetails(cnicNumber: self.cnicOCR.cnicNumber, cnicInfo: cnicInfo)
+                self.navigateToReviewDetails(cnicOCR: self.cnicOCR, cnicInfo: cnicInfo)
             })
             .disposed(by: disposeBag)
 
@@ -66,9 +66,9 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
         return resultSubject
     }
 
-    private func navigateToReviewDetails(cnicNumber: String, cnicInfo: CNICInfo) {
+    private func navigateToReviewDetails(cnicOCR: CNICOCR, cnicInfo: CNICInfo) {
         let reviewViewController = container.makeKYCReviewDetailsViewController(
-            identityDocument: identityDocument, cnicNumber: cnicNumber, cnicInfo: cnicInfo)
+            identityDocument: identityDocument, cnicOCR: cnicOCR, cnicInfo: cnicInfo)
         let reviewViewModel = reviewViewController.viewModel
 
         reviewViewModel.outputs.next

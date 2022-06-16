@@ -40,6 +40,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
     private let fatherNameValueSubject = ReplaySubject<String>.create(bufferSize: 1)
 
     private var cnicInfo: CNICInfo
+    private var cnicOCR: CNICOCR
     
     private var nextSubject = PublishSubject<Void>()
     private var successSubject = PublishSubject<Void>()
@@ -63,22 +64,23 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
     init(accountProvider: AccountProvider,
          kycRepository: KYCRepository,
          identityDocument: IdentityDocument,
-         cnicNumber: String,
+         cnicOCR: CNICOCR,
          cnicInfo: CNICInfo) {
         
         self.cnicInfo = cnicInfo
+        self.cnicOCR = cnicOCR
         
-        notifyFields(cnicNumber: cnicNumber)
-        bindSaveRequest(identityDocument: identityDocument, cnicNumber: cnicNumber, kycRepository: kycRepository, accountProvider: accountProvider)
+        notifyFields()
+        bindSaveRequest(identityDocument: identityDocument, cnicNumber: cnicOCR.cnicNumber, kycRepository: kycRepository, accountProvider: accountProvider)
     }
 
-    private func notifyFields(cnicNumber: String) {
-        cnicNumberSubject.onNext(cnicNumber)
+    private func notifyFields() {
+        cnicNumberSubject.onNext(self.cnicOCR.cnicNumber)
         cnicFieldsSubject.onNext([
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_full_name".localized,
                                     value: self.cnicInfo.name, valueChanged: nameValueSubject.asObserver(), isEditable: true),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_father_spouse_name".localized,
-                                    value: self.cnicInfo.fatherSpouseName ?? "", valueChanged: fatherNameValueSubject.asObserver(), isEditable: true),
+                                    value: self.cnicOCR.guardianName, valueChanged: fatherNameValueSubject.asObserver(), isEditable: true),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_gender".localized,
                                     value: self.cnicInfo.gender),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_dob".localized,
@@ -123,7 +125,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                 let identityNo = self.getRandomNumber()
                 let nationality = "PAK"
                 let fullName = self.cnicInfo.name
-                let fatherName = self.cnicInfo.fatherSpouseName ?? ""
+                let fatherName = self.cnicOCR.guardianName
                 let gender = self.cnicInfo.gender
                 let dob = self.cnicInfo.dob
                 let dateIssue = self.cnicInfo.issueDate

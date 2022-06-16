@@ -126,11 +126,11 @@ public final class KYCFeatureContainer {
         return viewController
     }
 
-    func makeKYCReviewDetailsViewController(identityDocument: IdentityDocument, cnicNumber: String, cnicInfo: CNICInfo) -> KYCReviewDetailsViewController {
+    func makeKYCReviewDetailsViewController(identityDocument: IdentityDocument, cnicOCR: CNICOCR, cnicInfo: CNICInfo) -> KYCReviewDetailsViewController {
         let viewModel = KYCReviewDetailsViewModel(accountProvider: accountProvider,
                                                   kycRepository: makeKYCRepository(),
                                                   identityDocument: identityDocument,
-                                                  cnicNumber: cnicNumber, cnicInfo: cnicInfo)
+                                                  cnicOCR: cnicOCR, cnicInfo: cnicInfo)
         let viewController = KYCReviewDetailsViewController(themeService: themeService,
                                                             viewModel: viewModel)
 
