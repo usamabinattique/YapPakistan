@@ -192,29 +192,13 @@ private extension DashboardTimelineView {
 
 private extension DashboardTimelineView {
     func bindViews() {
-        
-//        viewModel.outputs.credit.bind(to: limitLabel.rx.attributedText).disposed(by: disposeBag)
-//        infoButton.rx.tap.bind(to: viewModel.inputs.creditInfo).disposed(by: disposeBag)
-        viewModel.outputs.model.withUnretained(self).subscribe(onNext: { `self`, model in
-            self.title.text = model.title
-            self.descriptionLabel.text = model.description
-            self.icon.image = model.leftIcon
-            self.statusVeiw.isHidden = !model.isProgress
-            self.status.text = model.progressStatus
-            self.leftSeparator.isHidden = !model.isSeparator
-            self.button.setTitle(model.btnTitle, for: .normal)
-            self.button.isHidden = model.isBtnHidden
-            self.leftSeparator.alpha = model.isSeparatorVague ? 0.5 : 1
-            
-            self.containerView.alpha = model.isWholeContainerVague ? 0.5 : 1
-            
-            
-            self.descriptionLabel.alpha = model.isWholeContainerVague ? 0.5 : 1
-            self.icon.alpha = model.isWholeContainerVague ? 0.5 : 1
-            self.statusVeiw.alpha = model.isWholeContainerVague ? 0.5 : 1
-            self.status.alpha = model.isWholeContainerVague ? 0.5 : 1
-        }).disposed(by: disposeBag)
-        
-        button.rx.tap.bind(to: viewModel.inputs.btnObserver).disposed(by: disposeBag)
-    }
+           viewModel.outputs.model.withUnretained(self).subscribe(onNext: { `self`, model in
+               self.title.text = model.title
+               self.icon.image = model.leftIcon
+               self.button.setTitle(model.btnTitle, for: .normal)
+               self.button.isEnabled = model.isBtnEnabled
+           }).disposed(by: disposeBag)
+           
+           button.rx.tap.bind(to: viewModel.inputs.btnObserver).disposed(by: disposeBag)
+       }
 }
