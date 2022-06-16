@@ -329,12 +329,14 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         }).disposed(by: disposeBag)
         
         //TODO: uncomment following
-        generateCellViewModels()
+   /*     generateCellViewModels()
         getCustomerAccountBalance()
         getWidgets(repository: cardsRepository)
-        getCards()
+        getCards() */
         
-       // verifyUserStatus()
+        generateCellViewModels()
+        getWidgets(repository: cardsRepository)
+        verifyUserStatus() 
         
         refreshSubject.subscribe(onNext: { [weak self] _ in
             self?.getCustomerAccountBalance()
@@ -370,14 +372,38 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private func verifyUserStatus() {
         accountProvider.fetchAccounts().elements().subscribe(onNext: { [weak self] in
             guard let `self` = self else { return }
-            
-            
+            let a = $0
+            let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "Tap to continue", isBtnEnabled: true))
+            vm.outputs.btn.map{ true }.bind(to: self.completeVerificationResultSubject).disposed(by: self.disposeBag)
+            self.addTimelineViewModelSubject.onNext(vm)
+          /*
             if let account = $0.first {
                 self.generateCellViewModels()
                 
-                let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: true))
-                vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
-                self.addTimelineViewModelSubject.onNext(vm)
+                if account.accountStatus == .onboarded || account.accountStatus == .secretQuestionPending || account.accountStatus == .selfiePending
+                    || account.accountStatus == .cardNamePending || account.accountStatus == .addressPending || account.accountStatus == .cardSchemePending || account.accountStatus == .cardSchemeExternalCardPending {
+                    if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == false {
+                        // verification required
+                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: true))
+                        vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
+                        self.addTimelineViewModelSubject.onNext(vm)
+                    } else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == true {
+                        // verification required
+                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "Re-upload", isBtnEnabled: true))
+                        vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
+                        self.addTimelineViewModelSubject.onNext(vm)
+                    }
+                    else {
+                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "Tap to continue", isBtnEnabled: true))
+                        vm.outputs.btn.map{ true }.bind(to: self.completeVerificationResultSubject).disposed(by: self.disposeBag)
+                        self.addTimelineViewModelSubject.onNext(vm)
+                    }
+                    
+                } else {
+                    // show transactions
+                    self.getCustomerAccountBalance()
+                    self.getCards()
+                }
                 
                /* /// KYC | CNIC Verified User
                 if account.parnterBankStatus == .activated && account.accountStatus == .onboarded {
@@ -412,7 +438,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
                 } else {
                     self.getCards()
                 } */
-            }
+            } */
         }).disposed(by: disposeBag)
     }
 }
@@ -452,25 +478,20 @@ extension HomeViewModel {
             self?.shimmeringSubject.onNext(false)
             self?.errorSubject.onNext($0)
             
-            if let account = self?.accountProvider.currentAccountValue.value {
+          /*  if let account = self?.accountProvider.currentAccountValue.value {
 //                self?.errorSubject.onNext("Card not found")
                 self?.shimmeringSubject.onNext(false)
                 let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
                 self?.dashobarStatusActions(viewModel: initioaryModel)
                 self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
-            }
-            
+            } */
+            self?.bindPaymentCardOnboardingStagesViewModel(card: nil)
         }).disposed(by: disposeBag)
         
         cardsRequest.elements().subscribe(onNext:{ [weak self] list in
             print("success \(list)")
             self?.shimmeringSubject.onNext(false)
             self?.cardsSubject.onNext(list ?? [])
-           /* if !(list?.isEmpty ?? false), let serialNumber =  list?.first?.cardSerialNumber {
-                self?.cardStatus = list?.first?.status ?? .inActive
-                self?.transactionDataProvider.cardSerialNumber = serialNumber
-                self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
-            } */
             
             self?.cardStatus = list?.first?.status ?? .inActive
             self?.bindPaymentCardOnboardingStagesViewModel(card: list?.first)
@@ -541,6 +562,11 @@ extension HomeViewModel {
         request.elements().withUnretained(self).subscribe(onNext: { `self`, respon in
             self.shimmeringSubject.onNext(false)
             self.transactionsViewModel.pageInfo = respon
+            if (self.transactionsViewModel.transactionsObj.isEmpty  ) {
+                print("response is \(respon.content?.count ?? 0)")
+                self.transactionsViewModel.transactionsObj = respon.content ?? []
+                self.transactionsViewModel.updateContent()
+            }
             
         }).disposed(by: disposeBag)
 
@@ -562,10 +588,10 @@ extension HomeViewModel {
             .subscribe(onNext: { [weak self] res in
                 self?.shimmeringSubject.onNext(false)
                 // set transactions if they are empty
-                if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false ) {
+               /* if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false ) {
                     self?.transactionsViewModel.transactionsObj = res.0 ?? []
                     self?.transactionsViewModel.updateContent()
-                }
+                }*/
                 self?.debitCardOnboardingStageViewModelSubject.onCompleted()
                 
             }).disposed(by: disposeBag)
