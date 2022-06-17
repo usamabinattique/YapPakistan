@@ -72,6 +72,7 @@ public protocol CustomerServiceType {
                                     progressObserver: AnyObserver<Progress>?) -> Observable<T>
     func performNadraVerification<T: Codable>(cnic: String, dateOfIssuance: String) -> Observable<T>
     func uploadSelfie<T: Codable>(_ selfie: (data: Data, format: String)) -> Observable<T>
+    func uploadSelfieComparison<T: Codable>(_ selfie: (data: Data, format: String), isCompared: Bool) -> Observable<T>
     func setCardName<T: Codable>(cardName: String) -> Observable<T>
     
     func fetchRecentBeneficiaries<T: Codable>(_ type:RecentServicesType) -> Observable<T>
@@ -415,6 +416,21 @@ public class CustomersService: BaseService, CustomerServiceType {
 
         return upload(apiClient: apiClient, documents: docs, route: route,
                       progressObserver: nil, otherFormValues: [:])
+    }
+    
+    public func uploadSelfieComparison<T: Codable>(_ selfie: (data: Data, format: String), isCompared: Bool) -> Observable<T> {
+        var docs: [DocumentUploadRequest] = []
+        let info = fileInfo(format: selfie.format)
+        docs.append(DocumentUploadRequest(data: selfie.data,
+                                          name: "selfie-picture",
+                                          fileName: info.1,
+                                          mimeType: info.2))
+        let formValue = ["selfie-matched": String(isCompared)]
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/customers/selfie-picture-comparison",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient, documents: docs, route: route,
+                      progressObserver: nil, otherFormValues: formValue)
     }
 
     public func setCardName<T: Codable>(cardName: String) -> Observable<T> {

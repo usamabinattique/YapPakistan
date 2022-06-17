@@ -69,7 +69,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
         let uploadResult = nextSubject.withLatestFrom(imageSubject).withUnretained(self)
             .do(onNext: { `self`, _ in self.loadingSubject.onNext(true) })
             .map({ `self`, image in self.extracImageData(from: image) }).unwrap().withUnretained(self)
-            .flatMapLatest { `self`, data in self.kycRepository.uploadSelfie(data) }
+            .flatMapLatest { `self`, data in self.kycRepository.uploadSelfieComparison(data, isCompared: true) }
             .share()
 
         uploadResult.elements()

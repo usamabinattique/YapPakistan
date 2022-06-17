@@ -27,6 +27,7 @@ protocol KYCRepositoryType {
     func getCityOfBirthNames() -> Observable<Event<[String]>>
     func verifySecretQuestions(motherMaidenName: String, cityOfBirth: String ) -> Observable<Event<Bool>>
     func uploadSelfie(_ selfie: (data: Data, format: String)) -> Observable<Event<[String: String?]>>
+    func uploadSelfieComparison(_ selfie: (data: Data, format: String), isCompared: Bool) -> Observable<Event<[String: String?]>>
     func setCardName(cardName: String) -> Observable<Event<String?>>
     func getCities() -> Observable<Event<[Cities]>>
     func saveUserAddress(addressOne: String,
@@ -93,6 +94,10 @@ class KYCRepository: KYCRepositoryType {
 
     func uploadSelfie(_ selfie: (data: Data, format: String)) -> Observable<Event<[String: String?]>> {
         return customersService.uploadSelfie(selfie).materialize()
+    }
+    
+    func uploadSelfieComparison(_ selfie: (data: Data, format: String), isCompared: Bool) -> Observable<Event<[String: String?]>> {
+        return customersService.uploadSelfieComparison(selfie, isCompared: isCompared).materialize()
     }
 
     func setCardName(cardName: String) -> Observable<Event<String?>> {
