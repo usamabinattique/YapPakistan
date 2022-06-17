@@ -58,6 +58,7 @@ extension KYCResultCoordinator {
         viewModel.outputs.gotoDashboard.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
             print("Goto Dashboard button pressed")
+            self.root.popToRootViewController(animated: true)
         }).disposed(by: rx.disposeBag)
         
         self.root.pushViewController(viewController, completion: nil)
@@ -69,9 +70,7 @@ extension KYCResultCoordinator {
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
-                self.root.popViewController(animated: true) {
-                    self.goToHome()
-                }
+                self.root.popToRootViewController(animated: true)
             })
             .disposed(by: rx.disposeBag)
     }
