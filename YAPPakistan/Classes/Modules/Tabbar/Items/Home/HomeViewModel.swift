@@ -435,7 +435,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
                 } else {
                     self.getCards()
                 } */
-            } 
+            }
         }).disposed(by: disposeBag)
     }
 }
@@ -513,7 +513,7 @@ extension HomeViewModel {
         
         self.callFetchTransactions(card: card)
 
-        debitCard.subscribe(onNext: { [weak self] card in
+     /*   debitCard.subscribe(onNext: { [weak self] card in
             //TODO: uncomment following line
            /* if let account = self?.accountProvider.currentAccountValue.value, (account.paidCard ?? false), account.parnterBankStatus != .physicalCardPending {
                 self?.addCreditInfoSubject.onNext(())
@@ -542,7 +542,7 @@ extension HomeViewModel {
 //                self?.callFetchTransactions(card: card)
 //            }
 
-       }).disposed(by: disposeBag)
+       }).disposed(by: disposeBag) */
         
         
     }
@@ -559,8 +559,9 @@ extension HomeViewModel {
         request.elements().withUnretained(self).subscribe(onNext: { `self`, respon in
             self.shimmeringSubject.onNext(false)
             self.transactionsViewModel.pageInfo = respon
-            if (self.transactionsViewModel.transactionsObj.isEmpty  ) {
+            if (self.transactionsViewModel.transactionsObj.isEmpty  && !(respon.content?.isEmpty ?? false) ) {
                 print("response is \(respon.content?.count ?? 0)")
+                self.debitCardOnboardingStageViewModelSubject.onCompleted()
                 self.transactionsViewModel.transactionsObj = respon.content ?? []
                 self.transactionsViewModel.updateContent()
             }
