@@ -372,11 +372,8 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private func verifyUserStatus() {
         accountProvider.fetchAccounts().elements().subscribe(onNext: { [weak self] in
             guard let `self` = self else { return }
-            let a = $0
-            let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "Tap to continue", isBtnEnabled: true))
-            vm.outputs.btn.map{ true }.bind(to: self.completeVerificationResultSubject).disposed(by: self.disposeBag)
-            self.addTimelineViewModelSubject.onNext(vm)
-          /*
+           
+          
             if let account = $0.first {
                 self.generateCellViewModels()
                 
@@ -438,7 +435,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
                 } else {
                     self.getCards()
                 } */
-            } */
+            } 
         }).disposed(by: disposeBag)
     }
 }
