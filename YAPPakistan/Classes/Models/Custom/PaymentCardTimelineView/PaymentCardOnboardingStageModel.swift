@@ -70,7 +70,7 @@ public struct PaymentCardOnboardingStageModel {
                 documentSubmissionDate: String?,
                 accountStatus: AccountStatus?) {
         self.paymentCard = paymentCard
-        self.deliveryStatus = paymentCard.deliveryStatus
+        self.deliveryStatus = paymentCard.deliveryStatus ?? .ordered
         self.deliveryDate = paymentCard.deliveryDate
         self.activationDate = paymentCard.setPinDate
         self.partnerBankApprovalDate = partnerBankApprovalDate
@@ -88,7 +88,7 @@ public struct PaymentCardOnboardingStageModel {
                 documentSubmissionDate: String?,
          accountStatus: AccountStatus?, isCustom: Bool = true, customData: PaymentCardOnboardingStageModelCustomData) {
         self.paymentCard = paymentCard
-        self.deliveryStatus = paymentCard.deliveryStatus
+        self.deliveryStatus = paymentCard.deliveryStatus ?? .ordered
         self.deliveryDate = paymentCard.deliveryDate
         self.activationDate = paymentCard.setPinDate
         self.partnerBankApprovalDate = partnerBankApprovalDate

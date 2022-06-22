@@ -133,7 +133,7 @@ public class PaymentCard: Codable {
     let currentBalance: Double?
     let customerId: String?
     let delivered: Bool?
-    var deliveryStatus: DeliveryStatus
+    var deliveryStatus: DeliveryStatus?
     let expiryDate: String?
     let frontImage: String?
     let issuanceDate: String?
@@ -215,7 +215,7 @@ public class PaymentCard: Codable {
         currentBalance = try? values?.decodeIfPresent(Double.self, forKey: .currentBalance)
         customerId = try? values?.decodeIfPresent(String.self, forKey: .customerId)
         delivered = try? values?.decodeIfPresent(Bool.self, forKey: .delivered)
-        deliveryStatus = (try? values?.decodeIfPresent(DeliveryStatus.self, forKey: .deliveryStatus)) ?? .ordered
+        deliveryStatus = (try? values?.decodeIfPresent(DeliveryStatus.self, forKey: .deliveryStatus))
         expiryDate = try? values?.decodeIfPresent(String.self, forKey: .expiryDate)
         frontImage = try? values?.decodeIfPresent(String.self, forKey: .frontImage)
         issuanceDate = try? values?.decodeIfPresent(String.self, forKey: .issuanceDate)

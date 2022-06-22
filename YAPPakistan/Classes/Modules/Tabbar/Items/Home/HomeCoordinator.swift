@@ -162,7 +162,14 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.missingDocument.withUnretained(self).subscribe(onNext: { `self` , _ in
             self.missingDocument()
         }).disposed(by: rx.disposeBag)
-
+        
+        viewController.viewModel.outputs.orderPhysicalCard.withUnretained(self).subscribe(onNext: { `self` , _ in
+            self.navigateToCardScheme()
+        }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.trackCardDelivery.subscribe(onNext: { [weak self] card in
+            self?.navigateToDeliveryStatus(card)
+        }).disposed(by: rx.disposeBag)
     }
     
     func showCreditLimit() {
@@ -205,6 +212,12 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             self.navigationRoot.pushViewController(viewController, animated: true)
             self.navigationRoot.setNavigationBarHidden(true, animated: true)
         }
+    }
+    
+    private func navigateToCardScheme() {
+        coordinate(to: CardSchemeCoordinator(root: navigationRoot, container: self.container))
+            .subscribe()
+            .disposed(by: rx.disposeBag)
     }
 }
 
@@ -488,18 +501,18 @@ extension HomeCoodinator {
     }
 
     func navigateToDeliveryStatus(_ card: PaymentCard) {
-       /* let viewModel = CardDeliveryStatusViewModel(paymentCard: card)
-        let viewController = CardDeliveryStatusViewController(viewModel: viewModel)
-        let navigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
-
-        viewModel.outputs.action.subscribe(onNext: {[weak self] _ in
-            guard let `self` = self else { return }
-            navigationController.dismiss(animated: true) { [unowned self] in
-                self.navigateToSetPin(card: card)
-            }
-        }).disposed(by: disposeBag)
-
-        navigationRoot.present(navigationController, animated: true, completion: nil) */
+//        let viewModel = CardDeliveryStatusViewModel(paymentCard: card)
+//        let viewController = CardDeliveryStatusViewController(viewModel: viewModel)
+//        let navigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+//
+//        viewModel.outputs.action.subscribe(onNext: {[weak self] _ in
+//            guard let `self` = self else { return }
+//            navigationController.dismiss(animated: true) { [unowned self] in
+//                self.navigateToSetPin(card: card)
+//            }
+//        }).disposed(by: disposeBag)
+//
+//        navigationRoot.present(navigationController, animated: true, completion: nil)
     }
 
     private func additionalInformation() {

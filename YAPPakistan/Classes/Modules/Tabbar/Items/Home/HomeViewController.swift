@@ -159,6 +159,7 @@ class HomeViewController: UIViewController {
     }()
     
     private var widgetViewHeightConstraints: NSLayoutConstraint!
+    private var timelineViewHeightConstraints: NSLayoutConstraint!
 
     private lazy var widgetView: DashboardWidgets = {
         let buttons = DashboardWidgets(theme: self.themeService)
@@ -201,6 +202,12 @@ class HomeViewController: UIViewController {
     private var containerViewHeightConstraint: NSLayoutConstraint!
 
     lazy var transactionContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    lazy var timelineContainer: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -353,7 +360,8 @@ fileprivate extension HomeViewController {
         view.addSubview(scrollView)
         
      //   balanceView.isHidden = true
-
+        
+        scrollView.addSubview(timelineContainer)
         scrollView.addSubview(transactionContainer)
         parallaxHeaderView.addSubview(headerStackView)
         separtorView.alpha = 0
@@ -412,8 +420,17 @@ fileprivate extension HomeViewController {
         containerViewHeightConstraint.isActive = true
 
         
+        timelineContainer
+            .width(with: .width, ofView: scrollView)
+            .alignEdgesWithSuperview([.left, .right,.top])
+        timelineViewHeightConstraints = timelineContainer.heightAnchor.constraint(equalToConstant: 0)
+        timelineViewHeightConstraints.isActive = true
+        
         transactionContainer
-            .alignEdgesWithSuperview([.left, .top, .bottom])
+            //.alignEdgesWithSuperview([.left, .top, .bottom])
+            .alignEdgesWithSuperview([.left, .bottom])
+            .toBottomOf(timelineContainer)
+        
             .width(with: .width, ofView: scrollView)
         
         toolBar
@@ -488,7 +505,8 @@ fileprivate extension HomeViewController {
     private func addTimeLine(vm: DashboardTimelineViewModel) {
         //TODO: add proper checks here for this view
         timelineView.viewModel = vm
-        transactionContainer.addSubview(timelineView)
+        timelineViewHeightConstraints.constant = 84
+        timelineContainer.addSubview(timelineView)
         timelineView.alignEdgesWithSuperview([.top,.left,.right], constants: [28,0,0])
         timelineView.height(constant: 56)
     }
