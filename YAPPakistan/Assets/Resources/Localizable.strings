@@ -787,3 +787,11 @@ and click on Quick Access Widgets.";
 "screen_card_analytics_display_text_title" = "Analytics";
 "screen_card_analytics_display_text_transaction" = "transaction";
 "screen_card_analytics_display_text_transactions" = "transactions";
+
+// MARK: Block features: app restrictions
+"common_display_text_cnic_expired" = "CNIC expired. This feature will be available once you upload your new CNIC";
+"common_display_text_cnic_not_verified" = "This feature will be available once your account is verified";
+"common_display_text_cnic_card_freeze" = "Your card is frozen, please un-freeze your card to use this feature";
+"common_display_text_account_dormant" = "Your account is dormant, please activate your account to use this feature";
+"common_display_text_account_kyc_pending" = "This feature will be available once your verify your account";
+"common_display_text_account_none" = "This feature is restricted";

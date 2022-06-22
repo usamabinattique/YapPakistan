@@ -80,7 +80,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         let coordinator = ReorderCardCoordinator(root: navigationRoot,
                                                  container: self.container,
                                                  cardDetaild: cardDetaild)
-        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
+        navigate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 
     func cardDetailView(_ paymentCard: PaymentCard?) {
@@ -195,7 +195,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     func changePin(cardDetaild: PaymentCard?) {
         let coordinator = ChangePinCoordinator(root: self.navigationRoot, container: self.container, serialNumber: cardDetaild?.cardSerialNumber ?? "")
 
-        let forgotResult = coordinate(to: coordinator)
+        let forgotResult = navigate(to: coordinator)
             .filter{ $0.isSuccess == .forgotPin }.share()
         forgotResult.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.forgotPin(cardDetaild: cardDetaild) })
@@ -221,7 +221,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
     
     func cardStatement(cardDetaild: PaymentCard?) {
         let coordinator = CardStatementCoordinator(root: self.navigationRoot, container: self.container, card: cardDetaild, repository: self.container.makeTransactionsRepository() as StatementsRepositoryType)
-        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
+        navigate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 
     func cardLimits(_ paymentCard: PaymentCard) {

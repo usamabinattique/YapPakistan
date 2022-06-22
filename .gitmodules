@@ -1,6 +1,6 @@
 [submodule "YAPComponents"]
 	path = YAPComponents
-	url = https://bitbucket.org/mb28/ios-yap-ui-kit.git
+url=https://bitbucket.org/yap-technology/ios-yap-ui-kit.git
 [submodule "YAPCore"]
 	path = YAPCore
-	url = https://bitbucket.org/mb28/ios-yap-core.git
+url=https://bitbucket.org/yap-technology/ios-yap-core.git

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import YAPCore
 
 // swiftlint:disable identifier_name
 public enum AccountError: Error {
@@ -380,7 +381,7 @@ public enum AccountFreezeInitiator: String, Codable {
     case blockedByYapComplianceTotal = "YAP_COMPLIANCE_TOTAL"
     case blockedByYapComplianceDebit = "YAP_COMPLIANCE_DEBIT"
     case blockedByYapComplianceCredit = "YAP_COMPLIANCE_CREDIT"
-    case eidExpiredBySchedular = "EID_EXPIRED_SCHEDULER"
+    case cnicExpiredBySchedular = "CNIC_EXPIRED_SCHEDULER"
     case none
 }
 

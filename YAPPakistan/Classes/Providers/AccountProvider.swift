@@ -42,6 +42,7 @@ public class AccountProvider {
 
             if let currentAccount = userAccounts.first {
                 // po currentAccount._accountStatus = "ADDRESS_PENDING"
+                AppRestrictionManager.shared.account = currentAccount
                 self.accountSubject.onNext(currentAccount)
             }
         }).disposed(by: disposeBag)

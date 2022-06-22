@@ -47,7 +47,7 @@ public class ReportCardCoordinator: Coordinator<ResultType<Void>> {
         let coordinator = ReorderCardCoordinator(root: root,
                                                  container: self.container,
                                                  cardDetaild: cardDetail)
-        coordinate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
+        navigate(to: coordinator).subscribe().disposed(by: rx.disposeBag)
     }
 }
 
