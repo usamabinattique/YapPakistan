@@ -95,6 +95,8 @@ public protocol CustomerServiceType {
     func getDashboardWidgets<T: Codable> () -> Observable<T>
     func updateDashboardWidgets<T:Codable>(widgets: [DashboardWidgetsRequest], uuid: String, customer_uuid: String)-> Observable<T>
     func fetchFAQs<T: Codable>() -> Observable<T>
+    func generateIBAN<T: Codable>(isSelfieMatched: Bool) -> Observable<T>
+    func verifyFaceOCR<T: Codable>(_ data: Data, fileName: String, mimeType: String) -> Observable<T>
 }
 
     
@@ -367,6 +369,7 @@ public class CustomersService: BaseService, CustomerServiceType {
             "firstName": fullName,
             "lastName": fatherName,
             "fullName": fullName+fatherName,
+            "fatherName": fatherName,
             "gender": gender,
             "dob": dob,
             "dateIssue": dateIssue,
@@ -585,6 +588,29 @@ public class CustomersService: BaseService, CustomerServiceType {
 //        let route = APIEndpoint(.put, apiConfig.customersURL, "/api/updateWidgets/uuid/\(customer_uuid)" ,body: widgets, headers: authorizationProvider.authorizationHeaders)
         let route = APIEndpoint(.put, apiConfig.customersURL, "/api/updateWidgets/uuid/" , pathVariables: pathVariables, body: widgets, headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func generateIBAN<T: Codable>(isSelfieMatched: Bool) -> Observable<T> {
+        let params = ["selfie-matched": String(isSelfieMatched)]
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/create-customer/", query: params, headers: authorizationProvider.authorizationHeaders)
+
+        return self.request(apiClient: self.apiClient, route: route)
+    }
+    
+    public func verifyFaceOCR<T: Codable>(_ data: Data, fileName: String, mimeType: String) -> Observable<T> {
+        
+        var docs: [DocumentUploadRequest] = []
+        //let info = fileInfo(format: selfie.format)
+        docs.append(DocumentUploadRequest(data: data,
+                                          name: "file_selfie",
+                                          fileName: fileName,
+                                          mimeType: mimeType))
+        
+        let route = APIEndpoint<String>(.post, apiConfig.ocrURL, "/selfie-comparison/",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient, documents: docs, route: route,
+                      progressObserver: nil, otherFormValues: [:])
     }
     
 }

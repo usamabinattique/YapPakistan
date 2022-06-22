@@ -7,6 +7,7 @@
 
 import Foundation
 import RxSwift
+import UIKit
 
 protocol KYCRepositoryType {
     func fetchDocument(byType documentType: String) -> Observable<Event<Document?>>
@@ -38,6 +39,8 @@ protocol KYCRepositoryType {
                          longitude: String ) -> Observable<Event<Account>>
     
     func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>>
+    func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<String>>
+    func verifyFaceOCR(_ data: Data, fileName: String, mimeType: String) -> Observable<Event<String>>
 }
 
 class KYCRepository: KYCRepositoryType {
@@ -129,5 +132,13 @@ class KYCRepository: KYCRepositoryType {
     
     func fetchCardBenefits(cardType type: SchemeType) -> Observable<Event<[KYCCardBenefitsM]>> {
         return cardsService.getCardBenefits(scheme: type).materialize()
+    }
+    
+    func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<String>> {
+        return customersService.generateIBAN(isSelfieMatched: isSelfieMatched).materialize()
+    }
+    
+    func verifyFaceOCR(_ data: Data, fileName: String, mimeType: String) -> Observable<Event<String>> {
+        return customersService.verifyFaceOCR(data, fileName: fileName, mimeType: mimeType).materialize()
     }
 }

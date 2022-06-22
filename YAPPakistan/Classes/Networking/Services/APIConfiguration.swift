@@ -48,6 +48,10 @@ public struct APIConfiguration {
         return baseURL.appendingPathComponent("/transactions")
     }
     
+    public var ocrURL : URL {
+        return baseURL.appendingPathComponent("/digi-ocr")
+    }
+    
     public var onBoardingCardDetailWebURL: String {
         switch self.environment {
         case .dev:
