@@ -28,6 +28,8 @@ class AddMoneyQRCodeCoordinator: Coordinator<ResultType<Void>> {
         self.container = container
     }
     
+    override var feature: PKCoordinatorFeature { .qrCodeAddMoney }
+    
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
         let viewModel = AddMoneyQRCodeViewModel(scanAllowed: scanAllowed, accountProvider: container.accountProvider, themeService: container.themeService)

@@ -28,6 +28,8 @@ public class ReorderCardCoordinator: Coordinator<ResultType<Void>> {
 
         self.navigationRoot = makeNavigationController()
     }
+    
+    public override var feature: PKCoordinatorFeature { .reorderCard } 
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 

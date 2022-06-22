@@ -148,17 +148,17 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
     
     func navigateToAddMoneyQRCode() {
-        coordinate(to: AddMoneyQRCodeCoordinator(root: rootNavigationController, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
-           
-        }).disposed(by: rx.disposeBag)
+        navigate(to: AddMoneyQRCodeCoordinator(root: rootNavigationController, scanAllowed: true, container: container))
+            .subscribe()
+            .disposed(by: rx.disposeBag)
     }
     
     func analytics(_ paymentCard: PaymentCard, date: Date? = nil, theRoot: UIViewController) {
-        coordinate(to: CardAnalyticsCoordinator(root: theRoot, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
+        navigate(to: CardAnalyticsCoordinator(root: theRoot, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
     }
 
     fileprivate func store(root: UITabBarController) {
-        self.coordinate(to: StoreCoordinator(root: root, container: container))
+        navigate(to: StoreCoordinator(root: root, container: container))
             .subscribe()
             .disposed(by: disposeBag)
     }
@@ -201,7 +201,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
     
     fileprivate func sendMoney(_ root: UIViewController) {
-        coordinate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+        navigate(to: SendMoneyDashboardCoordinator(root: root, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
             if case ResultType.success = result {
                 root.dismiss(animated: true, completion: nil)
                 (root as? UITabBarController)?.selectedIndex = 0
@@ -210,7 +210,7 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
                    }
     private func topup(_ root: UIViewController, returnsToDashboard: Bool = true, successButtonTitle: String? = nil) {
         let rootNav = returnsToDashboard ? root : root.lastPresentedViewController ?? root
-        coordinate(to: AddMoneyCoordinator(root: rootNav, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+        navigate(to: AddMoneyCoordinator(root: rootNav, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
             if case ResultType.success = result, returnsToDashboard {
                 (root as? UITabBarController)?.selectedIndex = 0
             }
@@ -232,13 +232,13 @@ class TabbarCoodinator: Coordinator<ResultType<Void>> {
     }
     
     private func statements(_ viewController: UIViewController) {
-        coordinate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
+        navigate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
             .subscribe()
             .disposed(by: disposeBag)
     }
     
     private func coordinateToAccountLimits(_ viewController: UIViewController){
-        coordinate(to: AccountLimitsCoordinator(root: viewController, container: self.container, repository: container.makeTransactionsRepository()))
+        navigate(to: AccountLimitsCoordinator(root: viewController, container: self.container, repository: container.makeTransactionsRepository()))
             .subscribe()
             .disposed(by: disposeBag)
     }

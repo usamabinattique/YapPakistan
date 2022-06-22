@@ -24,6 +24,8 @@ public class AccountLimitsCoordinator: Coordinator<ResultType<Void>> {
         self.repository = repository
     }
     
+    public override var feature: PKCoordinatorFeature { .accountLimits }
+    
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
         let viewModel = AccountLimitsViewModel(repository: self.repository)

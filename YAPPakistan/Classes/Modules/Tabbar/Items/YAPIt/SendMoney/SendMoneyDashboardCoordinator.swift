@@ -21,6 +21,10 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
     let contactsManager: ContactsManager
     private let repository: Y2YRepositoryType
     
+    override var feature: PKCoordinatorFeature {
+        .sendMoney
+    }
+    
     init(root: UIViewController, container: UserSessionContainer, successButtonTitle: String? = nil, contactsManager: ContactsManager, repository: Y2YRepositoryType) {
         self.root = root
         self.successButtonTitle = successButtonTitle
@@ -156,7 +160,7 @@ private extension SendMoneyDashboardCoordinator {
     }
     
     func sendMoneyViaQrCode(localRoot: UINavigationController) {
-        coordinate(to: SendMoneyQRCodeCoordinator(root: localRoot, container: container)).subscribe(onNext: { [weak self] in
+        navigate(to: SendMoneyQRCodeCoordinator(root: localRoot, container: container)).subscribe(onNext: { [weak self] in
             if case let ResultType.success(result) = $0 {
                 self?.qrFundsTransfer(localRoot: localRoot, contact: result)
             }
@@ -173,7 +177,7 @@ private extension SendMoneyDashboardCoordinator {
     } */
     
     func qrFundsTransfer(localRoot: UINavigationController, contact: QRContact) {
-        coordinate(to: QRPaymentCoordinator(root: localRoot, container: container, contact: contact.yapContact, repository: container.makeY2YRepository(), transferType: .qrCode)).subscribe(onNext: { [weak self] in
+        navigate(to: QRPaymentCoordinator(root: localRoot, container: container, contact: contact.yapContact, repository: container.makeY2YRepository(), transferType: .qrCode)).subscribe(onNext: { [weak self] in
             if case let ResultType.success(result) = $0 {
                 self?.result.onNext(.success(result))
                 self?.result.onCompleted()

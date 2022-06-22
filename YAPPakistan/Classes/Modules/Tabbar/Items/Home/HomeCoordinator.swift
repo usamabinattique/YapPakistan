@@ -345,7 +345,7 @@ extension HomeCoodinator {
     }
     
     private func statements(_ viewController: UIViewController) {
-        coordinate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
+        navigate(to: CardStatementCoordinator(root: viewController, container: self.container, card: nil, repository: container.makeTransactionsRepository()))
             .subscribe()
             .disposed(by: rx.disposeBag)
     }
@@ -402,7 +402,7 @@ extension HomeCoodinator {
     }
 
     func navigateToTransactionDetails(transaction: TransactionResponse) {
-        self.coordinate(to: TransactionDetailsCoordinator(root: root, container: container, repository: container.makeTransactionsRepository(), transaction: transaction))
+        self.navigate(to: TransactionDetailsCoordinator(root: root, container: container, repository: container.makeTransactionsRepository(), transaction: transaction))
             .subscribe(onNext: {[weak self] result in
                 if !(result.isCancel) {
                     self?.transactionCategoryResult.onNext(())
@@ -421,7 +421,7 @@ extension HomeCoodinator {
     }
 
     func analytics(_ paymentCard: PaymentCard, date: Date? = nil) {
-        coordinate(to: CardAnalyticsCoordinator(root: self.root, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
+        navigate(to: CardAnalyticsCoordinator(root: self.root, container: container, card: paymentCard, date: date)).subscribe().disposed(by: rx.disposeBag)
     }
     
     func missingDocument() {
@@ -559,7 +559,7 @@ extension HomeCoodinator {
     
     func navigateToAddMoneyQRCode() {
         self.root.tabBar.isHidden = true
-        coordinate(to: AddMoneyQRCodeCoordinator(root: navigationRoot, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
+        navigate(to: AddMoneyQRCodeCoordinator(root: navigationRoot, scanAllowed: true, container: container)).subscribe(onNext: { [weak self] _  in
             self?.root.tabBar.isHidden = false
         }).disposed(by: rx.disposeBag)
     }
