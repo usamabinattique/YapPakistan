@@ -12,7 +12,7 @@ Pod::Spec.new do |spec|
   spec.author                = { 'Tayyab Akram' => 'tayyab.akram@digitify.com' }
 
   spec.platform              = :ios
-  spec.ios.deployment_target = '13.0'
+  spec.ios.deployment_target = '11.4'
   spec.swift_version         = '5.0'
 
   spec.source_files          = 'YAPPakistan/Classes/**/*'
