@@ -290,7 +290,7 @@ extension CardsViewModel {
         
         return LocalizedStrings(titleView: "Your cards",
                                 titleCard: (paymentCard.nameUpdated ?? false) ? (paymentCard.cardName ?? "") : "Primary card",
-                                subTitle: (paymentCard.deliveryStatus).mainScreenMessage,
+                                subTitle: (paymentCard.deliveryStatus ?? .ordered).mainScreenMessage,
                                 seeDetail: "See details",
                                 cardImage: (paymentCard.cardScheme).cardImage,
                                 count: "1 of 1")
