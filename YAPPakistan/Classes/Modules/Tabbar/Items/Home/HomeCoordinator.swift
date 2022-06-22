@@ -265,13 +265,26 @@ extension HomeCoodinator {
     func setPinIntroScreen(cardSerial: String) {
         let viewController = SetpinIntroModuleBuilder(container: self.container).viewController()
         self.navigationRoot.pushViewController(viewController)
+        hideNavAndTabBar()
 
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.setPin(cardSerial: cardSerial) })
             .disposed(by: rx.disposeBag)
         viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true)
+                self.showNavAndTabBar()
+            })
             .disposed(by: rx.disposeBag)
+    }
+    
+    func hideNavAndTabBar() {
+        navigationRoot.setNavigationBarHidden(true, animated: false)
+        root.tabBar.isHidden = true
+    }
+    
+    func showNavAndTabBar() {
+        navigationRoot.setNavigationBarHidden(false, animated: false)
+        root.tabBar.isHidden = false
     }
 
     func setPin(cardSerial: String) {

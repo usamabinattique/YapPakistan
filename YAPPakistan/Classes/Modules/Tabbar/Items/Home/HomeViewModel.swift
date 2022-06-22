@@ -378,7 +378,6 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             guard let `self` = self else { return }
             if let account = $0.first {
                 self.generateCellViewModels()
-                
                 if account.accountStatus == .onboarded || account.accountStatus == .secretQuestionPending || account.accountStatus == .selfiePending
                    /* || account.accountStatus == .cardNamePending || account.accountStatus == .addressPending || account.accountStatus == .cardSchemePending || account.accountStatus == .cardSchemeExternalCardPending */ {
                     if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == false {
@@ -405,7 +404,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
                     // show transactions
                     self.getCustomerAccountBalance()
                     self.getCards(account: account, isShowTransactions: true)
-                }
+                } 
                 
                /* /// KYC | CNIC Verified User
                 if account.parnterBankStatus == .activated && account.accountStatus == .onboarded {
@@ -506,6 +505,7 @@ extension HomeViewModel {
             self.addTimelineViewModelSubject.onNext(vm)
         } else if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardSuccess) && (card.status == .active || card.status == .inActive) && (card.deliveryStatus == .delivered) && card.pinCreated  == false {
             // set pin
+            self.setPinSubject.onNext(card)
         } else if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardPending) && card.status == nil && card.deliveryStatus == nil && card.pinCreated == nil {
             // order physical card
             let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Order your physical YAP card", leftIcon: UIImage.init(named: "icon_order_card", in: .yapPakistan)?.asTemplate, btnTitle: "Order now", isBtnEnabled: true))
