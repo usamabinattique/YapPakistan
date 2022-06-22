@@ -29,6 +29,8 @@ class SendMoneyQRCodeCoordinator: Coordinator<ResultType<QRContact>> {
         self.container = container
     }
     
+    override var feature: PKCoordinatorFeature { .qrCodeSendMoney }
+    
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<QRContact>> {
         
         let authorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
@@ -133,7 +135,9 @@ private extension SendMoneyQRCodeCoordinator {
     }
     
     func myQrCode() {
-        coordinate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: false, container: container)).subscribe().disposed(by: disposeBag)
+        navigate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: false, container: container))
+            .subscribe()
+            .disposed(by: disposeBag)
     }
     
     func photoLibrary() {

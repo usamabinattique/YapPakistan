@@ -28,6 +28,8 @@ class AddMoneyCoordinator: Coordinator<ResultType<Void>> {
         self.repository = repository
     }
     
+    override var feature: PKCoordinatorFeature { .addMoney }
+    
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
         
@@ -175,7 +177,7 @@ private extension AddMoneyCoordinator {
     }
     
     func navigateToAddMoneyQRCode() {
-        coordinate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: true, container: container)).subscribe().disposed(by: rx.disposeBag)
+        navigate(to: AddMoneyQRCodeCoordinator(root: localRoot, scanAllowed: true, container: container)).subscribe().disposed(by: rx.disposeBag)
     }
 }
 

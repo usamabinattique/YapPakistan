@@ -35,6 +35,8 @@ public class QRPaymentCoordinator: Coordinator<ResultType<Void>> {
         
     }
     
+    public override var feature: PKCoordinatorFeature { .qrCodeSendMoney }
+    
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         let viewModel = QRPaymentViewModel(contact, repository: repository, transferType: transferType, container: container,presented: shouldPresent)
         let viewController = QRPaymentViewController(themeService: container.themeService, viewModel: viewModel)

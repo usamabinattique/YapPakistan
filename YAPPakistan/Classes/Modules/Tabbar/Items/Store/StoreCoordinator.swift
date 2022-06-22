@@ -19,6 +19,8 @@ public class StoreCoordinator: Coordinator<ResultType<Void>> {
         self.root = root
         self.container = container
     }
+    
+    public override var feature: PKCoordinatorFeature { .store }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         let viewModel = StoreViewModel()

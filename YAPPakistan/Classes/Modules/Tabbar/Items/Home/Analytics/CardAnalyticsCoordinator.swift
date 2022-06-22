@@ -25,6 +25,8 @@ public class CardAnalyticsCoordinator: Coordinator<ResultType<Void>> {
         self.card = card
         self.date = date
     }
+    
+    public override var feature: PKCoordinatorFeature { .analytics }
 
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 

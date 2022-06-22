@@ -26,6 +26,8 @@ public class CardStatementCoordinator: Coordinator<ResultType<Void>> {
         self.repository = repository
     }
     
+    public override var feature: PKCoordinatorFeature { .accountStatements }
+    
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
         let viewModel = CardStatementViewModel(statementFetchable: card, repository: repository, cardsRepository: container.makeCardsRepository())

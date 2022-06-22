@@ -26,6 +26,8 @@ public class TransactionDetailsCoordinator: Coordinator<ResultType<Void>> {
         self.transaction = transaction
     }
     
+    public override var feature: PKCoordinatorFeature { .transactionDetails }
+    
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         
         let viewModel = TransactionDetailsViewModel(repository: self.repository, transaction: transaction, themeService: container.themeService)
