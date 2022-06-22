@@ -28,7 +28,7 @@ public class ChangePinCoordinator: Coordinator<ResultType<ChangePinCoordinatorRe
         self.serialNumber = serialNumber
     }
     
-    public var feature: PKCoordinatorFeature { .changeCardPin }
+    public override var feature: PKCoordinatorFeature { .changeCardPin }
 
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<ChangePinCoordinatorResult>> {
 
