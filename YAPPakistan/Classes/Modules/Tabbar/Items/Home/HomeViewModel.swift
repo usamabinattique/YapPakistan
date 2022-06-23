@@ -378,12 +378,11 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             guard let `self` = self else { return }
             if let account = $0.first {
                 self.generateCellViewModels()
-                if account.accountStatus == .onboarded || account.accountStatus == .secretQuestionPending || account.accountStatus == .selfiePending
+                if account.accountStatus == .onboarded || account.accountStatus == .secretQuestionPending || account.accountStatus == .selfiePending || account.accountStatus == .kycPending
                    /* || account.accountStatus == .cardNamePending || account.accountStatus == .addressPending || account.accountStatus == .cardSchemePending || account.accountStatus == .cardSchemeExternalCardPending */ {
                     if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == false {
                         // verification required
-                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: true))
-                        vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
+                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: false))
                         self.addTimelineViewModelSubject.onNext(vm)
                     } else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == true {
                         // verification required
@@ -397,48 +396,17 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
                         self.addTimelineViewModelSubject.onNext(vm)
                         
                     } else {
-                        self.getCards(account: account)
+                        // show transactions
+                        self.getCustomerAccountBalance()
+                        self.getCards(account: account, isShowTransactions: true)
                     }
                     
                 } else {
                     // show transactions
                     self.getCustomerAccountBalance()
                     self.getCards(account: account, isShowTransactions: true)
-                } 
-                
-               /* /// KYC | CNIC Verified User
-                if account.parnterBankStatus == .activated && account.accountStatus == .onboarded {
-                    self.getCards()
-                }
-                /// BM | FAILED | Activated USER
-                else if account.parnterBankStatus == .activated && account.accountStatus == .eDDRequired {
-                    self.getCards()
                 }
                 
-                /// BM failed after user onboarded
-                else if account.parnterBankStatus == .inActive && account.accountStatus == .benchmetricFailed {
-                    self.getCards()
-                }
-                
-                /// KYC | CNIC Unverified user, (show in process and disable action)
-                else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == nil {
-                    
-                    let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: false))
-                    self.addTimelineViewModelSubject.onNext(vm)
-                }
-                
-                /// In-process variant (Unverified user)
-                else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == false {
-                    
-                }
-                /// Tap to continue variant (Unverified user), New API required: BE | reupload documents list API
-                else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == true {
-                    let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "Tap to continue", isBtnEnabled: true))
-                    vm.outputs.btn.map{ true }.bind(to: self.completeVerificationResultSubject).disposed(by: self.disposeBag)
-                    self.addTimelineViewModelSubject.onNext(vm)
-                } else {
-                    self.getCards()
-                } */
             }
         }).disposed(by: disposeBag)
     }
@@ -474,9 +442,8 @@ extension HomeViewModel {
             print("success cards")
             self?.shimmeringSubject.onNext(false)
             self?.cardsSubject.onNext(list ?? [])
-            if let card = list?.first {
-                self?.checkCardStatus(card: card, account: account)
-            }
+           
+            self?.checkCardStatus(card: list?.first ?? .mock, account: account)
             if isShowTransactions {
                 self?.callFetchTransactions(card: list?.first)
             }
@@ -506,50 +473,12 @@ extension HomeViewModel {
         } else if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardSuccess) && (card.status == .active || card.status == .inActive) && (card.deliveryStatus == .delivered) && card.pinCreated  == false {
             // set pin
             self.setPinSubject.onNext(card)
-        } else if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardPending) && card.status == nil && card.deliveryStatus == nil && card.pinCreated == nil {
+        } else if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardPending) && card.status == nil && (card.deliveryStatus == nil || card.deliveryStatus == .notCreated ) && card.pinCreated == nil {
             // order physical card
             let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Order your physical YAP card", leftIcon: UIImage.init(named: "icon_order_card", in: .yapPakistan)?.asTemplate, btnTitle: "Order now", isBtnEnabled: true))
             vm.outputs.btn.map{ card }.bind(to: orderPhysicalCardSubject).disposed(by: self.disposeBag)
             self.addTimelineViewModelSubject.onNext(vm)
         }
-    }
-    
-    func bindPaymentCardOnboardingStagesViewModel(card: PaymentCard?) {
-        
-        self.callFetchTransactions(card: card)
-
-     /*   debitCard.subscribe(onNext: { [weak self] card in
-            //TODO: uncomment following line
-           /* if let account = self?.accountProvider.currentAccountValue.value, (account.paidCard ?? false), account.parnterBankStatus != .physicalCardPending {
-                self?.addCreditInfoSubject.onNext(())
-            } */
-            
-            if card == nil, let account = self?.accountProvider.currentAccountValue.value {
-                self?.shimmeringSubject.onNext(false)
-                
-               /* if (account.paidCard ?? false) {
-                    self?.addCreditInfoSubject.onNext(())
-                } */
-                
-                
-                let initioaryModel = PaymentCardInitiatoryStageViewModel(account: account )
-                self?.dashobarStatusActions(viewModel: initioaryModel)
-                self?.debitCardOnboardingStageViewModelSubject.onNext(initioaryModel)
-            }/* else {
-                if let account = self?.accountProvider.currentAccountValue.value {
-                    if !account.isFirstCredit && account.parnterBankStatus == .physicalCardSuccess {
-                        self?.addCreditInfoSubject.onNext(())
-                    }
-                }
-            } */
-            
-//            if (self?.transactionsViewModel.transactionsObj.isEmpty ?? false) {
-//                self?.callFetchTransactions(card: card)
-//            }
-
-       }).disposed(by: disposeBag) */
-        
-        
     }
     
     fileprivate func callFetchTransactions(card: PaymentCard?) {
