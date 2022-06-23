@@ -526,6 +526,24 @@ extension HomeCoodinator {
 //        }).disposed(by: disposeBag)
 //
 //        navigationRoot.present(navigationController, animated: true, completion: nil)
+        
+        
+        
+        let status = card.deliveryStatus ?? .notCreated
+        let cardSerial = card.cardSerialNumber ?? ""
+        let schemeType = card.cardScheme 
+        
+        let viewController = CardStatusModuleBuilder(container: self.container, status: status, schemeImage: schemeType).viewController()
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationRoot.pushViewController(viewController)
+        
+        viewController.viewModel.outputs.next.filter({ _ in true /* $0 > 0 */ }).withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.setPinIntroScreen(cardSerial: cardSerial) })
+            .disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+        
     }
 
     private func additionalInformation() {
