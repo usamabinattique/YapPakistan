@@ -20,6 +20,7 @@ protocol KYCReviewDetailsViewModelOutput {
     var cnicFields: Observable<[KYCReviewFieldViewModel]> { get }
     var showError: Observable<String> { get }
     var next: Observable<Void> { get }
+    var cnicBlockCase: Observable<CNICBlockCase> { get }
 }
 
 protocol KYCReviewDetailsViewModelType {
@@ -44,6 +45,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
     
     private var nextSubject = PublishSubject<Void>()
     private var successSubject = PublishSubject<Void>()
+    private var cnicBlockCaseSubject  = PublishSubject<CNICBlockCase>()
 
     var inputs: KYCReviewDetailsViewModelInput { return self }
     var outputs: KYCReviewDetailsViewModelOutput { return self }
@@ -53,7 +55,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
     var nextObserver: AnyObserver<Void> { nextSubject.asObserver() }
 
     // MARK: Outputs
-
+    var cnicBlockCase: Observable<CNICBlockCase> { cnicBlockCaseSubject.asObservable() }
     var cnicNumber: Observable<String> { cnicNumberSubject.asObservable() }
     var cnicFields: Observable<[KYCReviewFieldViewModel]> { cnicFieldsSubject.asObservable() }
     var showError: Observable<String> { showErrorSubject.asObservable() }
@@ -111,6 +113,12 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                                  cnicNumber: String,
                                  kycRepository: KYCRepository,
                                  accountProvider: AccountProvider) {
+        
+        nextSubject.subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            self.cnicBlockCaseSubject.onNext(.cnicAlreadyUsed)
+        }).disposed(by: disposeBag)
+        
         let saveRequest = nextSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
             .flatMap { [weak self] _ -> Observable<Event<String?>> in
@@ -118,7 +126,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                       let documents = self.extractDocuments(from: identityDocument) else {
                     return .empty()
                 }
-                
+
                 let documentType = "CNIC"
 //                let identityNo = cnicNumber.replace(string: "-", replacement: "")
                 //!!!: Random Cnic for testing
@@ -130,13 +138,25 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                 let dob = self.cnicInfo.dob
                 let dateIssue = self.cnicInfo.issueDate
                 let dateExpiry = self.cnicInfo.expiryDate
-                
+
                 return kycRepository.saveDocuments(documents, documentType: documentType,
                                                    identityNo: identityNo, nationality: nationality,
                                                    fullName: fullName, fatherName: fatherName, gender: "\(gender.charactersArray[0])", dob: dob,
                                                    dateIssue: dateIssue, dateExpiry: dateExpiry)
             }
             .share()
+
+        saveRequest.elements().subscribe(onNext: { [unowned self] response in
+
+            print(response)
+
+            self.cnicBlockCaseSubject.onNext(.underAge)
+
+        }).disposed(by: disposeBag)
+
+        saveRequest.errors().subscribe(onNext: { [unowned self] error in
+            print(error.localizedDescription)
+        }).disposed(by: disposeBag)
 
         let refreshAccountRequest = saveRequest.elements()
             .flatMap { _ in

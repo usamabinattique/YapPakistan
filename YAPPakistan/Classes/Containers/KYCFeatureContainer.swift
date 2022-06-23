@@ -133,7 +133,6 @@ public final class KYCFeatureContainer {
                                                   cnicOCR: cnicOCR, cnicInfo: cnicInfo)
         let viewController = KYCReviewDetailsViewController(themeService: themeService,
                                                             viewModel: viewModel)
-
         return viewController
     }
 }

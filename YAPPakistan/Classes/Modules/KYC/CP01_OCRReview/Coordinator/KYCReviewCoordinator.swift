@@ -15,10 +15,10 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
     private let root: UINavigationController!
     private let identityDocument: IdentityDocument
     private let cnicOCR: CNICOCR
-
+    
     private let resultSubject = PublishSubject<ResultType<Void>>()
     private let disposeBag = DisposeBag()
-
+    
     init(container: KYCFeatureContainer,
          root: UINavigationController,
          identityDocument: IdentityDocument,
@@ -28,69 +28,79 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
         self.identityDocument = identityDocument
         self.cnicOCR = cnicOCR
     }
-
+    
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         let reviewViewController = container.makeKYCInitialReviewViewController(cnicOCR: cnicOCR)
         let reviewViewModel = reviewViewController.viewModel
-
+        
         reviewViewModel.outputs.rescan
             .subscribe(onNext: { [weak self] in
                 self?.resultSubject.onNext(.cancel)
                 self?.resultSubject.onCompleted()
             })
             .disposed(by: disposeBag)
-
+        
         reviewViewModel.outputs.cnicInfo
             .subscribe(onNext: { [weak self] cnicInfo in
                 guard let self = self else { return }
                 self.navigateToReviewDetails(cnicOCR: self.cnicOCR, cnicInfo: cnicInfo)
             })
             .disposed(by: disposeBag)
-
+        
         let navigationController = UINavigationController(rootViewController: reviewViewController)
         navigationController.navigationBar.isHidden = true
-
+        
         let progressViewController = container.makeKYCProgressViewController(navigationController: navigationController)
         let progressViewModel: KYCProgressViewModelType! = progressViewController.viewModel
         progressViewModel.inputs.progressObserver.onNext(0.25)
-
+        
         root.pushViewController(progressViewController, animated: true)
-
+        
         progressViewModel.outputs.backTap
             .subscribe(onNext: { [weak self] in
                 self?.resultSubject.onNext(.cancel)
                 self?.resultSubject.onCompleted()
             })
             .disposed(by: disposeBag)
-
+        
         return resultSubject
     }
-
+    
     private func navigateToReviewDetails(cnicOCR: CNICOCR, cnicInfo: CNICInfo) {
         let reviewViewController = container.makeKYCReviewDetailsViewController(
             identityDocument: identityDocument, cnicOCR: cnicOCR, cnicInfo: cnicInfo)
         let reviewViewModel = reviewViewController.viewModel
-
+        
         reviewViewModel.outputs.next
             .subscribe(onNext: { [weak self] in
                 self?.resultSubject.onNext(.success(()))
                 self?.resultSubject.onCompleted()
             })
             .disposed(by: disposeBag)
-
+        
+        reviewViewModel.outputs.cnicBlockCase.subscribe(onNext: { [unowned self] cnicBlockCase in
+            self.navigateToCNICBlockCaseErrorViewController(cnicBlockCase: cnicBlockCase)
+        }).disposed(by: rx.disposeBag)
+        
         let navigationController = UINavigationController(rootViewController: reviewViewController)
         navigationController.navigationBar.isHidden = true
-
+        
         let progressViewController = container.makeKYCProgressViewController(navigationController: navigationController)
         let progressViewModel: KYCProgressViewModelType! = progressViewController.viewModel
         progressViewModel.inputs.progressObserver.onNext(0.50)
-
+        
         root.pushViewController(progressViewController, animated: true)
-
+        
         progressViewModel.outputs.backTap
             .subscribe(onNext: { [weak self] in
                 self?.root.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func navigateToCNICBlockCaseErrorViewController(cnicBlockCase: CNICBlockCase) {
+        let viewModel = CNICBlockCaseErrorViewModel(cnicBlockCase: cnicBlockCase)
+        let viewController = CNICBlockCaseErrorViewController(themeService: self.container.themeService, viewModel: viewModel)
+        root.pushViewController(viewController, completion: nil)
     }
 }
