@@ -17,6 +17,7 @@ protocol ReviewSelfieViewModelInputs {
 protocol ReviewSelfieViewModelOutputs {
     var next: Observable<Void> { get }
     var back: Observable<Void> { get }
+    var selfieComplete: Observable <Void> { get }
     var image: Observable<UIImage> { get }
     var loading: Observable<Bool> { get }
     var showError: Observable<String> { get }
@@ -44,6 +45,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
     var loading: Observable<Bool> { loadingSubject.asObservable() }
     var showError: Observable<String> { showErrorSubject.asObservable() }
     var image: Observable<UIImage> { imageSubject.asObservable() }
+    var selfieComplete: Observable <Void> { selfieCompleteSubject.asObservable() }
     
     // MARK: Subjects
     private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
@@ -53,6 +55,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
     private var loadingSubject = PublishSubject<Bool>()
     private var showErrorSubject = PublishSubject<String>()
     private var imageSubject: BehaviorSubject<UIImage>
+    private var selfieCompleteSubject = PublishSubject<Void>()
     
     private var disposeBag = DisposeBag()
     private var kycRepository: KYCRepositoryType
@@ -132,7 +135,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
     }
     
     func uploadSelfie(data: Data) {
-        let uploadSelfieReq = self.kycRepository.uploadSelfie((data, "image/jpg"))
+        let uploadSelfieReq = self.kycRepository.uploadSelfie((data, "image/jpg")).share()
         
         uploadSelfieReq.elements().subscribe(onNext: { [weak self] response in
             print(response)
@@ -149,18 +152,19 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
     }
     
     func generateIBAN(isSelfieMatched: Bool) {
-        let req = self.kycRepository.generateIBAN(isSelfieMatched: isSelfieMatched)
+        let req = self.kycRepository.generateIBAN(isSelfieMatched: isSelfieMatched).share()
         
         req.elements().subscribe(onNext: { [weak self] result in
             guard let _ = self else { return }
             print(result)
-            self?.nextSubject.onNext(())
+            self?.selfieCompleteSubject.onNext(())
         }).disposed(by: disposeBag)
         
         req.errors().subscribe(onNext: { [weak self] error in
             guard let _  = self else { return }
             print(error.localizedDescription)
-            self?.nextSubject.onNext(())
+            //self?.showErrorSubject.onNext(error.localizedDescription)
+            self?.selfieCompleteSubject.onNext(())
         }).disposed(by: disposeBag)
     }
     

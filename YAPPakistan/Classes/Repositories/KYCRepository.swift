@@ -39,7 +39,7 @@ protocol KYCRepositoryType {
                          longitude: String ) -> Observable<Event<Account>>
     
     func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>>
-    func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<String>>
+    func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<Account>>
     func verifyFaceOCR(_ data: Data, fileName: String, mimeType: String) -> Observable<Event<String>>
 }
 
@@ -134,7 +134,7 @@ class KYCRepository: KYCRepositoryType {
         return cardsService.getCardBenefits(scheme: type).materialize()
     }
     
-    func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<String>> {
+    func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<Account>> {
         return customersService.generateIBAN(isSelfieMatched: isSelfieMatched).materialize()
     }
     

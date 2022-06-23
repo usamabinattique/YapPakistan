@@ -70,6 +70,12 @@ class SelfieCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.next.subscribe(onNext: { [unowned self] _ in
             self.GotoKYCResult()
         }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.selfieComplete.subscribe(onNext: { [unowned self] _ in
+            
+            self.GotoKYCResult()
+            
+        }).disposed(by: rx.disposeBag)
 
         return viewController.viewModel.outputs.next
     }

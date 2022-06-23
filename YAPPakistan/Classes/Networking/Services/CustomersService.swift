@@ -592,7 +592,7 @@ public class CustomersService: BaseService, CustomerServiceType {
     
     public func generateIBAN<T: Codable>(isSelfieMatched: Bool) -> Observable<T> {
         let params = ["selfie-matched": String(isSelfieMatched)]
-        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/create-customer", query: params, headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/customers/create-customer", query: params, headers: authorizationProvider.authorizationHeaders)
 
         return self.request(apiClient: self.apiClient, route: route)
     }
