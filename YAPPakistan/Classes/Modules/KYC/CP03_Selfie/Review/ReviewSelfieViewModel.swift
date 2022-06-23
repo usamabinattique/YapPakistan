@@ -163,8 +163,8 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
         req.errors().subscribe(onNext: { [weak self] error in
             guard let _  = self else { return }
             print(error.localizedDescription)
-            //self?.showErrorSubject.onNext(error.localizedDescription)
-            self?.selfieCompleteSubject.onNext(())
+            self?.showErrorSubject.onNext(error.localizedDescription)
+            //self?.selfieCompleteSubject.onNext(())
         }).disposed(by: disposeBag)
     }
     
