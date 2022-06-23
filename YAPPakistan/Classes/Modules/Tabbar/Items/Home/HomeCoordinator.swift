@@ -162,7 +162,14 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.missingDocument.withUnretained(self).subscribe(onNext: { `self` , _ in
             self.missingDocument()
         }).disposed(by: rx.disposeBag)
-
+        
+        viewController.viewModel.outputs.orderPhysicalCard.withUnretained(self).subscribe(onNext: { `self` , _ in
+            self.navigateToCardScheme()
+        }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.trackCardDelivery.subscribe(onNext: { [weak self] card in
+            self?.navigateToDeliveryStatus(card)
+        }).disposed(by: rx.disposeBag)
     }
     
     func showCreditLimit() {
@@ -205,6 +212,12 @@ class HomeCoodinator: Coordinator<ResultType<Void>> {
             self.navigationRoot.pushViewController(viewController, animated: true)
             self.navigationRoot.setNavigationBarHidden(true, animated: true)
         }
+    }
+    
+    private func navigateToCardScheme() {
+        coordinate(to: CardSchemeCoordinator(root: navigationRoot, container: self.container))
+            .subscribe()
+            .disposed(by: rx.disposeBag)
     }
 }
 
@@ -252,13 +265,26 @@ extension HomeCoodinator {
     func setPinIntroScreen(cardSerial: String) {
         let viewController = SetpinIntroModuleBuilder(container: self.container).viewController()
         self.navigationRoot.pushViewController(viewController)
+        hideNavAndTabBar()
 
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { `self`, _ in self.setPin(cardSerial: cardSerial) })
             .disposed(by: rx.disposeBag)
         viewController.viewModel.outputs.back.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true)
+                self.showNavAndTabBar()
+            })
             .disposed(by: rx.disposeBag)
+    }
+    
+    func hideNavAndTabBar() {
+        navigationRoot.setNavigationBarHidden(true, animated: false)
+        root.tabBar.isHidden = true
+    }
+    
+    func showNavAndTabBar() {
+        navigationRoot.setNavigationBarHidden(false, animated: false)
+        root.tabBar.isHidden = false
     }
 
     func setPin(cardSerial: String) {
@@ -488,18 +514,36 @@ extension HomeCoodinator {
     }
 
     func navigateToDeliveryStatus(_ card: PaymentCard) {
-       /* let viewModel = CardDeliveryStatusViewModel(paymentCard: card)
-        let viewController = CardDeliveryStatusViewController(viewModel: viewModel)
-        let navigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
-
-        viewModel.outputs.action.subscribe(onNext: {[weak self] _ in
-            guard let `self` = self else { return }
-            navigationController.dismiss(animated: true) { [unowned self] in
-                self.navigateToSetPin(card: card)
-            }
-        }).disposed(by: disposeBag)
-
-        navigationRoot.present(navigationController, animated: true, completion: nil) */
+//        let viewModel = CardDeliveryStatusViewModel(paymentCard: card)
+//        let viewController = CardDeliveryStatusViewController(viewModel: viewModel)
+//        let navigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
+//
+//        viewModel.outputs.action.subscribe(onNext: {[weak self] _ in
+//            guard let `self` = self else { return }
+//            navigationController.dismiss(animated: true) { [unowned self] in
+//                self.navigateToSetPin(card: card)
+//            }
+//        }).disposed(by: disposeBag)
+//
+//        navigationRoot.present(navigationController, animated: true, completion: nil)
+        
+        
+        
+        let status = card.deliveryStatus ?? .notCreated
+        let cardSerial = card.cardSerialNumber ?? ""
+        let schemeType = card.cardScheme 
+        
+        let viewController = CardStatusModuleBuilder(container: self.container, status: status, schemeImage: schemeType).viewController()
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationRoot.pushViewController(viewController)
+        
+        viewController.viewModel.outputs.next.filter({ _ in true /* $0 > 0 */ }).withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.setPinIntroScreen(cardSerial: cardSerial) })
+            .disposed(by: rx.disposeBag)
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in self.navigationRoot.popViewController(animated: true) })
+            .disposed(by: rx.disposeBag)
+        
     }
 
     private func additionalInformation() {
