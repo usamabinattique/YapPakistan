@@ -378,12 +378,11 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
             guard let `self` = self else { return }
             if let account = $0.first {
                 self.generateCellViewModels()
-                if account.accountStatus == .onboarded || account.accountStatus == .secretQuestionPending || account.accountStatus == .selfiePending
+                if account.accountStatus == .onboarded || account.accountStatus == .secretQuestionPending || account.accountStatus == .selfiePending || account.accountStatus == .kycPending
                    /* || account.accountStatus == .cardNamePending || account.accountStatus == .addressPending || account.accountStatus == .cardSchemePending || account.accountStatus == .cardSchemeExternalCardPending */ {
                     if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == false {
                         // verification required
-                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: true))
-                        vm.outputs.btn.bind(to: self.showMissingDocumentSubject).disposed(by: self.disposeBag)
+                        let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Account Progress", leftIcon: UIImage.init(named: "icon_profile_primary_dark", in: .yapPakistan)?.asTemplate, btnTitle: "In Process", isBtnEnabled: false))
                         self.addTimelineViewModelSubject.onNext(vm)
                     } else if account.parnterBankStatus == .signUpPending && account.accountStatus == .kycPending && account.isAmendment == true {
                         // verification required
