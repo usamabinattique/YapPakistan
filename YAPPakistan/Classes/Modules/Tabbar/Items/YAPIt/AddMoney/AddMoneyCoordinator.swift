@@ -42,7 +42,7 @@ class AddMoneyCoordinator: Coordinator<ResultType<Void>> {
         
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] in
-            self?.localRoot.dismiss(animated: true, completion: nil)
+            self?.root.dismiss(animated: true, completion: nil)
             self?.result.onNext(.cancel)
             self?.result.onCompleted()
         }).disposed(by: rx.disposeBag)

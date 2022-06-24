@@ -64,7 +64,7 @@ public class CardsService: BaseService, CardsServiceType {
         ]
 
         let route = APIEndpoint(.post,
-                                apiConfig.cardsURL, "/api/save-address-and-create-cardholder",
+                                apiConfig.cardsURL, "/api/pickup-address",
                                 body: body,
                                 headers: authorizationProvider.authorizationHeaders)
         

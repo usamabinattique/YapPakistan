@@ -37,9 +37,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     }
 
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-
-        let progressRoot = container.makeKYCProgressViewController()
-//        root.present(progressRoot, animated: true) //.pushViewController(progressRoot)
       
         cardScheme()
             .subscribe(onNext:{ [weak self] cardSchemeObj in
@@ -55,10 +52,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
                 }
             })
             .disposed(by: rx.disposeBag)
-
-//        progressRoot.viewModel.outputs.backTap.withUnretained(self)
-//            .subscribe(onNext: { `self`, _ in self.popViewController(progress: 0.60) })
-//            .disposed(by: rx.disposeBag)
         
         return result
     }
@@ -70,12 +63,11 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         
         viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
-            navController.dismiss(animated: true, completion: nil)
+            self.root.popViewController(animated: true)
         }).disposed(by: rx.disposeBag)
         
         self.localRoot = navController
-        root.present(navController, animated: true, completion: nil)
-        //push(viewController: viewController, progress: 0.75)
+        self.root.pushViewController(viewController)
         return viewController.viewModel.outputs.next
     }
     
@@ -83,13 +75,10 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         let viewController = container.makeCardBenefitsViewController()
         viewController.viewModel.inputs.cardSchemeMObserver.onNext(schemeObj)
         
-        //self.localRoot.navigationBar.isHidden = true
-//        self.navigationRoot.pushViewController(viewController, completion: nil)
-//        self.navigationRoot.navigationBar.isHidden = true
-//        self.root.present(self.navigationRoot, animated: true, completion: nil)
-        
-        
-        self.localRoot.pushViewController(viewController, completion: nil)
+        self.localRoot.navigationBar.isHidden = true
+        self.navigationRoot.pushViewController(viewController, completion: nil)
+        self.navigationRoot.navigationBar.isHidden = true
+        self.root.present(self.navigationRoot, animated: true, completion: nil)
 
         viewController.viewModel.outputs.fedValue
             .subscribe(onNext:{ fed in
@@ -102,7 +91,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
             
             
             if isTopupNeeded {
-                coordinate(to: AddMoneyCoordinator(root: localRoot, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
+                coordinate(to: AddMoneyCoordinator(root: viewController, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
                     
                 }).disposed(by: rx.disposeBag)
             }
@@ -113,7 +102,9 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         viewController.viewModel.outputs.back.withUnretained(self).subscribe(onNext: {  _ in
             print("back button tap masterCard Benefits")
-            self.localRoot.popViewController()
+            self.localRoot.navigationBar.isHidden = false
+            self.navigationRoot.navigationBar.isHidden = false
+            self.root.dismiss(animated: true)
         }).disposed(by: rx.disposeBag)
     }
     
@@ -129,26 +120,13 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 self.localRoot.popViewController()
-                //self.goBack()
             })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
                 guard let cardScheme = self.cardSchemeModel else { return }
-//                if cardScheme.isPaidScheme {
-//                    if self.container.parent.accountProvider.currentAccountValue.value?.accountStatus == .cardSchemeExternalCardPending {
-//                        self.topupCardSelection()
-//                            .subscribe(onNext: { _ in
-//                                print("In cardName -> TopupCardSelection is subscribed")
-//                            }).disposed(by: self.disposeBag)
-//                    } else {
-//                        self.cardDetailWeb()
-//                    }
-//
-//                } else {
                     self.addressPending()
-                //}
             })
             .disposed(by: rx.disposeBag)
 
@@ -170,7 +148,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _
                 in
-                //self.navigation.childNavigation.popViewController(animated: true)
                 self.localRoot.popViewController()
             })
             .disposed(by: rx.disposeBag)
@@ -178,7 +155,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         let next = viewController.viewModel.outputs.next
             .do(onNext: { [weak self] _ in
                 self?.addressPending()
-                //self?.navigation.childNavigation.popViewController(animated: true)
                 
             })
         return next
@@ -211,27 +187,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
             self.localRoot.popViewController()
         }).disposed(by: rx.disposeBag)
-                
-                
-//                .subscribe(onNext: { [weak self] value in
-//                guard let `self` = self else { return }
-//                print("confirm called in address")
-//                switch value {
-//                case .cancel:
-//                    print("confirm payment cancel ")
-//                case .success(_):
-////                    if self.isPresented {
-////                        self.localRoot.dismiss(animated: true) {
-////                            self.kycResult()
-////                        }
-////                    } else {
-////                        self.root.popViewController()
-////                        self.kycResult()
-////                    }
-//                    print("success")
-//                }
-//            }).disposed(by: self.rx.disposeBag)
-//        }).disposed(by: rx.disposeBag)
     }
     
     func confirmPayment() {
@@ -240,7 +195,6 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         self.localRoot.pushViewController(viewController, completion: nil)
         
         viewModel.outputs.showCVV.withUnretained(self).subscribe(onNext: { `self`,_ in
-//            guard let card = self.paymentGatewayM.beneficiary, let amount = self.paymentGatewayM.cardSchemeObject?.fee, !self.isCVVPushed else { return }
         }).disposed(by: rx.disposeBag)
 
         
@@ -264,10 +218,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
             guard let self = self else { return }
             
-            //navController.dismiss(animated: true, completion: nil)
-            //progressRoot.dismiss(animated: true, completion: nil)
             self.localRoot.dismiss(animated: true, completion: nil)
-            //self.finishCoordinator(.success(()))
         }).disposed(by: rx.disposeBag)
         
         viewModel.outputs.html.withUnretained(self).subscribe(onNext:{ `self`, htmlString in

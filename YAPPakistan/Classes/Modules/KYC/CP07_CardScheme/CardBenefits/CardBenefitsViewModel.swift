@@ -130,17 +130,16 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
 
         req.elements().subscribe(onNext: { [unowned self] balance in
             print(balance)
+            self.userAccountBalance = balance.currentBalance
         }).disposed(by: disposeBag)
 
         req.errors().subscribe(onNext: { [unowned self] error in
             self.errorSubject.onNext(error.localizedDescription)
         }).disposed(by: disposeBag)
         
-        let balance = 600
-        self.userAccountBalance = Double(balance)
         self.cardSchemeSubject.subscribe(onNext: { [unowned self] card in
             
-            if card.fee > Double(balance) {
+            if card.fee > self.userAccountBalance {
                 self.nextButtonTitleSubject.onNext("Top up")
                 self.isTopupNeeded = true
             }
@@ -151,7 +150,7 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
             
         }).disposed(by: disposeBag)
         
-        self.userBalanceSubject.onNext("Your available balance is PKR \(balance)")
+        self.userBalanceSubject.onNext("Your available balance is PKR \(self.userAccountBalance)")
     }
 }
 
