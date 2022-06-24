@@ -199,15 +199,15 @@ class TopupTransferViewModel: TopupTransferViewModelType, TopupTransferViewModel
             .bind(to: activateActionSubject)
             .disposed(by: disposeBag)
 
-        actionButtonSubject.withLatestFrom(Observable.combineLatest(accountBalance.unwrap(), enteredAmountSubject.unwrap(), maximumAmountLimitSubject.unwrap()))
+        actionButtonSubject.withLatestFrom(Observable.combineLatest( enteredAmountSubject.unwrap(), maximumAmountLimitSubject.unwrap()))
             .subscribe(onNext: { [unowned self] arg in
                 print("button tapped")
-                if arg.1 <= arg.2 {
+                if arg.0 <= arg.1 {
                     self.isValidMaxLimitSubject.onNext((true, nil))
                     self.isValidAmountSubject.onNext((true, nil))
                     self.transactionRequestSubject.onNext(())
                 } else {
-                    self.isValidMaxLimitSubject.onNext((false, String(format: errorMessage.addMaxLimit.localized, CurrencyFormatter.formatAmountInLocalCurrency(arg.2))))
+                    self.isValidMaxLimitSubject.onNext((false, String(format: errorMessage.addMaxLimit.localized, CurrencyFormatter.formatAmountInLocalCurrency(arg.1))))
                 }
                 
             }).disposed(by: disposeBag)

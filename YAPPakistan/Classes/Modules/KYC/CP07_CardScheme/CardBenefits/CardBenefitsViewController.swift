@@ -63,6 +63,7 @@ class CardBenefitsViewController: UIViewController {
         crossButton.addTarget(self, action: #selector(onTapBackButton), for: .touchUpInside)
         //Fetch cards
         viewModel.inputs.fetchBenefitsObserver.onNext(())
+        setupBindings()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -71,7 +72,7 @@ class CardBenefitsViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        setupBindings()
+        
     }
     
     @objc internal override func onTapBackButton() {
