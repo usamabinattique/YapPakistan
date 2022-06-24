@@ -101,6 +101,65 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
     private func navigateToCNICBlockCaseErrorViewController(cnicBlockCase: CNICBlockCase) {
         let viewModel = CNICBlockCaseErrorViewModel(cnicBlockCase: cnicBlockCase)
         let viewController = CNICBlockCaseErrorViewController(themeService: self.container.themeService, viewModel: viewModel)
+        
+        viewModel.outputs.actionButton.subscribe(onNext: { [weak self] blockCase in
+            guard let self = self else { return }
+            
+            if blockCase == nil { return }
+            
+            if blockCase == .underAge {
+                // Perform Logout here
+                self.perfromLogout()
+            }
+            else if blockCase == .invalidCNIC {
+                // Perform Rescan CNIC here
+                //CNICScanCoordinator(container: container, root: root, scanType: .new)
+//                self.root.popViewController(animated: true, nil)
+//                self.root.popViewController(animated: true, nil)
+                
+//                self.resultSubject.onNext(.cancel)
+//                self.resultSubject.onCompleted()
+                
+                //self.navigateToRescanCNIC()
+            }
+            else if blockCase == .cnicExpiredOnScane {
+                // Perform Rescan CNIC here
+                //self.navigateToRescanCNIC()
+                self.root.popViewController(animated: true, nil)
+                self.root.popViewController(animated: true, nil)
+                
+//                self.resultSubject.onNext(.cancel)
+//                self.resultSubject.onCompleted()
+            }
+            else if blockCase == .cnicAlreadyUsed {
+                // Perform Logout here
+                self.perfromLogout()
+            }
+        }).disposed(by: rx.disposeBag)
+        
+        viewModel.outputs.gotoDashboard.subscribe(onNext: { [weak self] _ in
+            self?.root.popToRootViewController(animated: true)
+        }).disposed(by: disposeBag)
+        
         root.pushViewController(viewController, completion: nil)
+    }
+    
+    func navigateToRescanCNIC() {
+        coordinate(to: CNICScanCoordinator(container: container, root: self.root, scanType: .new)).subscribe(onNext: { result in
+            print(result)
+            
+            //self.navigateToReviewDetails(cnicOCR: self.cnicOCR, cnicInfo: result)
+            
+        }).disposed(by: self.disposeBag)
+    }
+    
+    func perfromLogout() {
+        self.container.parent.biometricsManager.deleteBiometryForUser(phone: self.container.parent.parent.credentialsStore.getUsername() ?? "")
+        if !(self.container.parent.parent.credentialsStore.remembersId ?? false) {
+            self.container.parent.parent.credentialsStore.clearCredentials()
+        }
+        
+        let name = Notification.Name.init(.logout)
+        NotificationCenter.default.post(name: name,object: nil)
     }
 }
