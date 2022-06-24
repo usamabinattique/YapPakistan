@@ -55,7 +55,7 @@ class KYCReviewDetailsViewController: UIViewController {
     private let disposeBag = DisposeBag()
     private let themeService: ThemeService<AppTheme>
 
-    let viewModel: KYCReviewDetailsViewModelType
+    var viewModel: KYCReviewDetailsViewModelType
 
     // MARK: Initialization
 
