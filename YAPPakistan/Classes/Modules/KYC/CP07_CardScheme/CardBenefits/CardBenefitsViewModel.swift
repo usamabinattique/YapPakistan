@@ -139,7 +139,7 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
         
         self.cardSchemeSubject.subscribe(onNext: { [unowned self] card in
             
-            if card.fee > self.userAccountBalance {
+            if card.totalFee >= self.userAccountBalance {
                 self.nextButtonTitleSubject.onNext("Top up")
                 self.isTopupNeeded = true
             }
