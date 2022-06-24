@@ -388,76 +388,9 @@ extension TopupTransferViewModel {
                 }
                 .bind(to: errorSubject)
                 .disposed(by: disposeBag)
-        checkoutSessionRequest.elements()
-            .do(onNext: { _ in
-                YAPProgressHud.hideProgressHud()
-            })
-        
-//        let  fetch3DSEnrollmentRequest = checkoutSessionRequest.elements().withUnretained(self)
-//            .flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
-//                self.checkoutSessionObject = paymentGatewayCheckoutSession
-//                guard let amount = try? self.enteredAmountSubject.value() else { return .never() }
-//                return self.repository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: beneficiaryID.intValue, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
-//            }
-//            .share()
-//
-//        fetch3DSEnrollmentRequest.errors()
-//            .do(onNext: { _ in
-//                YAPProgressHud.hideProgressHud()
-//            })
-//            .map {
-//                $0.localizedDescription
-//            }
-//            .bind(to: errorSubject)
-//            .disposed(by: disposeBag)
-//
-//        let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
-//        threeDEnrollmentResult
-//            .map ({ enrolmentResult in
-//                YAPProgressHud.hideProgressHud()
-//                return enrolmentResult.formattedHTML
-//            })
-//            .bind(to: htmlSubject)
-//            .disposed(by: disposeBag)
-
-        var count = 0
-
-        let acsResultRequest = pollACSResultSubject
-            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-            .delay(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance).withLatestFrom(checkoutSessionRequest.elements()).flatMap { [unowned self] result in
-                self.repository.retrieveACSResults(threeDSecureID: result.threeDSecureId)
-        }.share()
-       
-        acsResultRequest.elements().subscribe(onNext: { [weak self] result in
-            guard let `self` = self else { return }
-            YAPProgressHud.hideProgressHud()
-            if let result = result {
-                YAPProgressHud.hideProgressHud()
-                if result == "Y" {
-                    self.transferSubject.onNext(())
-                } else {
-                    self.errorSubject.onNext("Unable to verify")
-                }
-            } else {
-                count += 1
-                guard count < 5 else {
-                    YAPProgressHud.hideProgressHud()
-                    self.errorSubject.onNext("Unable to verify")
-                    return
-                }
-                self.pollACSResultObserver.onNext(())
-            }
-        }).disposed(by: disposeBag)
-
-        acsResultRequest.errors()
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
-                .map { $0.localizedDescription }
-                .bind(to: errorSubject)
-                .disposed(by: disposeBag)
         
         let  fetch3DSEnrollmentRequest = checkoutSessionRequest.elements().withUnretained(self)
             .flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
-                //let (acsResult,paymentGatewayCheckoutSession) = _arg1
                 self.checkoutSessionObject = paymentGatewayCheckoutSession
                 guard let amount = try? self.enteredAmountSubject.value() else { return .never() }
                 return self.repository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: beneficiaryID.intValue, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
@@ -482,6 +415,41 @@ extension TopupTransferViewModel {
             })
             .bind(to: htmlSubject)
             .disposed(by: disposeBag)
+
+        var count = 0
+
+        let acsResultRequest = pollACSResultSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .delay(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance).withLatestFrom(threeDEnrollmentResult).flatMap { [unowned self] result in
+                self.repository.retrieveACSResults(threeDSecureID: result.threeDSecureId)
+        }.share()
+
+        acsResultRequest.elements().subscribe(onNext: { [weak self] result in
+            guard let `self` = self else { return }
+
+            if let result = result {
+                YAPProgressHud.hideProgressHud()
+                if result == "Y" {
+                    self.transferSubject.onNext(())
+                } else {
+                    self.errorSubject.onNext("Unable to verify")
+                }
+            } else {
+                count += 1
+                guard count < 5 else {
+                    YAPProgressHud.hideProgressHud()
+                    self.errorSubject.onNext("Unable to verify")
+                    return
+                }
+                self.pollACSResultObserver.onNext(())
+            }
+        }).disposed(by: disposeBag)
+
+        acsResultRequest.errors()
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+                .map { $0.localizedDescription }
+                .bind(to: errorSubject)
+                .disposed(by: disposeBag)
 
         transferSubject.withLatestFrom(Observable.combineLatest(checkoutSessionRequest.elements(), threeDEnrollmentResult)).subscribe(onNext: { [weak self] checkoutSession, threeDSecureResult in
             guard let `self` = self else { return }

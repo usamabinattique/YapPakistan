@@ -150,9 +150,9 @@ class CardsViewModel: CardsViewModelType,
         self.accountProvider = accountProvider
         self.cardsRepository = cardsRepository
 
-        let completionStatus = self.isProfileCompleted()
-        self.resolveIfIncompleted(completionStatus)
-        self.resolveIfCompleted(completionStatus)
+//        let completionStatus = self.isProfileCompleted()
+//        self.resolveIfIncompleted(completionStatus)
+        self.resolveIfCompleted()
 
         let unfreez = unfreezSubject.withLatestFrom(cardDetailsSubject).withUnretained(self)
             .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
@@ -182,7 +182,10 @@ class CardsViewModel: CardsViewModelType,
     }
 
     func resolveIfIncompleted(_ completionStatus: Observable<Bool>) {
-        completionStatus.filter{ !$0 }
+        completionStatus.filter{
+            print($0)
+            return !$0
+        }
             .map{ _ in DeliveryStatus.ordered }.withUnretained(self)
             // .do(onNext: { $0.0.deliveryStatus = $0.1 })
             .map { $0.0.makeLocalizableStrings(PaymentCard.mock) }
@@ -190,12 +193,21 @@ class CardsViewModel: CardsViewModelType,
             .disposed(by: disposeBag)
     }
 
-    func resolveIfCompleted(_ completionStatus: Observable<Bool>) {
-        let cardsFetched = completionStatus.filter{ $0 }.withUnretained(self)
-            .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
-                .flatMap { $0.0.cardsRepository.getCards() }
+    func resolveIfCompleted() {
+        
+        self.loaderSubject.onNext(true)
+        let cardsFetched = self.cardsRepository.getCards()
             .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
             .share()
+        
+//        let cardsFetched = completionStatus.filter{
+//            print($0)
+//            return !$0
+//        }.withUnretained(self)
+//            .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
+//                .flatMap { $0.0.cardsRepository.getCards() }
+//            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+//            .share()
 
                 cardsFetched.elements().subscribe(onNext: { [unowned self] cards in
                     print(cards?.count)
