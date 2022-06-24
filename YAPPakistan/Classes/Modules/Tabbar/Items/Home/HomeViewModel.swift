@@ -456,9 +456,9 @@ extension HomeViewModel {
     }
     
     private func checkCardStatus(card: PaymentCard, account: Account) {
-        if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardSuccess ) && (card.deliveryStatus == .delivered && card.deliveryStatus != .failed) &&  card.pinCreated == false {
+        if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardSuccess ) && (card.deliveryStatus != .delivered && card.deliveryStatus != .failed) &&  card.pinCreated == false {
             // track card version
-            let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Track your card", leftIcon: UIImage.init(named: "icon_order_card", in: .yapPakistan)?.asTemplate, btnTitle: "Track now", isBtnEnabled: true))
+            let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Card delivery status", leftIcon: UIImage.init(named: "icon_order_card", in: .yapPakistan)?.asTemplate, btnTitle: "Track now", isBtnEnabled: true))
             vm.outputs.btn.map{ card }.bind(to: trackCardDeliverySubject).disposed(by: timelineDisposeBag)
             self.addTimelineViewModelSubject.onNext(vm)
         } else if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardSuccess) && (card.status == .active || card.status == .inActive) && (card.deliveryStatus == .delivered) && card.pinCreated  == false {
