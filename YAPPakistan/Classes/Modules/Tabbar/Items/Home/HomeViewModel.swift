@@ -103,7 +103,6 @@ protocol HomeViewModelOutputs {
     var addTimelineViewModel: Observable<DashboardTimelineViewModel> { get }
     var missingDocument: Observable<Void> { get }
     var orderPhysicalCard: Observable<PaymentCard> { get }
-    var timelineDisposeBag: DisposeBag { get }
 }
 
 protocol HomeViewModelType {
@@ -171,7 +170,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
     private let showMissingDocumentSubject = PublishSubject<Void>()
     
     private var transactionDetailsSubject = PublishSubject<TransactionResponse>()
-    var timelineDisposeBag = DisposeBag()
+    private var timelineDisposeBag = DisposeBag()
     
     private var numberOfShownWidgets = 0
     private var cardStatus: CardStatus = .inActive
