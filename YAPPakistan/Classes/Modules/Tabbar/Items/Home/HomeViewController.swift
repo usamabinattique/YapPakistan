@@ -313,7 +313,6 @@ class HomeViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
             self?.refreshControl.endRefreshing()
         }
-//        SessionManager.current.refreshAccount()
         viewModel.inputs.refreshObserver.onNext(())
     }
     
@@ -321,12 +320,7 @@ class HomeViewController: UIViewController {
         self.view.generateImpact()
         viewModel.inputs.menuTapObserver.onNext(())
     }
-    
-//    private func render() {
-//        self.profileImageView.layer.cornerRadius = 12
-//        self.profileImageView.clipsToBounds = true
-//    }
-    
+ 
     @objc func searchAction(_ sender: UIButton) {
         viewModel.inputs.searchTapObserver.onNext(())
     }
@@ -353,24 +347,14 @@ fileprivate extension HomeViewController {
     
     private func setupViews() {
         
-       // balanceView.addSubviews([balanceLabel,balanceValueLabel,showButton,hideButton,balanceDateLabel,separtorView])
-        
         view.addSubview(toolBar)
-       // view.addSubview(balanceView)
         view.addSubview(scrollView)
-        
-     //   balanceView.isHidden = true
         
         scrollView.addSubview(timelineContainer)
         scrollView.addSubview(transactionContainer)
         parallaxHeaderView.addSubview(headerStackView)
         separtorView.alpha = 0
        
-    /*    tableView.register(CreditLimitCell.self, forCellReuseIdentifier: CreditLimitCell.defaultIdentifier)
-        
-        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 15, right: 0) */
-        
-      //  stack.addArrangedSubviews([balanceView, tableView])
         showButton.imageView?.contentMode = .scaleAspectFit
         showButton.setImage(UIImage.init(named: "icon_view_cell", in: .yapPakistan)?.asTemplate, for: .normal)
         hideButton.setImage(UIImage.init(named: "eye_close", in: .yapPakistan), for: .normal)
@@ -398,14 +382,14 @@ fileprivate extension HomeViewController {
         
         parallaxHeaderView
             .width(with: .width, ofView: view)
-            //.height(constant: scrollView.parallaxHeader.height)
+           
 
         headerStackView
             .alignEdgesWithSuperview([.left, .right])//,.top])
         
         scrollView
             .alignEdgesWithSuperview([.left, .right, .safeAreaBottom])
-            .toBottomOf(toolBar) //(balanceView)
+            .toBottomOf(toolBar)
         
 
         barGraphView
@@ -427,7 +411,6 @@ fileprivate extension HomeViewController {
         timelineViewHeightConstraints.isActive = true
         
         transactionContainer
-            //.alignEdgesWithSuperview([.left, .top, .bottom])
             .alignEdgesWithSuperview([.left, .bottom])
             .toBottomOf(timelineContainer)
         
@@ -506,6 +489,7 @@ fileprivate extension HomeViewController {
         //TODO: add proper checks here for this view
         timelineView.viewModel = vm
         timelineViewHeightConstraints.constant = 84
+        timelineContainer.subviews.filter { $0 is DashboardTimelineView }.forEach { $0.removeFromSuperview() }
         timelineContainer.addSubview(timelineView)
         timelineView.alignEdgesWithSuperview([.top,.left,.right], constants: [28,0,0])
         timelineView.height(constant: 56)
@@ -740,20 +724,6 @@ fileprivate extension HomeViewController {
         
         
     }
-}
-
-
-private extension HomeViewController {
-   /* func bindTableView() {
-        dataSource = RxTableViewSectionedReloadDataSource(configureCell: { (_, tableView, _, viewModel) in
-            let cell = tableView.dequeueReusableCell(withIdentifier: viewModel.reusableIdentifier) as! ConfigurableTableViewCell
-            cell.configure(with: self.themeService, viewModel: viewModel)
-            return cell as! UITableViewCell
-        })
-        
-        viewModel.outputs.dataSource.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-    } */
-
 }
 
 // MARK: Parallex header delegate
