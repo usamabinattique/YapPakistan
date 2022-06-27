@@ -82,7 +82,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_full_name".localized,
                                     value: self.cnicInfo.name, valueChanged: nameValueSubject.asObserver(), isEditable: true),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_father_spouse_name".localized,
-                                    value: self.cnicOCR.guardianName, valueChanged: fatherNameValueSubject.asObserver(), isEditable: true),
+                                    value: self.cnicOCR.guardianName ?? "", valueChanged: fatherNameValueSubject.asObserver(), isEditable: true),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_gender".localized,
                                     value: self.cnicInfo.gender),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_dob".localized,
@@ -119,6 +119,65 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
             self.cnicBlockCaseSubject.onNext(.cnicExpiredOnScane)
         }).disposed(by: disposeBag)
         
+        let saveRequest = nextSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .flatMap { [weak self] _ -> Observable<Event<String?>> in
+                guard let self = self,
+                      let documents = self.extractDocuments(from: identityDocument) else {
+                    return .empty()
+                }
+
+                let documentType = "CNIC"
+//                let identityNo = cnicNumber.replace(string: "-", replacement: "")
+                //!!!: Random Cnic for testing
+                let identityNo = self.getRandomNumber()
+                let nationality = "PAK"
+                let fullName = self.cnicInfo.name
+                let fatherName = self.cnicOCR.guardianName
+                let gender = self.cnicInfo.gender
+                let dob = self.cnicInfo.dob
+                let dateIssue = self.cnicInfo.issueDate
+                let dateExpiry = self.cnicInfo.expiryDate
+
+                return kycRepository.saveDocuments(documents, documentType: documentType,
+                                                   identityNo: identityNo, nationality: nationality,
+                                                   fullName: fullName, fatherName: fatherName ?? "", gender: "\(gender.charactersArray[0])", dob: dob,
+                                                   dateIssue: dateIssue, dateExpiry: dateExpiry)
+            }
+            .share()
+
+        saveRequest.elements().subscribe(onNext: { [unowned self] response in
+
+            print(response)
+
+            self.cnicBlockCaseSubject.onNext(.underAge)
+
+        }).disposed(by: disposeBag)
+
+        saveRequest.errors().subscribe(onNext: { [unowned self] error in
+            print(error.localizedDescription)
+        }).disposed(by: disposeBag)
+
+        let refreshAccountRequest = saveRequest.elements()
+            .flatMap { _ in
+                accountProvider.refreshAccount()
+            }
+            .share()
+
+        refreshAccountRequest
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .bind(to: successSubject)
+            .disposed(by: disposeBag)
+
+        saveRequest.errors()
+            .do(onNext: { _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .map { $0.localizedDescription }
+            .bind(to: showErrorSubject)
+            .disposed(by: disposeBag)
 //        let saveRequest = nextSubject
 //            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
 //            .flatMap { [weak self] _ -> Observable<Event<String?>> in
