@@ -151,6 +151,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
     private let accentColorSubject = BehaviorSubject<UIColor> (value: UIColor.red) //SessionManager.current.currentProfile?.customer.accentColor ?? .primary)
     private let userNotificationPreferenceSubject = BehaviorSubject<Bool>(value: YAPUserDefaults.isNotificationOn())
     private let dismissSubject = PublishSubject<Void>()
+    private let socialMediaLinksSubject = ReplaySubject<[SocialMedia]>.create(bufferSize: 1)
     
     
     // MARK: - Inputs
@@ -275,6 +276,7 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         openTermsandConditions()
         openLinkedin()
         openPasscodechange()
+        getSocialMediaLinks(repository: repository)
         //notificationAuthorisationStatausChange()
         
         Observable.merge(privacyTapSubject, appNotificationsDidChangeSubject).subscribe(onNext: { state in
@@ -552,6 +554,28 @@ class UserProfileViewModel: UserProfileViewModelType, UserProfileViewModelInputs
         //            .subscribe(onNext: { [weak self] in
         //                self?.resultSubject.onNext(()) })
         //            .disposed(by: disposeBag)
+    }
+    
+    func getSocialMediaLinks(repository: LoginRepository) {
+        let request = viewWillAppearSubject
+            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
+            .flatMap { _ -> Observable<Event<[SocialMedia]>> in
+                
+                return repository.getSocialMediaLinks()
+            }
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
+            .share(replay: 1, scope: .whileConnected)
+        
+                request.errors()
+                .subscribe(onNext: { [unowned self] in
+                    self.errorSubject.onNext($0) })
+                .disposed(by: disposeBag)
+                
+                request.elements()
+                .subscribe(onNext: { [weak self] links in
+                    self?.socialMediaLinksSubject.onNext(links)
+                }).disposed(by: disposeBag)
+                
     }
 }
 

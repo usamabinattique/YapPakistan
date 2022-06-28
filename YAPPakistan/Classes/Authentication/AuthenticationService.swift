@@ -21,6 +21,7 @@ public protocol AuthenticationServiceType {
     func saveProfile<T: Codable>(firstName: String, lastName: String, email: String, companyName: String?,
                                  countryCode: String, phone: String, passcode: String, accountType: String, token: String?) -> Observable<T>
     func reauthenticate<T: Codable>(token: String) -> Observable<T>
+    func getSocialMediaLinks<T: Codable>() -> Observable<T>
 }
 
 public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
@@ -75,6 +76,12 @@ public class AuthenticationService: AuthBaseService, AuthenticationServiceType {
                                         query: params,
                                         headers: authorizationProvider.authorizationHeaders)
 
+        return request(apiClient: apiClient, route: route)
+    }
+    
+    public func getSocialMediaLinks<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.adminURL, "/api/social-media-links",
+                                headers: authorizationProvider.authorizationHeaders)
         return request(apiClient: apiClient, route: route)
     }
 }

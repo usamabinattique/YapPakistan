@@ -114,10 +114,10 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                                  kycRepository: KYCRepository,
                                  accountProvider: AccountProvider) {
         
-//        nextSubject.subscribe(onNext: { [weak self] _ in
-//            guard let self = self else { return }
-//            self.cnicBlockCaseSubject.onNext(.cnicExpiredOnScane)
-//        }).disposed(by: disposeBag)
+        nextSubject.subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            self.cnicBlockCaseSubject.onNext(.cnicExpiredOnScane)
+        }).disposed(by: disposeBag)
         
         let saveRequest = nextSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })

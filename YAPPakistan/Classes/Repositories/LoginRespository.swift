@@ -18,6 +18,7 @@ public protocol LoginRepositoryType: AnyObject {
     func logout(deviceUUID: String) -> Observable<Event<[String: String]?>>
     func changeProfilePhoto(_ data: Data, name: String, fileName: String, mimeType: String) -> Observable<Event<ProfilePhotoResponse>>
     func removeProfilePhoto() -> Observable<Event<String?>>
+    func getSocialMediaLinks() -> Observable<Event<[SocialMedia]>>
 }
 
 public class LoginRepository: LoginRepositoryType {
@@ -32,6 +33,7 @@ public class LoginRepository: LoginRepositoryType {
         self.customerService = customerService
         self.authenticationService = authenticationService
         self.messageService = messageService
+        
     }
     
     let disposeBag = DisposeBag()
@@ -67,5 +69,9 @@ public class LoginRepository: LoginRepositoryType {
 
     public func logout(deviceUUID: String) -> Observable<Event<[String: String]?>> {
         return authenticationService.logout(deviceUUID: deviceUUID).materialize()
+    }
+    
+    public func getSocialMediaLinks() -> Observable<Event<[SocialMedia]>> {
+        return authenticationService.getSocialMediaLinks().materialize()
     }
 }

@@ -113,14 +113,18 @@ class KYCReviewCoordinator : Coordinator<ResultType<Void>> {
             }
             else if blockCase == .invalidCNIC {
                 // Perform Rescan CNIC here
-                self.root.popViewController(animated: true, nil)
-                self.root.popViewController(animated: true, nil)
+                self.root.popViewController(animated: false, nil)
+                self.root.popViewController(animated: false, nil)
+                self.resultSubject.onNext(.cancel)
+                self.resultSubject.onCompleted()
             }
             else if blockCase == .cnicExpiredOnScane {
                 // Perform Rescan CNIC here
                 //self.navigateToRescanCNIC()
-                self.root.popViewController(animated: true, nil)
-                self.root.popViewController(animated: true, nil)
+                self.root.popViewController(animated: false, nil)
+                self.root.popViewController(animated: false, nil)
+                self.resultSubject.onNext(.cancel)
+                self.resultSubject.onCompleted()
             }
             else if blockCase == .cnicAlreadyUsed {
                 // Perform Logout here

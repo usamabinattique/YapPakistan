@@ -12,12 +12,7 @@ import RxSwift
 struct MissingDocumentData{
     var title: String
     var type: MissingDocumentType
-}
-
-enum MissingDocumentType: String {
-    case cnicCopy = "CNIC copy"
-    case selfie = "Selfie"
-    
+    var isUploaded: Bool
 }
 
 protocol MissingDocumentNameCellViewModelInput {
@@ -26,6 +21,7 @@ protocol MissingDocumentNameCellViewModelInput {
 
 protocol MissingDocumentNameCellViewModelOutput {
     var name: Observable<String> { get }
+    var isUploaded: Observable<Bool> { get }
 }
 
 protocol MissingDocumentNameCellViewModelType {
@@ -44,11 +40,13 @@ class MissingDocumentNameCellViewModel: MissingDocumentNameCellViewModelType, Mi
   //  private let bankImageSubject: BehaviorSubject<(String?, UIImage?)>
     
     private let nameSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let isUploadedSubject = ReplaySubject<Bool>.create(bufferSize: 1)
    
     // MARK: - Inputs
     
     // MARK: - Outputs
     var name: Observable<String> {  nameSubject.asObservable() }
+    var isUploaded: Observable<Bool> { isUploadedSubject.asObservable() }
     
     let data: MissingDocumentData
     
@@ -56,6 +54,7 @@ class MissingDocumentNameCellViewModel: MissingDocumentNameCellViewModelType, Mi
     init(_ data: MissingDocumentData) {
         self.data = data
         nameSubject.onNext(data.title)
+        isUploadedSubject.onNext(data.isUploaded)
     }
 }
 
