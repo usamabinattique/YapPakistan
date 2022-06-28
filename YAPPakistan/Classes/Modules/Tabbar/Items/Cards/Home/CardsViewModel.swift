@@ -195,21 +195,20 @@ class CardsViewModel: CardsViewModelType,
 
     func resolveIfCompleted() {
         
-        self.loaderSubject.onNext(true)
-        let cardsFetched = self.cardsRepository.getCards()
-            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
-            .share()
+        let cardsFetched = viewDidAppearSubject
+            .do(onNext: { [weak self] in
+                self?.loaderSubject.onNext(true)
+            })
+            .flatMap({ [unowned self] _ -> Observable<Event<[PaymentCard]?>> in
+                return self.cardsRepository.getCards()
+            }).share()
+//            .do(onNext: { [weak self] _ in
+//                self?.loaderSubject.onNext(false)
+//            })
         
-//        let cardsFetched = completionStatus.filter{
-//            print($0)
-//            return !$0
-//        }.withUnretained(self)
-//            .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
-//                .flatMap { $0.0.cardsRepository.getCards() }
-//            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
-//            .share()
-
-                cardsFetched.elements().subscribe(onNext: { [unowned self] cards in
+            cardsFetched.elements()
+                .subscribe(onNext: { [unowned self] cards in
+                    self.loaderSubject.onNext(false)
                     print(cards?.count)
                     
                     if (cards?.count ?? 0) > 0 {
@@ -220,6 +219,36 @@ class CardsViewModel: CardsViewModelType,
                     }
                     
                 }).disposed(by: disposeBag)
+                    
+                cardsFetched.errors().subscribe(onNext:{ [weak self] error in
+                    self?.loaderSubject.onNext(false)
+                    print(error.localizedDescription)
+                }).disposed(by: disposeBag)
+//        self.loaderSubject.onNext(true)
+//        let cardsFetched = self.cardsRepository.getCards()
+//            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+//            .share()
+        
+//        let cardsFetched = completionStatus.filter{
+//            print($0)
+//            return !$0
+//        }.withUnretained(self)
+//            .do(onNext: { `self`, _ in self.loaderSubject.onNext(true) })
+//                .flatMap { $0.0.cardsRepository.getCards() }
+//            .do(onNext: { [weak self] _ in self?.loaderSubject.onNext(false) })
+//            .share()
+
+//        cardsFetched.elements().subscribe(onNext: { [unowned self] cards in
+//            print(cards?.count)
+//
+//            if (cards?.count ?? 0) > 0 {
+//                self.noCardFoundSubject.onNext(false)
+//            }
+//            else {
+//                self.noCardFoundSubject.onNext(true)
+//            }
+//
+//        }).disposed(by: disposeBag)
                 
         let cardElements = cardsFetched.elements().map({ $0?.first }).share()
         cardElements.bind(to: cardDetailsSubject).disposed(by: disposeBag)

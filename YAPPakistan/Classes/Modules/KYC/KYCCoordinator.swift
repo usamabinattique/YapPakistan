@@ -150,23 +150,6 @@ extension KYCCoordinator {
     func selfiePending() -> Observable<ResultType<Void>>  {
         return coordinate(to: container.makeSelfieCoordinator(root: root))
     }
-    
-//    func cardOrderSchemePending() -> Observable<ResultType<Void>>  {
-//        return coordinate(to: container.makeCardSchemeCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
-//    }
-    
-    func confirmPayment() -> Observable<ResultType<Void>>  {
-        return coordinate(to: container.makeConfirmPaymentCoordinator(root: root, paymentGatewayM: paymentGatewayM))
-    }
-    
-    func carTopupCardSelection(isPresented : Bool) -> Observable<ResultType<Void>>  {
-        self.isPresented = isPresented
-        return coordinate(to: container.makeTopupCardSelectionCoordinator(root: root, paymentGatewayM: paymentGatewayM))
-    }
-
-    func addressPending() -> Observable<ResultType<Void>> {
-        return coordinate(to: container.makeAddressCoordinator(root: root, paymentGatewayM: self.paymentGatewayM))
-    }
 
     func kycResult() -> Observable<ResultType<Void>> {
         return coordinate(to: KYCResultCoordinator(root: root, container: container))

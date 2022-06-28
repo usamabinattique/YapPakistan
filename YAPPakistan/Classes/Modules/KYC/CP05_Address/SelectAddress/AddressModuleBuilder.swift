@@ -8,7 +8,7 @@
 import Foundation
 
 struct AddressModuleBuilder {
-    let container: KYCFeatureContainer
+    let container: UserSessionContainer
 
     func viewController() -> AddressViewController {
         let themeService = container.themeService
@@ -17,7 +17,7 @@ struct AddressModuleBuilder {
         let viewModel = AddressViewModel(locationService: locationService,
                                          kycRepository: kycRepository,
                                          accountProvider: container.accountProvider,
-                                         configuration: container.mainContainer.configuration)
+                                         configuration: container.parent.configuration)
         return AddressViewController(themeService: themeService, viewModel: viewModel)
     }
 }

@@ -115,7 +115,7 @@ class AddressViewController: UIViewController {
         let barItem = barButtonItem(image: UIImage(named: "icon_search", in: .yapPakistan)?.asTemplate,
                                     insectBy: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 2))
         self.navigationItem.rightBarButtonItem = barItem.barItem
-        self.title = "Address VC"
+        
         self.navigationItem.leftBarButtonItem = backBarButtonItem.barItem
         searchButton = barItem.button
         searchButton.isEnabled = false

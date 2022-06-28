@@ -9,7 +9,7 @@ import Foundation
 
 struct EditCardNameModuleBuilder {
 
-    let container: KYCFeatureContainer
+    let container: UserSessionContainer
 
     func viewController(name: String) -> EditCardNameViewController {
         let themeService = container.themeService

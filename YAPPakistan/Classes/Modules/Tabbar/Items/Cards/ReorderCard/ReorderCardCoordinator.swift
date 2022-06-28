@@ -95,7 +95,6 @@ public class ReorderCardCoordinator: Coordinator<ResultType<Void>> {
     }
 
     func selectCityName() -> Observable<String>  {
-        let container = KYCFeatureContainer(parent: self.container)
         let viewController = container.makeCityListViewController()
 
         viewController.viewModel.outputs.back.withUnretained(self)

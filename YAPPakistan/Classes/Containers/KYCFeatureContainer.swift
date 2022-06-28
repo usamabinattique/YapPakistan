@@ -66,22 +66,6 @@ public final class KYCFeatureContainer {
 //    func makeCardSchemeCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> CardSchemeCoordinator {
 //        CardSchemeCoordinator(root: root, container: self)
 //    }
-    
-    func makeTopupCardSelectionCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> TopupCardSelectionCoordinator {
-        TopupCardSelectionCoordinator(root: root, container: self, repository: self.makeY2YRepository(), cardsRepository: self.parent.makeCardsRepository(), paymentGatewayM: paymentGatewayM )
-    }
-
-    func makeCardNameCoordinator(root: UINavigationController,  schemeObj: KYCCardsSchemeM, paymentGatewayM: PaymentGatewayLocalModel) -> CardNameCoordinator {
-        CardNameCoordinator(root: root, container: self ,schemeObj: schemeObj, paymentGatewayM: paymentGatewayM)
-    }
-
-    func makeAddressCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel,isPresented: Bool = false) -> AddressCoordinator {
-        AddressCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM,isPresented: isPresented)
-    }
-    
-    func makeConfirmPaymentCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> ConfirmPaymentCoordinator {
-        ConfirmPaymentCoordinator(root: root, container: self, repository: self.makeY2YRepository(), paymentGatewayM: paymentGatewayM)
-    }
 
     // MARK: Controllers
 
@@ -161,19 +145,6 @@ extension KYCFeatureContainer {
 //    func makeCardNameViewController(paymentGatewayM: PaymentGatewayLocalModel) -> CardNameViewController {
 //        CardNameModuleBuilder(container: self, paymentGatewayM: paymentGatewayM).viewController()
 //    }
-
-    func makeEditCardNameViewController(name: String) -> EditCardNameViewController {
-        EditCardNameModuleBuilder(container: self).viewController(name: name)
-    }
-
-    func makeAddressViewController() -> AddressViewController {
-        AddressModuleBuilder(container: self).viewController()
-    }
-
-    func makeCityListViewController() -> CityListViewController {
-        CityListModuleBuilder(container: self).viewController()
-    }
-
 
     func makeAccountOpenSuccessViewController() -> AccountOpenSuccessViewController {
         AccountOpenSuccessModuleBuilder(container: self).viewController()

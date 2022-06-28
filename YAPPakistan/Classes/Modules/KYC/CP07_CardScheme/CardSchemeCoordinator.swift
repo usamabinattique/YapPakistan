@@ -19,16 +19,14 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
     private var navigationRoot: UINavigationController!
     private let container: UserSessionContainer
     private var paymentGatewayM: PaymentGatewayLocalModel!
-    private var cardSchemeModel: KYCCardsSchemeM!
-    var locationData: LocationModel?
+    //private var cardSchemeModel: KYCCardsSchemeM!
     private var contactsManager: ContactsManager!
 
     init(root: UINavigationController,
          container: UserSessionContainer) {
         self.container = container
         self.root = root
-        //self.paymentGatewayM = paymentGatewayM
-        
+        self.paymentGatewayM = PaymentGatewayLocalModel()
         super.init()
         
         self.navigationRoot = makeNavigationController()
@@ -41,7 +39,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         cardScheme()
             .subscribe(onNext:{ [weak self] cardSchemeObj in
                 guard let `self` = self else { return }
-                self.cardSchemeModel = cardSchemeObj
+                self.paymentGatewayM.cardSchemeObject = cardSchemeObj
                 switch cardSchemeObj.scheme {
                 case .Mastercard:
                     self.cardBenefits(cardSchemeObj)
@@ -82,20 +80,17 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
         viewController.viewModel.outputs.fedValue
             .subscribe(onNext:{ fed in
-                self.cardSchemeModel?.fedFee = fed
+                self.paymentGatewayM.cardSchemeObject?.fedFee = fed
             })
             .disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.next.subscribe(onNext: { [unowned self] isTopupNeeded in
-
-            
             
             if isTopupNeeded {
                 coordinate(to: AddMoneyCoordinator(root: viewController, container: self.container, contactsManager: self.contactsManager, repository: container.makeY2YRepository())).subscribe(onNext: { result in
                     
                 }).disposed(by: rx.disposeBag)
-            }
-            else {
+            } else {
                 self.cardNamePending(schemeObj: schemeObj)
             }
         }).disposed(by: rx.disposeBag)
@@ -115,17 +110,17 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
 
         let viewModel = CardNameViewModel(kycRepository: kycRepository, accountProvider: accountProvider, schemeObj: schemeObj)
         let viewController =  CardNameViewController(themeService: themeService, viewModel: viewModel)
-        self.localRoot.pushViewController(viewController, animated: false)
+        self.navigationRoot.pushViewController(viewController, animated: true)
 
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
-                self.localRoot.popViewController()
+                self.navigationRoot.popViewController()
             })
             .disposed(by: rx.disposeBag)
 
         viewController.viewModel.outputs.next.withUnretained(self)
             .subscribe(onNext: { `self`, _ in
-                guard let cardScheme = self.cardSchemeModel else { return }
+                guard let cardScheme = self.paymentGatewayM.cardSchemeObject else { return }
                     self.addressPending()
             })
             .disposed(by: rx.disposeBag)
@@ -143,19 +138,19 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         let themeService = self.container.themeService
         let viewModel = EditNameViewModel(name: name)
         let viewController =  EditCardNameViewController(themeService: themeService, viewModel: viewModel)
-        self.localRoot.pushViewController(viewController, completion: nil)
+        self.navigationRoot.pushViewController(viewController, completion: nil)
         
         viewController.viewModel.outputs.back.withUnretained(self)
             .subscribe(onNext: { `self`, _
                 in
-                self.localRoot.popViewController()
+                self.navigationRoot.popViewController()
             })
             .disposed(by: rx.disposeBag)
 
         let next = viewController.viewModel.outputs.next
             .do(onNext: { [weak self] _ in
-                self?.addressPending()
-                
+                //self?.addressPending()
+                self?.navigationRoot.popViewController()
             })
         return next
     }
@@ -170,7 +165,7 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
                                          configuration: container.parent.configuration)
         let viewController =  AddressViewController(themeService: themeService, viewModel: viewModel)
 
-        self.localRoot.pushViewController(viewController, completion: nil)
+        self.navigationRoot.pushViewController(viewController, completion: nil)
         
         viewController.viewModel.outputs.city.withUnretained(self)
             .flatMap{ `self`, _ in self.selectCityName() }
@@ -179,93 +174,45 @@ class CardSchemeCoordinator: Coordinator<ResultType<Void>> {
         
         viewController.viewModel.outputs.next.subscribe(onNext: { [weak self] location in
             guard let `self` = self else { return }
-            self.locationData = location
+            self.paymentGatewayM.locationData = location
             print("next called in address")
             self.confirmPayment()
-        })
+        }).disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.back.subscribe(onNext: { [unowned self] _ in
-            self.localRoot.popViewController()
+            self.navigationRoot.popViewController()
         }).disposed(by: rx.disposeBag)
     }
     
     func confirmPayment() {
-        let viewModel = ConfirmPaymentViewModel(accountProvider: container.accountProvider, kycRepository: container.makeKYCRepository(), transactionRepository: container.makeTransactionsRepository(), paymentGatewayObj: self.cardSchemeModel, locationData: self.locationData)
-        let viewController = ConfirmPaymentViewController(themeService: container.themeService, viewModel: viewModel)
-        self.localRoot.pushViewController(viewController, completion: nil)
-        
-        viewModel.outputs.showCVV.withUnretained(self).subscribe(onNext: { `self`,_ in
+        coordinate(to: ConfirmPaymentCoordinator(root: navigationRoot, container: container, repository: container.makeY2YRepository(), shouldPresent: true, paymentGatewayM: paymentGatewayM))
+            .subscribe(onNext: { [unowned self] result in
+            switch result {
+            case .success:
+                self.root.dismiss(animated: true)
+                self.moveNext()
+            case .cancel:
+                ()
+            }
         }).disposed(by: rx.disposeBag)
-
-        
-        viewModel.outputs.close.subscribe(onNext: { [weak self] in
-            guard let self = self else { return }
-            //self.localRoot.dismiss(animated: true, completion: nil)
-            self.localRoot.popViewController()
-        }).disposed(by: rx.disposeBag)
-        
-        
-        viewModel.outputs.doItLater.subscribe(onNext: { [unowned self] _ in
-            
-            self.localRoot.dismiss(animated: true, completion: nil)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.edit.subscribe(onNext: { [weak self] in
-            guard let self = self else { return }
-            //self.finishCoordinator(.cancel)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.next.subscribe(onNext: { [weak self] _ in
-            guard let self = self else { return }
-            
-            self.localRoot.dismiss(animated: true, completion: nil)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.html.withUnretained(self).subscribe(onNext:{ `self`, htmlString in
-//            self.cardDetailWeb(html: htmlString, viewModel: viewModel)
-//                .subscribe(onNext: { [weak self] _ in
-//                    guard let `self` = self else { return }
-//                    print("confirm payment subscription for webview")
-//                }).disposed(by: self.rx.disposeBag)
-        }).disposed(by: rx.disposeBag)
-        
-        viewModel.outputs.topupComplete.withUnretained(self).subscribe(onNext: { `self`, _ in
-//            if self.shouldPresent {
-//
-//                self.root.dismiss(animated: true) {
-//                    self.moveNext()
-//                }
-//            }
-//            else {
-//                self.root.popViewController(animated: true) {
-//                    self.moveNext()
-//                }
-//            }
-        }).disposed(by: rx.disposeBag)
-        
-        
-        
     }
     
     func selectCityName() -> Observable<String>  {
         let viewController = container.makeCityListViewController()
         let navigation = container.makeNavigationController(root: viewController)
-       // root.present(navigation, animated: true)
-        localRoot.present(navigation, animated: true)
-
-       /* viewController.viewModel.outputs.back
-            .subscribe(onNext: { [weak self] _ in self?.root.dismiss(animated: true) })
-            .disposed(by: rx.disposeBag)
-
-        return viewController.viewModel.outputs.next
-            .do(onNext: { [weak self] _ in self?.root.dismiss(animated: true) }) */
+        
+        navigationRoot.present(navigation, animated: true)
         
         viewController.viewModel.outputs.back
-             .subscribe(onNext: { [weak self] _ in viewController.dismiss(animated: true) })
+             .subscribe(onNext: { [weak self] _ in
+                 viewController.dismiss(animated: true)
+             })
              .disposed(by: rx.disposeBag)
 
          return viewController.viewModel.outputs.next
-             .do(onNext: { [weak self] _ in viewController.dismiss(animated: true) })
+             .do(onNext: { [weak self] _ in
+                 viewController.dismiss(animated: true)
+             })
     }
 }
 

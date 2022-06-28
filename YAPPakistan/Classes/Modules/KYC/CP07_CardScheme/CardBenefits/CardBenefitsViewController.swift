@@ -161,8 +161,6 @@ extension CardBenefitsViewController: ViewDesignable {
         }).disposed(by: rx.disposeBag) //.bind(to: self.balanceLabel.text).disposed(by: rx.disposeBag)
         
         viewModel.outputs.buttonTitle.bind(to: nextButton.rx.title(for: .normal)).disposed(by: rx.disposeBag)
-#warning("[UMAIR] - Todo: disable button for master card")
-//        viewModel.outputs.isNextButtonEnabled.bind(to: nextButton.rx.isEnabled).disposed(by: rx.disposeBag)
         
         viewModel.outputs.coverImage.subscribe(onNext:{ [weak self] imageName in
             self?.coverImage.image = UIImage(named: imageName ?? "", in: .yapPakistan)

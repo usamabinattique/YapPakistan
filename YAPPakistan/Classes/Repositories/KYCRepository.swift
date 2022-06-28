@@ -36,7 +36,7 @@ protocol KYCRepositoryType {
                          city: String,
                          country: String,
                          latitude: String,
-                         longitude: String ) -> Observable<Event<Account>>
+                         longitude: String ) -> Observable<Event<String?>>
     
     func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>>
     func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<[Account]>>
@@ -116,7 +116,7 @@ class KYCRepository: KYCRepositoryType {
                          city: String,
                          country: String,
                          latitude: String,
-                         longitude: String ) -> Observable<Event<Account>> {
+                         longitude: String ) -> Observable<Event<String?>> {
         
        return cardsService.saveUserAddress(addressOne: addressOne,
                                            addressTwo: addressTwo,

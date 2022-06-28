@@ -15,12 +15,12 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
     private var localRoot: UINavigationController!
-    private let container: KYCFeatureContainer
+    private let container: UserSessionContainer
     private var paymentGatewayM: PaymentGatewayLocalModel!
     private var isPresented: Bool
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer, paymentGatewayM: PaymentGatewayLocalModel, isPresented: Bool = false) {
+         container: UserSessionContainer, paymentGatewayM: PaymentGatewayLocalModel, isPresented: Bool = false) {
         self.container = container
         self.root = root
         self.paymentGatewayM = paymentGatewayM
@@ -30,29 +30,13 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
     }
 
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-        let progressRoot = container.makeKYCProgressViewController()
-       // root.pushViewController(progressRoot)
+       
         localRoot = UINavigationControllerFactory.createAppThemedNavigationController(themeColor: UIColor(container.themeService.attrs.primary), font: UIFont.regular)
         localRoot.setNavigationBarHidden(true, animated: false)
-        localRoot.pushViewController(progressRoot)
         
-        progressRoot.viewModel.outputs.backTap.withUnretained(self)
-            .subscribe(onNext: { `self`, _ in
-                self.goBack()
-                if self.isPresented {
-                    self.localRoot.dismiss(animated: true, completion: nil)
-                } else {
-                    self.root.popViewController()
-                }
-                
-                
-            })
-            .disposed(by: rx.disposeBag)
-        progressRoot.hidesBottomBarWhenPushed = true
-
         let viewController = container.makeAddressViewController()
         
-        push(viewController: viewController, progress: 0.90)
+        localRoot.pushViewController(viewController)
         //root.present(localRoot, animated: true, completion: nil)
         //localRoot.present(localRoot, animated: true, completion: nil)
         root.present(localRoot, animated: true, completion: nil)
@@ -75,11 +59,13 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
                 case .success(_):
                     if self.isPresented {
                         self.localRoot.dismiss(animated: true) {
-                            self.kycResult()
+                            //self.kycResult()
+                            self.root.dismiss(animated: true)
                         }
                     } else {
                         self.root.popViewController()
-                        self.kycResult()
+                        //self.kycResult()
+                        self.root.dismiss(animated: true)
                     }
                     print("success")
                 }
@@ -110,24 +96,9 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
              .do(onNext: { [weak self] _ in viewController.dismiss(animated: true) })
     }
     
-    func kycResult() {
-        coordinate(to: KYCResultCoordinator(root: root, container: container))
-            .subscribe(onNext:{ [weak self] result in
-                switch result {
-                case .success:
-                    print("go next from Name address")
-                    self?.goToHome()
-                case .cancel:
-//                    self?.navigationRoot.popToRootViewController(animated: true)
-                    print("go back from Name address")
-                    break
-                }
-            }).disposed(by: rx.disposeBag)
-    }
-    
     func confirmPayment() -> Observable<ResultType<Void>> {
        /* return coordinate(to: ConfirmPaymentCoordinator(root: root, container: container, repository: container.makeY2YRepository(), shouldPresent: true,paymentGatewayM: paymentGatewayM)) */
-        return coordinate(to: ConfirmPaymentCoordinator(root: localRoot, container: container, repository: container.makeY2YRepository(), shouldPresent: true, paymentGatewayM: paymentGatewayM))
+        return coordinate(to: ConfirmPaymentCoordinator(root: localRoot, container: container, repository: container.makeY2YRepository(), shouldPresent: false, paymentGatewayM: paymentGatewayM))
     }
     
     func goToHome() {
@@ -140,20 +111,6 @@ class AddressCoordinator: Coordinator<ResultType<Void>> {
 
 // MARK: Helpers
 fileprivate extension AddressCoordinator {
-    var progressRoot: KYCProgressViewController! { localRoot.topViewController as? KYCProgressViewController } //root.topViewController as? KYCProgressViewController }
-
-    func push(viewController: UIViewController, progress: Float ) {
-        self.progressRoot.viewModel.inputs.progressObserver.onNext(progress)
-        self.progressRoot.childNavigation.pushViewController(viewController, animated: true)
-    }
-
-    func popViewController(progress: Float) {
-//        guard self.progressRoot.childNavigation.viewControllers.count > 1 else {
-//            return goBack()
-//        }
-        self.progressRoot.viewModel.inputs.progressObserver.onNext(progress)
-        self.progressRoot.childNavigation.popViewController(animated: true)
-    }
     
     func moveNext() {
         self.result.onNext(.success(()))
