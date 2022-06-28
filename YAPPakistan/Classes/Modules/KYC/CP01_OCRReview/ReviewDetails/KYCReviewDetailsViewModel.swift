@@ -82,7 +82,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_full_name".localized,
                                     value: self.cnicInfo.name, valueChanged: nameValueSubject.asObserver(), isEditable: true),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_father_spouse_name".localized,
-                                    value: self.cnicOCR.guardianName, valueChanged: fatherNameValueSubject.asObserver(), isEditable: true),
+                                    value: self.cnicOCR.guardianName ?? "", valueChanged: fatherNameValueSubject.asObserver(), isEditable: true),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_gender".localized,
                                     value: self.cnicInfo.gender),
             KYCReviewFieldViewModel(heading: "screen_kyc_review_details_dob".localized,
@@ -114,10 +114,10 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                                  kycRepository: KYCRepository,
                                  accountProvider: AccountProvider) {
         
-//        nextSubject.subscribe(onNext: { [weak self] _ in
-//            guard let self = self else { return }
-//            self.cnicBlockCaseSubject.onNext(.cnicExpiredOnScane)
-//        }).disposed(by: disposeBag)
+        nextSubject.subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            self.cnicBlockCaseSubject.onNext(.cnicExpiredOnScane)
+        }).disposed(by: disposeBag)
         
         let saveRequest = nextSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
@@ -141,7 +141,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
 
                 return kycRepository.saveDocuments(documents, documentType: documentType,
                                                    identityNo: identityNo, nationality: nationality,
-                                                   fullName: fullName, fatherName: fatherName, gender: "\(gender.charactersArray[0])", dob: dob,
+                                                   fullName: fullName, fatherName: fatherName ?? "", gender: "\(gender.charactersArray[0])", dob: dob,
                                                    dateIssue: dateIssue, dateExpiry: dateExpiry)
             }
             .share()

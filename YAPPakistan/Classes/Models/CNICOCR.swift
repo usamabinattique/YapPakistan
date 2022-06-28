@@ -12,7 +12,7 @@ import Foundation
 public struct CNICOCR: Codable {
     private var _cnicNumber: String
     private var _issueDate: String
-    var guardianName: String
+    var guardianName: String?
 
     enum CodingKeys: String, CodingKey {
         case _cnicNumber = "cnic_number"
