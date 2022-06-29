@@ -48,6 +48,7 @@ public struct KYCCardsSchemeM: Codable {
         case schemeCode
         case isActive
         case fee
+        case fedFee = "vat"
     }
     
     public init(from decoder: Decoder) throws {
@@ -57,6 +58,7 @@ public struct KYCCardsSchemeM: Codable {
         self.schemeCode = (try? data.decode(String?.self, forKey: .schemeCode)) ?? ""
         self.isActive = (try? data.decode(Bool?.self, forKey: .isActive)) ?? false
         self.fee = (try? data.decode(Double?.self, forKey: .fee)) ?? 0
+        self.fedFee = (try? data.decode(Double?.self, forKey: .fedFee)) ?? 0
         
         setupCustomProperties()
     }

@@ -40,6 +40,7 @@ protocol TopupTransferViewModelInput {
     var requestDenominationAmountObserver: AnyObserver<Void> { get }
     var transactionRequestObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
+    var show3DSObserver: AnyObserver<Void> { get }
 }
 
 protocol TopupTransferViewModelOutput {
@@ -72,6 +73,7 @@ protocol TopupTransferViewModelOutput {
     var quickAmounts: Observable<[String]> { get }
     var denominationAmountViewModels: Observable<[DenominationAmountCollectionViewCellViewModel]> { get }
     var back: Observable<Void> { get }
+    var showCVV: Observable<Void> { get }
 }
 
 
@@ -130,6 +132,8 @@ class TopupTransferViewModel: TopupTransferViewModelType, TopupTransferViewModel
     private var transactionRequestSubject = PublishSubject<Void>()
     private let quickAmountsSubject =  BehaviorSubject<[String]>(value: [])
     private var backSubject = PublishSubject<Void>()
+    private var showCVVSubject = PublishSubject<Void>()
+    private var show3DSSubject = PublishSubject<Void>()
     
     // MARK: - Input
     var actionButtonObserver: AnyObserver<Void> { return actionButtonSubject.asObserver() }
@@ -138,6 +142,7 @@ class TopupTransferViewModel: TopupTransferViewModelType, TopupTransferViewModel
     var requestDenominationAmountObserver: AnyObserver<Void> { return requestDenominationAmountSubject.asObserver() }
     var transactionRequestObserver: AnyObserver<Void> { return transactionRequestSubject.asObserver() }
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
+    var show3DSObserver: AnyObserver<Void> { show3DSSubject.asObserver() }
     
     // MARK: - Outputs
     var html: Observable<String> { return htmlSubject.asObservable() }
@@ -169,6 +174,7 @@ class TopupTransferViewModel: TopupTransferViewModelType, TopupTransferViewModel
     var isValidLowerLimit: Observable<Bool?> { return isValidLowerLimitSubject.asObservable() }
     var isValidAmount: Observable<(Bool?, String?)> { return isValidAmountSubject.asObservable() }
     var quickAmounts: Observable<[String]> { return quickAmountsSubject.asObservable() }
+    var showCVV: Observable<Void> { showCVVSubject.asObservable() }
     
     init(repository: TransactionsRepositoryType, paymentGatewayModel: PaymentGatewayLocalModel) {
         self.repository = repository
@@ -397,6 +403,12 @@ extension TopupTransferViewModel {
             }
             .share()
 
+        checkoutSessionRequest.elements()
+            .subscribe(onNext:{ [weak self] _ in
+                self?.showCVVSubject.onNext(())
+            })
+            .disposed(by: disposeBag)
+        
         fetch3DSEnrollmentRequest.errors()
             .do(onNext: { _ in
                 YAPProgressHud.hideProgressHud()

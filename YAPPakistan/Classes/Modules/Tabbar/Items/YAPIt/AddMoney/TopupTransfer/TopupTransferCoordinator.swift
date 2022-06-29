@@ -37,6 +37,12 @@ class TopupTransferCoordinator: Coordinator<ResultType<Void>> {
                 self.navigateTo3DSEnrollment(html: html, navigationController: self.root, resultObserver: viewController.viewModel.inputs.pollACSResultObserver)
             }).disposed(by: rx.disposeBag)
 
+        viewController.viewModel.outputs.showCVV
+            .subscribe(onNext: { _ in
+                
+            })
+            .disposed(by: rx.disposeBag)
+        
         viewController.viewModel.outputs.result.subscribe(onNext: { [weak self] in
             guard let `self` = self else { return }
             self.navigateToCVV(card: self.paymentGatewayModel.beneficiary ?? ExternalPaymentCard(), amount: Double($0.amount) ?? 0, currency: $0.currency, orderID: $0.orderId, threeDSecureId: $0.threeDSecureId, navigationController: self.root)
