@@ -37,9 +37,16 @@ class TopupTransferCoordinator: Coordinator<ResultType<Void>> {
                 self.navigateTo3DSEnrollment(html: html, navigationController: self.root, resultObserver: viewController.viewModel.inputs.pollACSResultObserver)
             }).disposed(by: rx.disposeBag)
 
+        viewController.viewModel.outputs.showCVV
+            .subscribe(onNext: { [weak self] in
+                guard let `self` = self else { return }
+                self.navigateToCVV(card: self.paymentGatewayModel.beneficiary ?? ExternalPaymentCard(), amount: Double($0.amount) ?? 0, currency: $0.currency, orderID: $0.orderId, navigationController: self.root, refVM: viewController.viewModel)
+            })
+            .disposed(by: rx.disposeBag)
+        
         viewController.viewModel.outputs.result.subscribe(onNext: { [weak self] in
             guard let `self` = self else { return }
-            self.navigateToCVV(card: self.paymentGatewayModel.beneficiary ?? ExternalPaymentCard(), amount: Double($0.amount) ?? 0, currency: $0.currency, orderID: $0.orderId, threeDSecureId: $0.threeDSecureId, navigationController: self.root)
+            self.navigateToTopupSuccess(amount: $0.amount, currency: $0.currency, card: $0.card, navigationController: self.root, newBalance: $0.newBalance)
         }).disposed(by: rx.disposeBag)
 
 //        viewController.viewModel.outputs.cancel.subscribe(onNext: { [weak self] _ in
@@ -93,8 +100,8 @@ private extension TopupTransferCoordinator {
     }
     
 
-    func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String, navigationController: UINavigationController) {
-        let viewModel = TopupCardCVVViewModel(card: card, amount: amount, currency: currency, orderID: orderID, threeDSecureId: threeDSecureId, repository: self.container.makeTransactionsRepository())
+    func navigateToCVV(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, navigationController: UINavigationController, refVM: TopupTransferViewModel) {
+        let viewModel = TopupCardCVVViewModel(card: card, amount: amount, currency: currency, orderID: orderID, repository: self.container.makeTransactionsRepository())
         //(card: card, amount: amount, currency: currency, orderID: orderID, threeDSecureId: threeDSecureId)
         let viewController = TopupCardCVVViewController(themeService: self.container.themeService, viewModel: viewModel)
         navigationController.pushViewController(viewController, animated: true)
@@ -105,8 +112,9 @@ private extension TopupTransferCoordinator {
             })
             .disposed(by: rx.disposeBag)
         
-        viewModel.outputs.result.subscribe(onNext: { [weak self] in
-            self?.navigateToTopupSuccess(amount: $0.amount, currency: $0.currency, card: $0.card, navigationController: navigationController, newBalance: $0.newBalance)
+        viewModel.outputs.result.subscribe(onNext: {
+            navigationController.popViewController()
+            refVM.inputs.show3DSObserver.onNext($0)
         }).disposed(by: rx.disposeBag)
     }
 
