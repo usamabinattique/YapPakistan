@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import UIKit
+import YAPComponents
 
 protocol ReviewSelfieViewModelInputs {
     var nextObserver: AnyObserver<Void> { get }
@@ -110,35 +111,38 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
                 print("image validation error \(err.localizedDescription)")
             }
             
-            let veriyFaceReq = self.kycRepository.verifyFaceOCR(compressedImage, fileName: "file_selfie", mimeType: "image/jpg")
+            
+            YAPProgressHud.showProgressHud()
+            
+            let veriyFaceReq = self.kycRepository.verifyFaceOCR(compressedImage, fileName: "file_selfie", mimeType: "image/jpg").share()
             
             
             // Selfie Match Success
             veriyFaceReq.elements().subscribe(onNext: { [weak self] response in
                 guard let _ = self else { return }
                 print(response)
+                YAPProgressHud.hideProgressHud()
                 self?.isSelfieMatched = true
                 self?.uploadSelfie(data: compressedImage)
+                
             }).disposed(by: self.disposeBag)
             
             // Selfie did not match
             veriyFaceReq.errors().subscribe(onNext: { [weak self] error in
                 guard let self = self else { return }
-                print(error.localizedDescription)
-                
+                YAPProgressHud.hideProgressHud()
                 self.isSelfieMatched = false
-                
                 self.uploadSelfie(data: compressedImage)
-                
             }).disposed(by: self.disposeBag)
         }).disposed(by: disposeBag)
     }
     
     func uploadSelfie(data: Data) {
         let uploadSelfieReq = self.kycRepository.uploadSelfie((data, "image/jpg")).share()
-        
+        YAPProgressHud.showProgressHud()
         uploadSelfieReq.elements().subscribe(onNext: { [weak self] response in
             print(response)
+            YAPProgressHud.hideProgressHud()
             guard let self = self else { return }
             self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
             
@@ -148,19 +152,23 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
         
         uploadSelfieReq.errors().subscribe(onNext: { [weak self] error in
             print(error.localizedDescription)
+            YAPProgressHud.hideProgressHud()
         }).disposed(by: self.disposeBag)
     }
     
     func generateIBAN(isSelfieMatched: Bool) {
+        YAPProgressHud.showProgressHud()
         let req = self.kycRepository.generateIBAN(isSelfieMatched: isSelfieMatched).share()
         
         req.elements().subscribe(onNext: { [weak self] result in
+            YAPProgressHud.hideProgressHud()
             guard let _ = self else { return }
             print(result)
             self?.selfieCompleteSubject.onNext(())
         }).disposed(by: disposeBag)
         
         req.errors().subscribe(onNext: { [weak self] error in
+            YAPProgressHud.hideProgressHud()
             guard let _  = self else { return }
             print(error.localizedDescription)
             self?.showErrorSubject.onNext(error.localizedDescription)
