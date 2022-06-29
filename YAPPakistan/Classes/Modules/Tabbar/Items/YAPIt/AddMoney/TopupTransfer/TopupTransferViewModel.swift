@@ -40,13 +40,13 @@ protocol TopupTransferViewModelInput {
     var requestDenominationAmountObserver: AnyObserver<Void> { get }
     var transactionRequestObserver: AnyObserver<Void> { get }
     var backObserver: AnyObserver<Void> { get }
-    var show3DSObserver: AnyObserver<Void> { get }
+    var show3DSObserver: AnyObserver<String> { get }
 }
 
 protocol TopupTransferViewModelOutput {
     var html: Observable<String> { get }
     var pollACSResult: Observable<Void> { get }
-    var result: Observable<(orderId: String, threeDSecureId: String, amount: String, currency: String, card: ExternalPaymentCard)> { get }
+    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)> { get }
     var becomeResponder: Observable<Bool> { get }
     var amountError: Observable<String?> { get }
     var availableBalance: Observable<NSAttributedString?> { get}
@@ -73,7 +73,8 @@ protocol TopupTransferViewModelOutput {
     var quickAmounts: Observable<[String]> { get }
     var denominationAmountViewModels: Observable<[DenominationAmountCollectionViewCellViewModel]> { get }
     var back: Observable<Void> { get }
-    var showCVV: Observable<Void> { get }
+    var showCVV: Observable<(orderId: String, amount: String, currency: String, card: ExternalPaymentCard)>  { get }
+    var amount: Observable<String?> { get }
 }
 
 
@@ -106,7 +107,7 @@ class TopupTransferViewModel: TopupTransferViewModelType, TopupTransferViewModel
     private let requestTopupTransactionFeeSubject = PublishSubject<Void>()
     private let feeSubject = BehaviorSubject<Double?>(value: nil)
     private let pollACSResultSubject = PublishSubject<Void>()
-    private let resultSubject = PublishSubject<(orderId: String, threeDSecureId: String, amount: String, currency: String, card: ExternalPaymentCard)>()
+    private var resultSubject = PublishSubject<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)>()
     private let transferSubject = PublishSubject<Void>()
     private let dailyRemainingLimitSubject = BehaviorSubject<Double?>(value: nil)
     private let screeTitleSubject = BehaviorSubject<String?>(value: nil)
@@ -132,8 +133,8 @@ class TopupTransferViewModel: TopupTransferViewModelType, TopupTransferViewModel
     private var transactionRequestSubject = PublishSubject<Void>()
     private let quickAmountsSubject =  BehaviorSubject<[String]>(value: [])
     private var backSubject = PublishSubject<Void>()
-    private var showCVVSubject = PublishSubject<Void>()
-    private var show3DSSubject = PublishSubject<Void>()
+    private var showCVVSubject = PublishSubject<(orderId: String, amount: String, currency: String, card: ExternalPaymentCard)> ()
+    private var show3DSSubject = PublishSubject<String>()
     
     // MARK: - Input
     var actionButtonObserver: AnyObserver<Void> { return actionButtonSubject.asObserver() }
@@ -142,16 +143,17 @@ class TopupTransferViewModel: TopupTransferViewModelType, TopupTransferViewModel
     var requestDenominationAmountObserver: AnyObserver<Void> { return requestDenominationAmountSubject.asObserver() }
     var transactionRequestObserver: AnyObserver<Void> { return transactionRequestSubject.asObserver() }
     var backObserver: AnyObserver<Void> { backSubject.asObserver() }
-    var show3DSObserver: AnyObserver<Void> { show3DSSubject.asObserver() }
+    var show3DSObserver: AnyObserver<String> { show3DSSubject.asObserver() }
     
     // MARK: - Outputs
     var html: Observable<String> { return htmlSubject.asObservable() }
     var pollACSResult: Observable<Void> { return pollACSResultSubject.asObservable() }
-    var result: Observable<(orderId: String, threeDSecureId: String, amount: String, currency: String, card: ExternalPaymentCard)> { return resultSubject.asObservable() }
+    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)> { return resultSubject.asObservable() }
     var amountError: Observable<String?> { amountErrorSubject.asObservable() }
     var availableBalance: Observable<NSAttributedString?> { return availableBalanceSubject.asObservable() }
     var screenTitle: Observable<String?> { return screeTitleSubject.asObservable() }
     var amountTitle: Observable<String?> { return amountViewTitleSubject.asObservable() }
+    var amount: Observable<String?> { return amountSubject.asObservable()}
     var accountBalance: Observable<String?> { return accountBalanceSubject.asObservable() }
     var panNumber: Observable<String?> { return cardPANNumberSubject.asObservable() }
     var transactionFee: Observable<NSAttributedString?> { return transactionFeeSubject.asObservable() }
@@ -174,7 +176,9 @@ class TopupTransferViewModel: TopupTransferViewModelType, TopupTransferViewModel
     var isValidLowerLimit: Observable<Bool?> { return isValidLowerLimitSubject.asObservable() }
     var isValidAmount: Observable<(Bool?, String?)> { return isValidAmountSubject.asObservable() }
     var quickAmounts: Observable<[String]> { return quickAmountsSubject.asObservable() }
-    var showCVV: Observable<Void> { showCVVSubject.asObservable() }
+    var showCVV: Observable<(orderId: String, amount: String, currency: String, card: ExternalPaymentCard)>  { showCVVSubject.asObservable() }
+    
+    var cvv: String = ""
     
     init(repository: TransactionsRepositoryType, paymentGatewayModel: PaymentGatewayLocalModel) {
         self.repository = repository
@@ -395,19 +399,23 @@ extension TopupTransferViewModel {
                 .bind(to: errorSubject)
                 .disposed(by: disposeBag)
         
-        let  fetch3DSEnrollmentRequest = checkoutSessionRequest.elements().withUnretained(self)
-            .flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
-                self.checkoutSessionObject = paymentGatewayCheckoutSession
-                guard let amount = try? self.enteredAmountSubject.value() else { return .never() }
-                return self.repository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: beneficiaryID.intValue, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
-            }
-            .share()
-
         checkoutSessionRequest.elements()
-            .subscribe(onNext:{ [weak self] _ in
-                self?.showCVVSubject.onNext(())
+            .subscribe(onNext:{ [unowned self] checkoutSessionObj in
+                YAPProgressHud.hideProgressHud()
+                self.checkoutSessionObject = checkoutSessionObj
+                guard let amount = try? self.enteredAmountSubject.value() else { return }
+                guard let orderID = checkoutSessionObj.order?.id else { return }
+                
+                self.showCVVSubject.onNext((orderId: orderID, amount: "\(amount)", currency: "PKR", card: self.paymentCard))
             })
             .disposed(by: disposeBag)
+        
+        let fetch3DSEnrollmentRequest = show3DSSubject
+            .flatMapLatest { [unowned self] cvv -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
+                self.cvv = cvv
+                return self.repository.fetch3DSEnrollment(orderId: self.checkoutSessionObject?.order?.id ?? "", beneficiaryID: beneficiaryID.intValue, amount: self.checkoutSessionObject?.order?.amount ?? "", currency: self.checkoutSessionObject?.order?.currency ?? "", sessionID: self.checkoutSessionObject?.session?.id ?? "")
+            }
+            .share()
         
         fetch3DSEnrollmentRequest.errors()
             .do(onNext: { _ in
@@ -467,8 +475,40 @@ extension TopupTransferViewModel {
             guard let `self` = self else { return }
             guard let amount = try? self.enteredAmountSubject.value() else { return }
             guard let orderID = checkoutSession.order?.id else { return }
-            self.resultSubject.onNext((orderId: orderID, threeDSecureId: threeDSecureResult.threeDSecureId, amount: "\(amount)", currency: "PKR", card: self.paymentCard))
+            threeDSecureResult.threeDSecureId
+            self.callTopupApi(threeDSecureID: threeDSecureResult.threeDSecureId, orderId: orderID, amount: "\(amount)", currency: "PKR", card: self.paymentCard)
+            
+            //self.resultSubject.onNext((orderId: orderID, amount: "\(amount)", currency: "PKR", card: self.paymentCard))
         }).disposed(by: disposeBag)
+    }
+    
+    func callTopupApi(threeDSecureID: String, orderId: String, amount: String, currency: String, card: ExternalPaymentCard) {
+        
+        YAPProgressHud.showProgressHud()
+        
+        let paymentRequest = self.repository.paymentGatewayTopup(threeDSecureId: threeDSecureID, orderId: orderId, currency: currency, amount: amount, sessionId: "", securityCode: self.cvv, beneficiaryId: String(card.id)).share()
+        
+         paymentRequest.errors()
+             .do(onNext: { _ in
+                 YAPProgressHud.hideProgressHud()
+             })
+             .subscribe(onNext:{ [weak self] error in
+                 self?.errorSubject.onNext(error.localizedDescription)
+             })
+             .disposed(by: disposeBag)
+                 
+         paymentRequest.elements()
+                 .flatMap{ _ in self.getCustomerAccountBalance() }
+                 .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
+                 .subscribe(onNext: { [unowned self] _ in
+                     
+                     self.accountBalanceSubject.subscribe(onNext:{ balance in
+                         if let bal = balance {
+                             self.resultSubject.onNext((amount: amount.doubleValue, currency: currency, card: card, newBalance: bal))
+                         }
+                     }).disposed(by: disposeBag)
+                 })
+             .disposed(by: disposeBag)
     }
 }
 
