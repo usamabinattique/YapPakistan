@@ -16,7 +16,7 @@ class SelfieCoordinator: Coordinator<ResultType<Void>> {
     private let navigator: NavigationContainerViewController
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer) {
+         container: KYCFeatureContainer, isAmendmentRequired: Bool = false) {
         self.container = container
         self.root = root
         self.navigator = container.makeNavigationContainerViewController()

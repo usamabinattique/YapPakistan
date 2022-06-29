@@ -122,12 +122,6 @@ final class DashboardMissingDocumentViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel.inputs.viewDidAppearObserver.onNext(())
-        scrollToFirstRow()
-    }
-    
-    private func scrollToFirstRow() {
-        let indexPath = IndexPath(row: 0, section: 0)
-        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }
 }
 

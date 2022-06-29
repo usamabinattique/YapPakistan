@@ -16,24 +16,24 @@ public enum MissingDocumentType: String {
 public struct RequiredDocument: Codable {
     
     let documentName: String
-    let DocumentType: String
+    let documentTypeString: String
     let uploaded: Bool
     
     public var documentType: MissingDocumentType {
-        return MissingDocumentType(rawValue: DocumentType) ?? .selfie
+        return MissingDocumentType(rawValue: documentTypeString) ?? .selfie
     }
 
     enum CodingKeys: String, CodingKey {
 
         case documentName
-        case DocumentType
+        case documentTypeString = "documentType"
         case uploaded
     }
 
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         documentName = try values.decodeIfPresent(String.self, forKey: .documentName) ?? ""
-        DocumentType = try values.decodeIfPresent(String.self, forKey: .DocumentType) ?? ""
+        documentTypeString = try values.decodeIfPresent(String.self, forKey: .documentTypeString) ?? ""
         uploaded = try values.decodeIfPresent(Bool.self, forKey: .uploaded) ?? false
     }
 

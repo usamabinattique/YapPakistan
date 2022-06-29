@@ -34,4 +34,8 @@ extension CNICOCR {
         let stringOut = "\(cnic.prefix(5))-\(cnic.dropFirst(5).prefix(7))-\(cnic.last!)"
         return stringOut
     }
+    
+    var cnicNumberWithoutSlashes: String {
+        return _cnicNumber
+    }
 }
