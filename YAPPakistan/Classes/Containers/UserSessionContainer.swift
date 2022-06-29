@@ -233,9 +233,37 @@ public final class UserSessionContainer {
         return TopupTransferViewController(themeService: self.themeService, viewModel: viewModel)
     }
     
+    func makeEditCardNameViewController(name: String) -> EditCardNameViewController {
+        EditCardNameModuleBuilder(container: self).viewController(name: name)
+    }
+
+    func makeAddressViewController() -> AddressViewController {
+        AddressModuleBuilder(container: self).viewController()
+    }
+
+    func makeCityListViewController() -> CityListViewController {
+        CityListModuleBuilder(container: self).viewController()
+    }
+    
     // MARK: Coordinators
     func makeTopupTransferCoordinator(root: UINavigationController, paymentGatewayModel: PaymentGatewayLocalModel) -> TopupTransferCoordinator {
         TopupTransferCoordinator(root: root, container: self, paymentGatewayModel: paymentGatewayModel)
+    }
+    
+    func makeAddressCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel,isPresented: Bool = false) -> AddressCoordinator {
+        AddressCoordinator(root: root, container: self, paymentGatewayM: paymentGatewayM,isPresented: isPresented)
+    }
+    
+    func makeConfirmPaymentCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> ConfirmPaymentCoordinator {
+        ConfirmPaymentCoordinator(root: root, container: self, repository: self.makeY2YRepository(), paymentGatewayM: paymentGatewayM)
+    }
+    
+    func makeTopupCardSelectionCoordinator(root: UINavigationController, paymentGatewayM: PaymentGatewayLocalModel) -> TopupCardSelectionCoordinator {
+        TopupCardSelectionCoordinator(root: root, container: self, repository: self.makeY2YRepository(), cardsRepository: self.makeCardsRepository(), paymentGatewayM: paymentGatewayM )
+    }
+
+    func makeCardNameCoordinator(root: UINavigationController,  schemeObj: KYCCardsSchemeM, paymentGatewayM: PaymentGatewayLocalModel) -> CardNameCoordinator {
+        CardNameCoordinator(root: root, container: self ,schemeObj: schemeObj, paymentGatewayM: paymentGatewayM)
     }
     
     // MARK: Custom Methods
@@ -318,15 +346,6 @@ public final class UserSessionContainer {
         let childNav: UINavigationController = makeNavigationController()
         childNav.setNavigationBarHidden(true, animated: false)
         return makeKYCProgressViewController(navigationController: childNav)
-    }
-    
-    func makeCityListViewController() -> CityListViewController {
-        let kycRepository = self.makeKYCRepository()
-        let themeService = self.themeService
-        let viewModel = CityListViewModel(kycRepository: kycRepository)
-        return CityListViewController(themeService: themeService, viewModel: viewModel)
-        
-        //CityListModuleBuilder(container: self).viewController()
     }
     
     func makeNavigationController(root: UIViewController? = nil) -> UINavigationController {

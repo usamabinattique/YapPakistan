@@ -92,8 +92,6 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
             .subscribe(onNext:{ [weak self] obj in
                 if obj.scheme == .Mastercard {
                     self?.coverImageSubject.onNext("benefits_mastercard_cover_image")
-                    #warning("[UMAIR] - Todo: change next button title to coming soon for master card")
-                    //self?.nextButtonTitleSubject.onNext("screen_kyc_card_benefits_screen_coming_soon_next_button_title".localized)
                     self?.nextButtonTitleSubject.onNext("screen_kyc_card_benefits_screen_next_button_title".localized)
                     self?.isNextButtonEnabledSubject.onNext(false)
                 } else if obj.scheme == .PayPak {
@@ -103,11 +101,9 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
                 }
                 self?.fetchCardsBenefits(repository, cardObj: obj)
                 self?.fetchFEDFee(transactionRepo, cardObj: obj)
+                self?.checkCustomerBalance(cardObj: obj)
             })
             .disposed(by: disposeBag)
-        
-        
-        checkCustomerBalance()
         
         self.nextSubject.subscribe(onNext: { [unowned self] _ in
            if isTopupNeeded {
@@ -118,28 +114,25 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
             }
         }).disposed(by: disposeBag)
         
-        
 //        self.accountProvider.currentAccount.subscribe(onNext: { [unowned self] account in
 //            print(account)
 //        }).disposed(by: self.disposeBag)
         
     }
     
-    private func checkCustomerBalance() {
+    private func checkCustomerBalance(cardObj: KYCCardsSchemeM) {
+        
+        YAPProgressHud.showProgressHud()
+        
         let req = self.transactionRepo.fetchCustomerAccountBalance().share()
 
         req.elements().subscribe(onNext: { [unowned self] balance in
-            print(balance)
-            self.userAccountBalance = balance.currentBalance
-        }).disposed(by: disposeBag)
-
-        req.errors().subscribe(onNext: { [unowned self] error in
-            self.errorSubject.onNext(error.localizedDescription)
-        }).disposed(by: disposeBag)
-        
-        self.cardSchemeSubject.subscribe(onNext: { [unowned self] card in
             
-            if card.totalFee >= self.userAccountBalance {
+            self.userAccountBalance = balance.currentBalance
+            
+            YAPProgressHud.hideProgressHud()
+            
+            if cardObj.totalFee >= balance.currentBalance {
                 self.nextButtonTitleSubject.onNext("Top up")
                 self.isTopupNeeded = true
             }
@@ -148,9 +141,15 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
                 self.isTopupNeeded = false
             }
             
+            self.userBalanceSubject.onNext("Your available balance is PKR \(self.userAccountBalance)")
+            
+        }).disposed(by: disposeBag)
+
+        req.errors().subscribe(onNext: { [unowned self] error in
+            YAPProgressHud.hideProgressHud()
+            self.errorSubject.onNext(error.localizedDescription)
         }).disposed(by: disposeBag)
         
-        self.userBalanceSubject.onNext("Your available balance is PKR \(self.userAccountBalance)")
     }
 }
 

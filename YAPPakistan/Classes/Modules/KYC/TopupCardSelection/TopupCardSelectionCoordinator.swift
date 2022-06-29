@@ -23,12 +23,12 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
     private var localRoot: UINavigationController!
     private let successButtonTitle: String?
     private let result = PublishSubject<ResultType<Void>>()
-    private var container: KYCFeatureContainer
+    private var container: UserSessionContainer
     private let repository: Y2YRepositoryType
     private let cardsRepository: CardsRepositoryType
     private let paymentGatewayM: PaymentGatewayLocalModel
     
-    init(root: UINavigationController, container: KYCFeatureContainer, successButtonTitle: String? = nil,  repository: Y2YRepositoryType, cardsRepository: CardsRepositoryType, paymentGatewayM: PaymentGatewayLocalModel) {
+    init(root: UINavigationController, container: UserSessionContainer, successButtonTitle: String? = nil,  repository: Y2YRepositoryType, cardsRepository: CardsRepositoryType, paymentGatewayM: PaymentGatewayLocalModel) {
         self.root = root
         self.successButtonTitle = successButtonTitle
         self.container = container
@@ -75,10 +75,10 @@ class TopupCardSelectionCoordinator: Coordinator<ResultType<Void>> {
     
     private func cardDetailWebView() {
         
-        let apiConfig = self.container.mainContainer.makeAPIConfiguration()
+        let apiConfig = self.container.parent.makeAPIConfiguration()
         
         let viewModel = CommonWebViewModel(commonWebType: .onBoardingAddCardWeb, repository: self.cardsRepository, html: apiConfig.onBoardingCardDetailWebURL)
-        let viewController = self.container.parent.makeCommonWebViewController(viewModel: viewModel)
+        let viewController = self.container.makeCommonWebViewController(viewModel: viewModel)
         
         viewModel.outputs.close.subscribe(onNext: { [weak self] _ in
             viewController.dismiss(animated: true, completion: nil)

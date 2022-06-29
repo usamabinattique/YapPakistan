@@ -20,14 +20,14 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
 
     private let result = PublishSubject<ResultType<Void>>()
     private let root: UINavigationController!
-    private let container: KYCFeatureContainer
+    private let container: UserSessionContainer
     private var paymentGatewayM: PaymentGatewayLocalModel?
     private var html: String!
     private var resultObserver: AnyObserver<Void>?
     private var commonWebType: CommonWebType
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer, commonWebType: CommonWebType, paymentGatewayM: PaymentGatewayLocalModel? = nil, html: String, resultObserver: AnyObserver<Void>? = nil) {
+         container: UserSessionContainer, commonWebType: CommonWebType, paymentGatewayM: PaymentGatewayLocalModel? = nil, html: String, resultObserver: AnyObserver<Void>? = nil) {
         self.root = root
         self.container = container
         self.commonWebType = commonWebType
@@ -42,8 +42,8 @@ class CommonWebViewCoordinator: Coordinator<ResultType<Void>> {
     }
     
     private func cardDetailWebView() {
-        let viewModel = CommonWebViewModel(commonWebType: self.commonWebType, repository: container.parent.makeCardsRepository(), html: self.html)
-        let viewController = container.parent.makeCommonWebViewController(viewModel: viewModel)
+        let viewModel = CommonWebViewModel(commonWebType: self.commonWebType, repository: container.makeCardsRepository(), html: self.html)
+        let viewController = container.makeCommonWebViewController(viewModel: viewModel)
         
         let navigationRoot = makeNavigationController()
         
