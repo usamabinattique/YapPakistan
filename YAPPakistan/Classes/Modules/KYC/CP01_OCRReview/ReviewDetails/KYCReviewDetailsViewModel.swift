@@ -114,10 +114,10 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
                                  kycRepository: KYCRepository,
                                  accountProvider: AccountProvider) {
         
-        nextSubject.subscribe(onNext: { [weak self] _ in
-            guard let self = self else { return }
-            self.cnicBlockCaseSubject.onNext(.cnicExpiredOnScane)
-        }).disposed(by: disposeBag)
+//        nextSubject.subscribe(onNext: { [weak self] _ in
+//            guard let self = self else { return }
+//            self.cnicBlockCaseSubject.onNext(.cnicExpiredOnScane)
+//        }).disposed(by: disposeBag)
         
         let saveRequest = nextSubject
             .do(onNext: { _ in YAPProgressHud.showProgressHud() })
@@ -146,18 +146,7 @@ class KYCReviewDetailsViewModel: KYCReviewDetailsViewModelInput, KYCReviewDetail
             }
             .share()
 
-        saveRequest.elements().subscribe(onNext: { [unowned self] response in
-
-            print(response)
-
-            self.cnicBlockCaseSubject.onNext(.underAge)
-
-        }).disposed(by: disposeBag)
-
-        saveRequest.errors().subscribe(onNext: { [unowned self] error in
-            print(error.localizedDescription)
-        }).disposed(by: disposeBag)
-
+       
         let refreshAccountRequest = saveRequest.elements()
             .flatMap { _ in
                 accountProvider.refreshAccount()
