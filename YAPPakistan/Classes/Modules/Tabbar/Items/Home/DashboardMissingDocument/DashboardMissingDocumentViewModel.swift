@@ -33,6 +33,7 @@ protocol DashboardMissingDocumentViewModelOutputs {
     var error: Observable<Error> { get}
     var getStarted: Observable<MissingDocumentType?> { get }
     var cninScanResult: Observable<IdentityScannerResult> { get }
+    var showOnlyDashboardButton: Observable<Bool> { get }
 }
 
 protocol DashboardMissingDocumentViewModelType {
@@ -59,11 +60,22 @@ class DashboardMissingDocumentViewModel: DashboardMissingDocumentViewModelType, 
     private let getStartedSubject = PublishSubject<Void>()
     private let cnicScanResultSubject = PublishSubject<IdentityScannerResult>()
     private let cnicOCRSubject = PublishSubject<CNICOCR>()
+    private let showOnlyDashboardButtonSubject = ReplaySubject<Bool>.create(bufferSize: 1)
     
     private var transactionRepository: TransactionsRepositoryType
     private var kycRepository: KYCRepositoryType
     private var accountProvider: AccountProvider!
-    private var requiredDocuments = [RequiredDocument]()
+    private var requiredDocuments = [RequiredDocument]() {
+        didSet {
+            let newDocs = requiredDocuments.map { document -> RequiredDocument? in
+                return document.uploaded == false ? document : nil
+            }
+            if newDocs.isEmpty {
+                showOnlyDashboardButtonSubject.onNext(true)
+            }
+            
+        }
+    }
     
     
     // MARK: - Inputs
@@ -91,6 +103,7 @@ class DashboardMissingDocumentViewModel: DashboardMissingDocumentViewModelType, 
        }.first
         return abc?.documentType
     } }
+    var showOnlyDashboardButton: Observable<Bool> { showOnlyDashboardButtonSubject.asObservable() }
     
     init(accountProvider: AccountProvider, transactionRepository: TransactionsRepositoryType, kycRepository: KYCRepositoryType) {
         self.transactionRepository = transactionRepository
