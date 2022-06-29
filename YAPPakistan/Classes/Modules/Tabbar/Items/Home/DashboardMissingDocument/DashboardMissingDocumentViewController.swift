@@ -50,6 +50,8 @@ final class DashboardMissingDocumentViewController: UIViewController {
         tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.showsVerticalScrollIndicator = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.layer.cornerRadius = 10
+        tableView.clipsToBounds = true
         return tableView
     }()
     
@@ -114,6 +116,7 @@ final class DashboardMissingDocumentViewController: UIViewController {
         setupConstraints()
         setupBindings()
         setupTheme()
+        bindError()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -167,9 +170,8 @@ extension DashboardMissingDocumentViewController: ViewDesignable {
         doItLaterButton
             .height(constant: 30)
         
-        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 24, right: 0)
-        tableView.layer.cornerRadius = 10
-        tableView.clipsToBounds = true
+        //tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        
        
     }
     
@@ -187,6 +189,7 @@ extension DashboardMissingDocumentViewController: ViewDesignable {
 //            .disposed(by: disposeBag)
         viewModel.outputs.titleName.bind(to: screenTitle.rx.text).disposed(by: disposeBag)
         doItLaterButton.rx.tap.bind(to: viewModel.inputs.doItLaterObserver).disposed(by: disposeBag)
+        getStartedButton.rx.tap.bind(to: viewModel.inputs.getStartedObserver).disposed(by: disposeBag)
     }
     
     func setupTheme(){
@@ -200,6 +203,12 @@ extension DashboardMissingDocumentViewController: ViewDesignable {
             .bind({ UIColor($0.primary) }, to: doItLaterButton.rx.titleColor(for: .normal))
             .disposed(by: disposeBag)
     }
+    
+    func bindError() {
+        viewModel.outputs.error.subscribe(onNext: { [weak self] error in
+            self?.showAlert(message: error.localizedDescription)
+        }).disposed(by: disposeBag)
+    }
 }
 
 //MARK: UITableViewDelegate
@@ -212,7 +221,7 @@ extension DashboardMissingDocumentViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 44
+        return 40
     }
     
     

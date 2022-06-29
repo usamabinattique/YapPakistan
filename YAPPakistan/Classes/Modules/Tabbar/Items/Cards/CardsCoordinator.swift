@@ -71,10 +71,7 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
         
         viewController.viewModel.outputs.addCard.subscribe(onNext: { [unowned self] _ in
             
-            
-            coordinate(to: CardSchemeCoordinator(root: navigationRoot, container: self.container))
-                .subscribe()
-                .disposed(by: rx.disposeBag)
+            self.showCardScheme()
             
 //            let viewModel = CardSchemeViewModel(self.container.makeKYCRepository(), accountProvider: self.container.accountProvider)
 //            let viewController = CardSchemeViewController(themeService: self.container.themeService, viewModel: viewModel)
@@ -102,6 +99,18 @@ public class CardsCoordinator: Coordinator<ResultType<Void>> {
             .disposed(by: rx.disposeBag)
 
         return result
+    }
+    
+    func showCardScheme() {
+        coordinate(to: CardSchemeCoordinator(root: navigationRoot, container: self.container))
+            .subscribe(onNext: { [unowned self] result in
+                switch result {
+                case .success:
+                    self.navigationRoot.popViewController()
+                case .cancel:
+                    ()
+                }
+            }).disposed(by: rx.disposeBag)
     }
 
     func orderNew(cardDetaild: PaymentCard) {

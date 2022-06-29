@@ -97,6 +97,7 @@ public protocol CustomerServiceType {
     func fetchFAQs<T: Codable>() -> Observable<T>
     func generateIBAN<T: Codable>(isSelfieMatched: Bool) -> Observable<T>
     func verifyFaceOCR<T: Codable>(_ data: Data, fileName: String, mimeType: String) -> Observable<T>
+    func fetchRequiredDocuments<T: Codable>() -> Observable<T>
 }
 
     
@@ -611,6 +612,11 @@ public class CustomersService: BaseService, CustomerServiceType {
 
         return upload(apiClient: apiClient, documents: docs, route: route,
                       progressObserver: nil, otherFormValues: [:])
+    }
+    
+    public func fetchRequiredDocuments<T: Codable>() -> Observable<T> {
+        let route = APIEndpoint<String>(.get, apiConfig.customersURL, "/api/required-additional-documents", pathVariables: nil,body: nil ,headers: authorizationProvider.authorizationHeaders)
+        return self.request(apiClient: self.apiClient, route: route)
     }
     
 }

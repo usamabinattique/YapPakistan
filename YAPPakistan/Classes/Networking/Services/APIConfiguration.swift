@@ -52,6 +52,10 @@ public struct APIConfiguration {
         return baseURL.appendingPathComponent("/digi-ocr")
     }
     
+    public var adminURL: URL {
+        return baseURL.appendingPathComponent("/admin")
+    }
+    
     public var onBoardingCardDetailWebURL: String {
         switch self.environment {
         case .dev:

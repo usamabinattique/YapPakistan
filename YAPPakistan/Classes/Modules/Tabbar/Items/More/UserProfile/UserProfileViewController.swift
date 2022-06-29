@@ -91,7 +91,7 @@ class UserProfileViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //viewModel.inputs.viewWillAppearObserver.onNext(())
+        viewModel.inputs.viewWillAppearObserver.onNext(())
     }
     
     override internal func onTapBackButton() {

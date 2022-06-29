@@ -7,7 +7,7 @@
 
 import Foundation
 struct CityListModuleBuilder {
-    let container: KYCFeatureContainer
+    let container: UserSessionContainer
 
     func viewController() -> CityListViewController {
         let kycRepository = container.makeKYCRepository()

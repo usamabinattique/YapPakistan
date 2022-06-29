@@ -566,7 +566,7 @@
 
 // MARK: KYC Card Benefits
 "screen_kyc_card_benefits_screen_coming_soon_next_button_title" = "Coming soon";
-"screen_kyc_card_benefits_screen_next_button_title" = "Select";//"Proceed";
+"screen_kyc_card_benefits_screen_next_button_title" = "Next";//"Proceed";
 
 //MARK: Common WebView
 "screen_kyc_card_details_screen_title" = "Enter your card details";

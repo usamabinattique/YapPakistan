@@ -114,14 +114,11 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
     private let transactionRepository: TransactionsRepository
     private var accountProvider: AccountProvider!
     private var checkoutSessionObject: PaymentGatewayCheckoutSession?
-    private var cardSchemeOBJ : KYCCardsSchemeM?
-    private var locationData: LocationModel?
+    private var gatewayLocalM : PaymentGatewayLocalModel?
     
-    init(accountProvider: AccountProvider, kycRepository: KYCRepository, transactionRepository: TransactionsRepository, paymentGatewayObj: KYCCardsSchemeM? = nil, locationData: LocationModel?){
+    init(accountProvider: AccountProvider, kycRepository: KYCRepository, transactionRepository: TransactionsRepository, paymentGatewayObj: PaymentGatewayLocalModel? = nil){
         
-        self.cardSchemeOBJ = paymentGatewayObj
-        self.locationData = locationData
-        //self.paymentGatewayM = paymentGatewayObj
+        self.gatewayLocalM = paymentGatewayObj
         self.accountProvider = accountProvider
         
         self.kycRepository = kycRepository
@@ -130,18 +127,18 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         
         var theStrings = LocalizedStrings(title: "screen_yap_confirm_payment_display_text_toolbar_title".localized, subTitle: "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized,cardFee: "screen_yap_confirm_payment_display_text_Card_fee".localized, payWith: "screen_yap_confirm_payment_display_text_pay_with".localized, action: "Place order for PKR 1,000")
         //    localizedStringsSubject.onNext(strings)
-        if let payment = cardSchemeOBJ {
-            let cardImageName = cardSchemeOBJ?.scheme == .Mastercard ? "payment_card" : "image_payment_card_white_paypak"
+        if let payment = gatewayLocalM {
+            let cardImageName = gatewayLocalM?.cardSchemeObject?.scheme == .Mastercard ? "payment_card" : "image_payment_card_white_paypak"
             cardImageSubject.onNext(UIImage(named: cardImageName, in: .yapPakistan))
-            theStrings.subTitle = cardSchemeOBJ?.scheme == .Mastercard ? "screen_kyc_card_scheme_title_mastercard".localized : "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized
-            isPaidSubject.onNext(!(cardSchemeOBJ?.isPaidScheme ?? false))
-            feeSubject.onNext(cardSchemeOBJ?.feeValue ?? "")
-            if let location = self.locationData {
+            theStrings.subTitle = gatewayLocalM?.cardSchemeObject?.scheme == .Mastercard ? "screen_kyc_card_scheme_title_mastercard".localized : "screen_yap_confirm_payment_display_text_toolbar_subtitle".localized
+            isPaidSubject.onNext(!(gatewayLocalM?.cardSchemeObject?.isPaidScheme ?? false))
+            feeSubject.onNext(gatewayLocalM?.cardSchemeObject?.feeValue ?? "")
+            if let location = self.gatewayLocalM?.locationData {
                 addressSubject.onNext(location)
             }
             
-            fedFeeSubject.onNext(String(format: "PKR %.2f", cardSchemeOBJ?.fedFee ?? 0.0))
-            orderTotalFeeSubject.onNext(String(format: "PKR %.2f", cardSchemeOBJ?.totalFee ?? 0.0))
+            fedFeeSubject.onNext(String(format: "PKR %.2f", gatewayLocalM?.cardSchemeObject?.fedFee ?? 0.0))
+            orderTotalFeeSubject.onNext(String(format: "PKR %.2f", gatewayLocalM?.cardSchemeObject?.totalFee ?? 0.0))
             
             let text = String.init(format: "screen_yap_confirm_payment_display_text_place_order_for".localized)
             buttonTitleSubject.onNext(text)
@@ -161,52 +158,22 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
             .subscribe(onNext:{ `self`, _ in
                 self.fetchApis()
             }).disposed(by: disposeBag)
-        
-        enteredCVVSubject.withUnretained(self).subscribe(onNext: { `self` ,cvv in
-            print("user entered cvv is \(cvv)")
-            //TODO: [UMAIR] - CVV Comes here
-            YAPProgressHud.showProgressHud()
-            self.fetchTopupApi(securityCode: cvv)
-        }).disposed(by: disposeBag)
-
     }
     
     private func fetchApis() {
-        
-        //self.nextSubject.onNext(())
-        
-        self.nextResultSubject.onNext(1)
-        
         YAPProgressHud.showProgressHud()
-        
-        //!!!: check if user isFirstCredit is True then don't call saveAddress api
-        if (accountProvider.currentAccountValue.value?.parnterBankStatus == .physicalCardPending || accountProvider.currentAccountValue.value?.parnterBankStatus == .ibanAssigned) && (accountProvider.currentAccountValue.value?.isFirstCredit == true || self.cardSchemeOBJ?.isPaidScheme == false) {
-            
-            //order card api directly
-            self.fetchOrderCardHolderApi()
-            
-        } else if (accountProvider.currentAccountValue.value?.parnterBankStatus == .physicalCardPending || accountProvider.currentAccountValue.value?.parnterBankStatus == .ibanAssigned) && (self.cardSchemeOBJ?.isPaidScheme == true) {
-            
-            //create checkout session request and flow
-            self.fetchCheckoutSessionFlowApis()
-            
-        } else {
-            
-            //save address and complete flow
-            self.fetchSaveAddressApi()
-            
-        }
+        fetchSaveAddressApi()
     }
     
     //MARK: - Apis helper methods
     
     private func fetchSaveAddressApi() {
-        guard let locationObj = self.locationData else { return }
+        guard let locationObj = self.gatewayLocalM?.locationData else { return }
         let saveUserAddressRequest = kycRepository.saveUserAddress(addressOne: String(locationObj.formattAdaddress.prefix(50)), addressTwo: String(locationObj.formattAdaddress.prefix(50)), city: locationObj.city, country: locationObj.country, latitude: String(locationObj.latitude), longitude: String(locationObj.longitude))
         
         saveUserAddressRequest.elements().withUnretained(self)
             .subscribe(onNext: { `self`, account in
-                self.fetchCheckoutSessionFlowApis()
+                self.fetchOrderCardHolderApi()
             })
             .disposed(by: disposeBag)
         
@@ -217,136 +184,27 @@ class ConfirmPaymentViewModel: ConfirmPaymentViewModelType, ConfirmPaymentViewMo
         }).disposed(by: disposeBag)
     }
     
-    private func fetchCheckoutSessionFlowApis() {
-//        let sessionID = self.paymentGatewayM.cardSchemeOBJ?.sessionID ?? ""
-//        let beneficiaryID = String(self.paymentGatewayM.beneficiary?.id ?? 0)
-//
-//        let fetchCheckoutSessionRequest = self.transactionRepository.fetchCheckoutSession(beneficiaryId: beneficiaryID, amount: String(self.paymentGatewayM.cardSchemeObject?.totalFee ?? 0), currency: "PKR", sessionId: sessionID)
-//
-//        let  fetch3DSEnrollmentRequest = fetchCheckoutSessionRequest.elements().withUnretained(self).flatMapLatest { `self`,  paymentGatewayCheckoutSession -> Observable<Event<PaymentGateway3DSEnrollmentResult>> in
-//            self.checkoutSessionObject = paymentGatewayCheckoutSession
-//            return self.transactionRepository.fetch3DSEnrollment(orderId: paymentGatewayCheckoutSession.order?.id ?? "", beneficiaryID: Int(beneficiaryID) ?? 0, amount: paymentGatewayCheckoutSession.order?.amount ?? "", currency: paymentGatewayCheckoutSession.order?.currency ?? "", sessionID: paymentGatewayCheckoutSession.session?.id ?? "")
-//        }.share()
-//
-//        fetchCheckoutSessionRequest.errors().subscribe(onNext: { [weak self] error in
-//            self?.errorSubject.onNext(error.localizedDescription)
-//            print("checkout session request error")
-//            YAPProgressHud.hideProgressHud()
-//        }).disposed(by: disposeBag)
-//
-//        let threeDEnrollmentResult = fetch3DSEnrollmentRequest.elements()
-//        threeDEnrollmentResult.do(onNext:{ threeDSResult in
-//            YAPProgressHud.hideProgressHud()
-//            self.checkoutSessionObject?.threeDSecureId = threeDSResult.threeDSecureId
-//        }).map { $0.formattedHTML}.bind(to: htmlSubject).disposed(by: disposeBag)
-//
-//        fetch3DSEnrollmentRequest.errors().subscribe(onNext: { [weak self] error in
-//            print("3ds request error")
-//            self?.errorSubject.onNext(error.localizedDescription)
-//            YAPProgressHud.hideProgressHud()
-//        }).disposed(by: disposeBag)
-//
-//        let acsResultRequest = pollACSResultSubject
-//            .do(onNext: { _ in YAPProgressHud.showProgressHud() })
-//            .delay(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance).withLatestFrom(threeDEnrollmentResult).flatMap { [unowned self] result in
-//                self.transactionRepository.retrieveACSResults(threeDSecureID: result.threeDSecureId)
-//        }.share()
-//
-//        var count = 0
-//
-//        acsResultRequest.elements().subscribe(onNext: { [weak self] result in
-//            guard let `self` = self else { return }
-//
-//            if let result = result {
-//                if result == "Y" {
-//                    print("3DS Successful -> go ahead")
-//                    //call topup api
-//                    YAPProgressHud.hideProgressHud()
-//                    self.fetchCVV()
-//                } else {
-//                    YAPProgressHud.hideProgressHud()
-//                    print("3DS Fail -> Unable to verify")
-//                    self.errorSubject.onNext("Unable to verify")
-//                }
-//            } else {
-//                count += 1
-//                guard count < 5 else {
-//                    YAPProgressHud.hideProgressHud()
-//                    print("time out - 3DS Fail -> Unable to verify")
-//                    self.errorSubject.onNext("Unable to verify")
-//                    return
-//                }
-//                self.pollACSResultObserver.onNext(())
-//            }
-//        }).disposed(by: disposeBag)
-//
-//        acsResultRequest.errors().do(onNext: { _ in YAPProgressHud.hideProgressHud() }).map {
-//            $0.localizedDescription
-//        }.bind(to: errorSubject).disposed(by: disposeBag)
-    }
-    
-    func fetchTopupApi(securityCode: String?){
-        
-//        guard let checkoutSessionObj = self.checkoutSessionObject else { return }
-//        var sessionId = ""
-//        var beneficiaryID = ""
-//        var _securityCode = ""
-//        if let benefId = self.paymentGatewayM.beneficiary?.id {
-//            beneficiaryID = String(benefId)
-//            _securityCode = securityCode ?? ""
-//        } else {
-//            sessionId = self.paymentGatewayM.cardDetailObject?.sessionID ?? ""
-//            _securityCode = checkoutSessionObj.securityCode
-//        }
-//
-//        let topupRequest = transactionRepository.paymentGatewayFirstCreditTopup(threeDSecureId: checkoutSessionObj.threeDSecureId, orderId: checkoutSessionObj.order?.id ?? "", currency: checkoutSessionObj.order?.currency ?? "", amount: checkoutSessionObj.order?.amount ?? "", sessionId: sessionId, securityCode: _securityCode, beneficiaryId: beneficiaryID)
-//
-//        topupRequest.elements().subscribe(onNext: { [weak self] responseObj in
-//            self?.fetchOrderCardHolderApi()
-//        }).disposed(by: disposeBag)
-//
-//        topupRequest.errors()
-//            .do(onNext:{ _ in
-//                YAPProgressHud.hideProgressHud()
-//            })
-//            .map {
-//                $0.localizedDescription
-//            }
-//            .bind(to: errorSubject)
-//            .disposed(by: disposeBag)
-    }
-    
     func fetchOrderCardHolderApi() {
         
-//        let cardOrderRequest = transactionRepository.createCardHolder(cardScheme: self.paymentGatewayM.cardSchemeObject?.schemeName ?? "", fee: String(self.paymentGatewayM.cardSchemeObject?.fee ?? 0))
-//
-//
-//        cardOrderRequest.elements().subscribe(onNext: { [unowned self] responseObj in
-//            YAPProgressHud.hideProgressHud()
-//            self.accountProvider.refreshAccount().bind(to: self.topupCompleteSubject).disposed(by: self.disposeBag)
-//
-//        }).disposed(by: disposeBag)
-//
-//        cardOrderRequest.errors()
-//            .do(onNext:{ _ in
-//                YAPProgressHud.hideProgressHud()
-//            })
-//            .map {
-//                $0.localizedDescription
-//            }
-//            .bind(to: errorSubject)
-//            .disposed(by: disposeBag)
+        let cardOrderRequest = transactionRepository.createCardHolder(cardScheme: self.gatewayLocalM?.cardSchemeObject?.schemeName ?? "", fee: String(self.gatewayLocalM?.cardSchemeObject?.fee ?? 0))
+
+
+        cardOrderRequest.elements().subscribe(onNext: { [unowned self] responseObj in
+            YAPProgressHud.hideProgressHud()
+            self.accountProvider.refreshAccount().bind(to: self.topupCompleteSubject).disposed(by: self.disposeBag)
+
+        }).disposed(by: disposeBag)
+
+        cardOrderRequest.errors()
+            .do(onNext:{ _ in
+                YAPProgressHud.hideProgressHud()
+            })
+            .map {
+                $0.localizedDescription
+            }
+            .bind(to: errorSubject)
+            .disposed(by: disposeBag)
     }
-    
-    func fetchCVV(){
-//        if self.paymentGatewayM.beneficiary?.id != nil && paymentGatewayM.cardSchemeObject?.fee != nil {
-//            showCVVSubject.onNext(())
-//        } else {
-//            self.fetchTopupApi(securityCode: nil)
-//        }
-    }
-    
-    
 }
 
 extension ConfirmPaymentViewModel {

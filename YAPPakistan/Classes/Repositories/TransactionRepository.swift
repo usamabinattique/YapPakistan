@@ -53,6 +53,7 @@ protocol TransactionsRepositoryType {
     func uploadReceiptImage(_ data: Data, name: String, fileName: String, mimeType: String, transactionID: String) -> Observable<Event<String?>>
     func fetchReceiptPhotos(transactionID: String) -> Observable<Event<[String]?>>
     func deleteReceipt(_ transactionId: String, imageName: String) -> Observable<Event<String?>>
+    func fetchRequiredDocuments() -> Observable<Event<[RequiredDocument]?>>
 }
 
 class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryType {
@@ -198,5 +199,9 @@ class TransactionsRepository: TransactionsRepositoryType, StatementsRepositoryTy
     
     public func deleteReceipt(_ transactionId: String, imageName: String) -> Observable<Event<String?>> {
         return transactionService.deleteReceipts(transactionId, imageName: imageName).materialize()
+    }
+    
+    public func fetchRequiredDocuments() -> Observable<Event<[RequiredDocument]?>> {
+        return customersService.fetchRequiredDocuments().materialize()
     }
 }

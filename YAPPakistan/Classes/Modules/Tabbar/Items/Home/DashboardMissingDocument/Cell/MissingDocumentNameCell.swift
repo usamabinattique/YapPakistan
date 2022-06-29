@@ -81,7 +81,7 @@ private extension MissingDocumentNameCell {
     func setupConstraints() {
         
         name
-            .alignEdgesWithSuperview([.left, .top,.bottom], constants: [32,8,4])
+            .alignEdgesWithSuperview([.left, .top,.bottom], constants: [32,8,8])
         icon
             .toRightOf(name, .greaterThanOrEqualTo,constant: 12)
             .alignEdgesWithSuperview([.right],constants: [48])
@@ -109,5 +109,6 @@ private extension MissingDocumentNameCell {
 private extension MissingDocumentNameCell {
     func bindViews() {
         viewModel.outputs.name.bind(to: name.rx.text).disposed(by: disposeBag)
+        viewModel.outputs.isUploaded.map{ !$0 }.bind(to: icon.rx.isHidden).disposed(by: disposeBag)
     }
 }

@@ -8,6 +8,7 @@
 import Foundation
 import RxSwift
 import YAPComponents
+import Alamofire
 
 
 protocol DashboardMissingDocumentViewModelInputs {
@@ -15,6 +16,7 @@ protocol DashboardMissingDocumentViewModelInputs {
     var actionObserver: AnyObserver<Void> { get }
     var selectStorePackageObserver: AnyObserver<StorePackageType>{ get }
     var doItLaterObserver: AnyObserver<Void> { get }
+    var getStartedObserver: AnyObserver<Void> { get }
 }
 
 protocol DashboardMissingDocumentViewModelOutputs {
@@ -26,6 +28,8 @@ protocol DashboardMissingDocumentViewModelOutputs {
     var doItLater: Observable<Void> { get }
     func sectionViewModel(for: Int) -> DocumentMissingHeaderCellViewModelType
     var titleName: Observable<String> { get }
+    var error: Observable<Error> { get}
+    var getStarted: Observable<MissingDocumentType?> { get }
 }
 
 protocol DashboardMissingDocumentViewModelType {
@@ -48,12 +52,19 @@ class DashboardMissingDocumentViewModel: DashboardMissingDocumentViewModelType, 
     private let selectPackageSubject = PublishSubject<StorePackageType>()
     private let doItLaterSubject = PublishSubject<Void>()
     private let titleNameSubject = ReplaySubject<String>.create(bufferSize: 1)
+    private let errorSubject = PublishSubject<Error>()
+    private let getStartedSubject = PublishSubject<Void>()
+    
+    private var transactionRepository: TransactionsRepositoryType
+    private var accountProvider: AccountProvider!
+    private var requiredDocuments = [RequiredDocument]()
     
     // MARK: - Inputs
     var viewDidAppearObserver: AnyObserver<Void> { viewDidAppearSubject.asObserver() }
     var actionObserver: AnyObserver<Void>{  actionSubject.asObserver() }
     var selectStorePackageObserver: AnyObserver<StorePackageType>{  selectPackageSubject.asObserver() }
     var doItLaterObserver: AnyObserver<Void> { doItLaterSubject.asObserver() }
+    var getStartedObserver: AnyObserver<Void> { getStartedSubject.asObserver() }
     
     // MARK: - Outputs
     var viewDidAppear: Observable<Void> { viewDidAppearSubject }
@@ -64,28 +75,47 @@ class DashboardMissingDocumentViewModel: DashboardMissingDocumentViewModelType, 
     var selectStorePackage: Observable<StorePackageType>{  selectPackageSubject.asObservable() }
     var doItLater: Observable<Void> { doItLaterSubject.asObservable() }
     var titleName: Observable<String> { titleNameSubject.asObservable() }
+    var error: Observable<Error> { errorSubject.asObservable() }
+    var getStarted: Observable<MissingDocumentType?> { getStartedSubject.map { [unowned self] _ -> MissingDocumentType? in
+       let abc = self.requiredDocuments.filter { document in
+           return document.uploaded == false
+       }.first
+        return abc?.documentType
+    } }
     
-    init() {
-       // makePackages()
-        
-       
-        
-        let vm = MissingDocumentNameCellViewModel(MissingDocumentData(title: "1. CNIC copy", type: .cnicCopy))
-        cellViewModelsSubject.onNext([vm])
-        
-        titleNameSubject.onNext("Hey Shayad")
+    init(accountProvider: AccountProvider, transactionRepository: TransactionsRepositoryType) {
+        self.transactionRepository = transactionRepository
+        self.accountProvider = accountProvider
+        let name = accountProvider.currentAccountValue.value?.customer.firstName ?? ""
+        titleNameSubject.onNext("Hey \(name)")
+        getRequiredDocuments()
     }
-    
-//    private func makePackages() {
-//        Observable.of(YAPStore.mock)
-//            .map{ $0.map{ StorePackageTableViewCellViewModel($0) } }
-//            .subscribe(onNext: {[unowned self] storeInformation in
-//                self.StorePackageCellViewModelSubject.onNext(storeInformation)
-//            }).disposed(by: disposeBag)
-//    }
     
     func sectionViewModel(for: Int) -> DocumentMissingHeaderCellViewModelType {
         return DocumentMissingHeaderCellViewModel(title: "Review required for:")
+    }
+    
+    private func getRequiredDocuments() {
+        YAPProgressHud.showProgressHud()
+        let request = transactionRepository.fetchRequiredDocuments()
+            .share()
+        
+        request.errors()
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+                .bind(to: errorSubject).disposed(by: disposeBag)
+                
+        request.elements()
+            .do(onNext: { _ in YAPProgressHud.hideProgressHud() })
+            .subscribe(onNext: { [weak self]  in
+                if let docs = $0 {
+                    self?.requiredDocuments = docs
+                    var vms = [MissingDocumentNameCellViewModel]()
+                    for (index,document) in docs.enumerated() {
+                        vms.append(MissingDocumentNameCellViewModel(MissingDocumentData(title: "\(index + 1): \(document.documentName)", type: document.documentType,isUploaded: document.uploaded)))
+                    }
+                    self?.cellViewModelsSubject.onNext(vms)
+                }
+            }).disposed(by: disposeBag)
     }
 }
 
