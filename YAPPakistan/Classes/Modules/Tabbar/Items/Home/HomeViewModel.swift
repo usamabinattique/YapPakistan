@@ -304,7 +304,7 @@ class HomeViewModel: HomeViewModelType, HomeViewModelInputs, HomeViewModelOutput
         self.transactionsViewModel = TransactionsViewModel(transactionDataProvider: transactionDataProvider, repository: transactionRepository, themService: themeService)
         
         isFirstTimeLanding = true
-        shimmeringSubject.bind(to: transactionsViewModel.showShimmeringObserver).disposed(by: disposeBag)
+       /* shimmeringSubject.bind(to: transactionsViewModel.showShimmeringObserver).disposed(by: disposeBag) */
         //
         // FIXME: Enable this after implementing biometrics.
         //      self.biometrySupportedSuject = BehaviorSubject(value: biometricsManager.isBiometrySupported)

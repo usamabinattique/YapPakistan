@@ -59,4 +59,11 @@ public class AccountProvider {
         let request = repository.fetchAccounts().share()
         return request
     }
+    
+    public func updateAccount(accounts: [Account]) {
+        accountsSubject.onNext(accounts)
+        if let currentAccount = accounts.first {
+            accountSubject.onNext(currentAccount)
+        }
+    }
 }

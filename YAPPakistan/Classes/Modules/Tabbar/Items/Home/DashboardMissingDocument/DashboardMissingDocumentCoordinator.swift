@@ -26,8 +26,8 @@ public class DashboardMissingDocumentCoordinator: Coordinator<ResultType<Void>> 
     }
 
     override public func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
-
-        let viewModel = DashboardMissingDocumentViewModel(accountProvider: container.accountProvider, transactionRepository: container.makeTransactionsRepository())
+        
+        let viewModel = DashboardMissingDocumentViewModel(accountProvider: container.accountProvider, transactionRepository: container.makeTransactionsRepository(), kycRepository: container.makeKYCRepository())
         let viewController = DashboardMissingDocumentViewController(viewModel: viewModel, themeService: container.themeService)
         localNavigationController = UINavigationControllerFactory.createOpaqueNavigationBarNavigationController(rootViewController: viewController)
         localNavigationController?.isNavigationBarHidden = true
@@ -50,6 +50,7 @@ public class DashboardMissingDocumentCoordinator: Coordinator<ResultType<Void>> 
                     print("cancel scan")
                 case .success(let identityResult):
                     print("success scan")
+                    viewModel.inputs.cninScanResultObserver.onNext(identityResult)
                 }
                 }).disposed(by: self.disposeBag)
             }

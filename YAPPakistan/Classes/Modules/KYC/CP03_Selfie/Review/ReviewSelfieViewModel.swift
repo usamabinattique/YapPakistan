@@ -144,8 +144,24 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
             print(response)
             YAPProgressHud.hideProgressHud()
             guard let self = self else { return }
-            self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
+           // self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
             
+//            if account.isAmendment == true {
+//                //dimiss the view
+//            }
+            self.accountProvider.fetchAccounts().elements().withUnretained(self).subscribe(onNext: { `self` , accounts in
+                self.accountProvider.updateAccount(accounts: accounts)
+                if let isAmendment = accounts.first?.isAmendment {
+                    if isAmendment {
+                        self.backSubject.onNext(())
+                    } else {
+                        self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
+                    }
+                } else {
+                    self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
+                }
+            }).disposed(by: self.disposeBag)
+
            
             
         }).disposed(by: self.disposeBag)
