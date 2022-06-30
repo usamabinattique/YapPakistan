@@ -205,7 +205,7 @@ class TransactionsService: BaseService, TransactionsServiceType {
     }
     
     public func accountLimits<T: Codable>() -> Observable<T> {
-        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/limits/customer", query: nil, body: nil ,headers: authorizationProvider.authorizationHeaders)
+        let route = APIEndpoint<String>(.get, apiConfig.transactionsURL, "/api/limits-actual", query: nil, body: nil ,headers: authorizationProvider.authorizationHeaders)
         return self.request(apiClient: self.apiClient, route: route)
     }
     

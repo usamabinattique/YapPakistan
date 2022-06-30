@@ -118,7 +118,7 @@ class AppRestrictionManager: NSObject {
     func getRestrictionList() -> [UserAccessRestriction] {
         guard let account = self.account else { return [] }
             var restrictionsType = [UserAccessRestriction]()
-        restrictionsType.append(UserAccessRestriction.kycPending)
+        //restrictionsType.append(UserAccessRestriction.kycPending)
 //            if (accountState.cnicExpired == true) {
 //                restrictionsType.append(UserAccessRestriction.cnicExpired)
 //            }
