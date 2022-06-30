@@ -396,6 +396,7 @@ public enum AccountFreezeInitiator: String, Codable {
     case blockedByYapComplianceDebit = "YAP_COMPLIANCE_DEBIT"
     case blockedByYapComplianceCredit = "YAP_COMPLIANCE_CREDIT"
     case cnicExpiredBySchedular = "CNIC_EXPIRED_SCHEDULER"
+    case accountDormant = "PROCESSOR_ACCOUNT_DORMANT"
     case none
 }
 

@@ -76,6 +76,8 @@ class AppRestrictionManager: NSObject {
                 .qrCodeAddMoney,
                 .qrCodeSendMoney,
                 .accountLimits,
+                .sendMoney,
+                .addMoney,
                 .analytics,
                 .transactionDetails
             ])
@@ -117,26 +119,28 @@ class AppRestrictionManager: NSObject {
     
     func getRestrictionList() -> [UserAccessRestriction] {
         guard let account = self.account else { return [] }
-            var restrictionsType = [UserAccessRestriction]()
+        var restrictionsType = [UserAccessRestriction]()
         //restrictionsType.append(UserAccessRestriction.kycPending)
-//            if (accountState.cnicExpired == true) {
-//                restrictionsType.append(UserAccessRestriction.cnicExpired)
-//            }
-//
-//            if (accountState.cnicVerified == false) {
-//                restrictionsType.append(UserAccessRestriction.cnicNotVerified)
-//            }
-//            if (accountState.debitCardFreeze == false) {
-//                restrictionsType.append(UserAccessRestriction.debitCardFreeze)
-//            }
-//
-//            if (accountState.accountStatus == "DORMANT") {
-//                restrictionsType.append(UserAccessRestriction.accountDormant)
-//            }
-//
-//            if (isRegistrationPending()) {
-//                restrictionsType.append(UserAccessRestriction.kycPending)
-//            }
+        if (account.accountStatus == .kycPending) {
+            restrictionsType.append(UserAccessRestriction.cnicNotVerified)
+        }
+        
+        if (account.freezeInitiator == .cnicExpiredBySchedular) {
+            restrictionsType.append(UserAccessRestriction.cnicExpired)
+        }
+        
+        if (account.freezeInitiator == .accountDormant) {
+            restrictionsType.append(UserAccessRestriction.accountDormant)
+        }
+        
+        if ((account.accountStatus == .onboarded || account.accountStatus == .secretQuestionPending || account.accountStatus == .selfiePending || account.accountStatus == .kycPending) && (account.parnterBankStatus == .signUpPending)) {
+            restrictionsType.append(UserAccessRestriction.kycPending)
+        }
+        
+        //Debit card freeze
+//        if (account.accountStatus == .kycPending) {
+//            restrictionsType.append(UserAccessRestriction.cnicNotVerified)
+//        }
 
             return restrictionsType
         }

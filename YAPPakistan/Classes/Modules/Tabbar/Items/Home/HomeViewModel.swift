@@ -466,12 +466,13 @@ extension HomeViewModel {
                 // set pin
                 self.setPinSubject.onNext(card)
             }
-        } else if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardPending) && card.status == nil && (card.deliveryStatus == nil || card.deliveryStatus == .notCreated ) && card.pinCreated == nil {
+        } else if (account.parnterBankStatus == .activated || account.parnterBankStatus == .physicalCardPending) && card.status == nil && (card.deliveryStatus == nil) && card.pinCreated == nil {
             // order physical card
             let vm = DashboardTimelineViewModel(DashboardTimelineModel(title: "Order your physical YAP card", leftIcon: UIImage.init(named: "icon_order_card", in: .yapPakistan)?.asTemplate, btnTitle: "Order now", isBtnEnabled: true))
             vm.outputs.btn.map{ card }.bind(to: orderPhysicalCardSubject).disposed(by: timelineDisposeBag)
             self.addTimelineViewModelSubject.onNext(vm)
         }
+        //|| card.deliveryStatus == .notCreated
         isFirstTimeLanding = false
     }
     

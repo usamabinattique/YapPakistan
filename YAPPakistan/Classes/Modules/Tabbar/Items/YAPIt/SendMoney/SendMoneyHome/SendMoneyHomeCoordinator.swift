@@ -37,7 +37,7 @@ extension SendMoneyType: Equatable {
     }
 }
 
-public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
+class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
     
     private let root: UIViewController
     private let result = PublishSubject<ResultType<Void>>()
@@ -50,7 +50,7 @@ public class SendMoneyHomeCoordinator: Coordinator<ResultType<Void>> {
     private var container: UserSessionContainer!
     private let disposeBag = DisposeBag()
     
-    // public override var feature: CoordinatorFeature { .sendMoney }
+    override var feature: PKCoordinatorFeature { .sendMoney }
     
     public init(root: UIViewController, container: UserSessionContainer, sendMoneyType: SendMoneyType) {
         //        self.repository = repository

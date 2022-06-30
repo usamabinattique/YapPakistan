@@ -40,7 +40,7 @@ protocol KYCRepositoryType {
     
     func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>>
     func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<[Account]>>
-    func verifyFaceOCR(_ data: Data, fileName: String, mimeType: String) -> Observable<Event<String>>
+    func verifyFaceOCR(_ data: Data, fileName: String, mimeType: String) -> Observable<Event<Bool>>
     func idCardReupload(_ documents: [(fileName: String, data: Data, format: String)],
                                            progressObserver: AnyObserver<Progress>?, issueDate: String, cnic: String) -> Observable<Event<String?>>
 }
@@ -145,7 +145,7 @@ class KYCRepository: KYCRepositoryType {
         return customersService.generateIBAN(isSelfieMatched: isSelfieMatched).materialize()
     }
     
-    func verifyFaceOCR(_ data: Data, fileName: String, mimeType: String) -> Observable<Event<String>> {
+    func verifyFaceOCR(_ data: Data, fileName: String, mimeType: String) -> Observable<Event<Bool>> {
         return customersService.verifyFaceOCR(data, fileName: fileName, mimeType: mimeType).materialize()
     }
 }

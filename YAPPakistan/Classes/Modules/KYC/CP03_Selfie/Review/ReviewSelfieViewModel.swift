@@ -122,10 +122,9 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
             
             // Selfie Match Success
             veriyFaceReq.elements().subscribe(onNext: { [weak self] response in
-                guard let _ = self else { return }
                 print(response)
-                //YAPProgressHud.hideProgressHud()
-                self?.isSelfieMatched = true
+//                YAPProgressHud.hideProgressHud()
+                self?.isSelfieMatched = response
                 self?.uploadSelfie(data: compressedImage)
                 
             }).disposed(by: self.disposeBag)

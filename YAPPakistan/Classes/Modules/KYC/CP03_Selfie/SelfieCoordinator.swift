@@ -87,24 +87,35 @@ class SelfieCoordinator: Coordinator<ResultType<Void>> {
     }
     
     func GotoKYCResult() {
-        //        coordinate(to: KYCResultCoordinator(root: self.root, container: self.container))
-        //            .subscribe()
-        //            .disposed(by: rx.disposeBag)
         
         let account = container.accountProvider.currentAccountValue.value
-        if account?.isSecretQuestionVerified == true {
-            let viewModel = AccountOpenSuccessViewModel()
-            let viewController = AccountOpenSuccessViewController(themeService: self.container.themeService, viewModel: viewModel)
-            viewModel.outputs.gotoDashboard.debug().subscribe(onNext: { [weak self] _ in
-                guard let _ = self else { return }
-                print("Go to dashboard function called")
-                self?.root.popToRootViewController(animated: true)
-            }).disposed(by: rx.disposeBag)
-            self.root.pushViewController(viewController, completion: nil)
+        if account?.parnterBankStatus == .activated && account?.accountStatus == .onboarded {
+            self.showKYCSuccessScreen()
         } else {
-            // self.manualVerification()
-            // - Open Mannual verification ViewController here.. 
+             self.manualVerification() 
         }
+    }
+    
+    func showKYCSuccessScreen() {
+        let viewModel = AccountOpenSuccessViewModel()
+        let viewController = AccountOpenSuccessViewController(themeService: self.container.themeService, viewModel: viewModel)
+        viewModel.outputs.gotoDashboard.debug().subscribe(onNext: { [weak self] _ in
+            guard let _ = self else { return }
+            print("Go to dashboard function called")
+            self?.root.popToRootViewController(animated: true)
+        }).disposed(by: rx.disposeBag)
+        self.root.pushViewController(viewController, completion: nil)
+    }
+    
+    func manualVerification() {
+        let viewController = container.makeManualVerificationViewController()
+        root.pushViewController(viewController, animated: true)
+
+        viewController.viewModel.outputs.back.withUnretained(self)
+            .subscribe(onNext: { `self`, _ in
+                self.root.popToRootViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
     }
 }
 

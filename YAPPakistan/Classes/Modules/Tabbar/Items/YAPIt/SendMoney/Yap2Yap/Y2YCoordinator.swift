@@ -44,6 +44,8 @@ public class Y2YCoordinator: Coordinator<ResultType<Void>> {
         
     }
     
+    public override var feature: PKCoordinatorFeature { .sendMoney }
+    
     public override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
         let viewModel = Y2YViewModel(referralManager: container.parent.referralManager, repository: repository, contacts: contacts, recentBeneficiaries: recentBeneficiaries, presented: presentable, contactsManager: contactsManager, currentAccount: container.accountProvider.currentAccount)
         let viewController = Y2YViewController(themeService: container.themeService, viewModel: viewModel, recentBeneficiaryView: container.makeRecentBeneficiaryView())

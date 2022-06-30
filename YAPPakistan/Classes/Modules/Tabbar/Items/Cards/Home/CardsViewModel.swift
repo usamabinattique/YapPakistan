@@ -183,7 +183,6 @@ class CardsViewModel: CardsViewModelType,
 
     func resolveIfIncompleted(_ completionStatus: Observable<Bool>) {
         completionStatus.filter{
-            print($0)
             return !$0
         }
             .map{ _ in DeliveryStatus.ordered }.withUnretained(self)

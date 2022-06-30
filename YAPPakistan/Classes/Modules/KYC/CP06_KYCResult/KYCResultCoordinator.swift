@@ -24,7 +24,7 @@ class KYCResultCoordinator: Coordinator<ResultType<Void>> {
     override func start(with option: DeepLinkOptionType?) -> Observable<ResultType<Void>> {
 
         let account = container.accountProvider.currentAccountValue.value
-        if account?.isSecretQuestionVerified == true {
+        if account?.parnterBankStatus == .activated && account?.accountStatus == .onboarded {
             self.cardOnItsWay()
         } else {
             self.manualVerification()
@@ -32,7 +32,6 @@ class KYCResultCoordinator: Coordinator<ResultType<Void>> {
 
         return result
     }
-
 }
 
 // MARK: Helpers

@@ -27,7 +27,8 @@ public class Y2YFundsTransferCoordinator: Coordinator<ResultType<Void>> {
     
     private var shouldPresent: Bool = false
     
-//    public override var feature: CoordinatorFeature { .y2yTransfer }
+    //public override var feature: CoordinatorFeature { .y2yTransfer }
+    public override var feature: PKCoordinatorFeature { .sendMoney }
     
     public init(root: UINavigationController, container: UserSessionContainer, contact: YAPContact, repository: Y2YRepositoryType , transferType: TransferType = .yapContact, shouldPresent: Bool? = false) {
         self.root = root

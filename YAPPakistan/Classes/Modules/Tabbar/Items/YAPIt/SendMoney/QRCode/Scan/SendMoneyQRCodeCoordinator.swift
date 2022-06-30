@@ -22,6 +22,7 @@ class SendMoneyQRCodeCoordinator: Coordinator<ResultType<QRContact>> {
     private let pickedImageSubject = PublishSubject<UIImage>()
     private let disposeBag = DisposeBag()
     private var container: UserSessionContainer
+    
    // override var feature: CoordinatorFeature { .y2yTransfer }
     
     init(root: UINavigationController, container: UserSessionContainer) {

@@ -22,6 +22,10 @@ class SendMoneyFundsTransferCoordinator: Coordinator<ResultType<Void>> {
     
     private let result = PublishSubject<ResultType<Void>>()
     
+    override var feature: PKCoordinatorFeature {
+        .sendMoney
+    }
+    
     public init(root: UIViewController, container: UserSessionContainer, beneficiary: SendMoneyBeneficiary, sendMoneyType: SendMoneyType) {
         
         self.root = root

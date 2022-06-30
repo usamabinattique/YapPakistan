@@ -21,10 +21,6 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
     let contactsManager: ContactsManager
     private let repository: Y2YRepositoryType
     
-    override var feature: PKCoordinatorFeature {
-        .sendMoney
-    }
-    
     init(root: UIViewController, container: UserSessionContainer, successButtonTitle: String? = nil, contactsManager: ContactsManager, repository: Y2YRepositoryType) {
         self.root = root
         self.successButtonTitle = successButtonTitle
@@ -94,7 +90,7 @@ class SendMoneyDashboardCoordinator: Coordinator<ResultType<Void>> {
 
 private extension SendMoneyDashboardCoordinator {
     func y2y(localRoot: UINavigationController, refreshObserver: AnyObserver<Void>, recentBeneficiaries: [Y2YRecentBeneficiary]) {
-        coordinate(to: Y2YCoordinator(root: localRoot, container: self.container, repository: self.container.makeY2YRepository(), contacts: [], recentBeneficiaries: recentBeneficiaries, inviteFriendRepository: self.container.makeYapInviteFriendRepository(), presentable: false, contactsManager:contactsManager))
+        navigate(to: Y2YCoordinator(root: localRoot, container: self.container, repository: self.container.makeY2YRepository(), contacts: [], recentBeneficiaries: recentBeneficiaries, inviteFriendRepository: self.container.makeYapInviteFriendRepository(), presentable: false, contactsManager:contactsManager))
             .subscribe(onNext: { [weak self] in
             if case let ResultType.success(result) = $0 {
                 self?.result.onNext(.success(result))
@@ -106,7 +102,7 @@ private extension SendMoneyDashboardCoordinator {
     }
     
     func sendMoneyLocally(localRoot: UINavigationController, refreshObserver: AnyObserver<Void>) {
-        coordinate(to: SendMoneyHomeCoordinator(root: localRoot, container: container, sendMoneyType: .local)).subscribe(onNext: { [weak self] in
+        navigate(to: SendMoneyHomeCoordinator(root: localRoot, container: container, sendMoneyType: .local)).subscribe(onNext: { [weak self] in
             if case let ResultType.success(result) = $0 {
                 self?.result.onNext(.success(result))
                 self?.result.onCompleted()
@@ -146,6 +142,7 @@ private extension SendMoneyDashboardCoordinator {
                 self?.result.onNext(.success(result))
                 self?.result.onCompleted()
             }
+            
         }).disposed(by: rx.disposeBag)
     } */
     
@@ -167,14 +164,29 @@ private extension SendMoneyDashboardCoordinator {
         }).disposed(by: rx.disposeBag)
     }
     
-   /* func qrFundsTransfer(localRoot: UINavigationController, contact: QRContact) {
-        coordinate(to: Y2YFundsTransferCoordinator(root: localRoot, container: container, contact: contact.yapContact, repository: container.makeY2YRepository(), transferType: .qrCode)).subscribe(onNext: { [weak self] in
-            if case let ResultType.success(result) = $0 {
-                self?.result.onNext(.success(result))
+   /*
+    func search(_ localRoot: UINavigationController, beneficairies: [SearchableBeneficiaryType]) {
+        
+        navigate(to: SendMoneySearchCoordinator(root: localRoot, container: container, beneficairies: beneficairies)).subscribe(onNext: { [weak self] result in
+            
+            switch result.isSuccess {
+            case .SearchType_SendMoneyBeneficiary:
+                print("send money beneficiary selected")
+                //self?.sendMoneyFundsTransfer($0 as! SendMoneyBeneficiary, localRoot: localRoot)
+            case .SearchType_Y2YBeneficiary:
+                print("Y2Y beneficiary selected")
+                //self?.y2yFundsTransfer(YAPContact.contact(fromRecentBeneficiary: $0 as! Y2YRecentBeneficiary), localRoot: localRoot)
+            case .SearchType_YapContact:
+                print("YapContact selected")
+                //self?.y2yFundsTransfer($0 as! YAPContact, localRoot: localRoot)
+            default:
+                //self?.result.onNext(.success(result.isSuccess()))
                 self?.result.onCompleted()
             }
+            
         }).disposed(by: rx.disposeBag)
-    } */
+    }
+    */
     
     func qrFundsTransfer(localRoot: UINavigationController, contact: QRContact) {
         navigate(to: QRPaymentCoordinator(root: localRoot, container: container, contact: contact.yapContact, repository: container.makeY2YRepository(), transferType: .qrCode)).subscribe(onNext: { [weak self] in
