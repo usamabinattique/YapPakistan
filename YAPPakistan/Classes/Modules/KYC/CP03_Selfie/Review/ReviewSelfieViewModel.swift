@@ -23,6 +23,7 @@ protocol ReviewSelfieViewModelOutputs {
     var loading: Observable<Bool> { get }
     var showError: Observable<String> { get }
     var languageStrings: Observable<ReviewSelfieViewModel.LanguageStrings> { get }
+    var pendingDocSelfie: Observable<Void> { get }
 }
 
 protocol ReviewSelfieViewModelType {
@@ -47,6 +48,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
     var showError: Observable<String> { showErrorSubject.asObservable() }
     var image: Observable<UIImage> { imageSubject.asObservable() }
     var selfieComplete: Observable <Void> { selfieCompleteSubject.asObservable() }
+    var pendingDocSelfie: Observable<Void> { pendingDocSelfieSubject.asObservable() }
     
     // MARK: Subjects
     private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
@@ -57,6 +59,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
     private var showErrorSubject = PublishSubject<String>()
     private var imageSubject: BehaviorSubject<UIImage>
     private var selfieCompleteSubject = PublishSubject<Void>()
+    private var pendingDocSelfieSubject = PublishSubject<Void>()
     
     private var disposeBag = DisposeBag()
     private var kycRepository: KYCRepositoryType
@@ -144,8 +147,24 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
             print(response)
             YAPProgressHud.hideProgressHud()
             guard let self = self else { return }
-            self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
+           // self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
             
+//            if account.isAmendment == true {
+//                //dimiss the view
+//            }
+            self.accountProvider.fetchAccounts().elements().withUnretained(self).subscribe(onNext: { `self` , accounts in
+                self.accountProvider.updateAccount(accounts: accounts)
+                if let isAmendment = accounts.first?.isAmendment {
+                    if isAmendment {
+                        self.pendingDocSelfieSubject.onNext(())
+                    } else {
+                        self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
+                    }
+                } else {
+                    self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
+                }
+            }).disposed(by: self.disposeBag)
+
            
             
         }).disposed(by: self.disposeBag)

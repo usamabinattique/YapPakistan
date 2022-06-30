@@ -41,6 +41,8 @@ protocol KYCRepositoryType {
     func fetchCardScheme() -> Observable<Event<[KYCCardsSchemeM]>>
     func generateIBAN(isSelfieMatched: Bool) -> Observable<Event<[Account]>>
     func verifyFaceOCR(_ data: Data, fileName: String, mimeType: String) -> Observable<Event<String>>
+    func idCardReupload(_ documents: [(fileName: String, data: Data, format: String)],
+                                           progressObserver: AnyObserver<Progress>?, issueDate: String, cnic: String) -> Observable<Event<String?>>
 }
 
 class KYCRepository: KYCRepositoryType {
@@ -79,6 +81,11 @@ class KYCRepository: KYCRepositoryType {
                                               identityNo: identityNo, nationality: nationality,
                                               fullName: fullName, fatherName: fatherName, gender: gender, dob: dob,
                                               dateIssue: dateIssue, dateExpiry: dateExpiry).materialize()
+    }
+    
+    func idCardReupload(_ documents: [(fileName: String, data: Data, format: String)],
+                        progressObserver: AnyObserver<Progress>? = nil, issueDate: String, cnic: String) -> Observable<Event<String?>> {
+        return customersService.idCardReupload(documents, progressObserver: progressObserver, issueDate: issueDate, cnic: cnic).materialize()
     }
 
     func getMotherMaidenNames() -> Observable<Event<[String]>> {

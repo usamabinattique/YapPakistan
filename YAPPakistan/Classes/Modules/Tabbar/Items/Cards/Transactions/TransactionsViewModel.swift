@@ -567,6 +567,8 @@ extension TransactionsViewModel {
     }
 
     func updateContent() {
+        self.showShimmeringSubject.onNext(false)
+        self.loadingSubject.onNext(false)
         
         filterEnabledSubject.onNext(TransactionResponse.getNumberOfSections(allTransactions: transactionsObj).count != 0 || filter != nil)
         reloadDataSubject.onNext(())

@@ -141,7 +141,7 @@ class CardBenefitsViewModel: CardBenefitsViewModelType, CardBenefitsViewModelInp
                 self.isTopupNeeded = false
             }
             
-            self.userBalanceSubject.onNext("Your available balance is PKR \(self.userAccountBalance)")
+            self.userBalanceSubject.onNext("Your available balance is PKR \(self.userAccountBalance)\nTop up to proceed with this purchase.")
             
         }).disposed(by: disposeBag)
 

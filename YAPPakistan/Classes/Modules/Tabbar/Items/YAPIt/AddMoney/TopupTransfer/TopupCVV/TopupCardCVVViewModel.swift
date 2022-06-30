@@ -23,7 +23,7 @@ protocol TopupCardCVVViewModelOutput {
     var cvvCount: Observable<Int> { get }
     var amount: Observable<NSAttributedString?> { get }
     var error: Observable<String> { get }
-    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)> { get }
+    var result: Observable<String> { get }
     var confirmEnabled: Observable<Bool> { get }
     var back: Observable<Void> { get }
 }
@@ -41,7 +41,7 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
     var outputs: TopupCardCVVViewModelOutput { return self }
     var accountBalance = ""
     
-    private let cvvSubject = PublishSubject<String?>()
+    private let cvvSubject = ReplaySubject<String?>.create(bufferSize: 1)
     private let confirmSubject = PublishSubject<Void>()
     private let backSubject = PublishSubject<Void>()
     private let accountBalanceSubject = BehaviorSubject<String?>(value: nil)
@@ -52,7 +52,7 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
     private let cvvCountSubject: BehaviorSubject<Int>
     private let amountSubject: BehaviorSubject<NSAttributedString?>
     private let errorSubject = PublishSubject<String>()
-    private let resultSubject = PublishSubject<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)>()
+    private let resultSubject = PublishSubject<String>()
     private let confirmEnabledSubject = BehaviorSubject<Bool>(value: false)
     
     // MARK: - Inputs
@@ -67,14 +67,14 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
     var amount: Observable<NSAttributedString?> { return amountSubject.asObservable()}
     var cvvCount: Observable<Int> { return cvvCountSubject.asObservable() }
     var error: Observable<String> { return errorSubject.asObservable() }
-    var result: Observable<(amount: Double, currency: String, card: ExternalPaymentCard, newBalance: String)> { return resultSubject.asObservable() }
+    var result: Observable<String> { return resultSubject.asObservable() }
     var confirmEnabled: Observable<Bool> { return confirmEnabledSubject.asObservable() }
     var back: Observable<Void> { return backSubject.asObservable() }
     
     private let repository: TransactionsRepository
     
     // MARK: - Init
-    init(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, threeDSecureId: String, repository: TransactionsRepository) {
+    init(card: ExternalPaymentCard, amount: Double, currency: String, orderID: String, repository: TransactionsRepository) {
         
         self.repository = repository
         
@@ -91,61 +91,23 @@ class TopupCardCVVViewModel: TopupCardCVVViewModelType, TopupCardCVVViewModelInp
         
         amountSubject = BehaviorSubject<NSAttributedString?>(value: attributed)
         
-        let paymentRequest = confirmSubject.withLatestFrom(cvvSubject).unwrap()
-            .do(onNext: { _ in YAPProgressHud.showProgressHud()})
-            .flatMap { [unowned self] in
-                self.repository.paymentGatewayTopup(threeDSecureId: threeDSecureId, orderId: orderID, currency: currency, amount: String(amount), sessionId: "", securityCode: $0, beneficiaryId: String(card.id)) }
-            .share()
+        /*confirmSubject
+            .subscribe(onNext:{ [unowned self] _ in
+                self.cvvSubject.unwrap().bind(to: resultSubject).disposed(by: disposeBag)
+            }).disposed(by: disposeBag) */
         
-        #warning("[UMAIR] - uncomment following error block and remove current error block")
-        paymentRequest.errors()
-            .do(onNext: { _ in
-                YAPProgressHud.hideProgressHud()
-            })
-            .subscribe(onNext:{ [weak self] error in
-                self?.errorSubject.onNext(error.localizedDescription)
-            })
-            .disposed(by: disposeBag)
-        
-//                paymentRequest.errors()
-//                        .flatMap{ _ in self.getCustomerAccountBalance() }
-//                    .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
-//                    .subscribe(onNext: { [weak self] _ in
-//                        self?.resultSubject.onNext((amount: amount, currency: currency, card: card, newBalance: self?.accountBalance ?? "")) })
-//                    .disposed(by: disposeBag)
-                
-        paymentRequest.elements()
-                .flatMap{ _ in self.getCustomerAccountBalance() }
-            .do(onNext: { _ in YAPProgressHud.hideProgressHud()})
-            .subscribe(onNext: { [weak self] _ in
-                self?.resultSubject.onNext((amount: amount, currency: currency, card: card, newBalance: self?.accountBalance ?? "")) })
-            .disposed(by: disposeBag)
+        confirmSubject.flatMap{ [unowned self] in self.cvvSubject }
+            .subscribe(onNext:{ cv in
+                print(cv)
+                if let cvv = cv {
+                    self.resultSubject.onNext(cvv)
+                }
+            }).disposed(by: disposeBag)
+            //.unwrap().bind(to: resultSubject).disposed(by: disposeBag)
         
         backSubject.subscribe(onNext: { [weak self] in self?.resultSubject.onCompleted() }).disposed(by: disposeBag)
         
         cvvSubject.unwrap().map { $0.count == (card.type == .americanExpress ? 4 : 3) }.bind(to: confirmEnabledSubject).disposed(by: disposeBag)
     }
     
-    fileprivate func getCustomerAccountBalance() -> Observable<Event<CustomerBalanceResponse>> {
-        let accountBalanceRequest = repository.fetchCustomerAccountBalance().share(replay: 1, scope: .whileConnected)
-        
-        accountBalanceRequest.elements()
-            .map { [weak self] in
-                self?.accountBalance = $0.formattedBalance()
-                return $0.formattedBalance()
-            }
-            .bind(to: accountBalanceSubject)
-            .disposed(by: disposeBag)
-
-        accountBalanceRequest
-            .errors()
-            .do(onNext: { [unowned self] _ in
-                YAPProgressHud.hideProgressHud()
-            })
-            .map { $0.localizedDescription }
-            .bind(to: errorSubject)
-            .disposed(by: disposeBag)
-        
-        return accountBalanceRequest
-    }
 }

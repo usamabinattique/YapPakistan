@@ -98,6 +98,8 @@ public protocol CustomerServiceType {
     func generateIBAN<T: Codable>(isSelfieMatched: Bool) -> Observable<T>
     func verifyFaceOCR<T: Codable>(_ data: Data, fileName: String, mimeType: String) -> Observable<T>
     func fetchRequiredDocuments<T: Codable>() -> Observable<T>
+    func idCardReupload<T: Codable>(_ documents: [(fileName: String, data: Data, format: String)],
+                                    progressObserver: AnyObserver<Progress>?, issueDate: String, cnic: String) -> Observable<T>
 }
 
     
@@ -619,6 +621,25 @@ public class CustomersService: BaseService, CustomerServiceType {
         return self.request(apiClient: self.apiClient, route: route)
     }
     
+    public func idCardReupload<T: Codable>(_ documents: [(fileName: String, data: Data, format: String)],
+                                           progressObserver: AnyObserver<Progress>? = nil, issueDate: String, cnic: String) -> Observable<T> {
+        
+        var docs: [DocumentUploadRequest] = []
+        for document in documents {
+            let info = fileInfo(format: document.format)
+            docs.append(DocumentUploadRequest(data: document.data, name: info.0, fileName: info.1, mimeType: info.2))
+        }
+        let formData = [
+            "issueanceDate": issueDate,
+            "cnic": cnic
+        ]
+
+        let route = APIEndpoint<String>(.post, apiConfig.customersURL, "/api/v2/re-upload-documents",
+                                        headers: authorizationProvider.authorizationHeaders)
+
+        return upload(apiClient: apiClient, documents: docs, route: route,
+                      progressObserver: nil, otherFormValues: formData)
+    }
 }
 
 // MARK: Helpers

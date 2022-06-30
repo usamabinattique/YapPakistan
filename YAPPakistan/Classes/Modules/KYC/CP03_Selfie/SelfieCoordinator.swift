@@ -16,7 +16,7 @@ class SelfieCoordinator: Coordinator<ResultType<Void>> {
     private let navigator: NavigationContainerViewController
 
     init(root: UINavigationController,
-         container: KYCFeatureContainer) {
+         container: KYCFeatureContainer, isAmendmentRequired: Bool = false) {
         self.container = container
         self.root = root
         self.navigator = container.makeNavigationContainerViewController()
@@ -70,6 +70,12 @@ class SelfieCoordinator: Coordinator<ResultType<Void>> {
         viewController.viewModel.outputs.next.subscribe(onNext: { [unowned self] _ in
             self.GotoKYCResult()
         }).disposed(by: rx.disposeBag)
+        
+        viewController.viewModel.outputs.pendingDocSelfie
+            .subscribe(onNext:{ [weak self] _ in
+                self?.root.popToRootViewController(animated: true)
+            })
+            .disposed(by: rx.disposeBag)
         
         viewController.viewModel.outputs.selfieComplete.subscribe(onNext: { [unowned self] _ in
             

@@ -122,12 +122,6 @@ final class DashboardMissingDocumentViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel.inputs.viewDidAppearObserver.onNext(())
-        scrollToFirstRow()
-    }
-    
-    private func scrollToFirstRow() {
-        let indexPath = IndexPath(row: 0, section: 0)
-        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }
 }
 
@@ -190,6 +184,13 @@ extension DashboardMissingDocumentViewController: ViewDesignable {
         viewModel.outputs.titleName.bind(to: screenTitle.rx.text).disposed(by: disposeBag)
         doItLaterButton.rx.tap.bind(to: viewModel.inputs.doItLaterObserver).disposed(by: disposeBag)
         getStartedButton.rx.tap.bind(to: viewModel.inputs.getStartedObserver).disposed(by: disposeBag)
+        
+        viewModel.outputs.showOnlyDashboardButton.withUnretained(self).subscribe(onNext: { `self`,isShow in
+            guard isShow else { return }
+            self.doItLaterButton.isHidden = isShow
+            self.getStartedButton.setTitle("common_button_go_to_dashbaord".localized, for: .normal)
+        }).disposed(by: disposeBag)
+
     }
     
     func setupTheme(){
