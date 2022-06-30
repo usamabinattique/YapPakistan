@@ -105,7 +105,7 @@ extension MoreCoordinator {
 //        let viewController = ManualVerificationViewController(themeService: self.container.themeService, viewModel: viewModel)
 //        self.navigationRoot.present(viewController, animated: true)
         
-//        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
+        coordinate(to: HelpAndSupportCoordinator(root: root, container: self.container)).subscribe(onNext: { _ in }).disposed(by: disposeBag)
     }
     
     func openUserProfileSettings() {
