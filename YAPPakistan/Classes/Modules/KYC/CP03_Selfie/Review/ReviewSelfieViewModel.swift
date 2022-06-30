@@ -23,6 +23,7 @@ protocol ReviewSelfieViewModelOutputs {
     var loading: Observable<Bool> { get }
     var showError: Observable<String> { get }
     var languageStrings: Observable<ReviewSelfieViewModel.LanguageStrings> { get }
+    var pendingDocSelfie: Observable<Void> { get }
 }
 
 protocol ReviewSelfieViewModelType {
@@ -47,6 +48,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
     var showError: Observable<String> { showErrorSubject.asObservable() }
     var image: Observable<UIImage> { imageSubject.asObservable() }
     var selfieComplete: Observable <Void> { selfieCompleteSubject.asObservable() }
+    var pendingDocSelfie: Observable<Void> { pendingDocSelfieSubject.asObservable() }
     
     // MARK: Subjects
     private var languageStringsSubject: BehaviorSubject<LanguageStrings>!
@@ -57,6 +59,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
     private var showErrorSubject = PublishSubject<String>()
     private var imageSubject: BehaviorSubject<UIImage>
     private var selfieCompleteSubject = PublishSubject<Void>()
+    private var pendingDocSelfieSubject = PublishSubject<Void>()
     
     private var disposeBag = DisposeBag()
     private var kycRepository: KYCRepositoryType
@@ -121,7 +124,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
             veriyFaceReq.elements().subscribe(onNext: { [weak self] response in
                 guard let _ = self else { return }
                 print(response)
-                YAPProgressHud.hideProgressHud()
+                //YAPProgressHud.hideProgressHud()
                 self?.isSelfieMatched = true
                 self?.uploadSelfie(data: compressedImage)
                 
@@ -142,7 +145,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
         YAPProgressHud.showProgressHud()
         uploadSelfieReq.elements().subscribe(onNext: { [weak self] response in
             print(response)
-            YAPProgressHud.hideProgressHud()
+            //YAPProgressHud.hideProgressHud()
             guard let self = self else { return }
            // self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
             
@@ -153,7 +156,8 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
                 self.accountProvider.updateAccount(accounts: accounts)
                 if let isAmendment = accounts.first?.isAmendment {
                     if isAmendment {
-                        self.backSubject.onNext(())
+                        YAPProgressHud.hideProgressHud()
+                        self.pendingDocSelfieSubject.onNext(())
                     } else {
                         self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
                     }
