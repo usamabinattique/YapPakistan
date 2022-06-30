@@ -57,6 +57,11 @@ class AccountLimitCell: RxUITableViewCell {
         setupConstraints()
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        setupAppearance()
+    }
+    
     // MARK: View cycle
     
     override func layoutIfNeeded() {
@@ -148,6 +153,9 @@ extension AccountLimitCell: ViewDesignable {
             .disposed(by: disposeBag)
     }
     
+    func setupAppearance() {
+        transactionTypeLogo.roundView()
+    }
 }
 
 extension AccountLimitCell: UITableViewDelegate, UITableViewDataSource {

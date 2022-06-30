@@ -160,6 +160,10 @@ public extension String {
         return self.initialsImage(color: color)
     }
     
+    func thumbnailWithThemeColor() -> UIImage? {
+        return self.initialsImage(color: UIColor(hexString: "#5E35B1")!)
+    }
+    
 //    func thumbnail(for colour: UIColor) {
 //        return initialsImage(color: <#T##UIColor#>)
 //    }
