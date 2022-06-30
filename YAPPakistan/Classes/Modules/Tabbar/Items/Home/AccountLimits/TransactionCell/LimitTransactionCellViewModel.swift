@@ -55,7 +55,7 @@ class LimitTransactionCellViewModel: LimitTransactionCellViewModelType, LimitTra
     private let disposeBag = DisposeBag()
 
     init(_ limitDetail: TransactionLimitsDetail) {
-        transactionTitleSubject.onNext(limitDetail.title)
+        transactionTitleSubject.onNext(limitDetail.title + ": " + CurrencyFormatter.formatAmountInLocalCurrency(Double(limitDetail.allocatedLimit)))
         limitConsumedValueSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(Double(limitDetail.consumedLimit)))
         limitAllocatedValueSubject.onNext(CurrencyFormatter.formatAmountInLocalCurrency(Double(limitDetail.allocatedLimit)))
         print(isLastElement)

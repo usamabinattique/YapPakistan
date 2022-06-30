@@ -48,7 +48,7 @@ class AccountLimitCellViewModel: AccountLimitCellViewModelType, AccountLimitCell
     var viewModels: [ReusableTableViewCellViewModelType] = []
     
     init(_ accountLimits: AccountLimits) {
-        logoSubject.onNext((accountLimits.logo, accountLimits.title.thumbnail))
+        logoSubject.onNext((accountLimits.logo, accountLimits.title.thumbnailWithThemeColor()))
         titleSubject.onNext(accountLimits.title)
         for (index,transactions) in accountLimits.transactionLimits.enumerated() {
             let transactionsVM = LimitTransactionCellViewModel(transactions)
