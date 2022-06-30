@@ -124,7 +124,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
             veriyFaceReq.elements().subscribe(onNext: { [weak self] response in
                 guard let _ = self else { return }
                 print(response)
-                YAPProgressHud.hideProgressHud()
+                //YAPProgressHud.hideProgressHud()
                 self?.isSelfieMatched = true
                 self?.uploadSelfie(data: compressedImage)
                 
@@ -145,7 +145,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
         YAPProgressHud.showProgressHud()
         uploadSelfieReq.elements().subscribe(onNext: { [weak self] response in
             print(response)
-            YAPProgressHud.hideProgressHud()
+            //YAPProgressHud.hideProgressHud()
             guard let self = self else { return }
            // self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
             
@@ -156,6 +156,7 @@ class ReviewSelfieViewModel: ReviewSelfieViewModelType, ReviewSelfieViewModelInp
                 self.accountProvider.updateAccount(accounts: accounts)
                 if let isAmendment = accounts.first?.isAmendment {
                     if isAmendment {
+                        YAPProgressHud.hideProgressHud()
                         self.pendingDocSelfieSubject.onNext(())
                     } else {
                         self.generateIBAN(isSelfieMatched: self.isSelfieMatched)
